@@ -15,10 +15,12 @@ namespace WikiClientLibrary.Client
     {
         #region the json client
 
-        private async Task<JObject> SendAsync(HttpRequestMessage request)
+        private async Task<JObject> SendAsync(Func<HttpRequestMessage> requestFactory)
         {
             HttpResponseMessage response;
             RETRY:
+            var request = requestFactory();
+            Debug.Assert(request != null);
             var retries = 0;
             using (var responseCancellation = new CancellationTokenSource(Timeout))
             {

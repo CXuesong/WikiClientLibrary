@@ -83,12 +83,11 @@ namespace WikiClientLibrary.Client
         {
             if (queryParams == null) throw new ArgumentNullException(nameof(queryParams));
             var requestUrl = EndPointUrl + "?format=json&" + queryParams;
-            var request = new HttpRequestMessage(HttpMethod.Post, EndPointUrl)
+            var result = await SendAsync(() => new HttpRequestMessage(HttpMethod.Post, EndPointUrl)
             {
                 Content = new FormUrlEncodedContent(new[] {new KeyValuePair<string, string>("format", "json")}
                     .Concat(queryParams)),
-            };
-            var result = await SendAsync(request);
+            });
             return result;
         }
 
