@@ -115,6 +115,8 @@ namespace WikiClientLibrary
             return dict.Values.Single();
         }
 
+        #region Authetication
+
         public Task LoginAsync(string userName, string password)
         {
             return LoginAsync(userName, password, null);
@@ -152,6 +154,17 @@ namespace WikiClientLibrary
             message = (string) jobj["login"]["reason"] ?? message;
             throw new OperationFailedException(result, message);
         }
+
+        public async Task LogoutAsync()
+        {
+            var jobj = await WikiClient.GetJsonAsync(new
+            {
+                action = "logout",
+            });
+            await RefreshUserInfoAsync();
+        }
+
+        #endregion
 
         /// <summary>
         /// 返回表示当前对象的字符串。

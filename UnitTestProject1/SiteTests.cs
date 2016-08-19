@@ -78,6 +78,10 @@ namespace UnitTestProject1
             Assert.IsTrue(site.UserInfo.IsUser);
             Assert.IsFalse(site.UserInfo.IsAnnonymous);
             Trace.WriteLine($"{site.UserInfo.Name} has logged into {site}");
+            CredentialManager.Logout(site);
+            Assert.IsFalse(site.UserInfo.IsUser);
+            Assert.IsTrue(site.UserInfo.IsAnnonymous);
+            Trace.WriteLine($"{site.UserInfo.Name} has logged out.");
         }
 
     }

@@ -40,5 +40,10 @@ namespace UnitTestProject1
                 // This is usually because LoginCore hasn't been implemented yet.
                 throw new NotSupportedException("To enable login feature, you should implement LoginCore private function. See http://github.com/cxuesong/WikiClientLibrary for more information.");
         }
+
+        public static void Logout(Site site)
+        {
+            Utility.AwaitSync(site.LogoutAsync());
+        }
     }
 }
