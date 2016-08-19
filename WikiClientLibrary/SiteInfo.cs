@@ -17,14 +17,23 @@ namespace WikiClientLibrary
     [JsonObject(MemberSerialization.OptIn)]
     public class SiteInfo
     {
+        /// <summary>
+        /// The title of the main page, as found in MediaWiki:Mainpage. 1.8+
+        /// </summary>
         [JsonProperty]      // This should be kept or private setter will be ignored by Newtonsoft.JSON.
         public string MainPage { get; private set; }
 
         /// <summary>
-        /// The absolute path to the main page.
+        /// The absolute path to the main page. 1.8+
         /// </summary>
         [JsonProperty("base")]
         public string BaseUrl { get; private set; }
+
+        /// <summary>
+        /// The absolute or protocol-relative base URL for the server. See $wgServer. 1.16+
+        /// </summary>
+        [JsonProperty("server")]
+        public string ServerUrl { get; private set; }
 
         [JsonProperty]
         public string SiteName { get; private set; }

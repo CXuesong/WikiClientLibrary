@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -23,7 +24,7 @@ namespace WikiClientLibrary
         public static async Task<Site> GetAsync(WikiClient wikiClient)
         {
             var site = new Site(wikiClient);
-            await site.RefreshAsync();
+            await Task.WhenAll(site.RefreshSiteInfoAsync(), site.RefreshUserInfoAsync());
             return site;
         }
 
@@ -34,7 +35,7 @@ namespace WikiClientLibrary
             //Namespaces = new ReadOnlyDictionary<int, NamespaceInfo>(_Namespaces);
         }
 
-        public async Task RefreshAsync()
+        public async Task RefreshSiteInfoAsync()
         {
             var jobj = await WikiClient.GetJsonAsync(new
             {
@@ -48,7 +49,11 @@ namespace WikiClientLibrary
             SiteInfo = qg.ToObject<SiteInfo>(Utility.WikiJsonSerializer);
             _Namespaces = ns.ToObject<Dictionary<int, NamespaceInfo>>(Utility.WikiJsonSerializer);
             Namespaces = new ReadOnlyDictionary<int, NamespaceInfo>(_Namespaces);
-            jobj = await WikiClient.GetJsonAsync(new
+        }
+
+        public async Task RefreshUserInfoAsync()
+        {
+            var jobj = await WikiClient.GetJsonAsync(new
             {
                 action = "query",
                 meta = "userinfo",
@@ -133,6 +138,8 @@ namespace WikiClientLibrary
             switch (result)
             {
                 case "Success":
+                    await RefreshUserInfoAsync();
+                    Debug.Assert(UserInfo.IsUser);
                     return;
                 case "Aborted":
                     message =

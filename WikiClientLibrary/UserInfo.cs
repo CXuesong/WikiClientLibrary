@@ -23,6 +23,13 @@ namespace WikiClientLibrary
         [JsonProperty("anon")]
         public bool IsAnnonymous { get; private set; }
 
+        /// <summary>
+        /// Determines wheter current user is in "user" group.
+        /// This is usually used to determine whether a user
+        /// has logged in.
+        /// </summary>
+        public bool IsUser => Groups.Contains(UserGroups.User);
+
         public bool IsBlocked => BlockId != 0;
 
         [JsonProperty]
@@ -48,5 +55,11 @@ namespace WikiClientLibrary
 
         [JsonProperty]
         public IReadOnlyCollection<string> Rights { get; private set; }
+    }
+
+    public static class UserGroups
+    {
+        public const string User = "user";
+        public const string Autoconfirmed = "autoconfirmed";
     }
 }

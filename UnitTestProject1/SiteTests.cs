@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Globalization;
+using System.Threading;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -68,11 +70,14 @@ namespace UnitTestProject1
         }
 
         [TestMethod]
-        [ExpectedException(typeof(OperationFailedException))]
         public void LoginWpTest2_2()
         {
             var site = CreateWikiSite(EntryPointWikipediaTest2);
-            // TODO Make a successful login attempt here.
+            //site.WikiClient.Timeout = TimeSpan.Zero;
+            CredentialManager.Login(site);
+            Assert.IsTrue(site.UserInfo.IsUser);
+            Assert.IsFalse(site.UserInfo.IsAnnonymous);
+            Trace.WriteLine($"{site.UserInfo.Name} has logged into {site}");
         }
     }
 }
