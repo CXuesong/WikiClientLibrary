@@ -36,19 +36,19 @@ namespace UnitTestProject1
         public void TestWpTest2()
         {
             var site = CreateWikiSite(EntryPointWikipediaTest2);
-            TraceSite(site);
+            ShallowTrace(site);
             Assert.AreEqual("Wikipedia", site.SiteInfo.SiteName);
             Assert.AreEqual("Main Page", site.SiteInfo.MainPage);
             ValidateNamespaces(site);
         }
 
         [TestMethod]
-        public void TestWpZh()
+        public void TestWpLzh()
         {
-            var site = CreateWikiSite(EntryWikipediaZh);
-            TraceSite(site);
-            Assert.AreEqual("Wikipedia", site.SiteInfo.SiteName);
-            Assert.AreEqual("Wikipedia:首页", site.SiteInfo.MainPage);
+            var site = CreateWikiSite(EntryWikipediaLzh);
+            ShallowTrace(site);
+            Assert.AreEqual("維基大典", site.SiteInfo.SiteName);
+            Assert.AreEqual("維基大典:卷首", site.SiteInfo.MainPage);
             ValidateNamespaces(site);
         }
 
@@ -56,7 +56,7 @@ namespace UnitTestProject1
         public void TestWikia()
         {
             var site = CreateWikiSite(EntryPointWikiaTest);
-            TraceSite(site);
+            ShallowTrace(site);
             Assert.AreEqual("Mediawiki 1.19 test Wiki", site.SiteInfo.SiteName);
             ValidateNamespaces(site);
         }

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -6,6 +7,7 @@ using System.Threading.Tasks;
 using Newtonsoft.Json.Serialization;
 using WikiClientLibrary;
 using System.Diagnostics;
+using System.Reflection;
 using System.Runtime.ExceptionServices;
 using WikiClientLibrary.Client;
 using Newtonsoft.Json.Linq;
@@ -18,7 +20,7 @@ namespace UnitTestProject1
         /// <summary>
         /// This is NOT a test site so do not make modifications to the site.
         /// </summary>
-        public const string EntryWikipediaZh = "https://zh.wikipedia.org/w/api.php";
+        public const string EntryWikipediaLzh = "https://zh-classical.wikipedia.org/w/api.php";
         // TODO This is a rather unofficial test site. Replace it in the future.
         public const string EntryPointWikiaTest = "https://mediawiki119.wikia.com/api.php";
 
@@ -28,6 +30,7 @@ namespace UnitTestProject1
             {
                 Logger = new TraceLogger(),
                 EndPointUrl = entryPointUrl,
+                Timeout = TimeSpan.FromSeconds(3),
             };
             return client;
         }
@@ -94,27 +97,64 @@ namespace UnitTestProject1
             AwaitSync<bool>(task);
         }
 
-        public static string DumpSite(Site site)
+        private static string DumpObject(object obj, int indention, int maxDepth)
         {
-            if (site == null) throw new ArgumentNullException(nameof(site));
+            if (obj == null) return "null";
             var sb = new StringBuilder();
-            sb.AppendLine("Site Info");
-            sb.AppendLine(JObject.FromObject(site.SiteInfo).ToString());
-            sb.AppendLine();
-            sb.AppendLine("User Info");
-            sb.AppendLine(JObject.FromObject(site.UserInfo).ToString());
-            sb.AppendLine();
-            sb.AppendLine("Namespaces");
-            foreach (var ns in site.Namespaces.Values.OrderBy(n => n.Id))
+            if (obj.GetType().GetMethod("ToString", Type.EmptyTypes).DeclaringType
+                == typeof (object))
             {
-                sb.AppendLine(ns.ToString());
+                sb.Append('{');
+                sb.Append(obj.GetType().Name);
+                sb.Append('}');
+            }
+            else
+            {
+                sb.Append(obj);
+            }
+            if (maxDepth < 1 || obj is ValueType || obj is string || obj is Uri)
+                return sb.ToString();
+            foreach (var p in obj.GetType().GetProperties())
+            {
+                if (p.GetIndexParameters().Length > 0) continue;
+                sb.AppendLine();
+                sb.Append(' ', indention*2);
+                sb.Append(p.Name);
+                sb.Append(" = ");
+                var value = p.GetValue(obj);
+                sb.Append(DumpObject(value, indention + 1, maxDepth - 1));
+            }
+            var dict = obj as IDictionary;
+            var enu = obj as IEnumerable;
+            if (dict != null)
+            {
+                foreach (DictionaryEntry p in dict)
+                {
+                    sb.AppendLine();
+                    sb.Append(' ', indention*2);
+                    sb.AppendFormat("[{0}] = ", p.Key);
+                    sb.Append(DumpObject(p.Value, indention + 1, maxDepth - 1));
+                }
+            }
+            else if (enu != null)
+            {
+                foreach (var i in enu)
+                {
+                    sb.AppendLine();
+                    sb.Append(DumpObject(i, indention + 1, maxDepth - 1));
+                }
             }
             return sb.ToString();
         }
 
-        public static void TraceSite(Site site)
+        public static string DumpObject(object obj, int maxDepth)
         {
-            Trace.WriteLine(DumpSite(site));
+            return DumpObject(obj, 0, maxDepth);
+        }
+
+        public static void ShallowTrace(object obj)
+        {
+            Trace.WriteLine(DumpObject(obj, 2));
         }
     }
 }
