@@ -34,11 +34,13 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="Exceptions.cs" />
     <Compile Include="ILogger.cs" />
     <Compile Include="ReadonlyJObjectWrapper.cs" />
     <Compile Include="Page.cs" />
     <Compile Include="Site.cs" />
     <Compile Include="SiteInfo.cs" />
+    <Compile Include="UserInfo.cs" />
     <Compile Include="Utility.cs" />
     <Compile Include="Client\WikiClient-json.cs" />
     <Compile Include="Client\WikiClient.cs" />

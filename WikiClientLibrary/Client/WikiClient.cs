@@ -14,9 +14,10 @@ namespace WikiClientLibrary.Client
     /// </summary>
     public partial class WikiClient : IDisposable
     {
-        private int _MaxRetries;
 
         #region Configurations
+
+        private int _MaxRetries = 3;
 
         /// <summary>
         /// MediaWiki API endpoint.

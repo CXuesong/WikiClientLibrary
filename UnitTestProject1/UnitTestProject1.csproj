@@ -56,11 +56,13 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
+    <Compile Include="CredentialManager.cs" />
     <Compile Include="Initializer.cs" />
     <Compile Include="SiteTests.cs" />
     <Compile Include="WebClientTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Utility.cs" />
+    <Compile Include="_private\credentials.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\WikiClientLibrary\WikiClientLibrary.csproj">

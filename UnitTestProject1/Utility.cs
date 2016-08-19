@@ -12,9 +12,13 @@ using Newtonsoft.Json.Linq;
 
 namespace UnitTestProject1
 {
-    internal static class Utility
+    internal static partial class Utility
     {
         public const string EntryPointWikipediaTest2 = "https://test2.wikipedia.org/w/api.php";
+        /// <summary>
+        /// This is NOT a test site so do not make modifications to the site.
+        /// </summary>
+        public const string EntryWikipediaZh = "https://zh.wikipedia.org/w/api.php";
         // TODO This is a rather unofficial test site. Replace it in the future.
         public const string EntryPointWikiaTest = "https://mediawiki119.wikia.com/api.php";
 
@@ -94,8 +98,11 @@ namespace UnitTestProject1
         {
             if (site == null) throw new ArgumentNullException(nameof(site));
             var sb = new StringBuilder();
-            sb.AppendLine("Info");
-            sb.AppendLine(JObject.FromObject(site.Info).ToString());
+            sb.AppendLine("Site Info");
+            sb.AppendLine(JObject.FromObject(site.SiteInfo).ToString());
+            sb.AppendLine();
+            sb.AppendLine("User Info");
+            sb.AppendLine(JObject.FromObject(site.UserInfo).ToString());
             sb.AppendLine();
             sb.AppendLine("Namespaces");
             foreach (var ns in site.Namespaces.Values.OrderBy(n => n.Id))

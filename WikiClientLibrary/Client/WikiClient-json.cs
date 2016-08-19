@@ -53,6 +53,10 @@ namespace WikiClientLibrary.Client
                     {
                         var obj = JObject.Load(jreader);
                         //Logger?.Trace(obj.ToString());
+                        if (obj["warnings"] != null)
+                        {
+                            Logger?.Warn(obj["warnings"].ToString());
+                        }
                         return obj;
                     }
                 }

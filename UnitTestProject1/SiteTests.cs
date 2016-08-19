@@ -31,22 +31,48 @@ namespace UnitTestProject1
         }
 
         [TestMethod]
-        public void TestMethod1()
+        public void TestWpTest2()
         {
             var site = CreateWikiSite(EntryPointWikipediaTest2);
             TraceSite(site);
-            Assert.AreEqual("Wikipedia", site.Info.SiteName);
-            Assert.AreEqual("Main Page", site.Info.MainPage);
+            Assert.AreEqual("Wikipedia", site.SiteInfo.SiteName);
+            Assert.AreEqual("Main Page", site.SiteInfo.MainPage);
             ValidateNamespaces(site);
         }
 
         [TestMethod]
-        public void TestMethodWikia()
+        public void TestWpZh()
+        {
+            var site = CreateWikiSite(EntryWikipediaZh);
+            TraceSite(site);
+            Assert.AreEqual("Wikipedia", site.SiteInfo.SiteName);
+            Assert.AreEqual("Wikipedia:首页", site.SiteInfo.MainPage);
+            ValidateNamespaces(site);
+        }
+
+        [TestMethod]
+        public void TestWikia()
         {
             var site = CreateWikiSite(EntryPointWikiaTest);
             TraceSite(site);
-            Assert.AreEqual("Mediawiki 1.19 test Wiki", site.Info.SiteName);
+            Assert.AreEqual("Mediawiki 1.19 test Wiki", site.SiteInfo.SiteName);
             ValidateNamespaces(site);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(OperationFailedException))]
+        public void LoginWpTest2_1()
+        {
+            var site = CreateWikiSite(EntryPointWikipediaTest2);
+            AwaitSync(site.LoginAsync("user", "password"));
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(OperationFailedException))]
+        public void LoginWpTest2_2()
+        {
+            var site = CreateWikiSite(EntryPointWikipediaTest2);
+            // TODO Make a successful login attempt here.
         }
     }
 }
