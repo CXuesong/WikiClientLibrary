@@ -45,6 +45,27 @@ namespace WikiClientLibrary
         }
     }
 
+    /// <summary>
+    /// An exception indicating the requested action is invalid.
+    /// </summary>
+    public class InvalidActionException : ArgumentException
+    {
+        public InvalidActionException() : this(null, null)
+        {
+            
+        }
+
+        public InvalidActionException(string message) : this(message, null)
+        {
+            
+        }
+
+        public InvalidActionException(string message, Exception inner)
+            : base(message, "action", inner)
+        {
+            
+        }
+    }
 
     /// <summary>
     /// Raises when user has no rights for certain operations.

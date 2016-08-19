@@ -57,6 +57,18 @@ namespace WikiClientLibrary.Client
                         {
                             Logger?.Warn(obj["warnings"].ToString());
                         }
+                        if (obj["error"] != null)
+                        {
+                            var err = obj["error"];
+                            switch ((string) err["code"])
+                            {
+                                case "unknown_action":
+                                    throw new InvalidActionException((string) err["info"]);
+                                default:
+                                    throw new OperationFailedException((string) err["code"],
+                                        string.Format("{0} {1}", (string) err["info"], (string) err["*"]));
+                            }
+                        }
                         return obj;
                     }
                 }

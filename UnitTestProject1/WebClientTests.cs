@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using WikiClientLibrary;
 using static UnitTestProject1.Utility;
 
 namespace UnitTestProject1
@@ -14,6 +15,15 @@ namespace UnitTestProject1
         {
             var client = CreateWikiClient(EntryPointWikipediaTest2);
             var json = AwaitSync(client.GetJsonAsync(new {action = "query", meta = "siteinfo"}));
+            Trace.WriteLine(json);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(InvalidActionException))]
+        public void TestMethod2()
+        {
+            var client = CreateWikiClient(EntryPointWikipediaTest2);
+            var json = AwaitSync(client.GetJsonAsync(new { action = "invalid_action_test", description = "This is a test case for invalid action parameter." }));
             Trace.WriteLine(json);
         }
     }
