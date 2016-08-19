@@ -59,6 +59,7 @@
     <Compile Include="CredentialManager.cs" />
     <Compile Include="Initializer.cs" />
     <Compile Include="SiteTests.cs" />
+    <Compile Include="PageTests.cs" />
     <Compile Include="WebClientTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Utility.cs" />
