@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using static UnitTestProject1.Utility;
 
 namespace UnitTestProject1
 {
@@ -11,8 +12,8 @@ namespace UnitTestProject1
         [TestMethod]
         public void TestMethod1()
         {
-            var client = Utility.CreateWikiClient();
-            var json = client.GetJsonAsync(new {action = "query", meta = "siteinfo"}).Result;
+            var client = CreateWikiClient(EntryPointWikipediaTest2);
+            var json = AwaitSync(client.GetJsonAsync(new {action = "query", meta = "siteinfo"}));
             Trace.WriteLine(json);
         }
     }
