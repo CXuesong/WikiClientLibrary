@@ -17,6 +17,8 @@ namespace WikiClientLibrary
     [JsonObject(MemberSerialization.OptIn)]
     public class SiteInfo
     {
+        private string _Generator;
+
         /// <summary>
         /// The title of the main page, as found in MediaWiki:Mainpage. 1.8+
         /// </summary>
@@ -41,8 +43,29 @@ namespace WikiClientLibrary
         [JsonProperty("logo")]
         public string LogoUrl { get; private set; }
 
-        [JsonProperty]
-        public string Generator { get; private set; }
+        /// <summary>
+        /// API version information as found in $wgVersion. 1.8+
+        /// </summary>
+        /// <remarks>Example value: MediaWiki 1.28.0-wmf.15</remarks>
+        [JsonProperty("generator")]
+        public string Generator
+        {
+            get { return _Generator; }
+            private set
+            {
+                _Generator = value;
+                if (value != null)
+                {
+                    var part = value.Split(new[] {' ', '-'});
+                    Version = Version.Parse(part[1]);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Gets main part of API version. E.g. 1.28.0 for MediaWiki 1.28.0-wmf.15 .
+        /// </summary>
+        public Version Version { get; private set; }
 
         [JsonProperty]
         public long MaxUploadSize { get; private set; }
