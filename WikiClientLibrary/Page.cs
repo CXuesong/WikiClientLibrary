@@ -99,6 +99,8 @@ namespace WikiClientLibrary
             return false;
         }
 
+        #region Query
+
         /// <summary>
         /// Loads page information from JSON.
         /// </summary>
@@ -209,6 +211,10 @@ namespace WikiClientLibrary
             }
         }
 
+        #endregion
+
+        #region Modification
+
         /// <summary>
         /// Submits content contained in <see cref="Content"/>, making edit to the page.
         /// (MediaWiki 1.16)
@@ -275,27 +281,27 @@ namespace WikiClientLibrary
             var tokenTask = Site.GetTokenAsync("csrf");
             await WikiClient.WaitForThrottleAsync();
             var token = await tokenTask;
-            // Here we just ignore possible edit conflicts.
             // When passing this to the Edit API, always pass the token parameter last
             // (or at least after the text parameter). That way, if the edit gets interrupted,
             // the token won't be passed and the edit will fail.
             // This is done automatically by mw.Api.
-             JObject jobj;
+            JObject jobj;
             try
             {
-            jobj = await WikiClient.GetJsonAsync(new
-            {
-                action = "edit",
-                title = Title,
-                minor = minor,
-                bot = bot,
-                recreate = true,
-                maxlag = 5,
-                basetimestamp = LastRevision?.TimeStamp,
-                summary = summary,
-                text = Content,
-                token = token,
-            });
+                jobj = await WikiClient.GetJsonAsync(new
+                {
+                    action = "edit",
+                    title = Title,
+                    minor = minor,
+                    bot = bot,
+                    recreate = true,
+                    maxlag = 5,
+                    basetimestamp = LastRevision?.TimeStamp,
+                    watchlist = watch,
+                    summary = summary,
+                    text = Content,
+                    token = token,
+                });
             }
             catch (OperationFailedException ex)
             {
@@ -321,6 +327,19 @@ namespace WikiClientLibrary
                 throw new OperationFailedException(result, (string) null);
             }
         }
+
+        #endregion
+
+        /// <summary>
+        /// 返回表示当前对象的字符串。
+        /// </summary>
+        /// <returns>
+        /// 表示当前对象的字符串。
+        /// </returns>
+        public override string ToString()
+        {
+            return Title;
+        }
     }
 
     /// <summary>
@@ -332,9 +351,38 @@ namespace WikiClientLibrary
         /// Use the preference settings. (watchlist=preferences)
         /// </summary>
         Default = 0,
+        /// <summary>
+        /// Do not change watchlist.
+        /// </summary>
         None = 1,
         Watch = 2,
         Unwatch = 3,
+    }
+
+    /// <summary>
+    /// Specifies options for moving pages.
+    /// </summary>
+    public enum PageMovingOptions
+    {
+        None = 0,
+        /// <summary>
+        /// Do not attempt to move talk pages.
+        /// </summary>
+        LeaveTalk = 1,
+        /// <summary>
+        /// Move subpages, if applicable.
+        /// </summary>
+        /// <remarks>This is usually not recommended because you still cannot overwrite existing subpages.</remarks>
+        MoveSubpages = 2,
+        /// <summary>
+        /// Don't create a redirect. Requires the suppressredirect right,
+        /// which by default is granted only to bots and sysops
+        /// </summary>
+        NoRedirect = 4,
+        /// <summary>
+        /// Ignore any warnings.
+        /// </summary>
+        IgnoreWarnings = 8,
     }
 
     /// <summary>

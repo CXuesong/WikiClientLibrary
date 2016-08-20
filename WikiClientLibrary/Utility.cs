@@ -67,9 +67,30 @@ namespace WikiClientLibrary
                 {
                     if ((bool)value) value = "";
                     else continue;
+                } else if (value is AutoWatchBehavior)
+                {
+                    switch ((AutoWatchBehavior)value)
+                    {
+                        case AutoWatchBehavior.Default:
+                            value = "preferences";
+                            break;
+                        case AutoWatchBehavior.None:
+                            value = "nochange";
+                            break;
+                        case AutoWatchBehavior.Watch:
+                            value = "watch";
+                            break;
+                        case AutoWatchBehavior.Unwatch:
+                            value = "unwatch";
+                            break;
+                        default:
+                            throw new ArgumentOutOfRangeException(p.Name, value, null);
+                    }
+                } else if (value is DateTime)
+                {
+                    // ISO 8601
+                    value = ((DateTime) value).ToString("yyyy-MM-ddTHH:mm:ssK");
                 }
-                // ISO 8601
-                if (value is DateTime) value = ((DateTime) value).ToString("yyyy-MM-ddTHH:mm:ssK");
                 yield return new KeyValuePair<string, string>(p.Name, Convert.ToString(value));
             }
         }
@@ -104,7 +125,7 @@ namespace WikiClientLibrary
         /// <param name="writer">The <see cref="T:Newtonsoft.Json.JsonWriter"/> to write to.</param><param name="value">The value.</param><param name="serializer">The calling serializer.</param>
         public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
         {
-            if ((bool)value) writer.WriteValue("");
+            if ((bool) value) writer.WriteValue("");
         }
 
         /// <summary>

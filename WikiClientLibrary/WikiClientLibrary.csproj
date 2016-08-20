@@ -36,7 +36,6 @@
   <ItemGroup>
     <Compile Include="Exceptions.cs" />
     <Compile Include="ILogger.cs" />
-    <Compile Include="ReadonlyJObjectWrapper.cs" />
     <Compile Include="Page.cs" />
     <Compile Include="Site.cs" />
     <Compile Include="SiteInfo.cs" />
