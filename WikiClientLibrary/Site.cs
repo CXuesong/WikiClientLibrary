@@ -93,8 +93,21 @@ namespace WikiClientLibrary
         /// <summary>
         /// Request tokens for operations.
         /// </summary>
+        /// <param name="tokenTypes">The names of token.</param>
+        /// <param name="forceRefetch">Whether to fetch token from server, regardless of the cache.</param>
         /// <remarks>See https://www.mediawiki.org/wiki/API:Tokens .</remarks>
-        public async Task<IDictionary<string, string>> GetTokensAsync(IEnumerable<string> tokenTypes)
+        public Task<IDictionary<string, string>> GetTokensAsync(IEnumerable<string> tokenTypes)
+        {
+            return GetTokensAsync(tokenTypes, false);
+        }
+
+        /// <summary>
+        /// Request tokens for operations.
+        /// </summary>
+        /// <param name="tokenTypes">The names of token.</param>
+        /// <param name="forceRefetch">Whether to fetch token from server, regardless of the cache.</param>
+        /// <remarks>See https://www.mediawiki.org/wiki/API:Tokens .</remarks>
+        public async Task<IDictionary<string, string>> GetTokensAsync(IEnumerable<string> tokenTypes, bool forceRefetch)
         {
             if (tokenTypes == null) throw new ArgumentNullException(nameof(tokenTypes));
             var pendingtokens = new List<string>();
@@ -102,7 +115,7 @@ namespace WikiClientLibrary
             foreach (var tt in tokenTypes)
             {
                 string token;
-                if (_TokensCache.TryGetValue(tt, out token))
+                if (!forceRefetch && _TokensCache.TryGetValue(tt, out token))
                     tokens[tt] = token;
                 else
                     pendingtokens.Add(tt);
@@ -125,13 +138,25 @@ namespace WikiClientLibrary
         /// <summary>
         /// Request a token for operation.
         /// </summary>
+        /// <param name="tokenType">The name of token.</param>
         /// <remarks>See https://www.mediawiki.org/wiki/API:Tokens .</remarks>
-        public async Task<string> GetTokenAsync(string tokenType)
+        public Task<string> GetTokenAsync(string tokenType)
+        {
+            return GetTokenAsync(tokenType, false);
+        }
+
+        /// <summary>
+        /// Request a token for operation.
+        /// </summary>
+        /// <param name="tokenType">The name of token.</param>
+        /// <param name="forceRefetch">Whether to fetch token from server, regardless of the cache.</param>
+        /// <remarks>See https://www.mediawiki.org/wiki/API:Tokens .</remarks>
+        public async Task<string> GetTokenAsync(string tokenType, bool forceRefetch)
         {
             if (tokenType == null) throw new ArgumentNullException(nameof(tokenType));
             if (tokenType.Contains("|"))
                 throw new ArgumentException("Pipe character in token type name.", nameof(tokenType));
-            var dict = await GetTokensAsync(new[] {tokenType});
+            var dict = await GetTokensAsync(new[] {tokenType}, forceRefetch);
             return dict.Values.Single();
         }
 
@@ -146,7 +171,7 @@ namespace WikiClientLibrary
         {
             if (string.IsNullOrEmpty(userName)) throw new ArgumentNullException(nameof(userName));
             if (string.IsNullOrEmpty(password)) throw new ArgumentNullException(nameof(password));
-            var token = await GetTokenAsync("login");
+            var token = await GetTokenAsync("login", true);
             var jobj = await WikiClient.GetJsonAsync(new
             {
                 action = "login",
