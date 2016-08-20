@@ -138,8 +138,10 @@ namespace WikiClientLibrary.Client
             // https://www.mediawiki.org/wiki/API:Client_code
             // Please use GZip compression when making API calls (Accept-Encoding: gzip).
             // Bots eat up a lot of bandwidth, which is not free.
-            _HttpClient.DefaultRequestHeaders.AcceptEncoding.Add(new StringWithQualityHeaderValue("gzip"));
-            _HttpClient.DefaultRequestHeaders.AcceptEncoding.Add(new StringWithQualityHeaderValue("deflate"));
+            if (_HttpClientHandler.SupportsAutomaticDecompression)
+            {
+                _HttpClientHandler.AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate;
+            }
         }
 
         /// <summary>
