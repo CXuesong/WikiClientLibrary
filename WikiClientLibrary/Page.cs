@@ -272,7 +272,9 @@ namespace WikiClientLibrary
         /// <exception cref="UnauthorizedOperationException">You have no rights to edit the page.</exception>
         public async Task UpdateContentAsync(string summary, bool minor, bool bot, AutoWatchBehavior watch)
         {
-            var token = await Site.GetTokenAsync("csrf");
+            var tokenTask = Site.GetTokenAsync("csrf");
+            await WikiClient.WaitForThrottleAsync();
+            var token = await tokenTask;
             // Here we just ignore possible edit conflicts.
             // When passing this to the Edit API, always pass the token parameter last
             // (or at least after the text parameter). That way, if the edit gets interrupted,

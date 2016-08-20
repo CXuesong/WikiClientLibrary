@@ -70,11 +70,34 @@ namespace WikiClientLibrary.Client
 
         public ILogger Logger { get; set; }
 
+        /// <summary>
+        /// Time to wait before any modification operations.
+        /// </summary>
+        /// <remarks>Note this won't work as you may expected when you attemt to perform multi-threaded operations.</remarks>
+        public TimeSpan ThrottleTime
+        {
+            get { return _ThrottleTime; }
+            set
+            {
+                if (value < TimeSpan.Zero) throw new ArgumentOutOfRangeException(nameof(value));
+                _ThrottleTime = value;
+            }
+        }
+
         #endregion
 
         private HttpClient _HttpClient;
         private HttpClientHandler _HttpClientHandler;
         private ProductInfoHeaderValue lastCustomUserAgent;
+        private TimeSpan _ThrottleTime = TimeSpan.FromSeconds(5);
+
+        /// <summary>
+        /// Returns a task which finishes after the time specified in <see cref="ThrottleTime"/> .
+        /// </summary>
+        internal Task WaitForThrottleAsync()
+        {
+            return Task.Delay(ThrottleTime);
+        }
 
         /// <summary>
         /// Invoke API and get JSON result.
@@ -114,7 +137,7 @@ namespace WikiClientLibrary.Client
         /// </returns>
         public override string ToString()
         {
-            return $"{this.GetType()}@{EndPointUrl}";
+            return $"{GetType()}@{EndPointUrl}";
         }
 
         public void Dispose()
