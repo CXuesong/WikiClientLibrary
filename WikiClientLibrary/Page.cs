@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using WikiClientLibrary.Client;
 
@@ -46,6 +47,9 @@ namespace WikiClientLibrary
 
         public IReadOnlyCollection<ProtectionInfo> Protections { get; private set; }
 
+        /// <summary>
+        /// Applicable protection types. (MediaWiki 1.25)
+        /// </summary>
         public IReadOnlyCollection<string> RestrictionTypes { get; private set; }
 
         /// <summary>
@@ -74,17 +78,40 @@ namespace WikiClientLibrary
         /// </remarks>
         public string Title { get; private set; }
 
-        public async Task RefreshInfoAsync()
+        /// <summary>
+        /// Gets / Sets the content of the page.
+        /// </summary>
+        /// <remarks>You should have invoked <see cref="RefreshContentAsync"/> before trying to read the content of the page.</remarks>
+        public string Content { get; set; }
+
+        /// <summary>
+        /// Gets the latest revision of the page.
+        /// </summary>
+        /// <remarks>Make sure to invoke <see cref="RefreshContentAsync"/> before getting the value.</remarks>
+        public Revision LastRevision { get; private set; }
+
+        private static bool AreIdEquals(int id1, int id2)
         {
-            var jobj = await WikiClient.GetJsonAsync(new
-            {
-                action = "query",
-                prop = "info",
-                inprop = "protection",
-                titles = Title
-            });
-            var prop = ((JObject) jobj["query"]["pages"]).Properties().First();
-            Id = Convert.ToInt32(prop.Name);
+            if (id1 == id2) return false;
+            // For inexistent pages, id is negative.
+            if (id2 > 0 && id1 > 0 || Math.Sign(id2) != Math.Sign(id1)) return true;
+            return false;
+        }
+
+        /// <summary>
+        /// Loads page information from JSON.
+        /// </summary>
+        /// <param name="prop">query.pages.xxx property.</param>
+        /// <param name="loadFullInfo">Whether to attempt to load full page information, including protection.</param>
+        internal void LoadPageInfo(JProperty prop, bool loadFullInfo)
+        {
+            var id = Convert.ToInt32(prop.Name);
+            // I'm not sure whether this assertion holds.
+            Debug.Assert(id != 0);
+            // The page has been overwritten, or deleted.
+            if (Id != 0 && !AreIdEquals(Id, id))
+                WikiClient.Logger?.Warn($"Detected page id changed: {Title}, {Id}");
+            Id = id;
             var page = prop.Value;
             NamespaceId = (int) page["ns"];
             Title = (string) page["title"];
@@ -96,41 +123,81 @@ namespace WikiClientLibrary
                 ContentLength = (int) page["length"];
                 LastRevisionId = (int) page["lastrevid"];
                 LastTouched = (DateTime) page["touched"];
-                Protections = ((JArray) page["protection"]).ToObject<IReadOnlyCollection<ProtectionInfo>>(
-                    Utility.WikiJsonSerializer);
-                RestrictionTypes = ((JArray) page["restrictiontypes"])?.ToObject<IReadOnlyCollection<string>>(
-                    Utility.WikiJsonSerializer);
+                if (loadFullInfo)
+                {
+                    Protections = ((JArray) page["protection"]).ToObject<IReadOnlyCollection<ProtectionInfo>>(
+                        Utility.WikiJsonSerializer);
+                    RestrictionTypes = ((JArray) page["restrictiontypes"])?.ToObject<IReadOnlyCollection<string>>(
+                        Utility.WikiJsonSerializer);
+                }
             }
             else
             {
                 ContentLength = 0;
                 LastRevisionId = 0;
                 LastTouched = DateTime.MinValue;
-                Protections = null;
+                if (loadFullInfo)
+                {
+                    Protections = null;
+                    RestrictionTypes = null;
+                }
             }
         }
 
-        public async Task RefreshContentAsync()
+        /// <summary>
+        /// Fetch basic information of the page.
+        /// </summary>
+        public async Task RefreshInfoAsync()
         {
-            
+            var jobj = await WikiClient.GetJsonAsync(new
+            {
+                action = "query",
+                prop = "info",
+                inprop = "protection",
+                titles = Title
+            });
+            LoadPageInfo(((JObject) jobj["query"]["pages"]).Properties().First(), true);
         }
 
         /// <summary>
-        /// Gets / Sets the content of the page.
+        /// Fetch the latest content of the page.
         /// </summary>
-        /// <remarks>You should have invoked <see cref="RefreshContentAsync"/> before trying to read the content of the page.</remarks>
-        public string Content { get; set; }
+        public async Task RefreshContentAsync()
+        {
+            var needFullRefresh = Id == 0;
+            var jobj = await WikiClient.GetJsonAsync(new
+            {
+                action = "query",
+                prop = "info|revisions",
+                rvprop = "ids|timestamp|flags|comment|user|contentmodel|sha1|content",
+                inprop = needFullRefresh ? "protection" : null,
+                maxlag = 5,
+                titles = Title
+            });
+            // TODO Cache content
+            var prop = ((JObject) jobj["query"]["pages"]).Properties().First();
+            //var newId = Convert.ToInt32(prop.Name);
+            // Update page info by the way.
+            LoadPageInfo(prop, needFullRefresh);
+            var rev = (JObject) prop.Value["revisions"].FirstOrDefault();
+            LastRevision = rev.ToObject<Revision>(Utility.WikiJsonSerializer);
+            Content = LastRevision.Content;
+        }
     }
 
-    public struct ProtectionInfo
+    /// <summary>
+    /// Page protection information.
+    /// </summary>
+    [JsonObject(MemberSerialization.OptIn)]
+    public class ProtectionInfo
     {
-        public string Type { get; set; }
+        public string Type { get; private set; }
 
-        public string Level { get; set; }
+        public string Level { get; private set; }
 
-        public DateTime Expiry { get; set; }
+        public DateTime Expiry { get; private set; }
 
-        public bool Cascade { get; set; }
+        public bool Cascade { get; private set; }
 
         /// <summary>
         /// 返回该实例的完全限定类型名。
@@ -141,6 +208,51 @@ namespace WikiClientLibrary
         public override string ToString()
         {
             return $"{Type}, {Level}, {Expiry}, {(Cascade ? "Cascade" : "")}";
+        }
+    }
+
+    /// <summary>
+    /// Represents a revision of a page.
+    /// </summary>
+    [JsonObject(MemberSerialization.OptIn)]
+    public class Revision
+    {
+        [JsonProperty("revid")]
+        public int Id { get; private set; }
+
+        [JsonProperty]
+        public int ParentId { get; private set; }
+
+        [JsonProperty("*")]
+        public string Content { get; private set; }
+
+        [JsonProperty]
+        public string Comment { get; private set; }
+
+        [JsonProperty]
+        public string ContentModel { get; private set; }
+
+        [JsonProperty]
+        public string Sha1 { get; private set; }
+
+        [JsonProperty]
+        public string UserId { get; private set; }
+
+        [JsonProperty("user")]
+        public string UserName { get; private set; }
+
+        [JsonProperty]
+        public DateTime TimeStamp { get; private set; }
+
+        /// <summary>
+        /// 返回该实例的完全限定类型名。
+        /// </summary>
+        /// <returns>
+        /// 包含完全限定类型名的 <see cref="T:System.String"/>。
+        /// </returns>
+        public override string ToString()
+        {
+            return $"Revision#{Id}, SHA1={Sha1}";
         }
     }
 }
