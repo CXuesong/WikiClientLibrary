@@ -21,6 +21,8 @@ namespace WikiClientLibrary
 
         private Dictionary<int, NamespaceInfo> _Namespaces = new Dictionary<int, NamespaceInfo>();
 
+        private Dictionary<string, string>  _TokensCache = new Dictionary<string, string>();
+
         public static async Task<Site> GetAsync(WikiClient wikiClient)
         {
             var site = new Site(wikiClient);
@@ -95,12 +97,29 @@ namespace WikiClientLibrary
         public async Task<IDictionary<string, string>> GetTokensAsync(IEnumerable<string> tokenTypes)
         {
             if (tokenTypes == null) throw new ArgumentNullException(nameof(tokenTypes));
-            IEnumerable<KeyValuePair<string, JToken>> jobj = await GetTokensAsync(string.Join("|", tokenTypes));
-            // Remove "token" in the result
-            return jobj.ToDictionary(p => p.Key.EndsWith("token")
-                ? p.Key.Substring(0, p.Key.Length - 5)
-                : p.Key,
-                p => (string) p.Value);
+            var pendingtokens = new List<string>();
+            var tokens = new Dictionary<string, string>();
+            foreach (var tt in tokenTypes)
+            {
+                string token;
+                if (_TokensCache.TryGetValue(tt, out token))
+                    tokens[tt] = token;
+                else
+                    pendingtokens.Add(tt);
+            }
+            if (pendingtokens.Count > 0)
+            {
+                IEnumerable<KeyValuePair<string, JToken>> jobj = await GetTokensAsync(string.Join("|", pendingtokens));
+                foreach (var p in jobj)
+                {
+                    // Remove "token" in the result
+                    var tokenName = p.Key.EndsWith("token")
+                        ? p.Key.Substring(0, p.Key.Length - 5)
+                        : p.Key;
+                    tokens.Add(tokenName, (string) p.Value);
+                }
+            }
+            return tokens;
         }
 
         /// <summary>
