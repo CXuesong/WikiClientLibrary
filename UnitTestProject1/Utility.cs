@@ -42,6 +42,7 @@ namespace UnitTestProject1
                 EndPointUrl = entryPointUrl,
                 Timeout = TimeSpan.FromSeconds(3),
                 ThrottleTime = TimeSpan.FromSeconds(1),
+                ClientUserAgent = "UnitTest/1.0 (.NET CLR " + Environment.Version + ")",
             };
             return client;
         }

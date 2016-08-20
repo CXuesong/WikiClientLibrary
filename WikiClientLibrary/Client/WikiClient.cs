@@ -18,6 +18,10 @@ namespace WikiClientLibrary.Client
         #region Configurations
 
         private int _MaxRetries = 3;
+        private HttpClient _HttpClient;
+        private string _ClientUserAgent;
+        private TimeSpan _ThrottleTime = TimeSpan.FromSeconds(5);
+        private HttpClientHandler _HttpClientHandler;
 
         /// <summary>
         /// MediaWiki API endpoint.
@@ -29,13 +33,17 @@ namespace WikiClientLibrary.Client
         /// </summary>
         public string ClientUserAgent
         {
-            get { return lastCustomUserAgent?.ToString(); }
+            get { return _ClientUserAgent; }
             set
             {
-                if (lastCustomUserAgent != null)
-                    _HttpClient.DefaultRequestHeaders.UserAgent.Remove(lastCustomUserAgent);
-                lastCustomUserAgent = ProductInfoHeaderValue.Parse(value);
-                _HttpClient.DefaultRequestHeaders.UserAgent.Add(lastCustomUserAgent);
+                if (_ClientUserAgent != value)
+                {
+                    var ua = _HttpClient.DefaultRequestHeaders.UserAgent;
+                    if (!string.IsNullOrWhiteSpace(value))
+                        ua.ParseAdd(value);
+                    ua.ParseAdd("WikiClientLibrary/1.0 (.NET Portable; http://github.com/cxuesong/WikiClientLibrary)");
+                    _ClientUserAgent = value;
+                }
             }
         } 
 
@@ -91,11 +99,6 @@ namespace WikiClientLibrary.Client
 
         #endregion
 
-        private HttpClient _HttpClient;
-        private HttpClientHandler _HttpClientHandler;
-        private ProductInfoHeaderValue lastCustomUserAgent;
-        private TimeSpan _ThrottleTime = TimeSpan.FromSeconds(5);
-
         /// <summary>
         /// Returns a task which finishes after the time specified in <see cref="ThrottleTime"/> .
         /// </summary>
@@ -131,7 +134,12 @@ namespace WikiClientLibrary.Client
                 UseCookies = true
             };
             _HttpClient = new HttpClient(_HttpClientHandler, true);
-            _HttpClient.DefaultRequestHeaders.UserAgent.ParseAdd("WikiClientLibrary/1.0 (.NET Portable; http://github.com/cxuesong/WikiClientLibrary)");
+            ClientUserAgent = null;
+            // https://www.mediawiki.org/wiki/API:Client_code
+            // Please use GZip compression when making API calls (Accept-Encoding: gzip).
+            // Bots eat up a lot of bandwidth, which is not free.
+            _HttpClient.DefaultRequestHeaders.AcceptEncoding.Add(new StringWithQualityHeaderValue("gzip"));
+            _HttpClient.DefaultRequestHeaders.AcceptEncoding.Add(new StringWithQualityHeaderValue("deflate"));
         }
 
         /// <summary>
