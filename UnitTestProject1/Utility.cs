@@ -24,6 +24,16 @@ namespace UnitTestProject1
         // TODO This is a rather unofficial test site. Replace it in the future.
         public const string EntryPointWikiaTest = "https://mediawiki119.wikia.com/api.php";
 
+        /// <summary>
+        /// Asserts that modifications to wiki site can be done in unit tests.
+        /// </summary>
+        public static void AssertModify()
+        {
+#if DRY_RUN
+            Assert.Inconclusive("Remove #define DRY_RUN to perform edit tests.");
+#endif
+        }
+
         public static WikiClient CreateWikiClient(string entryPointUrl)
         {
             var client = new WikiClient
@@ -31,6 +41,7 @@ namespace UnitTestProject1
                 Logger = new TraceLogger(),
                 EndPointUrl = entryPointUrl,
                 Timeout = TimeSpan.FromSeconds(3),
+                ThrottleTime = TimeSpan.FromSeconds(1),
             };
             return client;
         }

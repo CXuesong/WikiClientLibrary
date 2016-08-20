@@ -19,7 +19,7 @@ namespace WikiClientLibrary
         public Page(Site site, string title)
         {
             if (site == null) throw new ArgumentNullException(nameof(site));
-            if (title == null) throw new ArgumentNullException(nameof(title));
+            if (string.IsNullOrWhiteSpace(title)) throw new ArgumentNullException(nameof(title));
             Site = site;
             WikiClient = Site.WikiClient;
             Debug.Assert(WikiClient != null);
@@ -328,6 +328,76 @@ namespace WikiClientLibrary
             }
         }
 
+        /// <summary>
+        /// Moves (renames) a page. (MediaWiki 1.12)
+        /// </summary>
+        public Task MoveAsync(string newTitle, string reason, PageMovingOptions options)
+        {
+            return MoveAsync(newTitle, reason, options, AutoWatchBehavior.Default);
+        }
+
+        /// <summary>
+        /// Moves (renames) a page. (MediaWiki 1.12)
+        /// </summary>
+        public Task MoveAsync(string newTitle, string reason)
+        {
+            return MoveAsync(newTitle, reason, PageMovingOptions.None, AutoWatchBehavior.Default);
+        }
+
+        /// <summary>
+        /// Moves (renames) a page. (MediaWiki 1.12)
+        /// </summary>
+        public Task MoveAsync(string newTitle)
+        {
+            return MoveAsync(newTitle, null, PageMovingOptions.None, AutoWatchBehavior.Default);
+        }
+
+        /// <summary>
+        /// Moves (renames) a page. (MediaWiki 1.12)
+        /// </summary>
+        public async Task MoveAsync(string newTitle, string reason, PageMovingOptions options, AutoWatchBehavior watch)
+        {
+            if (newTitle == null) throw new ArgumentNullException(nameof(newTitle));
+            if (newTitle == Title) return;
+            var tokenTask = Site.GetTokenAsync("csrf");
+            await WikiClient.WaitForThrottleAsync();
+            var token = await tokenTask;
+            // When passing this to the Edit API, always pass the token parameter last
+            // (or at least after the text parameter). That way, if the edit gets interrupted,
+            // the token won't be passed and the edit will fail.
+            // This is done automatically by mw.Api.
+            JObject jobj;
+            try
+            {
+                jobj = await WikiClient.GetJsonAsync(new
+                {
+                    action = "move",
+                    from = Title,
+                    to = newTitle,
+                    maxlag = 5,
+                    movetalk = (options & PageMovingOptions.LeaveTalk) != PageMovingOptions.LeaveTalk,
+                    movesubpages = (options & PageMovingOptions.MoveSubpages) == PageMovingOptions.MoveSubpages,
+                    noredirect = (options & PageMovingOptions.NoRedirect) == PageMovingOptions.NoRedirect,
+                    reason = reason,
+                    token = token,
+                });
+            }
+            catch (OperationFailedException ex)
+            {
+                switch (ex.ErrorCode)
+                {
+                    case "cantmove":
+                    case "protectedpage":
+                    case "protectedtitle":
+                        throw new UnauthorizedOperationException(ex.ErrorCode, ex.ErrorMessage);
+                    default:
+                        if (ex.ErrorCode.StartsWith("cantmove"))
+                            throw new UnauthorizedOperationException(ex.ErrorCode, ex.ErrorMessage);
+                        throw;
+                }
+            }
+            Title = (string) jobj["move"]["to"];
+        }
         #endregion
 
         /// <summary>
@@ -362,6 +432,7 @@ namespace WikiClientLibrary
     /// <summary>
     /// Specifies options for moving pages.
     /// </summary>
+    [Flags]
     public enum PageMovingOptions
     {
         None = 0,

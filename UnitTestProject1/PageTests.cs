@@ -1,5 +1,6 @@
-﻿// Enables this switch to prevent test cases from making any edits.
-//#define DRY_RUN
+﻿// Enables the following conditional switch in the project options
+// to prevent test cases from making any edits.
+//          DRY_RUN
 
 using System;
 using System.Diagnostics;
@@ -13,13 +14,6 @@ namespace UnitTestProject1
     [TestClass]
     public class PageTests
     {
-        private void AssertModify()
-        {
-#if DRY_RUN
-            Assert.Inconclusive("Remove #define DRY_RUN to perform edit tests.");
-#endif
-        }
-
         private const string SummaryPrefix = "WikiClientLibrary test. ";
 
         [TestMethod]
@@ -94,10 +88,8 @@ namespace UnitTestProject1
             // We do not need to login.
             var page = new Page(site, "Special:");
             AwaitSync(page.RefreshContentAsync());
-            //Assert.IsTrue(page.Protections.Any(), "To perform this test, the working page should be protected.");
             page.Content += "\n\nTest from WikiClientLibrary.";
             AwaitSync(page.UpdateContentAsync(SummaryPrefix + "Attempt to edit a special page."));
         }
-
     }
 }
