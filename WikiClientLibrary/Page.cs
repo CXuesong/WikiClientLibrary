@@ -398,6 +398,32 @@ namespace WikiClientLibrary
             }
             Title = (string) jobj["move"]["to"];
         }
+
+        /// <summary>
+        /// Purges the current page.
+        /// </summary>
+        /// <returns><c>true</c> if the page has been successfully purged.</returns>
+        public async Task<bool> PurgeAsync()
+        {
+                JObject jobj;
+            try
+            {
+                jobj = await WikiClient.GetJsonAsync(new
+                {
+                    action = "purge",
+                    titles = Title,
+                    forcelinkupdate = true,
+                    forcerecursivelinkupdate = true,
+                });
+            }
+            catch (OperationFailedException ex)
+            {
+                if (ex.ErrorCode == "cantpurge") throw new UnauthorizedOperationException(ex.ErrorCode, ex.ErrorMessage);
+                throw;
+            }
+            var page = jobj["purge"].First();
+            return page["purged"] != null;
+        }
         #endregion
 
         /// <summary>

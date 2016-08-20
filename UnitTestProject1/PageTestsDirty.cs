@@ -16,8 +16,6 @@ namespace UnitTestProject1
     {
         private const string SummaryPrefix = "WikiClientLibrary test. ";
 
-        private static Site site;
-
         // The following pages will be created.
         private const string TestPage1Title = "WCL test page 1";
 
@@ -27,6 +25,8 @@ namespace UnitTestProject1
 
         // The following pages will NOT be created at first.
         private const string TestPage12Title = "WCL test page 1/2";
+
+        private static Site site;
 
         private static Page GetOrCreatePage(Site site, string title)
         {
