@@ -50,6 +50,11 @@ namespace WikiClientLibrary.Client
         public TimeSpan Timeout { get; set; } = TimeSpan.FromSeconds(10);
 
         /// <summary>
+        /// Delay before each retry.
+        /// </summary>
+        public TimeSpan RetryDelay { get; set; } = TimeSpan.FromSeconds(10);
+
+        /// <summary>
         /// Max retries count.
         /// </summary>
         public int MaxRetries

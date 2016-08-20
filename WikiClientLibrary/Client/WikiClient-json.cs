@@ -18,30 +18,51 @@ namespace WikiClientLibrary.Client
         private async Task<JObject> SendAsync(Func<HttpRequestMessage> requestFactory)
         {
             HttpResponseMessage response;
+            var retries = -1;
             RETRY:
             var request = requestFactory();
             Debug.Assert(request != null);
-            var retries = 0;
-            using (var responseCancellation = new CancellationTokenSource(Timeout))
+            retries++;
+            if (retries > 0)
+                Logger?.Trace($"Retry x{retries}: {request.RequestUri}");
+            try
             {
-                try
-                {
+                // Use await instead of responseTask.Result to unwrap Exceptions.
+                // Or AggregateException might be thrown.
+                using (var responseCancellation = new CancellationTokenSource(Timeout))
                     response = await _HttpClient.SendAsync(request, responseCancellation.Token);
-                    // The request has been finished.
-                }
-                catch (OperationCanceledException)
+                // The request has been finished.
+            }
+            catch (OperationCanceledException)
+            {
+                if (retries >= MaxRetries) throw new TimeoutException();
+                Logger?.Warn($"Timeout: {request.RequestUri}");
+                await Task.Delay(RetryDelay);
+                goto RETRY;
+            }
+            Logger?.Trace($"{response.StatusCode}: {request.RequestUri}");
+            var statusCode = (int) response.StatusCode;
+            if (statusCode >= 500 && statusCode <= 599)
+            {
+                // Service Error. We can retry.
+                // HTTP 503 : https://www.mediawiki.org/wiki/Manual:Maxlag_parameter
+                if (retries < MaxRetries)
                 {
-                    retries++;
-                    if (retries > MaxRetries) throw new TimeoutException();
-                    Logger?.Warn($"Timeout(x{retries}): {request.RequestUri}");
-                    goto RETRY;
+                    var date = response.Headers.RetryAfter?.Date;
+                    var offset = response.Headers.RetryAfter?.Delta;
+                    if (offset == null && date != null) offset = date - DateTimeOffset.Now;
+                    if (offset != null)
+                    {
+                        if (offset > RetryDelay) offset = RetryDelay;
+                        await Task.Delay(offset.Value);
+                        goto RETRY;
+                    }
                 }
             }
-            // Use await instead of responseTask.Result to unwrap Exceptions.
-            // Or AggregateException might be thrown.
-            Logger?.Trace($"{response.StatusCode}: {request.RequestUri}");
             response.EnsureSuccessStatusCode();
-            return await ProcessResponseAsync(response);
+            var jresp = await ProcessResponseAsync(response);
+            CheckErrors(jresp);
+            return jresp;
         }
 
         private async Task<JObject> ProcessResponseAsync(HttpResponseMessage webResponse)
@@ -55,27 +76,31 @@ namespace WikiClientLibrary.Client
                     {
                         var obj = JObject.Load(jreader);
                         //Logger?.Trace(obj.ToString());
-                        if (obj["warnings"] != null)
-                        {
-                            Logger?.Warn(obj["warnings"].ToString());
-                        }
-                        if (obj["error"] != null)
-                        {
-                            var err = obj["error"];
-                            var errcode = (string) err["code"];
-                            var errmessage = ((string) err["info"] + " " + (string) err["*"]).Trim();
-                            switch (errcode)
-                            {
-                                case "unknown_action":
-                                    throw new InvalidActionException(errcode, errmessage);
-                                default:
-                                    if (errcode.EndsWith("conflict"))
-                                        throw new OperationConflictException(errcode, errmessage);
-                                    throw new OperationFailedException(errcode, errmessage);
-                            }
-                        }
                         return obj;
                     }
+                }
+            }
+        }
+
+        private void CheckErrors(JObject jresponse)
+        {
+            if (jresponse["warnings"] != null)
+            {
+                Logger?.Warn(jresponse["warnings"].ToString());
+            }
+            if (jresponse["error"] != null)
+            {
+                var err = jresponse["error"];
+                var errcode = (string)err["code"];
+                var errmessage = ((string)err["info"] + " " + (string)err["*"]).Trim();
+                switch (errcode)
+                {
+                    case "unknown_action":
+                        throw new InvalidActionException(errcode, errmessage);
+                    default:
+                        if (errcode.EndsWith("conflict"))
+                            throw new OperationConflictException(errcode, errmessage);
+                        throw new OperationFailedException(errcode, errmessage);
                 }
             }
         }
