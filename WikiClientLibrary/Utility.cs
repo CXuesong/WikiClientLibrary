@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Dynamic;
 using System.Linq;
 using System.Net;
@@ -24,7 +25,7 @@ namespace WikiClientLibrary
                 Converters =
                 {
                     new WikiBooleanJsonConverter()
-                }
+                },
             };
 
         public static readonly JsonSerializer WikiJsonSerializer =
@@ -34,12 +35,43 @@ namespace WikiClientLibrary
         /// Convert name-value paris to URL query format.
         /// This overload handles <see cref="ExpandoObject"/> as well as anonymous objects.
         /// </summary>
-        public static IEnumerable<KeyValuePair<string, string>> ToStringValuePairs(object values)
+        /// <remarks>
+        /// <para>
+        /// The key-value pair with null value will be excluded. To specify a key with empty value,
+        /// consider using <see cref="string.Empty"/> .
+        /// </para>
+        /// <para>
+        /// For <see cref="bool"/> values, if the value is true, a pair with key and empty value
+        /// will be generated; otherwise the whole pair will be excluded. 
+        /// </para>
+        /// <para>
+        /// If <paramref name="values"/> is <see cref="IEnumerable{T}"/> of <see cref="KeyValuePair{TKey,TValue}"/>
+        /// of strings, the values will be returned with no further processing.
+        /// </para>
+        /// </remarks>
+        public static IEnumerable<KeyValuePair<string, string>> ToWikiStringValuePairs(object values)
         {
             var pc = values as IEnumerable<KeyValuePair<string, string>>;
             if (pc != null) return pc;
-            return from p in values.GetType().GetRuntimeProperties()
-                select new KeyValuePair<string, string>(p.Name, Convert.ToString(p.GetValue(values)));
+            return IterateWikiStringValuePairs(values);
+        }
+
+        private static IEnumerable<KeyValuePair<string, string>> IterateWikiStringValuePairs(object values)
+        {
+            Debug.Assert(!(values is IEnumerable<KeyValuePair<string, string>>));
+            foreach (var p in values.GetType().GetRuntimeProperties())
+            {
+                var value = p.GetValue(values);
+                if (value == null) continue;
+                if (value is bool)
+                {
+                    if ((bool)value) value = "";
+                    else continue;
+                }
+                // ISO 8601
+                if (value is DateTime) value = ((DateTime) value).ToString("yyyy-MM-ddTHH:mm:ssK");
+                yield return new KeyValuePair<string, string>(p.Name, Convert.ToString(value));
+            }
         }
     }
 

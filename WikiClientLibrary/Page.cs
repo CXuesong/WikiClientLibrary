@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Runtime.Serialization;
 using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
@@ -113,8 +114,14 @@ namespace WikiClientLibrary
                 WikiClient.Logger?.Warn($"Detected page id changed: {Title}, {Id}");
             Id = id;
             var page = prop.Value;
-            NamespaceId = (int) page["ns"];
             Title = (string) page["title"];
+            // Invalid page title (like Special:)
+            if (page["invalid"] != null)
+            {
+                var reason = (string) page["invalidreason"];
+                throw new OperationFailedException(reason);
+            }
+            NamespaceId = (int) page["ns"];
             Exists = page["missing"] == null;
             ContentModel = (string) page["contentmodel"];
             PageLanguage = (string) page["pagelanguage"];
@@ -145,6 +152,17 @@ namespace WikiClientLibrary
         }
 
         /// <summary>
+        /// Loads last revision from JSON.
+        /// </summary>
+        /// <param name="revision">query.pages.revisions.xxx property.</param>
+        internal void LoadLastRevision(JObject revision)
+        {
+            LastRevision = revision.ToObject<Revision>(Utility.WikiJsonSerializer);
+            LastRevisionId = LastRevision.Id;
+            Content = LastRevision.Content;
+        }
+
+        /// <summary>
         /// Fetch basic information of the page.
         /// </summary>
         public async Task RefreshInfoAsync()
@@ -160,7 +178,7 @@ namespace WikiClientLibrary
         }
 
         /// <summary>
-        /// Fetch the latest content of the page.
+        /// Fetch the latest revision and content of the page.
         /// </summary>
         public async Task RefreshContentAsync()
         {
@@ -179,10 +197,142 @@ namespace WikiClientLibrary
             //var newId = Convert.ToInt32(prop.Name);
             // Update page info by the way.
             LoadPageInfo(prop, needFullRefresh);
-            var rev = (JObject) prop.Value["revisions"].FirstOrDefault();
-            LastRevision = rev.ToObject<Revision>(Utility.WikiJsonSerializer);
-            Content = LastRevision.Content;
+            var rev = (JObject) prop.Value["revisions"]?.FirstOrDefault();
+            if (rev != null)
+            {
+                LoadLastRevision(rev);
+            }
+            else
+            {
+                LastRevision = null;
+                LastRevisionId = 0;
+            }
         }
+
+        /// <summary>
+        /// Submits content contained in <see cref="Content"/>, making edit to the page.
+        /// (MediaWiki 1.16)
+        /// </summary>
+        /// <remarks>
+        /// This action will refill <see cref="Id" />, <see cref="Title"/>,
+        /// <see cref="ContentModel"/>, <see cref="LastRevisionId"/>, and invalidates
+        /// <see cref="ContentLength"/>, <see cref="LastRevision"/>, and <see cref="LastTouched"/>.
+        /// You should call <see cref="RefreshInfoAsync"/> or <see cref="RefreshContentAsync"/> again
+        /// if you're interested in them.
+        /// </remarks>
+        public Task UpdateContentAsync(string summary)
+        {
+            return UpdateContentAsync(summary, false, true, AutoWatchBehavior.Default);
+        }
+
+        /// <summary>
+        /// Submits content contained in <see cref="Content"/>, making edit to the page.
+        /// (MediaWiki 1.16)
+        /// </summary>
+        /// <remarks>
+        /// This action will refill <see cref="Id" />, <see cref="Title"/>,
+        /// <see cref="ContentModel"/>, <see cref="LastRevisionId"/>, and invalidates
+        /// <see cref="ContentLength"/>, <see cref="LastRevision"/>, and <see cref="LastTouched"/>.
+        /// You should call <see cref="RefreshInfoAsync"/> or <see cref="RefreshContentAsync"/> again
+        /// if you're interested in them.
+        /// </remarks>
+        public Task UpdateContentAsync(string summary, bool minor)
+        {
+            return UpdateContentAsync(summary, minor, true, AutoWatchBehavior.Default);
+        }
+
+        /// <summary>
+        /// Submits content contained in <see cref="Content"/>, making edit to the page.
+        /// (MediaWiki 1.16)
+        /// </summary>
+        /// <remarks>
+        /// This action will refill <see cref="Id" />, <see cref="Title"/>,
+        /// <see cref="ContentModel"/>, <see cref="LastRevisionId"/>, and invalidates
+        /// <see cref="ContentLength"/>, <see cref="LastRevision"/>, and <see cref="LastTouched"/>.
+        /// You should call <see cref="RefreshInfoAsync"/> or <see cref="RefreshContentAsync"/> again
+        /// if you're interested in them.
+        /// </remarks>
+        public Task UpdateContentAsync(string summary, bool minor, bool bot)
+        {
+            return UpdateContentAsync(summary, minor, bot, AutoWatchBehavior.Default);
+        }
+
+        /// <summary>
+        /// Submits content contained in <see cref="Content"/>, making edit to the page.
+        /// (MediaWiki 1.16)
+        /// </summary>
+        /// <remarks>
+        /// This action will refill <see cref="Id" />, <see cref="Title"/>,
+        /// <see cref="ContentModel"/>, <see cref="LastRevisionId"/>, and invalidates
+        /// <see cref="ContentLength"/>, <see cref="LastRevision"/>, and <see cref="LastTouched"/>.
+        /// You should call <see cref="RefreshInfoAsync"/> or <see cref="RefreshContentAsync"/> again
+        /// if you're interested in them.
+        /// </remarks>
+        /// <exception cref="OperationConflictException">Edit conflict detected.</exception>
+        /// <exception cref="UnauthorizedOperationException">You have no rights to edit the page.</exception>
+        public async Task UpdateContentAsync(string summary, bool minor, bool bot, AutoWatchBehavior watch)
+        {
+            var token = await Site.GetTokenAsync("csrf");
+            // Here we just ignore possible edit conflicts.
+            // When passing this to the Edit API, always pass the token parameter last
+            // (or at least after the text parameter). That way, if the edit gets interrupted,
+            // the token won't be passed and the edit will fail.
+            // This is done automatically by mw.Api.
+             JObject jobj;
+            try
+            {
+            jobj = await WikiClient.GetJsonAsync(new
+            {
+                action = "edit",
+                title = Title,
+                minor = minor,
+                bot = bot,
+                recreate = true,
+                maxlag = 5,
+                basetimestamp = LastRevision?.TimeStamp,
+                summary = summary,
+                text = Content,
+                token = token,
+            });
+            }
+            catch (OperationFailedException ex)
+            {
+                switch (ex.ErrorCode)
+                {
+                    case "protectedpage":
+                        throw new UnauthorizedOperationException(ex.ErrorCode, ex.ErrorMessage);
+                    default:
+                        throw;
+                }
+            }
+            var jedit = jobj["edit"];
+            var result = (string) jedit["result"];
+            if (result == "Success")
+            {
+                ContentModel = (string) jedit["contentmodel"];
+                LastRevisionId = (int) jedit["newrevid"];
+                Id = (int) jedit["pageid"];
+                Title = (string) jedit["title"];
+            }
+            else
+            {
+                throw new OperationFailedException(result, (string) null);
+            }
+        }
+    }
+
+    /// <summary>
+    /// Specifies wheter to watch the page after editing it.
+    /// </summary>
+    public enum AutoWatchBehavior
+    {
+        /// <summary>
+        /// Use the preference settings. (watchlist=preferences)
+        /// </summary>
+        Default = 0,
+        None = 1,
+        Watch = 2,
+        Unwatch = 3,
     }
 
     /// <summary>
@@ -241,6 +391,9 @@ namespace WikiClientLibrary
         [JsonProperty("user")]
         public string UserName { get; private set; }
 
+        /// <summary>
+        /// The timestamp of revision.
+        /// </summary>
         [JsonProperty]
         public DateTime TimeStamp { get; private set; }
 

@@ -48,22 +48,11 @@ namespace WikiClientLibrary
     /// <summary>
     /// An exception indicating the requested action is invalid.
     /// </summary>
-    public class InvalidActionException : ArgumentException
+    public class InvalidActionException : OperationFailedException
     {
-        public InvalidActionException() : this(null, null)
+        public InvalidActionException(string errorCode, string message)
+            : base(errorCode, message)
         {
-            
-        }
-
-        public InvalidActionException(string message) : this(message, null)
-        {
-            
-        }
-
-        public InvalidActionException(string message, Exception inner)
-            : base(message, "action", inner)
-        {
-            
         }
     }
 
@@ -73,8 +62,19 @@ namespace WikiClientLibrary
     public class UnauthorizedOperationException : OperationFailedException
     {
 
-        public UnauthorizedOperationException(string message)
-            : base(message)
+        public UnauthorizedOperationException(string errorCode, string message)
+            : base(errorCode, message)
+        {
+        }
+    }
+
+    /// <summary>
+    /// Raises when conflict detected performing the operation.
+    /// </summary>
+    public class OperationConflictException : OperationFailedException
+    {
+        public OperationConflictException(string errorCode, string message)
+            : base(errorCode, message)
         {
         }
     }

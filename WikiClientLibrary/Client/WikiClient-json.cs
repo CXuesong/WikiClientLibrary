@@ -62,13 +62,16 @@ namespace WikiClientLibrary.Client
                         if (obj["error"] != null)
                         {
                             var err = obj["error"];
-                            switch ((string) err["code"])
+                            var errcode = (string) err["code"];
+                            var errmessage = ((string) err["info"] + " " + (string) err["*"]).Trim();
+                            switch (errcode)
                             {
                                 case "unknown_action":
-                                    throw new InvalidActionException((string) err["info"]);
+                                    throw new InvalidActionException(errcode, errmessage);
                                 default:
-                                    throw new OperationFailedException((string) err["code"],
-                                        string.Format("{0} {1}", (string) err["info"], (string) err["*"]));
+                                    if (errcode.EndsWith("conflict"))
+                                        throw new OperationConflictException(errcode, errmessage);
+                                    throw new OperationFailedException(errcode, errmessage);
                             }
                         }
                         return obj;

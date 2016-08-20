@@ -80,8 +80,9 @@ namespace WikiClientLibrary
             if (warnings != null)
             {
                 // "*": "Unrecognized value for parameter 'type': xxxx"
-                if (warnings["*"] != null)
-                    throw new OperationFailedException((string) warnings["*"]);
+                var warn = (string) warnings["*"];
+                if (warn != null && warn.Contains("Unrecognized value") && warn.Contains("type"))
+                    throw new ArgumentException(warn, nameof(tokenTypeExpr));
                 throw new OperationFailedException(warnings.ToString());
             }
             return (JObject) jobj["query"]["tokens"];

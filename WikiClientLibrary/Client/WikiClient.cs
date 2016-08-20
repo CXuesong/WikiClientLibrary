@@ -93,7 +93,7 @@ namespace WikiClientLibrary.Client
 
         public Task<JObject> GetJsonAsync(object queryParams)
         {
-            return GetJsonAsync(Utility.ToStringValuePairs(queryParams));
+            return GetJsonAsync(Utility.ToWikiStringValuePairs(queryParams));
         }
 
         public WikiClient()
