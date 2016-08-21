@@ -1,0 +1,51 @@
+﻿<Window x:Class="WpfTestApplication1.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:WpfTestApplication1"
+        xmlns:wcl="clr-namespace:WikiClientLibrary;assembly=WikiClientLibrary"
+        mc:Ignorable="d"
+        Title="Test Wiki Browser" Height="350" Width="525" Loaded="Window_Loaded">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="200"/>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition/>
+        </Grid.ColumnDefinitions>
+        <ListBox x:Name="TocListBox" SelectionChanged="TocListBox_SelectionChanged">
+            <ListBox.ItemTemplate>
+                <DataTemplate DataType="{x:Type wcl:ContentSectionInfo}">
+                    <StackPanel Orientation="Vertical">
+                        <TextBlock Text="{Binding Number}" FontSize="9pt"/>
+                        <TextBlock Text="{Binding Heading}" FontSize="12pt" />
+                    </StackPanel>
+                </DataTemplate>
+            </ListBox.ItemTemplate>
+        </ListBox>
+        <Grid Grid.Column="2">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition/>
+                </Grid.ColumnDefinitions>
+                <Label Content="Page title: "/>
+                <TextBox x:Name="TitleTextBox" Grid.Column="1" TextWrapping="Wrap" Text="TextBox" VerticalContentAlignment="Center" KeyDown="TitleTextBox_KeyDown"/>
+            </Grid>
+            <WebBrowser x:Name="PageFrame" Grid.Row="1" LoadCompleted="PageFrame_LoadCompleted"/>
+        </Grid>
+        <GridSplitter Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Stretch" Width="5"/>
+        <StatusBar Grid.ColumnSpan="3" Grid.Row="1">
+            <Label x:Name="StatusLabel" />
+        </StatusBar>
+    </Grid>
+</Window>
