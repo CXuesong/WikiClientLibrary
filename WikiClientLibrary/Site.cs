@@ -228,7 +228,7 @@ namespace WikiClientLibrary
                 action = "parse",
                 page = title,
                 redirects = followRedirects,
-                prop = "text|langlinks|categories|sections|revid|displaytitle|properties"
+                prop = "text|langlinks|categories|sections|revid|displaytitle|properties|disabletoc"
             });
             var parsed = ((JObject) jobj["parse"]).ToObject<ParsedContentInfo>();
             return parsed;

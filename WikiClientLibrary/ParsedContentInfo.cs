@@ -85,8 +85,15 @@ namespace WikiClientLibrary
     [JsonObject(MemberSerialization.OptIn)]
     public class ContentSectionInfo
     {
+        /// <summary>
+        /// Index of the section.
+        /// </summary>
+        /// <remarks>
+        /// Note that sometimes this property is not avaliable,
+        /// especially when the heading is included in a template.
+        /// </remarks>
         [JsonProperty]
-        public int Index { get; private set; }
+        public int? Index { get; private set; }
 
         /// <summary>
         /// Heading text.
@@ -124,7 +131,14 @@ namespace WikiClientLibrary
         [JsonProperty("fromtitle")]
         public string PageTitle { get; private set; }
 
-        public int ByteOffset { get; private set; }
+        /// <summary>
+        /// Byte offset of the section.
+        /// </summary>
+        /// <remarks>
+        /// Note that sometimes this property is not avaliable,
+        /// especially when the heading is included in a template.
+        /// </remarks>
+        public int? ByteOffset { get; private set; }
 
         /// <summary>
         /// 返回表示当前对象的字符串。
