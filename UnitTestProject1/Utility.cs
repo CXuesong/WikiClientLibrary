@@ -125,7 +125,11 @@ namespace UnitTestProject1
                 sb.Append(obj);
             }
             if (maxDepth < 1 || obj is ValueType || obj is string || obj is Uri)
-                return sb.ToString();
+            {
+                var s = sb.ToString();
+                if (s.Length > 1024) s = s.Substring(0, 1024) + "...";
+                return s;
+            }
             foreach (var p in obj.GetType().GetProperties())
             {
                 if (p.GetIndexParameters().Length > 0) continue;
@@ -152,6 +156,7 @@ namespace UnitTestProject1
             {
                 foreach (var i in enu)
                 {
+                    sb.Append(' ', indention*2);
                     sb.AppendLine();
                     sb.Append(DumpObject(i, indention + 1, maxDepth - 1));
                 }

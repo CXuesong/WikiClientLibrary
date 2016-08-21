@@ -21,8 +21,6 @@ namespace WikiClientLibrary
 
         private Dictionary<int, NamespaceInfo> _Namespaces = new Dictionary<int, NamespaceInfo>();
 
-        private Dictionary<string, string>  _TokensCache = new Dictionary<string, string>();
-
         public static async Task<Site> GetAsync(WikiClient wikiClient)
         {
             var site = new Site(wikiClient);
@@ -45,8 +43,8 @@ namespace WikiClientLibrary
                 meta = "siteinfo",
                 siprop = "general|namespaces|namespacealiases"
             });
-            var qg = (JObject)jobj["query"]["general"];
-            var ns = (JObject)jobj["query"]["namespaces"];
+            var qg = (JObject) jobj["query"]["general"];
+            var ns = (JObject) jobj["query"]["namespaces"];
             //Name = (string) qg["sitename"];
             SiteInfo = qg.ToObject<SiteInfo>(Utility.WikiJsonSerializer);
             _Namespaces = ns.ToObject<Dictionary<int, NamespaceInfo>>(Utility.WikiJsonSerializer);
@@ -61,7 +59,7 @@ namespace WikiClientLibrary
                 meta = "userinfo",
                 uiprop = "blockinfo|groups|hasmsg|rights"
             });
-            UserInfo = ((JObject)jobj["query"]["userinfo"]).ToObject<UserInfo>(Utility.WikiJsonSerializer);
+            UserInfo = ((JObject) jobj["query"]["userinfo"]).ToObject<UserInfo>(Utility.WikiJsonSerializer);
         }
 
         public SiteInfo SiteInfo { get; private set; }
@@ -69,6 +67,10 @@ namespace WikiClientLibrary
         public UserInfo UserInfo { get; private set; }
 
         public IReadOnlyDictionary<int, NamespaceInfo> Namespaces { get; private set; }
+
+        #region Tokens
+
+        private Dictionary<string, string> _TokensCache = new Dictionary<string, string>();
 
         private async Task<JObject> GetTokensAsync(string tokenTypeExpr)
         {
@@ -160,6 +162,8 @@ namespace WikiClientLibrary
             return dict.Values.Single();
         }
 
+        #endregion
+
         #region Authetication
 
         public Task LoginAsync(string userName, string password)
@@ -192,7 +196,7 @@ namespace WikiClientLibrary
                     message =
                         "The login using the main account password (rather than a bot password) cannot proceed because user interaction is required. The clientlogin action should be used instead.";
                     break;
-                case "NeedToken":       // We should have got correct token.
+                case "NeedToken": // We should have got correct token.
                 case "WrongToken":
                     throw new UnexpectedDataException($"Unexpected login result: {result} .");
             }
@@ -207,6 +211,27 @@ namespace WikiClientLibrary
                 action = "logout",
             });
             await RefreshUserInfoAsync();
+        }
+
+        #endregion
+
+        #region rendering
+
+        /// <summary>
+        /// Parsing the specific page, gets HTML and more information. (MediaWiki 1.12)
+        /// </summary>
+        public async Task<ParsedContentInfo> ParsePage(string title, bool followRedirects)
+        {
+            if (title == null) throw new ArgumentNullException(nameof(title));
+            var jobj = await WikiClient.GetJsonAsync(new
+            {
+                action = "parse",
+                page = title,
+                redirects = followRedirects,
+                prop = "text|langlinks|categories|sections|revid|displaytitle|properties"
+            });
+            var parsed = ((JObject) jobj["parse"]).ToObject<ParsedContentInfo>();
+            return parsed;
         }
 
         #endregion

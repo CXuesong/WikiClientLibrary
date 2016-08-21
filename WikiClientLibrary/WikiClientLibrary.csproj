@@ -37,6 +37,7 @@
     <Compile Include="Exceptions.cs" />
     <Compile Include="ILogger.cs" />
     <Compile Include="Page.cs" />
+    <Compile Include="ParsedContentInfo.cs" />
     <Compile Include="Site.cs" />
     <Compile Include="SiteInfo.cs" />
     <Compile Include="UserInfo.cs" />
