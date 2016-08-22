@@ -110,7 +110,7 @@ namespace WikiClientLibrary.Client
         /// <summary>
         /// Invoke API and get JSON result.
         /// </summary>
-        public async Task<JObject> GetJsonAsync(IEnumerable<KeyValuePair<string, string>> queryParams)
+        public async Task<JToken> GetJsonAsync(IEnumerable<KeyValuePair<string, string>> queryParams)
         {
             if (queryParams == null) throw new ArgumentNullException(nameof(queryParams));
             var requestUrl = EndPointUrl + "?format=json&" + queryParams;
@@ -122,7 +122,7 @@ namespace WikiClientLibrary.Client
             return result;
         }
 
-        public Task<JObject> GetJsonAsync(object queryParams)
+        public Task<JToken> GetJsonAsync(object queryParams)
         {
             return GetJsonAsync(Utility.ToWikiStringValuePairs(queryParams));
         }

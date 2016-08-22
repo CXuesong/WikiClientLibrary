@@ -73,7 +73,6 @@ namespace UnitTestProject1
         public void LoginWpTest2_2()
         {
             var site = CreateWikiSite(EntryPointWikipediaTest2);
-            //site.WikiClient.Timeout = TimeSpan.Zero;
             CredentialManager.Login(site);
             Assert.IsTrue(site.UserInfo.IsUser);
             Assert.IsFalse(site.UserInfo.IsAnnonymous);
@@ -84,5 +83,19 @@ namespace UnitTestProject1
             Trace.WriteLine($"{site.UserInfo.Name} has logged out.");
         }
 
+
+        [TestMethod]
+        public void LoginWikiaTest_1()
+        {
+            var site = CreateWikiSite(EntryPointWikiaTest);
+            CredentialManager.Login(site);
+            Assert.IsTrue(site.UserInfo.IsUser);
+            Assert.IsFalse(site.UserInfo.IsAnnonymous);
+            Trace.WriteLine($"{site.UserInfo.Name} has logged into {site}");
+            CredentialManager.Logout(site);
+            Assert.IsFalse(site.UserInfo.IsUser);
+            Assert.IsTrue(site.UserInfo.IsAnnonymous);
+            Trace.WriteLine($"{site.UserInfo.Name} has logged out.");
+        }
     }
 }

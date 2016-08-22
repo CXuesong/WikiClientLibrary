@@ -278,17 +278,17 @@ namespace WikiClientLibrary
         /// <exception cref="UnauthorizedOperationException">You have no rights to edit the page.</exception>
         public async Task UpdateContentAsync(string summary, bool minor, bool bot, AutoWatchBehavior watch)
         {
-            var tokenTask = Site.GetTokenAsync("csrf");
+            var tokenTask = Site.GetTokenAsync("edit");
             await WikiClient.WaitForThrottleAsync();
             var token = await tokenTask;
             // When passing this to the Edit API, always pass the token parameter last
             // (or at least after the text parameter). That way, if the edit gets interrupted,
             // the token won't be passed and the edit will fail.
             // This is done automatically by mw.Api.
-            JObject jobj;
+            JToken jresult;
             try
             {
-                jobj = await WikiClient.GetJsonAsync(new
+                jresult = await WikiClient.GetJsonAsync(new
                 {
                     action = "edit",
                     title = Title,
@@ -313,7 +313,7 @@ namespace WikiClientLibrary
                         throw;
                 }
             }
-            var jedit = jobj["edit"];
+            var jedit = jresult["edit"];
             var result = (string) jedit["result"];
             if (result == "Success")
             {
@@ -366,10 +366,10 @@ namespace WikiClientLibrary
             // (or at least after the text parameter). That way, if the edit gets interrupted,
             // the token won't be passed and the edit will fail.
             // This is done automatically by mw.Api.
-            JObject jobj;
+            JToken jresult;
             try
             {
-                jobj = await WikiClient.GetJsonAsync(new
+                jresult = await WikiClient.GetJsonAsync(new
                 {
                     action = "move",
                     from = Title,
@@ -396,7 +396,7 @@ namespace WikiClientLibrary
                         throw;
                 }
             }
-            Title = (string) jobj["move"]["to"];
+            Title = (string) jresult["move"]["to"];
         }
 
         /// <summary>
@@ -405,10 +405,10 @@ namespace WikiClientLibrary
         /// <returns><c>true</c> if the page has been successfully purged.</returns>
         public async Task<bool> PurgeAsync()
         {
-                JObject jobj;
+            JToken jresult;
             try
             {
-                jobj = await WikiClient.GetJsonAsync(new
+                jresult = await WikiClient.GetJsonAsync(new
                 {
                     action = "purge",
                     titles = Title,
@@ -421,7 +421,7 @@ namespace WikiClientLibrary
                 if (ex.ErrorCode == "cantpurge") throw new UnauthorizedOperationException(ex.ErrorCode, ex.ErrorMessage);
                 throw;
             }
-            var page = jobj["purge"].First();
+            var page = jresult["purge"].First();
             return page["purged"] != null;
         }
         #endregion

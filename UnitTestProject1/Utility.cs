@@ -9,6 +9,7 @@ using WikiClientLibrary;
 using System.Diagnostics;
 using System.Reflection;
 using System.Runtime.ExceptionServices;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using WikiClientLibrary.Client;
 using Newtonsoft.Json.Linq;
 
@@ -172,6 +173,12 @@ namespace UnitTestProject1
         public static void ShallowTrace(object obj)
         {
             Trace.WriteLine(DumpObject(obj, 2));
+        }
+
+        public static void AssertLoggedIn(Site site)
+        {
+            if (site == null) throw new ArgumentNullException(nameof(site));
+            if (!site.UserInfo.IsUser) Assert.Inconclusive($"User {site.UserInfo} has not logged into {site}.");
         }
     }
 }

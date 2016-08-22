@@ -15,7 +15,7 @@ namespace WikiClientLibrary.Client
     {
         #region the json client
 
-        private async Task<JObject> SendAsync(Func<HttpRequestMessage> requestFactory)
+        private async Task<JToken> SendAsync(Func<HttpRequestMessage> requestFactory)
         {
             HttpResponseMessage response;
             var retries = -1;
@@ -65,7 +65,7 @@ namespace WikiClientLibrary.Client
             return jresp;
         }
 
-        private async Task<JObject> ProcessResponseAsync(HttpResponseMessage webResponse)
+        private async Task<JToken> ProcessResponseAsync(HttpResponseMessage webResponse)
         {
             using (webResponse)
             {
@@ -74,7 +74,7 @@ namespace WikiClientLibrary.Client
                     using (var reader = new StreamReader(stream))
                     using (var jreader = new JsonTextReader(reader))
                     {
-                        var obj = JObject.Load(jreader);
+                        var obj = JToken.Load(jreader);
                         //Logger?.Trace(obj.ToString());
                         return obj;
                     }
@@ -82,8 +82,10 @@ namespace WikiClientLibrary.Client
             }
         }
 
-        private void CheckErrors(JObject jresponse)
+        private void CheckErrors(JToken jresponse)
         {
+            var obj = jresponse as JObject;
+            if (obj == null) return;
             if (jresponse["warnings"] != null)
             {
                 Logger?.Warn(jresponse["warnings"].ToString());

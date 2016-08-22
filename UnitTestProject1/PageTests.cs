@@ -18,12 +18,16 @@ namespace UnitTestProject1
 
         private static Site WpTestSite;
 
+        private static Site WikiaTestSite;
+
         [ClassInitialize]
         public static void OnClassInitializing(TestContext context)
         {
             // Prepare test environment.
             WpTestSite = CreateWikiSite(EntryPointWikipediaTest2);
             CredentialManager.Login(WpTestSite);
+            WikiaTestSite = CreateWikiSite(EntryPointWikiaTest);
+            CredentialManager.Login(WikiaTestSite);
         }
 
         [ClassCleanup]
@@ -120,6 +124,19 @@ namespace UnitTestProject1
             page = new Page(site, "the page should be inexistent");
             result = AwaitSync(page.PurgeAsync());
             Assert.IsFalse(result);
+        }
+
+        [TestMethod]
+        public void WikiaPageWriteTest1()
+        {
+            AssertModify();
+            var site = WikiaTestSite;
+            AssertLoggedIn(site);
+            var page = new Page(site, "project:sandbox");
+            AwaitSync(page.RefreshContentAsync());
+            page.Content += "\n\nTest from WikiClientLibrary.";
+            Trace.WriteLine(page.Content);
+            AwaitSync(page.UpdateContentAsync(SummaryPrefix + "Edit sandbox page."));
         }
     }
 }

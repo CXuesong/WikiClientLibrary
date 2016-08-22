@@ -21,6 +21,8 @@ namespace WikiClientLibrary
 
         private Dictionary<int, NamespaceInfo> _Namespaces = new Dictionary<int, NamespaceInfo>();
 
+        public ILogger Logger { get; set; }
+
         public static async Task<Site> GetAsync(WikiClient wikiClient)
         {
             var site = new Site(wikiClient);
@@ -70,9 +72,22 @@ namespace WikiClientLibrary
 
         #region Tokens
 
+        /// <summary>
+        /// Tokens that have been merged into CSRF token since MediaWiki 1.24 .
+        /// </summary>
+        private static readonly string[] CsrfTokens =
+        {
+            "edit", "delete", "protect", "move", "block", "unblock", "email",
+            "import"
+        };
+
         private Dictionary<string, string> _TokensCache = new Dictionary<string, string>();
 
-        private async Task<JObject> GetTokensAsync(string tokenTypeExpr)
+        /// <summary>
+        /// Fetch tokens. (MediaWiki 1.24)
+        /// </summary>
+        /// <param name="tokenTypeExpr">Token types, joined by | .</param>
+        private async Task<JObject> FetchTokensAsync2(string tokenTypeExpr)
         {
             var jobj = await WikiClient.GetJsonAsync(new
             {
@@ -93,10 +108,27 @@ namespace WikiClientLibrary
         }
 
         /// <summary>
+        /// Fetch tokens. (MediaWiki &lt; 1.24)
+        /// </summary>
+        /// <param name="tokenTypeExpr">Token types, joined by | .</param>
+        private async Task<JObject> FetchTokensAsync(string tokenTypeExpr)
+        {
+            Debug.Assert(!tokenTypeExpr.Contains("patrol"));
+            var jobj = await WikiClient.GetJsonAsync(new
+            {
+                action = "query",
+                prop = "info",
+                titles = "Dummy Title",
+                intoken = tokenTypeExpr,
+            });
+            var page = (JObject) ((JProperty) jobj["query"]["pages"].First).Value;
+            return new JObject(page.Properties().Where(p => p.Name.EndsWith("token")));
+        }
+
+        /// <summary>
         /// Request tokens for operations.
         /// </summary>
         /// <param name="tokenTypes">The names of token.</param>
-        /// <param name="forceRefetch">Whether to fetch token from server, regardless of the cache.</param>
         /// <remarks>See https://www.mediawiki.org/wiki/API:Tokens .</remarks>
         public Task<IDictionary<string, string>> GetTokensAsync(IEnumerable<string> tokenTypes)
         {
@@ -106,41 +138,97 @@ namespace WikiClientLibrary
         /// <summary>
         /// Request tokens for operations.
         /// </summary>
-        /// <param name="tokenTypes">The names of token.</param>
+        /// <param name="tokenTypes">The names of token. Names should be as accurate as possible (E.g. use "edit" instead of "csrf").</param>
         /// <param name="forceRefetch">Whether to fetch token from server, regardless of the cache.</param>
+        /// <exception cref="InvalidOperationException">One or more specified token types cannot be recognized.</exception>
         /// <remarks>See https://www.mediawiki.org/wiki/API:Tokens .</remarks>
         public async Task<IDictionary<string, string>> GetTokensAsync(IEnumerable<string> tokenTypes, bool forceRefetch)
         {
             if (tokenTypes == null) throw new ArgumentNullException(nameof(tokenTypes));
-            var pendingtokens = new List<string>();
-            var tokens = new Dictionary<string, string>();
-            foreach (var tt in tokenTypes)
+            var tokenTypesList = tokenTypes as IReadOnlyList<string> ?? tokenTypes.ToList();
+            var pendingtokens = tokenTypesList.Where(tt => forceRefetch || !_TokensCache.ContainsKey(tt)).ToList();
+            JObject fetchedTokens = null;
+            if (SiteInfo.Version < new Version("1.24"))
             {
-                string token;
-                if (!forceRefetch && _TokensCache.TryGetValue(tt, out token))
-                    tokens[tt] = token;
-                else
-                    pendingtokens.Add(tt);
-            }
-            if (pendingtokens.Count > 0)
-            {
-                IEnumerable<KeyValuePair<string, JToken>> jobj = await GetTokensAsync(string.Join("|", pendingtokens));
-                foreach (var p in jobj)
+                /*
+                 Patrol was added in v1.14.
+                 Until v1.16, the patrol token is same as the edit token.
+                 For v1.17-19, the patrol token must be obtained from the query
+                 list recentchanges.
+                 */
+                var needPatrolFromRC = false;
+                if (SiteInfo.Version < new Version("1.20"))
+                    needPatrolFromRC = pendingtokens.Remove("patrol");
+                if (needPatrolFromRC)
                 {
-                    // Remove "token" in the result
-                    var tokenName = p.Key.EndsWith("token")
-                        ? p.Key.Substring(0, p.Key.Length - 5)
-                        : p.Key;
-                    tokens.Add(tokenName, (string) p.Value);
+                    if (SiteInfo.Version < new Version("1.17"))
+                    {
+                        _TokensCache["patrol"] = await GetTokenAsync("edit");
+                    }
+                    else
+                    {
+                        var jobj = await WikiClient.GetJsonAsync(new
+                        {
+                            action = "query",
+                            meta = "recentchanges",
+                            rctoken = "patrol",
+                            rclimit = 1
+                        });
+                        _TokensCache["patrol"] = (string) jobj["query"]["recentchanges"]["patroltoken"];
+                    }
+                }
+                if (pendingtokens.Count > 0)
+                    fetchedTokens = await FetchTokensAsync(string.Join("|", pendingtokens));
+            }
+            else
+            {
+                // Use csrf token if possible.
+                if (!pendingtokens.Contains("csrf"))
+                {
+                    var needCsrf = false;
+                    foreach (var t in CsrfTokens)
+                    {
+                        if (pendingtokens.Remove(t)) needCsrf = true;
+                    }
+                    if (needCsrf) pendingtokens.Add("csrf");
+                }
+                if (pendingtokens.Count > 0)
+                {
+                    fetchedTokens = await FetchTokensAsync2(string.Join("|", pendingtokens));
+                    var csrf = (string) fetchedTokens["csrftoken"];
+                    if (csrf != null)
+                    {
+                        foreach (var t in CsrfTokens) _TokensCache[t] = csrf;
+                    }
                 }
             }
-            return tokens;
+            // Put tokens into cache first.
+            if (fetchedTokens != null)
+            {
+                foreach (var p in fetchedTokens.Properties())
+                {
+                    // Remove "token" in the result
+                    var tokenName = p.Name.EndsWith("token")
+                        ? p.Name.Substring(0, p.Name.Length - 5)
+                        : p.Name;
+                    _TokensCache[tokenName] = (string) p.Value;
+                    pendingtokens.Remove(tokenName);
+                }
+                if (pendingtokens.Count > 0)
+                {
+                    throw new InvalidOperationException("Unrecognized token(s): " + string.Join(", ", pendingtokens) +
+                                                        ".");
+                }
+            }
+            // Then return.
+            return tokenTypesList.ToDictionary(t => t, t => _TokensCache[t]);
         }
 
         /// <summary>
         /// Request a token for operation.
         /// </summary>
         /// <param name="tokenType">The name of token.</param>
+        /// <exception cref="InvalidOperationException">Specified token type cannot be recognized.</exception>
         /// <remarks>See https://www.mediawiki.org/wiki/API:Tokens .</remarks>
         public Task<string> GetTokenAsync(string tokenType)
         {
@@ -175,7 +263,12 @@ namespace WikiClientLibrary
         {
             if (string.IsNullOrEmpty(userName)) throw new ArgumentNullException(nameof(userName));
             if (string.IsNullOrEmpty(password)) throw new ArgumentNullException(nameof(password));
-            var token = await GetTokenAsync("login", true);
+            string token = null;
+            // For MedaiWiki 1.27+
+            if (SiteInfo.Version >= new Version("1.27"))
+                token = await GetTokenAsync("login", true);
+            // For MedaiWiki < 1.27, We'll have to request twice.
+            RETRY:
             var jobj = await WikiClient.GetJsonAsync(new
             {
                 action = "login",
@@ -196,8 +289,15 @@ namespace WikiClientLibrary
                     message =
                         "The login using the main account password (rather than a bot password) cannot proceed because user interaction is required. The clientlogin action should be used instead.";
                     break;
-                case "NeedToken": // We should have got correct token.
-                case "WrongToken":
+                case "Throttled":
+                    var time = (int) jobj["login"]["wait"];
+                    Logger?.Warn($"Throttled: {time}sec.");
+                    await Task.Delay(TimeSpan.FromSeconds(time));
+                    goto RETRY;
+                case "NeedToken":
+                    token = (string) jobj["login"]["token"];
+                    goto RETRY;
+                case "WrongToken":   // We should have got correct token.
                     throw new UnexpectedDataException($"Unexpected login result: {result} .");
             }
             message = (string) jobj["login"]["reason"] ?? message;
