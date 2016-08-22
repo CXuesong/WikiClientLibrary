@@ -34,8 +34,8 @@ namespace UnitTestProject1
         public static void OnClassCleanup()
         {
             CredentialManager.Logout(WpTestSite);
+            CredentialManager.Logout(WikiaTestSite);
         }
-
 
         [TestMethod]
         public void WpTest2PageReadTest()
@@ -63,7 +63,7 @@ namespace UnitTestProject1
         [TestMethod]
         public void WikiaPageReadTest()
         {
-            var site = WpTestSite;
+            var site = WikiaTestSite;
             var page = new Page(site, "Project:Sandbox");
             AwaitSync(page.RefreshInfoAsync());
             AwaitSync(page.RefreshContentAsync());

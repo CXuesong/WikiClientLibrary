@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 using System.Globalization;
+using System.Linq;
 using System.Threading;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Newtonsoft.Json;
@@ -14,6 +15,28 @@ namespace UnitTestProject1
     [TestClass]
     public class SiteTests
     {
+
+        private static Site WpTestSite;
+
+        private static Site WikiaTestSite;
+
+        [ClassInitialize]
+        public static void OnClassInitializing(TestContext context)
+        {
+            // Prepare test environment.
+            WpTestSite = CreateWikiSite(EntryPointWikipediaTest2);
+            //CredentialManager.Login(WpTestSite);
+            WikiaTestSite = CreateWikiSite(EntryPointWikiaTest);
+            //CredentialManager.Login(WikiaTestSite);
+        }
+
+        [ClassCleanup]
+        public static void OnClassCleanup()
+        {
+            //CredentialManager.Logout(WpTestSite);
+        }
+
+
         private void ValidateNamespace(Site site, int id, string name, bool isContent)
         {
             Assert.IsTrue(site.Namespaces.ContainsKey(id), $"Cannot find namespace id={id}.");
@@ -35,7 +58,7 @@ namespace UnitTestProject1
         [TestMethod]
         public void TestWpTest2()
         {
-            var site = CreateWikiSite(EntryPointWikipediaTest2);
+            var site = WpTestSite;
             ShallowTrace(site);
             Assert.AreEqual("Wikipedia", site.SiteInfo.SiteName);
             Assert.AreEqual("Main Page", site.SiteInfo.MainPage);
@@ -55,7 +78,7 @@ namespace UnitTestProject1
         [TestMethod]
         public void TestWikia()
         {
-            var site = CreateWikiSite(EntryPointWikiaTest);
+            var site = WikiaTestSite;
             ShallowTrace(site);
             Assert.AreEqual("Mediawiki 1.19 test Wiki", site.SiteInfo.SiteName);
             ValidateNamespaces(site);
@@ -65,14 +88,14 @@ namespace UnitTestProject1
         [ExpectedException(typeof(OperationFailedException))]
         public void LoginWpTest2_1()
         {
-            var site = CreateWikiSite(EntryPointWikipediaTest2);
+            var site = WpTestSite;
             AwaitSync(site.LoginAsync("user", "password"));
         }
 
         [TestMethod]
         public void LoginWpTest2_2()
         {
-            var site = CreateWikiSite(EntryPointWikipediaTest2);
+            var site = WpTestSite;
             CredentialManager.Login(site);
             Assert.IsTrue(site.UserInfo.IsUser);
             Assert.IsFalse(site.UserInfo.IsAnnonymous);
@@ -87,7 +110,7 @@ namespace UnitTestProject1
         [TestMethod]
         public void LoginWikiaTest_1()
         {
-            var site = CreateWikiSite(EntryPointWikiaTest);
+            var site = WikiaTestSite;
             CredentialManager.Login(site);
             Assert.IsTrue(site.UserInfo.IsUser);
             Assert.IsFalse(site.UserInfo.IsAnnonymous);
@@ -96,6 +119,16 @@ namespace UnitTestProject1
             Assert.IsFalse(site.UserInfo.IsUser);
             Assert.IsTrue(site.UserInfo.IsAnnonymous);
             Trace.WriteLine($"{site.UserInfo.Name} has logged out.");
+        }
+
+        [TestMethod]
+        public void WpTest2OpenSearchTest()
+        {
+            var site = WpTestSite;
+            var result = AwaitSync(site.OpenSearchAsync("San"));
+            ShallowTrace(result);
+            Assert.IsTrue(result.Count > 0);
+            Assert.IsTrue(result.Any(e => e.Title == "Sandbox"));
         }
     }
 }

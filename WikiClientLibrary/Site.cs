@@ -315,14 +315,14 @@ namespace WikiClientLibrary
 
         #endregion
 
-        #region rendering
+        #region Query
 
         /// <summary>
         /// Parsing the specific page, gets HTML and more information. (MediaWiki 1.12)
         /// </summary>
         public async Task<ParsedContentInfo> ParsePage(string title, bool followRedirects)
         {
-            if (title == null) throw new ArgumentNullException(nameof(title));
+            if (string.IsNullOrEmpty(title)) throw new ArgumentNullException(nameof(title));
             var jobj = await WikiClient.GetJsonAsync(new
             {
                 action = "parse",
@@ -332,6 +332,96 @@ namespace WikiClientLibrary
             });
             var parsed = ((JObject) jobj["parse"]).ToObject<ParsedContentInfo>();
             return parsed;
+        }
+
+        /// <summary>
+        /// Performs an opensearch and get results, often used for search box suggestions.
+        /// (MediaWiki 1.25 or OpenSearch extension)
+        /// </summary>
+        /// <param name="searchExpression">The beginning part of the title to be searched.</param>
+        /// <returns>Search result.</returns>
+        /// <remarks>This overload will allow up to 20 results to be returned, and will not resolve redirects.</remarks>
+        public Task<IList<OpenSearchResultEntry>> OpenSearchAsync(string searchExpression)
+        {
+            return OpenSearchAsync(searchExpression, 20, OpenSearchOptions.None);
+        }
+
+
+        /// <summary>
+        /// Performs an opensearch and get results, often used for search box suggestions.
+        /// (MediaWiki 1.25 or OpenSearch extension)
+        /// </summary>
+        /// <param name="searchExpression">The beginning part of the title to be searched.</param>
+        /// <param name="options">Other options.</param>
+        /// <returns>Search result.</returns>
+        /// <remarks>This overload will allow up to 20 results to be returned.</remarks>
+        public Task<IList<OpenSearchResultEntry>> OpenSearchAsync(string searchExpression, OpenSearchOptions options)
+        {
+            return OpenSearchAsync(searchExpression, 20, options);
+        }
+
+        /// <summary>
+        /// Performs an opensearch and get results, often used for search box suggestions.
+        /// (MediaWiki 1.25 or OpenSearch extension)
+        /// </summary>
+        /// <param name="searchExpression">The beginning part of the title to be searched.</param>
+        /// <param name="maxCount">Maximum number of results to return. No more than 500 (5000 for bots) allowed.</param>
+        /// <returns>Search result.</returns>
+        /// <remarks>This overload will not resolve redirects.</remarks>
+        public Task<IList<OpenSearchResultEntry>> OpenSearchAsync(string searchExpression, int maxCount)
+        {
+            return OpenSearchAsync(searchExpression, maxCount, OpenSearchOptions.None);
+        }
+
+        /// <summary>
+        /// Performs an opensearch and get results, often used for search box suggestions.
+        /// (MediaWiki 1.25 or OpenSearch extension)
+        /// </summary>
+        /// <param name="searchExpression">The beginning part of the title to be searched.</param>
+        /// <param name="maxCount">Maximum number of results to return. No more than 500 (5000 for bots) allowed.</param>
+        /// <param name="options">Other options.</param>
+        /// <returns>Search result.</returns>
+        public async Task<IList<OpenSearchResultEntry>> OpenSearchAsync(string searchExpression,
+            int maxCount, OpenSearchOptions options)
+        {
+            /*
+[
+    "Te",
+    [
+        "Te",
+        "Television",
+    ],
+    [
+        "From other capitalisation: ...",
+        "Television or TV is ...",
+    ],
+    [
+        "https://en.wikipedia.org/wiki/Te",
+        "https://en.wikipedia.org/wiki/Television",
+    ]
+]
+             */
+            if (string.IsNullOrEmpty(searchExpression)) throw new ArgumentNullException(nameof(searchExpression));
+            if (maxCount <= 0) throw new ArgumentOutOfRangeException(nameof(maxCount));
+            var jresult = await WikiClient.GetJsonAsync(new
+            {
+                action = "opensearch",
+                search = searchExpression,
+                limit = maxCount,
+                redirects = (options & OpenSearchOptions.ResolveRedirects) == OpenSearchOptions.ResolveRedirects,
+            });
+            var result = new List<OpenSearchResultEntry>();
+            var titles = (JArray) jresult[1];
+            var descs = jresult[2] as JArray;
+            var urls = jresult[3] as JArray;
+            for (int i = 0; i < titles.Count; i++)
+            {
+                var entry = new OpenSearchResultEntry {Title = (string) titles[i]};
+                if (descs != null) entry.Description = (string) descs[i];
+                if (urls != null) entry.Url = (string) urls[i];
+                result.Add(entry);
+            }
+            return result;
         }
 
         #endregion
@@ -345,6 +435,51 @@ namespace WikiClientLibrary
         public override string ToString()
         {
             return string.IsNullOrEmpty(SiteInfo.SiteName) ? WikiClient.EndPointUrl : SiteInfo.SiteName;
+        }
+    }
+
+    /// <summary>
+    /// Options for opensearch.
+    /// </summary>
+    [Flags]
+    public enum OpenSearchOptions
+    {
+        None = 0,
+        /// <summary>
+        /// Return the target page when meeting redirects. May return fewer than limit results.
+        /// </summary>
+        ResolveRedirects = 1,
+    }
+
+    /// <summary>
+    /// Represents an entry in opensearch result.
+    /// </summary>
+    public struct OpenSearchResultEntry
+    {
+        /// <summary>
+        /// Title of the page.
+        /// </summary>
+        public string Title { get; set; }
+
+        /// <summary>
+        /// Url of the page. May be null.
+        /// </summary>
+        public string Url { get; set; }
+
+        /// <summary>
+        /// Description of the page. May be null.
+        /// </summary>
+        public string Description { get; set; }
+
+        /// <summary>
+        /// 返回该实例的完全限定类型名。
+        /// </summary>
+        /// <returns>
+        /// 包含完全限定类型名的 <see cref="T:System.String"/>。
+        /// </returns>
+        public override string ToString()
+        {
+            return Title + (Description != null ? ":" + Description : null);
         }
     }
 }

@@ -410,7 +410,7 @@ namespace WikiClientLibrary
                         throw;
                 }
             }
-            var fromTitle = (string) jresult["move"]["to"];
+            var fromTitle = (string) jresult["move"]["from"];
             var toTitle = (string)jresult["move"]["to"];
             Site.Logger.Info($"Page {fromTitle} has been moved to {toTitle} .");
             Title = toTitle;
@@ -445,10 +445,10 @@ namespace WikiClientLibrary
             }
             catch (OperationFailedException ex)
             {
-                // Couldn't delete "title". Maybe it was deleted already by someone else
                 switch (ex.ErrorCode)
                 {
-                    case "cantdelete":
+                    case "cantdelete":      // Couldn't delete "title". Maybe it was deleted already by someone else
+                    case "missingtitle":
                         return false;
                     case "permissiondenied":
                         throw new UnauthorizedOperationException(ex);
