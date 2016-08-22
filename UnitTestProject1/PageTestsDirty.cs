@@ -76,7 +76,7 @@ The original title of the page is '''{title}'''.
         public void PageMoveTest1()
         {
             var page = new Page(site, TestPage11Title);
-            AwaitSync(page.MoveAsync(TestPage12Title, SummaryPrefix + "Move a page."));
+            AwaitSync(page.MoveAsync(TestPage12Title, SummaryPrefix + "Move a page.", PageMovingOptions.IgnoreWarnings));
         }
     }
 }

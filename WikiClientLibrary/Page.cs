@@ -378,6 +378,7 @@ namespace WikiClientLibrary
                     movetalk = (options & PageMovingOptions.LeaveTalk) != PageMovingOptions.LeaveTalk,
                     movesubpages = (options & PageMovingOptions.MoveSubpages) == PageMovingOptions.MoveSubpages,
                     noredirect = (options & PageMovingOptions.NoRedirect) == PageMovingOptions.NoRedirect,
+                    ignorewarnings = (options & PageMovingOptions.IgnoreWarnings) == PageMovingOptions.IgnoreWarnings,
                     reason = reason,
                     token = token,
                 });
