@@ -57,6 +57,17 @@ namespace WikiClientLibrary
         public IReadOnlyCollection<string> Rights { get; private set; }
 
         /// <summary>
+        /// Determines whether the user is in certian group.
+        /// </summary>
+        /// <param name="groupName">The group user should be in.</param>
+        /// <remarks>It's recommended to use this method instead of checking <see cref="Groups"/> manually.</remarks>
+        public bool IsInGroup(string groupName)
+        {
+            if (groupName == null) throw new ArgumentNullException(nameof(groupName));
+            return Groups.Contains(groupName);
+        }
+
+        /// <summary>
         /// Asserts the user is in certain group.
         /// </summary>
         /// <param name="groupName">The group user should be in.</param>
@@ -64,8 +75,32 @@ namespace WikiClientLibrary
         public void AssertInGroup(string groupName)
         {
             if (groupName == null) throw new ArgumentNullException(nameof(groupName));
-            if (!Groups.Contains(groupName))
+            if (!IsInGroup(groupName))
                 throw new UnauthorizedOperationException($"Current user is not in the group:{groupName}.");
+        }
+
+        /// <summary>
+        /// Determines whether the user has certian right.
+        /// </summary>
+        /// <param name="rightName">The name of the right.</param>
+        /// <remarks>It's recommended to use this method instead of checking <see cref="Rights"/> manually.</remarks>
+        public bool HasRight(string rightName)
+        {
+            if (rightName == null) throw new ArgumentNullException(nameof(rightName));
+            return Rights.Contains(rightName);
+        }
+
+
+        /// <summary>
+        /// Asserts the user has certian right.
+        /// </summary>
+        /// <param name="rightName">The name of the right.</param>
+        /// <exception cref="UnauthorizedOperationException">The user doesn't have specific right.</exception>
+        public void AssertRight(string rightName)
+        {
+            if (rightName == null) throw new ArgumentNullException(nameof(rightName));
+            if (!HasRight(rightName))
+                throw new UnauthorizedOperationException($"Current user is not in the group:{rightName}.");
         }
 
         internal UserInfo()
@@ -74,9 +109,22 @@ namespace WikiClientLibrary
         }
     }
 
+    /// <summary>
+    /// Predefined User Groups.
+    /// </summary>
     public static class UserGroups
     {
         public const string User = "user";
+        public const string Bot = "bot";
+        public const string SysOp = "sysop";
         public const string Autoconfirmed = "autoconfirmed";
+    }
+
+    /// <summary>
+    /// Predefined User Rights.
+    /// </summary>
+    public static class UserRights
+    {
+        public const string ApiHighLimits = "apihighlimits";
     }
 }

@@ -35,6 +35,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Exceptions.cs" />
+    <Compile Include="Generators.cs" />
     <Compile Include="ILogger.cs" />
     <Compile Include="Page.cs" />
     <Compile Include="ParsedContentInfo.cs" />

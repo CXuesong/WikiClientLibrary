@@ -365,7 +365,8 @@ namespace WikiClientLibrary
         /// (MediaWiki 1.25 or OpenSearch extension)
         /// </summary>
         /// <param name="searchExpression">The beginning part of the title to be searched.</param>
-        /// <param name="maxCount">Maximum number of results to return. No more than 500 (5000 for bots) allowed.</param>
+        /// <param name="maxCount">Maximum number of results to return. No more than 500 (5000 for bots) allowed.
+        /// prior to MW 1.28, this value was capped at 100, regardless of user permissions.</param>
         /// <returns>Search result.</returns>
         /// <remarks>This overload will not resolve redirects.</remarks>
         public Task<IList<OpenSearchResultEntry>> OpenSearchAsync(string searchExpression, int maxCount)

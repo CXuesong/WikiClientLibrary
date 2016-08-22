@@ -35,7 +35,7 @@ namespace UnitTestProject1
         {
             if (site == null) throw new ArgumentNullException(nameof(site));
             var page = new Page(site, title);
-            AwaitSync(page.RefreshInfoAsync());
+            AwaitSync(page.RefreshAsync());
             if (!page.Exists)
             {
                 Trace.WriteLine("Creating page: " + page);
@@ -81,7 +81,7 @@ The original title of the page is '''{title}'''.
         {
             var page1 = new Page(site, TestPage11Title);
             var page2 = new Page(site, TestPage12Title);
-            AwaitSync(page2.DeleteAsync(SummaryPrefix + "Delete the move destination."));
+            Trace.WriteLine("Deleted:" + AwaitSync(page2.DeleteAsync(SummaryPrefix + "Delete the move destination.")));
             AwaitSync(page1.MoveAsync(TestPage12Title, SummaryPrefix + "Move a page.", PageMovingOptions.IgnoreWarnings));
             AwaitSync(page2.DeleteAsync(SummaryPrefix + "Delete the moved page."));
         }

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -8,6 +9,9 @@ using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using WikiClientLibrary.Client;
+
+//TODO IMPLEMENT PageQueryOptions
+//I'm going to merge single-page query into a special case of multi-page query.
 
 namespace WikiClientLibrary
 {
@@ -28,6 +32,9 @@ namespace WikiClientLibrary
             if (title == null) throw new ArgumentNullException(nameof(title));
         }
 
+        /// <summary>
+        /// Synonym for <c>Site.WikiClient</c> .
+        /// </summary>
         public WikiClient WikiClient { get; }
 
         public Site Site { get; }
@@ -91,6 +98,11 @@ namespace WikiClientLibrary
         /// <remarks>Make sure to invoke <see cref="RefreshContentAsync"/> before getting the value.</remarks>
         public Revision LastRevision { get; private set; }
 
+        /// <summary>
+        /// Gets / Sets the options when querying page information.
+        /// </summary>
+        public PageQueryOptions QueryOptions { get; set; }
+
         private static bool AreIdEquals(int id1, int id2)
         {
             if (id1 == id2) return false;
@@ -105,8 +117,7 @@ namespace WikiClientLibrary
         /// Loads page information from JSON.
         /// </summary>
         /// <param name="prop">query.pages.xxx property.</param>
-        /// <param name="loadFullInfo">Whether to attempt to load full page information, including protection.</param>
-        internal void LoadPageInfo(JProperty prop, bool loadFullInfo)
+        internal void LoadPageInfo(JProperty prop)
         {
             var id = Convert.ToInt32(prop.Name);
             // I'm not sure whether this assertion holds.
@@ -132,24 +143,18 @@ namespace WikiClientLibrary
                 ContentLength = (int) page["length"];
                 LastRevisionId = (int) page["lastrevid"];
                 LastTouched = (DateTime) page["touched"];
-                if (loadFullInfo)
-                {
-                    Protections = ((JArray) page["protection"]).ToObject<IReadOnlyCollection<ProtectionInfo>>(
-                        Utility.WikiJsonSerializer);
-                    RestrictionTypes = ((JArray) page["restrictiontypes"])?.ToObject<IReadOnlyCollection<string>>(
-                        Utility.WikiJsonSerializer);
-                }
+                Protections = ((JArray) page["protection"]).ToObject<IReadOnlyCollection<ProtectionInfo>>(
+                    Utility.WikiJsonSerializer);
+                RestrictionTypes = ((JArray) page["restrictiontypes"])?.ToObject<IReadOnlyCollection<string>>(
+                    Utility.WikiJsonSerializer);
             }
             else
             {
                 ContentLength = 0;
                 LastRevisionId = 0;
                 LastTouched = DateTime.MinValue;
-                if (loadFullInfo)
-                {
-                    Protections = null;
-                    RestrictionTypes = null;
-                }
+                Protections = null;
+                RestrictionTypes = null;
             }
         }
 
@@ -165,50 +170,94 @@ namespace WikiClientLibrary
         }
 
         /// <summary>
-        /// Fetch basic information of the page.
+        /// Fetch information for one or more pages.
+        /// This overload will not fetch content.
         /// </summary>
-        public async Task RefreshInfoAsync()
+        /// <param name="pages">Pages to be fetched.</param>
+        public static Task RefreshAsync(IEnumerable<Page> pages)
         {
-            var jobj = await WikiClient.GetJsonAsync(new
-            {
-                action = "query",
-                prop = "info",
-                inprop = "protection",
-                titles = Title
-            });
-            LoadPageInfo(((JObject) jobj["query"]["pages"]).Properties().First(), true);
+            return RefreshAsync(pages, false);
         }
 
         /// <summary>
-        /// Fetch the latest revision and content of the page.
+        /// Fetch information for one or more pages.
         /// </summary>
-        public async Task RefreshContentAsync()
+        /// <param name="pages">Pages to be fetched.</param>
+        /// <param name="fetchContent">Whether to fetch latest revision and its content of the pages.</param>
+        public static async Task RefreshAsync(IEnumerable<Page> pages, bool fetchContent)
         {
-            var needFullRefresh = Id == 0;
-            var jobj = await WikiClient.GetJsonAsync(new
+            if (pages == null) throw new ArgumentNullException(nameof(pages));
+            var generator = pages as Generator;
+            if (generator != null)
             {
-                action = "query",
-                prop = "info|revisions",
-                rvprop = "ids|timestamp|flags|comment|user|contentmodel|sha1|content",
-                inprop = needFullRefresh ? "protection" : null,
-                maxlag = 5,
-                titles = Title
-            });
-            // TODO Cache content
-            var prop = ((JObject) jobj["query"]["pages"]).Properties().First();
-            //var newId = Convert.ToInt32(prop.Name);
-            // Update page info by the way.
-            LoadPageInfo(prop, needFullRefresh);
-            var rev = (JObject) prop.Value["revisions"]?.FirstOrDefault();
-            if (rev != null)
-            {
-                LoadLastRevision(rev);
+                throw new NotImplementedException();
             }
             else
             {
-                LastRevision = null;
-                LastRevisionId = 0;
+                foreach (var sitePages in  pages.GroupBy(p => p.Site))
+                {
+                    var titleLimit = sitePages.Key.UserInfo.HasRight(UserRights.ApiHighLimits)
+                        ? 500
+                        : 50;
+                    foreach (var partition in sitePages.Partition(titleLimit).Select(partition => partition.ToList()))
+                    {
+                        sitePages.Key.Logger?.Trace($"Loading information of {partition.Count} pages.");
+                        var jobj = await sitePages.Key.WikiClient.GetJsonAsync(new
+                        {
+                            action = "query",
+                            prop = "info" + (fetchContent ? "|revisions" : null),
+                            rvprop = fetchContent ? "ids|timestamp|flags|comment|user|contentmodel|sha1|content" : null,
+                            inprop = "protection",
+                            maxlag = 5,
+                            titles = string.Join("|", partition.Select(p => p.Title)),
+                        });
+                        var normalized = jobj["query"]["normalized"]?.ToDictionary(n => (string) n["from"],
+                            n => (string) n["to"]);
+                        var pageInfoDict = ((JObject) jobj["query"]["pages"]).Properties()
+                            .ToDictionary(p => p.Value["title"]);
+                        foreach (var page in partition)
+                        {
+                            if (normalized?.ContainsKey(page.Title) ?? false)
+                                page.Title = normalized[page.Title];
+                            var pageInfo = pageInfoDict[page.Title];
+                            page.LoadPageInfo(pageInfo);
+                            if (fetchContent)
+                            {
+                                // TODO Cache content
+                                var rev = (JObject) pageInfo.Value["revisions"]?.FirstOrDefault();
+                                if (rev != null)
+                                {
+                                    page.LoadLastRevision(rev);
+                                }
+                                else
+                                {
+                                    // No revisions available.
+                                    page.LastRevision = null;
+                                    page.LastRevisionId = 0;
+                                }
+                            }
+                        }
+                    }
+                }
             }
+        }
+
+        /// <summary>
+        /// Fetch information for one or more pages.
+        /// This overload will not fetch content.
+        /// </summary>
+        public Task RefreshAsync()
+        {
+            return RefreshAsync(false);
+        }
+
+        /// <summary>
+        /// Fetch information for one or more pages.
+        /// </summary>
+        /// <param name="fetchContent">Whether to fetch latest revision and its content of the pages.</param>
+        public Task RefreshAsync(bool fetchContent)
+        {
+            return RefreshAsync(new[] {this}, fetchContent);
         }
 
         #endregion
@@ -267,6 +316,7 @@ namespace WikiClientLibrary
         /// Submits content contained in <see cref="Content"/>, making edit to the page.
         /// (MediaWiki 1.16)
         /// </summary>
+        /// <returns><c>true</c> if page content has been changed; <c>false</c> otherwise.</returns>
         /// <remarks>
         /// This action will refill <see cref="Id" />, <see cref="Title"/>,
         /// <see cref="ContentModel"/>, <see cref="LastRevisionId"/>, and invalidates
@@ -276,7 +326,7 @@ namespace WikiClientLibrary
         /// </remarks>
         /// <exception cref="OperationConflictException">Edit conflict detected.</exception>
         /// <exception cref="UnauthorizedOperationException">You have no rights to edit the page.</exception>
-        public async Task UpdateContentAsync(string summary, bool minor, bool bot, AutoWatchBehavior watch)
+        public async Task<bool> UpdateContentAsync(string summary, bool minor, bool bot, AutoWatchBehavior watch)
         {
             var tokenTask = Site.GetTokenAsync("edit");
             await WikiClient.WaitForThrottleAsync();
@@ -317,20 +367,19 @@ namespace WikiClientLibrary
             var result = (string) jedit["result"];
             if (result == "Success")
             {
+                if (jedit["nochange"] != null) return false;
                 ContentModel = (string) jedit["contentmodel"];
                 LastRevisionId = (int) jedit["newrevid"];
                 Id = (int) jedit["pageid"];
                 Title = (string) jedit["title"];
+                return true;
             }
-            else
-            {
-                throw new OperationFailedException(result, (string) null);
-            }
+            throw new OperationFailedException(result, (string) null);
         }
 
         #endregion
 
-#region Management
+        #region Management
 
         /// <summary>
         /// Get token and wait for a while.
@@ -411,7 +460,7 @@ namespace WikiClientLibrary
                 }
             }
             var fromTitle = (string) jresult["move"]["from"];
-            var toTitle = (string)jresult["move"]["to"];
+            var toTitle = (string) jresult["move"]["to"];
             Site.Logger.Info($"Page {fromTitle} has been moved to {toTitle} .");
             Title = toTitle;
         }
@@ -447,7 +496,7 @@ namespace WikiClientLibrary
             {
                 switch (ex.ErrorCode)
                 {
-                    case "cantdelete":      // Couldn't delete "title". Maybe it was deleted already by someone else
+                    case "cantdelete": // Couldn't delete "title". Maybe it was deleted already by someone else
                     case "missingtitle":
                         return false;
                     case "permissiondenied":
@@ -455,7 +504,7 @@ namespace WikiClientLibrary
                 }
                 throw;
             }
-            var title = (string)jresult["delete"]["title"];
+            var title = (string) jresult["delete"]["title"];
             Site.Logger.Info($"Page {title} has been deleted.");
             return true;
         }
@@ -509,6 +558,7 @@ namespace WikiClientLibrary
         /// Use the preference settings. (watchlist=preferences)
         /// </summary>
         Default = 0,
+
         /// <summary>
         /// Do not change watchlist.
         /// </summary>
@@ -524,24 +574,42 @@ namespace WikiClientLibrary
     public enum PageMovingOptions
     {
         None = 0,
+
         /// <summary>
         /// Do not attempt to move talk pages.
         /// </summary>
         LeaveTalk = 1,
+
         /// <summary>
         /// Move subpages, if applicable.
         /// </summary>
         /// <remarks>This is usually not recommended because you still cannot overwrite existing subpages.</remarks>
         MoveSubpages = 2,
+
         /// <summary>
         /// Don't create a redirect. Requires the suppressredirect right,
         /// which by default is granted only to bots and sysops
         /// </summary>
         NoRedirect = 4,
+
         /// <summary>
         /// Ignore any warnings.
         /// </summary>
         IgnoreWarnings = 8,
+    }
+
+    /// <summary>
+    /// Options for refreshing a <see cref="Page"/> object.
+    /// </summary>
+    [Flags]
+    public enum PageQueryOptions
+    {
+        None = 0,
+
+        /// <summary>
+        /// Resolves directs automatically. This may later change <see cref="Page.Title"/> .
+        /// </summary>
+        ResolveRedirects = 1,
     }
 
     /// <summary>

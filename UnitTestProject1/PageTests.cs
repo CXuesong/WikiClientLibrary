@@ -38,11 +38,11 @@ namespace UnitTestProject1
         }
 
         [TestMethod]
-        public void WpTest2PageReadTest()
+        public void WpTest2PageReadTest1()
         {
             var site = WpTestSite;
             var page = new Page(site, "project:sandbox");
-            AwaitSync(page.RefreshContentAsync());
+            AwaitSync(page.RefreshAsync(true));
             ShallowTrace(page);
             Assert.IsTrue(page.Exists);
             Assert.AreEqual("Wikipedia:Sandbox", page.Title);
@@ -52,7 +52,7 @@ namespace UnitTestProject1
             Assert.IsTrue(page.Content.Length <= page.ContentLength);
             Trace.WriteLine(new string('-', 10));
             page = new Page(site, "file:inexistent_file.jpg");
-            AwaitSync(page.RefreshInfoAsync());
+            AwaitSync(page.RefreshAsync());
             ShallowTrace(page);
             Assert.IsFalse(page.Exists);
             Assert.AreEqual("File:Inexistent file.jpg", page.Title);
@@ -61,12 +61,22 @@ namespace UnitTestProject1
         }
 
         [TestMethod]
+        public void WpTest2PageReadTest2()
+        {
+            var site = WpTestSite;
+            var search = AwaitSync(site.OpenSearchAsync("A", 10));
+            var pages = search.Select(e => new Page(site, e.Title)).ToList();
+            AwaitSync(Page.RefreshAsync(pages));
+            ShallowTrace(pages);
+        }
+
+        [TestMethod]
         public void WikiaPageReadTest()
         {
             var site = WikiaTestSite;
             var page = new Page(site, "Project:Sandbox");
-            AwaitSync(page.RefreshInfoAsync());
-            AwaitSync(page.RefreshContentAsync());
+            AwaitSync(page.RefreshAsync());
+            AwaitSync(page.RefreshAsync(true));
             Assert.AreEqual("Mediawiki 1.19 test Wiki:Sandbox", page.Title);
             Assert.AreEqual(4, page.NamespaceId);
             ShallowTrace(page);
@@ -78,7 +88,7 @@ namespace UnitTestProject1
             AssertModify();
             var site = WpTestSite;
             var page = new Page(site, "project:sandbox");
-            AwaitSync(page.RefreshContentAsync());
+            AwaitSync(page.RefreshAsync(true));
             page.Content += "\n\nTest from WikiClientLibrary.";
             Trace.WriteLine(page.Content);
             AwaitSync(page.UpdateContentAsync(SummaryPrefix + "Edit sandbox page."));
@@ -91,7 +101,7 @@ namespace UnitTestProject1
             AssertModify();
             var site = WpTestSite;
             var page = new Page(site, "Test page");
-            AwaitSync(page.RefreshContentAsync());
+            AwaitSync(page.RefreshAsync(true));
             Assert.IsTrue(page.Protections.Any(), "To perform this test, the working page should be protected.");
             page.Content += "\n\nTest from WikiClientLibrary.";
             AwaitSync(page.UpdateContentAsync(SummaryPrefix + "Attempt to edit a protected page."));
@@ -104,7 +114,7 @@ namespace UnitTestProject1
             AssertModify();
             var site = WpTestSite;
             var page = new Page(site, "Special:");
-            AwaitSync(page.RefreshContentAsync());
+            AwaitSync(page.RefreshAsync(true));
             page.Content += "\n\nTest from WikiClientLibrary.";
             AwaitSync(page.UpdateContentAsync(SummaryPrefix + "Attempt to edit a special page."));
         }
@@ -133,7 +143,7 @@ namespace UnitTestProject1
             var site = WikiaTestSite;
             AssertLoggedIn(site);
             var page = new Page(site, "project:sandbox");
-            AwaitSync(page.RefreshContentAsync());
+            AwaitSync(page.RefreshAsync(true));
             page.Content += "\n\nTest from WikiClientLibrary.";
             Trace.WriteLine(page.Content);
             AwaitSync(page.UpdateContentAsync(SummaryPrefix + "Edit sandbox page."));
