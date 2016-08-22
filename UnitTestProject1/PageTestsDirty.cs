@@ -59,7 +59,7 @@ The original title of the page is '''{title}'''.
         {
             AssertModify(); // We're doing dirty work in this calss.
             // Prepare test environment.
-            site = CreateWikiSite(EntryPointWikipediaTest2);
+            site = CreateWikiSite(CredentialManager.DirtyTestsEntryPointUrl);
             CredentialManager.Login(site);
             GetOrCreatePage(site, TestPage1Title);
             GetOrCreatePage(site, TestPage11Title);
@@ -73,7 +73,7 @@ The original title of the page is '''{title}'''.
         }
 
         [TestMethod]
-        public void WpTest2PageMoveTest1()
+        public void PageMoveTest1()
         {
             var page = new Page(site, TestPage11Title);
             AwaitSync(page.MoveAsync(TestPage12Title, SummaryPrefix + "Move a page."));

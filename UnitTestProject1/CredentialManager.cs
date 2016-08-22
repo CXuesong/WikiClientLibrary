@@ -11,6 +11,11 @@ namespace UnitTestProject1
     internal static partial class CredentialManager
     {
         /// <summary>
+        /// The API EntryPoint used for performing dirty tests.
+        /// </summary>
+        public static string DirtyTestsEntryPointUrl { get; private set; }
+
+        /// <summary>
         /// When implemented in your own credential file,
         /// login into specific site.
         /// You can use <see cref="WikiClient.EndPointUrl"/> 
@@ -18,6 +23,12 @@ namespace UnitTestProject1
         /// </summary>
         /// <exception cref="NotSupportedException">Logging into the site specified is not supported yet.</exception>
         static partial void LoginCore(Site site);
+
+        /// <summary>
+        /// Initialize confidential information.
+        /// </summary>
+        /// <remarks>You can initialize <see cref="DirtyTestsEntryPointUrl"/> in this method.</remarks>
+        static partial void Initialize();
 
         /// <summary>
         /// Invoked by the implementation of <see cref="LoginCore"/>,
@@ -44,6 +55,11 @@ namespace UnitTestProject1
         public static void Logout(Site site)
         {
             Utility.AwaitSync(site.LogoutAsync());
+        }
+
+        static CredentialManager()
+        {
+            Initialize();
         }
     }
 }
