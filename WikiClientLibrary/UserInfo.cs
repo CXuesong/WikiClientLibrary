@@ -55,6 +55,23 @@ namespace WikiClientLibrary
 
         [JsonProperty]
         public IReadOnlyCollection<string> Rights { get; private set; }
+
+        /// <summary>
+        /// Asserts the user is in certain group.
+        /// </summary>
+        /// <param name="groupName">The group user should be in.</param>
+        /// <exception cref="UnauthorizedOperationException">The user is not in the specific group.</exception>
+        public void AssertInGroup(string groupName)
+        {
+            if (groupName == null) throw new ArgumentNullException(nameof(groupName));
+            if (!Groups.Contains(groupName))
+                throw new UnauthorizedOperationException($"Current user is not in the group:{groupName}.");
+        }
+
+        internal UserInfo()
+        {
+            
+        }
     }
 
     public static class UserGroups

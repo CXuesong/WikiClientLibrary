@@ -11,6 +11,9 @@ using WikiClientLibrary;
 
 namespace UnitTestProject1
 {
+    /// <summary>
+    /// The tests in this class requires a site administrator (i.e. sysop) account.
+    /// </summary>
     [TestClass]
     public class PageTestsDirty
     {
@@ -61,6 +64,7 @@ The original title of the page is '''{title}'''.
             // Prepare test environment.
             site = CreateWikiSite(CredentialManager.DirtyTestsEntryPointUrl);
             CredentialManager.Login(site);
+            site.UserInfo.AssertInGroup("sysop");
             GetOrCreatePage(site, TestPage1Title);
             GetOrCreatePage(site, TestPage11Title);
             GetOrCreatePage(site, TestPage2Title);
@@ -73,10 +77,13 @@ The original title of the page is '''{title}'''.
         }
 
         [TestMethod]
-        public void PageMoveTest1()
+        public void PageMoveAndDeleteTest1()
         {
-            var page = new Page(site, TestPage11Title);
-            AwaitSync(page.MoveAsync(TestPage12Title, SummaryPrefix + "Move a page.", PageMovingOptions.IgnoreWarnings));
+            var page1 = new Page(site, TestPage11Title);
+            var page2 = new Page(site, TestPage12Title);
+            AwaitSync(page2.DeleteAsync(SummaryPrefix + "Delete the move destination."));
+            AwaitSync(page1.MoveAsync(TestPage12Title, SummaryPrefix + "Move a page.", PageMovingOptions.IgnoreWarnings));
+            AwaitSync(page2.DeleteAsync(SummaryPrefix + "Delete the moved page."));
         }
     }
 }

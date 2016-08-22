@@ -308,7 +308,7 @@ namespace WikiClientLibrary
                 switch (ex.ErrorCode)
                 {
                     case "protectedpage":
-                        throw new UnauthorizedOperationException(ex.ErrorCode, ex.ErrorMessage);
+                        throw new UnauthorizedOperationException(ex);
                     default:
                         throw;
                 }
@@ -326,6 +326,20 @@ namespace WikiClientLibrary
             {
                 throw new OperationFailedException(result, (string) null);
             }
+        }
+
+        #endregion
+
+#region Management
+
+        /// <summary>
+        /// Get token and wait for a while.
+        /// </summary>
+        private async Task<string> GetTokenAndWaitAsync(string tokenType)
+        {
+            var tokenTask = Site.GetTokenAsync("csrf");
+            await WikiClient.WaitForThrottleAsync();
+            return await tokenTask;
         }
 
         /// <summary>
@@ -359,9 +373,7 @@ namespace WikiClientLibrary
         {
             if (newTitle == null) throw new ArgumentNullException(nameof(newTitle));
             if (newTitle == Title) return;
-            var tokenTask = Site.GetTokenAsync("csrf");
-            await WikiClient.WaitForThrottleAsync();
-            var token = await tokenTask;
+            var token = await GetTokenAndWaitAsync("csrf");
             // When passing this to the Edit API, always pass the token parameter last
             // (or at least after the text parameter). That way, if the edit gets interrupted,
             // the token won't be passed and the edit will fail.
@@ -379,6 +391,7 @@ namespace WikiClientLibrary
                     movesubpages = (options & PageMovingOptions.MoveSubpages) == PageMovingOptions.MoveSubpages,
                     noredirect = (options & PageMovingOptions.NoRedirect) == PageMovingOptions.NoRedirect,
                     ignorewarnings = (options & PageMovingOptions.IgnoreWarnings) == PageMovingOptions.IgnoreWarnings,
+                    watchlist = watch,
                     reason = reason,
                     token = token,
                 });
@@ -390,14 +403,61 @@ namespace WikiClientLibrary
                     case "cantmove":
                     case "protectedpage":
                     case "protectedtitle":
-                        throw new UnauthorizedOperationException(ex.ErrorCode, ex.ErrorMessage);
+                        throw new UnauthorizedOperationException(ex);
                     default:
                         if (ex.ErrorCode.StartsWith("cantmove"))
-                            throw new UnauthorizedOperationException(ex.ErrorCode, ex.ErrorMessage);
+                            throw new UnauthorizedOperationException(ex);
                         throw;
                 }
             }
-            Title = (string) jresult["move"]["to"];
+            var fromTitle = (string) jresult["move"]["to"];
+            var toTitle = (string)jresult["move"]["to"];
+            Site.Logger.Info($"Page {fromTitle} has been moved to {toTitle} .");
+            Title = toTitle;
+        }
+
+        /// <summary>
+        /// Deletes the current page.
+        /// </summary>
+        public Task<bool> DeleteAsync(string reason)
+        {
+            return DeleteAsync(reason, AutoWatchBehavior.Default);
+        }
+
+        /// <summary>
+        /// Deletes the current page.
+        /// </summary>
+        public async Task<bool> DeleteAsync(string reason, AutoWatchBehavior watch)
+        {
+            var token = await GetTokenAndWaitAsync("csrf");
+            JToken jresult;
+            try
+            {
+                jresult = await WikiClient.GetJsonAsync(new
+                {
+                    action = "delete",
+                    title = Title,
+                    maxlag = 5,
+                    watchlist = watch,
+                    reason = reason,
+                    token = token,
+                });
+            }
+            catch (OperationFailedException ex)
+            {
+                // Couldn't delete "title". Maybe it was deleted already by someone else
+                switch (ex.ErrorCode)
+                {
+                    case "cantdelete":
+                        return false;
+                    case "permissiondenied":
+                        throw new UnauthorizedOperationException(ex);
+                }
+                throw;
+            }
+            var title = (string)jresult["delete"]["title"];
+            Site.Logger.Info($"Page {title} has been deleted.");
+            return true;
         }
 
         /// <summary>
@@ -419,12 +479,13 @@ namespace WikiClientLibrary
             }
             catch (OperationFailedException ex)
             {
-                if (ex.ErrorCode == "cantpurge") throw new UnauthorizedOperationException(ex.ErrorCode, ex.ErrorMessage);
+                if (ex.ErrorCode == "cantpurge") throw new UnauthorizedOperationException(ex);
                 throw;
             }
             var page = jresult["purge"].First();
             return page["purged"] != null;
         }
+
         #endregion
 
         /// <summary>

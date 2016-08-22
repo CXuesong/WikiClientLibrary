@@ -52,12 +52,18 @@ namespace UnitTestProject1
         {
             var client = CreateWikiClient(entryPointUrl);
             var site = AwaitSync(Site.GetAsync(client));
+            site.Logger = new TraceLogger();
             return site;
         }
 
         private class TraceLogger : ILogger
         {
             public void Trace(string message)
+            {
+                System.Diagnostics.Trace.WriteLine(message);
+            }
+
+            public void Info(string message)
             {
                 System.Diagnostics.Trace.WriteLine(message);
             }
