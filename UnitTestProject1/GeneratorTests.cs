@@ -43,6 +43,8 @@ namespace UnitTestProject1
             {
                 Trace.WriteLine(string.Format(lineFormat, page.Title, page.ContentLength, page.LastRevisionId,
                     page.LastTouched));
+                if (page.Content != null)
+                    Trace.WriteLine(page.Content.Length > 100 ? page.Content.Substring(100) + "..." : page.Content);
             }
         }
 
@@ -52,6 +54,9 @@ namespace UnitTestProject1
             var site = WpTestSite;
             var generator = new AllPagesGenerator(site);
             var pages = generator.EnumPages().Take(2000).ToList();
+            TracePages(pages);
+            generator = new AllPagesGenerator(site) {StartTitle = "C", PagingSize = 20};
+            pages = generator.EnumPages(true).Take(100).ToList();
             TracePages(pages);
         }
 

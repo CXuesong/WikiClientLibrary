@@ -5,6 +5,7 @@
 using System;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
+using System.Threading.Tasks;
 using static UnitTestProject1.Utility;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using WikiClientLibrary;

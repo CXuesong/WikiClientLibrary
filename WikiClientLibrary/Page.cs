@@ -469,6 +469,9 @@ namespace WikiClientLibrary
                 throw;
             }
             var title = (string) jresult["delete"]["title"];
+            Exists = false;
+            LastRevision = null;
+            LastRevisionId = 0;
             Site.Logger.Info($"Page {title} has been deleted.");
             return true;
         }

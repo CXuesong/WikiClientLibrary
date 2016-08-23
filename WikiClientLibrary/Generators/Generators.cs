@@ -61,7 +61,7 @@ namespace WikiClientLibrary.Generators
                 {
                     // Prepare for the next page of list.
                     foreach (var p in continuation.Properties())
-                        valuesDict[p.Name] = (string) p.Value;
+                        valuesDict[p.Name] = p.Value.ToString();
                 }
                 else
                 {
