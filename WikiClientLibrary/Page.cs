@@ -2,6 +2,7 @@
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Dynamic;
 using System.Linq;
 using System.Runtime.Serialization;
 using System.Text;
@@ -9,6 +10,7 @@ using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using WikiClientLibrary.Client;
+using WikiClientLibrary.Generators;
 
 //TODO IMPLEMENT PageQueryOptions
 //I'm going to merge single-page query into a special case of multi-page query.
@@ -28,8 +30,13 @@ namespace WikiClientLibrary
             WikiClient = Site.WikiClient;
             Debug.Assert(WikiClient != null);
             Title = title;
+        }
+
+        private Page(Site site, JProperty prop, bool loadContent)
+        {
             if (site == null) throw new ArgumentNullException(nameof(site));
-            if (title == null) throw new ArgumentNullException(nameof(title));
+            LoadPageInfo(prop);
+            if (loadContent) LoadLastRevision(prop.Value);
         }
 
         /// <summary>
@@ -113,6 +120,8 @@ namespace WikiClientLibrary
 
         #region Query
 
+        private static readonly Page[] EmptyPages = new Page[0];
+
         /// <summary>
         /// Loads page information from JSON.
         /// </summary>
@@ -159,87 +168,42 @@ namespace WikiClientLibrary
         }
 
         /// <summary>
-        /// Loads last revision from JSON.
+        /// Loads the first revision from JSON, assuming it's the latest revision.
         /// </summary>
-        /// <param name="revision">query.pages.revisions.xxx property.</param>
-        internal void LoadLastRevision(JObject revision)
+        /// <param name="pageInfo">query.pages.xxx property value.</param>
+        internal void LoadLastRevision(JToken pageInfo)
         {
-            LastRevision = revision.ToObject<Revision>(Utility.WikiJsonSerializer);
-            LastRevisionId = LastRevision.Id;
-            Content = LastRevision.Content;
-        }
-
-        /// <summary>
-        /// Fetch information for one or more pages.
-        /// This overload will not fetch content.
-        /// </summary>
-        /// <param name="pages">Pages to be fetched.</param>
-        public static Task RefreshAsync(IEnumerable<Page> pages)
-        {
-            return RefreshAsync(pages, false);
-        }
-
-        /// <summary>
-        /// Fetch information for one or more pages.
-        /// </summary>
-        /// <param name="pages">Pages to be fetched.</param>
-        /// <param name="fetchContent">Whether to fetch latest revision and its content of the pages.</param>
-        public static async Task RefreshAsync(IEnumerable<Page> pages, bool fetchContent)
-        {
-            if (pages == null) throw new ArgumentNullException(nameof(pages));
-            var generator = pages as Generator;
-            if (generator != null)
+            var revision = (JObject) pageInfo["revisions"]?.FirstOrDefault();
+            if (revision != null)
             {
-                throw new NotImplementedException();
+                LastRevision = revision.ToObject<Revision>(Utility.WikiJsonSerializer);
+                LastRevisionId = LastRevision.Id;
+                Content = LastRevision.Content;
             }
             else
             {
-                foreach (var sitePages in  pages.GroupBy(p => p.Site))
-                {
-                    var titleLimit = sitePages.Key.UserInfo.HasRight(UserRights.ApiHighLimits)
-                        ? 500
-                        : 50;
-                    foreach (var partition in sitePages.Partition(titleLimit).Select(partition => partition.ToList()))
-                    {
-                        sitePages.Key.Logger?.Trace($"Loading information of {partition.Count} pages.");
-                        var jobj = await sitePages.Key.WikiClient.GetJsonAsync(new
-                        {
-                            action = "query",
-                            prop = "info" + (fetchContent ? "|revisions" : null),
-                            rvprop = fetchContent ? "ids|timestamp|flags|comment|user|contentmodel|sha1|content" : null,
-                            inprop = "protection",
-                            maxlag = 5,
-                            titles = string.Join("|", partition.Select(p => p.Title)),
-                        });
-                        var normalized = jobj["query"]["normalized"]?.ToDictionary(n => (string) n["from"],
-                            n => (string) n["to"]);
-                        var pageInfoDict = ((JObject) jobj["query"]["pages"]).Properties()
-                            .ToDictionary(p => p.Value["title"]);
-                        foreach (var page in partition)
-                        {
-                            if (normalized?.ContainsKey(page.Title) ?? false)
-                                page.Title = normalized[page.Title];
-                            var pageInfo = pageInfoDict[page.Title];
-                            page.LoadPageInfo(pageInfo);
-                            if (fetchContent)
-                            {
-                                // TODO Cache content
-                                var rev = (JObject) pageInfo.Value["revisions"]?.FirstOrDefault();
-                                if (rev != null)
-                                {
-                                    page.LoadLastRevision(rev);
-                                }
-                                else
-                                {
-                                    // No revisions available.
-                                    page.LastRevision = null;
-                                    page.LastRevisionId = 0;
-                                }
-                            }
-                        }
-                    }
-                }
+                // No revisions available.
+                LastRevision = null;
+                LastRevisionId = 0;
             }
+        }
+
+        /// <summary>
+        /// Creates a list of <see cref="Page"/> based on JSON query result.
+        /// </summary>
+        /// <param name="site">A <see cref="Site"/> object.</param>
+        /// <param name="queryNode">The <c>qurey</c> node value object of JSON result.</param>
+        /// <param name="loadContent">Whther to load the first revision and treat it as the lastest content of the page.</param>
+        /// <returns>Retrived pages.</returns>
+        internal static IList<Page> FromJsonQueryResult(Site site, JObject queryNode, bool loadContent)
+        {
+            if (site == null) throw new ArgumentNullException(nameof(site));
+            if (queryNode == null) throw new ArgumentNullException(nameof(queryNode));
+            var pages = (JObject) queryNode["pages"];
+            if (pages == null) return EmptyPages;
+            site.Logger?.Trace($"Fetching {pages.Count} pages.");
+            return pages.Properties().Select(page =>
+                new Page(site, page, loadContent)).ToList();
         }
 
         /// <summary>
@@ -257,7 +221,7 @@ namespace WikiClientLibrary
         /// <param name="fetchContent">Whether to fetch latest revision and its content of the pages.</param>
         public Task RefreshAsync(bool fetchContent)
         {
-            return RefreshAsync(new[] {this}, fetchContent);
+            return QueryManager.RefreshPagesAsync(new[] {this}, fetchContent);
         }
 
         #endregion

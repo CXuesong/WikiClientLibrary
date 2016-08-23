@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
-using System.Reactive.Linq;
-using System.Reactive.Subjects;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Newtonsoft.Json.Linq;
 using WikiClientLibrary.Client;
 
 namespace WikiClientLibrary.Generators
@@ -14,42 +14,108 @@ namespace WikiClientLibrary.Generators
     /// <summary>
     /// Represents a generator (or iterator) of <see cref="Page"/>.
     /// </summary>
-    public abstract class PageGenerator : IObservable<Page>
+    public abstract class PageGenerator
     {
         public Site Site { get; }
 
         public WikiClient Client => Site.WikiClient;
 
-        /// <summary>
-        /// The IObservable used to publish pages.
-        /// </summary>
-        private IObservable<Page> myObservable;
-
         public PageGenerator(Site site)
         {
             if (site == null) throw new ArgumentNullException(nameof(site));
             Site = site;
-            myObservable = Observable.Create((Func<IObserver<Page>, CancellationToken, Task>)SubscribeAsync);
         }
-
-        /// <summary>
-        /// 通知提供程序：某观察程序将要接收通知。
-        /// </summary>
-        /// <returns>
-        /// 对允许观察者在提供程序发送完通知前停止接收这些通知的接口的引用。
-        /// </returns>
-        /// <param name="observer">要接收通知的对象。</param>
-        public IDisposable Subscribe(IObserver<Page> observer)
-        {
-            return myObservable.Subscribe(observer);
-        }
-
-        protected abstract Task SubscribeAsync(IObserver<Page> observer, CancellationToken cancellationToken);
 
         /// <summary>
         /// When overridden, fills generator parameters for action=query request.
         /// </summary>
-        /// <param name="queryDictionary">The dictioanry containning request value pairs.</param>
-        protected abstract void FillQueryRequestParams(IDictionary<string, string> queryDictionary);
+        /// <returns>The dictioanry containning request value pairs.</returns>
+        protected abstract IEnumerable<KeyValuePair<string, string>> GetGeneratorParams();
+
+        /// <summary>
+        /// Gets JSON result of the query operation with the specific generator.
+        /// </summary>
+        /// <returns>The root of JSON result. You may need to access query result by ["query"].</returns>
+        internal IAsyncEnumerable<JObject> EnumJsonAsync(IEnumerable<KeyValuePair<string, string>> overridingParams)
+        {
+            var valuesDict = new Dictionary<string, string>
+            {
+                {"action", "query"},
+                {"maxlag", "5"}
+            };
+            foreach (var v in GetGeneratorParams())
+                valuesDict[v.Key] = v.Value;
+            foreach (var v in overridingParams)
+                valuesDict[v.Key] = v.Value;
+            Debug.Assert(valuesDict["action"] == "query");
+            var eofReached = false;
+            var resultCounter = 0;
+            return new DelegateAsyncEnumerable<JObject>(async cancellation =>
+            {
+                if (eofReached) return null;
+                cancellation.ThrowIfCancellationRequested();
+                Site.Logger?.Trace(ToString() + ": Loading pages from #" + resultCounter);
+                var jresult = await Client.GetJsonAsync(valuesDict);
+                var continuation = (JObject)(jresult["continue"] ?? jresult["query-continue"]);
+                if (continuation != null)
+                {
+                    // Prepare for the next page of list.
+                    foreach (var p in continuation.Properties())
+                        valuesDict[p.Name] = (string) p.Value;
+                }
+                else
+                {
+                    eofReached = true;
+                }
+                resultCounter += ((JObject) jresult["query"]).Count;
+                cancellation.ThrowIfCancellationRequested();
+                return Tuple.Create((JObject) jresult, true);
+            });
+        }
+
+        /// <summary>
+        /// Synchornously generate the sequence of pages.
+        /// </summary>
+        public IEnumerable<Page> EnumPages()
+        {
+            return EnumPages(false);
+        }
+
+        /// <summary>
+        /// Synchornously generate the sequence of pages.
+        /// </summary>
+        /// <param name="fetchContent">Whether to fetch the last revision and content of the page.</param>
+        public IEnumerable<Page> EnumPages(bool fetchContent)
+        {
+            return EnumPagesAsync(fetchContent).ToEnumerable();
+        }
+
+        /// <summary>
+        /// Asynchornously generate the sequence of pages.
+        /// </summary>
+        public IAsyncEnumerable<Page> EnumPagesAsync()
+        {
+            return EnumPagesAsync(false);
+        }
+
+        /// <summary>
+        /// Asynchornously generate the sequence of pages.
+        /// </summary>
+        /// <param name="fetchContent">Whether to fetch the last revision and content of the page.</param>
+        public IAsyncEnumerable<Page> EnumPagesAsync(bool fetchContent)
+        {
+            return QueryManager.EnumPagesAsync(this, fetchContent);
+        }
+
+        /// <summary>
+        /// 返回表示当前对象的字符串。
+        /// </summary>
+        /// <returns>
+        /// 表示当前对象的字符串。
+        /// </returns>
+        public override string ToString()
+        {
+            return GetType().Name;
+        }
     }
 }

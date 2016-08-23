@@ -10,37 +10,40 @@ namespace WikiClientLibrary.Generators
 {
     public class AllPagesGenerator : PageGenerator
     {
-        public int NamespaceId { get; }
-        public string StartTitle { get; }
+        public int NamespaceId { get; set; } = 0;
 
-        protected override Task SubscribeAsync(IObserver<Page> observer, CancellationToken cancellationToken)
-        {
-            //var jresult = Client.GetJsonAsync(new
-            //{
-            //    action = "query",
-            //    list = "allpages",
-            //    apfrom = ""
-            //})
-            throw new NotImplementedException();
-        }
+        public string StartTitle { get; set; } = "!";
+
+        /// <summary>
+        /// Maximum items returned per request.
+        /// </summary>
+        /// <value>
+        /// Maximum count of items returned per request.
+        /// <c>null</c> if using the default limit.
+        /// (5000 for bots and 500 for users.)
+        /// </value>
+        public int? PagingSize { get; set; }
 
         /// <summary>
         /// When overridden, fills generator parameters for action=query request.
         /// </summary>
-        /// <param name="queryDictionary">The dictioanry containning request value pairs.</param>
-        protected override void FillQueryRequestParams(IDictionary<string, string> queryDictionary)
+        /// <returns>The dictioanry containning request value pairs.</returns>
+        protected override IEnumerable<KeyValuePair<string, string>> GetGeneratorParams()
         {
-            throw new NotImplementedException();
+            return new Dictionary<string, string>
+            {
+                {"generator", "allpages"},
+                {"gapfrom", StartTitle},
+                {
+                    "gaplimit", Convert.ToString(PagingSize ?? (
+                        Site.UserInfo.HasRight(UserRights.ApiHighLimits) ? 5000 : 500))
+                },
+                {"gapnamespace", Convert.ToString(NamespaceId)},
+            };
         }
 
-        public AllPagesGenerator(Site site, int namespaceId) : this(site, namespaceId, "!")
+        public AllPagesGenerator(Site site) : base(site)
         {
-        }
-
-        public AllPagesGenerator(Site site, int namespaceId, string startTitle) : base(site)
-        {
-            NamespaceId = namespaceId;
-            StartTitle = startTitle;
         }
     }
 }

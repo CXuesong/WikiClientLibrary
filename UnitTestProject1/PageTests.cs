@@ -66,7 +66,7 @@ namespace UnitTestProject1
             var site = WpTestSite;
             var search = AwaitSync(site.OpenSearchAsync("A", 10));
             var pages = search.Select(e => new Page(site, e.Title)).ToList();
-            AwaitSync(Page.RefreshAsync(pages));
+            AwaitSync(pages.RefreshAsync());
             ShallowTrace(pages);
         }
 
