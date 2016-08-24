@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using WikiClientLibrary.Client;
+using WikiClientLibrary.Generators;
 
 namespace WikiClientLibrary
 {
@@ -56,43 +57,55 @@ namespace WikiClientLibrary
             return IterateWikiStringValuePairs(values);
         }
 
+        private static string ToWikiQueryValue(object value)
+        {
+            if (value == null)
+                return null;
+            if (value is bool)
+            {
+                if ((bool) value) value = "";
+                else return null;
+            }
+            else if (value is AutoWatchBehavior)
+            {
+                switch ((AutoWatchBehavior)value)
+                {
+                    case AutoWatchBehavior.Default:
+                        value = "preferences";
+                        break;
+                    case AutoWatchBehavior.None:
+                        value = "nochange";
+                        break;
+                    case AutoWatchBehavior.Watch:
+                        value = "watch";
+                        break;
+                    case AutoWatchBehavior.Unwatch:
+                        value = "unwatch";
+                        break;
+                    default:
+                        throw new ArgumentOutOfRangeException(nameof(value), value, null);
+                }
+            }
+            else if (value is DateTime)
+            {
+                // ISO 8601
+                value = ((DateTime)value).ToString("yyyy-MM-ddTHH:mm:ssK");
+            }
+            return Convert.ToString(value);
+        }
+
         private static IEnumerable<KeyValuePair<string, string>> IterateWikiStringValuePairs(object values)
         {
             Debug.Assert(!(values is IEnumerable<KeyValuePair<string, string>>));
-            foreach (var p in values.GetType().GetRuntimeProperties())
-            {
-                var value = p.GetValue(values);
-                if (value == null) continue;
-                if (value is bool)
-                {
-                    if ((bool)value) value = "";
-                    else continue;
-                } else if (value is AutoWatchBehavior)
-                {
-                    switch ((AutoWatchBehavior)value)
-                    {
-                        case AutoWatchBehavior.Default:
-                            value = "preferences";
-                            break;
-                        case AutoWatchBehavior.None:
-                            value = "nochange";
-                            break;
-                        case AutoWatchBehavior.Watch:
-                            value = "watch";
-                            break;
-                        case AutoWatchBehavior.Unwatch:
-                            value = "unwatch";
-                            break;
-                        default:
-                            throw new ArgumentOutOfRangeException(p.Name, value, null);
-                    }
-                } else if (value is DateTime)
-                {
-                    // ISO 8601
-                    value = ((DateTime) value).ToString("yyyy-MM-ddTHH:mm:ssK");
-                }
-                yield return new KeyValuePair<string, string>(p.Name, Convert.ToString(value));
-            }
+            var dict = values as IDictionary<string, object>;
+            if (dict != null)
+                return from p in dict
+                    let value = ToWikiQueryValue(p.Value)
+                    where value != null
+                    select new KeyValuePair<string, string>(p.Key, value);
+            return from p in values.GetType().GetRuntimeProperties()
+                   let value = ToWikiQueryValue(p.GetValue(values))
+                   where value != null select new KeyValuePair<string, string>(p.Name, value);
         }
 
         /// <summary>
@@ -113,6 +126,22 @@ namespace WikiClientLibrary
                 }
             }
             if (list.Count > 0) yield return list;
+        }
+
+        public static string ToString(this PropertyFilterOption value,
+            string withValue, string withoutValue, string allValue = "all")
+        {
+            switch (value)
+            {
+                case PropertyFilterOption.Disable:
+                    return allValue;
+                case PropertyFilterOption.WithProperty:
+                    return withValue;
+                case PropertyFilterOption.WithoutProperty:
+                    return withoutValue;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(value), value, null);
+            }
         }
     }
 }

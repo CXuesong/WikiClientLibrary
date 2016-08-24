@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Dynamic;
 using System.Linq;
+using System.Reflection;
 using System.Runtime.Serialization;
 using System.Text;
 using System.Threading.Tasks;
@@ -32,11 +33,13 @@ namespace WikiClientLibrary
             Title = title;
         }
 
-        private Page(Site site, JProperty prop, bool loadContent)
+        internal Page(Site site)
         {
             if (site == null) throw new ArgumentNullException(nameof(site));
-            LoadPageInfo(prop);
-            if (loadContent) LoadLastRevision(prop.Value);
+            Site = site;
+            WikiClient = Site.WikiClient;
+            Debug.Assert(WikiClient != null);
+            Site = site;
         }
 
         /// <summary>
@@ -69,6 +72,7 @@ namespace WikiClientLibrary
 
         /// <summary>
         /// Gets whether the page exists.
+        /// For category, gets whether the categories description page exists.
         /// </summary>
         public bool Exists { get; private set; }
 
@@ -135,26 +139,31 @@ namespace WikiClientLibrary
             if (Id != 0 && !AreIdEquals(Id, id))
                 WikiClient.Logger?.Warn($"Detected page id changed: {Title}, {Id}");
             Id = id;
-            var page = prop.Value;
-            Title = (string) page["title"];
+            var page = (JObject) prop.Value;
+            OnLoadPageInfo(page);
+        }
+
+        protected virtual void OnLoadPageInfo(JObject jpage)
+        {
+            Title = (string)jpage["title"];
             // Invalid page title (like Special:)
-            if (page["invalid"] != null)
+            if (jpage["invalid"] != null)
             {
-                var reason = (string) page["invalidreason"];
+                var reason = (string)jpage["invalidreason"];
                 throw new OperationFailedException(reason);
             }
-            NamespaceId = (int) page["ns"];
-            Exists = page["missing"] == null;
-            ContentModel = (string) page["contentmodel"];
-            PageLanguage = (string) page["pagelanguage"];
+            NamespaceId = (int)jpage["ns"];
+            Exists = jpage["missing"] == null;
+            ContentModel = (string)jpage["contentmodel"];
+            PageLanguage = (string)jpage["pagelanguage"];
             if (Exists)
             {
-                ContentLength = (int) page["length"];
-                LastRevisionId = (int) page["lastrevid"];
-                LastTouched = (DateTime) page["touched"];
-                Protections = ((JArray) page["protection"]).ToObject<IReadOnlyCollection<ProtectionInfo>>(
+                ContentLength = (int)jpage["length"];
+                LastRevisionId = (int)jpage["lastrevid"];
+                LastTouched = (DateTime)jpage["touched"];
+                Protections = ((JArray)jpage["protection"]).ToObject<IReadOnlyCollection<ProtectionInfo>>(
                     Utility.WikiJsonSerializer);
-                RestrictionTypes = ((JArray) page["restrictiontypes"])?.ToObject<IReadOnlyCollection<string>>(
+                RestrictionTypes = ((JArray)jpage["restrictiontypes"])?.ToObject<IReadOnlyCollection<string>>(
                     Utility.WikiJsonSerializer);
             }
             else
@@ -171,7 +180,7 @@ namespace WikiClientLibrary
         /// Loads the first revision from JSON, assuming it's the latest revision.
         /// </summary>
         /// <param name="pageInfo">query.pages.xxx property value.</param>
-        internal void LoadLastRevision(JToken pageInfo)
+        internal void LoadLastRevision(JObject pageInfo)
         {
             var revision = (JObject) pageInfo["revisions"]?.FirstOrDefault();
             if (revision != null)
@@ -188,6 +197,14 @@ namespace WikiClientLibrary
             }
         }
 
+        internal static T CreateInstance<T>(Site site) where T : Page
+        {
+            var t = typeof (T);
+            if (t == typeof (Page)) return new Page(site) as T;
+            if (t == typeof (Category)) return new Category(site) as T;
+            throw new NotSupportedException($"Can not create instance of {t} .");
+        }
+
         /// <summary>
         /// Creates a list of <see cref="Page"/> based on JSON query result.
         /// </summary>
@@ -195,15 +212,21 @@ namespace WikiClientLibrary
         /// <param name="queryNode">The <c>qurey</c> node value object of JSON result.</param>
         /// <param name="loadContent">Whther to load the first revision and treat it as the lastest content of the page.</param>
         /// <returns>Retrived pages.</returns>
-        internal static IList<Page> FromJsonQueryResult(Site site, JObject queryNode, bool loadContent)
+        internal static IList<T> FromJsonQueryResult<T>(Site site, JObject queryNode, bool loadContent)
+            where T : Page
         {
             if (site == null) throw new ArgumentNullException(nameof(site));
             if (queryNode == null) throw new ArgumentNullException(nameof(queryNode));
             var pages = (JObject) queryNode["pages"];
-            if (pages == null) return EmptyPages;
+            if (pages == null) return new T[0];
             site.Logger?.Trace($"Fetching {pages.Count} pages.");
             return pages.Properties().Select(page =>
-                new Page(site, page, loadContent)).ToList();
+            {
+                var newInst = CreateInstance<T>(site);
+                newInst.LoadPageInfo(page);
+                if (loadContent) newInst.LoadLastRevision((JObject) page.Value);
+                return newInst;
+            }).ToList();
         }
 
         /// <summary>

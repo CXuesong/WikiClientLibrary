@@ -130,4 +130,29 @@ namespace WikiClientLibrary
                     new KeyValuePair<string, string>(p.Name, (string) p.Value)).ToList());
         }
     }
+
+    /// <summary>
+    /// Contains MediaWiki built-in namespace ids for most MediaWiki site. (MediaWiki 1.14+)
+    /// </summary>
+    public static class BuiltInNamespaces
+    {
+        public const int Media = -2;
+        public const int Special = -1;
+        public const int Article = 0;
+        public const int Talk = 1;
+        public const int User = 2;
+        public const int UserTalk = 3;
+        public const int Project = 4;
+        public const int ProjectTalk = 5;
+        public const int File = 6;
+        public const int FileTalk = 7;
+        public const int MediaWiki = 8;
+        public const int MediaWikiTalk = 9;
+        public const int Template = 10;
+        public const int TemplateTalk = 11;
+        public const int Help = 12;
+        public const int HelpTalk = 13;
+        public const int Category = 14;
+        public const int CategoryTalk = 15;
+    }
 }

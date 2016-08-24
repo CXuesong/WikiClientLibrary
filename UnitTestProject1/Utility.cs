@@ -41,9 +41,9 @@ namespace UnitTestProject1
             {
                 Logger = new TraceLogger(),
                 EndPointUrl = entryPointUrl,
-                Timeout = TimeSpan.FromSeconds(3),
+                Timeout = TimeSpan.FromSeconds(10),
                 ThrottleTime = TimeSpan.FromSeconds(1),
-                RetryDelay = TimeSpan.FromSeconds(3),
+                RetryDelay = TimeSpan.FromSeconds(5),
                 ClientUserAgent = "UnitTest/1.0 (.NET CLR " + Environment.Version + ")",
             };
             return client;

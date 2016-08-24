@@ -13,7 +13,7 @@ namespace WikiClientLibrary
     /// </summary>
     internal static class QueryManager
     {
-        private static IDictionary<string, string> GetPageFetchingParams(bool fetchContent)
+        private static IDictionary<string, string> GetPageFetchingParams(Type pageType, bool fetchContent)
         {
             var queryParams = new Dictionary<string, string>
             {
@@ -22,6 +22,7 @@ namespace WikiClientLibrary
                 {"inprop", "protection"},
                 {"maxlag", "5"},
             };
+            if (pageType == typeof (Category)) queryParams["prop"] += "|categoryinfo";
             if (fetchContent)
             {
                 queryParams["prop"] += "|revisions";
@@ -33,12 +34,14 @@ namespace WikiClientLibrary
         /// <summary>
         /// Enumerate pages from the generator.
         /// </summary>
-        public static IAsyncEnumerable<Page> EnumPagesAsync(PageGenerator generator, bool fetchContent)
+        public static IAsyncEnumerable<T> EnumPagesAsync<T>(PageGeneratorBase generator, bool fetchContent)
+            where T : Page
         {
             if (generator == null) throw new ArgumentNullException(nameof(generator));
-            var queryParams = GetPageFetchingParams(fetchContent);
+            var queryParams = GetPageFetchingParams(typeof (T), fetchContent);
             return generator.EnumJsonAsync(queryParams).SelectMany(jresult =>
-                Page.FromJsonQueryResult(generator.Site, (JObject) jresult["query"], fetchContent).ToAsyncEnumerable());
+                Page.FromJsonQueryResult<T>(generator.Site, (JObject) jresult["query"], fetchContent)
+                    .ToAsyncEnumerable());
         }
 
         /// <summary>
@@ -47,17 +50,18 @@ namespace WikiClientLibrary
         public static async Task RefreshPagesAsync(IEnumerable<Page> pages, bool fetchContent)
         {
             if (pages == null) throw new ArgumentNullException(nameof(pages));
-            var queryParams = GetPageFetchingParams(fetchContent);
-            foreach (var sitePages in pages.GroupBy(p => p.Site))
+            foreach (var sitePages in pages.GroupBy(p =>Tuple.Create(p.Site, p.GetType())))
             {
-                var titleLimit = sitePages.Key.UserInfo.HasRight(UserRights.ApiHighLimits)
+                var site = sitePages.Key.Item1;
+                var queryParams = GetPageFetchingParams(sitePages.Key.Item2, fetchContent);
+                var titleLimit = site.UserInfo.HasRight(UserRights.ApiHighLimits)
                     ? 500
                     : 50;
                 foreach (var partition in sitePages.Partition(titleLimit).Select(partition => partition.ToList()))
                 {
-                    sitePages.Key.Logger?.Trace($"Fetching {partition.Count} pages.");
+                    site.Logger?.Trace($"Fetching {partition.Count} pages.");
                     queryParams["titles"] = string.Join("|", partition.Select(p => p.Title));
-                    var jobj = await sitePages.Key.WikiClient.GetJsonAsync(queryParams);
+                    var jobj = await site.WikiClient.GetJsonAsync(queryParams);
                     var normalized = jobj["query"]["normalized"]?.ToDictionary(n => (string) n["from"],
                         n => (string) n["to"]);
                     var pageInfoDict = ((JObject) jobj["query"]["pages"]).Properties()
@@ -72,7 +76,7 @@ namespace WikiClientLibrary
                         if (fetchContent)
                         {
                             // TODO Cache content
-                            page.LoadLastRevision(pageInfo.Value);
+                            page.LoadLastRevision((JObject) pageInfo.Value);
                         }
                     }
                 }

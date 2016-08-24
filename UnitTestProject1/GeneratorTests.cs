@@ -34,39 +34,81 @@ namespace UnitTestProject1
             //CredentialManager.Logout(WikiaTestSite);
         }
 
+        private void AssertTitlesDistinct(IReadOnlyCollection<Page> pages)
+        {
+            var distinctTitles = pages.Select(p => p.Title).Distinct().Count();
+            Assert.AreEqual(pages.Count, distinctTitles);
+        }
+
         private void TracePages(IReadOnlyCollection<Page> pages)
         {
-            const string lineFormat = "{0,-20} {1,10} {2,10} {3,10}";
+            const string lineFormat = "{0,-20} {1,10} {2,10} {3,10} {4,10}";
             Trace.WriteLine(pages.Count + " pages.");
-            Trace.WriteLine(string.Format(lineFormat, "Title", "Length", "Last Revision", "Last Touched"));
+            Trace.WriteLine(string.Format(lineFormat, "Title", "Length", "Last Revision", "Last Touched", "Children"));
             foreach (var page in pages)
             {
+                var childrenField = "";
+                var cat = page as Category;
+                if (cat != null) childrenField = $"{cat.ChildrenCount}(sub:{cat.SubcategoriesCount})";
                 Trace.WriteLine(string.Format(lineFormat, page.Title, page.ContentLength, page.LastRevisionId,
-                    page.LastTouched));
+                    page.LastTouched, childrenField));
                 if (page.Content != null)
-                    Trace.WriteLine(page.Content.Length > 100 ? page.Content.Substring(100) + "..." : page.Content);
+                    Trace.WriteLine(page.Content.Length > 100 ? page.Content.Substring(0, 100) + "..." : page.Content);
             }
         }
 
         [TestMethod]
-        public void WpAllPagesGeneratorTest()
+        public void WpAllPagesGeneratorTest1()
         {
             var site = WpTestSite;
             var generator = new AllPagesGenerator(site);
             var pages = generator.EnumPages().Take(2000).ToList();
             TracePages(pages);
-            generator = new AllPagesGenerator(site) {StartTitle = "C", PagingSize = 20};
-            pages = generator.EnumPages(true).Take(100).ToList();
+            AssertTitlesDistinct(pages);
+        }
+
+        [TestMethod]
+        public void WpAllPagesGeneratorTest2()
+        {
+            var site = WpTestSite;
+            var generator = new AllPagesGenerator(site) { StartTitle = "W", PagingSize = 20 };
+            var pages = generator.EnumPages(true).Take(100).ToList();
             TracePages(pages);
+            Assert.IsTrue(pages[0].Title[0] == 'W');
+            AssertTitlesDistinct(pages);
         }
 
         [TestMethod]
         public void WikiaAllPagesGeneratorTest()
         {
             var site = WikiaTestSite;
-            var generator = new AllPagesGenerator(site);
+            var generator = new AllPagesGenerator(site) {NamespaceId = BuiltInNamespaces.Template};
             var pages = generator.EnumPages().Take(2000).ToList();
             TracePages(pages);
+            AssertTitlesDistinct(pages);
+        }
+
+        [TestMethod]
+        public void WpAllCategoriesGeneratorTest()
+        {
+            var site = WpTestSite;
+            var generator = new AllCategoriesGenerator(site);
+            var pages = generator.EnumPages().Take(2000).ToList();
+            TracePages(pages);
+            generator = new AllCategoriesGenerator(site) { StartTitle = "C", PagingSize = 20 };
+            pages = generator.EnumPages(true).Take(100).ToList();
+            TracePages(pages);
+            AssertTitlesDistinct(pages);
+        }
+
+        [TestMethod]
+        public void WikiaAllCategoriesGeneratorTest()
+        {
+            var site = WikiaTestSite;
+            var generator = new AllCategoriesGenerator(site);
+            var pages = generator.EnumPages().Take(2000).ToList();
+            TracePages(pages);
+            AssertTitlesDistinct(pages);
         }
     }
 }

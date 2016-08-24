@@ -11,26 +11,51 @@ using WikiClientLibrary.Client;
 
 namespace WikiClientLibrary.Generators
 {
-    /// <summary>
-    /// Represents a generator (or iterator) of <see cref="Page"/>.
-    /// </summary>
-    public abstract class PageGenerator
+    public abstract class PageGeneratorBase
     {
-        public Site Site { get; }
+        private int? _PagingSize;
 
-        public WikiClient Client => Site.WikiClient;
-
-        public PageGenerator(Site site)
+        public PageGeneratorBase(Site site)
         {
             if (site == null) throw new ArgumentNullException(nameof(site));
             Site = site;
         }
 
+        public Site Site { get; }
+        public WikiClient Client => Site.WikiClient;
+
+        /// <summary>
+        /// Maximum items returned per request.
+        /// </summary>
+        /// <value>
+        /// Maximum count of items returned per request.
+        /// <c>null</c> if using the default limit.
+        /// (5000 for bots and 500 for users.)
+        /// </value>
+        public int? PagingSize
+        {
+            get { return _PagingSize; }
+            set
+            {
+                if (value < 1) throw new ArgumentOutOfRangeException(nameof(value));
+                _PagingSize = value;
+            }
+        }
+
+        /// <summary>
+        /// Gets the actual value of <see cref="PagingSize"/> used for request.
+        /// </summary>
+        /// <value>
+        /// The same of <see cref="PagingSize"/> if specified, or the default limit
+        /// (5000 for bots and 500 for users) otherwise.
+        /// </value>
+        public int ActualPagingSize => PagingSize ?? (Site.UserInfo.HasRight(UserRights.ApiHighLimits) ? 5000 : 500);
+
         /// <summary>
         /// When overridden, fills generator parameters for action=query request.
         /// </summary>
         /// <returns>The dictioanry containning request value pairs.</returns>
-        protected abstract IEnumerable<KeyValuePair<string, string>> GetGeneratorParams();
+        protected abstract IEnumerable<KeyValuePair<string, object>> GetGeneratorParams();
 
         /// <summary>
         /// Gets JSON result of the query operation with the specific generator.
@@ -38,16 +63,16 @@ namespace WikiClientLibrary.Generators
         /// <returns>The root of JSON result. You may need to access query result by ["query"].</returns>
         internal IAsyncEnumerable<JObject> EnumJsonAsync(IEnumerable<KeyValuePair<string, string>> overridingParams)
         {
-            var valuesDict = new Dictionary<string, string>
+            var valuesDict = new Dictionary<string, object>
             {
                 {"action", "query"},
-                {"maxlag", "5"}
+                {"maxlag", 5}
             };
             foreach (var v in GetGeneratorParams())
                 valuesDict[v.Key] = v.Value;
             foreach (var v in overridingParams)
                 valuesDict[v.Key] = v.Value;
-            Debug.Assert(valuesDict["action"] == "query");
+            Debug.Assert((string) valuesDict["action"] == "query");
             var eofReached = false;
             var resultCounter = 0;
             return new DelegateAsyncEnumerable<JObject>(async cancellation =>
@@ -56,7 +81,10 @@ namespace WikiClientLibrary.Generators
                 cancellation.ThrowIfCancellationRequested();
                 Site.Logger?.Trace(ToString() + ": Loading pages from #" + resultCounter);
                 var jresult = await Client.GetJsonAsync(valuesDict);
-                var continuation = (JObject)(jresult["continue"] ?? jresult["query-continue"]);
+                // continue.xxx
+                // or query-continue.allpages.xxx
+                var continuation = (JObject) (jresult["continue"]
+                                              ?? ((JProperty) jresult["query-continue"]?.First)?.Value);
                 if (continuation != null)
                 {
                     // Prepare for the next page of list.
@@ -74,40 +102,6 @@ namespace WikiClientLibrary.Generators
         }
 
         /// <summary>
-        /// Synchornously generate the sequence of pages.
-        /// </summary>
-        public IEnumerable<Page> EnumPages()
-        {
-            return EnumPages(false);
-        }
-
-        /// <summary>
-        /// Synchornously generate the sequence of pages.
-        /// </summary>
-        /// <param name="fetchContent">Whether to fetch the last revision and content of the page.</param>
-        public IEnumerable<Page> EnumPages(bool fetchContent)
-        {
-            return EnumPagesAsync(fetchContent).ToEnumerable();
-        }
-
-        /// <summary>
-        /// Asynchornously generate the sequence of pages.
-        /// </summary>
-        public IAsyncEnumerable<Page> EnumPagesAsync()
-        {
-            return EnumPagesAsync(false);
-        }
-
-        /// <summary>
-        /// Asynchornously generate the sequence of pages.
-        /// </summary>
-        /// <param name="fetchContent">Whether to fetch the last revision and content of the page.</param>
-        public IAsyncEnumerable<Page> EnumPagesAsync(bool fetchContent)
-        {
-            return QueryManager.EnumPagesAsync(this, fetchContent);
-        }
-
-        /// <summary>
         /// 返回表示当前对象的字符串。
         /// </summary>
         /// <returns>
@@ -116,6 +110,52 @@ namespace WikiClientLibrary.Generators
         public override string ToString()
         {
             return GetType().Name;
+        }
+    }
+
+    /// <summary>
+    /// Represents a generator (or iterator) of <see cref="Page"/>.
+    /// </summary>
+    /// <typeparam name="T">The type of generated page instances.</typeparam>
+    public abstract class PageGenerator<T> : PageGeneratorBase
+        where T : Page
+    {
+        public PageGenerator(Site site) : base(site)
+        {
+        }
+
+        /// <summary>
+        /// Synchornously generate the sequence of pages.
+        /// </summary>
+        public IEnumerable<T> EnumPages()
+        {
+            return EnumPages(false);
+        }
+
+        /// <summary>
+        /// Synchornously generate the sequence of pages.
+        /// </summary>
+        /// <param name="fetchContent">Whether to fetch the last revision and content of the page.</param>
+        public IEnumerable<T> EnumPages(bool fetchContent)
+        {
+            return EnumPagesAsync(fetchContent).ToEnumerable();
+        }
+
+        /// <summary>
+        /// Asynchornously generate the sequence of pages.
+        /// </summary>
+        public IAsyncEnumerable<T> EnumPagesAsync()
+        {
+            return EnumPagesAsync(false);
+        }
+
+        /// <summary>
+        /// Asynchornously generate the sequence of pages.
+        /// </summary>
+        /// <param name="fetchContent">Whether to fetch the last revision and content of the page.</param>
+        public IAsyncEnumerable<T> EnumPagesAsync(bool fetchContent)
+        {
+            return QueryManager.EnumPagesAsync<T>(this, fetchContent);
         }
     }
 }
