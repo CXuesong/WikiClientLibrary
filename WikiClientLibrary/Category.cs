@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
+using WikiClientLibrary.Generators;
 
 namespace WikiClientLibrary
 {
@@ -26,7 +27,7 @@ namespace WikiClientLibrary
             var cat = jpage["categoryinfo"];
             if (cat != null)
             {
-                ChildrenCount = (int) cat["size"];
+                MembersCount = (int) cat["size"];
                 PagesCount = (int) cat["pages"];
                 FilesCount = (int) cat["files"];
                 SubcategoriesCount = (int) cat["subcats"];
@@ -34,11 +35,11 @@ namespace WikiClientLibrary
             else
             {
                 // Possibly not a valid category.
-                ChildrenCount = PagesCount = FilesCount = SubcategoriesCount = 0;
+                MembersCount = PagesCount = FilesCount = SubcategoriesCount = 0;
             }
         }
 
-        public int ChildrenCount { get; private set; }
+        public int MembersCount { get; private set; }
 
         public int PagesCount { get; private set; }
 
@@ -46,5 +47,35 @@ namespace WikiClientLibrary
 
         public int SubcategoriesCount { get; private set; }
 
+        public IAsyncEnumerable<Page> EnumMembersAsync(bool fetchContent)
+        {
+            return new CategoryMembersGenerator(Site, Title).EnumPagesAsync(fetchContent);
+        }
+
+        public IAsyncEnumerable<Page> EnumMembersAsync()
+        {
+            return new CategoryMembersGenerator(Site, Title).EnumPagesAsync();
+        }
+
+        public IEnumerable<Page> EnumMembers(bool fetchContent)
+        {
+            return new CategoryMembersGenerator(Site, Title).EnumPages(fetchContent);
+        }
+
+        public IEnumerable<Page> EnumMembers()
+        {
+            return new CategoryMembersGenerator(Site, Title).EnumPages();
+        }
+
+        /// <summary>
+        /// 返回表示当前对象的字符串。
+        /// </summary>
+        /// <returns>
+        /// 表示当前对象的字符串。
+        /// </returns>
+        public override string ToString()
+        {
+            return $"{Title}, M:{MembersCount}, P:{PagesCount}, S:{SubcategoriesCount}, F:{FilesCount}";
+        }
     }
 }

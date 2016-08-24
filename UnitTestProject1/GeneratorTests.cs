@@ -49,7 +49,7 @@ namespace UnitTestProject1
             {
                 var childrenField = "";
                 var cat = page as Category;
-                if (cat != null) childrenField = $"{cat.ChildrenCount}(sub:{cat.SubcategoriesCount})";
+                if (cat != null) childrenField = $"{cat.MembersCount}(sub:{cat.SubcategoriesCount})";
                 Trace.WriteLine(string.Format(lineFormat, page.Title, page.ContentLength, page.LastRevisionId,
                     page.LastTouched, childrenField));
                 if (page.Content != null)
@@ -109,6 +109,34 @@ namespace UnitTestProject1
             var pages = generator.EnumPages().Take(2000).ToList();
             TracePages(pages);
             AssertTitlesDistinct(pages);
+        }
+
+        [TestMethod]
+        public void WpCategoryMembersGeneratorTest()
+        {
+            var site = WpTestSite;
+            var cat = new Category(site, "Category:Template documentation pages‏‎");
+            AwaitSync(cat.RefreshAsync());
+            Trace.WriteLine(cat);
+            var generator = new CategoryMembersGenerator(cat) {PagingSize = 50};
+            var pages = generator.EnumPages().ToList();
+            TracePages(pages);
+            AssertTitlesDistinct(pages);
+            Assert.AreEqual(cat.MembersCount, pages.Count);
+        }
+
+        [TestMethod]
+        public void WikiaCategoryMembersGeneratorTest()
+        {
+            var site = WikiaTestSite;
+            var cat = new Category(site, "Category:BlogListingPage‏‎‏‎");
+            AwaitSync(cat.RefreshAsync());
+            Trace.WriteLine(cat);
+            var generator = new CategoryMembersGenerator(cat) { PagingSize = 50 };
+            var pages = generator.EnumPages().ToList();
+            TracePages(pages);
+            AssertTitlesDistinct(pages);
+            Assert.AreEqual(cat.MembersCount, pages.Count);
         }
     }
 }
