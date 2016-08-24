@@ -71,7 +71,7 @@ namespace UnitTestProject1
         public void WpAllPagesGeneratorTest2()
         {
             var site = WpTestSite;
-            var generator = new AllPagesGenerator(site) { StartTitle = "W", PagingSize = 20 };
+            var generator = new AllPagesGenerator(site) {StartTitle = "W", PagingSize = 20};
             var pages = generator.EnumPages(true).Take(100).ToList();
             TracePages(pages);
             Assert.IsTrue(pages[0].Title[0] == 'W');
@@ -95,7 +95,7 @@ namespace UnitTestProject1
             var generator = new AllCategoriesGenerator(site);
             var pages = generator.EnumPages().Take(2000).ToList();
             TracePages(pages);
-            generator = new AllCategoriesGenerator(site) { StartTitle = "C", PagingSize = 20 };
+            generator = new AllCategoriesGenerator(site) {StartTitle = "C", PagingSize = 20};
             pages = generator.EnumPages(true).Take(100).ToList();
             TracePages(pages);
             AssertTitlesDistinct(pages);
@@ -132,11 +132,40 @@ namespace UnitTestProject1
             var cat = new Category(site, "Category:BlogListingPage‏‎‏‎");
             AwaitSync(cat.RefreshAsync());
             Trace.WriteLine(cat);
-            var generator = new CategoryMembersGenerator(cat) { PagingSize = 50 };
+            var generator = new CategoryMembersGenerator(cat) {PagingSize = 50};
             var pages = generator.EnumPages().ToList();
             TracePages(pages);
             AssertTitlesDistinct(pages);
             Assert.AreEqual(cat.MembersCount, pages.Count);
+        }
+
+
+        [TestMethod]
+        public void WpRecentChangesGeneratorTest1()
+        {
+            var site = WpTestSite;
+            var generator = new RecentChangesGenerator(site) {LastRevisionsOnly = true, PagingSize = 20};
+            var pages = generator.EnumPages().Take(2000).ToList();
+            TracePages(pages);
+            AssertTitlesDistinct(pages);
+        }
+
+        //ISSUE
+        // There's something wrong with wikia's continuation,
+        // when using RecentChanges as generator rather than a
+        // list to query. The continuation just failed to make effects
+        // and the continued page of results just like the previous page.
+        public void WikiaRecentChangesGeneratorTest1()
+        {
+            var site = CreateWikiSite("http://warriors.wikia.com/api.php");
+            var generator = new RecentChangesGenerator(site)
+            {
+                LastRevisionsOnly = true,
+                PagingSize = 100,
+            };
+            var pages = generator.EnumPages().Take(2000).ToList();
+            TracePages(pages);
+            AssertTitlesDistinct(pages);
         }
     }
 }
