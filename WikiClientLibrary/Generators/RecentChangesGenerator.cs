@@ -242,6 +242,7 @@ namespace WikiClientLibrary.Generators
 
         /// <summary>
         /// Page creations (Uploads are not listed as Creation but as LogEntry).
+        /// Using this flag can create a New Page Generator.
         /// </summary>
         Create = 4,
 

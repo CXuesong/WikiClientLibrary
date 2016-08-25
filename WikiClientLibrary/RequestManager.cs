@@ -133,5 +133,15 @@ namespace WikiClientLibrary
                 throw;
             }
         }
+
+        /// <summary>
+        /// Queries parameter information for one module.
+        /// </summary>
+        /// <param name="moduleName">Name of the module.</param>
+        /// <returns></returns>
+        public static Task<JObject> QueryParameterInformation(string moduleName)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

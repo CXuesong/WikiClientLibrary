@@ -40,6 +40,7 @@
     <Compile Include="Generators\AllPagesGenerator.cs" />
     <Compile Include="Generators\CategoryMembersGenerator.cs" />
     <Compile Include="Generators\Generators.cs" />
+    <Compile Include="Generators\QueryPageGenerator.cs" />
     <Compile Include="Generators\RecentChangesGenerator.cs" />
     <Compile Include="ILogger.cs" />
     <Compile Include="MediaWiki.cs" />

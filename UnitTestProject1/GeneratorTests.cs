@@ -212,6 +212,7 @@ namespace UnitTestProject1
         }
 
         [TestMethod]
+        [ExpectedException(typeof(UnauthorizedOperationException))]
         public void WpTest2PatrolTest1()
         {
             var site = WpTestSite;
@@ -222,6 +223,27 @@ namespace UnitTestProject1
             var rc = generator.EnumRecentChanges().Take(2).ToList();
             if (rc.Count < 1) Assert.Inconclusive();
             AwaitSync(rc[0].PatrolAsync());
+        }
+
+
+        [TestMethod]
+        public void WpQueryPageGeneratorTest1()
+        {
+            var site = WpTestSite;
+            var generator = new QueryPageGenerator(site, "Ancientpages");
+            var pages = generator.EnumPages().Take(2000).ToList();
+            TracePages(pages);
+            AssertTitlesDistinct(pages);
+        }
+
+        [TestMethod]
+        public void WikiaQueryPageGeneratorTest1()
+        {
+            var site = WikiaTestSite;
+            var generator = new QueryPageGenerator(site, "Ancientpages");
+            var pages = generator.EnumPages().Take(2000).ToList();
+            TracePages(pages);
+            AssertTitlesDistinct(pages);
         }
 
     }
