@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Newtonsoft.Json.Linq;
 
 namespace WikiClientLibrary.Generators
 {
@@ -19,6 +20,29 @@ namespace WikiClientLibrary.Generators
         public QueryPageGenerator(Site site, string queryPageName) : base(site)
         {
             QueryPageName = queryPageName;
+        }
+
+        /// <summary>
+        /// Asynchronously get a list of available QueryPage-based special pages.
+        /// The item in the list can later be used as a value of <see cref="QueryPageName"/>.
+        /// </summary>
+        /// <param name="site">MediaWiki site.</param>
+        /// <returns>A list of titles of available QueryPage-based special pages.</returns>
+        public static async Task<IList<string>> GetQueryPageNamesAsync(Site site)
+        {
+            var module = await RequestManager.QueryParameterInformationAsync(site, "query+querypage");
+            var pa = module["parameters"].First(p => (string) p["name"] == "page");
+            return ((JArray) pa["type"]).ToObject<IList<string>>();
+        }
+
+        /// <summary>
+        /// Asynchronously get a list of available QueryPage-based special pages.
+        /// The item in the list can later be used as a value of <see cref="QueryPageName"/>.
+        /// </summary>
+        /// <returns>A list of titles of available QueryPage-based special pages.</returns>
+        public Task<IList<string>> GetQueryPageNamesAsync()
+        {
+            return GetQueryPageNamesAsync(Site);
         }
 
         /// <summary>

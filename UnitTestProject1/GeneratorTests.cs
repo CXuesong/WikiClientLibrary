@@ -225,7 +225,6 @@ namespace UnitTestProject1
             AwaitSync(rc[0].PatrolAsync());
         }
 
-
         [TestMethod]
         public void WpQueryPageGeneratorTest1()
         {
@@ -246,5 +245,22 @@ namespace UnitTestProject1
             AssertTitlesDistinct(pages);
         }
 
+        [TestMethod]
+        public void WpGetQueryPageNamesTest()
+        {
+            var site = WpTestSite;
+            var sp = AwaitSync(QueryPageGenerator.GetQueryPageNamesAsync(site));
+            Assert.IsTrue(sp.Contains("Uncategorizedpages"));
+            ShallowTrace(sp);
+        }
+
+        [TestMethod]
+        public void WikiaGetQueryPageNamesTest()
+        {
+            var site = WikiaTestSite;
+            var sp = AwaitSync(QueryPageGenerator.GetQueryPageNamesAsync(site));
+            Assert.IsTrue(sp.Contains("Uncategorizedpages"));
+            ShallowTrace(sp);
+        }
     }
 }

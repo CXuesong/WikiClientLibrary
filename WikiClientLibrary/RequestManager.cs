@@ -137,11 +137,44 @@ namespace WikiClientLibrary
         /// <summary>
         /// Queries parameter information for one module.
         /// </summary>
+        /// <param name="site"></param>
         /// <param name="moduleName">Name of the module.</param>
-        /// <returns></returns>
-        public static Task<JObject> QueryParameterInformation(string moduleName)
+        /// <returns>The paraminfo.modules[0] item.</returns>
+        public static async Task<JObject> QueryParameterInformationAsync(Site site, string moduleName)
         {
-            throw new NotImplementedException();
+            if (site == null) throw new ArgumentNullException(nameof(site));
+            var pa = new Dictionary<string, object> {{"action", "paraminfo"}};
+            if (site.SiteInfo.Version < new Version("1.25"))
+            {
+                var parts = moduleName.Split('+');
+                switch (parts[0])
+                {
+                    case "main":
+                        pa["mainmodule"] = true;
+                        break;
+                    case "query":
+                        if (parts.Length == 1)
+                            pa["pagesetmodule"] = true;
+                        else
+                            pa["querymodules"] = parts[1];
+                        break;
+                    case "format":
+                        pa["formatmodules"] = true;
+                        break;
+                    default:
+                        pa["modules"] = moduleName;
+                        break;
+                }
+            }
+            else
+            {
+                pa["modules"] = moduleName;
+            }
+            var jresult = await site.WikiClient.GetJsonAsync(pa);
+            var jmodules = ((JObject) jresult["paraminfo"]).Properties().FirstOrDefault(p => p.Name.EndsWith("modules"))?.Value;
+            // For now we use the method internally.
+            Debug.Assert(jmodules != null);
+            return (JObject) jmodules.First;
         }
     }
 }
