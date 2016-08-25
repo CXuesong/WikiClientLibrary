@@ -14,17 +14,18 @@ namespace WikiClientLibrary
     /// </summary>
     internal static class RequestManager
     {
-        private static IDictionary<string, string> GetPageFetchingParams(bool fetchContent)
+        private static IDictionary<string, object> GetPageFetchingParams(PageQueryOptions options)
         {
-            var queryParams = new Dictionary<string, string>
+            var queryParams = new Dictionary<string, object>
             {
                 {"action", "query"},
                 // We also fetch category info, just in case.
                 {"prop", "info|categoryinfo"},
                 {"inprop", "protection"},
-                {"maxlag", "5"},
+                {"redirects", (options & PageQueryOptions.ResolveRedirects) == PageQueryOptions.ResolveRedirects},
+                {"maxlag", 5},
             };
-            if (fetchContent)
+            if ((options & PageQueryOptions.FetchLastRevision) == PageQueryOptions.FetchLastRevision)
             {
                 queryParams["prop"] += "|revisions";
                 queryParams["rvprop"] = "ids|timestamp|flags|comment|user|contentmodel|sha1|content";
@@ -35,17 +36,19 @@ namespace WikiClientLibrary
         /// <summary>
         /// Enumerate pages from the generator.
         /// </summary>
-        public static IAsyncEnumerable<T> EnumPagesAsync<T>(PageGeneratorBase generator, bool fetchContent)
+        public static IAsyncEnumerable<T> EnumPagesAsync<T>(PageGeneratorBase generator, PageQueryOptions options)
             where T : Page
         {
             if (generator == null) throw new ArgumentNullException(nameof(generator));
-            var queryParams = GetPageFetchingParams(fetchContent);
+            if ((options & PageQueryOptions.ResolveRedirects) == PageQueryOptions.ResolveRedirects)
+                throw new ArgumentException("Cannot resolve redirects when using generators.", nameof(options));
+            var queryParams = GetPageFetchingParams(options);
             return generator.EnumJsonAsync(queryParams).SelectMany(jresult =>
             {
                 var jquery = (JObject) jresult["query"];
                 return jquery == null
                     ? AsyncEnumerable.Empty<T>()
-                    : Page.FromJsonQueryResult<T>(generator.Site, jquery, fetchContent)
+                    : Page.FromJsonQueryResult<T>(generator.Site, jquery, options)
                         .ToAsyncEnumerable();
             });
         }
@@ -53,13 +56,13 @@ namespace WikiClientLibrary
         /// <summary>
         /// Refresh a sequence of pages.
         /// </summary>
-        public static async Task RefreshPagesAsync(IEnumerable<Page> pages, bool fetchContent)
+        public static async Task RefreshPagesAsync(IEnumerable<Page> pages, PageQueryOptions options)
         {
             if (pages == null) throw new ArgumentNullException(nameof(pages));
             foreach (var sitePages in pages.GroupBy(p =>Tuple.Create(p.Site, p.GetType())))
             {
                 var site = sitePages.Key.Item1;
-                var queryParams = GetPageFetchingParams(fetchContent);
+                var queryParams = GetPageFetchingParams(options);
                 var titleLimit = site.UserInfo.HasRight(UserRights.ApiHighLimits)
                     ? 500
                     : 50;
@@ -70,20 +73,23 @@ namespace WikiClientLibrary
                     var jobj = await site.WikiClient.GetJsonAsync(queryParams);
                     var normalized = jobj["query"]["normalized"]?.ToDictionary(n => (string) n["from"],
                         n => (string) n["to"]);
+                    var redirects = jobj["query"]["redirects"]?.ToDictionary(n => (string) n["from"],
+                        n => (string) n["to"]);
                     var pageInfoDict = ((JObject) jobj["query"]["pages"]).Properties()
                         .ToDictionary(p => p.Value["title"]);
                     foreach (var page in partition)
                     {
                         var title = page.Title;
-                        if (normalized?.ContainsKey(page.Title) ?? false)
-                            title = normalized[page.Title];
+                        // Normalize the title first.
+                        if (normalized?.ContainsKey(title) ?? false)
+                            title = normalized[title];
+                        // Then process the redirects.
+                        // TODO Investigate how multi-redirects will be handled by API.
+                        while (redirects?.ContainsKey(title) ?? false)
+                            title = redirects[title];
+                        // Finally, get the page.
                         var pageInfo = pageInfoDict[title];
-                        page.LoadPageInfo(pageInfo);
-                        if (fetchContent)
-                        {
-                            // TODO Cache content
-                            page.LoadLastRevision((JObject) pageInfo.Value);
-                        }
+                        page.LoadFromJson(pageInfo, options);
                     }
                 }
             }

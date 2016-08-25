@@ -49,11 +49,12 @@ namespace UnitTestProject1
             return client;
         }
 
-        public static Site CreateWikiSite(string entryPointUrl)
+        public static Site CreateWikiSite(string entryPointUrl, bool login = false)
         {
             var client = CreateWikiClient(entryPointUrl);
             var site = AwaitSync(Site.GetAsync(client));
             site.Logger = new TraceLogger();
+            if (login) CredentialManager.Login(site);
             return site;
         }
 

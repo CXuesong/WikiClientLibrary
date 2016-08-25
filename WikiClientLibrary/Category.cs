@@ -47,9 +47,9 @@ namespace WikiClientLibrary
 
         public int SubcategoriesCount { get; private set; }
 
-        public IAsyncEnumerable<Page> EnumMembersAsync(bool fetchContent)
+        public IAsyncEnumerable<Page> EnumMembersAsync(PageQueryOptions options)
         {
-            return new CategoryMembersGenerator(Site, Title).EnumPagesAsync(fetchContent);
+            return new CategoryMembersGenerator(Site, Title).EnumPagesAsync(options);
         }
 
         public IAsyncEnumerable<Page> EnumMembersAsync()
@@ -57,9 +57,9 @@ namespace WikiClientLibrary
             return new CategoryMembersGenerator(Site, Title).EnumPagesAsync();
         }
 
-        public IEnumerable<Page> EnumMembers(bool fetchContent)
+        public IEnumerable<Page> EnumMembers(PageQueryOptions options)
         {
-            return new CategoryMembersGenerator(Site, Title).EnumPages(fetchContent);
+            return new CategoryMembersGenerator(Site, Title).EnumPages(options);
         }
 
         public IEnumerable<Page> EnumMembers()

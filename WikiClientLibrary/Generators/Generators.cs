@@ -61,7 +61,7 @@ namespace WikiClientLibrary.Generators
         /// Gets JSON result of the query operation with the specific generator.
         /// </summary>
         /// <returns>The root of JSON result. You may need to access query result by ["query"].</returns>
-        internal IAsyncEnumerable<JObject> EnumJsonAsync(IEnumerable<KeyValuePair<string, string>> overridingParams)
+        internal IAsyncEnumerable<JObject> EnumJsonAsync(IEnumerable<KeyValuePair<string, object>> overridingParams)
         {
             var valuesDict = new Dictionary<string, object>
             {
@@ -137,16 +137,16 @@ namespace WikiClientLibrary.Generators
         /// </summary>
         public IEnumerable<T> EnumPages()
         {
-            return EnumPages(false);
+            return EnumPages(PageQueryOptions.None);
         }
 
         /// <summary>
         /// Synchornously generate the sequence of pages.
         /// </summary>
-        /// <param name="fetchContent">Whether to fetch the last revision and content of the page.</param>
-        public IEnumerable<T> EnumPages(bool fetchContent)
+        /// <param name="options">Options when querying for the pages.</param>
+        public IEnumerable<T> EnumPages(PageQueryOptions options)
         {
-            return EnumPagesAsync(fetchContent).ToEnumerable();
+            return EnumPagesAsync(options).ToEnumerable();
         }
 
         /// <summary>
@@ -154,16 +154,16 @@ namespace WikiClientLibrary.Generators
         /// </summary>
         public IAsyncEnumerable<T> EnumPagesAsync()
         {
-            return EnumPagesAsync(false);
+            return EnumPagesAsync(PageQueryOptions.None);
         }
 
         /// <summary>
         /// Asynchornously generate the sequence of pages.
         /// </summary>
-        /// <param name="fetchContent">Whether to fetch the last revision and content of the page.</param>
-        public IAsyncEnumerable<T> EnumPagesAsync(bool fetchContent)
+        /// <param name="options">Options when querying for the pages.</param>
+        public IAsyncEnumerable<T> EnumPagesAsync(PageQueryOptions options)
         {
-            return RequestManager.EnumPagesAsync<T>(this, fetchContent);
+            return RequestManager.EnumPagesAsync<T>(this, options);
         }
     }
 }

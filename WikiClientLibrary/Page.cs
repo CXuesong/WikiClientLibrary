@@ -13,9 +13,6 @@ using Newtonsoft.Json.Linq;
 using WikiClientLibrary.Client;
 using WikiClientLibrary.Generators;
 
-//TODO IMPLEMENT PageQueryOptions
-//I'm going to merge single-page query into a special case of multi-page query.
-
 namespace WikiClientLibrary
 {
     /// <summary>
@@ -100,19 +97,19 @@ namespace WikiClientLibrary
         /// <summary>
         /// Gets / Sets the content of the page.
         /// </summary>
-        /// <remarks>You should have invoked <see cref="RefreshContentAsync"/> before trying to read the content of the page.</remarks>
+        /// <remarks>You should have invoked <c>RefreshAsync(true)</c> before trying to read the content of the page.</remarks>
         public string Content { get; set; }
 
         /// <summary>
         /// Gets the latest revision of the page.
         /// </summary>
-        /// <remarks>Make sure to invoke <see cref="RefreshContentAsync"/> before getting the value.</remarks>
+        /// <remarks>Make sure to invoke <c>RefreshAsync(true)</c> before getting the value.</remarks>
         public Revision LastRevision { get; private set; }
 
         /// <summary>
         /// Gets / Sets the options when querying page information.
         /// </summary>
-        public PageQueryOptions QueryOptions { get; set; }
+        public PageQueryOptions QueryOptions { get; private set; }
 
         private static bool AreIdEquals(int id1, int id2)
         {
@@ -130,17 +127,22 @@ namespace WikiClientLibrary
         /// Loads page information from JSON.
         /// </summary>
         /// <param name="prop">query.pages.xxx property.</param>
-        internal void LoadPageInfo(JProperty prop)
+        /// <param name="options">Provides options when performing the query.</param>
+        internal void LoadFromJson(JProperty prop, PageQueryOptions options)
         {
             var id = Convert.ToInt32(prop.Name);
             // I'm not sure whether this assertion holds.
             Debug.Assert(id != 0);
             // The page has been overwritten, or deleted.
             if (Id != 0 && !AreIdEquals(Id, id))
-                WikiClient.Logger?.Warn($"Detected page id changed: {Title}, {Id}");
+                WikiClient.Logger?.Warn($"Detected change of page id: {Title}, {Id}");
             Id = id;
             var page = (JObject) prop.Value;
             OnLoadPageInfo(page);
+            if ((options & PageQueryOptions.FetchLastRevision) == PageQueryOptions.FetchLastRevision)
+                // TODO Cache content
+                LoadLastRevision(page);
+            QueryOptions = options;
         }
 
         protected virtual void OnLoadPageInfo(JObject jpage)
@@ -180,7 +182,7 @@ namespace WikiClientLibrary
         /// Loads the first revision from JSON, assuming it's the latest revision.
         /// </summary>
         /// <param name="pageInfo">query.pages.xxx property value.</param>
-        internal void LoadLastRevision(JObject pageInfo)
+        private void LoadLastRevision(JObject pageInfo)
         {
             var revision = (JObject) pageInfo["revisions"]?.FirstOrDefault();
             if (revision != null)
@@ -210,21 +212,20 @@ namespace WikiClientLibrary
         /// </summary>
         /// <param name="site">A <see cref="Site"/> object.</param>
         /// <param name="queryNode">The <c>qurey</c> node value object of JSON result.</param>
-        /// <param name="loadContent">Whther to load the first revision and treat it as the lastest content of the page.</param>
+        /// <param name="options">Provides options when performing the query.</param>
         /// <returns>Retrived pages.</returns>
-        internal static IList<T> FromJsonQueryResult<T>(Site site, JObject queryNode, bool loadContent)
+        internal static IList<T> FromJsonQueryResult<T>(Site site, JObject queryNode, PageQueryOptions options)
             where T : Page
         {
             if (site == null) throw new ArgumentNullException(nameof(site));
             if (queryNode == null) throw new ArgumentNullException(nameof(queryNode));
             var pages = (JObject) queryNode["pages"];
             if (pages == null) return new T[0];
-            site.Logger?.Trace($"Fetching {pages.Count} pages.");
+            site.Logger?.Trace($"Fetching {pages.Count} pages. {options}");
             return pages.Properties().Select(page =>
             {
                 var newInst = CreateInstance<T>(site);
-                newInst.LoadPageInfo(page);
-                if (loadContent) newInst.LoadLastRevision((JObject) page.Value);
+                newInst.LoadFromJson(page, options);
                 return newInst;
             }).ToList();
         }
@@ -235,16 +236,16 @@ namespace WikiClientLibrary
         /// </summary>
         public Task RefreshAsync()
         {
-            return RefreshAsync(false);
+            return RefreshAsync(PageQueryOptions.None);
         }
 
         /// <summary>
         /// Fetch information for one or more pages.
         /// </summary>
-        /// <param name="fetchContent">Whether to fetch latest revision and its content of the pages.</param>
-        public Task RefreshAsync(bool fetchContent)
+        /// <param name="options">Options when querying for the pages.</param>
+        public Task RefreshAsync(PageQueryOptions options)
         {
-            return RequestManager.RefreshPagesAsync(new[] {this}, fetchContent);
+            return RequestManager.RefreshPagesAsync(new[] {this}, options);
         }
 
         #endregion
@@ -595,11 +596,15 @@ namespace WikiClientLibrary
     public enum PageQueryOptions
     {
         None = 0,
-
         /// <summary>
-        /// Resolves directs automatically. This may later change <see cref="Page.Title"/> .
+        /// Fetch last revison and its content.
         /// </summary>
-        ResolveRedirects = 1,
+        FetchLastRevision = 1,
+        /// <summary>
+        /// Resolves directs automatically. This may later change <see cref="Page.Title"/>.
+        /// This option cannot be used with generators.
+        /// </summary>
+        ResolveRedirects = 2,
     }
 
     /// <summary>
