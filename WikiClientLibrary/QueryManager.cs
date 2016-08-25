@@ -13,16 +13,16 @@ namespace WikiClientLibrary
     /// </summary>
     internal static class QueryManager
     {
-        private static IDictionary<string, string> GetPageFetchingParams(Type pageType, bool fetchContent)
+        private static IDictionary<string, string> GetPageFetchingParams(bool fetchContent)
         {
             var queryParams = new Dictionary<string, string>
             {
                 {"action", "query"},
-                {"prop", "info"},
+                // We also fetch category info, just in case.
+                {"prop", "info|categoryinfo"},
                 {"inprop", "protection"},
                 {"maxlag", "5"},
             };
-            if (pageType == typeof (Category)) queryParams["prop"] += "|categoryinfo";
             if (fetchContent)
             {
                 queryParams["prop"] += "|revisions";
@@ -38,7 +38,7 @@ namespace WikiClientLibrary
             where T : Page
         {
             if (generator == null) throw new ArgumentNullException(nameof(generator));
-            var queryParams = GetPageFetchingParams(typeof (T), fetchContent);
+            var queryParams = GetPageFetchingParams(fetchContent);
             return generator.EnumJsonAsync(queryParams).SelectMany(jresult =>
                 Page.FromJsonQueryResult<T>(generator.Site, (JObject) jresult["query"], fetchContent)
                     .ToAsyncEnumerable());
@@ -53,7 +53,7 @@ namespace WikiClientLibrary
             foreach (var sitePages in pages.GroupBy(p =>Tuple.Create(p.Site, p.GetType())))
             {
                 var site = sitePages.Key.Item1;
-                var queryParams = GetPageFetchingParams(sitePages.Key.Item2, fetchContent);
+                var queryParams = GetPageFetchingParams(fetchContent);
                 var titleLimit = site.UserInfo.HasRight(UserRights.ApiHighLimits)
                     ? 500
                     : 50;

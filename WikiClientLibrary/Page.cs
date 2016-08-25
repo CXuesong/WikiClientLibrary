@@ -664,6 +664,25 @@ namespace WikiClientLibrary
         [JsonProperty]
         public DateTime TimeStamp { get; private set; }
 
+        public RevisionFlags Flags { get; private set; }
+
+#pragma warning disable 649
+        [JsonProperty] private bool Minor;
+        [JsonProperty] private bool Bot;
+        [JsonProperty] private bool New;
+        [JsonProperty] private bool Anon;
+#pragma warning restore 649
+
+        [OnDeserialized]
+        private void OnDeserialized(StreamingContext context)
+        {
+            Flags = RevisionFlags.None;
+            if (Minor) Flags |= RevisionFlags.Minor;
+            if (Bot) Flags |= RevisionFlags.Bot;
+            if (New) Flags |= RevisionFlags.Create;
+            if (Anon) Flags |= RevisionFlags.Annonymous;
+        }
+
         /// <summary>
         /// 返回该实例的完全限定类型名。
         /// </summary>
@@ -672,7 +691,20 @@ namespace WikiClientLibrary
         /// </returns>
         public override string ToString()
         {
-            return $"Revision#{Id}, SHA1={Sha1}";
+            return $"Revision#{Id}, {Flags}, SHA1={Sha1}";
         }
+    }
+
+    /// <summary>
+    /// Revision flags.
+    /// </summary>
+    [Flags]
+    public enum RevisionFlags
+    {
+        None = 0,
+        Minor = 1,
+        Bot = 2,
+        Create = 4,
+        Annonymous = 8,
     }
 }
