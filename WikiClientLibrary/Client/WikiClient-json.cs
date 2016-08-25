@@ -94,9 +94,11 @@ namespace WikiClientLibrary.Client
             {
                 var err = jresponse["error"];
                 var errcode = (string)err["code"];
-                var errmessage = ((string)err["info"] + " " + (string)err["*"]).Trim();
+                var errmessage = ((string)err["info"] + ". " + (string)err["*"]).Trim();
                 switch (errcode)
                 {
+                    case "permissiondenied":
+                        throw new UnauthorizedOperationException(errmessage);
                     case "unknown_action":
                         throw new InvalidActionException(errcode, errmessage);
                     default:

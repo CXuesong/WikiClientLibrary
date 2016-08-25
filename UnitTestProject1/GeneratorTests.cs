@@ -174,6 +174,7 @@ namespace UnitTestProject1
             };
             var pages = generator.EnumPages().Take(2000).ToList();
             TracePages(pages);
+            // Sometimes the assertion fails for wikia.
             AssertTitlesDistinct(pages);
         }
 
@@ -208,6 +209,19 @@ namespace UnitTestProject1
             };
             var rc = generator.EnumRecentChanges().Take(2000).ToList();
             ShallowTrace(rc, 1);
+        }
+
+        [TestMethod]
+        public void WpTest2PatrolTest1()
+        {
+            var site = WpTestSite;
+            var generator = new RecentChangesGenerator(site)
+            {
+                LastRevisionsOnly = true,
+            };
+            var rc = generator.EnumRecentChanges().Take(2).ToList();
+            if (rc.Count < 1) Assert.Inconclusive();
+            AwaitSync(rc[0].PatrolAsync());
         }
 
     }

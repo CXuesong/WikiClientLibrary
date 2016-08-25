@@ -16,6 +16,14 @@ namespace WikiClientLibrary
     [JsonObject(MemberSerialization.OptIn)]
     public class RecentChangesEntry
     {
+        public Site Site { get; }
+
+        public RecentChangesEntry(Site site)
+        {
+            if (site == null) throw new ArgumentNullException(nameof(site));
+            Site = site;
+        }
+
         [JsonProperty("type")]
         private string TypeName
         {
@@ -146,7 +154,24 @@ namespace WikiClientLibrary
             if (Patrolled) PatrolStatus = PatrolStatus.Patrolled;
             else if (Unpatrolled) PatrolStatus = PatrolStatus.Unpatrolled;
             else PatrolStatus = PatrolStatus.Unknown;
-            Debug.Assert(!(Patrolled | Unpatrolled));
+            if (Patrolled && Unpatrolled)
+                Site.Logger?.Warn($"Patrolled and Unpatrolled are both set for rcid={RecentChangeId}.");
+        }
+
+        /// <summary>
+        /// Asynchronously patrol the change.
+        /// </summary>
+        /// <exception cref="UnauthorizedOperationException">
+        /// <para>You don't have permission to patrol changes. Only users with the patrol right can do this.</para>
+        /// <para>OR You don't have permission to patrol your own changes. Only users with the autopatrol right can do this.</para>
+        /// </exception>
+        /// <exception cref="NotSupportedException">Patrolling is disabled on this wiki.</exception>
+        public Task PatrolAsync()
+        {
+            if (PatrolStatus == PatrolStatus.Patrolled)
+                throw new InvalidOperationException("The change has already been patrolled.");
+            Site.UserInfo.AssertRight(UserRights.Patrol);
+            return RequestManager.PatrolAsync(Site, RecentChangeId, null);
         }
 
         /// <summary>

@@ -111,6 +111,7 @@ namespace WikiClientLibrary.Client
         /// Invoke API and get JSON result.
         /// </summary>
         /// <exception cref="InvalidActionException">Specified action is not supported.</exception>
+        /// <exception cref="UnauthorizedOperationException">Permission denied.</exception>
         /// <exception cref="OperationFailedException">There's "error" node in returned JSON.</exception>
         public async Task<JToken> GetJsonAsync(IEnumerable<KeyValuePair<string, string>> queryParams)
         {

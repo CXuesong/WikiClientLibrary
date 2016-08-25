@@ -5,6 +5,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Runtime.Serialization;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Linq;
 
 namespace WikiClientLibrary.Generators
@@ -187,8 +188,10 @@ namespace WikiClientLibrary.Generators
                 cancellation.ThrowIfCancellationRequested();
                 return Tuple.Create(jrc, true);
             });
+            var serializer = Utility.CreateWikiJsonSerializer();
+            serializer.Converters.Insert(0, new RcEntryCreator(Site));
             return paging.SelectMany(jarr =>
-                jarr.ToObject<IList<RecentChangesEntry>>(Utility.WikiJsonSerializer).ToAsyncEnumerable());
+                jarr.ToObject<IList<RecentChangesEntry>>(serializer).ToAsyncEnumerable());
         }
 
         /// <summary>
@@ -197,6 +200,22 @@ namespace WikiClientLibrary.Generators
         public IEnumerable<RecentChangesEntry> EnumRecentChanges()
         {
             return EnumRecentChangesAsync().ToEnumerable();
+        }
+
+        private class RcEntryCreator : CustomCreationConverter<RecentChangesEntry>
+        {
+            public RcEntryCreator(Site site)
+            {
+                if (site == null) throw new ArgumentNullException(nameof(site));
+                Site = site;
+            }
+
+            public Site Site { get; }
+
+            public override RecentChangesEntry Create(Type objectType)
+            {
+                return new RecentChangesEntry(Site);
+            }
         }
     }
 

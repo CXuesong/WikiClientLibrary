@@ -16,21 +16,29 @@ namespace WikiClientLibrary
 {
     internal static class Utility
     {
-        // http://stackoverflow.com/questions/36186276/is-the-json-net-jsonserializer-threadsafe
-        private static readonly JsonSerializerSettings WikiJsonSerializerSettings =
-            new JsonSerializerSettings
-            {
-                DateFormatHandling = DateFormatHandling.IsoDateFormat,
-                NullValueHandling = NullValueHandling.Include,
-                ContractResolver = new DefaultContractResolver {NamingStrategy = new WikiJsonNamingStrategy()},
-                Converters =
-                {
-                    new WikiBooleanJsonConverter()
-                },
-            };
 
-        public static readonly JsonSerializer WikiJsonSerializer =
-            JsonSerializer.CreateDefault(WikiJsonSerializerSettings);
+        // http://stackoverflow.com/questions/36186276/is-the-json-net-jsonserializer-threadsafe
+        public static readonly JsonSerializer WikiJsonSerializer = CreateWikiJsonSerializer();
+
+        /// <summary>
+        /// Create an new instance of <see cref="JsonSerializer"/> with its
+        /// own instance of <see cref="JsonSerializerSettings"/>.
+        /// </summary>
+        public static JsonSerializer CreateWikiJsonSerializer()
+        {
+            var settings =
+                new JsonSerializerSettings
+                {
+                    DateFormatHandling = DateFormatHandling.IsoDateFormat,
+                    NullValueHandling = NullValueHandling.Include,
+                    ContractResolver = new DefaultContractResolver {NamingStrategy = new WikiJsonNamingStrategy()},
+                    Converters =
+                    {
+                        new WikiBooleanJsonConverter()
+                    },
+                };
+            return JsonSerializer.CreateDefault(settings);
+        }
 
         /// <summary>
         /// Convert name-value paris to URL query format.
