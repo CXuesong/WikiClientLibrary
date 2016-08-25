@@ -165,6 +165,7 @@ namespace WikiClientLibrary
         /// <para>You don't have permission to patrol changes. Only users with the patrol right can do this.</para>
         /// <para>OR You don't have permission to patrol your own changes. Only users with the autopatrol right can do this.</para>
         /// </exception>
+        /// <remarks>It's suggested that the caller only patrol the pages whose <see cref="PatrolStatus"/> is <see cref="WikiClientLibrary.PatrolStatus.Unpatrolled"/>.</remarks>
         /// <exception cref="NotSupportedException">Patrolling is disabled on this wiki.</exception>
         public Task PatrolAsync()
         {

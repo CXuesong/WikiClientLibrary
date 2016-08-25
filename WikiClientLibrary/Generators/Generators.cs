@@ -54,7 +54,7 @@ namespace WikiClientLibrary.Generators
         /// <summary>
         /// When overridden, fills generator parameters for action=query request.
         /// </summary>
-        /// <returns>The dictioanry containning request value pairs.</returns>
+        /// <returns>The dictioanry containing request value pairs.</returns>
         protected abstract IEnumerable<KeyValuePair<string, object>> GetGeneratorParams();
 
         /// <summary>
