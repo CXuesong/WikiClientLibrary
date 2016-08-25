@@ -36,7 +36,7 @@ namespace WikiClientLibrary
         /// </remarks>
         public static Task RefreshAsync(this IEnumerable<Page> pages, bool fetchContent)
         {
-            return QueryManager.RefreshPagesAsync(pages, fetchContent);
+            return RequestManager.RefreshPagesAsync(pages, fetchContent);
         }
     }
 }

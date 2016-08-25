@@ -47,7 +47,8 @@
     <Compile Include="DelegateEnumerable.cs" />
     <Compile Include="PageExtensions.cs" />
     <Compile Include="ParsedContentInfo.cs" />
-    <Compile Include="QueryManager.cs" />
+    <Compile Include="RequestManager.cs" />
+    <Compile Include="RecentChangesEntry.cs" />
     <Compile Include="Site.cs" />
     <Compile Include="SiteInfo.cs" />
     <Compile Include="UserInfo.cs" />

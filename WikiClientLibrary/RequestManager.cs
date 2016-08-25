@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -11,7 +12,7 @@ namespace WikiClientLibrary
     /// <summary>
     /// Provides static methods for API queries.
     /// </summary>
-    internal static class QueryManager
+    internal static class RequestManager
     {
         private static IDictionary<string, string> GetPageFetchingParams(bool fetchContent)
         {
@@ -40,8 +41,13 @@ namespace WikiClientLibrary
             if (generator == null) throw new ArgumentNullException(nameof(generator));
             var queryParams = GetPageFetchingParams(fetchContent);
             return generator.EnumJsonAsync(queryParams).SelectMany(jresult =>
-                Page.FromJsonQueryResult<T>(generator.Site, (JObject) jresult["query"], fetchContent)
-                    .ToAsyncEnumerable());
+            {
+                var jquery = (JObject) jresult["query"];
+                return jquery == null
+                    ? AsyncEnumerable.Empty<T>()
+                    : Page.FromJsonQueryResult<T>(generator.Site, jquery, fetchContent)
+                        .ToAsyncEnumerable();
+            });
         }
 
         /// <summary>
@@ -80,6 +86,45 @@ namespace WikiClientLibrary
                         }
                     }
                 }
+            }
+        }
+
+        public static async Task PatrolAsync(Site site, int? recentChangeId, int? revisionId)
+        {
+            if (site == null) throw new ArgumentNullException(nameof(site));
+            if (recentChangeId == null && revisionId == null)
+                throw new ArgumentNullException(nameof(recentChangeId),
+                    "Either recentChangeId or revisionId should be set.");
+            //if (recentChangeId != null && revisionId != null)
+            //    throw new ArgumentException("Either recentChangeId or revisionId should be set, not both.");
+            if (revisionId != null && site.SiteInfo.Version < new Version("1.22"))
+                throw new InvalidOperationException("Current version of site does not support patrol by RevisionId.");
+            var token = await site.GetTokenAsync("patrol");
+            try
+            {
+                var jresult = await site.WikiClient.GetJsonAsync(new
+                {
+                    action = "patrol",
+                    rcid = recentChangeId,
+                    revid = revisionId,
+                    token = token,
+                });
+                if (recentChangeId != null) Debug.Assert((int)jresult["patrol"]["rcid"] == recentChangeId.Value);
+            }
+            catch (OperationFailedException ex)
+            {
+                switch (ex.ErrorCode)
+                {
+                    case "nosuchrcid":
+                        throw new ArgumentException($"There is no change with rcid {recentChangeId}.", ex);
+                    case "patroldisabled":
+                        throw new NotSupportedException("Patrolling is disabled on this wiki.", ex);
+                    case "noautopatrol":
+                        throw new UnauthorizedOperationException(
+                            "You don't have permission to patrol your own changes. Only users with the autopatrol right can do this.",
+                            ex);
+                }
+                throw;
             }
         }
     }

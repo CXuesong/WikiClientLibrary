@@ -1,8 +1,11 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Runtime.Serialization;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace WikiClientLibrary.Generators
 {
@@ -55,7 +58,7 @@ namespace WikiClientLibrary.Generators
         /// <summary>
         /// Only list certain types of changes.
         /// </summary>
-        public RecentChangesTypes ChangesTypes { get; set; } = RecentChangesTypes.All;
+        public RecentChangesFilterTypes TypeFilters { get; set; } = RecentChangesFilterTypes.All;
 
         public PropertyFilterOption MinorFilter { get; set; }
 
@@ -63,8 +66,14 @@ namespace WikiClientLibrary.Generators
 
         public PropertyFilterOption AnnonymousFilter { get; set; }
 
+        /// <summary>
+        /// Whether to list edits to pages that are currently redirects.
+        /// </summary>
         public PropertyFilterOption RedirectsFilter { get; set; }
 
+        /// <summary>
+        /// Whether to list edits flagged as patrolled. Only available to users with the patrol right.
+        /// </summary>
         public PropertyFilterOption PatrolledFilter { get; set; }
 
         /// <summary>
@@ -72,14 +81,14 @@ namespace WikiClientLibrary.Generators
         /// </summary>
         public bool LastRevisionsOnly { get; set; }
 
-
-        private string ParseRecentChangesTypes(RecentChangesTypes value)
+        private string ParseRecentChangesTypes(RecentChangesFilterTypes value)
         {
             var types = "";
-            if ((value & RecentChangesTypes.Edit) == RecentChangesTypes.Edit) types += "|edit";
-            if ((value & RecentChangesTypes.ExternalEdit) == RecentChangesTypes.ExternalEdit) types += "|external";
-            if ((value & RecentChangesTypes.Creation) == RecentChangesTypes.Creation) types += "|new";
-            if ((value & RecentChangesTypes.LogEntry) == RecentChangesTypes.LogEntry) types += "|log";
+            if ((value & RecentChangesFilterTypes.Edit) == RecentChangesFilterTypes.Edit) types += "|edit";
+            if ((value & RecentChangesFilterTypes.External) == RecentChangesFilterTypes.External) types += "|external";
+            if ((value & RecentChangesFilterTypes.Create) == RecentChangesFilterTypes.Create) types += "|new";
+            if ((value & RecentChangesFilterTypes.Log) == RecentChangesFilterTypes.Log) types += "|log";
+            if ((value & RecentChangesFilterTypes.Categorize) == RecentChangesFilterTypes.Log) types += "|categorize";
             if (types.Length == 0) throw new ArgumentOutOfRangeException(nameof(value));
             return types.Substring(1);
         }
@@ -91,7 +100,35 @@ namespace WikiClientLibrary.Generators
                         + AnnonymousFilter.ToString("|anon", "|!anon", "")
                         + RedirectsFilter.ToString("|redirect", "|!redirect", "")
                         + PatrolledFilter.ToString("|patrolled", "|!patrolled", "");
-            return types;
+            return types.Length > 1 ? types.Substring(1) : null;
+        }
+
+        private IEnumerable<KeyValuePair<string, object>> GetParams(bool asList)
+        {
+            var dict = new Dictionary<string, object>
+            {
+                {asList ? "list" : "generator", "recentchanges"}
+            };
+            Action<string, object> addParam = (k, v) => dict.Add(asList ? k : ("g" + k), v);
+            addParam("rcdir", TimeAscending ? "newer" : "older");
+            addParam("rcstart", StartTime);
+            addParam("rcend", EndTime);
+            addParam("rcnamespace", NamespaceIds == null ? null : string.Join("|", NamespaceIds));
+            addParam("rcuser", UserName);
+            addParam("rctag", Tag);
+            addParam("rctype", ParseRecentChangesTypes(TypeFilters));
+            addParam("rcshow", ParseFilters());
+            addParam("rctoponly", LastRevisionsOnly);
+            addParam("rclimit", ActualPagingSize);
+            if (asList)
+            {
+                // All except userid .
+                // rcpermissiondenied
+                var fields = "user|comment|parsedcomment|flags|timestamp|title|ids|sizes|redirect|loginfo|tags|sha1";
+                if (Site.UserInfo.HasRight(UserRights.Patrol)) fields += "|patrolled";
+                addParam("rcprop", fields);
+            }
+            return dict;
         }
 
         /// <summary>
@@ -100,28 +137,74 @@ namespace WikiClientLibrary.Generators
         /// <returns>The dictioanry containning request value pairs.</returns>
         protected override IEnumerable<KeyValuePair<string, object>> GetGeneratorParams()
         {
-            return new Dictionary<string, object>
+            return GetParams(false);
+        }
+
+        /// <summary>
+        /// Asynchronously generate a sequence of <see cref="RecentChangesEntry"/>.
+        /// </summary>
+        public IAsyncEnumerable<RecentChangesEntry> EnumRecentChangesAsync()
+        {
+            var valuesDict = new Dictionary<string, object>
             {
-                {"generator", "recentchanges"},
-                {"grcdir", TimeAscending ? "newer" : "older"},
-                {"grcstart", StartTime},
-                {"grcend", EndTime},
-                {"grcnamespace", NamespaceIds == null ? null : string.Join("|", NamespaceIds)},
-                {"grcuser", UserName},
-                {"grctag", Tag},
-                {"grctype", ParseRecentChangesTypes(ChangesTypes)},
-                {"grcshow", ParseFilters()},
-                {"grctoponly", LastRevisionsOnly},
-                {"grclimit", ActualPagingSize},
+                {"action", "query"},
+                {"maxlag", 5}
             };
+            foreach (var v in GetParams(true))
+                valuesDict[v.Key] = v.Value;
+            Debug.Assert((string) valuesDict["action"] == "query");
+            var eofReached = false;
+            var resultCounter = 0;
+            var paging = new DelegateAsyncEnumerable<JArray>(async cancellation =>
+            {
+                if (eofReached) return null;
+                cancellation.ThrowIfCancellationRequested();
+                Site.Logger?.Trace(ToString() + ": Loading pages from #" + resultCounter);
+                var jresult = await Client.GetJsonAsync(valuesDict);
+                // continue.xxx
+                // or query-continue.allpages.xxx
+                var continuation = (JObject) (jresult["continue"]
+                                              ?? ((JProperty) jresult["query-continue"]?.First)?.Value);
+                if (continuation != null)
+                {
+                    // Prepare for the next page of list.
+                    // Note for string of ISO date,
+                    // (string) JToken == (string) (DateTime) JToken
+                    // So we cannot use (string) p.Value or p.Value.ToString
+                    foreach (var p in continuation.Properties())
+                        valuesDict[p.Name] = p.Value.ToObject<object>();
+                }
+                else
+                {
+                    eofReached = true;
+                }
+                // If there's no result, "query" node will not exist.
+                var jrc = (JArray) jresult["query"]?["recentchanges"];
+                if (jrc != null)
+                    resultCounter += jrc.Count;
+                else if (continuation != null)
+                    Site.Logger?.Warn("Empty page list received.");
+                cancellation.ThrowIfCancellationRequested();
+                return Tuple.Create(jrc, true);
+            });
+            return paging.SelectMany(jarr =>
+                jarr.ToObject<IList<RecentChangesEntry>>(Utility.WikiJsonSerializer).ToAsyncEnumerable());
+        }
+
+        /// <summary>
+        /// Generate a sequence of <see cref="RecentChangesEntry"/>.
+        /// </summary>
+        public IEnumerable<RecentChangesEntry> EnumRecentChanges()
+        {
+            return EnumRecentChangesAsync().ToEnumerable();
         }
     }
 
     /// <summary>
-    /// Types of recent changes.
+    /// Types of recent changes. Used in <see cref="RecentChangesGenerator"/>.
     /// </summary>
     [Flags]
-    public enum RecentChangesTypes
+    public enum RecentChangesFilterTypes
     {
         /// <summary>
         /// Invalid enum value. Using this value may cause exceptions.
@@ -134,23 +217,28 @@ namespace WikiClientLibrary.Generators
         Edit = 1,
 
         /// <summary>
-        /// External edits.
+        /// An external recent change. Primarily used by Wikidata.
         /// </summary>
-        ExternalEdit = 2,
+        External = 2,
 
         /// <summary>
         /// Page creations (Uploads are not listed as Creation but as LogEntry).
         /// </summary>
-        Creation = 4,
+        Create = 4,
 
         /// <summary>
         /// Log entries.
         /// </summary>
-        LogEntry = 8,
+        Log = 8,
+
+        /// <summary>
+        /// Category membership change. (MediaWiki 1.27)
+        /// </summary>
+        Categorize = 16,
 
         /// <summary>
         /// All types of changes.
         /// </summary>
-        All = Edit | ExternalEdit | Creation | LogEntry,
+        All = Edit | External | Create | Log | Categorize
     }
 }

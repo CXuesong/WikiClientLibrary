@@ -177,9 +177,9 @@ namespace UnitTestProject1
             return DumpObject(obj, 0, maxDepth);
         }
 
-        public static void ShallowTrace(object obj)
+        public static void ShallowTrace(object obj, int depth = 2)
         {
-            Trace.WriteLine(DumpObject(obj, 2));
+            Trace.WriteLine(DumpObject(obj, depth));
         }
 
         public static void AssertLoggedIn(Site site)

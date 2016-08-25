@@ -88,14 +88,22 @@ namespace WikiClientLibrary.Generators
                 if (continuation != null)
                 {
                     // Prepare for the next page of list.
+                    // Note for string of ISO date,
+                    // (string) JToken == (string) (DateTime) JToken
+                    // So we cannot use (string) p.Value or p.Value.ToString
                     foreach (var p in continuation.Properties())
-                        valuesDict[p.Name] = p.Value.ToString();
+                        valuesDict[p.Name] = p.Value.ToObject<object>();
                 }
                 else
                 {
                     eofReached = true;
                 }
-                resultCounter += ((JObject) jresult["query"]).Count;
+                // If there's no result, "query" node will not exist.
+                var jquery = (JObject) jresult["query"];
+                if (jquery != null)
+                    resultCounter += jquery.Count;
+                else if (continuation != null)
+                    Site.Logger?.Warn("Empty page list received.");
                 cancellation.ThrowIfCancellationRequested();
                 return Tuple.Create((JObject) jresult, true);
             });
@@ -155,7 +163,7 @@ namespace WikiClientLibrary.Generators
         /// <param name="fetchContent">Whether to fetch the last revision and content of the page.</param>
         public IAsyncEnumerable<T> EnumPagesAsync(bool fetchContent)
         {
-            return QueryManager.EnumPagesAsync<T>(this, fetchContent);
+            return RequestManager.EnumPagesAsync<T>(this, fetchContent);
         }
     }
 }

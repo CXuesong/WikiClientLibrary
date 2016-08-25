@@ -13,26 +13,16 @@ namespace UnitTestProject1
     [TestClass]
     public class GeneratorTests
     {
-        private static Site WpTestSite;
+        private static readonly Lazy<Site> _WpTestSite = new Lazy<Site>(() => CreateWikiSite(EntryPointWikipediaTest2));
+        private static readonly Lazy<Site> _WikiaTestSite = new Lazy<Site>(() => CreateWikiSite(EntryPointWikiaTest));
+        private static readonly Lazy<Site> _WpSite = new Lazy<Site>(() => CreateWikiSite(EntryWikipediaLzh));
 
-        private static Site WikiaTestSite;
+        public static Site WpTestSite => _WpTestSite.Value;
 
-        [ClassInitialize]
-        public static void OnClassInitializing(TestContext context)
-        {
-            // Prepare test environment.
-            WpTestSite = CreateWikiSite(EntryPointWikipediaTest2);
-            //CredentialManager.Login(WpTestSite);
-            WikiaTestSite = CreateWikiSite(EntryPointWikiaTest);
-            //CredentialManager.Login(WikiaTestSite);
-        }
+        public static Site WikiaTestSite => _WikiaTestSite.Value;
 
-        [ClassCleanup]
-        public static void OnClassCleanup()
-        {
-            //CredentialManager.Logout(WpTestSite);
-            //CredentialManager.Logout(WikiaTestSite);
-        }
+        public static Site WpLzhSite => _WpSite.Value;
+
 
         private void AssertTitlesDistinct(IReadOnlyCollection<Page> pages)
         {
@@ -141,13 +131,37 @@ namespace UnitTestProject1
 
 
         [TestMethod]
-        public void WpRecentChangesGeneratorTest1()
+        public void WpTest2RecentChangesGeneratorTest1()
         {
             var site = WpTestSite;
             var generator = new RecentChangesGenerator(site) {LastRevisionsOnly = true, PagingSize = 20};
-            var pages = generator.EnumPages().Take(2000).ToList();
+            var pages = generator.EnumPages().Take(1000).ToList();
             TracePages(pages);
             AssertTitlesDistinct(pages);
+        }
+
+        [TestMethod]
+        public void WpLzhRecentChangesGeneratorTest1()
+        {
+            var site = WpLzhSite;
+            var generator = new RecentChangesGenerator(site)
+            {
+                LastRevisionsOnly = true,
+                // BotFilter = PropertyFilterOption.WithProperty,
+                MinorFilter = PropertyFilterOption.WithProperty,
+                AnnonymousFilter = PropertyFilterOption.WithoutProperty,
+                TypeFilters = RecentChangesFilterTypes.Create | RecentChangesFilterTypes.Edit,
+            };
+            var pages = generator.EnumPages(true).Take(100).ToList();
+            TracePages(pages);
+            AssertTitlesDistinct(pages);
+            foreach (var p in pages)
+            {
+                var flags = p.LastRevision.Flags;
+                Assert.IsTrue(flags != RevisionFlags.None);
+                Assert.IsFalse(flags.HasFlag(RevisionFlags.Annonymous));
+                Assert.IsTrue(flags.HasFlag(RevisionFlags.Minor));
+            }
         }
 
         //ISSUE
@@ -155,17 +169,51 @@ namespace UnitTestProject1
         // when using RecentChanges as generator rather than a
         // list to query. The continuation just failed to make effects
         // and the continued page of results just like the previous page.
+        [TestMethod]
         public void WikiaRecentChangesGeneratorTest1()
         {
-            var site = CreateWikiSite("http://warriors.wikia.com/api.php");
+            var site = WikiaTestSite;
             var generator = new RecentChangesGenerator(site)
             {
                 LastRevisionsOnly = true,
-                PagingSize = 100,
             };
             var pages = generator.EnumPages().Take(2000).ToList();
             TracePages(pages);
             AssertTitlesDistinct(pages);
         }
+
+        [TestMethod]
+        public void WpLzhRecentChangesListTest()
+        {
+            var site = WpLzhSite;
+            var generator = new RecentChangesGenerator(site)
+            {
+                LastRevisionsOnly = true,
+                BotFilter = PropertyFilterOption.WithProperty,
+                MinorFilter = PropertyFilterOption.WithProperty,
+            };
+            var rc = generator.EnumRecentChanges().Take(2000).ToList();
+            ShallowTrace(rc, 1);
+            foreach (var p in rc)
+            {
+                var flags = p.Flags;
+                Assert.IsTrue(flags != RevisionFlags.None);
+                Assert.IsTrue(flags.HasFlag(RevisionFlags.Bot));
+                Assert.IsTrue(flags.HasFlag(RevisionFlags.Minor));
+            }
+        }
+
+        [TestMethod]
+        public void WikiaRecentChangesListTest()
+        {
+            var site = WikiaTestSite;
+            var generator = new RecentChangesGenerator(site)
+            {
+                LastRevisionsOnly = true,
+            };
+            var rc = generator.EnumRecentChanges().Take(2000).ToList();
+            ShallowTrace(rc, 1);
+        }
+
     }
 }

@@ -110,6 +110,8 @@ namespace WikiClientLibrary.Client
         /// <summary>
         /// Invoke API and get JSON result.
         /// </summary>
+        /// <exception cref="InvalidActionException">Specified action is not supported.</exception>
+        /// <exception cref="OperationFailedException">There's "error" node in returned JSON.</exception>
         public async Task<JToken> GetJsonAsync(IEnumerable<KeyValuePair<string, string>> queryParams)
         {
             if (queryParams == null) throw new ArgumentNullException(nameof(queryParams));
@@ -122,6 +124,11 @@ namespace WikiClientLibrary.Client
             return result;
         }
 
+        /// <summary>
+        /// Invoke API and get JSON result.
+        /// </summary>
+        /// <exception cref="InvalidActionException">Specified action is not supported.</exception>
+        /// <exception cref="OperationFailedException">There's "error" node in returned JSON.</exception>
         public Task<JToken> GetJsonAsync(object queryParams)
         {
             return GetJsonAsync(Utility.ToWikiStringValuePairs(queryParams));

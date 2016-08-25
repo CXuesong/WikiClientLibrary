@@ -244,7 +244,7 @@ namespace WikiClientLibrary
         /// <param name="fetchContent">Whether to fetch latest revision and its content of the pages.</param>
         public Task RefreshAsync(bool fetchContent)
         {
-            return QueryManager.RefreshPagesAsync(new[] {this}, fetchContent);
+            return RequestManager.RefreshPagesAsync(new[] {this}, fetchContent);
         }
 
         #endregion
@@ -703,6 +703,10 @@ namespace WikiClientLibrary
     {
         None = 0,
         Minor = 1,
+        /// <summary>
+        /// The operation is performed by bot.
+        /// This flag can only be access via <see cref="RecentChangesEntry.Flags"/>.
+        /// </summary>
         Bot = 2,
         Create = 4,
         Annonymous = 8,

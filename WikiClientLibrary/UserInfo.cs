@@ -126,5 +126,7 @@ namespace WikiClientLibrary
     public static class UserRights
     {
         public const string ApiHighLimits = "apihighlimits";
+        public const string Patrol = "patrol";
+        public const string AutoPatrol = "autopatrol";
     }
 }
