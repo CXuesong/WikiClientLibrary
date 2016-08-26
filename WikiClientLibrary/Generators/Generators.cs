@@ -19,10 +19,13 @@ namespace WikiClientLibrary.Generators
         {
             if (site == null) throw new ArgumentNullException(nameof(site));
             Site = site;
+            WikiClient = site.WikiClient;
+            Debug.Assert(WikiClient != null);
         }
 
         public Site Site { get; }
-        public WikiClient Client => Site.WikiClient;
+
+        public WikiClient WikiClient { get; }
 
         /// <summary>
         /// Maximum items returned per request.
@@ -80,7 +83,7 @@ namespace WikiClientLibrary.Generators
                 if (eofReached) return null;
                 cancellation.ThrowIfCancellationRequested();
                 Site.Logger?.Trace(ToString() + ": Loading pages from #" + resultCounter);
-                var jresult = await Client.GetJsonAsync(valuesDict);
+                var jresult = await WikiClient.GetJsonAsync(valuesDict);
                 // continue.xxx
                 // or query-continue.allpages.xxx
                 var continuation = (JObject) (jresult["continue"]
