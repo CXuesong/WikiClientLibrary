@@ -39,7 +39,7 @@ namespace UnitTestProject1
             Assert.IsTrue(site.Namespaces.Contains(id), $"Cannot find namespace id={id}.");
             var ns = site.Namespaces[id];
             var n = normalizedName ?? name;
-            Assert.IsTrue(ns.Name == n || ns.Aliases.Contains(n));
+            Assert.IsTrue(ns.CanonicalName == n || ns.Aliases.Contains(n));
             Assert.AreEqual(isContent, site.Namespaces[id].IsContent);
         }
 

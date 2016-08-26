@@ -138,7 +138,7 @@ namespace WikiClientLibrary
     {
         public const int Media = -2;
         public const int Special = -1;
-        public const int Article = 0;
+        public const int Main = 0;
         public const int Talk = 1;
         public const int User = 2;
         public const int UserTalk = 3;
@@ -154,5 +154,41 @@ namespace WikiClientLibrary
         public const int HelpTalk = 13;
         public const int Category = 14;
         public const int CategoryTalk = 15;
+
+        private static readonly IDictionary<int, string> _CanonicalNameDict = new Dictionary<int, string>
+        {
+            {-2, "Media"},
+            {-1, "Special"},
+            {0, ""},
+            {1, "Talk"},
+            {2, "User"},
+            {3, "User talk"},
+            {4, "Project"},
+            {5, "Project talk"},
+            {6, "File"},
+            {7, "File talk"},
+            {8, "MediaWiki"},
+            {9, "MediaWiki talk"},
+            {10, "Template"},
+            {11, "Template talk"},
+            {12, "Help"},
+            {13, "Help talk"},
+            {14, "Category"},
+            {15, "Category talk"},
+        };
+
+        /// <summary>
+        /// Gets the canonical name for a specific built-in namespace.
+        /// </summary>
+        /// <returns>
+        /// canonical name for the specified built-in namespace.
+        /// OR <c>null</c> if no such namespace is found.
+        /// </returns>
+        public static string GetCanonicalName(int namespaceId)
+        {
+            string name;
+            if (_CanonicalNameDict.TryGetValue(namespaceId, out name)) return name;
+            return null;
+        }
     }
 }

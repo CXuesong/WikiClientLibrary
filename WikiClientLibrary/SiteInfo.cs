@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System.Collections.Specialized;
+using System.Diagnostics;
 using System.Runtime.Serialization;
 
 namespace WikiClientLibrary
@@ -160,9 +161,15 @@ namespace WikiClientLibrary
         /// <summary>
         /// Canonical namespace name.
         /// </summary>
-        /// <remarks>In JSON, prior to MediaWiki 1.25, the parameter name was *.</remarks>
         [JsonProperty("canonical")]
-        public string Name { get; private set; }
+        public string CanonicalName { get; private set; }
+
+        /// <summary>
+        /// The displayed name for the namespace. Defined in server LocalSettings.php .
+        /// </summary>
+        /// <remarks>In JSON, prior to MediaWiki 1.25, the parameter name was *.</remarks>
+        [JsonProperty("name")]
+        public string CustomName { get; private set; }
 
         /// <summary>
         /// Namespace alias names.
@@ -173,7 +180,7 @@ namespace WikiClientLibrary
         [JsonProperty("*")]
         private string StarName
         {
-            set { if (Name == null) Name = value; }
+            set { if (CustomName == null) CustomName = value; }
         }
 
         [JsonProperty("content")]
@@ -197,6 +204,15 @@ namespace WikiClientLibrary
             _Aliases.Add(title);
         }
 
+        [OnDeserialized]
+        private void OnDeserialized(StreamingContext context)
+        {
+            // Try to get canonical name for built-in namespace.
+            // This is used especially for NS_MAIN .
+            if (CanonicalName == null) CanonicalName = BuiltInNamespaces.GetCanonicalName(Id);
+            Debug.Assert(CanonicalName != null);
+        }
+
         /// <summary>
         /// 返回表示当前对象的字符串。
         /// </summary>
@@ -205,7 +221,7 @@ namespace WikiClientLibrary
         /// </returns>
         public override string ToString()
         {
-            return $"[{Id}]{Name}" + (Aliases.Count > 0 ? "/" + string.Join("/", Aliases) : null);
+            return $"[{Id}]{CustomName}" + (Aliases.Count > 0 ? "/" + string.Join("/", Aliases) : null);
         }
     }
 
@@ -223,7 +239,12 @@ namespace WikiClientLibrary
             if (site == null) throw new ArgumentNullException(nameof(site));
             if (namespaces == null) throw new ArgumentNullException(nameof(namespaces));
             idNsDict = namespaces.ToObject<IDictionary<int, NamespaceInfo>>(Utility.WikiJsonSerializer);
-            nameNsDict = idNsDict.Values.ToDictionary(n => n.Name);
+            nameNsDict = idNsDict.Values.ToDictionary(n => n.CanonicalName);
+            foreach (var ns in idNsDict.Values)
+            {
+                if (ns.CustomName != ns.CanonicalName)
+                    nameNsDict.Add(ns.CustomName, ns);
+            }
             if (jaliases != null)
             {
                 foreach (var al in jaliases)
@@ -245,13 +266,13 @@ namespace WikiClientLibrary
         }
 
         /// <summary>
-        /// Get the namespace info with specified nemspace id.
+        /// Get the namespace info with specified namespace id.
         /// </summary>
         /// <exception cref="KeyNotFoundException">The specified namespace id cannot be found.</exception>
         public NamespaceInfo this[int index] => idNsDict[index];
 
         /// <summary>
-        /// Get the namespace info with specified nemspace name or alias.
+        /// Get the namespace info with specified namespace name or alias.
         /// </summary>
         /// <exception cref="KeyNotFoundException">The specified namespace id cannot be found.</exception>
         public NamespaceInfo this[string name]
@@ -259,21 +280,42 @@ namespace WikiClientLibrary
             get
             {
                 var ns = TryGetNamespace(name);
-                if (ns != null) return ns;
+                if (ns != null) return ns.Item1;
                 throw new KeyNotFoundException($"Cannot find namespace for {name} .");
             }
         }
 
-        private NamespaceInfo TryGetNamespace(string name)
+        /// <summary>
+        /// Tries to get the namespace info with specified namespace id.
+        /// </summary>
+        public bool TryGetValue(int id, out NamespaceInfo ns)
+        {
+            return idNsDict.TryGetValue(id, out ns);
+        }
+
+        /// <summary>
+        /// Tries to get the namespace info with specified namespace name.
+        /// </summary>
+        public bool TryGetValue(string name, out NamespaceInfo ns)
+        {
+            var ns1 = TryGetNamespace(name)?.Item1;
+            ns = ns1;
+            return ns1 != null;
+        }
+
+        private Tuple<NamespaceInfo, string> TryGetNamespace(string name)
         {
             NamespaceInfo ns;
             // Try the case-sensitive one first.
-            if (nameNsDict.TryGetValue(Utility.NormalizeTitlePart(name, true), out ns))
-                return ns;
+            var nn = Utility.NormalizeTitlePart(name, true);
+            if (nameNsDict.TryGetValue(nn, out ns))
+                return Tuple.Create(ns, nn);
             // Try case-insensitive.
+            nn = Utility.NormalizeTitlePart(name, false);
             if (nameNsDict.TryGetValue(Utility.NormalizeTitlePart(name, false), out ns))
             {
-                if (!ns.IsCaseSensitive) return ns;
+                if (!ns.IsCaseSensitive)
+                    return Tuple.Create(ns, nn);
             }
             return null;
         }
@@ -286,6 +328,21 @@ namespace WikiClientLibrary
         public bool Contains(string name)
         {
             return TryGetNamespace(name) != null;
+        }
+
+        /// <summary>
+        /// Tries to normalize the namespace name, if the given name
+        /// is the same as namespace cannonical name or alias.
+        /// </summary>
+        /// <param name="name">The name to be normalized.</param>
+        /// <returns>
+        /// The normalized namespace name or alias.
+        /// OR <c>null</c>, if there's no matching namespace name.
+        /// </returns>
+        public string TryNormalize(string name)
+        {
+            var ns = TryGetNamespace(name);
+            return ns?.Item2;
         }
 
         #region ICollection
@@ -389,13 +446,23 @@ namespace WikiClientLibrary
     [JsonObject(MemberSerialization.OptIn)]
     public class InterwikiEntry
     {
+        private string _Prefix;
+
         /// <summary>
         /// The prefix of the interwiki link;
         /// this is used the same way as a namespace is used when editing.
         /// </summary>
         /// <remarks>Prefixes must be all lower-case.</remarks>
         [JsonProperty]
-        public string Prefix { get; private set; }
+        public string Prefix
+        {
+            get { return _Prefix; }
+            private set
+            {
+                if (value != null) Debug.Assert(value == value.ToLowerInvariant());
+                _Prefix = value;
+            }
+        }
 
         /// <summary>
         /// Whether the interwiki prefix points to a site belonging to the current wiki farm.
@@ -478,17 +545,22 @@ namespace WikiClientLibrary
             if (interwikiMap == null) throw new ArgumentNullException(nameof(interwikiMap));
             // I should use InvariantIgnoreCase. But there's no such a member in PCL.
             nameIwDict = interwikiMap.ToObject<IList<InterwikiEntry>>(Utility.WikiJsonSerializer)
-                .ToDictionary(e => e.Prefix, StringComparer.OrdinalIgnoreCase);
+                .ToDictionary(e => e.Prefix);
         }
 
         /// <summary>
         /// Get the interwiki entry with specified prefix. The match is case-insensitive.
         /// </summary>
         /// <exception cref="KeyNotFoundException">The specified prefix cannot be found.</exception>
-        public InterwikiEntry this[string name] => nameIwDict[name];
+        public InterwikiEntry this[string prefix] => nameIwDict[prefix];
 
+        /// <summary>
+        /// Determines whether there's an interwiki entry with specified prefix.
+        /// The match is case-insensitive, and name will internally be normalized.
+        /// </summary>
         public bool Contains(string name)
         {
+            name = name.ToLowerInvariant().Trim(' ', '_');
             return nameIwDict.ContainsKey(name);
         }
 
