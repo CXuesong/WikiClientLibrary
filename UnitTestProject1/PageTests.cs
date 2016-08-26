@@ -131,7 +131,7 @@ namespace UnitTestProject1
         }
 
         [TestMethod]
-        [ExpectedException(typeof(OperationFailedException))]
+        [ExpectedException(typeof(ArgumentException))]
         public void WpTest2PageWriteTest3()
         {
             AssertModify();
@@ -151,9 +151,10 @@ namespace UnitTestProject1
             var page = new Page(site, "project:sandbox");
             var result = AwaitSync(page.PurgeAsync());
             Assert.IsTrue(result);
-            page = new Page(site, "special:");
-            result = AwaitSync(page.PurgeAsync());
-            Assert.IsFalse(result);
+            // Now an ArgumentException should be thrown.
+            //page = new Page(site, "special:");
+            //result = AwaitSync(page.PurgeAsync());
+            //Assert.IsFalse(result);
             page = new Page(site, "the page should be inexistent");
             result = AwaitSync(page.PurgeAsync());
             Assert.IsFalse(result);
