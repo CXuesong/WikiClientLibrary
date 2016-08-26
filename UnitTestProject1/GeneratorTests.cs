@@ -62,7 +62,7 @@ namespace UnitTestProject1
         {
             var site = WpTestSite;
             var generator = new AllPagesGenerator(site) {StartTitle = "W", PagingSize = 20};
-            var pages = generator.EnumPages(PageQueryOptions.FetchLastRevision).Take(100).ToList();
+            var pages = generator.EnumPages(PageQueryOptions.FetchContent).Take(100).ToList();
             TracePages(pages);
             Assert.IsTrue(pages[0].Title[0] == 'W');
             AssertTitlesDistinct(pages);
@@ -86,7 +86,7 @@ namespace UnitTestProject1
             var pages = generator.EnumPages().Take(2000).ToList();
             TracePages(pages);
             generator = new AllCategoriesGenerator(site) {StartTitle = "C", PagingSize = 20};
-            pages = generator.EnumPages(PageQueryOptions.FetchLastRevision).Take(100).ToList();
+            pages = generator.EnumPages(PageQueryOptions.FetchContent).Take(100).ToList();
             TracePages(pages);
             AssertTitlesDistinct(pages);
         }
@@ -152,7 +152,7 @@ namespace UnitTestProject1
                 AnnonymousFilter = PropertyFilterOption.WithoutProperty,
                 TypeFilters = RecentChangesFilterTypes.Create | RecentChangesFilterTypes.Edit,
             };
-            var pages = generator.EnumPages(PageQueryOptions.FetchLastRevision).Take(100).ToList();
+            var pages = generator.EnumPages(PageQueryOptions.FetchContent).Take(100).ToList();
             TracePages(pages);
             AssertTitlesDistinct(pages);
             foreach (var p in pages)

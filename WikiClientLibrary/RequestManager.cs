@@ -20,15 +20,15 @@ namespace WikiClientLibrary
             {
                 {"action", "query"},
                 // We also fetch category info, just in case.
-                {"prop", "info|categoryinfo"},
+                {"prop", "info|categoryinfo|revisions"},
                 {"inprop", "protection"},
+                {"rvprop", "ids|timestamp|flags|comment|user|contentmodel|sha1|tags|size"},
                 {"redirects", (options & PageQueryOptions.ResolveRedirects) == PageQueryOptions.ResolveRedirects},
                 {"maxlag", 5},
             };
-            if ((options & PageQueryOptions.FetchLastRevision) == PageQueryOptions.FetchLastRevision)
+            if ((options & PageQueryOptions.FetchContent) == PageQueryOptions.FetchContent)
             {
-                queryParams["prop"] += "|revisions";
-                queryParams["rvprop"] = "ids|timestamp|flags|comment|user|contentmodel|sha1|content";
+                queryParams["rvprop"] += "|content";
             }
             return queryParams;
         }
@@ -94,6 +94,60 @@ namespace WikiClientLibrary
                 }
             }
         }
+
+        /// <summary>
+        /// Enumerate revisions from the page.
+        /// </summary>
+        /// <remarks>Redirect resolution is disabled in this operation.</remarks>
+        public static IAsyncEnumerable<Revision> EnumRevisionsAsync(Site site, string pageTitle, RevisionsQueryOptions options)
+        {
+            var pa = GetPageFetchingParams(
+                (options & RevisionsQueryOptions.FetchContent) == RevisionsQueryOptions.FetchContent
+                    ? PageQueryOptions.FetchContent
+                    : PageQueryOptions.None);
+            pa["rvlimit"] = site.UserInfo.HasRight(UserRights.ApiHighLimits) ? 5000 : 500;
+            pa["rvdir"] = (options & RevisionsQueryOptions.TimeAscending) == RevisionsQueryOptions.TimeAscending
+                ? "newer"
+                : "older";
+            pa["titles"] = pageTitle;
+            var eofReached = false;
+            var resultCounter = 0;
+            return new DelegateAsyncEnumerable<JArray>(async cancellation =>
+            {
+                if (eofReached) return null;
+                cancellation.ThrowIfCancellationRequested();
+                site.Logger?.Trace($"Loading revisions of {pageTitle} from #{resultCounter}");
+                var jresult = await site.WikiClient.GetJsonAsync(pa);
+                // continue.xxx
+                // or query-continue.allpages.xxx
+                var continuation = (JObject) (jresult["continue"]
+                                              ?? ((JProperty) jresult["query-continue"]?.First)?.Value);
+                if (continuation != null)
+                {
+                    // Prepare for the next page of list.
+                    foreach (var p in continuation.Properties())
+                        pa[p.Name] = p.Value.ToObject<object>();
+                }
+                else
+                {
+                    eofReached = true;
+                }
+                // If there's no result, "query" node will not exist.
+                var page = jresult["query"]?["pages"].Values().First();
+                var revisions = (JArray) page?["revisions"];
+                if (revisions != null)
+                    resultCounter += revisions.Count;
+                else if (continuation != null)
+                    site.Logger?.Warn("Empty page list received.");
+                cancellation.ThrowIfCancellationRequested();
+                return Tuple.Create(revisions, true);
+            }).SelectMany(jrevs =>
+            {
+                if (jrevs == null) return AsyncEnumerable.Empty<Revision>();
+                return jrevs.ToObject<IList<Revision>>(Utility.WikiJsonSerializer).ToAsyncEnumerable();
+            });
+        }
+
 
         public static async Task PatrolAsync(Site site, int? recentChangeId, int? revisionId)
         {

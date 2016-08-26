@@ -139,9 +139,8 @@ namespace WikiClientLibrary
             Id = id;
             var page = (JObject) prop.Value;
             OnLoadPageInfo(page);
-            if ((options & PageQueryOptions.FetchLastRevision) == PageQueryOptions.FetchLastRevision)
-                // TODO Cache content
-                LoadLastRevision(page);
+            // TODO Cache content
+            LoadLastRevision(page);
             QueryOptions = options;
         }
 
@@ -246,6 +245,23 @@ namespace WikiClientLibrary
         public Task RefreshAsync(PageQueryOptions options)
         {
             return RequestManager.RefreshPagesAsync(new[] {this}, options);
+        }
+
+        /// <summary>
+        /// Enumerate revisions of the page.
+        /// </summary>
+        /// <param name="options">Options for revision listing.</param>
+        public IAsyncEnumerable<Revision> EnumRevisionsAsync(RevisionsQueryOptions options)
+        {
+            return RequestManager.EnumRevisionsAsync(Site, Title, options);
+        }
+
+        /// <summary>
+        /// Enumerate revisions of the page, descending in time, without revision content.
+        /// </summary>
+        public IAsyncEnumerable<Revision> EnumRevisionsAsync()
+        {
+            return EnumRevisionsAsync(RevisionsQueryOptions.None);
         }
 
         #endregion
@@ -597,14 +613,28 @@ namespace WikiClientLibrary
     {
         None = 0,
         /// <summary>
-        /// Fetch last revison and its content.
+        /// Fetch content of the page.
         /// </summary>
-        FetchLastRevision = 1,
+        FetchContent = 1,
         /// <summary>
         /// Resolves directs automatically. This may later change <see cref="Page.Title"/>.
         /// This option cannot be used with generators.
         /// </summary>
         ResolveRedirects = 2,
+    }
+
+    [Flags]
+    public enum RevisionsQueryOptions
+    {
+        None = 0,
+        /// <summary>
+        /// Fetch content of the revision.
+        /// </summary>
+        FetchContent = 1,
+        /// <summary>
+        /// Enumerate the oldest revision first.
+        /// </summary>
+        TimeAscending = 2,
     }
 
     /// <summary>
@@ -645,6 +675,10 @@ namespace WikiClientLibrary
         [JsonProperty]
         public int ParentId { get; private set; }
 
+        /// <summary>
+        /// Gets the content of the revision.
+        /// </summary>
+        /// <value>Wikitext source code. OR <c>null</c> if content has not been fetched.</value>
         [JsonProperty("*")]
         public string Content { get; private set; }
 
@@ -657,11 +691,14 @@ namespace WikiClientLibrary
         [JsonProperty]
         public string Sha1 { get; private set; }
 
-        [JsonProperty]
-        public string UserId { get; private set; }
-
         [JsonProperty("user")]
         public string UserName { get; private set; }
+
+        [JsonProperty("size")]
+        public int ContentLength { get; private set; }
+
+        [JsonProperty]
+        public IList<string> Tags { get; private set; }
 
         /// <summary>
         /// The timestamp of revision.
@@ -671,11 +708,18 @@ namespace WikiClientLibrary
 
         public RevisionFlags Flags { get; private set; }
 
+        /// <summary>
+        /// Gets a indicator of whether one or more fields has been hidden.
+        /// </summary>
+        /// <remarks>See https://www.mediawiki.org/wiki/Help:RevisionDelete .</remarks>
+        public RevisionHiddenFields HiddenFields { get; private set; }
+
 #pragma warning disable 649
         [JsonProperty] private bool Minor;
         [JsonProperty] private bool Bot;
         [JsonProperty] private bool New;
         [JsonProperty] private bool Anon;
+        [JsonProperty] private bool UserHidden;
 #pragma warning restore 649
 
         [OnDeserialized]
@@ -686,6 +730,8 @@ namespace WikiClientLibrary
             if (Bot) Flags |= RevisionFlags.Bot;
             if (New) Flags |= RevisionFlags.Create;
             if (Anon) Flags |= RevisionFlags.Annonymous;
+            HiddenFields = RevisionHiddenFields.None;
+            if (UserHidden) HiddenFields |= RevisionHiddenFields.User;
         }
 
         /// <summary>
@@ -696,7 +742,8 @@ namespace WikiClientLibrary
         /// </returns>
         public override string ToString()
         {
-            return $"Revision#{Id}, {Flags}, SHA1={Sha1}";
+            var tags = Tags == null ? null : string.Join("|", Tags);
+            return $"Revision#{Id}, {Flags}, {tags}, SHA1={Sha1}";
         }
     }
 
@@ -715,5 +762,17 @@ namespace WikiClientLibrary
         Bot = 2,
         Create = 4,
         Annonymous = 8,
+    }
+
+    /// <summary>
+    /// Hidden part of revision indicators.
+    /// </summary>
+    /// <remarks>See https://www.mediawiki.org/wiki/Help:RevisionDelete .</remarks>
+    [Flags]
+    public enum RevisionHiddenFields
+    {
+        None = 0,
+        User = 1,
+        //TODO Content & Comment
     }
 }

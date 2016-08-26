@@ -18,11 +18,11 @@ namespace UnitTestProject1
 
         private static readonly Lazy<Site> _WpTestSite = new Lazy<Site>(() => CreateWikiSite(EntryPointWikipediaTest2, true));
         private static readonly Lazy<Site> _WikiaTestSite = new Lazy<Site>(() => CreateWikiSite(EntryPointWikiaTest, true));
-        private static readonly Lazy<Site> _WpSite = new Lazy<Site>(() => CreateWikiSite(EntryWikipediaLzh));
+        private static readonly Lazy<Site> _WpLzhSite = new Lazy<Site>(() => CreateWikiSite(EntryWikipediaLzh));
 
         public static Site WpTestSite => _WpTestSite.Value;
         public static Site WikiaTestSite => _WikiaTestSite.Value;
-        public static Site WpLzhSite => _WpSite.Value;
+        public static Site WpLzhSite => _WpLzhSite.Value;
 
         [ClassCleanup]
         public static void OnClassCleanup()
@@ -36,7 +36,7 @@ namespace UnitTestProject1
         {
             var site = WpTestSite;
             var page = new Page(site, "project:sandbox");
-            AwaitSync(page.RefreshAsync(PageQueryOptions.FetchLastRevision));
+            AwaitSync(page.RefreshAsync(PageQueryOptions.FetchContent));
             ShallowTrace(page);
             Assert.IsTrue(page.Exists);
             Assert.AreEqual("Wikipedia:Sandbox", page.Title);
@@ -69,10 +69,29 @@ namespace UnitTestProject1
         {
             var site = WikiaTestSite;
             var page = new Page(site, "Project:Sandbox");
-            AwaitSync(page.RefreshAsync(PageQueryOptions.FetchLastRevision));
+            AwaitSync(page.RefreshAsync(PageQueryOptions.FetchContent));
             Assert.AreEqual("Mediawiki 1.19 test Wiki:Sandbox", page.Title);
             Assert.AreEqual(4, page.NamespaceId);
             ShallowTrace(page);
+        }
+
+        [TestMethod]
+        public void WpTestEnumRevisionsTest()
+        {
+            var site = WpTestSite;
+            // 5,100 revisions
+            var page = new Page(site, "Page:Edit_page_for_chrome");
+            var revisions = AwaitSync(page.EnumRevisionsAsync().Take(2000).ToList());
+            ShallowTrace(revisions);
+        }
+
+        [TestMethod]
+        public void WikiaEnumRevisionsTest()
+        {
+            var site = WikiaTestSite;
+            var page = new Page(site, "Project:Sandbox");
+            var revisions = AwaitSync(page.EnumRevisionsAsync().Take(2000).ToList());
+            ShallowTrace(revisions);
         }
 
         [TestMethod]
@@ -92,7 +111,7 @@ namespace UnitTestProject1
             AssertModify();
             var site = WpTestSite;
             var page = new Page(site, "project:sandbox");
-            AwaitSync(page.RefreshAsync(PageQueryOptions.FetchLastRevision));
+            AwaitSync(page.RefreshAsync(PageQueryOptions.FetchContent));
             page.Content += "\n\nTest from WikiClientLibrary.";
             Trace.WriteLine(page.Content);
             AwaitSync(page.UpdateContentAsync(SummaryPrefix + "Edit sandbox page."));
@@ -105,7 +124,7 @@ namespace UnitTestProject1
             AssertModify();
             var site = WpTestSite;
             var page = new Page(site, "Test page");
-            AwaitSync(page.RefreshAsync(PageQueryOptions.FetchLastRevision));
+            AwaitSync(page.RefreshAsync(PageQueryOptions.FetchContent));
             Assert.IsTrue(page.Protections.Any(), "To perform this test, the working page should be protected.");
             page.Content += "\n\nTest from WikiClientLibrary.";
             AwaitSync(page.UpdateContentAsync(SummaryPrefix + "Attempt to edit a protected page."));
@@ -118,7 +137,7 @@ namespace UnitTestProject1
             AssertModify();
             var site = WpTestSite;
             var page = new Page(site, "Special:");
-            AwaitSync(page.RefreshAsync(PageQueryOptions.FetchLastRevision));
+            AwaitSync(page.RefreshAsync(PageQueryOptions.FetchContent));
             page.Content += "\n\nTest from WikiClientLibrary.";
             AwaitSync(page.UpdateContentAsync(SummaryPrefix + "Attempt to edit a special page."));
         }
@@ -147,7 +166,7 @@ namespace UnitTestProject1
             var site = WikiaTestSite;
             AssertLoggedIn(site);
             var page = new Page(site, "project:sandbox");
-            AwaitSync(page.RefreshAsync(PageQueryOptions.FetchLastRevision));
+            AwaitSync(page.RefreshAsync(PageQueryOptions.FetchContent));
             page.Content += "\n\nTest from WikiClientLibrary.";
             Trace.WriteLine(page.Content);
             AwaitSync(page.UpdateContentAsync(SummaryPrefix + "Edit sandbox page."));
