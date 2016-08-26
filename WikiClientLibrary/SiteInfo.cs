@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -22,7 +23,7 @@ namespace WikiClientLibrary
         /// <summary>
         /// The title of the main page, as found in MediaWiki:Mainpage. 1.8+
         /// </summary>
-        [JsonProperty]      // This should be kept or private setter will be ignored by Newtonsoft.JSON.
+        [JsonProperty] // This should be kept or private setter will be ignored by Newtonsoft.JSON.
         public string MainPage { get; private set; }
 
         /// <summary>
@@ -56,7 +57,7 @@ namespace WikiClientLibrary
                 _Generator = value;
                 if (value != null)
                 {
-                    var part = value.Split(new[] {' ', '-'});
+                    var part = value.Split(' ', '-');
                     Version = Version.Parse(part[1]);
                 }
             }
@@ -87,6 +88,30 @@ namespace WikiClientLibrary
 
         [JsonProperty("favicon")]
         public string FavIconUrl { get; private set; }
+
+        [JsonProperty]
+        private string Case
+        {
+            set
+            {
+                switch (value)
+                {
+                    case "case-sensitive":
+                        IsTitleCaseSensitive = true;
+                        break;
+                    case "first-letter":
+                        IsTitleCaseSensitive = false;
+                        break;
+                    default:
+                        throw new ArgumentException("Invalid case value.");
+                }
+            }
+        }
+
+        /// <summary>
+        /// Whether the first letter in a title is case-sensitive. (MediaWiki 1.8+)
+        /// </summary>
+        public bool IsTitleCaseSensitive { get; private set; }
     }
 
     /// <summary>
@@ -96,6 +121,12 @@ namespace WikiClientLibrary
     [JsonObject(MemberSerialization.OptIn)]
     public class NamespaceInfo
     {
+
+        private static IList<string> EmptyStrings = new string[0];
+
+        /// <summary>
+        /// An integer identification number which is unique for each namespace.
+        /// </summary>
         [JsonProperty]
         public int Id { get; private set; }
 
@@ -118,9 +149,12 @@ namespace WikiClientLibrary
             }
         }
 
+        /// <summary>
+        /// Whether the first letter in the namespace title is case-sensitive. (MediaWiki 1.8+)
+        /// </summary>
         public bool IsCaseSensitive { get; private set; }
 
-        [JsonProperty] 
+        [JsonProperty]
         public bool SubPages { get; private set; }
 
         /// <summary>
@@ -129,6 +163,11 @@ namespace WikiClientLibrary
         /// <remarks>In JSON, prior to MediaWiki 1.25, the parameter name was *.</remarks>
         [JsonProperty("canonical")]
         public string Name { get; private set; }
+
+        /// <summary>
+        /// Namespace alias names.
+        /// </summary>
+        public IList<string> Aliases { get; private set; } = EmptyStrings;
 
         // In JSON, prior to MediaWiki 1.25, the parameter name was *.
         [JsonProperty("*")]
@@ -146,6 +185,17 @@ namespace WikiClientLibrary
         [JsonProperty]
         public string DefaultContentModel { get; private set; }
 
+        private IList<string> _Aliases;
+        internal void AddAlias(string title)
+        {
+            if (_Aliases == null)
+            {
+                _Aliases = new List<string>();
+                Aliases = new ReadOnlyCollection<string>(_Aliases);
+            }
+            _Aliases.Add(title);
+        }
+
         /// <summary>
         /// 返回表示当前对象的字符串。
         /// </summary>
@@ -154,7 +204,182 @@ namespace WikiClientLibrary
         /// </returns>
         public override string ToString()
         {
-            return $"{Name}[{Id}]";
+            return $"[{Id}]{Name}" + (Aliases.Count > 0 ? "/" + string.Join("/", Aliases) : null);
         }
+    }
+
+    /// <summary>
+    /// Provides read-only access to namespace collection.
+    /// </summary>
+    public class NamespaceCollection : ICollection<NamespaceInfo>
+    {
+        //private IList<NamespaceInfo> nsList;
+        private IDictionary<int, NamespaceInfo> idNsDict;
+        private IDictionary<string, NamespaceInfo> nameNsDict;
+
+        internal NamespaceCollection(Site site, JObject namespaces, JArray jaliases)
+        {
+            // jaliases : query.namespacealiases
+            if (site == null) throw new ArgumentNullException(nameof(site));
+            if (namespaces == null) throw new ArgumentNullException(nameof(namespaces));
+            idNsDict = namespaces.ToObject<IDictionary<int, NamespaceInfo>>(Utility.WikiJsonSerializer);
+            nameNsDict = idNsDict.Values.ToDictionary(n => n.Name);
+            if (jaliases != null)
+            {
+                foreach (var al in jaliases)
+                {
+                    var id = (int) al["id"];
+                    var name = (string) al["*"];
+                    NamespaceInfo ns;
+                    if (idNsDict.TryGetValue(id, out ns))
+                    {
+                        ns.AddAlias(name);
+                        nameNsDict.Add(Utility.NormalizeTitlePart(name, ns.IsCaseSensitive), ns);
+                    }
+                    else
+                    {
+                        site.Logger?.Warn($"Cannot find namespace {id} for alias {name} .");
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// Get the namespace info with specified nemspace id.
+        /// </summary>
+        /// <exception cref="KeyNotFoundException">The specified namespace id cannot be found.</exception>
+        public NamespaceInfo this[int index] => idNsDict[index];
+
+        /// <summary>
+        /// Get the namespace info with specified nemspace name or alias.
+        /// </summary>
+        /// <exception cref="KeyNotFoundException">The specified namespace id cannot be found.</exception>
+        public NamespaceInfo this[string name]
+        {
+            get
+            {
+                var ns = TryGetNamespace(name);
+                if (ns != null) return ns;
+                throw new KeyNotFoundException($"Cannot find namespace for {name} .");
+            }
+        }
+
+        private NamespaceInfo TryGetNamespace(string name)
+        {
+            NamespaceInfo ns;
+            // Try the case-sensitive one first.
+            if (nameNsDict.TryGetValue(Utility.NormalizeTitlePart(name, true), out ns))
+                return ns;
+            // Try case-insensitive.
+            if (nameNsDict.TryGetValue(Utility.NormalizeTitlePart(name, false), out ns))
+            {
+                if (!ns.IsCaseSensitive) return ns;
+            }
+            return null;
+        }
+
+        public bool Contains(int index)
+        {
+            return idNsDict.ContainsKey(index);
+        }
+
+        public bool Contains(string name)
+        {
+            return TryGetNamespace(name) != null;
+        }
+
+        #region ICollection
+
+        /// <summary>
+        /// 返回一个循环访问集合的枚举器。
+        /// </summary>
+        /// <returns>
+        /// 可用于循环访问集合的 <see cref="T:System.Collections.Generic.IEnumerator`1"/>。
+        /// </returns>
+        public IEnumerator<NamespaceInfo> GetEnumerator()
+        {
+            return idNsDict.Values.GetEnumerator();
+        }
+
+        /// <summary>
+        /// 返回一个循环访问集合的枚举器。
+        /// </summary>
+        /// <returns>
+        /// 可用于循环访问集合的 <see cref="T:System.Collections.IEnumerator"/> 对象。
+        /// </returns>
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
+        }
+
+        /// <summary>
+        /// 将某项添加到 <see cref="T:System.Collections.Generic.ICollection`1"/> 中。
+        /// </summary>
+        /// <param name="item">要添加到 <see cref="T:System.Collections.Generic.ICollection`1"/> 的对象。</param>
+        /// <exception cref="T:System.NotSupportedException"><see cref="T:System.Collections.Generic.ICollection`1"/> 为只读。</exception>
+        void ICollection<NamespaceInfo>.Add(NamespaceInfo item)
+        {
+            throw new NotSupportedException();
+        }
+
+        /// <summary>
+        /// 从 <see cref="T:System.Collections.Generic.ICollection`1"/> 中移除所有项。
+        /// </summary>
+        /// <exception cref="T:System.NotSupportedException"><see cref="T:System.Collections.Generic.ICollection`1"/> 为只读。</exception>
+        void ICollection<NamespaceInfo>.Clear()
+        {
+            throw new NotSupportedException();
+        }
+
+        /// <summary>
+        /// 确定 <see cref="T:System.Collections.Generic.ICollection`1"/> 是否包含特定值。
+        /// </summary>
+        /// <returns>
+        /// 如果在 <see cref="T:System.Collections.Generic.ICollection`1"/> 中找到 <paramref name="item"/>，则为 true；否则为 false。
+        /// </returns>
+        /// <param name="item">要在 <see cref="T:System.Collections.Generic.ICollection`1"/> 中定位的对象。</param>
+        bool ICollection<NamespaceInfo>.Contains(NamespaceInfo item)
+        {
+            return idNsDict.Values.Contains(item);
+        }
+
+        /// <summary>
+        /// 从特定的 <see cref="T:System.Array"/> 索引开始，将 <see cref="T:System.Collections.Generic.ICollection`1"/> 的元素复制到一个 <see cref="T:System.Array"/> 中。
+        /// </summary>
+        /// <param name="array">作为从 <see cref="T:System.Collections.Generic.ICollection`1"/> 复制的元素的目标的一维 <see cref="T:System.Array"/>。 <see cref="T:System.Array"/> 必须具有从零开始的索引。</param><param name="arrayIndex"><paramref name="array"/> 中从零开始的索引，从此索引处开始进行复制。</param><exception cref="T:System.ArgumentNullException"><paramref name="array"/> 为 null。</exception><exception cref="T:System.ArgumentOutOfRangeException"><paramref name="arrayIndex"/> 小于 0。</exception><exception cref="T:System.ArgumentException">源 <see cref="T:System.Collections.Generic.ICollection`1"/> 中的元素数目大于从 <paramref name="arrayIndex"/> 到目标 <paramref name="array"/> 末尾之间的可用空间。</exception>
+        public void CopyTo(NamespaceInfo[] array, int arrayIndex)
+        {
+            idNsDict.Values.CopyTo(array, arrayIndex);
+        }
+
+        /// <summary>
+        /// 从 <see cref="T:System.Collections.Generic.ICollection`1"/> 中移除特定对象的第一个匹配项。
+        /// </summary>
+        /// <returns>
+        /// 如果已从 <see cref="T:System.Collections.Generic.ICollection`1"/> 中成功移除 <paramref name="item"/>，则为 true；否则为 false。 如果在原始 <see cref="T:System.Collections.Generic.ICollection`1"/> 中没有找到 <paramref name="item"/>，该方法也会返回 false。
+        /// </returns>
+        /// <param name="item">要从 <see cref="T:System.Collections.Generic.ICollection`1"/> 中移除的对象。</param><exception cref="T:System.NotSupportedException"><see cref="T:System.Collections.Generic.ICollection`1"/> 为只读。</exception>
+        bool ICollection<NamespaceInfo>.Remove(NamespaceInfo item)
+        {
+            throw new NotSupportedException();
+        }
+
+        /// <summary>
+        /// 获取 <see cref="T:System.Collections.Generic.ICollection`1"/> 中包含的元素数。
+        /// </summary>
+        /// <returns>
+        /// <see cref="T:System.Collections.Generic.ICollection`1"/> 中包含的元素个数。
+        /// </returns>
+        public int Count => idNsDict.Count;
+
+        /// <summary>
+        /// 获取一个值，该值指示 <see cref="T:System.Collections.Generic.ICollection`1"/> 是否为只读。
+        /// </summary>
+        /// <returns>
+        /// 如果 <see cref="T:System.Collections.Generic.ICollection`1"/> 为只读，则为 true；否则为 false。
+        /// </returns>
+        bool ICollection<NamespaceInfo>.IsReadOnly => true;
+
+        #endregion
     }
 }

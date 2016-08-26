@@ -19,8 +19,6 @@ namespace WikiClientLibrary
     {
         public WikiClient WikiClient { get; }
 
-        private Dictionary<int, NamespaceInfo> _Namespaces = new Dictionary<int, NamespaceInfo>();
-
         public ILogger Logger { get; set; }
 
         public static async Task<Site> GetAsync(WikiClient wikiClient)
@@ -47,10 +45,9 @@ namespace WikiClientLibrary
             });
             var qg = (JObject) jobj["query"]["general"];
             var ns = (JObject) jobj["query"]["namespaces"];
-            //Name = (string) qg["sitename"];
+            var aliases = (JArray) jobj["query"]["namespacealiases"];
             SiteInfo = qg.ToObject<SiteInfo>(Utility.WikiJsonSerializer);
-            _Namespaces = ns.ToObject<Dictionary<int, NamespaceInfo>>(Utility.WikiJsonSerializer);
-            Namespaces = new ReadOnlyDictionary<int, NamespaceInfo>(_Namespaces);
+            Namespaces = new NamespaceCollection(this, ns, aliases);
         }
 
         public async Task RefreshUserInfoAsync()
@@ -68,7 +65,7 @@ namespace WikiClientLibrary
 
         public UserInfo UserInfo { get; private set; }
 
-        public IReadOnlyDictionary<int, NamespaceInfo> Namespaces { get; private set; }
+        public NamespaceCollection Namespaces { get; private set; }
 
         #region Tokens
 

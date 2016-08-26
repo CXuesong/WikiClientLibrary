@@ -37,21 +37,26 @@ namespace UnitTestProject1
         }
 
 
-        private void ValidateNamespace(Site site, int id, string name, bool isContent)
+        private void ValidateNamespace(Site site, int id, string name, bool isContent, string normalizedName = null)
         {
-            Assert.IsTrue(site.Namespaces.ContainsKey(id), $"Cannot find namespace id={id}.");
-            Assert.AreEqual(name, site.Namespaces[id].Name);
+            Assert.IsTrue(site.Namespaces.Contains(id), $"Cannot find namespace id={id}.");
+            var ns = site.Namespaces[id];
+            var n = normalizedName ?? name;
+            Assert.IsTrue(ns.Name == n || ns.Aliases.Contains(n));
             Assert.AreEqual(isContent, site.Namespaces[id].IsContent);
         }
 
         private void ValidateNamespaces(Site site)
         {
-            Assert.IsTrue(site.Namespaces.ContainsKey(0));
+            Assert.IsTrue(site.Namespaces.Contains(0));
             Assert.IsTrue(site.Namespaces[0].IsContent);
             ValidateNamespace(site, -2, "Media", false);
             ValidateNamespace(site, -1, "Special", false);
             ValidateNamespace(site, 1, "Talk", false);
+            // btw test normalization functionality.
+            ValidateNamespace(site, 1, "___ talk __", false, "Talk");
             ValidateNamespace(site, 10, "Template", false);
+            ValidateNamespace(site, 11, "template_talk_", false, "Template talk");
             ValidateNamespace(site, 14, "Category", false);
         }
 
@@ -73,6 +78,8 @@ namespace UnitTestProject1
             Assert.AreEqual("維基大典", site.SiteInfo.SiteName);
             Assert.AreEqual("維基大典:卷首", site.SiteInfo.MainPage);
             ValidateNamespaces(site);
+            ValidateNamespace(site, BuiltInNamespaces.Project, "Wikipedia", false);
+            ValidateNamespace(site, 100, "門", false);
         }
 
         [TestMethod]

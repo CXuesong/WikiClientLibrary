@@ -151,5 +151,30 @@ namespace WikiClientLibrary
                     throw new ArgumentOutOfRangeException(nameof(value), value, null);
             }
         }
+
+        /// <summary>
+        /// Normalizes part of title (either namespace name or page title, not both)
+        /// to its cannonical form.
+        /// </summary>
+        /// <param name="title">The title to be normalized.</param>
+        /// <param name="caseSensitive">Whether the title is case sensitive.</param>
+        /// <returns>
+        /// Normalized part of title. The underscores are replaced by spaces,
+        /// and when <paramref name="caseSensitive"/> is <c>true</c>, the first letter is
+        /// upper-case.
+        /// </returns>
+        /// <exception cref="ArgumentNullException"><paramref name="title"/> is <c>null</c>.</exception>
+        public static string NormalizeTitlePart(string title, bool caseSensitive)
+        {
+            if (title == null) throw new ArgumentNullException(nameof(title));
+            title = title.Replace('_', ' ');
+            title = title.Trim();
+            if (title.Length > 0 && !caseSensitive)
+            {
+                var uc = char.ToUpperInvariant(title[0]);
+                if (uc != title[0]) title = uc + title.Substring(1);
+            }
+            return title;
+        }
     }
 }
