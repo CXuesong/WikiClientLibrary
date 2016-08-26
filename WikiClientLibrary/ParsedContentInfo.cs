@@ -89,7 +89,7 @@ namespace WikiClientLibrary
         /// Index of the section.
         /// </summary>
         /// <remarks>
-        /// Note that sometimes this property is not avaliable,
+        /// Note that sometimes this property is not available,
         /// especially when the heading is included in a template.
         /// </remarks>
         [JsonProperty]
@@ -135,7 +135,7 @@ namespace WikiClientLibrary
         /// Byte offset of the section.
         /// </summary>
         /// <remarks>
-        /// Note that sometimes this property is not avaliable,
+        /// Note that sometimes this property is not available,
         /// especially when the heading is included in a template.
         /// </remarks>
         public int? ByteOffset { get; private set; }
