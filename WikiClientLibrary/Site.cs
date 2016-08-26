@@ -41,13 +41,15 @@ namespace WikiClientLibrary
             {
                 action = "query",
                 meta = "siteinfo",
-                siprop = "general|namespaces|namespacealiases"
+                siprop = "general|namespaces|namespacealiases|interwikimap"
             });
             var qg = (JObject) jobj["query"]["general"];
             var ns = (JObject) jobj["query"]["namespaces"];
             var aliases = (JArray) jobj["query"]["namespacealiases"];
+            var interwiki = (JArray) jobj["query"]["interwikimap"];
             SiteInfo = qg.ToObject<SiteInfo>(Utility.WikiJsonSerializer);
             Namespaces = new NamespaceCollection(this, ns, aliases);
+            InterwikiMap = new InterwikiMap(this, interwiki);
         }
 
         public async Task RefreshUserInfoAsync()
@@ -66,6 +68,8 @@ namespace WikiClientLibrary
         public UserInfo UserInfo { get; private set; }
 
         public NamespaceCollection Namespaces { get; private set; }
+
+        public InterwikiMap InterwikiMap { get; private set; }
 
         #region Tokens
 

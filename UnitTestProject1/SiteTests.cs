@@ -15,9 +15,7 @@ namespace UnitTestProject1
     [TestClass]
     public class SiteTests
     {
-
         private static Site WpTestSite;
-
         private static Site WikiaTestSite;
 
         [ClassInitialize]
@@ -35,7 +33,6 @@ namespace UnitTestProject1
         {
             //CredentialManager.Logout(WpTestSite);
         }
-
 
         private void ValidateNamespace(Site site, int id, string name, bool isContent, string normalizedName = null)
         {
@@ -68,6 +65,7 @@ namespace UnitTestProject1
             Assert.AreEqual("Wikipedia", site.SiteInfo.SiteName);
             Assert.AreEqual("Main Page", site.SiteInfo.MainPage);
             ValidateNamespaces(site);
+            ShallowTrace(site.InterwikiMap);
         }
 
         [TestMethod]

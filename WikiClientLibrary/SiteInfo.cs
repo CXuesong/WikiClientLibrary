@@ -186,6 +186,7 @@ namespace WikiClientLibrary
         public string DefaultContentModel { get; private set; }
 
         private IList<string> _Aliases;
+
         internal void AddAlias(string title)
         {
             if (_Aliases == null)
@@ -213,9 +214,8 @@ namespace WikiClientLibrary
     /// </summary>
     public class NamespaceCollection : ICollection<NamespaceInfo>
     {
-        //private IList<NamespaceInfo> nsList;
-        private IDictionary<int, NamespaceInfo> idNsDict;
-        private IDictionary<string, NamespaceInfo> nameNsDict;
+        private readonly IDictionary<int, NamespaceInfo> idNsDict;
+        private readonly IDictionary<string, NamespaceInfo> nameNsDict;
 
         internal NamespaceCollection(Site site, JObject namespaces, JArray jaliases)
         {
@@ -379,6 +379,210 @@ namespace WikiClientLibrary
         /// 如果 <see cref="T:System.Collections.Generic.ICollection`1"/> 为只读，则为 true；否则为 false。
         /// </returns>
         bool ICollection<NamespaceInfo>.IsReadOnly => true;
+
+        #endregion
+    }
+
+    /// <summary>
+    /// An item of iterwiki map.
+    /// </summary>
+    [JsonObject(MemberSerialization.OptIn)]
+    public class InterwikiEntry
+    {
+        /// <summary>
+        /// The prefix of the interwiki link;
+        /// this is used the same way as a namespace is used when editing.
+        /// </summary>
+        /// <remarks>Prefixes must be all lower-case.</remarks>
+        [JsonProperty]
+        public string Prefix { get; private set; }
+
+        /// <summary>
+        /// Whether the interwiki prefix points to a site belonging to the current wiki farm.
+        /// The value is read straight out of the iw_local column of the interwiki table. 
+        /// </summary>
+        [JsonProperty]
+        public bool IsLocal { get; private set; }
+
+        /// <summary>
+        /// Whether transcluding pages from this wiki is allowed.
+        /// Note that this has no effect unless crosswiki transclusion is enabled on the current wiki.
+        /// </summary>
+        [JsonProperty("trans")]
+        public bool AllowsTransclusion { get; private set; }
+
+        /// <summary>
+        /// Autonym of the language, if the interwiki prefix is a language code
+        /// defined in Language::fetchLanguageNames() from $wgExtraLanguageNames,
+        /// </summary>
+        [JsonProperty("language")]
+        public string LanguageAutonym { get; private set; }
+
+        /// <summary>
+        /// The URL of the wiki, with "$1" as a placeholder for an article name.
+        /// </summary>
+        [JsonProperty]
+        public string Url { get; private set; }
+
+        /// <summary>
+        /// Whether the value of url can be treated as protocol-relative. (MediaWiki 1.24+)
+        /// Note, however, that the <see cref="Url"/> actually returned will always include the current protocol.
+        /// </summary>
+        [JsonProperty("protorel")]
+        public bool IsProtocolRelative { get; private set; }
+
+        /// <summary>
+        /// Whether the interwiki link points to the current wiki, based on Manual:$wgLocalInterwikis.
+        /// </summary>
+        [JsonProperty]
+        public bool IsLocalInterwiki { get; private set; }
+
+        /// <summary>
+        /// If the interwiki prefix is an extra language link,
+        /// this will contain the friendly site name used in the tooltip text of the links. (MediaWiki 1.24+)
+        /// </summary>
+        [JsonProperty]
+        public string SiteName { get; private set; }
+
+        /// <summary>
+        /// The internal name of the database. Not filled in by default;
+        /// it may be missing for you. The value is read straight out
+        /// of the iw_wikiid column of the interwiki table.
+        /// </summary>
+        [JsonProperty]
+        public string WikiId { get; set; }
+
+        /// <summary>
+        /// 返回表示当前对象的字符串。
+        /// </summary>
+        /// <returns>
+        /// 表示当前对象的字符串。
+        /// </returns>
+        public override string ToString()
+        {
+            return Prefix + ":" + LanguageAutonym;
+        }
+    }
+
+    /// <summary>
+    /// Provides read-only access to interwiki map.
+    /// </summary>
+    public class InterwikiMap : ICollection<InterwikiEntry>
+    {
+        private readonly IDictionary<string, InterwikiEntry> nameIwDict;
+
+        internal InterwikiMap(Site site, JArray interwikiMap)
+        {
+            // interwikiMap : query.namespacealiases
+            if (site == null) throw new ArgumentNullException(nameof(site));
+            if (interwikiMap == null) throw new ArgumentNullException(nameof(interwikiMap));
+            // I should use InvariantIgnoreCase. But there's no such a member in PCL.
+            nameIwDict = interwikiMap.ToObject<IList<InterwikiEntry>>(Utility.WikiJsonSerializer)
+                .ToDictionary(e => e.Prefix, StringComparer.OrdinalIgnoreCase);
+        }
+
+        /// <summary>
+        /// Get the interwiki entry with specified prefix. The match is case-insensitive.
+        /// </summary>
+        /// <exception cref="KeyNotFoundException">The specified prefix cannot be found.</exception>
+        public InterwikiEntry this[string name] => nameIwDict[name];
+
+        public bool Contains(string name)
+        {
+            return nameIwDict.ContainsKey(name);
+        }
+
+        #region ICollection
+
+        /// <summary>
+        /// 返回一个循环访问集合的枚举器。
+        /// </summary>
+        /// <returns>
+        /// 可用于循环访问集合的 <see cref="T:System.Collections.Generic.IEnumerator`1"/>。
+        /// </returns>
+        public IEnumerator<InterwikiEntry> GetEnumerator()
+        {
+            return nameIwDict.Values.GetEnumerator();
+        }
+
+        /// <summary>
+        /// 返回一个循环访问集合的枚举器。
+        /// </summary>
+        /// <returns>
+        /// 可用于循环访问集合的 <see cref="T:System.Collections.IEnumerator"/> 对象。
+        /// </returns>
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
+        }
+
+        /// <summary>
+        /// 将某项添加到 <see cref="T:System.Collections.Generic.ICollection`1"/> 中。
+        /// </summary>
+        /// <param name="item">要添加到 <see cref="T:System.Collections.Generic.ICollection`1"/> 的对象。</param>
+        /// <exception cref="T:System.NotSupportedException"><see cref="T:System.Collections.Generic.ICollection`1"/> 为只读。</exception>
+        void ICollection<InterwikiEntry>.Add(InterwikiEntry item)
+        {
+            throw new NotSupportedException();
+        }
+
+        /// <summary>
+        /// 从 <see cref="T:System.Collections.Generic.ICollection`1"/> 中移除所有项。
+        /// </summary>
+        /// <exception cref="T:System.NotSupportedException"><see cref="T:System.Collections.Generic.ICollection`1"/> 为只读。</exception>
+        void ICollection<InterwikiEntry>.Clear()
+        {
+            throw new NotSupportedException();
+        }
+
+        /// <summary>
+        /// 确定 <see cref="T:System.Collections.Generic.ICollection`1"/> 是否包含特定值。
+        /// </summary>
+        /// <returns>
+        /// 如果在 <see cref="T:System.Collections.Generic.ICollection`1"/> 中找到 <paramref name="item"/>，则为 true；否则为 false。
+        /// </returns>
+        /// <param name="item">要在 <see cref="T:System.Collections.Generic.ICollection`1"/> 中定位的对象。</param>
+        bool ICollection<InterwikiEntry>.Contains(InterwikiEntry item)
+        {
+            return nameIwDict.Values.Contains(item);
+        }
+
+        /// <summary>
+        /// 从特定的 <see cref="T:System.Array"/> 索引开始，将 <see cref="T:System.Collections.Generic.ICollection`1"/> 的元素复制到一个 <see cref="T:System.Array"/> 中。
+        /// </summary>
+        /// <param name="array">作为从 <see cref="T:System.Collections.Generic.ICollection`1"/> 复制的元素的目标的一维 <see cref="T:System.Array"/>。 <see cref="T:System.Array"/> 必须具有从零开始的索引。</param><param name="arrayIndex"><paramref name="array"/> 中从零开始的索引，从此索引处开始进行复制。</param><exception cref="T:System.ArgumentNullException"><paramref name="array"/> 为 null。</exception><exception cref="T:System.ArgumentOutOfRangeException"><paramref name="arrayIndex"/> 小于 0。</exception><exception cref="T:System.ArgumentException">源 <see cref="T:System.Collections.Generic.ICollection`1"/> 中的元素数目大于从 <paramref name="arrayIndex"/> 到目标 <paramref name="array"/> 末尾之间的可用空间。</exception>
+        public void CopyTo(InterwikiEntry[] array, int arrayIndex)
+        {
+            nameIwDict.Values.CopyTo(array, arrayIndex);
+        }
+
+        /// <summary>
+        /// 从 <see cref="T:System.Collections.Generic.ICollection`1"/> 中移除特定对象的第一个匹配项。
+        /// </summary>
+        /// <returns>
+        /// 如果已从 <see cref="T:System.Collections.Generic.ICollection`1"/> 中成功移除 <paramref name="item"/>，则为 true；否则为 false。 如果在原始 <see cref="T:System.Collections.Generic.ICollection`1"/> 中没有找到 <paramref name="item"/>，该方法也会返回 false。
+        /// </returns>
+        /// <param name="item">要从 <see cref="T:System.Collections.Generic.ICollection`1"/> 中移除的对象。</param><exception cref="T:System.NotSupportedException"><see cref="T:System.Collections.Generic.ICollection`1"/> 为只读。</exception>
+        bool ICollection<InterwikiEntry>.Remove(InterwikiEntry item)
+        {
+            throw new NotSupportedException();
+        }
+
+        /// <summary>
+        /// 获取 <see cref="T:System.Collections.Generic.ICollection`1"/> 中包含的元素数。
+        /// </summary>
+        /// <returns>
+        /// <see cref="T:System.Collections.Generic.ICollection`1"/> 中包含的元素个数。
+        /// </returns>
+        public int Count => nameIwDict.Count;
+
+        /// <summary>
+        /// 获取一个值，该值指示 <see cref="T:System.Collections.Generic.ICollection`1"/> 是否为只读。
+        /// </summary>
+        /// <returns>
+        /// 如果 <see cref="T:System.Collections.Generic.ICollection`1"/> 为只读，则为 true；否则为 false。
+        /// </returns>
+        bool ICollection<InterwikiEntry>.IsReadOnly => true;
 
         #endregion
     }
