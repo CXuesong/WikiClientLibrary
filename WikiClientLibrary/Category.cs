@@ -13,7 +13,8 @@ namespace WikiClientLibrary
     /// </summary>
     public class Category : Page
     {
-        public Category(Site site, string title) : base(site, title)
+
+        public Category(Site site, string title) : base(site, title, BuiltInNamespaces.Category)
         {
         }
 

@@ -20,14 +20,18 @@ namespace WikiClientLibrary
     /// </summary>
     public class Page
     {
-        public Page(Site site, string title)
+        public Page(Site site, string title) : this(site, title, BuiltInNamespaces.Main)
+        {
+        }
+
+        public Page(Site site, string title, int defaultNamespaceId)
         {
             if (site == null) throw new ArgumentNullException(nameof(site));
             if (string.IsNullOrWhiteSpace(title)) throw new ArgumentNullException(nameof(title));
             Site = site;
             WikiClient = Site.WikiClient;
             Debug.Assert(WikiClient != null);
-            Title = title;
+            Title = WikiLink.NormalizeWikiLink(site, title, defaultNamespaceId);
         }
 
         internal Page(Site site)

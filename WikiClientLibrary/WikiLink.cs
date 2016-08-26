@@ -198,5 +198,33 @@ namespace WikiClientLibrary
         {
             return _FormattedText;
         }
+
+        /// <summary>
+        /// Uses this class to normalize a specific wikilink expression.
+        /// </summary>
+        /// <param name="site">Site instance.</param>
+        /// <param name="text">Wikilink expression, without square brackets.</param>
+        /// <exception cref="ArgumentNullException">Either <paramref name="site"/> or <paramref name="text"/> is <c>null</c>.</exception>
+        /// <exception cref="ArgumentException"><paramref name="text"/> does not contain a valid page title.</exception>
+        /// <returns>Normalized wikilink expression.</returns>
+        public static string NormalizeWikiLink(Site site, string text)
+        {
+            return NormalizeWikiLink(site, text, BuiltInNamespaces.Main);
+        }
+
+        /// <summary>
+        /// Uses this class to normalize a specific wikilink expression.
+        /// </summary>
+        /// <param name="site">Site instance.</param>
+        /// <param name="text">Wikilink expression, without square brackets.</param>
+        /// <param name="defaultNamespaceId">Id of default namespace.</param>
+        /// <exception cref="ArgumentNullException">Either <paramref name="site"/> or <paramref name="text"/> is <c>null</c>.</exception>
+        /// <exception cref="ArgumentException"><paramref name="text"/> does not contain a valid page title.</exception>
+        /// <returns>Normalized wikilink expression.</returns>
+        public static string NormalizeWikiLink(Site site, string text, int defaultNamespaceId)
+        {
+            var link = new WikiLink(site, text, defaultNamespaceId);
+            return link._FormattedText;
+        }
     }
 }
