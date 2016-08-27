@@ -126,6 +126,11 @@ namespace WikiClientLibrary
         /// </summary>
         public PageQueryOptions QueryOptions { get; private set; }
 
+        ///// <summary>
+        ///// Determines whether the page is a disambiguation page.
+        ///// </summary>
+        //public bool IsDisambiguation { get; private set; }
+
         private static bool AreIdEquals(int id1, int id2)
         {
             if (id1 == id2) return false;
@@ -263,6 +268,7 @@ namespace WikiClientLibrary
         /// <remarks>
         /// For fetching multiple pages at one time, see <see cref="PageExtensions.RefreshAsync(IEnumerable{Page}, PageQueryOptions)"/>.
         /// </remarks>
+        /// <exception cref="InvalidOperationException">Circular redirect detected when resolving redirects.</exception>
         public Task RefreshAsync(PageQueryOptions options)
         {
             return RequestManager.RefreshPagesAsync(new[] {this}, options);
@@ -640,6 +646,7 @@ namespace WikiClientLibrary
         /// <summary>
         /// Resolves directs automatically. This may later change <see cref="Page.Title"/>.
         /// This option cannot be used with generators.
+        /// In the case of multiple redirects, all redirects will be resolved.
         /// </summary>
         ResolveRedirects = 2,
     }
@@ -795,5 +802,29 @@ namespace WikiClientLibrary
         None = 0,
         User = 1,
         //TODO Content & Comment
+    }
+
+    /// <summary>
+    /// Contains additional page properties.
+    /// </summary>
+    [JsonObject(MemberSerialization.OptIn)]
+    public class PagePropertyInfo
+    {
+        /// <summary>
+        /// Determines whether the page is a disambiguation page.
+        /// This is raw value and only works when Extension:Disambiguator presents.
+        /// Please use <see cref="Page.IsDisambiguation"/> instead.
+        /// </summary>
+        [JsonProperty]
+        public bool Disambiguation { get; private set; }
+
+        [JsonProperty]
+        public string DisplayTitle { get; private set; }
+
+        [JsonProperty("page_image")]
+        public string PageImage { get; private set; }
+
+        [JsonExtensionData]
+        public IDictionary<string, object> Others { get; private set; }
     }
 }

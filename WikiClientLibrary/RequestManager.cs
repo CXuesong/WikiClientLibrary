@@ -20,7 +20,7 @@ namespace WikiClientLibrary
             {
                 {"action", "query"},
                 // We also fetch category info, just in case.
-                {"prop", "info|categoryinfo|revisions"},
+                {"prop", "info|categoryinfo|revisions|pageprops"},
                 {"inprop", "protection"},
                 {"rvprop", "ids|timestamp|flags|comment|user|contentmodel|sha1|tags|size"},
                 {"redirects", (options & PageQueryOptions.ResolveRedirects) == PageQueryOptions.ResolveRedirects},
@@ -59,7 +59,7 @@ namespace WikiClientLibrary
         public static async Task RefreshPagesAsync(IEnumerable<Page> pages, PageQueryOptions options)
         {
             if (pages == null) throw new ArgumentNullException(nameof(pages));
-            foreach (var sitePages in pages.GroupBy(p =>Tuple.Create(p.Site, p.GetType())))
+            foreach (var sitePages in pages.GroupBy(p => Tuple.Create(p.Site, p.GetType())))
             {
                 var site = sitePages.Key.Item1;
                 var queryParams = GetPageFetchingParams(options);
@@ -84,9 +84,19 @@ namespace WikiClientLibrary
                         if (normalized?.ContainsKey(title) ?? false)
                             title = normalized[title];
                         // Then process the redirects.
-                        // TODO Investigate how multi-redirects will be handled by API.
+                        var redirectTrace = new List<string>();
                         while (redirects?.ContainsKey(title) ?? false)
-                            title = redirects[title];
+                        {
+                            var next = redirects[title];
+                            if (redirectTrace.Contains(next))
+                            {
+                                redirectTrace.Add(next);
+                                throw new InvalidOperationException(
+                                    $"Cannot resolve circular redirect: {string.Join("->", redirectTrace)}.");
+                            }
+                            redirectTrace.Add(next);
+                            title = next;
+                        }
                         // Finally, get the page.
                         var pageInfo = pageInfoDict[title];
                         page.LoadFromJson(pageInfo, options);

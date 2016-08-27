@@ -34,6 +34,7 @@ namespace WikiClientLibrary
         /// It's recommended that <paramref name="pages"/> is a list or a subset of a list
         /// that is hold by caller, because this method will not return the refreshed pages.
         /// </remarks>
+        /// <exception cref="InvalidOperationException">Circular redirect detected when resolving redirects.</exception>
         public static Task RefreshAsync(this IEnumerable<Page> pages, PageQueryOptions options)
         {
             return RequestManager.RefreshPagesAsync(pages, options);
