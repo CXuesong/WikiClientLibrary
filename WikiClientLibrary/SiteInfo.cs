@@ -658,4 +658,189 @@ namespace WikiClientLibrary
 
         #endregion
     }
+
+    /// <summary>
+    /// Provides read-only access to extension collection.
+    /// </summary>
+    public class ExtensionCollection : ICollection<ExtensionInfo>
+    {
+        private readonly IList<ExtensionInfo> extensions;
+        private readonly ILookup<string, ExtensionInfo> nameLookup;
+
+        internal ExtensionCollection(Site site, JArray jextensions)
+        {
+            // extensions : query.extensions
+            if (site == null) throw new ArgumentNullException(nameof(site));
+            if (jextensions == null) throw new ArgumentNullException(nameof(jextensions));
+            extensions = jextensions.ToObject<IList<ExtensionInfo>>(Utility.WikiJsonSerializer);
+            nameLookup = extensions.ToLookup(e => e.Name);
+        }
+
+        /// <summary>
+        /// Get the extensions with specified name. The match is case-sensitive.
+        /// </summary>
+        public IEnumerable<ExtensionInfo> this[string name] => nameLookup[name];
+
+        /// <summary>
+        /// Determines whether there's an extensions with specified name.
+        /// The match is case-sensitive.
+        /// </summary>
+        public bool Contains(string name)
+        {
+            return nameLookup[name].Any();
+        }
+
+        #region ICollection
+
+        /// <summary>
+        /// 返回一个循环访问集合的枚举器。
+        /// </summary>
+        /// <returns>
+        /// 可用于循环访问集合的 <see cref="T:System.Collections.Generic.IEnumerator`1"/>。
+        /// </returns>
+        public IEnumerator<ExtensionInfo> GetEnumerator()
+        {
+            return extensions.GetEnumerator();
+        }
+
+        /// <summary>
+        /// 返回一个循环访问集合的枚举器。
+        /// </summary>
+        /// <returns>
+        /// 可用于循环访问集合的 <see cref="T:System.Collections.IEnumerator"/> 对象。
+        /// </returns>
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
+        }
+
+        /// <summary>
+        /// 将某项添加到 <see cref="T:System.Collections.Generic.ICollection`1"/> 中。
+        /// </summary>
+        /// <param name="item">要添加到 <see cref="T:System.Collections.Generic.ICollection`1"/> 的对象。</param>
+        /// <exception cref="T:System.NotSupportedException"><see cref="T:System.Collections.Generic.ICollection`1"/> 为只读。</exception>
+        void ICollection<ExtensionInfo>.Add(ExtensionInfo item)
+        {
+            throw new NotSupportedException();
+        }
+
+        /// <summary>
+        /// 从 <see cref="T:System.Collections.Generic.ICollection`1"/> 中移除所有项。
+        /// </summary>
+        /// <exception cref="T:System.NotSupportedException"><see cref="T:System.Collections.Generic.ICollection`1"/> 为只读。</exception>
+        void ICollection<ExtensionInfo>.Clear()
+        {
+            throw new NotSupportedException();
+        }
+
+        /// <summary>
+        /// 确定 <see cref="T:System.Collections.Generic.ICollection`1"/> 是否包含特定值。
+        /// </summary>
+        /// <returns>
+        /// 如果在 <see cref="T:System.Collections.Generic.ICollection`1"/> 中找到 <paramref name="item"/>，则为 true；否则为 false。
+        /// </returns>
+        /// <param name="item">要在 <see cref="T:System.Collections.Generic.ICollection`1"/> 中定位的对象。</param>
+        bool ICollection<ExtensionInfo>.Contains(ExtensionInfo item)
+        {
+            return extensions.Contains(item);
+        }
+
+        /// <summary>
+        /// 从特定的 <see cref="T:System.Array"/> 索引开始，将 <see cref="T:System.Collections.Generic.ICollection`1"/> 的元素复制到一个 <see cref="T:System.Array"/> 中。
+        /// </summary>
+        /// <param name="array">作为从 <see cref="T:System.Collections.Generic.ICollection`1"/> 复制的元素的目标的一维 <see cref="T:System.Array"/>。 <see cref="T:System.Array"/> 必须具有从零开始的索引。</param><param name="arrayIndex"><paramref name="array"/> 中从零开始的索引，从此索引处开始进行复制。</param><exception cref="T:System.ArgumentNullException"><paramref name="array"/> 为 null。</exception><exception cref="T:System.ArgumentOutOfRangeException"><paramref name="arrayIndex"/> 小于 0。</exception><exception cref="T:System.ArgumentException">源 <see cref="T:System.Collections.Generic.ICollection`1"/> 中的元素数目大于从 <paramref name="arrayIndex"/> 到目标 <paramref name="array"/> 末尾之间的可用空间。</exception>
+        public void CopyTo(ExtensionInfo[] array, int arrayIndex)
+        {
+            extensions.CopyTo(array, arrayIndex);
+        }
+
+        /// <summary>
+        /// 从 <see cref="T:System.Collections.Generic.ICollection`1"/> 中移除特定对象的第一个匹配项。
+        /// </summary>
+        /// <returns>
+        /// 如果已从 <see cref="T:System.Collections.Generic.ICollection`1"/> 中成功移除 <paramref name="item"/>，则为 true；否则为 false。 如果在原始 <see cref="T:System.Collections.Generic.ICollection`1"/> 中没有找到 <paramref name="item"/>，该方法也会返回 false。
+        /// </returns>
+        /// <param name="item">要从 <see cref="T:System.Collections.Generic.ICollection`1"/> 中移除的对象。</param><exception cref="T:System.NotSupportedException"><see cref="T:System.Collections.Generic.ICollection`1"/> 为只读。</exception>
+        bool ICollection<ExtensionInfo>.Remove(ExtensionInfo item)
+        {
+            throw new NotSupportedException();
+        }
+
+        /// <summary>
+        /// 获取 <see cref="T:System.Collections.Generic.ICollection`1"/> 中包含的元素数。
+        /// </summary>
+        /// <returns>
+        /// <see cref="T:System.Collections.Generic.ICollection`1"/> 中包含的元素个数。
+        /// </returns>
+        public int Count => extensions.Count;
+
+        /// <summary>
+        /// 获取一个值，该值指示 <see cref="T:System.Collections.Generic.ICollection`1"/> 是否为只读。
+        /// </summary>
+        /// <returns>
+        /// 如果 <see cref="T:System.Collections.Generic.ICollection`1"/> 为只读，则为 true；否则为 false。
+        /// </returns>
+        bool ICollection<ExtensionInfo>.IsReadOnly => true;
+
+        #endregion
+    }
+    [JsonObject(MemberSerialization.OptIn)]
+    public class ExtensionInfo
+    {
+        [JsonProperty]
+        public string Type { get; private set; }
+
+        [JsonProperty]
+        public string Name { get; private set; }
+
+        [JsonProperty("namemsg")]
+        public string NameMessage { get; private set; }
+
+        [JsonProperty]
+        public string Description { get; private set; }
+
+        [JsonProperty("descriptionmsg")]
+        public string DescriptionMessage { get; private set; }
+
+        [JsonProperty]
+        public string Author { get; private set; }
+
+        [JsonProperty]
+        public string Url { get; private set; }
+
+        [JsonProperty("vcs-system")]
+        public string VcsSystem { get; private set; }
+
+        [JsonProperty("vcs-version")]
+        public string VcsVersion { get; private set; }
+
+        [JsonProperty("vcs-url")]
+        public string VcsUrl { get; private set; }
+
+        [JsonProperty("vcs-date")]
+        public string VcsDate { get; private set; }
+
+        [JsonProperty("license-name")]
+        public string LicenseName { get; private set; }
+
+        [JsonProperty]
+        public string License { get; private set; }
+
+        [JsonProperty]
+        public string Version { get; private set; }
+
+        [JsonProperty]
+        public string Credits { get; private set; }
+
+        /// <summary>
+        /// 返回表示当前对象的字符串。
+        /// </summary>
+        /// <returns>
+        /// 表示当前对象的字符串。
+        /// </returns>
+        public override string ToString()
+        {
+            return $"{Type}: {Name} - {Version}";
+        }
+    }
 }
