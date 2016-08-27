@@ -154,44 +154,11 @@ namespace WikiClientLibrary.Generators
             foreach (var v in GetParams(true))
                 valuesDict[v.Key] = v.Value;
             Debug.Assert((string) valuesDict["action"] == "query");
-            var eofReached = false;
-            var resultCounter = 0;
-            var paging = new DelegateAsyncEnumerable<JArray>(async cancellation =>
-            {
-                if (eofReached) return null;
-                cancellation.ThrowIfCancellationRequested();
-                Site.Logger?.Trace(ToString() + ": Loading pages from #" + resultCounter);
-                var jresult = await WikiClient.GetJsonAsync(valuesDict);
-                // continue.xxx
-                // or query-continue.allpages.xxx
-                var continuation = (JObject) (jresult["continue"]
-                                              ?? ((JProperty) jresult["query-continue"]?.First)?.Value);
-                if (continuation != null)
-                {
-                    // Prepare for the next page of list.
-                    // Note for string of ISO date,
-                    // (string) JToken == (string) (DateTime) JToken
-                    // So we cannot use (string) p.Value or p.Value.ToString
-                    foreach (var p in continuation.Properties())
-                        valuesDict[p.Name] = p.Value.ToObject<object>();
-                }
-                else
-                {
-                    eofReached = true;
-                }
-                // If there's no result, "query" node will not exist.
-                var jrc = (JArray) jresult["query"]?["recentchanges"];
-                if (jrc != null)
-                    resultCounter += jrc.Count;
-                else if (continuation != null)
-                    Site.Logger?.Warn("Empty page list received.");
-                cancellation.ThrowIfCancellationRequested();
-                return Tuple.Create(jrc, true);
-            });
+            var paging = new PagedQueryAsyncEnumerable(Site, valuesDict);
             var serializer = Utility.CreateWikiJsonSerializer();
             serializer.Converters.Insert(0, new RcEntryCreator(Site));
-            return paging.SelectMany(jarr =>
-                jarr.ToObject<IList<RecentChangesEntry>>(serializer).ToAsyncEnumerable());
+            return paging.SelectMany(jquery => jquery["recentchanges"]
+                .ToObject<IList<RecentChangesEntry>>(serializer).ToAsyncEnumerable());
         }
 
         /// <summary>

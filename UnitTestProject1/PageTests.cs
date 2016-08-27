@@ -95,6 +95,15 @@ namespace UnitTestProject1
         }
 
         [TestMethod]
+        public void WpTestEnumPageLinksTest()
+        {
+            var site = WpTestSite;
+            var page = new Page(site, site.SiteInfo.MainPage);
+            var links = AwaitSync(page.EnumLinksAsync().ToList());
+            ShallowTrace(links);
+        }
+
+        [TestMethod]
         public void WpLzhRedirectedPageReadTest()
         {
             var site = WpLzhSite;

@@ -44,11 +44,9 @@ namespace WikiClientLibrary
             var queryParams = GetPageFetchingParams(options);
             return generator.EnumJsonAsync(queryParams).SelectMany(jresult =>
             {
-                var jquery = (JObject) jresult["query"];
-                return jquery == null
-                    ? AsyncEnumerable.Empty<Page>()
-                    : Page.FromJsonQueryResult(generator.Site, jquery, options)
-                        .ToAsyncEnumerable();
+                var pages = Page.FromJsonQueryResult(generator.Site, jresult, options);
+                generator.Site.Logger?.Trace($"Loaded {pages.Count} pages from {generator}.");
+                return pages.ToAsyncEnumerable();
             });
         }
 
@@ -119,41 +117,19 @@ namespace WikiClientLibrary
                 ? "newer"
                 : "older";
             pa["titles"] = pageTitle;
-            var eofReached = false;
             var resultCounter = 0;
-            return new DelegateAsyncEnumerable<JArray>(async cancellation =>
+            return new PagedQueryAsyncEnumerable(site, pa)
+                .SelectMany(jresult =>
             {
-                if (eofReached) return null;
-                cancellation.ThrowIfCancellationRequested();
-                site.Logger?.Trace($"Loading revisions of {pageTitle} from #{resultCounter}");
-                var jresult = await site.WikiClient.GetJsonAsync(pa);
-                // continue.xxx
-                // or query-continue.allpages.xxx
-                var continuation = (JObject) (jresult["continue"]
-                                              ?? ((JProperty) jresult["query-continue"]?.First)?.Value);
-                if (continuation != null)
-                {
-                    // Prepare for the next page of list.
-                    foreach (var p in continuation.Properties())
-                        pa[p.Name] = p.Value.ToObject<object>();
-                }
-                else
-                {
-                    eofReached = true;
-                }
-                // If there's no result, "query" node will not exist.
                 var page = jresult["query"]?["pages"].Values().First();
-                var revisions = (JArray) page?["revisions"];
+                var revisions = (JArray)page?["revisions"];
                 if (revisions != null)
+                {
                     resultCounter += revisions.Count;
-                else if (continuation != null)
-                    site.Logger?.Warn("Empty page list received.");
-                cancellation.ThrowIfCancellationRequested();
-                return Tuple.Create(revisions, true);
-            }).SelectMany(jrevs =>
-            {
-                if (jrevs == null) return AsyncEnumerable.Empty<Revision>();
-                return jrevs.ToObject<IList<Revision>>(Utility.WikiJsonSerializer).ToAsyncEnumerable();
+                    site.Logger?.Trace($"Loaded {resultCounter} revisions of {pageTitle}.");
+                    return revisions.ToObject<IList<Revision>>(Utility.WikiJsonSerializer).ToAsyncEnumerable();
+                }
+                return AsyncEnumerable.Empty<Revision>();
             });
         }
 
@@ -237,6 +213,31 @@ namespace WikiClientLibrary
             // For now we use the method internally.
             Debug.Assert(jmodules != null);
             return (JObject) jmodules.First;
+        }
+
+        public static IAsyncEnumerable<string> EnumLinksAsync(Site site, string titlesExpr, /* optional */ IEnumerable<int> namespaces)
+        {
+            var pa = new Dictionary<string, object>
+            {
+                {"action", "query"},
+                {"prop", "links"},
+                {"plnamespace", namespaces == null ? null : string.Join("|", namespaces)},
+            };
+            pa["titles"] = titlesExpr;
+            var resultCounter = 0;
+            return new PagedQueryAsyncEnumerable(site, pa)
+                .SelectMany(jresult =>
+                {
+                    var page = jresult["query"]?["pages"].Values().First();
+                    var links = (JArray) page?["links"];
+                    if (links != null)
+                    {
+                        resultCounter += links.Count;
+                        site.Logger?.Trace($"Loaded {resultCounter} links out of {titlesExpr}.");
+                        return links.ToObject<IList<string>>(Utility.WikiJsonSerializer).ToAsyncEnumerable();
+                    }
+                    return AsyncEnumerable.Empty<string>();
+                });
         }
     }
 }

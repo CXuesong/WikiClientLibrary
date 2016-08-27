@@ -39,7 +39,7 @@
     <Compile Include="Generators\AllCategoriesGenerator.cs" />
     <Compile Include="Generators\AllPagesGenerator.cs" />
     <Compile Include="Generators\CategoryMembersGenerator.cs" />
-    <Compile Include="Generators\Generators.cs" />
+    <Compile Include="Generators\PageGenerator.cs" />
     <Compile Include="Generators\QueryPageGenerator.cs" />
     <Compile Include="Generators\RecentChangesGenerator.cs" />
     <Compile Include="ILogger.cs" />
@@ -47,6 +47,7 @@
     <Compile Include="Page.cs" />
     <Compile Include="DelegateEnumerable.cs" />
     <Compile Include="PageExtensions.cs" />
+    <Compile Include="PagedQueryAsyncEnumerable.cs" />
     <Compile Include="ParsedContentInfo.cs" />
     <Compile Include="RequestManager.cs" />
     <Compile Include="RecentChangesEntry.cs" />

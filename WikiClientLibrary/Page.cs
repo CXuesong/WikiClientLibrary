@@ -231,11 +231,10 @@ namespace WikiClientLibrary
             if (queryNode == null) throw new ArgumentNullException(nameof(queryNode));
             var pages = (JObject) queryNode["pages"];
             if (pages == null) return EmptyPages;
-            site.Logger?.Trace($"Fetching {pages.Count} pages. {options}");
             return pages.Properties().Select(page =>
             {
                 Page newInst;
-                if (page["categoryinfo"] != null)
+                if (page.Value["categoryinfo"] != null)
                     newInst = new Category(site);
                 else
                     newInst = new Page(site);
@@ -284,6 +283,26 @@ namespace WikiClientLibrary
         public IAsyncEnumerable<Revision> EnumRevisionsAsync()
         {
             return EnumRevisionsAsync(RevisionsQueryOptions.None);
+        }
+
+        /// <summary>
+        /// Enumerate all links on the pages.
+        /// </summary>
+        public IAsyncEnumerable<string> EnumLinksAsync()
+        {
+            return EnumLinksAsync(null);
+        }
+
+        /// <summary>
+        /// Enumerate all links on the pages.
+        /// </summary>
+        /// <param name="namespaces">
+        /// Only list links to pages in these namespaces.
+        /// If this is empty or <c>null</c>, all the pages will be listed.
+        /// </param>
+        public IAsyncEnumerable<string> EnumLinksAsync(IEnumerable<int> namespaces)
+        {
+            return RequestManager.EnumLinksAsync(Site, Title, namespaces);
         }
 
         #endregion
