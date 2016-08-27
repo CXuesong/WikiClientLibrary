@@ -36,8 +36,7 @@ namespace WikiClientLibrary
         /// <summary>
         /// Enumerate pages from the generator.
         /// </summary>
-        public static IAsyncEnumerable<T> EnumPagesAsync<T>(PageGeneratorBase generator, PageQueryOptions options)
-            where T : Page
+        public static IAsyncEnumerable<Page> EnumPagesAsync(PageGeneratorBase generator, PageQueryOptions options)
         {
             if (generator == null) throw new ArgumentNullException(nameof(generator));
             if ((options & PageQueryOptions.ResolveRedirects) == PageQueryOptions.ResolveRedirects)
@@ -47,8 +46,8 @@ namespace WikiClientLibrary
             {
                 var jquery = (JObject) jresult["query"];
                 return jquery == null
-                    ? AsyncEnumerable.Empty<T>()
-                    : Page.FromJsonQueryResult<T>(generator.Site, jquery, options)
+                    ? AsyncEnumerable.Empty<Page>()
+                    : Page.FromJsonQueryResult(generator.Site, jquery, options)
                         .ToAsyncEnumerable();
             });
         }
@@ -157,7 +156,6 @@ namespace WikiClientLibrary
                 return jrevs.ToObject<IList<Revision>>(Utility.WikiJsonSerializer).ToAsyncEnumerable();
             });
         }
-
 
         public static async Task PatrolAsync(Site site, int? recentChangeId, int? revisionId)
         {

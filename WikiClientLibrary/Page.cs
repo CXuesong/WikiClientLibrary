@@ -218,14 +218,6 @@ namespace WikiClientLibrary
             }
         }
 
-        internal static T CreateInstance<T>(Site site) where T : Page
-        {
-            var t = typeof (T);
-            if (t == typeof (Page)) return new Page(site) as T;
-            if (t == typeof (Category)) return new Category(site) as T;
-            throw new NotSupportedException($"Can not create instance of {t} .");
-        }
-
         /// <summary>
         /// Creates a list of <see cref="Page"/> based on JSON query result.
         /// </summary>
@@ -233,17 +225,20 @@ namespace WikiClientLibrary
         /// <param name="queryNode">The <c>qurey</c> node value object of JSON result.</param>
         /// <param name="options">Provides options when performing the query.</param>
         /// <returns>Retrived pages.</returns>
-        internal static IList<T> FromJsonQueryResult<T>(Site site, JObject queryNode, PageQueryOptions options)
-            where T : Page
+        internal static IList<Page> FromJsonQueryResult(Site site, JObject queryNode, PageQueryOptions options)
         {
             if (site == null) throw new ArgumentNullException(nameof(site));
             if (queryNode == null) throw new ArgumentNullException(nameof(queryNode));
             var pages = (JObject) queryNode["pages"];
-            if (pages == null) return new T[0];
+            if (pages == null) return EmptyPages;
             site.Logger?.Trace($"Fetching {pages.Count} pages. {options}");
             return pages.Properties().Select(page =>
             {
-                var newInst = CreateInstance<T>(site);
+                Page newInst;
+                if (page["categoryinfo"] != null)
+                    newInst = new Category(site);
+                else
+                    newInst = new Page(site);
                 newInst.LoadFromJson(page, options);
                 return newInst;
             }).ToList();
