@@ -2,7 +2,9 @@ A .NET Portable & asynchronous MediaWiki API client library for wiki sites. This
 
 The repository is still under constructions.
 
-Before running the test cases, please take a look at the [last section](#Setting up test cases).
+Before running the test cases, please take a look at the [last section](#setting-up-test-cases).
+
+[TOC]
 
 ## Overview
 
@@ -43,7 +45,8 @@ static async Task HelloWikiWorld()
     await page.RefreshAsync(PageQueryOptions.FetchContent);
 
     Console.WriteLine("Last touched at {0}.", page.LastTouched);
-    Console.WriteLine("Last revision by {0} at {1}.", page.LastRevisionId, page.LastRevision.TimeStamp);
+    Console.WriteLine("Last revision {0} by {1} at {2}.", page.LastRevisionId,
+        page.LastRevision.UserName, page.LastRevision.TimeStamp);
     Console.WriteLine("Content length: {0} bytes ----------", page.ContentLength);
     Console.WriteLine(page.Content);
     // Purge the page
@@ -77,7 +80,7 @@ Password >******
 You have successfully logged in as XuesongBot.
 Retriving Main Page...
 Last touched at 2016/8/27 AM 6:10:56.
-Last revision by 285903 at 2016/5/27 AM 1:54:34.
+Last revision 285903 by Luke081515Bot at 2016/5/27 上午 1:54:34.
 Content length: 3527 bytes ----------
 Welcome to '''test2.wikipedia.org'''! This wiki is currently running a test release of the {{CURRENTVERSION}} version of MediaWiki.
 
@@ -99,7 +102,7 @@ The portable library targets at .NET Framework 4.5, ASP.NET Core 1.0, Xamarin.iO
 
 You can fetch multiple pages at one time with `PageExtensions.RefreshAsync` extension method. However, it's often the case that you're actually fetching pages using [generators](https://www.mediawiki.org/wiki/API:Generator), so that's what we're discussing in the section.
 
-You can query a list of pages, fetching their information (with or without content) with lists (i.e. generators), such as [`allpages`](https://www.mediawiki.org/wiki/API:Allpages), [`allcategories`](https://www.mediawiki.org/wiki/API:Allcategories)[`querypage`](https://www.mediawiki.org/wiki/API:Querypage), and [`recentchanges`](https://www.mediawiki.org/wiki/API:Recentchanges). Such generators are implemented in `WikiClientLibrary.Generators` namespace. Though there're still a lot of types of generators yet to be supported, the routine for implementing a `Generator` class is quite the same. Up till now, the following generators have been implemented
+You can query a list of pages, fetching their information (with or without content) with lists (i.e. generators), such as [`allpages`](https://www.mediawiki.org/wiki/API:Allpages), [`allcategories`](https://www.mediawiki.org/wiki/API:Allcategories), [`querypage`](https://www.mediawiki.org/wiki/API:Querypage), and [`recentchanges`](https://www.mediawiki.org/wiki/API:Recentchanges). Such generators are implemented in `WikiClientLibrary.Generators` namespace. Though there're still a lot of types of generators yet to be supported, the routine for implementing a `Generator` class is quite the same. Up till now, the following generators have been implemented
 
 *   allpages
 *   allcategories
@@ -142,7 +145,7 @@ static async Task HelloWikiGenerators()
 
 ## Recent changes and patrol
 
-You can list pages using `RecentChangesGenerator.EnumPagesAsync`, just like other generators, while this generator has another powerful method `RecentChangesGenerator.EnumRecentChangesAsync`, which can generate a sequence of `RecentChangesEntry`, which contains the detailed information of each recent change.
+You can list pages using `RecentChangesGenerator.EnumPagesAsync`, just like other generators, while this generator has another powerful method `RecentChangesGenerator.EnumRecentChangesAsync`, which can generate a sequence of `RecentChangesEntry`, containing the detailed information of each recent change.
 
 ```c#
 static async Task HelloRecentChanges()
@@ -282,12 +285,21 @@ namespace UnitTestProject1
             var url = site.SiteInfo.ServerUrl;
             if (url.Contains("wikipedia.org"))
                 Login(site, "Anne", "password" );
-          // Though we do not login into wikia, for now.
+          // We'll make changes to MediaWiki 119 test Wiki
             else if (url.Contains("wikia.com"))
                 Login(site, "Bob", "password");
-          // Add other login routine if you need to.
+          // Add other login routines if you need to.
+            else if (url.contains("domain.com"))
+                Login(site, "Calla", "password");
             else
                 throw new NotSupportedException();
+        }
+
+        static partial void Initialize()
+        {
+          // A place to perform page moving and deleting
+          // You should have the bot or sysop right there
+            DirtyTestsEntryPointUrl = "http://testwiki.domain.com/api.php";
         }
     }
 }

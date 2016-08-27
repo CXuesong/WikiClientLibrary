@@ -60,7 +60,8 @@ namespace ConsoleTestApplication1
             await page.RefreshAsync(PageQueryOptions.FetchContent);
 
             Console.WriteLine("Last touched at {0}.", page.LastTouched);
-            Console.WriteLine("Last revision by {0} at {1}.", page.LastRevisionId, page.LastRevision.TimeStamp);
+            Console.WriteLine("Last revision {0} by {1} at {2}.", page.LastRevisionId,
+                page.LastRevision.UserName, page.LastRevision.TimeStamp);
             Console.WriteLine("Content length: {0} bytes ----------", page.ContentLength);
             Console.WriteLine(page.Content);
             // Purge the page
