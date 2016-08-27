@@ -322,6 +322,87 @@ namespace WikiClientLibrary
 
         #region Query
 
+        private IDictionary<string, string> _CachedMessages = new Dictionary<string, string>();
+
+        private async Task<JArray> FetchMessagesAsync(string messagesExpr)
+        {
+            var jresult = await WikiClient.GetJsonAsync(new
+            {
+                action = "query",
+                meta = "allmessages",
+                ammessages = messagesExpr,
+            });
+            return (JArray) jresult["query"]["allmessages"];
+            //return jresult.ToDictionary(m => , m => (string) m["*"]);
+        }
+
+        /// <summary>
+        /// Get the content of some or all MediaWiki interface messages.
+        /// </summary>
+        /// <param name="messages">A sequence of message names.</param>
+        /// <returns>
+        /// A dictionary of message name - message content pairs.
+        /// If some messages cannot be found, the corresponding value will be <c>null</c>.
+        /// </returns>
+        /// <exception cref="ArgumentException">
+        /// <paramref name="messages"/> contains <c>null</c> item.
+        /// OR one of the <paramref name="messages"/> contains pipe character (|).
+        /// </exception>
+        /// <exception cref="InvalidOperationException">
+        /// Trying to fetch all the messages with "*" input.
+        /// </exception>
+        public async Task<IDictionary<string, string>> GetMessagesAsync(IEnumerable<string> messages)
+        {
+            if (messages == null) throw new ArgumentNullException(nameof(messages));
+            var impending = new List<string>();
+            var result = new Dictionary<string, string>();
+            foreach (var m in messages)
+            {
+                if (m == null) throw new ArgumentException("The sequence contains null item.", nameof(messages));
+                if (m.Contains("|")) throw new ArgumentException($"The message name \"{m}\" contains pipe character.", nameof(messages));
+                if (m == "*") throw new InvalidOperationException("Getting all the messages is deprecated.");
+                string content;
+                if (_CachedMessages.TryGetValue(m.ToLowerInvariant(), out content))
+                    result[m] = content;
+                else
+                    impending.Add(m);
+            }
+            if (impending.Count > 0)
+            {
+                var jr = await FetchMessagesAsync(string.Join("|", impending));
+                foreach (var entry in jr)
+                {
+                    var name = (string)entry["name"];
+                    var nname = (string)entry["normalizedname"];
+                    var message = (string)entry["*"];
+                    //var missing = entry["missing"] != null;       message will be null
+                    result[name] = message;
+                    _CachedMessages[nname] = message;
+                }
+            }
+            return result;
+        }
+
+        /// <summary>
+        /// Get the content of MediaWiki interface message.
+        /// </summary>
+        /// <param name="message">The message name.</param>
+        /// <returns>
+        /// The message content. OR <c>null</c> if the messages cannot be found.
+        /// </returns>
+        /// <exception cref="ArgumentException">
+        /// <paramref name="message"/> contains pipe character (|).
+        /// </exception>
+        /// <exception cref="InvalidOperationException">
+        /// Trying to fetch all the messages with "*" input.
+        /// </exception>
+        public async Task<string> GetMessageAsync(string message)
+        {
+            if (message == null) throw new ArgumentNullException(nameof(message));
+            var result = await GetMessagesAsync(new[] {message});
+            return result.Values.FirstOrDefault();
+        }
+
         /// <summary>
         /// Parsing the specific page, gets HTML and more information. (MediaWiki 1.12)
         /// </summary>
@@ -487,5 +568,16 @@ namespace WikiClientLibrary
         {
             return Title + (Description != null ? ":" + Description : null);
         }
+    }
+
+    /// <summary>
+    /// Client options for a MediaWiki site.
+    /// </summary>
+    public class SiteOptions
+    {
+        /// <summary>
+        /// Gets a list of disambiguation templates.
+        /// </summary>
+        public IList<string> DisambiguationTemplates { get; set; } = new List<string>();
     }
 }

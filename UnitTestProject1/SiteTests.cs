@@ -64,6 +64,8 @@ namespace UnitTestProject1
             ShallowTrace(site);
             Assert.AreEqual("Wikipedia", site.SiteInfo.SiteName);
             Assert.AreEqual("Main Page", site.SiteInfo.MainPage);
+            var messages = AwaitSync(site.GetMessagesAsync(new[] {"august"}));
+            Assert.AreEqual("August", messages["august"]);
             ValidateNamespaces(site);
             ShallowTrace(site.InterwikiMap);
         }
