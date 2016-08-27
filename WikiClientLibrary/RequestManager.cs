@@ -106,13 +106,14 @@ namespace WikiClientLibrary
         /// Enumerate revisions from the page.
         /// </summary>
         /// <remarks>Redirect resolution is disabled in this operation.</remarks>
-        public static IAsyncEnumerable<Revision> EnumRevisionsAsync(Site site, string pageTitle, RevisionsQueryOptions options)
+        public static IAsyncEnumerable<Revision> EnumRevisionsAsync(Site site, string pageTitle,
+            RevisionsQueryOptions options)
         {
             var pa = GetPageFetchingParams(
                 (options & RevisionsQueryOptions.FetchContent) == RevisionsQueryOptions.FetchContent
                     ? PageQueryOptions.FetchContent
                     : PageQueryOptions.None);
-            pa["rvlimit"] = site.UserInfo.HasRight(UserRights.ApiHighLimits) ? 5000 : 500;
+            pa["rvlimit"] = site.ListingPagingSize;
             pa["rvdir"] = (options & RevisionsQueryOptions.TimeAscending) == RevisionsQueryOptions.TimeAscending
                 ? "newer"
                 : "older";
@@ -120,17 +121,17 @@ namespace WikiClientLibrary
             var resultCounter = 0;
             return new PagedQueryAsyncEnumerable(site, pa)
                 .SelectMany(jresult =>
-            {
-                var page = jresult["query"]?["pages"].Values().First();
-                var revisions = (JArray)page?["revisions"];
-                if (revisions != null)
                 {
-                    resultCounter += revisions.Count;
-                    site.Logger?.Trace($"Loaded {resultCounter} revisions of {pageTitle}.");
-                    return revisions.ToObject<IList<Revision>>(Utility.WikiJsonSerializer).ToAsyncEnumerable();
-                }
-                return AsyncEnumerable.Empty<Revision>();
-            });
+                    var page = jresult["query"]?["pages"].Values().First();
+                    var revisions = (JArray) page?["revisions"];
+                    if (revisions != null)
+                    {
+                        resultCounter += revisions.Count;
+                        site.Logger?.Trace($"Loaded {resultCounter} revisions of {pageTitle}.");
+                        return revisions.ToObject<IList<Revision>>(Utility.WikiJsonSerializer).ToAsyncEnumerable();
+                    }
+                    return AsyncEnumerable.Empty<Revision>();
+                });
         }
 
         public static async Task PatrolAsync(Site site, int? recentChangeId, int? revisionId)
@@ -153,7 +154,7 @@ namespace WikiClientLibrary
                     revid = revisionId,
                     token = token,
                 });
-                if (recentChangeId != null) Debug.Assert((int)jresult["patrol"]["rcid"] == recentChangeId.Value);
+                if (recentChangeId != null) Debug.Assert((int) jresult["patrol"]["rcid"] == recentChangeId.Value);
             }
             catch (OperationFailedException ex)
             {
@@ -209,32 +210,35 @@ namespace WikiClientLibrary
                 pa["modules"] = moduleName;
             }
             var jresult = await site.WikiClient.GetJsonAsync(pa);
-            var jmodules = ((JObject) jresult["paraminfo"]).Properties().FirstOrDefault(p => p.Name.EndsWith("modules"))?.Value;
+            var jmodules =
+                ((JObject) jresult["paraminfo"]).Properties().FirstOrDefault(p => p.Name.EndsWith("modules"))?.Value;
             // For now we use the method internally.
             Debug.Assert(jmodules != null);
             return (JObject) jmodules.First;
         }
 
-        public static IAsyncEnumerable<string> EnumLinksAsync(Site site, string titlesExpr, /* optional */ IEnumerable<int> namespaces)
+        public static IAsyncEnumerable<string> EnumLinksAsync(Site site, string titlesExpr, /* optional */
+            IEnumerable<int> namespaces)
         {
             var pa = new Dictionary<string, object>
             {
                 {"action", "query"},
                 {"prop", "links"},
+                {"pllimit", site.ListingPagingSize},
                 {"plnamespace", namespaces == null ? null : string.Join("|", namespaces)},
             };
             pa["titles"] = titlesExpr;
             var resultCounter = 0;
             return new PagedQueryAsyncEnumerable(site, pa)
-                .SelectMany(jresult =>
+                .SelectMany(jquery =>
                 {
-                    var page = jresult["query"]?["pages"].Values().First();
+                    var page = jquery["pages"].Values().First();
                     var links = (JArray) page?["links"];
                     if (links != null)
                     {
                         resultCounter += links.Count;
                         site.Logger?.Trace($"Loaded {resultCounter} links out of {titlesExpr}.");
-                        return links.ToObject<IList<string>>(Utility.WikiJsonSerializer).ToAsyncEnumerable();
+                        return links.Select(l => (string) l["title"]).ToAsyncEnumerable();
                     }
                     return AsyncEnumerable.Empty<string>();
                 });

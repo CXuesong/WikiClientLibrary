@@ -97,10 +97,14 @@ namespace UnitTestProject1
         [TestMethod]
         public void WpTestEnumPageLinksTest()
         {
-            var site = WpTestSite;
+            var site = WpLzhSite;
             var page = new Page(site, site.SiteInfo.MainPage);
+            Trace.WriteLine(page);
             var links = AwaitSync(page.EnumLinksAsync().ToList());
             ShallowTrace(links);
+            Assert.IsTrue(links.Contains("維基大典:條目指引"));
+            Assert.IsTrue(links.Contains("Help:凡例"));
+            Assert.IsTrue(links.Contains("維基大典:卓著"));
         }
 
         [TestMethod]

@@ -52,7 +52,7 @@ namespace WikiClientLibrary.Generators
         /// The same of <see cref="PagingSize"/> if specified, or the default limit
         /// (5000 for bots and 500 for users) otherwise.
         /// </value>
-        public int ActualPagingSize => PagingSize ?? (Site.UserInfo.HasRight(UserRights.ApiHighLimits) ? 5000 : 500);
+        public int ActualPagingSize => PagingSize ?? Site.ListingPagingSize;
 
         /// <summary>
         /// When overridden, fills generator parameters for action=query request.

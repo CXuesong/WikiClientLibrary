@@ -52,6 +52,7 @@ namespace WikiClientLibrary
             Namespaces = new NamespaceCollection(this, ns, aliases);
             InterwikiMap = new InterwikiMap(this, interwiki);
             Extensions = new ExtensionCollection(this, extensions);
+            ListingPagingSize = UserInfo.HasRight(UserRights.ApiHighLimits) ? 5000 : 500;
         }
 
         public async Task RefreshUserInfoAsync()
@@ -74,6 +75,12 @@ namespace WikiClientLibrary
         public InterwikiMap InterwikiMap { get; private set; }
 
         public ExtensionCollection Extensions { get; private set; }
+
+        /// <summary>
+        /// Gets the default result limit per page for current user.
+        /// </summary>
+        /// <value>This value is 500 for user, and 5000 for bots.</value>
+        internal int ListingPagingSize { get; private set; }
 
         #region Tokens
 
