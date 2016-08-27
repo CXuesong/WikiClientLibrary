@@ -1,6 +1,6 @@
 A .NET Portable & asynchronous MediaWiki API client library for wiki sites. This library aims for human users, as well as bots.
 
-The repository is still under constructions.
+The repository is still under constructions. The roadmap can be found in the [repository wiki](https://github.com/CXuesong/WikiClientLibrary/wiki).
 
 Before running the test cases, please take a look at the [last section](#setting-up-test-cases).
 
@@ -35,8 +35,8 @@ static async Task HelloWikiWorld()
         Console.WriteLine("You have successfully logged in as {0}.", site.UserInfo.Name);
     }
     // Find out more members in Site class, such as
-    //  page.Namespaces
-    //  page.InterwikiMap
+    //  site.Namespaces
+    //  site.InterwikiMap
 
     // Page Operations
     // Fetch information and content
