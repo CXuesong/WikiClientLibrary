@@ -12,15 +12,20 @@ namespace WikiClientLibrary.Generators
     public class CategoryMembersGenerator : PageGenerator<Page>
     {
         // We cannot decide whether generated item is a page or category,
-        // so we just use the base class.
+        // so we just use the base class Page for PageGenerator<T>.
 
         public CategoryMembersGenerator(Site site) : base(site)
         {
         }
 
+        /// <summary>
+        /// Initializes the generator from the site and category title.
+        /// </summary>
+        /// <param name="site">Site instance.</param>
+        /// <param name="categoryTitle">Title of the category, with or without Category: prefix.</param>
         public CategoryMembersGenerator(Site site, string categoryTitle) : base(site)
         {
-            CategoryTitle = categoryTitle;
+            CategoryTitle = WikiLink.NormalizeWikiLink(site, categoryTitle, BuiltInNamespaces.Category);
         }
 
         /// <summary>

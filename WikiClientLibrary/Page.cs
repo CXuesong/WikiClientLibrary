@@ -54,12 +54,24 @@ namespace WikiClientLibrary
 
         public int NamespaceId { get; private set; }
 
+        /// <summary>
+        /// Gets the id of last revision. In some cases, this property
+        /// has non-zero value while <see cref="LastRevision"/> is <c>null</c>.
+        /// See <see cref="UpdateContentAsync(string)"/> for more information.
+        /// </summary>
         public int LastRevisionId { get; private set; }
 
+        /// <summary>
+        /// Content length, in bytes.
+        /// </summary>
+        /// <remarks>
+        /// Even if you haven't fetched content of the page when calling <see cref="RefreshAsync()"/>,
+        /// this property will still get its value.
+        /// </remarks>
         public int ContentLength { get; private set; }
 
         /// <summary>
-        /// Page touched timestamp.
+        /// Page touched timestamp. It can be later than the timestamp of the last revision.
         /// </summary>
         /// <remarks>See https://www.mediawiki.org/wiki/Manual:Page_table#page_touched .</remarks>
         public DateTime LastTouched { get; private set; }
@@ -89,8 +101,7 @@ namespace WikiClientLibrary
         public string PageLanguage { get; private set; }
 
         /// <summary>
-        /// Gets the title of page. When more information is available,
-        /// gets the normalized title of page.
+        /// Gets the normalized title of the page.
         /// </summary>
         /// <remarks>
         /// Normalized title is a title with underscores(_) replaced by spaces,
@@ -101,13 +112,13 @@ namespace WikiClientLibrary
         /// <summary>
         /// Gets / Sets the content of the page.
         /// </summary>
-        /// <remarks>You should have invoked <c>RefreshAsync(true)</c> before trying to read the content of the page.</remarks>
+        /// <remarks>You should have invoked <c>RefreshAsync(PageQueryOptions.FetchContent)</c> before trying to read the content of the page.</remarks>
         public string Content { get; set; }
 
         /// <summary>
         /// Gets the latest revision of the page.
         /// </summary>
-        /// <remarks>Make sure to invoke <c>RefreshAsync(true)</c> before getting the value.</remarks>
+        /// <remarks>Make sure to invoke <see cref="RefreshAsync()"/> before getting the value.</remarks>
         public Revision LastRevision { get; private set; }
 
         /// <summary>
@@ -234,18 +245,24 @@ namespace WikiClientLibrary
         }
 
         /// <summary>
-        /// Fetch information for one or more pages.
+        /// Fetch information for the page.
         /// This overload will not fetch content.
         /// </summary>
+        /// <remarks>
+        /// For fetching multiple pages at one time, see <see cref="PageExtensions.RefreshAsync(IEnumerable{Page})"/>.
+        /// </remarks>
         public Task RefreshAsync()
         {
             return RefreshAsync(PageQueryOptions.None);
         }
 
         /// <summary>
-        /// Fetch information for one or more pages.
+        /// Fetch information for the page.
         /// </summary>
         /// <param name="options">Options when querying for the pages.</param>
+        /// <remarks>
+        /// For fetching multiple pages at one time, see <see cref="PageExtensions.RefreshAsync(IEnumerable{Page}, PageQueryOptions)"/>.
+        /// </remarks>
         public Task RefreshAsync(PageQueryOptions options)
         {
             return RequestManager.RefreshPagesAsync(new[] {this}, options);
@@ -280,7 +297,7 @@ namespace WikiClientLibrary
         /// This action will refill <see cref="Id" />, <see cref="Title"/>,
         /// <see cref="ContentModel"/>, <see cref="LastRevisionId"/>, and invalidates
         /// <see cref="ContentLength"/>, <see cref="LastRevision"/>, and <see cref="LastTouched"/>.
-        /// You should call <see cref="RefreshInfoAsync"/> or <see cref="RefreshContentAsync"/> again
+        /// You should call <see cref="RefreshAsync()"/> again
         /// if you're interested in them.
         /// </remarks>
         public Task UpdateContentAsync(string summary)

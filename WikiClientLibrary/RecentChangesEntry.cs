@@ -77,8 +77,11 @@ namespace WikiClientLibrary
         [JsonProperty("oldrevid")]
         public int OldRevisionId { get; private set; }
 
+        /// <summary>
+        /// Id of recent change entry.
+        /// </summary>
         [JsonProperty("rcid")]
-        public int RecentChangeId { get; private set; }
+        public int Id { get; private set; }
 
         [JsonProperty("user")]
         public string UserName { get; private set; }
@@ -122,6 +125,7 @@ namespace WikiClientLibrary
         [JsonProperty]
         public string LogAction { get; private set; }
 
+        // TODO Implement different classes to contain logparams for different log types.
         /// <summary>
         /// Additional log parameters.
         /// </summary>
@@ -155,7 +159,7 @@ namespace WikiClientLibrary
             else if (Unpatrolled) PatrolStatus = PatrolStatus.Unpatrolled;
             else PatrolStatus = PatrolStatus.Unknown;
             if (Patrolled && Unpatrolled)
-                Site.Logger?.Warn($"Patrolled and Unpatrolled are both set for rcid={RecentChangeId}.");
+                Site.Logger?.Warn($"Patrolled and Unpatrolled are both set for rcid={Id}.");
         }
 
         /// <summary>
@@ -172,7 +176,7 @@ namespace WikiClientLibrary
             if (PatrolStatus == PatrolStatus.Patrolled)
                 throw new InvalidOperationException("The change has already been patrolled.");
             Site.UserInfo.AssertRight(UserRights.Patrol);
-            return RequestManager.PatrolAsync(Site, RecentChangeId, null);
+            return RequestManager.PatrolAsync(Site, Id, null);
         }
 
         /// <summary>
@@ -192,7 +196,7 @@ namespace WikiClientLibrary
                     sb.Append(v);
                 }
             };
-            sb.Append(RecentChangeId);
+            sb.Append(Id);
             push(TimeStamp);
             push(Type);
             push(Flags);
