@@ -21,9 +21,19 @@ namespace WikiClientLibrary
 
         public ILogger Logger { get; set; }
 
-        public static async Task<Site> GetAsync(WikiClient wikiClient)
+        public static Task<Site> GetAsync(WikiClient wikiClient)
+        {
+            return GetAsync(wikiClient, null);
+        }
+
+        public static async Task<Site> GetAsync(WikiClient wikiClient, SiteOptions options)
         {
             var site = new Site(wikiClient);
+            if (options?.DisambiguationTemplates != null)
+            {
+                site.DisambiguationTemplates = options.DisambiguationTemplates
+                    .Concat(new[] {SiteOptions.DefaultDisambiguationTemplate}).ToList();
+            }
             await Task.WhenAll(site.RefreshSiteInfoAsync(), site.RefreshUserInfoAsync());
             return site;
         }
@@ -66,6 +76,8 @@ namespace WikiClientLibrary
             ListingPagingSize = UserInfo.HasRight(UserRights.ApiHighLimits) ? 5000 : 500;
         }
 
+        public SiteOptions Options { get; set; }
+
         public SiteInfo SiteInfo { get; private set; }
 
         public UserInfo UserInfo { get; private set; }
@@ -82,6 +94,27 @@ namespace WikiClientLibrary
         /// <value>This value is 500 for user, and 5000 for bots.</value>
         // Use 500 for default. This value will be updated along with UserInfo.
         internal int ListingPagingSize { get; private set; } = 500;
+
+        private List<string> DisambiguationTemplates;
+
+        internal async Task<IEnumerable<string>> GetDisambiguationTemplatesAsync()
+        {
+            if (DisambiguationTemplates == null)
+            {
+                var dabPages = await RequestManager
+                    .EnumLinksAsync(this, "MediaWiki:Disambiguationspage", new[] {BuiltInNamespaces.Template})
+                    .ToList();
+                if (dabPages.Count == 0)
+                {
+                    // Try to fetch from mw messages
+                    var msg = await GetMessageAsync("disambiguationspage");
+                    if (msg != null) dabPages.Add(msg);
+                }
+                dabPages.Add(SiteOptions.DefaultDisambiguationTemplate);
+                DisambiguationTemplates = dabPages;
+            }
+            return DisambiguationTemplates;
+        }
 
         #region Tokens
 
@@ -381,11 +414,12 @@ namespace WikiClientLibrary
                 foreach (var entry in jr)
                 {
                     var name = (string)entry["name"];
-                    var nname = (string)entry["normalizedname"];
+                    //var nname = (string)entry["normalizedname"];
+                    // for Wikia, there's no normalizedname
                     var message = (string)entry["*"];
                     //var missing = entry["missing"] != null;       message will be null
                     result[name] = message;
-                    _CachedMessages[nname] = message;
+                    _CachedMessages[name] = message;
                 }
             }
             return result;
@@ -596,13 +630,30 @@ namespace WikiClientLibrary
     }
 
     /// <summary>
-    /// Client options for a MediaWiki site.
+    /// Client options for creating a <see cref="Site"/> instance.
     /// </summary>
     public class SiteOptions
     {
         /// <summary>
-        /// Gets a list of disambiguation templates.
+        /// The name of default disambiguation template.
         /// </summary>
-        public IList<string> DisambiguationTemplates { get; set; } = new List<string>();
+        /// <remarks>
+        /// The default disambiguation template {{Disambig}} is always included in the
+        /// list, implicitly.
+        /// </remarks>
+        public const string DefaultDisambiguationTemplate = "Template:Disambig";
+
+        /// <summary>
+        /// Specifies a list of disambiguation templates explicitly.
+        /// </summary>
+        /// <remarks>
+        /// <para>This list is used when there's no Disambiguator on the MediaWiki site,
+        /// and WikiClientLibrary is deciding wheter a page is a disambiguation page.
+        /// The default disambiguation template {{Disambig}} is always included in the
+        /// list, implicitly.</para>
+        /// <para>If this value is <c>null</c>, WikiClientLibrary will try to
+        /// infer the disambiguation template from [[MediaWiki:Disambiguationspage]].</para>
+        /// </remarks>
+        public IList<string> DisambiguationTemplates { get; set; }
     }
 }

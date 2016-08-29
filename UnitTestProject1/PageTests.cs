@@ -65,6 +65,28 @@ namespace UnitTestProject1
         }
 
         [TestMethod]
+        public void WpTest2PageReadRedirectTest()
+        {
+            var site = WpTestSite;
+            var page = new Page(site, "Foo");
+            AwaitSync(page.RefreshAsync());
+            Assert.IsTrue(page.IsRedirect);
+            var target = AwaitSync(page.GetRedirectTargetAsync());
+            ShallowTrace(target);
+            Assert.AreEqual("Foo24", target.Title);
+            Assert.IsTrue(target.RedirectPath.SequenceEqual(new[] {"Foo", "Foo2", "Foo23"}));
+        }
+
+        [TestMethod]
+        public void WpLzhPageReadDisambigTest()
+        {
+            var site = WpLzhSite;
+            var page = new Page(site, "中國_(釋義)");
+            AwaitSync(page.RefreshAsync());
+            Assert.IsTrue(AwaitSync(page.IsDisambiguationAsync()));
+        }
+
+        [TestMethod]
         public void WikiaPageReadTest()
         {
             var site = WikiaTestSite;
@@ -73,6 +95,15 @@ namespace UnitTestProject1
             Assert.AreEqual("Mediawiki 1.19 test Wiki:Sandbox", page.Title);
             Assert.AreEqual(4, page.NamespaceId);
             ShallowTrace(page);
+        }
+
+        [TestMethod]
+        public void WikiaPageReadDisambigTest()
+        {
+            var site = WikiaTestSite;
+            var page = new Page(site, "Test (Disambiguation)");
+            AwaitSync(page.RefreshAsync());
+            Assert.IsTrue(AwaitSync(page.IsDisambiguationAsync()));
         }
 
         [TestMethod]

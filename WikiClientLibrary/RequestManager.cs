@@ -84,18 +84,17 @@ namespace WikiClientLibrary
                         var redirectTrace = new List<string>();
                         while (redirects?.ContainsKey(title) ?? false)
                         {
+                            redirectTrace.Add(title);       // Adds the last title
                             var next = redirects[title];
                             if (redirectTrace.Contains(next))
-                            {
-                                redirectTrace.Add(next);
                                 throw new InvalidOperationException(
                                     $"Cannot resolve circular redirect: {string.Join("->", redirectTrace)}.");
-                            }
-                            redirectTrace.Add(next);
                             title = next;
                         }
                         // Finally, get the page.
                         var pageInfo = pageInfoDict[title];
+                        if (redirectTrace.Count > 0)
+                            page.RedirectPath = redirectTrace;
                         page.LoadFromJson(pageInfo, options);
                     }
                 }
@@ -217,6 +216,9 @@ namespace WikiClientLibrary
             return (JObject) jmodules.First;
         }
 
+        /// <summary>
+        /// Enumerate links from the page.
+        /// </summary>
         public static IAsyncEnumerable<string> EnumLinksAsync(Site site, string titlesExpr, /* optional */
             IEnumerable<int> namespaces)
         {
@@ -234,6 +236,38 @@ namespace WikiClientLibrary
                 {
                     var page = jquery["pages"].Values().First();
                     var links = (JArray) page?["links"];
+                    if (links != null)
+                    {
+                        resultCounter += links.Count;
+                        site.Logger?.Trace($"Loaded {resultCounter} links out of {titlesExpr}.");
+                        return links.Select(l => (string) l["title"]).ToAsyncEnumerable();
+                    }
+                    return AsyncEnumerable.Empty<string>();
+                });
+        }
+
+        /// <summary>
+        /// Enumerate transcluded pages trans from the page.
+        /// </summary>
+        public static IAsyncEnumerable<string> EnumTransclusionsAsync(Site site, string titlesExpr, 
+            IEnumerable<int> namespaces = null, IEnumerable<string> transcludedTitlesExpr = null, int limit = -1)
+        {
+            // transcludedTitlesExpr should be full titles with ns prefix.
+            var pa = new Dictionary<string, object>
+            {
+                {"action", "query"},
+                {"prop", "templates"},
+                {"tllimit", limit > 0 ? limit : site.ListingPagingSize},
+                {"tlnamespace", namespaces == null ? null : string.Join("|", namespaces)},
+                {"tltemplates", transcludedTitlesExpr == null ? null : string.Join("|", transcludedTitlesExpr)}
+            };
+            pa["titles"] = titlesExpr;
+            var resultCounter = 0;
+            return new PagedQueryAsyncEnumerable(site, pa)
+                .SelectMany(jquery =>
+                {
+                    var page = jquery["pages"].Values().First();
+                    var links = (JArray) page?["templates"];
                     if (links != null)
                     {
                         resultCounter += links.Count;

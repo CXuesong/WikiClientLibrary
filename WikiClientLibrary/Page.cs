@@ -101,7 +101,7 @@ namespace WikiClientLibrary
         public string PageLanguage { get; private set; }
 
         /// <summary>
-        /// Gets the normalized title of the page.
+        /// Gets the normalized full title of the page.
         /// </summary>
         /// <remarks>
         /// Normalized title is a title with underscores(_) replaced by spaces,
@@ -122,14 +122,80 @@ namespace WikiClientLibrary
         public Revision LastRevision { get; private set; }
 
         /// <summary>
+        /// Gets the properties of the page.
+        /// </summary>
+        public PagePropertyInfo PageProperties { get; private set; }
+
+
+        /// <summary>
         /// Gets / Sets the options when querying page information.
         /// </summary>
         public PageQueryOptions QueryOptions { get; private set; }
 
-        ///// <summary>
-        ///// Determines whether the page is a disambiguation page.
-        ///// </summary>
-        //public bool IsDisambiguation { get; private set; }
+        /// <summary>
+        /// Determines whether the existing page is a disambiguation page.
+        /// </summary>
+        /// <exception cref="InvalidOperationException">The page does not exist.</exception>
+        /// <remarks>
+        /// It's recommended to use this method instead of accessing
+        /// <see cref="PagePropertyInfo.Disambiguation"/> directly. Because the latter
+        /// property is available only if there's Disambiguator extension installed
+        /// on the MediaWiki site.
+        /// </remarks>
+        public async Task<bool> IsDisambiguationAsync()
+        {
+            AssertExists();
+            // If the Disambiguator extension is loaded, use it
+            if (Site.Extensions.Contains("Disambiguator"))
+                return PageProperties.Disambiguation;
+            // Check whether the page has transcluded one of the DAB templates.
+            var dabt = await Site.GetDisambiguationTemplatesAsync();
+            var dabp = await RequestManager.EnumTransclusionsAsync(Site, Title,
+                new[] {BuiltInNamespaces.Template}, dabt, 1).Any();
+            return dabp;
+        }
+
+        #region Redirect
+
+        /// <summary>
+        /// Determines the last version of the page is a redirect page.
+        /// </summary>
+        public bool IsRedirect { get; private set; }
+
+        /// <summary>
+        /// Gets a list indicating the titles passed (except the final destination) when trying to
+        /// resolve the redirects in the last <see cref="RefreshAsync()"/> invocation.
+        /// </summary>
+        /// <value>
+        /// A sequence of strings indicating the titles passed when trying to
+        /// resolve the redirects in the last <see cref="RefreshAsync()"/> invocation.
+        /// OR an empty sequence if there's no redirect resolved, or redirect resolution
+        /// has been disabled.
+        /// </value>
+        public IList<string> RedirectPath { get; internal set; } = EmptyStrings;
+
+        /// <summary>
+        /// Tries to get the final target of the redirect page.
+        /// </summary>
+        /// <returns>
+        /// A <see cref="Page"/> of the target.
+        /// OR <c>null</c> if the page is not a redirect page.
+        /// </returns>
+        /// <remarks>
+        /// The method will create a new <see cref="Page"/> instance with the
+        /// same <see cref="Title"/> of current instance, and invoke 
+        /// <c>Page.RefreshAsync(PageQueryOptions.ResolveRedirects)</c>
+        /// to resolve the redirects.
+        /// </remarks>
+        public async Task<Page> GetRedirectTargetAsync()
+        {
+            var newPage = new Page(Site, Title);
+            await newPage.RefreshAsync(PageQueryOptions.ResolveRedirects);
+            if (newPage.RedirectPath.Count > 0) return newPage;
+            return null;
+        }
+
+        #endregion
 
         private static bool AreIdEquals(int id1, int id2)
         {
@@ -142,6 +208,13 @@ namespace WikiClientLibrary
         #region Query
 
         private static readonly Page[] EmptyPages = new Page[0];
+
+        private static readonly string[] EmptyStrings = new string[0];
+
+        protected void AssertExists()
+        {
+            if (!Exists) throw new InvalidOperationException($"The page {this} does not exist.");
+        }
 
         /// <summary>
         /// Loads page information from JSON.
@@ -166,34 +239,39 @@ namespace WikiClientLibrary
 
         protected virtual void OnLoadPageInfo(JObject jpage)
         {
-            Title = (string)jpage["title"];
+            Title = (string) jpage["title"];
             // Invalid page title (like Special:)
             if (jpage["invalid"] != null)
             {
-                var reason = (string)jpage["invalidreason"];
+                var reason = (string) jpage["invalidreason"];
                 throw new OperationFailedException(reason);
             }
-            NamespaceId = (int)jpage["ns"];
+            NamespaceId = (int) jpage["ns"];
             Exists = jpage["missing"] == null;
-            ContentModel = (string)jpage["contentmodel"];
-            PageLanguage = (string)jpage["pagelanguage"];
+            ContentModel = (string) jpage["contentmodel"];
+            PageLanguage = (string) jpage["pagelanguage"];
+            IsRedirect = jpage["redirect"] != null;
             if (Exists)
             {
-                ContentLength = (int)jpage["length"];
-                LastRevisionId = (int)jpage["lastrevid"];
-                LastTouched = (DateTime)jpage["touched"];
-                Protections = ((JArray)jpage["protection"]).ToObject<IReadOnlyCollection<ProtectionInfo>>(
+                ContentLength = (int) jpage["length"];
+                LastRevisionId = (int) jpage["lastrevid"];
+                LastTouched = (DateTime) jpage["touched"];
+                Protections = jpage["protection"].ToObject<IReadOnlyCollection<ProtectionInfo>>(
                     Utility.WikiJsonSerializer);
-                RestrictionTypes = ((JArray)jpage["restrictiontypes"])?.ToObject<IReadOnlyCollection<string>>(
-                    Utility.WikiJsonSerializer);
+                RestrictionTypes = jpage["restrictiontypes"]?.ToObject<IReadOnlyCollection<string>>(
+                    Utility.WikiJsonSerializer) ?? EmptyStrings;
+                PageProperties = jpage["pageprops"]?.ToObject<PagePropertyInfo>(Utility.WikiJsonSerializer)
+                                 ?? PagePropertyInfo.Empty;
             }
             else
             {
+                // N / A
                 ContentLength = 0;
                 LastRevisionId = 0;
                 LastTouched = DateTime.MinValue;
                 Protections = null;
                 RestrictionTypes = null;
+                PageProperties = null;
             }
         }
 
@@ -304,6 +382,27 @@ namespace WikiClientLibrary
         {
             return RequestManager.EnumLinksAsync(Site, Title, namespaces);
         }
+
+        /// <summary>
+        /// Enumerate all pages (typically templates) transcluded on the pages.
+        /// </summary>
+        public IAsyncEnumerable<string> EnumTransclusionsAsync()
+        {
+            return EnumTransclusionsAsync(null);
+        }
+
+        /// <summary>
+        /// Enumerate all pages (typically templates) transcluded on the pages.
+        /// </summary>
+        /// <param name="namespaces">
+        /// Only list links to pages in these namespaces.
+        /// If this is empty or <c>null</c>, all the transcluded pages will be listed.
+        /// </param>
+        public IAsyncEnumerable<string> EnumTransclusionsAsync(IEnumerable<int> namespaces)
+        {
+            return RequestManager.EnumTransclusionsAsync(Site, Title, namespaces);
+        }
+
 
         #endregion
 
@@ -653,10 +752,12 @@ namespace WikiClientLibrary
     public enum PageQueryOptions
     {
         None = 0,
+
         /// <summary>
         /// Fetch content of the page.
         /// </summary>
         FetchContent = 1,
+
         /// <summary>
         /// Resolves directs automatically. This may later change <see cref="Page.Title"/>.
         /// This option cannot be used with generators.
@@ -669,10 +770,12 @@ namespace WikiClientLibrary
     public enum RevisionsQueryOptions
     {
         None = 0,
+
         /// <summary>
         /// Fetch content of the revision.
         /// </summary>
         FetchContent = 1,
+
         /// <summary>
         /// Enumerate the oldest revision first.
         /// </summary>
@@ -797,6 +900,7 @@ namespace WikiClientLibrary
     {
         None = 0,
         Minor = 1,
+
         /// <summary>
         /// The operation is performed by bot.
         /// This flag can only be access via <see cref="RecentChangesEntry.Flags"/>.
@@ -825,9 +929,14 @@ namespace WikiClientLibrary
     public class PagePropertyInfo
     {
         /// <summary>
+        /// An empty instance.
+        /// </summary>
+        internal static readonly PagePropertyInfo Empty = new PagePropertyInfo();
+
+        /// <summary>
         /// Determines whether the page is a disambiguation page.
         /// This is raw value and only works when Extension:Disambiguator presents.
-        /// Please use <see cref="Page.IsDisambiguation"/> instead.
+        /// Please use <see cref="Page.IsDisambiguationAsync"/> instead.
         /// </summary>
         [JsonProperty]
         public bool Disambiguation { get; private set; }
@@ -837,6 +946,9 @@ namespace WikiClientLibrary
 
         [JsonProperty("page_image")]
         public string PageImage { get; private set; }
+
+        [JsonProperty("hiddencat")]
+        public bool IsHiddenCategory { get; private set; }
 
         [JsonExtensionData]
         public IDictionary<string, object> Others { get; private set; }
