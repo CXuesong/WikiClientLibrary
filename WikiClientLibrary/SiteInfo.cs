@@ -151,9 +151,13 @@ namespace WikiClientLibrary
         }
 
         /// <summary>
-        /// Whether the first letter in the namespace title is case-sensitive. (MediaWiki 1.8+)
+        /// Whether the first letter in the namespace title is upper-case. (MediaWiki 1.8+)
+        /// Note that all the namespace names are case-insensitive. See "remarks" for more information.
         /// </summary>
+        /// <remarks>See https://www.mediawiki.org/wiki/API:Siteinfo#Namespaces .</remarks>
         public bool IsCaseSensitive { get; private set; }
+        // TODO I'm still not sure what thae "case" property stands for,
+        // as all the namespace names are case-insensitive.
 
         [JsonProperty]
         public bool SubPages { get; private set; }
@@ -228,6 +232,7 @@ namespace WikiClientLibrary
     /// <summary>
     /// Provides read-only access to namespace collection.
     /// </summary>
+    /// <remarks>Note the namespace name is case-insensitive.</remarks>
     public class NamespaceCollection : ICollection<NamespaceInfo>
     {
         private readonly IDictionary<int, NamespaceInfo> idNsDict;
@@ -239,12 +244,14 @@ namespace WikiClientLibrary
             if (site == null) throw new ArgumentNullException(nameof(site));
             if (namespaces == null) throw new ArgumentNullException(nameof(namespaces));
             idNsDict = namespaces.ToObject<IDictionary<int, NamespaceInfo>>(Utility.WikiJsonSerializer);
-            nameNsDict = idNsDict.Values.ToDictionary(n => n.CanonicalName);
+            nameNsDict = idNsDict.Values.ToDictionary(n => n.CanonicalName.ToLowerInvariant());
+            // Add custom name.
             foreach (var ns in idNsDict.Values)
             {
                 if (ns.CustomName != ns.CanonicalName)
-                    nameNsDict.Add(ns.CustomName, ns);
+                    nameNsDict.Add(ns.CustomName.ToLowerInvariant(), ns);
             }
+            // Add aliases.
             if (jaliases != null)
             {
                 foreach (var al in jaliases)
@@ -255,7 +262,7 @@ namespace WikiClientLibrary
                     if (idNsDict.TryGetValue(id, out ns))
                     {
                         ns.AddAlias(name);
-                        nameNsDict.Add(Utility.NormalizeTitlePart(name, ns.IsCaseSensitive), ns);
+                        nameNsDict.Add(name.ToLowerInvariant(), ns);
                     }
                     else
                     {
@@ -280,7 +287,7 @@ namespace WikiClientLibrary
             get
             {
                 var ns = TryGetNamespace(name);
-                if (ns != null) return ns.Item1;
+                if (ns != null) return ns;
                 throw new KeyNotFoundException($"Cannot find namespace for {name} .");
             }
         }
@@ -298,25 +305,17 @@ namespace WikiClientLibrary
         /// </summary>
         public bool TryGetValue(string name, out NamespaceInfo ns)
         {
-            var ns1 = TryGetNamespace(name)?.Item1;
-            ns = ns1;
-            return ns1 != null;
+            ns = TryGetNamespace(name);
+            return ns != null;
         }
 
-        private Tuple<NamespaceInfo, string> TryGetNamespace(string name)
+        private NamespaceInfo TryGetNamespace(string name)
         {
             NamespaceInfo ns;
-            // Try the case-sensitive one first.
-            var nn = Utility.NormalizeTitlePart(name, true);
+            // Namespace name is case-insensitive.
+            var nn = Utility.NormalizeTitlePart(name, true).ToLowerInvariant();
             if (nameNsDict.TryGetValue(nn, out ns))
-                return Tuple.Create(ns, nn);
-            // Try case-insensitive.
-            nn = Utility.NormalizeTitlePart(name, false);
-            if (nameNsDict.TryGetValue(Utility.NormalizeTitlePart(name, false), out ns))
-            {
-                if (!ns.IsCaseSensitive)
-                    return Tuple.Create(ns, nn);
-            }
+                return ns;
             return null;
         }
 
@@ -328,21 +327,6 @@ namespace WikiClientLibrary
         public bool Contains(string name)
         {
             return TryGetNamespace(name) != null;
-        }
-
-        /// <summary>
-        /// Tries to normalize the namespace name, if the given name
-        /// is the same as namespace cannonical name or alias.
-        /// </summary>
-        /// <param name="name">The name to be normalized.</param>
-        /// <returns>
-        /// The normalized namespace name or alias.
-        /// OR <c>null</c>, if there's no matching namespace name.
-        /// </returns>
-        public string TryNormalize(string name)
-        {
-            var ns = TryGetNamespace(name);
-            return ns?.Item2;
         }
 
         #region ICollection

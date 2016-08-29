@@ -17,8 +17,8 @@ namespace UnitTestProject1
         [TestMethod]
         public void TestMethod1()
         {
-            var link1 = new WikiLink(WpTestSite, "____project__talk_:___sandbox_");
-            var link2 = new WikiLink(WpTestSite, "__ _project_ _talk_:___sandbox_", BuiltInNamespaces.Category);
+            var link1 = new WikiLink(WpTestSite, "____proJEct__talk_:___sandbox_");
+            var link2 = new WikiLink(WpTestSite, "__ _pROject_ _talk_:___sandbox_", BuiltInNamespaces.Category);
             var link3 = new WikiLink(WpTestSite, "___sandbox_  test__", BuiltInNamespaces.Category);
             var link4 = new WikiLink(WpTestSite, "__:   sandbox test  ", BuiltInNamespaces.Template);
             var link5 = new WikiLink(WpTestSite, "___lZh__:project:test", BuiltInNamespaces.Template);
