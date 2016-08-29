@@ -843,4 +843,46 @@ namespace WikiClientLibrary
             return $"{Type}: {Name} - {Version}";
         }
     }
+
+    /// <summary>
+    /// Contains statistical information of a MedaiWiki site.
+    /// </summary>
+    [JsonObject(MemberSerialization.OptIn)]
+    public class SiteStatistics
+    {
+        [JsonProperty("pages")]
+        public int PagesCount { get; private set; }
+
+        [JsonProperty("articles")]
+        public int ArticlesCount { get; private set; }
+
+        [JsonProperty("edits")]
+        public int EditsCount { get; private set; }
+
+        /// <summary>
+        /// Count of uploaded files.
+        /// </summary>
+        /// <remarks>
+        /// For historical reasons, the number of files on the wiki is labelled as images not files.
+        /// This number refers to uploaded files of all types, not just images.
+        /// </remarks>
+        [JsonProperty("images")]
+        public int FilesCount { get; private set; }
+
+        [JsonProperty("users")]
+        public int UsersCount { get; private set; }
+
+        [JsonProperty("activeusers")]
+        public int ActiveUsersCount { get; private set; }
+
+        [JsonProperty("admins")]
+        public int AdministratorsCount { get; private set; }
+
+        [JsonProperty("jobs")]
+        public int JobsCount { get; private set; }
+
+        [JsonProperty("queued-massmessages")]
+        public int MassMssageQueueLength { get; private set; }
+    }
+
 }

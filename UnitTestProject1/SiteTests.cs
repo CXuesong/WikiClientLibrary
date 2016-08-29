@@ -67,7 +67,14 @@ namespace UnitTestProject1
             var messages = AwaitSync(site.GetMessagesAsync(new[] {"august"}));
             Assert.AreEqual("August", messages["august"]);
             ValidateNamespaces(site);
-            ShallowTrace(site.InterwikiMap);
+            //ShallowTrace(site.InterwikiMap);
+            var stat = AwaitSync(site.GetStatisticsAsync());
+            ShallowTrace(stat);
+            Assert.IsTrue(stat.PagesCount > 20000); // 39244 @ 2016-08-29
+            Assert.IsTrue(stat.ArticlesCount > 800); // 1145 @ 2016-08-29
+            Assert.IsTrue(stat.EditsCount > 300000); // 343569 @ 2016-08-29
+            Assert.IsTrue(stat.FilesCount > 50); // 126 @ 2016-08-29
+            Assert.IsTrue(stat.UsersCount > 5000); // 6321 @ 2016-08-29
         }
 
         [TestMethod]

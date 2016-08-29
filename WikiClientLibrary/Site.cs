@@ -52,7 +52,6 @@ namespace WikiClientLibrary
             Namespaces = new NamespaceCollection(this, ns, aliases);
             InterwikiMap = new InterwikiMap(this, interwiki);
             Extensions = new ExtensionCollection(this, extensions);
-            ListingPagingSize = UserInfo.HasRight(UserRights.ApiHighLimits) ? 5000 : 500;
         }
 
         public async Task RefreshUserInfoAsync()
@@ -64,6 +63,7 @@ namespace WikiClientLibrary
                 uiprop = "blockinfo|groups|hasmsg|rights"
             });
             UserInfo = ((JObject) jobj["query"]["userinfo"]).ToObject<UserInfo>(Utility.WikiJsonSerializer);
+            ListingPagingSize = UserInfo.HasRight(UserRights.ApiHighLimits) ? 5000 : 500;
         }
 
         public SiteInfo SiteInfo { get; private set; }
@@ -80,7 +80,8 @@ namespace WikiClientLibrary
         /// Gets the default result limit per page for current user.
         /// </summary>
         /// <value>This value is 500 for user, and 5000 for bots.</value>
-        internal int ListingPagingSize { get; private set; }
+        // Use 500 for default. This value will be updated along with UserInfo.
+        internal int ListingPagingSize { get; private set; } = 500;
 
         #region Tokens
 
@@ -408,6 +409,23 @@ namespace WikiClientLibrary
             if (message == null) throw new ArgumentNullException(nameof(message));
             var result = await GetMessagesAsync(new[] {message});
             return result.Values.FirstOrDefault();
+        }
+
+        /// <summary>
+        /// Gets the statistical information of the MediaWiki site.
+        /// </summary>
+        public async Task<SiteStatistics> GetStatisticsAsync()
+        {
+            var jobj = await WikiClient.GetJsonAsync(new
+            {
+                action = "query",
+                meta = "siteinfo",
+                siprop = "statistics",
+            });
+            var jstat = (JObject) jobj["query"]?["statistics"];
+            if (jstat == null) throw new UnexpectedDataException();
+            var parsed = jstat.ToObject<SiteStatistics>();
+            return parsed;
         }
 
         /// <summary>
