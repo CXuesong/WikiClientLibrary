@@ -8,7 +8,32 @@ Before running the test cases, please take a look at the [last section](#setting
 
 ## Overview
 
-This portable & asynchronous MediaWiki API client provides an easy and asynchronous access to commonly-used MediaWiki API. You can find a demo in `ConsoleTestApplication1`. It's also suggested that you take a look at `UnitTestProject1` to find out what can be done with the library.
+This portable & asynchronous MediaWiki API client provides an easy and asynchronous access to commonly-used MediaWiki API. The portable library targets at .NET Framework 4.5, ASP.NET Core 1.0, Xamarin.iOS, and Xamarin.Android.
+
+*   Queries and edits for pages, including standard pages, category pages, and file pages.
+
+    *   Queries for category statistical info and its members.
+    *   Queries for basic file info, and file uploading.
+
+*   Login/logout via simple asynchronous functions, as shown in the demo below.
+
+    *   Client code have access to `CookieContainer`, and have chance to persist it.
+
+*   Tokens are hidden in the library functions, so that client won't bother to retrieve them over and over again.
+
+*   Query continuations are hidden by `IAsyncEnumerable`, which will ease the pain when using page generators.
+
+*   Other miscellaneous MediaWiki API, such as
+
+    *   OpenSearch
+    *   Page parsing
+    *   Patrol
+
+    ​
+
+## A Brief Demo
+
+You can find a demo in `ConsoleTestApplication1`. It's also suggested that you take a look at `UnitTestProject1` to find out what can be done with the library.
 
 ```c#
 static async Task HelloWikiWorld()
@@ -96,7 +121,7 @@ Wikipedia:Sandbox has been saved. RevisionId = 296329.
 You have successfully logged out.
 ```
 
-The portable library targets at .NET Framework 4.5, ASP.NET Core 1.0, Xamarin.iOS, and Xamarin.Android .
+
 
 ## Bulk fetching and generators
 
