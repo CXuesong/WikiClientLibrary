@@ -108,11 +108,12 @@ namespace WikiClientLibrary.Client
         }
 
         /// <summary>
-        /// Invoke API and get JSON result.
+        /// Invokes API and get JSON result.
         /// </summary>
         /// <exception cref="InvalidActionException">Specified action is not supported.</exception>
         /// <exception cref="UnauthorizedOperationException">Permission denied.</exception>
         /// <exception cref="OperationFailedException">There's "error" node in returned JSON.</exception>
+        /// <remarks>"Get" means the returned value is JSON, though the request is sent via HTTP POST.</remarks>
         public async Task<JToken> GetJsonAsync(IEnumerable<KeyValuePair<string, string>> queryParams)
         {
             if (queryParams == null) throw new ArgumentNullException(nameof(queryParams));
@@ -121,7 +122,24 @@ namespace WikiClientLibrary.Client
             {
                 Content = new FormUrlEncodedContent(new[] {new KeyValuePair<string, string>("format", "json")}
                     .Concat(queryParams)),
-            });
+            }, true);
+            return result;
+        }
+
+        // No, we cannot guarantee the returned value is JSON, so this function is internal.
+        // It depend's on caller's conscious.
+        internal async Task<JToken> GetJsonAsync(HttpContent postContent)
+        {
+            if (postContent == null) throw new ArgumentNullException(nameof(postContent));
+            // Implies we want JSON result.
+            var result = await SendAsync(() => new HttpRequestMessage(HttpMethod.Post, EndPointUrl)
+            {
+                Content = postContent,
+            }, false);
+            // No, we don't retry.
+            // HttpContent will usually be disposed after a request.
+            // We cannot ask for a HttpContent factory becuase in this case,
+            // caller may have Stream to pass in, which cannot be rebuilt.
             return result;
         }
 

@@ -171,6 +171,7 @@ namespace UnitTestProject1
             var generator = new RecentChangesGenerator(site)
             {
                 LastRevisionsOnly = true,
+                TypeFilters = RecentChangesFilterTypes.Edit
             };
             var pages = generator.EnumPages().Take(2000).ToList();
             TracePages(pages);

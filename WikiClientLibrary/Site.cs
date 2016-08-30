@@ -332,6 +332,7 @@ namespace WikiClientLibrary
             switch (result)
             {
                 case "Success":
+                    _TokensCache.Clear();
                     await RefreshUserInfoAsync();
                     Debug.Assert(UserInfo.IsUser);
                     return;
@@ -360,6 +361,7 @@ namespace WikiClientLibrary
             {
                 action = "logout",
             });
+            _TokensCache.Clear();
             await RefreshUserInfoAsync();
         }
 

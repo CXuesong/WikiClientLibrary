@@ -15,7 +15,7 @@ namespace WikiClientLibrary.Client
     {
         #region the json client
 
-        private async Task<JToken> SendAsync(Func<HttpRequestMessage> requestFactory)
+        private async Task<JToken> SendAsync(Func<HttpRequestMessage> requestFactory, bool allowRetry)
         {
             HttpResponseMessage response;
             var retries = -1;
@@ -35,7 +35,7 @@ namespace WikiClientLibrary.Client
             }
             catch (OperationCanceledException)
             {
-                if (retries >= MaxRetries) throw new TimeoutException();
+                if (!allowRetry || retries >= MaxRetries) throw new TimeoutException();
                 Logger?.Warn($"Timeout: {request.RequestUri}");
                 await Task.Delay(RetryDelay);
                 goto RETRY;
@@ -46,7 +46,7 @@ namespace WikiClientLibrary.Client
             {
                 // Service Error. We can retry.
                 // HTTP 503 : https://www.mediawiki.org/wiki/Manual:Maxlag_parameter
-                if (retries < MaxRetries)
+                if (allowRetry && retries < MaxRetries)
                 {
                     var date = response.Headers.RetryAfter?.Date;
                     var offset = response.Headers.RetryAfter?.Delta;

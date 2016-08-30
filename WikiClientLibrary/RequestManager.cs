@@ -21,8 +21,9 @@ namespace WikiClientLibrary
             {
                 {"action", "query"},
                 // We also fetch category info, just in case.
-                {"prop", "info|categoryinfo|revisions|pageprops"},
+                {"prop", "info|categoryinfo|imageinfo|revisions|pageprops"},
                 {"inprop", "protection"},
+                {"iiprop", "timestamp|user|comment|url|size|sha1" },
                 {"rvprop", "ids|timestamp|flags|comment|user|contentmodel|sha1|tags|size"},
                 {"redirects", (options & PageQueryOptions.ResolveRedirects) == PageQueryOptions.ResolveRedirects},
                 {"maxlag", 5},

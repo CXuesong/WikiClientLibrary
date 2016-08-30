@@ -102,6 +102,18 @@ namespace UnitTestProject1
         }
 
         [TestMethod]
+        public void WpLzhFetchFileTest()
+        {
+            var site = WpLzhSite;
+            var file = new FilePage(site, "File:Empress Suiko.jpg");
+            AwaitSync(file.RefreshAsync());
+            ShallowTrace(file);
+            //Assert.IsTrue(file.Exists);   //It's on WikiMedia!
+            Assert.AreEqual(58865, file.LastFileRevision.Size);
+            Assert.AreEqual("7aa12c613c156dd125212d85a072b250625ae39f", file.LastFileRevision.Sha1.ToLowerInvariant());
+        }
+
+        [TestMethod]
         public void WikiaPageReadTest()
         {
             var site = WikiaTestSite;

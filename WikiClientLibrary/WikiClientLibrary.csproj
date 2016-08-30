@@ -37,6 +37,7 @@
     <Compile Include="DelegateCreationConverter.cs" />
     <Compile Include="Category.cs" />
     <Compile Include="Exceptions.cs" />
+    <Compile Include="FilePage.cs" />
     <Compile Include="Generators\AllCategoriesGenerator.cs" />
     <Compile Include="Generators\AllPagesGenerator.cs" />
     <Compile Include="Generators\CategoryMembersGenerator.cs" />

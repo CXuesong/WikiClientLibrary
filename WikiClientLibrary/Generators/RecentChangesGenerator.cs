@@ -80,6 +80,9 @@ namespace WikiClientLibrary.Generators
         /// <summary>
         /// Only list changes which are the latest revision.
         /// </summary>
+        /// <remarks>
+        /// This WILL NOT make the results distinct. This option seems only affets EDIT changes.
+        /// </remarks>
         public bool LastRevisionsOnly { get; set; }
 
         private string ParseRecentChangesTypes(RecentChangesFilterTypes value)

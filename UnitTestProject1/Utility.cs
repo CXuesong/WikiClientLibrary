@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Newtonsoft.Json.Serialization;
 using WikiClientLibrary;
 using System.Diagnostics;
+using System.IO;
 using System.Reflection;
 using System.Runtime.ExceptionServices;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -18,10 +19,12 @@ namespace UnitTestProject1
     internal static partial class Utility
     {
         public const string EntryPointWikipediaTest2 = "https://test2.wikipedia.org/w/api.php";
+
         /// <summary>
         /// This is NOT a test site so do not make modifications to the site.
         /// </summary>
         public const string EntryWikipediaLzh = "https://zh-classical.wikipedia.org/w/api.php";
+
         // TODO This is a rather unofficial test site. Replace it in the future.
         public const string EntryPointWikiaTest = "https://mediawiki119.wikia.com/api.php";
 
@@ -187,6 +190,18 @@ namespace UnitTestProject1
         {
             if (site == null) throw new ArgumentNullException(nameof(site));
             if (!site.UserInfo.IsUser) Assert.Inconclusive($"User {site.UserInfo} has not logged into {site}.");
+        }
+
+        public static Tuple<Stream, string> GetDemoImage()
+        {
+            // Load DemoImage.jpg
+            var content = typeof (Utility).Assembly.GetManifestResourceStream("UnitTestProject1.DemoImage.jpg");
+            using (var r = new StreamReader(typeof (Utility).Assembly.
+                GetManifestResourceStream("UnitTestProject1.DemoImage.txt")))
+            {
+                var desc = r.ReadToEnd();
+                return Tuple.Create(content, desc);
+            }
         }
     }
 }

@@ -4,6 +4,7 @@
 
 using System;
 using System.Diagnostics;
+using System.IO;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using static UnitTestProject1.Utility;
@@ -85,6 +86,78 @@ The original title of the page is '''{title}'''.
             Trace.WriteLine("Deleted:" + AwaitSync(page2.DeleteAsync(SummaryPrefix + "Delete the move destination.")));
             AwaitSync(page1.MoveAsync(TestPage12Title, SummaryPrefix + "Move a page.", PageMovingOptions.IgnoreWarnings));
             AwaitSync(page2.DeleteAsync(SummaryPrefix + "Delete the moved page."));
+        }
+
+        [TestMethod]
+        public void LocalFileUploadTest1()
+        {
+            const string FileName = "File:Test image.jpg";
+            const string FileSHA1 = "81ED69FA2C2BDEEBBA277C326D1AAC9E0E57B346";
+            const string ReuploadSuffix = "\n\nReuploaded.";
+            var file = GetDemoImage();
+            try
+            {
+                AwaitSync(FilePage.UploadAsync(site, file.Item1, FileName, file.Item2, false));
+            }
+            catch (UploadException ex)
+            {
+                // Client should rarely be checking like this
+                // Usually we should notify the user.
+                if (ex.UploadResult.Warnings[0].Key == "exists")
+                    // Just re-upload
+                    AwaitSync(FilePage.UploadAsync(site, ex.UploadResult, FileName, file.Item2 + ReuploadSuffix, true));
+                else
+                    throw;
+            }
+            var fp = new FilePage(site, FileName);
+            AwaitSync(fp.RefreshAsync());
+            ShallowTrace(fp);
+            Assert.IsTrue(fp.Exists);
+            Assert.AreEqual(FileSHA1, fp.LastFileRevision.Sha1.ToUpperInvariant());
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(OperationFailedException))]
+        public void LocalFileUploadTest2()
+        {
+            var stream = Stream.Null;
+            AwaitSync(FilePage.UploadAsync(site, stream, "File:Null.png", "This upload should have failed.", false));
+        }
+
+        [TestMethod]
+        public void ExternalFileUploadTest1()
+        {
+            const string SourceUrl = "https://upload.wikimedia.org/wikipedia/commons/5/55/8-cell-simple.gif";
+            const string Description =
+                @"A 3D projection of an 8-cell performing a simple rotation about a plane which bisects the figure from front-left to back-right and top to bottom.
+
+This work has been released into the public domain by its author, JasonHise at English Wikipedia. This applies worldwide.
+
+In some countries this may not be legally possible; if so:
+
+JasonHise grants anyone the right to use this work for any purpose, without any conditions, unless such conditions are required by law.";
+            const string ReuploadSuffix = "\n\nReuploaded.";
+            const string FileName = "File:8-cell-simple.gif";
+            var timeout = site.WikiClient.Timeout;
+            site.WikiClient.Timeout = TimeSpan.FromSeconds(30);
+            try
+            {
+                AwaitSync(FilePage.UploadAsync(site, SourceUrl, FileName, Description, false));
+            }
+            catch (UploadException ex)
+            {
+                // Client should rarely be checking like this
+                // Usually we should notify the user.
+                if (ex.UploadResult.Warnings[0].Key == "exists")
+                    // Just re-upload
+                    AwaitSync(FilePage.UploadAsync(site, ex.UploadResult, FileName, Description + ReuploadSuffix, true));
+                else
+                    throw;
+            }
+            finally
+            {
+                site.WikiClient.Timeout = timeout;
+            }
         }
     }
 }
