@@ -87,6 +87,21 @@ namespace UnitTestProject1
         }
 
         [TestMethod]
+        public void WpLzhFetchRevisionsTest()
+        {
+            var site = WpLzhSite;
+            var revIds = new[] {248199, 248197, 255289};
+            var pageTitles = new[] {"清", "清", "香草"};
+            var rev = AwaitSync(Revision.FetchRevisionsAsync(site, revIds).ToList());
+            ShallowTrace(rev);
+            Assert.IsTrue(rev.Select(r => r.Id).SequenceEqual(revIds));
+            Assert.IsTrue(rev.Select(r => r.Page.Title).SequenceEqual(pageTitles));
+            // Asserts that pages with the same title shares the same reference
+            // Or an Exception will raise.
+            var pageDict = rev.Select(r => r.Page).Distinct().ToDictionary(p => p.Title);
+        }
+
+        [TestMethod]
         public void WikiaPageReadTest()
         {
             var site = WikiaTestSite;

@@ -34,6 +34,7 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="DelegateCreationConverter.cs" />
     <Compile Include="Category.cs" />
     <Compile Include="Exceptions.cs" />
     <Compile Include="Generators\AllCategoriesGenerator.cs" />
@@ -51,6 +52,7 @@
     <Compile Include="ParsedContentInfo.cs" />
     <Compile Include="RequestManager.cs" />
     <Compile Include="RecentChangesEntry.cs" />
+    <Compile Include="Revision.cs" />
     <Compile Include="Site.cs" />
     <Compile Include="SiteInfo.cs" />
     <Compile Include="UserInfo.cs" />

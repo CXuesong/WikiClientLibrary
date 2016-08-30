@@ -5,7 +5,6 @@ using System.Diagnostics;
 using System.Dynamic;
 using System.Linq;
 using System.Reflection;
-using System.Runtime.Serialization;
 using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
@@ -34,7 +33,7 @@ namespace WikiClientLibrary
             Title = WikiLink.NormalizeWikiLink(site, title, defaultNamespaceId);
         }
 
-        internal Page(Site site)
+        protected Page(Site site)
         {
             if (site == null) throw new ArgumentNullException(nameof(site));
             Site = site;
@@ -276,23 +275,23 @@ namespace WikiClientLibrary
         }
 
         /// <summary>
-        /// Loads the first revision from JSON, assuming it's the latest revision.
+        /// Loads the last revision from JSON, assuming it's the latest revision.
         /// </summary>
         /// <param name="pageInfo">query.pages.xxx property value.</param>
         private void LoadLastRevision(JObject pageInfo)
         {
-            var revision = (JObject) pageInfo["revisions"]?.FirstOrDefault();
+            var revision = (JObject) pageInfo["revisions"]?.LastOrDefault();
             if (revision != null)
             {
-                LastRevision = revision.ToObject<Revision>(Utility.WikiJsonSerializer);
-                LastRevisionId = LastRevision.Id;
+                var serializer = Utility.CreateWikiJsonSerializer();
+                serializer.Converters.Add(new DelegateCreationConverter<Revision>(t => new Revision(this)));
+                LastRevision = revision.ToObject<Revision>(serializer);
                 Content = LastRevision.Content;
             }
             else
             {
                 // No revisions available.
                 LastRevision = null;
-                LastRevisionId = 0;
             }
         }
 
@@ -352,7 +351,7 @@ namespace WikiClientLibrary
         /// <param name="options">Options for revision listing.</param>
         public IAsyncEnumerable<Revision> EnumRevisionsAsync(RevisionsQueryOptions options)
         {
-            return RequestManager.EnumRevisionsAsync(Site, Title, options);
+            return RequestManager.EnumRevisionsAsync(Site, this, options);
         }
 
         /// <summary>
@@ -806,120 +805,6 @@ namespace WikiClientLibrary
         {
             return $"{Type}, {Level}, {Expiry}, {(Cascade ? "Cascade" : "")}";
         }
-    }
-
-    /// <summary>
-    /// Represents a revision of a page.
-    /// </summary>
-    [JsonObject(MemberSerialization.OptIn)]
-    public class Revision
-    {
-        [JsonProperty("revid")]
-        public int Id { get; private set; }
-
-        [JsonProperty]
-        public int ParentId { get; private set; }
-
-        /// <summary>
-        /// Gets the content of the revision.
-        /// </summary>
-        /// <value>Wikitext source code. OR <c>null</c> if content has not been fetched.</value>
-        [JsonProperty("*")]
-        public string Content { get; private set; }
-
-        [JsonProperty]
-        public string Comment { get; private set; }
-
-        [JsonProperty]
-        public string ContentModel { get; private set; }
-
-        [JsonProperty]
-        public string Sha1 { get; private set; }
-
-        [JsonProperty("user")]
-        public string UserName { get; private set; }
-
-        [JsonProperty("size")]
-        public int ContentLength { get; private set; }
-
-        [JsonProperty]
-        public IList<string> Tags { get; private set; }
-
-        /// <summary>
-        /// The timestamp of revision.
-        /// </summary>
-        [JsonProperty]
-        public DateTime TimeStamp { get; private set; }
-
-        public RevisionFlags Flags { get; private set; }
-
-        /// <summary>
-        /// Gets a indicator of whether one or more fields has been hidden.
-        /// </summary>
-        /// <remarks>See https://www.mediawiki.org/wiki/Help:RevisionDelete .</remarks>
-        public RevisionHiddenFields HiddenFields { get; private set; }
-
-#pragma warning disable 649
-        [JsonProperty] private bool Minor;
-        [JsonProperty] private bool Bot;
-        [JsonProperty] private bool New;
-        [JsonProperty] private bool Anon;
-        [JsonProperty] private bool UserHidden;
-#pragma warning restore 649
-
-        [OnDeserialized]
-        private void OnDeserialized(StreamingContext context)
-        {
-            Flags = RevisionFlags.None;
-            if (Minor) Flags |= RevisionFlags.Minor;
-            if (Bot) Flags |= RevisionFlags.Bot;
-            if (New) Flags |= RevisionFlags.Create;
-            if (Anon) Flags |= RevisionFlags.Annonymous;
-            HiddenFields = RevisionHiddenFields.None;
-            if (UserHidden) HiddenFields |= RevisionHiddenFields.User;
-        }
-
-        /// <summary>
-        /// 返回该实例的完全限定类型名。
-        /// </summary>
-        /// <returns>
-        /// 包含完全限定类型名的 <see cref="T:System.String"/>。
-        /// </returns>
-        public override string ToString()
-        {
-            var tags = Tags == null ? null : string.Join("|", Tags);
-            return $"Revision#{Id}, {Flags}, {tags}, SHA1={Sha1}";
-        }
-    }
-
-    /// <summary>
-    /// Revision flags.
-    /// </summary>
-    [Flags]
-    public enum RevisionFlags
-    {
-        None = 0,
-        Minor = 1,
-
-        /// <summary>
-        /// The operation is performed by bot.
-        /// This flag can only be access via <see cref="RecentChangesEntry.Flags"/>.
-        /// </summary>
-        Bot = 2,
-        Create = 4,
-        Annonymous = 8,
-    }
-
-    /// <summary>
-    /// Hidden part of revision indicators.
-    /// </summary>
-    /// <remarks>See https://www.mediawiki.org/wiki/Help:RevisionDelete .</remarks>
-    [Flags]
-    public enum RevisionHiddenFields
-    {
-        None = 0,
-        User = 1,
-        //TODO Content & Comment
     }
 
     /// <summary>

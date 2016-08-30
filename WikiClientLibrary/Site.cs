@@ -97,6 +97,10 @@ namespace WikiClientLibrary
 
         private List<string> DisambiguationTemplates;
 
+        /// <summary>
+        /// Gets a list of titles of disambiguation templates. The default DAB template title
+        /// will be included in the list.
+        /// </summary>
         internal async Task<IEnumerable<string>> GetDisambiguationTemplatesAsync()
         {
             if (DisambiguationTemplates == null)

@@ -220,5 +220,17 @@ namespace WikiClientLibrary
             }
             return sb.ToString();
         }
+
+        public static IAsyncEnumerable<TResult> SelectAsync<TSource, TResult>(this IEnumerable<TSource> source,
+            Func<TSource, Task<TResult>> selector)
+        {
+            var enu = source.GetEnumerator();
+            return new DelegateAsyncEnumerable<TResult>(async () =>
+            {
+                if (!enu.MoveNext()) return null;
+                var result = await selector(enu.Current);
+                return Tuple.Create(result, true);
+            });
+        }
     }
 }
