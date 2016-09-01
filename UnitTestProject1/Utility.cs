@@ -38,12 +38,11 @@ namespace UnitTestProject1
 #endif
         }
 
-        public static WikiClient CreateWikiClient(string entryPointUrl)
+        public static WikiClient CreateWikiClient()
         {
             var client = new WikiClient
             {
                 Logger = new TraceLogger(),
-                EndPointUrl = entryPointUrl,
                 Timeout = TimeSpan.FromSeconds(10),
                 ThrottleTime = TimeSpan.FromSeconds(1),
                 RetryDelay = TimeSpan.FromSeconds(5),
@@ -54,8 +53,8 @@ namespace UnitTestProject1
 
         public static Site CreateWikiSite(string entryPointUrl, bool login = false)
         {
-            var client = CreateWikiClient(entryPointUrl);
-            var site = AwaitSync(Site.GetAsync(client));
+            var client = CreateWikiClient();
+            var site = AwaitSync(Site.CreateAsync(client, entryPointUrl));
             site.Logger = new TraceLogger();
             if (login) CredentialManager.Login(site);
             return site;

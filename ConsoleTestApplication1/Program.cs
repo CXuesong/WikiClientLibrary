@@ -15,10 +15,10 @@ namespace ConsoleTestApplication1
         {
             try
             {
-                HelloWikiWorld().Wait();
+                //HelloWikiWorld().Wait();
                 //HelloWikiGenerators().Wait();
                 //HelloRecentChanges().Wait();
-                //InteractivePatrol().Wait();
+                InteractivePatrol().Wait();
             }
             catch (Exception ex)
             {
@@ -28,16 +28,15 @@ namespace ConsoleTestApplication1
 
         static async Task HelloWikiWorld()
         {
-            // Create a MediaWiki API client.
-            var wikiClient = new WikiClient
-            {
-                EndPointUrl = "https://test2.wikipedia.org/w/api.php",
-                // UA of Client Application. The UA of WikiClientLibrary will
-                // be append to the end of this when sending requests.
-                ClientUserAgent = "ConsoleTestApplication1/1.0",
-            };
-            // Create a MediaWiki Site instance.
-            var site = await Site.GetAsync(wikiClient);
+    // Create a MediaWiki API client.
+    var wikiClient = new WikiClient
+    {
+        // UA of Client Application. The UA of WikiClientLibrary will
+        // be append to the end of this when sending requests.
+        ClientUserAgent = "ConsoleTestApplication1/1.0",
+    };
+    // Create a MediaWiki Site instance with the URL of API endpoint.
+    var site = await Site.CreateAsync(wikiClient, "https://test2.wikipedia.org/w/api.php");
             // Access site information via Site.SiteInfo
             Console.WriteLine("API version: {0}", site.SiteInfo.Generator);
             // Access user information via Site.UserInfo
@@ -84,10 +83,10 @@ namespace ConsoleTestApplication1
 
         static async Task HelloWikiGenerators()
         {
-            // Create a MediaWiki API client.
-            var wikiClient = new WikiClient {EndPointUrl = "https://en.wikipedia.org/w/api.php"};
-            // Create a MediaWiki Site instance.
-            var site = await Site.GetAsync(wikiClient);
+    // Create a MediaWiki API client.
+    var wikiClient = new WikiClient();
+    // Create a MediaWiki Site instance.
+    var site = await Site.CreateAsync(wikiClient, "https://en.wikipedia.org/w/api.php");
             // List all pages starting from item "Wiki", without redirect pages.
             var allpages = new AllPagesGenerator(site)
             {
@@ -114,9 +113,9 @@ namespace ConsoleTestApplication1
         static async Task HelloRecentChanges()
         {
             // Create a MediaWiki API client.
-            var wikiClient = new WikiClient {EndPointUrl = "https://en.wikipedia.org/w/api.php"};
+            var wikiClient = new WikiClient();
             // Create a MediaWiki Site instance.
-            var site = await Site.GetAsync(wikiClient);
+            var site = await Site.CreateAsync(wikiClient, "https://en.wikipedia.org/w/api.php");
             var rcg = new RecentChangesGenerator(site)
             {
                 TypeFilters = RecentChangesFilterTypes.Create,
@@ -139,36 +138,50 @@ namespace ConsoleTestApplication1
 
         static async Task InteractivePatrol()
         {
-            // Patrol the last unpatrolled change.
-            // Ususally a user should have the patrol right to perform such operation.
+    // Patrol the last unpatrolled change.
+    // Ususally a user should have the patrol right to perform such operation.
 
-            // Create a MediaWiki API client.
-            var wikiClient = new WikiClient {EndPointUrl = Input("Wiki site URL")};
-            // Create a MediaWiki Site instance.
-            var site = await Site.GetAsync(wikiClient);
-            await site.LoginAsync(Input("Username"), Input("Password"));
-            var rcg = new RecentChangesGenerator(site)
-            {
-                TypeFilters = RecentChangesFilterTypes.Create,
-                PagingSize = 5,
-                PatrolledFilter = PropertyFilterOption.WithoutProperty
-            };
-            // List the first unpatrolled result.
-            var rc = await rcg.EnumRecentChangesAsync().FirstOrDefault();
-            if (rc == null)
-            {
-                Console.WriteLine("Nothing to patrol.");
-                return;
-            }
-            Console.WriteLine("Unpatrolled:");
-            Console.WriteLine(rc);
-            // TODO show diff. But for now we do not even have an
-            // approach to get a revision directly.
-            if (Confirm("Mark as patrolled?"))
-            {
-                await rc.PatrolAsync();
-                Console.WriteLine("The change {0} has been marked as patrolled.", (object) rc.Title ?? rc.Id);
-            }
+    // Create a MediaWiki API client.
+    var wikiClient = new WikiClient();
+    // Create a MediaWiki Site instance.
+    var site = await Site.CreateAsync(wikiClient, Input("Wiki site API URL"));
+    await site.LoginAsync(Input("Username"), Input("Password"));
+    var rcg = new RecentChangesGenerator(site)
+    {
+        TypeFilters = RecentChangesFilterTypes.Create,
+        PagingSize = 5,
+        PatrolledFilter = PropertyFilterOption.WithoutProperty
+    };
+    // List the first unpatrolled result.
+    var rc = await rcg.EnumRecentChangesAsync().FirstOrDefault();
+    if (rc == null)
+    {
+        Console.WriteLine("Nothing to patrol.");
+        return;
+    }
+    Console.WriteLine("Unpatrolled:");
+    Console.WriteLine(rc);
+    // Show the involved revisions.
+    if (rc.OldRevisionId > 0 && rc.RevisionId > 0)
+    {
+        var rev = await Revision.FetchRevisionsAsync(site, rc.OldRevisionId, rc.RevisionId).ToList();
+        // Maybe we'll use some 3rd party diff lib
+        Console.WriteLine("Before, RevId={0}, {1}", rev[0].Id, rev[0].TimeStamp);
+        Console.WriteLine(rev[0].Content);
+        Console.WriteLine("After, RevId={0}, {1}", rev[1].Id, rev[1].TimeStamp);
+        Console.WriteLine(rev[1].Content);
+    }
+    else if (rc.RevisionId > 0)
+    {
+        var rev = await Revision.FetchRevisionAsync(site, rc.RevisionId);
+        Console.WriteLine("RevId={0}, {1}", rev.Id, rev.TimeStamp);
+        Console.WriteLine(rev.Content);
+    }
+    if (Confirm("Mark as patrolled?"))
+    {
+        await rc.PatrolAsync();
+        Console.WriteLine("The change {0} has been marked as patrolled.", (object) rc.Title ?? rc.Id);
+    }
         }
 
         #region Console Utilities

@@ -262,7 +262,19 @@ namespace WikiClientLibrary
                     if (idNsDict.TryGetValue(id, out ns))
                     {
                         ns.AddAlias(name);
-                        nameNsDict.Add(name.ToLowerInvariant(), ns);
+                        var normalizedName = name.ToLowerInvariant();
+                        NamespaceInfo varns;
+                        if (nameNsDict.TryGetValue(normalizedName, out varns))
+                        {
+                            // If the namespace alias already exists, check if they're pointing
+                            // to the same NamespaceInfo
+                            if (varns != ns)
+                                site.Logger?.Warn($"Namespace alias collision: {name} for {ns} and {varns}.");
+                        }
+                        else
+                        {
+                            nameNsDict.Add(normalizedName, ns);
+                        }
                     }
                     else
                     {

@@ -24,11 +24,6 @@ namespace WikiClientLibrary.Client
         private HttpClientHandler _HttpClientHandler;
 
         /// <summary>
-        /// MediaWiki API endpoint.
-        /// </summary>
-        public string EndPointUrl { get; set; } = "https://test2.wikipedia.org/w/api.php";
-
-        /// <summary>
         /// User Agent for client-side application.
         /// </summary>
         public string ClientUserAgent
@@ -75,6 +70,13 @@ namespace WikiClientLibrary.Client
             }
         }
 
+        /// <summary>
+        /// Gets/Sets the cookies used in the requests.
+        /// </summary>
+        /// <remarks>
+        /// <para>To persist user's login information, you can persist the value of this property.</para>
+        /// <para>You can use the same CookieContainer with different <see cref="WikiClient"/>s.</para>
+        /// </remarks>
         public CookieContainer CookieContainer
         {
             get { return _HttpClientHandler.CookieContainer; }
@@ -114,11 +116,11 @@ namespace WikiClientLibrary.Client
         /// <exception cref="UnauthorizedOperationException">Permission denied.</exception>
         /// <exception cref="OperationFailedException">There's "error" node in returned JSON.</exception>
         /// <remarks>"Get" means the returned value is JSON, though the request is sent via HTTP POST.</remarks>
-        public async Task<JToken> GetJsonAsync(IEnumerable<KeyValuePair<string, string>> queryParams)
+        public async Task<JToken> GetJsonAsync(string endPointUrl, IEnumerable<KeyValuePair<string, string>> queryParams)
         {
             if (queryParams == null) throw new ArgumentNullException(nameof(queryParams));
-            var requestUrl = EndPointUrl + "?format=json&" + queryParams;
-            var result = await SendAsync(() => new HttpRequestMessage(HttpMethod.Post, EndPointUrl)
+            var requestUrl = endPointUrl + "?format=json&" + queryParams;
+            var result = await SendAsync(() => new HttpRequestMessage(HttpMethod.Post, endPointUrl)
             {
                 Content = new FormUrlEncodedContent(new[] {new KeyValuePair<string, string>("format", "json")}
                     .Concat(queryParams)),
@@ -127,12 +129,12 @@ namespace WikiClientLibrary.Client
         }
 
         // No, we cannot guarantee the returned value is JSON, so this function is internal.
-        // It depend's on caller's conscious.
-        internal async Task<JToken> GetJsonAsync(HttpContent postContent)
+        // It depends on caller's conscious.
+        internal async Task<JToken> GetJsonAsync(string endPointUrl, HttpContent postContent)
         {
             if (postContent == null) throw new ArgumentNullException(nameof(postContent));
             // Implies we want JSON result.
-            var result = await SendAsync(() => new HttpRequestMessage(HttpMethod.Post, EndPointUrl)
+            var result = await SendAsync(() => new HttpRequestMessage(HttpMethod.Post, endPointUrl)
             {
                 Content = postContent,
             }, false);
@@ -148,9 +150,9 @@ namespace WikiClientLibrary.Client
         /// </summary>
         /// <exception cref="InvalidActionException">Specified action is not supported.</exception>
         /// <exception cref="OperationFailedException">There's "error" node in returned JSON.</exception>
-        public Task<JToken> GetJsonAsync(object queryParams)
+        public Task<JToken> GetJsonAsync(string endPointUrl, object queryParams)
         {
-            return GetJsonAsync(Utility.ToWikiStringValuePairs(queryParams));
+            return GetJsonAsync(endPointUrl, Utility.ToWikiStringValuePairs(queryParams));
         }
 
         public WikiClient()
@@ -178,7 +180,7 @@ namespace WikiClientLibrary.Client
         /// </returns>
         public override string ToString()
         {
-            return $"{GetType()}@{EndPointUrl}";
+            return $"{GetType()}";
         }
 
         public void Dispose()

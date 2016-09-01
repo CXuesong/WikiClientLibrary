@@ -13,8 +13,8 @@ namespace UnitTestProject1
         [TestMethod]
         public void TestMethod1()
         {
-            var client = CreateWikiClient(EntryPointWikipediaTest2);
-            var json = AwaitSync(client.GetJsonAsync(new {action = "query", meta = "siteinfo"}));
+            var client = CreateWikiClient();
+            var json = AwaitSync(client.GetJsonAsync(EntryPointWikipediaTest2, new { action = "query", meta = "siteinfo"}));
             Trace.WriteLine(json);
         }
 
@@ -22,8 +22,8 @@ namespace UnitTestProject1
         [ExpectedException(typeof(InvalidActionException))]
         public void TestMethod2()
         {
-            var client = CreateWikiClient(EntryPointWikipediaTest2);
-            var json = AwaitSync(client.GetJsonAsync(new { action = "invalid_action_test", description = "This is a test case for invalid action parameter." }));
+            var client = CreateWikiClient();
+            var json = AwaitSync(client.GetJsonAsync(EntryPointWikipediaTest2, new { action = "invalid_action_test", description = "This is a test case for invalid action parameter." }));
             Trace.WriteLine(json);
         }
     }

@@ -171,7 +171,7 @@ namespace WikiClientLibrary
                 Debug.Assert(false);
             if (ignoreWarnings) requestContent.Add(new StringContent(""), "ignorewarnings");
             site.Logger?.Trace($"Uploading: {link.Title} .");
-            var jresult = await site.WikiClient.GetJsonAsync(requestContent);
+            var jresult = await site.PostValuesAsync(requestContent);
             var result = jresult["upload"].ToObject<UploadResult>(Utility.WikiJsonSerializer);
             site.Logger?.Trace($"Upload[{link.Title}]: {result}.");
             switch (result.ResultCode)

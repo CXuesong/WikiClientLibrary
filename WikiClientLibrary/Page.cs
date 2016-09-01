@@ -481,7 +481,7 @@ namespace WikiClientLibrary
             JToken jresult;
             try
             {
-                jresult = await WikiClient.GetJsonAsync(new
+                jresult = await Site.PostValuesAsync(new
                 {
                     action = "edit",
                     title = Title,
@@ -573,7 +573,7 @@ namespace WikiClientLibrary
             JToken jresult;
             try
             {
-                jresult = await WikiClient.GetJsonAsync(new
+                jresult = await Site.PostValuesAsync(new
                 {
                     action = "move",
                     from = Title,
@@ -625,7 +625,7 @@ namespace WikiClientLibrary
             JToken jresult;
             try
             {
-                jresult = await WikiClient.GetJsonAsync(new
+                jresult = await Site.PostValuesAsync(new
                 {
                     action = "delete",
                     title = Title,
@@ -664,7 +664,7 @@ namespace WikiClientLibrary
             JToken jresult;
             try
             {
-                jresult = await WikiClient.GetJsonAsync(new
+                jresult = await Site.PostValuesAsync(new
                 {
                     action = "purge",
                     titles = Title,

@@ -99,11 +99,10 @@ namespace WpfTestApplication1
             // Play with some real wiki.
             client = new WikiClient
             {
-                EndPointUrl = EndPointUrl,
                 ClientUserAgent = "ApplicationTest/1.0 (.NET CLR " + Environment.Version + ")",
             };
-            SetStatus("Loading wiki site info: " + client.EndPointUrl);
-            site = await Site.GetAsync(client);
+            SetStatus("Loading wiki site info: " + EndPointUrl);
+            site = await Site.CreateAsync(client, EndPointUrl);
             Navigate(site.SiteInfo.MainPage);
         }
 

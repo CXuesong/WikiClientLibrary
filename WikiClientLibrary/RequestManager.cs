@@ -70,7 +70,7 @@ namespace WikiClientLibrary
                 {
                     site.Logger?.Trace($"Fetching {partition.Count} pages.");
                     queryParams["titles"] = string.Join("|", partition.Select(p => p.Title));
-                    var jobj = await site.WikiClient.GetJsonAsync(queryParams);
+                    var jobj = await site.PostValuesAsync(queryParams);
                     var normalized = jobj["query"]["normalized"]?.ToDictionary(n => (string) n["from"],
                         n => (string) n["to"]);
                     var redirects = jobj["query"]["redirects"]?.ToDictionary(n => (string) n["from"],
@@ -107,6 +107,9 @@ namespace WikiClientLibrary
         /// <summary>
         /// Refresh a sequence of revisions by revid, along with their owner pages.
         /// </summary>
+        /// <remarks>
+        /// <para>If there's invalid revision id in <paramref name="revIds"/>, an <see cref="ArgumentException"/> will be thrown while enumerating.</para>
+        /// </remarks>
         public static IAsyncEnumerable<Revision> FetchRevisionsAsync(Site site, IEnumerable<int> revIds, PageQueryOptions options)
         {
             if (revIds == null) throw new ArgumentNullException(nameof(revIds));
@@ -121,7 +124,7 @@ namespace WikiClientLibrary
                 {
                     site.Logger?.Trace($"Fetching {partition.Count} revisions.");
                     queryParams["revids"] = string.Join("|", partition);
-                    var jobj = await site.WikiClient.GetJsonAsync(queryParams);
+                    var jobj = await site.PostValuesAsync(queryParams);
                     var jpages = (JObject) jobj["query"]["pages"];
                     // Generate converters first
                     // Use DelegateCreationConverter to create Revision with constructor
@@ -146,8 +149,16 @@ namespace WikiClientLibrary
                         })).ToDictionary(o => o.RevisionId);
                     return partition.Select(revId =>
                     {
-                        var raw = rawRev[revId];
-                        return raw.Revision.ToObject<Revision>(raw.Serializer);
+                        try
+                        {
+                            var raw = rawRev[revId];
+                            return raw.Revision.ToObject<Revision>(raw.Serializer);
+                        }
+                        catch (KeyNotFoundException)
+                        {
+                            throw new ArgumentException($"The revision id {revId} could not be found on the site.",
+                                nameof(revIds));
+                        }
                     }).ToAsyncEnumerable();
                 });
             return revPartition.SelectMany(p => p);
@@ -203,7 +214,7 @@ namespace WikiClientLibrary
             var token = await site.GetTokenAsync("patrol");
             try
             {
-                var jresult = await site.WikiClient.GetJsonAsync(new
+                var jresult = await site.PostValuesAsync(new
                 {
                     action = "patrol",
                     rcid = recentChangeId,
@@ -265,7 +276,7 @@ namespace WikiClientLibrary
             {
                 pa["modules"] = moduleName;
             }
-            var jresult = await site.WikiClient.GetJsonAsync(pa);
+            var jresult = await site.PostValuesAsync(pa);
             var jmodules =
                 ((JObject) jresult["paraminfo"]).Properties().FirstOrDefault(p => p.Name.EndsWith("modules"))?.Value;
             // For now we use the method internally.

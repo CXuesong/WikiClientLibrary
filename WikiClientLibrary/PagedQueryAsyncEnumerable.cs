@@ -39,7 +39,7 @@ namespace WikiClientLibrary
                 BEGIN:
                 if (eofReached) return null;
                 cancellation.ThrowIfCancellationRequested();
-                var jresult = await _Site.WikiClient.GetJsonAsync(pa);
+                var jresult = await _Site.PostValuesAsync(pa);
                 // continue.xxx
                 // or query-continue.allpages.xxx
                 var continuation = (JObject) (jresult["continue"]
