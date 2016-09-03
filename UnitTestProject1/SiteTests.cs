@@ -15,17 +15,18 @@ namespace UnitTestProject1
     [TestClass]
     public class SiteTests
     {
-        private static Site WpTestSite;
-        private static Site WikiaTestSite;
+        private static readonly Lazy<Site> _WpTestSite = new Lazy<Site>(() => CreateWikiSite(EntryPointWikipediaTest2));
+        private static readonly Lazy<Site> _WikiaTestSite = new Lazy<Site>(() => CreateWikiSite(EntryPointWikiaTest));
+        private static readonly Lazy<Site> _WpLzhSite = new Lazy<Site>(() => CreateWikiSite(EntryWikipediaLzh));
+
+        public static Site WpTestSite => _WpTestSite.Value;
+        public static Site WikiaTestSite => _WikiaTestSite.Value;
+        public static Site WpLzhSite => _WpLzhSite.Value;
 
         [ClassInitialize]
         public static void OnClassInitializing(TestContext context)
         {
-            // Prepare test environment.
-            WpTestSite = CreateWikiSite(EntryPointWikipediaTest2);
-            //CredentialManager.Login(WpTestSite);
-            WikiaTestSite = CreateWikiSite(EntryPointWikiaTest);
-            //CredentialManager.Login(WikiaTestSite);
+
         }
 
         [ClassCleanup]
@@ -80,7 +81,7 @@ namespace UnitTestProject1
         [TestMethod]
         public void TestWpLzh()
         {
-            var site = CreateWikiSite(EntryWikipediaLzh);
+            var site = WpLzhSite;
             ShallowTrace(site);
             Assert.AreEqual("維基大典", site.SiteInfo.SiteName);
             Assert.AreEqual("維基大典:卷首", site.SiteInfo.MainPage);
@@ -143,6 +144,20 @@ namespace UnitTestProject1
             ShallowTrace(result);
             Assert.IsTrue(result.Count > 0);
             Assert.IsTrue(result.Any(e => e.Title == "Sandbox"));
+        }
+
+        [TestMethod]
+        public void SearchApiEndpointTest()
+        {
+            var client = CreateWikiClient();
+            var result = AwaitSync(Site.SearchApiEndpointAsync(client, "en.wikipedia.org"));
+            Assert.AreEqual("https://en.wikipedia.org/w/api.php", result);
+            result = AwaitSync(Site.SearchApiEndpointAsync(client, "mediawiki119.wikia.com"));
+            Assert.AreEqual("http://mediawiki119.wikia.com/api.php", result);
+            result = AwaitSync(Site.SearchApiEndpointAsync(client, "mediawiki119.wikia.com/abc/def"));
+            Assert.AreEqual("http://mediawiki119.wikia.com/api.php", result);
+            result = AwaitSync(Site.SearchApiEndpointAsync(client, "wikipedia.org"));
+            Assert.AreEqual(null, result);
         }
     }
 }

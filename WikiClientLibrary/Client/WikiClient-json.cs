@@ -30,7 +30,7 @@ namespace WikiClientLibrary.Client
                 // Use await instead of responseTask.Result to unwrap Exceptions.
                 // Or AggregateException might be thrown.
                 using (var responseCancellation = new CancellationTokenSource(Timeout))
-                    response = await _HttpClient.SendAsync(request, responseCancellation.Token);
+                    response = await HttpClient.SendAsync(request, responseCancellation.Token);
                 // The request has been finished.
             }
             catch (OperationCanceledException)

@@ -16,7 +16,7 @@ namespace WikiClientLibrary
     /// <summary>
     /// Represents a MediaWiki site.
     /// </summary>
-    public class Site
+    public partial class Site
     {
         public WikiClient WikiClient { get; }
 
@@ -46,6 +46,18 @@ namespace WikiClientLibrary
             }
             await Task.WhenAll(site.RefreshSiteInfoAsync(), site.RefreshUserInfoAsync());
             return site;
+        }
+
+        /// <summary>
+        /// Given the URL of a MediaWiki site, try to look for the Api Endpoint URL of it.
+        /// </summary>
+        /// <param name="client">WikiClient instance.</param>
+        /// <param name="urlExpression">The URL of MediaWiki site. It can be with or without protocol prefix.</param>
+        /// <exception cref="ArgumentNullException"><paramref name="client"/> or <paramref name="urlExpression"/> is <c>null</c>.</exception>
+        /// <returns>The URL of Api Endpoint. OR <c>null</c> if such search failed.</returns>
+        public static Task<string> SearchApiEndpointAsync(WikiClient client, string urlExpression)
+        {
+            return MediaWikiUtility.SearchApiEndpointAsync(client, urlExpression);
         }
 
         protected Site(WikiClient wikiClient, SiteOptions options)
@@ -165,11 +177,11 @@ namespace WikiClientLibrary
 
         #endregion
 
-            #region Tokens
+        #region Tokens
 
-            /// <summary>
-            /// Tokens that have been merged into CSRF token since MediaWiki 1.24 .
-            /// </summary>
+        /// <summary>
+        /// Tokens that have been merged into CSRF token since MediaWiki 1.24 .
+        /// </summary>
         private static readonly string[] CsrfTokens =
         {
             "edit", "delete", "protect", "move", "block", "unblock", "email",
@@ -643,6 +655,7 @@ namespace WikiClientLibrary
     public enum OpenSearchOptions
     {
         None = 0,
+
         /// <summary>
         /// Return the target page when meeting redirects. May return fewer than limit results.
         /// </summary>
@@ -718,7 +731,7 @@ namespace WikiClientLibrary
         /// </summary>
         public SiteOptions()
         {
-            
+
         }
 
         /// <summary>

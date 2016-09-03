@@ -18,7 +18,6 @@ namespace WikiClientLibrary.Client
         #region Configurations
 
         private int _MaxRetries = 3;
-        private HttpClient _HttpClient;
         private string _ClientUserAgent;
         private TimeSpan _ThrottleTime = TimeSpan.FromSeconds(5);
         private HttpClientHandler _HttpClientHandler;
@@ -33,7 +32,7 @@ namespace WikiClientLibrary.Client
             {
                 if (_ClientUserAgent != value)
                 {
-                    var ua = _HttpClient.DefaultRequestHeaders.UserAgent;
+                    var ua = HttpClient.DefaultRequestHeaders.UserAgent;
                     if (!string.IsNullOrWhiteSpace(value))
                         ua.ParseAdd(value);
                     ua.ParseAdd("WikiClientLibrary/1.0 (.NET Portable; http://github.com/cxuesong/WikiClientLibrary)");
@@ -99,6 +98,8 @@ namespace WikiClientLibrary.Client
             }
         }
 
+        internal HttpClient HttpClient { get; }
+
         #endregion
 
         /// <summary>
@@ -161,7 +162,7 @@ namespace WikiClientLibrary.Client
             {
                 UseCookies = true
             };
-            _HttpClient = new HttpClient(_HttpClientHandler, true);
+            HttpClient = new HttpClient(_HttpClientHandler, true);
             ClientUserAgent = null;
             // https://www.mediawiki.org/wiki/API:Client_code
             // Please use GZip compression when making API calls (Accept-Encoding: gzip).
@@ -185,7 +186,7 @@ namespace WikiClientLibrary.Client
 
         public void Dispose()
         {
-            _HttpClient.Dispose();
+            HttpClient.Dispose();
         }
     }
 }

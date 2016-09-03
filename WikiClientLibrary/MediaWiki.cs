@@ -1,13 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.Linq;
+using System.Net;
+using System.Net.Http;
 using System.Reflection;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Serialization;
+using WikiClientLibrary.Client;
 
 namespace WikiClientLibrary
 {
@@ -189,6 +194,118 @@ namespace WikiClientLibrary
             string name;
             if (_CanonicalNameDict.TryGetValue(namespaceId, out name)) return name;
             return null;
+        }
+    }
+
+    internal static class MediaWikiUtility
+    {
+        private static readonly Regex ProtocolMatcher = new Regex(@"^[A-Za-z\-]+(?=://)");
+        private static readonly Regex RootUrlMatcher = new Regex(@"^[A-Za-z\-]+:///?[^/]+");
+
+        /// <summary>
+        /// Navigate to the specific URL, taking base URL into consideration.
+        /// </summary>
+        public static string NavigateTo(string baseUrl, string url)
+        {
+            if (baseUrl == null) throw new ArgumentNullException(nameof(baseUrl));
+            if (url == null) throw new ArgumentNullException(nameof(url));
+            var protocol = ProtocolMatcher.Match(url).Value;
+            // Full URL
+            if (!string.IsNullOrEmpty(protocol)) return url;
+            if (url.StartsWith("//"))
+            {
+                // Relative protocol
+                var baseProtocol = ProtocolMatcher.Match(baseUrl).Value;
+                if (string.IsNullOrEmpty(baseProtocol))
+                    throw new ArgumentException($"Cannot find protocol for {baseUrl} .", nameof(baseUrl));
+                return baseProtocol + ":" + url;
+            }
+            // Root
+            if (url[0] == '/')
+            {
+                var root = RootUrlMatcher.Match(baseUrl).Value;
+                if (string.IsNullOrEmpty(root))
+                    throw new ArgumentException($"Cannot find root URL for {baseUrl} .", nameof(baseUrl));
+                return root + url;
+            }
+            // Navigate to the next level
+            if (baseUrl[baseUrl.Length - 1] == '/')
+                return baseUrl + url;
+            // Fallback and navigate
+            //E.g. base: http://abc.def/gh/ijk ; url: test -> http://abc.def/gh/test
+            var index = baseUrl.LastIndexOf('/');
+            if (index >= 0)
+                return baseUrl.Substring(0, index + 1) + url;
+            throw new ArgumentException($"Cannot find parent URL for {baseUrl} .", nameof(baseUrl));
+        }
+
+        // See Site.SearchApiEndpointAsync .
+        public static async Task<string> SearchApiEndpointAsync(WikiClient client, string urlExpression)
+        {
+            if (client == null) throw new ArgumentNullException(nameof(client));
+            if (urlExpression == null) throw new ArgumentNullException(nameof(urlExpression));
+            urlExpression = urlExpression.Trim();
+            if (urlExpression == "") return null;
+            // Append default protocol
+            if (!ProtocolMatcher.IsMatch(urlExpression)) urlExpression = "http://" + urlExpression;
+            var current = await TestApiEndpointAsync(client, urlExpression);
+            if (current != null) return current;
+            var result = await DownloadStringAsync(client, urlExpression, true);
+            if (result != null)
+            {
+                current = result.Item1;
+                // <link rel="EditURI" type="application/rsd+xml" href="http://..../api.php?action=rsd"/>
+                var match = Regex.Match(result.Item2, "[^\\?\"]+(?=\\?action=rsd)");
+                if (match.Success)
+                {
+                    var v = NavigateTo(current, match.Value);
+                    v = await TestApiEndpointAsync(client, v);
+                    if (v != null) return v;
+                }
+            }
+            return null;
+        }
+
+        // Tuple<final URL, downloaded string>
+        private static async Task<Tuple<string, string>> DownloadStringAsync(WikiClient client, string url, bool accept400)
+        {
+            var resp = await client.HttpClient.SendAsync(new HttpRequestMessage(HttpMethod.Get, url));
+            var status = (int) resp.StatusCode;
+            if (status == 200 || (accept400 && status >= 400 && status < 500) )
+            {
+                var fianlUrl = resp.RequestMessage.RequestUri.ToString();
+                var content = await resp.Content.ReadAsStringAsync();
+                return Tuple.Create(fianlUrl, content);
+            }
+            return null;
+        }
+
+        /// <summary>
+        /// Tests whether the specific URL is a valid MediaWiki API endpoint, and
+        /// returns the final URL, if redirected.
+        /// </summary>
+        private static async Task<string> TestApiEndpointAsync(WikiClient client, string url)
+        {
+            try
+            {
+                client.Logger?.Trace("Test MediaWiki API: " + url);
+                var result = await DownloadStringAsync(client, url + "?action=query&format=json", false);
+                if (result == null) return null;
+                var content = result.Item2;
+                // Ref: {"batchcomplete":""}
+                if (content.Length < 2) return null;
+                if (content[0] != '{' && content[0] != '[') return null;
+                JToken.Parse(content);
+                var finalUrl = result.Item1;
+                // Remove query string in the result
+                var querySplitter = finalUrl.IndexOf('?');
+                if (querySplitter > 0) return finalUrl.Substring(0, querySplitter);
+                return finalUrl;
+            }
+            catch (JsonException)
+            {
+                return null;
+            }
         }
     }
 }
