@@ -161,7 +161,7 @@ namespace UnitTestProject1
             var links = AwaitSync(page.EnumLinksAsync().ToList());
             ShallowTrace(links);
             Assert.IsTrue(links.Contains("維基大典:條目指引"));
-            Assert.IsTrue(links.Contains("Help:凡例"));
+            Assert.IsTrue(links.Contains("幫助:凡例"));
             Assert.IsTrue(links.Contains("維基大典:卓著"));
         }
 
