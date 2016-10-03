@@ -15,7 +15,7 @@ namespace WikiClientLibrary.Client
     {
         #region the json client
 
-        private async Task<JToken> SendAsync(Func<HttpRequestMessage> requestFactory, bool allowRetry)
+        private async Task<JToken> SendAsync(Func<HttpRequestMessage> requestFactory, bool allowsRetry)
         {
             HttpResponseMessage response;
             var retries = -1;
@@ -35,18 +35,19 @@ namespace WikiClientLibrary.Client
             }
             catch (OperationCanceledException)
             {
-                if (!allowRetry || retries >= MaxRetries) throw new TimeoutException();
                 Logger?.Warn($"Timeout: {request.RequestUri}");
+                if (!allowsRetry || retries >= MaxRetries) throw new TimeoutException();
                 await Task.Delay(RetryDelay);
                 goto RETRY;
             }
+            // Validate response.
             Logger?.Trace($"{response.StatusCode}: {request.RequestUri}");
             var statusCode = (int) response.StatusCode;
             if (statusCode >= 500 && statusCode <= 599)
             {
                 // Service Error. We can retry.
                 // HTTP 503 : https://www.mediawiki.org/wiki/Manual:Maxlag_parameter
-                if (allowRetry && retries < MaxRetries)
+                if (allowsRetry && retries < MaxRetries)
                 {
                     var date = response.Headers.RetryAfter?.Date;
                     var offset = response.Headers.RetryAfter?.Delta;
@@ -60,9 +61,19 @@ namespace WikiClientLibrary.Client
                 }
             }
             response.EnsureSuccessStatusCode();
-            var jresp = await ProcessResponseAsync(response);
-            CheckErrors(jresp);
-            return jresp;
+            try
+            {
+                var jresp = await ProcessResponseAsync(response);
+                CheckErrors(jresp);
+                return jresp;
+            }
+            catch (JsonReaderException)
+            {
+                // Input is not a valid json.
+                Logger?.Warn($"Received non-json content: {request.RequestUri}");
+                if (!allowsRetry || retries >= MaxRetries) throw;
+                goto RETRY;
+            }
         }
 
         private async Task<JToken> ProcessResponseAsync(HttpResponseMessage webResponse)
