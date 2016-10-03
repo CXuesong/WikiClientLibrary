@@ -16,7 +16,7 @@ namespace WikiClientLibrary
     /// <summary>
     /// Represents a MediaWiki site.
     /// </summary>
-    public partial class Site
+    public class Site
     {
         public WikiClient WikiClient { get; }
 
@@ -34,27 +34,34 @@ namespace WikiClientLibrary
         /// <summary>
         /// Initialize a <see cref="Site"/> instance with the specified settings.
         /// </summary>
+        /// <exception cref="ArgumentNullException"><paramref name="wikiClient"/> or <see cref="options"/> is <c>null</c>.</exception>
+        /// <exception cref="ArgumentException">One or more settings in <see cref="options"/> is invalid.</exception>
         public static async Task<Site> CreateAsync(WikiClient wikiClient, SiteOptions options)
         {
             if (wikiClient == null) throw new ArgumentNullException(nameof(wikiClient));
             if (options == null) throw new ArgumentNullException(nameof(options));
+            if (string.IsNullOrEmpty(options.ApiEndpoint))
+                throw new ArgumentException("Invalid API endpoint url.", nameof(options));
             var site = new Site(wikiClient, options);
             if (options.DisambiguationTemplates != null)
             {
-                site.DisambiguationTemplates = options.DisambiguationTemplates
+                site.disambiguationTemplates = options.DisambiguationTemplates
                     .Concat(new[] {SiteOptions.DefaultDisambiguationTemplate}).ToList();
             }
-            await Task.WhenAll(site.RefreshSiteInfoAsync(), site.RefreshUserInfoAsync());
+            if (options.ExplicitSiteInfoInitialization)
+                await site.RefreshUserInfoAsync();
+            else
+                await Task.WhenAll(site.RefreshSiteInfoAsync(), site.RefreshUserInfoAsync());
             return site;
         }
 
         /// <summary>
-        /// Given the URL of a MediaWiki site, try to look for the Api Endpoint URL of it.
+        /// Given a site or page URL of a MediaWiki site, try to look for the Api Endpoint URL of it.
         /// </summary>
         /// <param name="client">WikiClient instance.</param>
         /// <param name="urlExpression">The URL of MediaWiki site. It can be with or without protocol prefix.</param>
         /// <exception cref="ArgumentNullException"><paramref name="client"/> or <paramref name="urlExpression"/> is <c>null</c>.</exception>
-        /// <returns>The URL of Api Endpoint. OR <c>null</c> if such search failed.</returns>
+        /// <returns>The URL of Api Endpoint. OR <c>null</c> if such search has failed.</returns>
         public static Task<string> SearchApiEndpointAsync(WikiClient client, string urlExpression)
         {
             return MediaWikiUtility.SearchApiEndpointAsync(client, urlExpression);
@@ -62,11 +69,21 @@ namespace WikiClientLibrary
 
         protected Site(WikiClient wikiClient, SiteOptions options)
         {
-            if (wikiClient == null) throw new ArgumentNullException(nameof(wikiClient));
+            // Perform basic checks.
+            Debug.Assert(wikiClient != null);
+            Debug.Assert(options != null);
             WikiClient = wikiClient;
-            Options = options;
+            this.options = options;
+            this.ApiEndpoint = options.ApiEndpoint;
         }
 
+        /// <summary>
+        /// Refreshes site information.
+        /// </summary>
+        /// <returns>
+        /// This method affects <see cref="SiteInfo"/>, <see cref="Namespaces"/>,
+        /// <see cref="InterwikiMap"/>, and <see cref="Extensions"/> properties.
+        /// </returns>
         public async Task RefreshSiteInfoAsync()
         {
             var jobj = await PostValuesAsync(new
@@ -80,12 +97,39 @@ namespace WikiClientLibrary
             var aliases = (JArray) jobj["query"]["namespacealiases"];
             var interwiki = (JArray) jobj["query"]["interwikimap"];
             var extensions = (JArray) jobj["query"]["extensions"];
-            SiteInfo = qg.ToObject<SiteInfo>(Utility.WikiJsonSerializer);
-            Namespaces = new NamespaceCollection(this, ns, aliases);
-            InterwikiMap = new InterwikiMap(this, interwiki);
-            Extensions = new ExtensionCollection(this, extensions);
+            try
+            {
+                SiteInfo = qg.ToObject<SiteInfo>(Utility.WikiJsonSerializer);
+                Namespaces = new NamespaceCollection(this, ns, aliases);
+                InterwikiMap = new InterwikiMap(this, interwiki);
+                Extensions = new ExtensionCollection(this, extensions);
+            }
+            catch (Exception)
+            {
+                // Reset the state so that AssertSiteInitialized will work properly.
+                SiteInfo = null;
+                Namespaces = null;
+                InterwikiMap = null;
+                Extensions = null;
+                throw;
+            }
         }
 
+        /// <summary>
+        /// Asserts that site info has been loaded.
+        /// </summary>
+        private void AssertSiteInitialized()
+        {
+            if (_SiteInfo == null)
+                throw new InvalidOperationException("Site.RefreshSiteInfoAsync should be successfully invoked before performing the operation.");
+        }
+
+        /// <summary>
+        /// Refreshes user account information.
+        /// </summary>
+        /// <returns>
+        /// This method affects <see cref="UserInfo"/> property.
+        /// </returns>
         public async Task RefreshUserInfoAsync()
         {
             var jobj = await PostValuesAsync(new
@@ -98,17 +142,58 @@ namespace WikiClientLibrary
             ListingPagingSize = UserInfo.HasRight(UserRights.ApiHighLimits) ? 5000 : 500;
         }
 
-        public SiteOptions Options { get; set; }
+        private readonly SiteOptions options;
+        private SiteInfo _SiteInfo;
+        private NamespaceCollection _Namespaces;
+        private InterwikiMap _InterwikiMap;
+        private ExtensionCollection _Extensions;
 
-        public SiteInfo SiteInfo { get; private set; }
+        public SiteInfo SiteInfo
+        {
+            get
+            {
+                AssertSiteInitialized();
+                return _SiteInfo;
+            }
+            private set
+            {
+                _SiteInfo = value;
+            }
+        }
 
         public UserInfo UserInfo { get; private set; }
 
-        public NamespaceCollection Namespaces { get; private set; }
+        public NamespaceCollection Namespaces
+        {
+            get
+            {
+                AssertSiteInitialized();
+                return _Namespaces;
+            }
+            private set { _Namespaces = value; }
+        }
 
-        public InterwikiMap InterwikiMap { get; private set; }
+        public InterwikiMap InterwikiMap
+        {
+            get
+            {
+                AssertSiteInitialized();
+                return _InterwikiMap;
+            }
+            private set { _InterwikiMap = value; }
+        }
 
-        public ExtensionCollection Extensions { get; private set; }
+        public ExtensionCollection Extensions
+        {
+            get
+            {
+                AssertSiteInitialized();
+                return _Extensions;
+            }
+            private set { _Extensions = value; }
+        }
+
+        public string ApiEndpoint { get; }
 
         /// <summary>
         /// Gets the default result limit per page for current user.
@@ -117,7 +202,7 @@ namespace WikiClientLibrary
         // Use 500 for default. This value will be updated along with UserInfo.
         internal int ListingPagingSize { get; private set; } = 500;
 
-        private List<string> DisambiguationTemplates;
+        private List<string> disambiguationTemplates;
 
         /// <summary>
         /// Gets a list of titles of disambiguation templates. The default DAB template title
@@ -125,7 +210,7 @@ namespace WikiClientLibrary
         /// </summary>
         internal async Task<IEnumerable<string>> GetDisambiguationTemplatesAsync()
         {
-            if (DisambiguationTemplates == null)
+            if (disambiguationTemplates == null)
             {
                 var dabPages = await RequestManager
                     .EnumLinksAsync(this, "MediaWiki:Disambiguationspage", new[] {BuiltInNamespaces.Template})
@@ -137,9 +222,9 @@ namespace WikiClientLibrary
                     if (msg != null) dabPages.Add(msg);
                 }
                 dabPages.Add(SiteOptions.DefaultDisambiguationTemplate);
-                DisambiguationTemplates = dabPages;
+                disambiguationTemplates = dabPages;
             }
-            return DisambiguationTemplates;
+            return disambiguationTemplates;
         }
 
         #region API
@@ -153,7 +238,7 @@ namespace WikiClientLibrary
         /// <remarks>The request is sent via HTTP POST.</remarks>
         public Task<JToken> PostValuesAsync(IEnumerable<KeyValuePair<string, string>> queryParams)
         {
-            return WikiClient.GetJsonAsync(Options.ApiEndpoint, queryParams);
+            return WikiClient.GetJsonAsync(options.ApiEndpoint, queryParams);
         }
 
 
@@ -165,14 +250,14 @@ namespace WikiClientLibrary
         /// <exception cref="OperationFailedException">There's "error" node in returned JSON.</exception>
         public Task<JToken> PostValuesAsync(object queryParams)
         {
-            return WikiClient.GetJsonAsync(Options.ApiEndpoint, queryParams);
+            return WikiClient.GetJsonAsync(options.ApiEndpoint, queryParams);
         }
 
         // No, we cannot guarantee the returned value is JSON, so this function is internal.
         // It depends on caller's conscious.
         internal Task<JToken> PostContentAsync(string endPointUrl, HttpContent postContent)
         {
-            return WikiClient.GetJsonAsync(Options.ApiEndpoint, postContent);
+            return WikiClient.GetJsonAsync(options.ApiEndpoint, postContent);
         }
 
         #endregion
@@ -359,22 +444,39 @@ namespace WikiClientLibrary
 
         #endregion
 
-        #region Authetication
+        #region Authentication
 
+        /// <summary>
+        /// Logins into the wiki site.
+        /// </summary>
+        /// <param name="userName">User name of the account.</param>
+        /// <param name="password">Password of the account.</param>
+        /// <exception cref="ArgumentNullException">Either <paramref name="userName"/> or <paramref name="password"/> is <c>null</c> or empty.</exception>
+        /// <remarks>This operation will refresh <see cref="UserInfo"/>.</remarks>
         public Task LoginAsync(string userName, string password)
         {
             return LoginAsync(userName, password, null);
         }
 
+        /// <summary>
+        /// Logins into the wiki site.
+        /// </summary>
+        /// <param name="userName">User name of the account.</param>
+        /// <param name="password">Password of the account.</param>
+        /// <param name="domain">Domain name. <c>null</c> is usually a good choice.</param>
+        /// <exception cref="ArgumentNullException">Either <paramref name="userName"/> or <paramref name="password"/> is <c>null</c> or empty.</exception>
+        /// <remarks>This operation will refresh <see cref="UserInfo"/>.</remarks>
         public async Task LoginAsync(string userName, string password, string domain)
         {
+            // Note: this method may be invoked BEFORE the initialization of _SiteInfo.
             if (string.IsNullOrEmpty(userName)) throw new ArgumentNullException(nameof(userName));
             if (string.IsNullOrEmpty(password)) throw new ArgumentNullException(nameof(password));
             string token = null;
             // For MedaiWiki 1.27+
-            if (SiteInfo.Version >= new Version("1.27"))
+            if (_SiteInfo?.Version >= new Version("1.27"))
                 token = await GetTokenAsync("login", true);
             // For MedaiWiki < 1.27, We'll have to request twice.
+            // If _SiteInfo hasn't been initialized, we just treat it as MedaiWiki < 1.27 .
             RETRY:
             var jobj = await PostValuesAsync(new
             {
@@ -412,6 +514,10 @@ namespace WikiClientLibrary
             throw new OperationFailedException(result, message);
         }
 
+        /// <summary>
+        /// Logouts from the wiki site.
+        /// </summary>
+        /// <remarks>This operation will refresh <see cref="UserInfo"/>.</remarks>
         public async Task LogoutAsync()
         {
             var jobj = await PostValuesAsync(new
@@ -644,7 +750,7 @@ namespace WikiClientLibrary
         /// </returns>
         public override string ToString()
         {
-            return string.IsNullOrEmpty(SiteInfo.SiteName) ? Options.ApiEndpoint : SiteInfo.SiteName;
+            return string.IsNullOrEmpty(SiteInfo.SiteName) ? options.ApiEndpoint : SiteInfo.SiteName;
         }
     }
 
@@ -725,6 +831,25 @@ namespace WikiClientLibrary
         /// Sets the URL of MedaiWiki API endpoint.
         /// </summary>
         public string ApiEndpoint { get; set; }
+
+        /// <summary>
+        /// Whether to postpone the initialization of site info
+        /// until <see cref="Site.RefreshSiteInfoAsync"/> is called explicitly.
+        /// </summary>
+        /// <remarks>
+        /// <para>This property affects the initialization of <see cref="Site.SiteInfo"/>,
+        /// <see cref="Site.Extensions"/>, <see cref="Site.InterwikiMap"/>,
+        /// and <see cref="Site.Namespaces"/>. </para>
+        /// <para>For the priviate wiki where anonymous users cannot read site info,
+        /// it's recommended that this property be set to <c>true</c>.
+        /// You can check whether you have already logged in via <see cref="Site.UserInfo"/>,
+        /// and call <see cref="Site.LoginAsync(string,string)"/> If necessary.</para>
+        /// <para>The site info should always be initialized before most of the MediaWiki
+        /// operations. Otherwise <see cref="InvalidOperationException"/> will be thrown.</para>
+        /// <para>You cannot postpone the initialization of <see cref="Site.UserInfo"/>,
+        /// which will always be initialized when calling <see cref="Site.CreateAsync(WikiClient,SiteOptions)"/></para>
+        /// </remarks>
+        public bool ExplicitSiteInfoInitialization { get; set; }
 
         /// <summary>
         /// Initializes with empty settings.

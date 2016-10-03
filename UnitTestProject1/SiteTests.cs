@@ -121,6 +121,31 @@ namespace UnitTestProject1
             Trace.WriteLine($"{site.UserInfo.Name} has logged out.");
         }
 
+        /// <summary>
+        /// Tests <see cref="SiteOptions.ExplicitSiteInfoInitialization"/>.
+        /// </summary>
+        [TestMethod]
+        [ExpectedException(typeof(InvalidOperationException))]
+        public void LoginWpTest2_3()
+        {
+            var site = AwaitSync(Site.CreateAsync(CreateWikiClient(),
+                new SiteOptions(EntryPointWikipediaTest2) {ExplicitSiteInfoInitialization = true}));
+            var x = site.SiteInfo.Version;
+        }
+
+        /// <summary>
+        /// Tests <see cref="SiteOptions.ExplicitSiteInfoInitialization"/>.
+        /// </summary>
+        [TestMethod]
+        public void LoginWpTest2_4()
+        {
+            var site = AwaitSync(Site.CreateAsync(CreateWikiClient(),
+                new SiteOptions(EntryPointWikipediaTest2) { ExplicitSiteInfoInitialization = true }));
+            CredentialManager.Login(site);
+            AwaitSync(site.RefreshSiteInfoAsync());
+            ShallowTrace(site);
+            CredentialManager.Logout(site);
+        }
 
         [TestMethod]
         public void LoginWikiaTest_1()
