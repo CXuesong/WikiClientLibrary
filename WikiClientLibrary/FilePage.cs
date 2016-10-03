@@ -37,7 +37,7 @@ namespace WikiClientLibrary
         /// <param name="comment">Comment of the upload, as well as the page content if it doesn't exist.</param>
         /// <param name="ignoreWarnings">Ignore any warnings. This must be set to upload a new version of an existing image.</param>
         /// <exception cref="UploadException">
-        /// There's warning from server.
+        /// There's warning from server, and <paramref name="ignoreWarnings"/> is <c>false</c>.
         /// Check <see cref="UploadException.UploadResult"/> for the warning message or continuing the upload.
         /// </exception>
         /// <exception cref="OperationFailedException"> There's an error while uploading the file. </exception>
@@ -65,7 +65,7 @@ namespace WikiClientLibrary
         /// <param name="comment">Comment of the upload, as well as the page content if it doesn't exist.</param>
         /// <param name="ignoreWarnings">Ignore any warnings. This must be set to upload a new version of an existing image.</param>
         /// <exception cref="UploadException">
-        /// There's warning from server.
+        /// There's warning from server, and <paramref name="ignoreWarnings"/> is <c>false</c>.
         /// Check <see cref="UploadException.UploadResult"/> for the warning message or continuing the upload.
         /// </exception>
         /// <exception cref="OperationFailedException"> There's an error while uploading the file. </exception>
@@ -92,7 +92,7 @@ namespace WikiClientLibrary
         /// <param name="comment">Comment of the upload, as well as the page content if it doesn't exist.</param>
         /// <param name="ignoreWarnings">Ignore any warnings. This must be set to upload a new version of an existing image.</param>
         /// <exception cref="UploadException">
-        /// There's warning from server.
+        /// There's warning from server, and <paramref name="ignoreWarnings"/> is <c>false</c>.
         /// Check <see cref="UploadException.UploadResult"/> for the warning message or continuing the upload.
         /// </exception>
         /// <exception cref="OperationFailedException"> There's an error while uploading the file. </exception>
@@ -117,7 +117,7 @@ namespace WikiClientLibrary
         /// <param name="ignoreWarnings">Ignore any warnings. This must be set to upload a new version of an existing image.</param>
         /// <param name="watch">Whether to add the file into your watchlist.</param>
         /// <exception cref="UploadException">
-        /// There's warning from server.
+        /// There's warning from server, and <paramref name="ignoreWarnings"/> is <c>false</c>.
         /// Check <see cref="UploadException.UploadResult"/> for the warning message or continuing the upload.
         /// </exception>
         /// <exception cref="OperationFailedException"> There's an error while uploading the file. </exception>
@@ -168,10 +168,10 @@ namespace WikiClientLibrary
                     site.SiteInfo.Version >= new Version(1, 18) ? "filekey" : "sessionkey");
             }
             else
-                Debug.Assert(false);
+                Debug.Assert(false, "Unrecognized content argument type.");
             if (ignoreWarnings) requestContent.Add(new StringContent(""), "ignorewarnings");
             site.Logger?.Trace($"Uploading: {link.Title} .");
-            var jresult = await site.PostValuesAsync(requestContent);
+            var jresult = await site.PostContentAsync(requestContent);
             var result = jresult["upload"].ToObject<UploadResult>(Utility.WikiJsonSerializer);
             site.Logger?.Trace($"Upload[{link.Title}]: {result}.");
             switch (result.ResultCode)

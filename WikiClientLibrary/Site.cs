@@ -255,7 +255,7 @@ namespace WikiClientLibrary
 
         // No, we cannot guarantee the returned value is JSON, so this function is internal.
         // It depends on caller's conscious.
-        internal Task<JToken> PostContentAsync(string endPointUrl, HttpContent postContent)
+        internal Task<JToken> PostContentAsync(HttpContent postContent)
         {
             return WikiClient.GetJsonAsync(options.ApiEndpoint, postContent);
         }
