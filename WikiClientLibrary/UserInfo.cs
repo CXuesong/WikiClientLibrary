@@ -20,8 +20,13 @@ namespace WikiClientLibrary
         [JsonProperty]
         public string Name { get; private set; }
 
+        /// <summary>
+        /// Determines wheter current user is anonymous.
+        /// It's recommended that you use <see cref="IsUser"/> to determine
+        /// whether a user has logged in.
+        /// </summary>
         [JsonProperty("anon")]
-        public bool IsAnnonymous { get; private set; }
+        public bool IsAnonymous { get; private set; }
 
         /// <summary>
         /// Determines wheter current user is in "user" group.

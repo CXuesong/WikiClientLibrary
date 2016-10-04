@@ -874,13 +874,15 @@ namespace WikiClientLibrary
         /// <para>In order to decide whether you have already logged in into a private wiki, you can
         /// <list type="number">
         /// <item><description>Call <see cref="Site.CreateAsync(WikiClient,SiteOptions)"/>, with <see cref="ExplicitInfoRefresh"/> set to <c>true</c>.</description></item>
-        /// <item><description>Call and <c>await</c> for <see cref="Site.RefreshSiteInfoAsync"/> (recommended) or <see cref="Site.RefreshUserInfoAsync"/>.</description></item>
+        /// <item><description>Call and <c>await</c> for <see cref="Site.RefreshUserInfoAsync"/>. (Do not use <see cref="Site.RefreshSiteInfoAsync"/>. See the explanation below.)</description></item>
         /// <item><description>If an <see cref="UnauthorizedOperationException"/> is raised, then you should call <see cref="Site.LoginAsync(string,string)"/> to login.</description></item>
-        /// <item><description>Otherwise, check <see cref="UserInfo.IsAnnonymous"/>. Usually it would be <c>false</c>, since you've already logged in during a previous session.</description></item>
+        /// <item><description>Otherwise, since you've called <see cref="Site.RefreshUserInfoAsync"/>, you can directly check <see cref="UserInfo.IsUser"/>.
+        /// Usually it would be <c>true</c>, since you've already logged in during a previous session. Otherwise, which is a rare case, you may also need to login.</description></item>
         /// </list>
-        /// Note that <see cref="Site.RefreshUserInfoAsync"/> will be refreshed after a sucessful login operation,
-        /// so you only have to call <see cref="Site.RefreshSiteInfoAsync"/> afterwards. Nonetheless, both the
-        /// user info and the site info should be initially refreshed before you can perform other opertations.
+        /// Note that <see cref="Site.RefreshUserInfoAsync"/> will be refreshed automatically after a sucessful
+        /// login operation, so you only have to call <see cref="Site.RefreshSiteInfoAsync"/> afterwards.
+        /// Nonetheless, both the user info and the site info should be initially refreshed before
+        /// you can perform other opertations.
         /// </para>
         /// </remarks>
         public bool ExplicitInfoRefresh { get; set; }

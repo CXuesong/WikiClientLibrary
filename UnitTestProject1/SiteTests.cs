@@ -113,11 +113,11 @@ namespace UnitTestProject1
             var site = WpTestSite;
             CredentialManager.Login(site);
             Assert.IsTrue(site.UserInfo.IsUser);
-            Assert.IsFalse(site.UserInfo.IsAnnonymous);
+            Assert.IsFalse(site.UserInfo.IsAnonymous);
             Trace.WriteLine($"{site.UserInfo.Name} has logged into {site}");
             CredentialManager.Logout(site);
             Assert.IsFalse(site.UserInfo.IsUser);
-            Assert.IsTrue(site.UserInfo.IsAnnonymous);
+            Assert.IsTrue(site.UserInfo.IsAnonymous);
             Trace.WriteLine($"{site.UserInfo.Name} has logged out.");
         }
 
@@ -164,17 +164,31 @@ namespace UnitTestProject1
                 {
                     ExplicitInfoRefresh = true
                 }));
+            bool needsLogin;
             try
             {
-                // I think it's better to get user (rather than site) info here.
+                // It's better to get user (rather than site) info here.
                 AwaitSync(site.RefreshUserInfoAsync());
+                // If the attempt is succcessful, it means we should have logged in.
+                // After all, it's a private wiki, where anonymous users shouldn't have
+                // access to reading the wiki.
+                needsLogin = !site.UserInfo.IsUser;
+                // If needsLogin evaluates to true here... Well, you'd better
+                // check if your private wiki is private enough.
+                // Nonetheless, the code still works XD
             }
             catch (UnauthorizedOperationException)
             {
-                // Cannot read user info. Try to login.
-                CredentialManager.Login(site);
+                // Cannot read user info. We must haven't logged in.
+                needsLogin = true;
             }
-            // Login succeeded. Initialize site information.
+            if (needsLogin)
+            {
+                // Login if needed.
+                CredentialManager.Login(site);
+                Debug.Assert(site.UserInfo.IsUser);
+            }
+            // Login succeeded. We should initialize site information.
             AwaitSync(site.RefreshSiteInfoAsync());
             // Now we can do something.
             ShallowTrace(site);
@@ -187,11 +201,11 @@ namespace UnitTestProject1
             var site = WikiaTestSite;
             CredentialManager.Login(site);
             Assert.IsTrue(site.UserInfo.IsUser);
-            Assert.IsFalse(site.UserInfo.IsAnnonymous);
+            Assert.IsFalse(site.UserInfo.IsAnonymous);
             Trace.WriteLine($"{site.UserInfo.Name} has logged into {site}");
             CredentialManager.Logout(site);
             Assert.IsFalse(site.UserInfo.IsUser);
-            Assert.IsTrue(site.UserInfo.IsAnnonymous);
+            Assert.IsTrue(site.UserInfo.IsAnonymous);
             Trace.WriteLine($"{site.UserInfo.Name} has logged out.");
         }
 
