@@ -326,10 +326,13 @@ namespace UnitTestProject1
         {
           // A place to perform page moving and deleting
           // You should have the bot or sysop right there
-            DirtyTestsEntryPointUrl = "http://testwiki.domain.com/api.php";
+          DirtyTestsEntryPointUrl = "http://testwiki.domain.com/api.php";
+          // A private wiki API entrypoint, where anonymous
+          // users have no read permission.
+          PrivateWikiTestsEntryPointUrl = null;
         }
     }
 }
 ```
 
-You need to put valid user names and passwords into this file. As is set in `.gitignore`, this file WILL NOT be included in the repository.
+You need to put valid user names and passwords into this file. As for the special API entry point URLs, they are optional, but certain tests will not work if you neglect or set them to null. As is configured in `.gitignore`, this file WILL NOT be included in the repository.

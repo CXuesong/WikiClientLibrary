@@ -11,9 +11,22 @@ namespace UnitTestProject1
     internal static partial class CredentialManager
     {
         /// <summary>
-        /// The API EntryPoint used for performing dirty tests.
+        /// The API EntryPoint used for performing page moving/deletion and file uploads.
         /// </summary>
         public static string DirtyTestsEntryPointUrl { get; private set; }
+
+        /// <summary>
+        /// The API EntryPoint used for performing private wiki API tests.
+        /// </summary>
+        /// <remarks>
+        /// A private wiki is a wiki with the following settings
+        /// <code>
+        /// $wgGroupPermissions['*']['read'] = false;
+        /// $wgGroupPermissions['*']['edit'] = false;
+        /// $wgGroupPermissions['*']['createaccount'] = false;
+        /// </code>
+        /// </remarks>
+        public static string PrivateWikiTestsEntryPointUrl { get; private set; }
 
         /// <summary>
         /// When implemented in your own credential file,

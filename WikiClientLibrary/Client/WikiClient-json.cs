@@ -97,6 +97,7 @@ namespace WikiClientLibrary.Client
         {
             var obj = jresponse as JObject;
             if (obj == null) return;
+            // See https://www.mediawiki.org/wiki/API:Errors_and_warnings .
             if (jresponse["warnings"] != null)
             {
                 Logger?.Warn(jresponse["warnings"].ToString());
@@ -109,6 +110,7 @@ namespace WikiClientLibrary.Client
                 switch (errcode)
                 {
                     case "permissiondenied":
+                    case "readapidenied":       // You need read permission to use this module
                         throw new UnauthorizedOperationException(errmessage);
                     case "unknown_action":
                         throw new InvalidActionException(errcode, errmessage);

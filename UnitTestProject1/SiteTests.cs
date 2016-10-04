@@ -100,7 +100,7 @@ namespace UnitTestProject1
         }
 
         [TestMethod]
-        [ExpectedException(typeof(OperationFailedException))]
+        [ExpectedException(typeof (OperationFailedException))]
         public void LoginWpTest2_1()
         {
             var site = WpTestSite;
@@ -122,27 +122,61 @@ namespace UnitTestProject1
         }
 
         /// <summary>
-        /// Tests <see cref="SiteOptions.ExplicitSiteInfoInitialization"/>.
+        /// Tests <see cref="SiteOptions.ExplicitInfoInitialization"/>.
         /// </summary>
         [TestMethod]
-        [ExpectedException(typeof(InvalidOperationException))]
+        [ExpectedException(typeof (InvalidOperationException))]
         public void LoginWpTest2_3()
         {
             var site = AwaitSync(Site.CreateAsync(CreateWikiClient(),
-                new SiteOptions(EntryPointWikipediaTest2) {ExplicitSiteInfoInitialization = true}));
+                new SiteOptions(EntryPointWikipediaTest2) {ExplicitInfoInitialization = true}));
             var x = site.SiteInfo.Version;
         }
 
+
         /// <summary>
-        /// Tests <see cref="SiteOptions.ExplicitSiteInfoInitialization"/>.
+        /// Tests legacy way for logging in. That is, to call "login" API action
+        /// twice, with the second call using the token returned from the first call.
         /// </summary>
         [TestMethod]
         public void LoginWpTest2_4()
         {
             var site = AwaitSync(Site.CreateAsync(CreateWikiClient(),
-                new SiteOptions(EntryPointWikipediaTest2) { ExplicitSiteInfoInitialization = true }));
+                new SiteOptions(EntryPointWikipediaTest2) {ExplicitInfoInitialization = true}));
             CredentialManager.Login(site);
             AwaitSync(site.RefreshSiteInfoAsync());
+            ShallowTrace(site);
+            CredentialManager.Logout(site);
+        }
+
+        /// <summary>
+        /// Tests <see cref="SiteOptions.ExplicitInfoInitialization"/>.
+        /// </summary>
+        [TestMethod]
+        public void LoginPrivateWikiTest()
+        {
+            if (string.IsNullOrEmpty(CredentialManager.PrivateWikiTestsEntryPointUrl))
+                Assert.Inconclusive("The test needs CredentialManager.PrivateWikiTestsEntryPointUrl to be set.");
+            var client = CreateWikiClient();
+            // Load cookies, if any. Here we just create a client from scratch.
+            var site = AwaitSync(Site.CreateAsync(client,
+                new SiteOptions(CredentialManager.PrivateWikiTestsEntryPointUrl)
+                {
+                    ExplicitInfoInitialization = true
+                }));
+            try
+            {
+                // I think it's better to get user (rather than site) info here.
+                AwaitSync(site.RefreshUserInfoAsync());
+            }
+            catch (UnauthorizedOperationException)
+            {
+                // Cannot read user info. Try to login.
+                CredentialManager.Login(site);
+            }
+            // Login succeeded. Initialize site information.
+            AwaitSync(site.RefreshSiteInfoAsync());
+            // Now we can do something.
             ShallowTrace(site);
             CredentialManager.Logout(site);
         }

@@ -25,8 +25,12 @@ namespace WikiClientLibrary
         /// <summary>
         /// Initialize a <see cref="Site"/> instance with the given API Endpoint URL.
         /// </summary>
+        /// <exception cref="ArgumentNullException"><paramref name="wikiClient"/> or <paramref name="apiEndpoint"/> is <c>null</c>.</exception>
+        /// <exception cref="ArgumentException"><paramref name="apiEndpoint"/> is invalid.</exception>
+        /// <exception cref="UnauthorizedOperationException">Cannot access query API module due to target site permission settings. You may take a look at <see cref="SiteOptions.ExplicitInfoInitialization"/>.</exception>
         public static Task<Site> CreateAsync(WikiClient wikiClient, string apiEndpoint)
         {
+            if (wikiClient == null) throw new ArgumentNullException(nameof(wikiClient));
             if (apiEndpoint == null) throw new ArgumentNullException(nameof(apiEndpoint));
             return CreateAsync(wikiClient, new SiteOptions(apiEndpoint));
         }
@@ -34,8 +38,9 @@ namespace WikiClientLibrary
         /// <summary>
         /// Initialize a <see cref="Site"/> instance with the specified settings.
         /// </summary>
-        /// <exception cref="ArgumentNullException"><paramref name="wikiClient"/> or <see cref="options"/> is <c>null</c>.</exception>
-        /// <exception cref="ArgumentException">One or more settings in <see cref="options"/> is invalid.</exception>
+        /// <exception cref="ArgumentNullException"><paramref name="wikiClient"/> or <paramref name="options"/> is <c>null</c>.</exception>
+        /// <exception cref="ArgumentException">One or more settings in <paramref name="options"/> is invalid.</exception>
+        /// <exception cref="UnauthorizedOperationException">Cannot access query API module due to target site permission settings. You may take a look at <see cref="SiteOptions.ExplicitInfoInitialization"/>.</exception>
         public static async Task<Site> CreateAsync(WikiClient wikiClient, SiteOptions options)
         {
             if (wikiClient == null) throw new ArgumentNullException(nameof(wikiClient));
@@ -48,9 +53,7 @@ namespace WikiClientLibrary
                 site.disambiguationTemplates = options.DisambiguationTemplates
                     .Concat(new[] {SiteOptions.DefaultDisambiguationTemplate}).ToList();
             }
-            if (options.ExplicitSiteInfoInitialization)
-                await site.RefreshUserInfoAsync();
-            else
+            if (!options.ExplicitInfoInitialization)
                 await Task.WhenAll(site.RefreshSiteInfoAsync(), site.RefreshUserInfoAsync());
             return site;
         }
@@ -84,6 +87,7 @@ namespace WikiClientLibrary
         /// This method affects <see cref="SiteInfo"/>, <see cref="Namespaces"/>,
         /// <see cref="InterwikiMap"/>, and <see cref="Extensions"/> properties.
         /// </returns>
+        /// <exception cref="UnauthorizedOperationException">Cannot access query API module due to target site permission settings. You may need to login first.</exception>
         public async Task RefreshSiteInfoAsync()
         {
             var jobj = await PostValuesAsync(new
@@ -99,37 +103,39 @@ namespace WikiClientLibrary
             var extensions = (JArray) jobj["query"]["extensions"];
             try
             {
-                SiteInfo = qg.ToObject<SiteInfo>(Utility.WikiJsonSerializer);
-                Namespaces = new NamespaceCollection(this, ns, aliases);
-                InterwikiMap = new InterwikiMap(this, interwiki);
-                Extensions = new ExtensionCollection(this, extensions);
+                _SiteInfo = qg.ToObject<SiteInfo>(Utility.WikiJsonSerializer);
+                _Namespaces = new NamespaceCollection(this, ns, aliases);
+                _InterwikiMap = new InterwikiMap(this, interwiki);
+                _Extensions = new ExtensionCollection(this, extensions);
             }
             catch (Exception)
             {
                 // Reset the state so that AssertSiteInitialized will work properly.
-                SiteInfo = null;
-                Namespaces = null;
-                InterwikiMap = null;
-                Extensions = null;
+                _SiteInfo = null;
+                _Namespaces = null;
+                _InterwikiMap = null;
+                _Extensions = null;
                 throw;
             }
         }
 
         /// <summary>
-        /// Asserts that site info has been loaded.
+        /// Asserts that site info have been loaded.
         /// </summary>
-        private void AssertSiteInitialized()
+        private void AssertSiteInfoInitialized()
         {
             if (_SiteInfo == null)
-                throw new InvalidOperationException("Site.RefreshSiteInfoAsync should be successfully invoked before performing the operation.");
+                throw new InvalidOperationException(
+                    "Site.RefreshSiteInfoAsync should be successfully invoked before performing the operation.");
         }
 
         /// <summary>
         /// Refreshes user account information.
         /// </summary>
-        /// <returns>
+        /// <remarks>
         /// This method affects <see cref="UserInfo"/> property.
-        /// </returns>
+        /// </remarks>
+        /// <exception cref="UnauthorizedOperationException">Cannot access query API module due to target site permission settings. You may need to login first.</exception>
         public async Task RefreshUserInfoAsync()
         {
             var jobj = await PostValuesAsync(new
@@ -138,12 +144,13 @@ namespace WikiClientLibrary
                 meta = "userinfo",
                 uiprop = "blockinfo|groups|hasmsg|rights"
             });
-            UserInfo = ((JObject) jobj["query"]["userinfo"]).ToObject<UserInfo>(Utility.WikiJsonSerializer);
-            ListingPagingSize = UserInfo.HasRight(UserRights.ApiHighLimits) ? 5000 : 500;
+            _UserInfo = ((JObject) jobj["query"]["userinfo"]).ToObject<UserInfo>(Utility.WikiJsonSerializer);
+            ListingPagingSize = _UserInfo.HasRight(UserRights.ApiHighLimits) ? 5000 : 500;
         }
 
         private readonly SiteOptions options;
         private SiteInfo _SiteInfo;
+        private UserInfo _UserInfo;
         private NamespaceCollection _Namespaces;
         private InterwikiMap _InterwikiMap;
         private ExtensionCollection _Extensions;
@@ -152,45 +159,47 @@ namespace WikiClientLibrary
         {
             get
             {
-                AssertSiteInitialized();
+                AssertSiteInfoInitialized();
                 return _SiteInfo;
-            }
-            private set
-            {
-                _SiteInfo = value;
             }
         }
 
-        public UserInfo UserInfo { get; private set; }
+        public UserInfo UserInfo
+        {
+            get
+            {
+                if (_UserInfo == null)
+                    throw new InvalidOperationException(
+                        "Site.RefreshUserInfoAsync should be successfully invoked before performing the operation.");
+                return _UserInfo;
+            }
+        }
 
         public NamespaceCollection Namespaces
         {
             get
             {
-                AssertSiteInitialized();
+                AssertSiteInfoInitialized();
                 return _Namespaces;
             }
-            private set { _Namespaces = value; }
         }
 
         public InterwikiMap InterwikiMap
         {
             get
             {
-                AssertSiteInitialized();
+                AssertSiteInfoInitialized();
                 return _InterwikiMap;
             }
-            private set { _InterwikiMap = value; }
         }
 
         public ExtensionCollection Extensions
         {
             get
             {
-                AssertSiteInitialized();
+                AssertSiteInfoInitialized();
                 return _Extensions;
             }
-            private set { _Extensions = value; }
         }
 
         public string ApiEndpoint { get; }
@@ -833,23 +842,34 @@ namespace WikiClientLibrary
         public string ApiEndpoint { get; set; }
 
         /// <summary>
-        /// Whether to postpone the initialization of site info
-        /// until <see cref="Site.RefreshSiteInfoAsync"/> is called explicitly.
+        /// Whether to postpone the initialization of site info and user info
+        /// until <see cref="Site.RefreshSiteInfoAsync"/> and <see cref="Site.RefreshUserInfoAsync"/>
+        /// are called explicitly.
         /// </summary>
         /// <remarks>
-        /// <para>This property affects the initialization of <see cref="Site.SiteInfo"/>,
+        /// <para>This property affects the initialization of site info (<see cref="Site.SiteInfo"/>,
         /// <see cref="Site.Extensions"/>, <see cref="Site.InterwikiMap"/>,
-        /// and <see cref="Site.Namespaces"/>. </para>
-        /// <para>For the priviate wiki where anonymous users cannot read site info,
+        /// and <see cref="Site.Namespaces"/>), as well as <see cref="Site.UserInfo"/>. </para>
+        /// <para>For the priviate wiki where anonymous users cannot access query API,
         /// it's recommended that this property be set to <c>true</c>.
-        /// You can check whether you have already logged in via <see cref="Site.UserInfo"/>,
+        /// You can first check whether you have already logged in,
         /// and call <see cref="Site.LoginAsync(string,string)"/> If necessary.</para>
-        /// <para>The site info should always be initialized before most of the MediaWiki
-        /// operations. Otherwise <see cref="InvalidOperationException"/> will be thrown.</para>
-        /// <para>You cannot postpone the initialization of <see cref="Site.UserInfo"/>,
-        /// which will always be initialized when calling <see cref="Site.CreateAsync(WikiClient,SiteOptions)"/></para>
+        /// <para>The site info and user info should always be initialized before most of the MediaWiki
+        /// operations. Otherwise an <see cref="InvalidOperationException"/> will be thrown when
+        /// attempting to perform those operations.</para>
+        /// <para>In order to decide whether you have already logged in into a private wiki, you can
+        /// <list type="number">
+        /// <item><description>Call <see cref="Site.CreateAsync(WikiClient,SiteOptions)"/>, with <see cref="ExplicitInfoInitialization"/> set to <c>true</c>.</description></item>
+        /// <item><description>Call and <c>await</c> for <see cref="Site.RefreshSiteInfoAsync"/> and/or <see cref="Site.RefreshUserInfoAsync"/>.</description></item>
+        /// <item><description>If an <see cref="UnauthorizedOperationException"/> is raised, then you should call <see cref="Site.LoginAsync(string,string)"/> to login.</description></item>
+        /// <item><description>Otherwise, check <see cref="UserInfo.IsAnnonymous"/>. Usually it would be <c>false</c>, since you've already logged in in a previous session.</description></item>
+        /// </list>
+        /// Note that <see cref="Site.RefreshUserInfoAsync"/> will be refreshed after a sucessful login operation,
+        /// so you only have to call <see cref="Site.RefreshSiteInfoAsync"/> afterwards. Nonetheless, both the
+        /// user info and the site info should be initially refreshed before you can perform other opertations.
+        /// </para>
         /// </remarks>
-        public bool ExplicitSiteInfoInitialization { get; set; }
+        public bool ExplicitInfoInitialization { get; set; }
 
         /// <summary>
         /// Initializes with empty settings.
