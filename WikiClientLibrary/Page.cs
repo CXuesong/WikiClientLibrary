@@ -462,9 +462,9 @@ namespace WikiClientLibrary
         /// <returns><c>true</c> if page content has been changed; <c>false</c> otherwise.</returns>
         /// <remarks>
         /// This action will refill <see cref="Id" />, <see cref="Title"/>,
-        /// <see cref="ContentModel"/>, <see cref="LastRevisionId"/>, and invalidates
+        /// <see cref="ContentModel"/>, <see cref="LastRevisionId"/>, and invalidate
         /// <see cref="ContentLength"/>, <see cref="LastRevision"/>, and <see cref="LastTouched"/>.
-        /// You should call <see cref="RefreshInfoAsync"/> or <see cref="RefreshContentAsync"/> again
+        /// You should call <see cref="RefreshAsync()"/> again
         /// if you're interested in them.
         /// </remarks>
         /// <exception cref="OperationConflictException">Edit conflict detected.</exception>
@@ -517,6 +517,7 @@ namespace WikiClientLibrary
                 Title = (string) jedit["title"];
                 return true;
             }
+            // No "errors" in json result but result is not Success.
             throw new OperationFailedException(result, (string) null);
         }
 

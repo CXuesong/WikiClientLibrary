@@ -107,6 +107,7 @@ namespace UnitTestProject1
         /// <summary>
         /// Runs Task synchronously, and returns the result.
         /// </summary>
+        /// <remarks>This method is specially for unit tests. You should use async idiom in your code.</remarks>
         public static T AwaitSync<T>(Task<T> task)
         {
             return AwaitSync<T>((Task) task);
@@ -115,6 +116,7 @@ namespace UnitTestProject1
         /// <summary>
         /// Runs Task synchronously, and returns the result.
         /// </summary>
+        /// <remarks>This method is specially for unit tests. You should use async idiom in your code.</remarks>
         public static void AwaitSync(Task task)
         {
             AwaitSync<bool>(task);
