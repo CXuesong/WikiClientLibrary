@@ -27,7 +27,7 @@ namespace WikiClientLibrary
         /// </summary>
         /// <exception cref="ArgumentNullException"><paramref name="wikiClient"/> or <paramref name="apiEndpoint"/> is <c>null</c>.</exception>
         /// <exception cref="ArgumentException"><paramref name="apiEndpoint"/> is invalid.</exception>
-        /// <exception cref="UnauthorizedOperationException">Cannot access query API module due to target site permission settings. You may take a look at <see cref="SiteOptions.ExplicitInfoInitialization"/>.</exception>
+        /// <exception cref="UnauthorizedOperationException">Cannot access query API module due to target site permission settings. You may take a look at <see cref="SiteOptions.ExplicitInfoRefresh"/>.</exception>
         public static Task<Site> CreateAsync(WikiClient wikiClient, string apiEndpoint)
         {
             if (wikiClient == null) throw new ArgumentNullException(nameof(wikiClient));
@@ -40,7 +40,7 @@ namespace WikiClientLibrary
         /// </summary>
         /// <exception cref="ArgumentNullException"><paramref name="wikiClient"/> or <paramref name="options"/> is <c>null</c>.</exception>
         /// <exception cref="ArgumentException">One or more settings in <paramref name="options"/> is invalid.</exception>
-        /// <exception cref="UnauthorizedOperationException">Cannot access query API module due to target site permission settings. You may take a look at <see cref="SiteOptions.ExplicitInfoInitialization"/>.</exception>
+        /// <exception cref="UnauthorizedOperationException">Cannot access query API module due to target site permission settings. You may take a look at <see cref="SiteOptions.ExplicitInfoRefresh"/>.</exception>
         public static async Task<Site> CreateAsync(WikiClient wikiClient, SiteOptions options)
         {
             if (wikiClient == null) throw new ArgumentNullException(nameof(wikiClient));
@@ -53,7 +53,7 @@ namespace WikiClientLibrary
                 site.disambiguationTemplates = options.DisambiguationTemplates
                     .Concat(new[] {SiteOptions.DefaultDisambiguationTemplate}).ToList();
             }
-            if (!options.ExplicitInfoInitialization)
+            if (!options.ExplicitInfoRefresh)
                 await Task.WhenAll(site.RefreshSiteInfoAsync(), site.RefreshUserInfoAsync());
             return site;
         }
@@ -282,7 +282,7 @@ namespace WikiClientLibrary
             "import"
         };
 
-        private Dictionary<string, string> _TokensCache = new Dictionary<string, string>();
+        private readonly Dictionary<string, string> _TokensCache = new Dictionary<string, string>();
 
         /// <summary>
         /// Fetch tokens. (MediaWiki 1.24)
@@ -481,11 +481,14 @@ namespace WikiClientLibrary
             if (string.IsNullOrEmpty(userName)) throw new ArgumentNullException(nameof(userName));
             if (string.IsNullOrEmpty(password)) throw new ArgumentNullException(nameof(password));
             string token = null;
+            // If _SiteInfo is null, it indicates options.ExplicitInfoRefresh must be true.
+            Debug.Assert(options.ExplicitInfoRefresh || _SiteInfo != null);
             // For MedaiWiki 1.27+
-            if (_SiteInfo?.Version >= new Version("1.27"))
+            if (!options.ExplicitInfoRefresh && _SiteInfo.Version >= new Version("1.27"))
                 token = await GetTokenAsync("login", true);
             // For MedaiWiki < 1.27, We'll have to request twice.
-            // If _SiteInfo hasn't been initialized, we just treat it as MedaiWiki < 1.27 .
+            // If options.ExplicitInfoRefresh is true, we just treat it as MedaiWiki < 1.27,
+            //  because any "query" operation might raise readapidenied error.
             RETRY:
             var jobj = await PostValuesAsync(new
             {
@@ -526,7 +529,11 @@ namespace WikiClientLibrary
         /// <summary>
         /// Logouts from the wiki site.
         /// </summary>
-        /// <remarks>This operation will refresh <see cref="UserInfo"/>.</remarks>
+        /// <remarks>This operation will refresh <see cref="UserInfo"/>,
+        /// unless <see cref="SiteOptions.ExplicitInfoRefresh"/> is <c>true</c> when initializing
+        /// the instance. In the latter case, <see cref="UserInfo"/> will be invalidated,
+        /// and any attempt to read the property will raise <see cref="InvalidOperationException"/>
+        /// until the next successful login.</remarks>
         public async Task LogoutAsync()
         {
             var jobj = await PostValuesAsync(new
@@ -534,7 +541,10 @@ namespace WikiClientLibrary
                 action = "logout",
             });
             _TokensCache.Clear();
-            await RefreshUserInfoAsync();
+            if (options.ExplicitInfoRefresh)
+                _UserInfo = null;
+            else
+                await RefreshUserInfoAsync();
         }
 
         #endregion
@@ -842,14 +852,18 @@ namespace WikiClientLibrary
         public string ApiEndpoint { get; set; }
 
         /// <summary>
-        /// Whether to postpone the initialization of site info and user info
+        /// Whether to disable the refresh of site info and user info
         /// until <see cref="Site.RefreshSiteInfoAsync"/> and <see cref="Site.RefreshUserInfoAsync"/>
         /// are called explicitly.
         /// </summary>
         /// <remarks>
         /// <para>This property affects the initialization of site info (<see cref="Site.SiteInfo"/>,
         /// <see cref="Site.Extensions"/>, <see cref="Site.InterwikiMap"/>,
-        /// and <see cref="Site.Namespaces"/>), as well as <see cref="Site.UserInfo"/>. </para>
+        /// and <see cref="Site.Namespaces"/>), as well as <see cref="Site.UserInfo"/>.
+        /// If the value is <c>true</c>, these info will not be initialized
+        /// when calling <see cref="Site.CreateAsync(WikiClient,SiteOptions)"/>, and by the
+        /// invocation of <see cref="Site.LogoutAsync"/>, user info will just be invalidated,
+        /// with no further internal invocation of <see cref="Site.RefreshUserInfoAsync"/>.</para>
         /// <para>For the priviate wiki where anonymous users cannot access query API,
         /// it's recommended that this property be set to <c>true</c>.
         /// You can first check whether you have already logged in,
@@ -859,17 +873,17 @@ namespace WikiClientLibrary
         /// attempting to perform those operations.</para>
         /// <para>In order to decide whether you have already logged in into a private wiki, you can
         /// <list type="number">
-        /// <item><description>Call <see cref="Site.CreateAsync(WikiClient,SiteOptions)"/>, with <see cref="ExplicitInfoInitialization"/> set to <c>true</c>.</description></item>
-        /// <item><description>Call and <c>await</c> for <see cref="Site.RefreshSiteInfoAsync"/> and/or <see cref="Site.RefreshUserInfoAsync"/>.</description></item>
+        /// <item><description>Call <see cref="Site.CreateAsync(WikiClient,SiteOptions)"/>, with <see cref="ExplicitInfoRefresh"/> set to <c>true</c>.</description></item>
+        /// <item><description>Call and <c>await</c> for <see cref="Site.RefreshSiteInfoAsync"/> (recommended) or <see cref="Site.RefreshUserInfoAsync"/>.</description></item>
         /// <item><description>If an <see cref="UnauthorizedOperationException"/> is raised, then you should call <see cref="Site.LoginAsync(string,string)"/> to login.</description></item>
-        /// <item><description>Otherwise, check <see cref="UserInfo.IsAnnonymous"/>. Usually it would be <c>false</c>, since you've already logged in in a previous session.</description></item>
+        /// <item><description>Otherwise, check <see cref="UserInfo.IsAnnonymous"/>. Usually it would be <c>false</c>, since you've already logged in during a previous session.</description></item>
         /// </list>
         /// Note that <see cref="Site.RefreshUserInfoAsync"/> will be refreshed after a sucessful login operation,
         /// so you only have to call <see cref="Site.RefreshSiteInfoAsync"/> afterwards. Nonetheless, both the
         /// user info and the site info should be initially refreshed before you can perform other opertations.
         /// </para>
         /// </remarks>
-        public bool ExplicitInfoInitialization { get; set; }
+        public bool ExplicitInfoRefresh { get; set; }
 
         /// <summary>
         /// Initializes with empty settings.

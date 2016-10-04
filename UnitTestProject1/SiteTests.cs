@@ -122,14 +122,14 @@ namespace UnitTestProject1
         }
 
         /// <summary>
-        /// Tests <see cref="SiteOptions.ExplicitInfoInitialization"/>.
+        /// Tests <see cref="SiteOptions.ExplicitInfoRefresh"/>.
         /// </summary>
         [TestMethod]
         [ExpectedException(typeof (InvalidOperationException))]
         public void LoginWpTest2_3()
         {
             var site = AwaitSync(Site.CreateAsync(CreateWikiClient(),
-                new SiteOptions(EntryPointWikipediaTest2) {ExplicitInfoInitialization = true}));
+                new SiteOptions(EntryPointWikipediaTest2) {ExplicitInfoRefresh = true}));
             var x = site.SiteInfo.Version;
         }
 
@@ -142,7 +142,7 @@ namespace UnitTestProject1
         public void LoginWpTest2_4()
         {
             var site = AwaitSync(Site.CreateAsync(CreateWikiClient(),
-                new SiteOptions(EntryPointWikipediaTest2) {ExplicitInfoInitialization = true}));
+                new SiteOptions(EntryPointWikipediaTest2) {ExplicitInfoRefresh = true}));
             CredentialManager.Login(site);
             AwaitSync(site.RefreshSiteInfoAsync());
             ShallowTrace(site);
@@ -150,7 +150,7 @@ namespace UnitTestProject1
         }
 
         /// <summary>
-        /// Tests <see cref="SiteOptions.ExplicitInfoInitialization"/>.
+        /// Tests <see cref="SiteOptions.ExplicitInfoRefresh"/>.
         /// </summary>
         [TestMethod]
         public void LoginPrivateWikiTest()
@@ -162,7 +162,7 @@ namespace UnitTestProject1
             var site = AwaitSync(Site.CreateAsync(client,
                 new SiteOptions(CredentialManager.PrivateWikiTestsEntryPointUrl)
                 {
-                    ExplicitInfoInitialization = true
+                    ExplicitInfoRefresh = true
                 }));
             try
             {
