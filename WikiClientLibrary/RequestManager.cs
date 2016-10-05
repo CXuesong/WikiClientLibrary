@@ -15,6 +15,11 @@ namespace WikiClientLibrary
     /// </summary>
     internal static class RequestManager
     {
+        #region Page/Revision query
+
+        /// <summary>
+        /// Builds common parameters for fetching a page.
+        /// </summary>
         private static IDictionary<string, object> GetPageFetchingParams(PageQueryOptions options)
         {
             var queryParams = new Dictionary<string, object>
@@ -69,10 +74,13 @@ namespace WikiClientLibrary
                 foreach (var partition in sitePages.Partition(titleLimit).Select(partition => partition.ToList()))
                 {
                     site.Logger?.Trace($"Fetching {partition.Count} pages.");
+                    // We use titles to query pages.
                     queryParams["titles"] = string.Join("|", partition.Select(p => p.Title));
                     var jobj = await site.PostValuesAsync(queryParams);
+                    // Process title normalization.
                     var normalized = jobj["query"]["normalized"]?.ToDictionary(n => (string) n["from"],
                         n => (string) n["to"]);
+                    // Process redirects.
                     var redirects = jobj["query"]["redirects"]?.ToDictionary(n => (string) n["from"],
                         n => (string) n["to"]);
                     var pageInfoDict = ((JObject) jobj["query"]["pages"]).Properties()
@@ -199,6 +207,69 @@ namespace WikiClientLibrary
                     }
                     return AsyncEnumerable.Empty<Revision>();
                 });
+        }
+
+        #endregion
+
+        /// <summary>
+        /// Asynchronously purges the pages.
+        /// </summary>
+        /// <returns>A collection of pages that haven't been successfully purged, because of either missing or invalid titles.</returns>
+        public static async Task<IReadOnlyCollection<Page>> PurgePagesAsync(IEnumerable<Page> pages, PagePurgeOptions options)
+        {
+            if (pages == null) throw new ArgumentNullException(nameof(pages));
+            var failedPages = new List<Page>();
+            // You can even purge pages from different sites.
+            foreach (var sitePages in pages.GroupBy(p => Tuple.Create(p.Site, p.GetType())))
+            {
+                var site = sitePages.Key.Item1;
+                var titleLimit = site.UserInfo.HasRight(UserRights.ApiHighLimits)
+                    ? 500
+                    : 50;
+                foreach (var partition in sitePages.Partition(titleLimit).Select(partition => partition.ToList()))
+                {
+                    site.Logger?.Trace($"Purging {partition.Count} pages.");
+                    // We use titles to purge pages.
+                    try
+                    {
+                        var jresult = await site.PostValuesAsync(new
+                        {
+                            action = "purge",
+                            titles = string.Join("|", partition.Select(p => p.Title)),
+                            forcelinkupdate =
+                                (options & PagePurgeOptions.ForceLinkUpdate) == PagePurgeOptions.ForceLinkUpdate,
+                            forcerecursivelinkupdate =
+                                (options & PagePurgeOptions.ForceRecursiveLinkUpdate) ==
+                                PagePurgeOptions.ForceRecursiveLinkUpdate,
+                        });
+                        // Now check whether the pages have been purged successfully.
+                        // Process title normalization.
+                        var normalized = jresult["normalized"]?.ToDictionary(n => (string) n["from"],
+                            n => (string) n["to"]);
+                        var purgeStatusDict = jresult["purge"].ToDictionary(o => o["title"]);
+                        foreach (var page in partition)
+                        {
+                            var title = page.Title;
+                            // Normalize the title.
+                            if (normalized?.ContainsKey(title) ?? false)
+                                title = normalized[title];
+                            // No redirects here ^_^
+                            var jpage = purgeStatusDict[title];
+                            if (jpage["invalid"] != null || jpage["missing"] != null)
+                            {
+                                site.Logger.Trace($"Cannot purge the page: {page}. {jpage["invalidreason"]}");
+                                failedPages.Add(page);
+                            }
+                        }
+                    }
+                    catch (OperationFailedException ex)
+                    {
+                        if (ex.ErrorCode == "cantpurge") throw new UnauthorizedOperationException(ex);
+                        throw;
+                    }
+                }
+            }
+            return failedPages;
         }
 
         public static async Task PatrolAsync(Site site, int? recentChangeId, int? revisionId)

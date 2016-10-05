@@ -39,5 +39,25 @@ namespace WikiClientLibrary
         {
             return RequestManager.RefreshPagesAsync(pages, options);
         }
+
+
+        /// <summary>
+        /// Asynchronously purges a sequence of pages.
+        /// </summary>
+        /// <returns>A collection of pages that haven't been successfully purged, because of either missing or invalid titles.</returns>
+        public static Task<IReadOnlyCollection<Page>> PurgeAsync(this IEnumerable<Page> pages)
+        {
+            return PurgeAsync(pages, PagePurgeOptions.None);
+        }
+
+        /// <summary>
+        /// Asynchronously purges a sequence of pages with the given options.
+        /// </summary>
+        /// <returns>A collection of pages that haven't been successfully purged, because of either missing or invalid titles.</returns>
+        public static Task<IReadOnlyCollection<Page>> PurgeAsync(this IEnumerable<Page> pages,
+            PagePurgeOptions options)
+        {
+            return RequestManager.PurgePagesAsync(pages, options);
+        }
     }
 }

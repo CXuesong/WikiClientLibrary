@@ -657,29 +657,22 @@ namespace WikiClientLibrary
         }
 
         /// <summary>
-        /// Purges the current page.
+        /// Asynchronously purges the current page.
         /// </summary>
         /// <returns><c>true</c> if the page has been successfully purged.</returns>
-        public async Task<bool> PurgeAsync()
+        public Task<bool> PurgeAsync()
         {
-            JToken jresult;
-            try
-            {
-                jresult = await Site.PostValuesAsync(new
-                {
-                    action = "purge",
-                    titles = Title,
-                    forcelinkupdate = true,
-                    forcerecursivelinkupdate = true,
-                });
-            }
-            catch (OperationFailedException ex)
-            {
-                if (ex.ErrorCode == "cantpurge") throw new UnauthorizedOperationException(ex);
-                throw;
-            }
-            var page = jresult["purge"].First();
-            return page["purged"] != null;
+            return PurgeAsync(PagePurgeOptions.None);
+        }
+
+        /// <summary>
+        /// Asynchronously purges the current page with the given options.
+        /// </summary>
+        /// <returns><c>true</c> if the page has been successfully purged.</returns>
+        public async Task<bool> PurgeAsync(PagePurgeOptions options)
+        {
+            var failure = await RequestManager.PurgePagesAsync(new[] { this }, options);
+            return failure.Count == 0;
         }
 
         #endregion
@@ -764,6 +757,28 @@ namespace WikiClientLibrary
         /// In the case of multiple redirects, all redirects will be resolved.
         /// </summary>
         ResolveRedirects = 2,
+    }
+
+    /// <summary>
+    /// Options for purging a page.
+    /// </summary>
+    [Flags]
+    public enum PagePurgeOptions
+    {
+        None = 0,
+
+        /// <summary>
+        /// Updates the link tables.
+        /// </summary>
+        ForceLinkUpdate = 1,
+
+        /// <summary>
+        /// Like <see cref="ForceLinkUpdate"/>, but also do <see cref="ForceLinkUpdate"/> on
+        /// any page that transcludes the current page. This is akin to making an edit to
+        /// a template. Note that the job queue is used for this operation, so there may
+        /// be a slight delay when doing this for pages used a large number of times.
+        /// </summary>
+        ForceRecursiveLinkUpdate = 2,
     }
 
     [Flags]

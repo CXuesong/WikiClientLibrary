@@ -7,6 +7,7 @@ using System.Diagnostics;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using WikiClientLibrary;
+using WikiClientLibrary.Generators;
 using static UnitTestProject1.Utility;
 
 namespace UnitTestProject1
@@ -214,15 +215,34 @@ namespace UnitTestProject1
         }
 
         [TestMethod]
+        public void WpTest2BulkPurgeTest()
+        {
+            AssertModify();
+            var site = WpTestSite;
+            // Usually 500 is the limit for normal users.
+            var pages = new AllPagesGenerator(site) {PagingSize = 300}.EnumPages().Take(300).ToList();
+            var badPage = new Page(site, "Inexistent page title");
+            pages.Insert(pages.Count/2, badPage);
+            Trace.WriteLine("Attempt to purge: ");
+            ShallowTrace(pages, 1);
+            // Do a normal purge. It may take a while.
+            var failedPages = AwaitSync(pages.PurgeAsync());
+            Trace.WriteLine("Failed pages: ");
+            ShallowTrace(failedPages, 1);
+            Assert.AreEqual(1, failedPages.Count);
+            Assert.AreSame(badPage, failedPages.Single());
+        }
+
+        [TestMethod]
         public void WpTest2PagePurgeTest()
         {
             AssertModify();
             var site = WpTestSite;
             // We do not need to login.
             var page = new Page(site, "project:sandbox");
-            var result = AwaitSync(page.PurgeAsync());
+            var result = AwaitSync(page.PurgeAsync(PagePurgeOptions.ForceLinkUpdate | PagePurgeOptions.ForceRecursiveLinkUpdate));
             Assert.IsTrue(result);
-            // Now an ArgumentException should be thrown.
+            // Now an ArgumentException should be thrown from Page.ctor.
             //page = new Page(site, "special:");
             //result = AwaitSync(page.PurgeAsync());
             //Assert.IsFalse(result);

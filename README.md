@@ -124,7 +124,7 @@ You have successfully logged out.
 
 ## Bulk fetching and generators
 
-You can fetch multiple pages at one time with `PageExtensions.RefreshAsync` extension method. However, it's often the case that you're actually fetching pages using [generators](https://www.mediawiki.org/wiki/API:Generator), so that's what we're discussing in the section.
+You can fetch multiple pages at one time with `PageExtensions.RefreshAsync` extension method, as long as you have a sequence of `Page` objects. However, it's often the case that you're actually fetching pages using [generators](https://www.mediawiki.org/wiki/API:Generator), and that's what we're discussing in the section.
 
 You can query a list of pages, fetching their information (with or without content) with lists (i.e. generators), such as [`allpages`](https://www.mediawiki.org/wiki/API:Allpages), [`allcategories`](https://www.mediawiki.org/wiki/API:Allcategories), [`querypage`](https://www.mediawiki.org/wiki/API:Querypage), and [`recentchanges`](https://www.mediawiki.org/wiki/API:Recentchanges). Such generators are implemented in `WikiClientLibrary.Generators` namespace. Though there're still a lot of types of generators yet to be supported, the routine for implementing a `Generator` class is quite the same. Up till now, the following generators have been implemented
 
