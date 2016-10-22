@@ -61,6 +61,11 @@ namespace WikiClientLibrary.Generators
         protected abstract IEnumerable<KeyValuePair<string, object>> GetGeneratorParams();
 
         /// <summary>
+        /// Determins whether to remove duplicate page results generated from generator results.
+        /// </summary>
+        protected virtual bool DistinctGeneratedPages => false;
+
+        /// <summary>
         /// Gets JSON result of the query operation with the specific generator.
         /// </summary>
         /// <returns>The root of JSON result. You may need to access query result by ["query"].</returns>
@@ -76,7 +81,7 @@ namespace WikiClientLibrary.Generators
             foreach (var v in overridingParams)
                 valuesDict[v.Key] = v.Value;
             Debug.Assert((string) valuesDict["action"] == "query");
-            return new PagedQueryAsyncEnumerable(Site, valuesDict);
+            return new PagedQueryAsyncEnumerable(Site, valuesDict, DistinctGeneratedPages);
         }
 
         /// <summary>

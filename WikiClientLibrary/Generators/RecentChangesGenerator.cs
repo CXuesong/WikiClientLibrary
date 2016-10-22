@@ -135,6 +135,12 @@ namespace WikiClientLibrary.Generators
             return dict;
         }
 
+        // Duplicate results can be shown among continued query results in recent changes,
+        // if a wiki page is modified more than once. And when a page title is shown for the
+        // 2nd, 3rd, etc time, only the properties that has been changed will be included in JSON,
+        // which will screw up Page.LoadFromJson .
+        protected override bool DistinctGeneratedPages => true;
+
         /// <summary>
         /// When overridden, fills generator parameters for action=query request.
         /// </summary>

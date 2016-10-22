@@ -16,11 +16,18 @@ namespace WikiClientLibrary
     {
         private readonly Site _Site;
         private readonly IDictionary<string, object> _Parameters;
+        private readonly bool _DistinctPages;
 
-        public PagedQueryAsyncEnumerable(Site site, IDictionary<string, object> parameters)
+        public PagedQueryAsyncEnumerable(Site site, IDictionary<string, object> parameters) : this(site, parameters, false)
+        {
+        }
+
+        // distinctPages: Used by RecentChangesGenerator, remove duplicate page results generated from generator results.
+        public PagedQueryAsyncEnumerable(Site site, IDictionary<string, object> parameters, bool distinctPages)
         {
             _Site = site;
             _Parameters = parameters;
+            _DistinctPages = distinctPages;
             Debug.Assert((string) _Parameters["action"] == "query");
         }
 
@@ -34,6 +41,7 @@ namespace WikiClientLibrary
         {
             var eofReached = false;
             var pa = new Dictionary<string, object>(_Parameters);
+            var retrivedPageIds = _DistinctPages ? new HashSet<int>() : null;
             var ienu = new DelegateAsyncEnumerable<JObject>(async cancellation =>
             {
                 BEGIN:
@@ -57,10 +65,28 @@ namespace WikiClientLibrary
                 // If there's no result, "query" node will not exist.
                 var queryNode = (JObject) jresult["query"];
                 if (queryNode != null)
+                {
+                    var pages = (JObject) queryNode["pages"];
+                    if (retrivedPageIds != null && pages != null)
+                    {
+                        // Remove duplicate results
+                        var duplicateKeys = new List<string>(pages.Count);
+                        foreach (var jpage in pages)
+                        {
+                            if (!retrivedPageIds.Add(Convert.ToInt32(jpage.Key)))
+                            {
+                                // The page has been retrieved before.
+                                duplicateKeys.Add(jpage.Key);
+                            }
+                        }
+                        foreach (var k in duplicateKeys) pages.Remove(k);
+                        _Site.Logger?.Warn($"Received {pages.Count} distinct results.");
+                    }
                     return Tuple.Create(queryNode, true);
+                }
                 // If so, let's see if there're more results.
                 if (continuation != null)
-                    _Site.Logger?.Warn("Empty page list received.");
+                    _Site.Logger?.Warn("Empty query page with continuation received.");
                 goto BEGIN;
             });
             return ienu.GetEnumerator();
