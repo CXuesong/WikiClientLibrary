@@ -31,82 +31,133 @@ namespace WikiClientLibrary
             + "|&#[0-9]+"
             + "|&#x[0-9A-Fa-f]+;"
             );
-    
-        public Site Site { get; }
 
         /// <summary>
-        /// Initializes a new instance using specified Wikilink expression.
+        /// Parses a new instance using specified Wikilink expression.
         /// </summary>
         /// <param name="site">Site instance.</param>
         /// <param name="text">Wikilink expression, without square brackets.</param>
         /// <exception cref="ArgumentNullException">Either <paramref name="site"/> or <paramref name="text"/> is <c>null</c>.</exception>
         /// <exception cref="ArgumentException"><paramref name="text"/> does not contain a valid page title.</exception>
-        public WikiLink(Site site, string text) : this(site, text, BuiltInNamespaces.Main)
+
+        public static WikiLink Parse(Site site, string text)
         {
+            return Parse(site, text, 0);
         }
 
         /// <summary>
-        /// Initializes a new instance using specified Wikilink expression.
+        /// Parses a new instance using specified Wikilink expression.
         /// </summary>
         /// <param name="site">Site instance.</param>
         /// <param name="text">Wikilink expression, without square brackets.</param>
-        /// <param name="defaultNamespaceId">Id of default namespace.</param>
+        /// <param name="defaultNamespaceId">Id of default namespace. See <see cref="BuiltInNamespaces"/> for a list of possible values.</param>
         /// <exception cref="ArgumentNullException">Either <paramref name="site"/> or <paramref name="text"/> is <c>null</c>.</exception>
         /// <exception cref="ArgumentException"><paramref name="text"/> does not contain a valid page title.</exception>
-        public WikiLink(Site site, string text, int defaultNamespaceId)
+
+        public static WikiLink Parse(Site site, string text, int defaultNamespaceId)
+        {
+            return ParseInternal(site, text, defaultNamespaceId, true);
+        }
+
+        /// <summary>
+        /// Tries to parse a new instance using specified Wikilink expression.
+        /// </summary>
+        /// <param name="site">Site instance.</param>
+        /// <param name="text">Wikilink expression, without square brackets.</param>
+        /// <returns>A <see cref="WikiLink"/> instance, or <c>null</c> if the parsing failed.</returns>
+        /// <exception cref="ArgumentNullException">Either <paramref name="site"/> or <paramref name="text"/> is <c>null</c>.</exception>
+        /// <exception cref="ArgumentException"><paramref name="text"/> does not contain a valid page title.</exception>
+
+        public static WikiLink TryParse(Site site, string text)
+        {
+            return TryParse(site, text, 0);
+        }
+
+        /// <summary>
+        /// Tries to parse a new instance using specified Wikilink expression.
+        /// </summary>
+        /// <param name="site">Site instance.</param>
+        /// <param name="text">Wikilink expression, without square brackets.</param>
+        /// <param name="defaultNamespaceId">Id of default namespace. See <see cref="BuiltInNamespaces"/> for a list of possible values.</param>
+        /// <returns>A <see cref="WikiLink"/> instance, or <c>null</c> if the parsing failed.</returns>
+        /// <exception cref="ArgumentNullException">Either <paramref name="site"/> or <paramref name="text"/> is <c>null</c>.</exception>
+        /// <exception cref="ArgumentException"><paramref name="text"/> does not contain a valid page title.</exception>
+
+        public static WikiLink TryParse(Site site, string text, int defaultNamespaceId)
+        {
+            return ParseInternal(site, text, defaultNamespaceId, false);
+        }
+
+        private static WikiLink ParseInternal(Site site, string text, int defaultNamespaceId, bool exceptionOnFailed)
         {
             if (site == null) throw new ArgumentNullException(nameof(site));
             if (text == null) throw new ArgumentNullException(nameof(text));
-            Site = site;
-            OriginalText = text;
+            var link = new WikiLink(site, text);
             //preprocess text (these changes aren't site-dependent)
             //First remove anchor, which is stored unchanged, if there is one
-            var parts = text.Split(new[] {'|'}, 2);
+            var parts = text.Split(new[] { '|' }, 2);
             var title = parts[0];
-            Anchor = parts.Length > 1 ? parts[1] : null;
+            link.Anchor = parts.Length > 1 ? parts[1] : null;
             //This code was adapted from Title.php : secureAndSplit()
             if (title.IndexOf('\ufffd') >= 0)
-                throw new ArgumentException("Title contains illegal char (\\uFFFD 'REPLACEMENT CHARACTER')",
-                    nameof(text));
-            parts = title.Split(new[] {'#'}, 2);
+            {
+                if (exceptionOnFailed)
+                    throw new ArgumentException("Title contains illegal char (\\uFFFD 'REPLACEMENT CHARACTER')",
+                        nameof(text));
+                return null;
+            }
+            parts = title.Split(new[] { '#' }, 2);
             title = parts[0];
-            Section = parts.Length > 1 ? parts[1] : null;
+            link.Section = parts.Length > 1 ? parts[1] : null;
             var match = IllegalTitlesPattern.Match(title);
             if (match.Success)
-                throw new ArgumentException($"Title contains illegal char sequence: {match.Value} .");
+            {
+                if (exceptionOnFailed)
+                    throw new ArgumentException($"Title contains illegal char sequence: {match.Value} .");
+                return null;
+            }
             //Parse title parts.
             var parsedTitle = ParseTitle(site, title, defaultNamespaceId);
-            InterwikiPrefix = parsedTitle.Item1;
-            NamespaceName = parsedTitle.Item2;
-            Title = parsedTitle.Item3;
-            Interwiki = parsedTitle.Item1 == null ? null : site.InterwikiMap[parsedTitle.Item1];
-            Namespace = parsedTitle.Item2 == null ? null : site.Namespaces[parsedTitle.Item2];
+            link.InterwikiPrefix = parsedTitle.Item1;
+            link.NamespaceName = parsedTitle.Item2;
+            link.Title = parsedTitle.Item3;
+            link.Interwiki = parsedTitle.Item1 == null ? null : site.InterwikiMap[parsedTitle.Item1];
+            link.Namespace = parsedTitle.Item2 == null ? null : site.Namespaces[parsedTitle.Item2];
             //Format expression.
             var sb = new StringBuilder();
-            if (InterwikiPrefix != null)
+            if (link.InterwikiPrefix != null)
             {
-                sb.Append(InterwikiPrefix);
+                sb.Append(link.InterwikiPrefix);
                 sb.Append(':');
             }
-            if (!string.IsNullOrEmpty(NamespaceName))
+            if (!string.IsNullOrEmpty(link.NamespaceName))
             {
-                sb.Append(NamespaceName);
+                sb.Append(link.NamespaceName);
                 sb.Append(':');
             }
-            sb.Append(Title);
-            if (Section != null)
+            sb.Append(link.Title);
+            if (link.Section != null)
             {
                 sb.Append('#');
-                sb.Append(Section);
+                sb.Append(link.Section);
             }
-            if (Anchor != null)
+            if (link.Anchor != null)
             {
                 sb.Append('|');
-                sb.Append(Anchor);
+                sb.Append(link.Anchor);
             }
-            _FormattedText = sb.ToString();
+            link._FormattedText = sb.ToString();
+            return link;
         }
 
+        public Site Site { get; }
+
+        private WikiLink(Site site, string originalText)
+        {
+            this.Site = site;
+            this.OriginalText = originalText;
+        }
+        
         private static Tuple<string, string, string> ParseTitle(Site site, string rawTitle, int defaultNamespace)
         {
             // Tuple<interwiki, namespace, title>
@@ -173,23 +224,23 @@ namespace WikiClientLibrary
             throw new ArgumentException($"The title \"{rawTitle}\" does not contain page title.");
         }
 
-        public string InterwikiPrefix { get; }
+        public string InterwikiPrefix { get; private set; }
 
-        public InterwikiEntry Interwiki { get; }
+        public InterwikiEntry Interwiki { get; private set; }
 
-        public string NamespaceName { get; }
+        public string NamespaceName { get; private set; }
 
-        public NamespaceInfo Namespace { get; }
+        public NamespaceInfo Namespace { get; private set; }
 
-        public string Title { get; }
+        public string Title { get; private set; }
 
-        public string Section { get; }
+        public string Section { get; private set; }
 
-        public string Anchor { get; }
+        public string Anchor { get; private set; }
 
         public string OriginalText { get; }
 
-        private readonly string _FormattedText;
+        private string _FormattedText;
 
         /// <summary>
         /// Gets the formatted expression of the wikilink.
@@ -223,7 +274,7 @@ namespace WikiClientLibrary
         /// <returns>Normalized wikilink expression.</returns>
         public static string NormalizeWikiLink(Site site, string text, int defaultNamespaceId)
         {
-            var link = new WikiLink(site, text, defaultNamespaceId);
+            var link = Parse(site, text, defaultNamespaceId);
             return link._FormattedText;
         }
     }

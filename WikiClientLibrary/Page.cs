@@ -43,6 +43,59 @@ namespace WikiClientLibrary
         }
 
         /// <summary>
+        /// Create an instance of <see cref="Page"/> or its derived class,
+        /// depending on the namespace the page is in.
+        /// </summary>
+        /// <param name="site">Site instance.</param>
+        /// <param name="title">Title of the page.</param>
+        /// <exception cref="ArgumentNullException">Either <paramref name="site"/> or <paramref name="title"/> is <c>null</c>.</exception>
+        /// <exception cref="ArgumentException"><paramref name="title"/> has invalid title patterns.</exception>
+        /// <exception cref="InvalidOperationException"><paramref name="title"/> is an interwiki link.</exception>
+        public static Page FromTitle(Site site, string title)
+        {
+            return FromTitle(site, title, 0);
+        }
+
+        /// <summary>
+        /// Create an instance of <see cref="Page"/> or its derived class,
+        /// depending on the namespace the page is in.
+        /// </summary>
+        /// <param name="site">Site instance.</param>
+        /// <param name="title">Title of the page, with or without namespace prefix.</param>
+        /// <param name="defaultNamespaceId">
+        /// The namespace id of the page used when there's no explicit namespace prefix in <paramref name="title"/>.
+        /// See <see cref="BuiltInNamespaces"/> for a list of possible values.
+        /// </param>
+        /// <exception cref="ArgumentNullException">Either <paramref name="site"/> or <paramref name="title"/> is <c>null</c>.</exception>
+        /// <exception cref="ArgumentException"><paramref name="title"/> has invalid title patterns.</exception>
+        /// <exception cref="InvalidOperationException"><paramref name="title"/> is an interwiki link.</exception>
+        public static Page FromTitle(Site site, string title, int defaultNamespaceId)
+        {
+            if (site == null) throw new ArgumentNullException(nameof(site));
+            if (title == null) throw new ArgumentNullException(nameof(title));
+            WikiLink link;
+            try
+            {
+                link = WikiLink.Parse(site, title, defaultNamespaceId);
+            }
+            catch (ArgumentException ex)
+            {
+                throw new ArgumentException(ex.Message, nameof(title), ex);
+            }
+            if (link.Interwiki != null)
+                throw new InvalidOperationException($"Interwiki title is not supported: {title} .");
+            switch (link.Namespace.Id)
+            {
+                case BuiltInNamespaces.Category:
+                    return new Category(site, title);
+                case BuiltInNamespaces.File:
+                    return new Category(site, title);
+                default:
+                    return new Page(site, title, defaultNamespaceId);
+            }
+        }
+
+        /// <summary>
         /// Synonym for <c>Site.WikiClient</c> .
         /// </summary>
         public WikiClient WikiClient { get; }

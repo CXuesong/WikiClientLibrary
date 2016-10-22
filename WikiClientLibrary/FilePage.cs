@@ -142,7 +142,7 @@ namespace WikiClientLibrary
             if (site == null) throw new ArgumentNullException(nameof(site));
             if (content == null) throw new ArgumentNullException(nameof(content));
             if (title == null) throw new ArgumentNullException(nameof(title));
-            var link = new WikiLink(site, title);
+            var link = WikiLink.Parse(site, title);
             if (link.Namespace.Id != BuiltInNamespaces.File)
                 throw new ArgumentException($"Invalid namespace for file title: {title} .", nameof(title));
             var token = await site.GetTokenAsync("edit");
