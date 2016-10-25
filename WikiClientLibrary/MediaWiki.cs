@@ -8,6 +8,7 @@ using System.Net.Http;
 using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Threading;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -71,7 +72,7 @@ namespace WikiClientLibrary
         /// </returns>
         public override bool CanConvert(Type objectType)
         {
-            return objectType == typeof (bool);
+            return objectType == typeof(bool);
         }
     }
 
@@ -132,7 +133,7 @@ namespace WikiClientLibrary
             if (continueParams == null) throw new ArgumentNullException(nameof(continueParams));
             ContinueParams = new ReadOnlyCollection<KeyValuePair<string, string>>(
                 continueParams.Properties().Select(p =>
-                    new KeyValuePair<string, string>(p.Name, (string) p.Value)).ToList());
+                        new KeyValuePair<string, string>(p.Name, (string) p.Value)).ToList());
         }
     }
 
@@ -246,10 +247,10 @@ namespace WikiClientLibrary
             if (urlExpression == null) throw new ArgumentNullException(nameof(urlExpression));
             urlExpression = urlExpression.Trim();
             if (urlExpression == "") return null;
-            // Append default protocol
-            if (!ProtocolMatcher.IsMatch(urlExpression)) urlExpression = "http://" + urlExpression;
+            // Directly try the given URL.
             var current = await TestApiEndpointAsync(client, urlExpression);
             if (current != null) return current;
+            // Try to infer from the page content.
             var result = await DownloadStringAsync(client, urlExpression, true);
             if (result != null)
             {
@@ -267,9 +268,22 @@ namespace WikiClientLibrary
         }
 
         // Tuple<final URL, downloaded string>
-        private static async Task<Tuple<string, string>> DownloadStringAsync(WikiClient client, string url, bool accept400)
+        private static async Task<Tuple<string, string>> DownloadStringAsync(WikiClient client, string url,
+            bool accept400)
         {
-            var resp = await client.HttpClient.SendAsync(new HttpRequestMessage(HttpMethod.Get, url));
+            const int timeout = 10000;
+            HttpResponseMessage resp;
+            using (var cts = new CancellationTokenSource(timeout))
+            {
+                try
+                {
+                    resp = await client.HttpClient.SendAsync(new HttpRequestMessage(HttpMethod.Get, url), cts.Token);
+                }
+                catch (TaskCanceledException)
+                {
+                    throw new TimeoutException();
+                }
+            }
             var status = (int) resp.StatusCode;
             if (status == 200 || (accept400 && status >= 400 && status < 500) )
             {
@@ -286,6 +300,12 @@ namespace WikiClientLibrary
         /// </summary>
         private static async Task<string> TestApiEndpointAsync(WikiClient client, string url)
         {
+            // Append default protocol.
+            if (!ProtocolMatcher.IsMatch(url))
+                url = "http://" + url;
+            // Resolve relative protocol.
+            else if (url.StartsWith("//"))
+                url = "http:" + url;
             try
             {
                 client.Logger?.Trace("Test MediaWiki API: " + url);

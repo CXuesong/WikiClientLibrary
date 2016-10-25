@@ -64,6 +64,7 @@ namespace WikiClientLibrary
         /// <param name="client">WikiClient instance.</param>
         /// <param name="urlExpression">The URL of MediaWiki site. It can be with or without protocol prefix.</param>
         /// <exception cref="ArgumentNullException"><paramref name="client"/> or <paramref name="urlExpression"/> is <c>null</c>.</exception>
+        /// <exception cref="TimeoutException">A time-out has been reached during test requests.</exception>
         /// <returns>The URL of Api Endpoint. OR <c>null</c> if such search has failed.</returns>
         public static Task<string> SearchApiEndpointAsync(WikiClient client, string urlExpression)
         {
