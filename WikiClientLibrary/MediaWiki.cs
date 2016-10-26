@@ -273,6 +273,12 @@ namespace WikiClientLibrary
         {
             const int timeout = 10000;
             HttpResponseMessage resp;
+            // Append default protocol.
+            if (!ProtocolMatcher.IsMatch(url))
+                url = "http://" + url;
+            // Resolve relative protocol.
+            else if (url.StartsWith("//"))
+                url = "http:" + url;
             using (var cts = new CancellationTokenSource(timeout))
             {
                 try

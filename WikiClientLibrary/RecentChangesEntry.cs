@@ -74,7 +74,7 @@ namespace WikiClientLibrary
         [JsonProperty("revid")]
         public int RevisionId { get; private set; }
 
-        [JsonProperty("oldrevid")]
+        [JsonProperty("old_revid")]
         public int OldRevisionId { get; private set; }
 
         /// <summary>
