@@ -52,8 +52,13 @@ namespace WikiClientLibrary
         [JsonProperty("blockedtimestamp")]
         public DateTime BlockedSince { get; private set; }
 
-        [JsonProperty]
         public DateTime BlockExpiry { get; private set; }
+
+        [JsonProperty("blockexpiry")]
+        private string BlockExpiryProxy
+        {
+            set { BlockExpiry = MediaWikiUtility.ParseDateTimeOffset(value); }
+        }
 
         [JsonProperty]
         public IReadOnlyCollection<string> Groups { get; private set; }

@@ -97,7 +97,7 @@ namespace WikiClientLibrary
             else if (value is DateTime)
             {
                 // ISO 8601
-                value = ((DateTime)value).ToString("yyyy-MM-ddTHH:mm:ssK");
+                value = ((DateTime) value).ToString("yyyy-MM-ddTHH:mm:ssK");
             }
             return Convert.ToString(value);
         }

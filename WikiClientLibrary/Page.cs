@@ -856,13 +856,23 @@ namespace WikiClientLibrary
     [JsonObject(MemberSerialization.OptIn)]
     public class ProtectionInfo
     {
+
+        [JsonProperty]
         public string Type { get; private set; }
 
+        [JsonProperty]
         public string Level { get; private set; }
 
         public DateTime Expiry { get; private set; }
 
+        [JsonProperty]
         public bool Cascade { get; private set; }
+
+        [JsonProperty("expiry")]
+        private string ExpiryProxy
+        {
+            set { Expiry = MediaWikiUtility.ParseDateTimeOffset(value); }
+        }
 
         /// <summary>
         /// 返回该实例的完全限定类型名。
