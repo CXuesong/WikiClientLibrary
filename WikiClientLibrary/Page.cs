@@ -339,7 +339,9 @@ namespace WikiClientLibrary
                 var serializer = Utility.CreateWikiJsonSerializer();
                 serializer.Converters.Add(new DelegateCreationConverter<Revision>(t => new Revision(this)));
                 LastRevision = revision.ToObject<Revision>(serializer);
-                Content = LastRevision.Content;
+                // Check if the client has requested for revision content…
+                if (LastRevision.Content != null)
+                    Content = LastRevision.Content;
             }
             else
             {
