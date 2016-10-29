@@ -202,7 +202,6 @@ namespace WikiClientLibrary
     internal static class MediaWikiUtility
     {
         private static readonly Regex ProtocolMatcher = new Regex(@"^[A-Za-z\-]+(?=://)");
-        private static readonly Regex RootUrlMatcher = new Regex(@"^[A-Za-z\-]+:///?[^/]+");
 
         /// <summary>
         /// Navigate to the specific URL, taking base URL into consideration.
@@ -211,34 +210,9 @@ namespace WikiClientLibrary
         {
             if (baseUrl == null) throw new ArgumentNullException(nameof(baseUrl));
             if (url == null) throw new ArgumentNullException(nameof(url));
-            var protocol = ProtocolMatcher.Match(url).Value;
-            // Full URL
-            if (!string.IsNullOrEmpty(protocol)) return url;
-            if (url.StartsWith("//"))
-            {
-                // Relative protocol
-                var baseProtocol = ProtocolMatcher.Match(baseUrl).Value;
-                if (string.IsNullOrEmpty(baseProtocol))
-                    throw new ArgumentException($"Cannot find protocol for {baseUrl} .", nameof(baseUrl));
-                return baseProtocol + ":" + url;
-            }
-            // Root
-            if (url[0] == '/')
-            {
-                var root = RootUrlMatcher.Match(baseUrl).Value;
-                if (string.IsNullOrEmpty(root))
-                    throw new ArgumentException($"Cannot find root URL for {baseUrl} .", nameof(baseUrl));
-                return root + url;
-            }
-            // Navigate to the next level
-            if (baseUrl[baseUrl.Length - 1] == '/')
-                return baseUrl + url;
-            // Fallback and navigate
-            //E.g. base: http://abc.def/gh/ijk ; url: test -> http://abc.def/gh/test
-            var index = baseUrl.LastIndexOf('/');
-            if (index >= 0)
-                return baseUrl.Substring(0, index + 1) + url;
-            throw new ArgumentException($"Cannot find parent URL for {baseUrl} .", nameof(baseUrl));
+            var baseUri = new Uri(baseUrl);
+            var uri = new Uri(baseUri, url);
+            return uri.ToString();
         }
 
         // See Site.SearchApiEndpointAsync .
@@ -257,7 +231,7 @@ namespace WikiClientLibrary
             {
                 current = result.Item1;
                 // <link rel="EditURI" type="application/rsd+xml" href="http://..../api.php?action=rsd"/>
-                var match = Regex.Match(result.Item2, "[^\\?\"]+(?=\\?action=rsd)");
+                var match = Regex.Match(result.Item2, @"(?<=href\s*=\s*[""']?)[^\?""']+(?=\?action=rsd)");
                 if (match.Success)
                 {
                     var v = NavigateTo(current, match.Value);

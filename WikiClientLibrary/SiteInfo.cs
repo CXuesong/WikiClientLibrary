@@ -27,6 +27,8 @@ namespace WikiClientLibrary
         [JsonProperty] // This should be kept or private setter will be ignored by Newtonsoft.JSON.
         public string MainPage { get; private set; }
 
+        #region Url & Path
+
         /// <summary>
         /// The absolute path to the main page. 1.8+
         /// </summary>
@@ -38,6 +40,32 @@ namespace WikiClientLibrary
         /// </summary>
         [JsonProperty("server")]
         public string ServerUrl { get; private set; }
+
+        /// <summary>
+        /// The relative or absolute path to any article. $1 should be replaced by the article name.
+        /// See $wgArticlePath. 1.16+
+        /// </summary>
+        [JsonProperty]
+        public string ArticlePath { get; private set; }
+
+        /// <summary>
+        /// The path of index.php relative to the document root. 
+        /// </summary>
+        [JsonProperty("script")]
+        public string ScriptFilePath { get; private set; }
+
+        /// <summary>
+        /// The base URL path relative to the document root. 
+        /// </summary>
+        [JsonProperty("scriptpath")]
+        public string ScriptDirectoryPath { get; private set; }
+
+        [JsonProperty("favicon")]
+        public string FavIconUrl { get; private set; }
+
+        #endregion
+
+        #region General
 
         [JsonProperty]
         public string SiteName { get; private set; }
@@ -69,26 +97,25 @@ namespace WikiClientLibrary
         /// </summary>
         public Version Version { get; private set; }
 
+        /// <summary>
+        /// A list of magic words and their aliases 1.14+
+        /// </summary>
+        public string[] MagicWords { get; private set; }
+
+        [JsonProperty("magicwords")]
+        private JObject MagicWordsProxy {set { MagicWords = value.Properties().Select(p => p.Name).ToArray(); } }
+
+        #endregion
+
+        #region Limitations
+
         [JsonProperty]
         public long MaxUploadSize { get; private set; }
 
         [JsonProperty]
         public int MinUploadChunkSize { get; private set; }
 
-        /// <summary>
-        /// The path of index.php relative to the document root. 
-        /// </summary>
-        [JsonProperty("script")]
-        public string ScriptFilePath { get; private set; }
-
-        /// <summary>
-        /// The base URL path relative to the document root. 
-        /// </summary>
-        [JsonProperty("scriptpath")]
-        public string ScriptDirectoryPath { get; private set; }
-
-        [JsonProperty("favicon")]
-        public string FavIconUrl { get; private set; }
+        #endregion
 
         [JsonProperty]
         private string Case
@@ -113,6 +140,27 @@ namespace WikiClientLibrary
         /// Whether the first letter in a title is case-sensitive. (MediaWiki 1.8+)
         /// </summary>
         public bool IsTitleCaseSensitive { get; private set; }
+
+        /// <summary>
+        /// The current time on the server. 1.16+
+        /// </summary>
+        [JsonProperty]
+        public string Time { get; private set; }
+
+        /// <summary>
+        /// The name of the wiki's time zone. See $wgLocaltimezone. 1.13+
+        /// </summary>
+        /// <remarks>This will be used for date display and not for what's stored in the database.</remarks>
+        [JsonProperty("timezone")]
+        public string TimeZoneName { get; private set; }
+
+        /// <summary>
+        /// The offset of the wiki's time zone, from UTC. See $wgLocalTZoffset. 1.13+
+        /// </summary>
+        public TimeSpan TimeOffset {get; private set; }
+
+        [JsonProperty("timeoffset")]
+        private int TimeOffsetProxy { set { TimeOffset = TimeSpan.FromMinutes(value); } }
     }
 
     /// <summary>
