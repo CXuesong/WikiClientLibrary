@@ -238,7 +238,7 @@ static async Task InteractivePatrol()
     // Create a MediaWiki API client.
     var wikiClient = new WikiClient();
     // Create a MediaWiki Site instance.
-    var site = await Site.CreateAsync(wikiClient, Input("Wiki site URL"));
+    var site = await Site.CreateAsync(wikiClient, Input("Wiki site API URL"));
     await site.LoginAsync(Input("Username"), Input("Password"));
     var rcg = new RecentChangesGenerator(site)
     {
@@ -255,8 +255,22 @@ static async Task InteractivePatrol()
     }
     Console.WriteLine("Unpatrolled:");
     Console.WriteLine(rc);
-    // TODO show diff. But for now we do not even have an
-    // approach to get a revision directly.
+    // Show the involved revisions.
+    if (rc.OldRevisionId > 0 && rc.RevisionId > 0)
+    {
+        var rev = await Revision.FetchRevisionsAsync(site, rc.OldRevisionId, rc.RevisionId).ToList();
+        // Maybe we'll use some 3rd party diff lib
+        Console.WriteLine("Before, RevId={0}, {1}", rev[0].Id, rev[0].TimeStamp);
+        Console.WriteLine(rev[0].Content);
+        Console.WriteLine("After, RevId={0}, {1}", rev[1].Id, rev[1].TimeStamp);
+        Console.WriteLine(rev[1].Content);
+    }
+    else if (rc.RevisionId > 0)
+    {
+        var rev = await Revision.FetchRevisionAsync(site, rc.RevisionId);
+        Console.WriteLine("RevId={0}, {1}", rev.Id, rev.TimeStamp);
+        Console.WriteLine(rev.Content);
+    }
     if (Confirm("Mark as patrolled?"))
     {
         await rc.PatrolAsync();
@@ -272,7 +286,15 @@ You can get/set/persist cookies with `WikiClient.CookieContainer` property.
 The following APIs have also been taken or partially taken into the library
 
 *   `opensearch`: See `Site.OpenSearch`.
-*   `parse`: See `Site.ParsePage` . There's also a demo in `WpfTestApplication1`.
+*   `parse`: See `Site.ParsePageAsync`,  `Site.ParseRevisionAsync`, and `Site.ParseContentAsync`. There's also a demo in `WpfTestApplication1`.
+
+You can search for a valid MediaWiki entry point with `Site.SearchApiEndpointAsync`, given the URL of the website or the URL of a page on it. See `UnitTestProject1.SiteTests.SearchApiEndpointTest` for example.
+
+For private wiki users, please take a look at Issue #4 of this repository.
+
+Lately I've been working on a .NET Wikitext parser, [MwParserFromScratch](https://github.com/CXuesong/MwParserFromScratch) , but it's not quite done yet.
+
+
 
 ## Behavior
 
