@@ -77,7 +77,7 @@ namespace WikiClientLibrary
             Debug.Assert(wikiClient != null);
             Debug.Assert(options != null);
             WikiClient = wikiClient;
-            this.options = options;
+            this.siteOptions = options;
             this.ApiEndpoint = options.ApiEndpoint;
         }
 
@@ -149,7 +149,7 @@ namespace WikiClientLibrary
             ListingPagingSize = _UserInfo.HasRight(UserRights.ApiHighLimits) ? 5000 : 500;
         }
 
-        private readonly SiteOptions options;
+        private readonly SiteOptions siteOptions;
         private SiteInfo _SiteInfo;
         private UserInfo _UserInfo;
         private NamespaceCollection _Namespaces;
@@ -248,7 +248,7 @@ namespace WikiClientLibrary
         /// <remarks>The request is sent via HTTP POST.</remarks>
         public Task<JToken> PostValuesAsync(IEnumerable<KeyValuePair<string, string>> queryParams)
         {
-            return WikiClient.GetJsonAsync(options.ApiEndpoint, queryParams);
+            return WikiClient.GetJsonAsync(siteOptions.ApiEndpoint, queryParams);
         }
 
 
@@ -260,14 +260,14 @@ namespace WikiClientLibrary
         /// <exception cref="OperationFailedException">There's "error" node in returned JSON.</exception>
         public Task<JToken> PostValuesAsync(object queryParams)
         {
-            return WikiClient.GetJsonAsync(options.ApiEndpoint, queryParams);
+            return WikiClient.GetJsonAsync(siteOptions.ApiEndpoint, queryParams);
         }
 
         // No, we cannot guarantee the returned value is JSON, so this function is internal.
         // It depends on caller's conscious.
         internal Task<JToken> PostContentAsync(HttpContent postContent)
         {
-            return WikiClient.GetJsonAsync(options.ApiEndpoint, postContent);
+            return WikiClient.GetJsonAsync(siteOptions.ApiEndpoint, postContent);
         }
 
         #endregion
@@ -483,9 +483,9 @@ namespace WikiClientLibrary
             if (string.IsNullOrEmpty(password)) throw new ArgumentNullException(nameof(password));
             string token = null;
             // If _SiteInfo is null, it indicates options.ExplicitInfoRefresh must be true.
-            Debug.Assert(options.ExplicitInfoRefresh || _SiteInfo != null);
+            Debug.Assert(siteOptions.ExplicitInfoRefresh || _SiteInfo != null);
             // For MedaiWiki 1.27+
-            if (!options.ExplicitInfoRefresh && _SiteInfo.Version >= new Version("1.27"))
+            if (!siteOptions.ExplicitInfoRefresh && _SiteInfo.Version >= new Version("1.27"))
                 token = await GetTokenAsync("login", true);
             // For MedaiWiki < 1.27, We'll have to request twice.
             // If options.ExplicitInfoRefresh is true, we just treat it as MedaiWiki < 1.27,
@@ -542,7 +542,7 @@ namespace WikiClientLibrary
                 action = "logout",
             });
             _TokensCache.Clear();
-            if (options.ExplicitInfoRefresh)
+            if (siteOptions.ExplicitInfoRefresh)
                 _UserInfo = null;
             else
                 await RefreshUserInfoAsync();
@@ -653,23 +653,6 @@ namespace WikiClientLibrary
         }
 
         /// <summary>
-        /// Parsing the specific page, gets HTML and more information. (MediaWiki 1.12)
-        /// </summary>
-        public async Task<ParsedContentInfo> ParsePage(string title, bool followRedirects)
-        {
-            if (string.IsNullOrEmpty(title)) throw new ArgumentNullException(nameof(title));
-            var jobj = await PostValuesAsync(new
-            {
-                action = "parse",
-                page = title,
-                redirects = followRedirects,
-                prop = "text|langlinks|categories|sections|revid|displaytitle|properties|disabletoc"
-            });
-            var parsed = ((JObject) jobj["parse"]).ToObject<ParsedContentInfo>();
-            return parsed;
-        }
-
-        /// <summary>
         /// Performs an opensearch and get results, often used for search box suggestions.
         /// (MediaWiki 1.25 or OpenSearch extension)
         /// </summary>
@@ -762,6 +745,156 @@ namespace WikiClientLibrary
 
         #endregion
 
+        #region Parsing
+
+        private IDictionary<string, object> BuildParsingParams(ParsingOptions options)
+        {
+            var p = new Dictionary<string, object>
+            {
+                {"action", "parse"},
+                {"prop", "text|langlinks|categories|sections|revid|displaytitle|properties"},
+                {"disabletoc", (options & ParsingOptions.DisableToc) == ParsingOptions.DisableToc},
+                {"preview", (options & ParsingOptions.Preview) == ParsingOptions.Preview},
+                {"sectionpreview", (options & ParsingOptions.SectionPreview) == ParsingOptions.SectionPreview},
+                {"redirects", (options & ParsingOptions.ResolveRedirects) == ParsingOptions.ResolveRedirects},
+                {"mobileformat", (options & ParsingOptions.MobileFormat) == ParsingOptions.MobileFormat},
+                {"noimages", (options & ParsingOptions.NoImages) == ParsingOptions.NoImages},
+                {"effectivelanglinks", (options & ParsingOptions.EffectiveLanguageLinks) == ParsingOptions.EffectiveLanguageLinks},
+            };
+            if ((options & ParsingOptions.TranscludedPages) == ParsingOptions.TranscludedPages)
+                p["prop"] += "|templates";
+            if ((options & ParsingOptions.LimitReport) == ParsingOptions.LimitReport)
+                p["prop"] += "|limitreportdata";
+            return p;
+        }
+
+        /// <summary>
+        /// Parsing the specific page, gets HTML and more information. (MediaWiki 1.12)
+        /// </summary>
+        /// <param name="title">Title of the page to be parsed.</param>
+        /// <exception cref="ArgumentNullException"><paramref name="title"/> is <c>null</c>.</exception>
+        /// <remarks>This overload will not follow the redirects.</remarks>
+        public Task<ParsedContentInfo> ParsePageAsync(string title)
+        {
+            return ParsePageAsync(title, ParsingOptions.None);
+        }
+
+        /// <summary>
+        /// Parsing the specific page, gets HTML and more information. (MediaWiki 1.12)
+        /// </summary>
+        /// <param name="title">Title of the page to be parsed.</param>
+        /// <param name="options">Options for parsing.</param>
+        /// <exception cref="ArgumentNullException"><paramref name="title"/> is <c>null</c>.</exception>
+        public async Task<ParsedContentInfo> ParsePageAsync(string title, ParsingOptions options)
+        {
+            if (string.IsNullOrEmpty(title)) throw new ArgumentNullException(nameof(title));
+            var p = BuildParsingParams(options);
+            p["page"] = title;
+            var jobj = await PostValuesAsync(p);
+            var parsed = ((JObject)jobj["parse"]).ToObject<ParsedContentInfo>(Utility.WikiJsonSerializer);
+            return parsed;
+        }
+
+        /// <summary>
+        /// Parsing the specific page, gets HTML and more information. (MediaWiki 1.12)
+        /// </summary>
+        /// <param name="id">Id of the page to be parsed.</param>
+        /// <exception cref="ArgumentOutOfRangeException"><paramref name="id"/> is zero or negative.</exception>
+        /// <remarks>This overload will not follow the redirects.</remarks>
+        public Task<ParsedContentInfo> ParsePageAsync(int id)
+        {
+            return ParsePageAsync(id, ParsingOptions.None);
+        }
+
+        /// <summary>
+        /// Parsing the specific page, gets HTML and more information. (MediaWiki 1.12)
+        /// </summary>
+        /// <param name="id">Id of the page to be parsed.</param>
+        /// <param name="options">Options for parsing.</param>
+        /// <exception cref="ArgumentOutOfRangeException"><paramref name="id"/> is zero or negative.</exception>
+        public async Task<ParsedContentInfo> ParsePageAsync(int id, ParsingOptions options)
+        {
+            if (id <= 0) throw new ArgumentOutOfRangeException(nameof(id));
+            var p = BuildParsingParams(options);
+            p["pageid"] = id;
+            var jobj = await PostValuesAsync(p);
+            var parsed = ((JObject)jobj["parse"]).ToObject<ParsedContentInfo>(Utility.WikiJsonSerializer);
+            return parsed;
+        }
+
+        /// <summary>
+        /// Parsing the specific page revision, gets HTML and more information. (MediaWiki 1.12)
+        /// </summary>
+        /// <param name="revId">Id of the revision to be parsed.</param>
+        /// <exception cref="ArgumentOutOfRangeException"><paramref name="revId"/> is zero or negative.</exception>
+        public Task<ParsedContentInfo> ParseRevisionAsync(int revId)
+        {
+            return ParseRevisionAsync(revId, ParsingOptions.None);
+        }
+
+        /// <summary>
+        /// Parsing the specific page revision, gets HTML and more information. (MediaWiki 1.12)
+        /// </summary>
+        /// <param name="revId">Id of the revision to be parsed.</param>
+        /// <param name="options">Options for parsing.</param>
+        /// <exception cref="ArgumentOutOfRangeException"><paramref name="revId"/> is zero or negative.</exception>
+        public async Task<ParsedContentInfo> ParseRevisionAsync(int revId, ParsingOptions options)
+        {
+            if (revId <= 0) throw new ArgumentOutOfRangeException(nameof(revId));
+            var p = BuildParsingParams(options);
+            p["oldid"] = revId;
+            var jobj = await PostValuesAsync(p);
+            var parsed = ((JObject)jobj["parse"]).ToObject<ParsedContentInfo>(Utility.WikiJsonSerializer);
+            return parsed;
+        }
+
+        /// <summary>
+        /// Parsing the specific page content and/or summary, gets HTML and more information. (MediaWiki 1.12)
+        /// </summary>
+        /// <param name="content">The content to parse.</param>
+        /// <param name="summary">The summary to parse.</param>
+        /// <param name="title">Act like the wikitext is on this page.
+        /// This only really matters when parsing links to the page itself or subpages,
+        /// or when using magic words like {{PAGENAME}}.
+        /// If <c>null</c> is given, the default value "API" will be used.</param>
+        /// <remarks>If both <paramref name="title"/> is <c>null</c>, the content model will be assumed as wikitext.</remarks>
+        /// <param name="options">Options for parsing.</param>
+        /// <remarks>The content model will be inferred from <paramref name="title"/>.</remarks>
+        /// <exception cref="ArgumentException">Both <paramref name="content"/> and <paramref name="summary"/> is <c>null</c>.</exception>
+        public Task<ParsedContentInfo> ParseContentAsync(string content, string summary, string title, ParsingOptions options)
+        {
+            return ParseContentAsync(content, summary, title, null, options);
+        }
+
+        /// <summary>
+        /// Parsing the specific page content and/or summary, gets HTML and more information. (MediaWiki 1.12)
+        /// </summary>
+        /// <param name="content">The content to parse.</param>
+        /// <param name="summary">The summary to parse.</param>
+        /// <param name="title">Act like the wikitext is on this page.
+        /// This only really matters when parsing links to the page itself or subpages,
+        /// or when using magic words like {{PAGENAME}}.
+        /// If <c>null</c> is given, the default value "API" will be used.</param>
+        /// <param name="contentModel">The content model name of the text specified in <paramref name="content"/>.</param>
+        /// <remarks>If both <paramref name="title"/> and <paramref name="contentModel"/> is <c>null</c>, the content model will be assumed as wikitext.</remarks>
+        /// <param name="options">Options for parsing.</param>
+        /// <exception cref="ArgumentException">Both <paramref name="content"/> and <paramref name="summary"/> is <c>null</c>.</exception>
+        public async Task<ParsedContentInfo> ParseContentAsync(string content, string summary, string title,
+            string contentModel, ParsingOptions options)
+        {
+            if (content == null && summary == null) throw new ArgumentException(nameof(content));
+            var p = BuildParsingParams(options);
+            p["text"] = content;
+            p["summary"] = summary;
+            p["title"] = title;
+            p["title"] = title;
+            var jobj = await PostValuesAsync(p);
+            var parsed = ((JObject) jobj["parse"]).ToObject<ParsedContentInfo>(Utility.WikiJsonSerializer);
+            return parsed;
+        }
+
+        #endregion
+
         /// <summary>
         /// 返回表示当前对象的字符串。
         /// </summary>
@@ -770,7 +903,7 @@ namespace WikiClientLibrary
         /// </returns>
         public override string ToString()
         {
-            return string.IsNullOrEmpty(SiteInfo.SiteName) ? options.ApiEndpoint : SiteInfo.SiteName;
+            return string.IsNullOrEmpty(SiteInfo.SiteName) ? siteOptions.ApiEndpoint : SiteInfo.SiteName;
         }
     }
 
@@ -783,9 +916,55 @@ namespace WikiClientLibrary
         None = 0,
 
         /// <summary>
-        /// Return the target page when meeting redirects. May return fewer than limit results.
+        /// Return the target page when meeting redirects.
+        /// This may cause OpenSearch return fewer results than limitation.
         /// </summary>
         ResolveRedirects = 1,
+    }
+
+    /// <summary>
+    /// Options for page or content parsing.
+    /// </summary>
+    [Flags]
+    public enum ParsingOptions
+    {
+        None = 0,
+        /// <summary>
+        /// When parsing by page title or page id, returns the target page when meeting redirects.
+        /// </summary>
+        ResolveRedirects = 1,
+        /// <summary>
+        /// Disable table of contents in output. (1.23+)
+        /// </summary>
+        DisableToc = 2,
+        /// <summary>
+        /// Parse in preview mode. (1.22+)
+        /// </summary>
+        Preview = 4,
+        /// <summary>
+        /// Parse in section preview mode (enables preview mode too). (1.22+)
+        /// </summary>
+        SectionPreview = 8,
+        /// <summary>
+        /// Return parse output in a format suitable for mobile devices. (?)
+        /// </summary>
+        MobileFormat = 16,
+        /// <summary>
+        /// Disable images in mobile output. (?)
+        /// </summary>
+        NoImages = 0x20,
+        /// <summary>
+        /// Gives the limit report. (1.23+)
+        /// </summary>
+        LimitReport = 0x40,
+        /// <summary>
+        /// Includes language links supplied by extensions. (1.22+)
+        /// </summary>
+        EffectiveLanguageLinks = 0x80,
+        /// <summary>
+        /// Gives the templates and other transcluded pages/modules in the parsed wikitext.
+        /// </summary>
+        TranscludedPages = 0x100,
     }
 
     /// <summary>

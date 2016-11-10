@@ -57,7 +57,7 @@ namespace WpfTestApplication1
             ParsedContentInfo parsed;
             try
             {
-                parsed = await site.ParsePage(title, true);
+                parsed = await site.ParsePageAsync(title, ParsingOptions.DisableToc);
             }
             catch (Exception ex)
             {
@@ -73,7 +73,7 @@ namespace WpfTestApplication1
             Action<string, string> fillParam = (name, value) => text = text.Replace("<!-- " + name + " -->", value);
             fillParam("SITE NAME", site.SiteInfo.SiteName);
             fillParam("DISPLAY TITLE", parsed.DisplayTitle);
-            fillParam("CONTENT", parsed.Text);
+            fillParam("CONTENT", parsed.Content);
             if (token.IsCancellationRequested) goto CLEANUP;
             PageFrame.NavigateToString(text);
             if (token.IsCancellationRequested) goto CLEANUP;
