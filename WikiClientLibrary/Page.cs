@@ -278,8 +278,9 @@ namespace WikiClientLibrary
             var id = Convert.ToInt32(prop.Name);
             // I'm not sure whether this assertion holds.
             Debug.Assert(id != 0);
-            // The page has been overwritten, or deleted.
-            if (Id != 0 && !AreIdEquals(Id, id))
+            if ((options & PageQueryOptions.ResolveRedirects) != PageQueryOptions.ResolveRedirects
+                && Id != 0 && !AreIdEquals(Id, id))
+                // The page has been overwritten, or deleted.
                 WikiClient.Logger?.Warn($"Detected change of page id: {Title}, {Id}");
             Id = id;
             var page = (JObject) prop.Value;
