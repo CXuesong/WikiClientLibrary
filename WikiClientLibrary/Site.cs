@@ -661,7 +661,7 @@ namespace WikiClientLibrary
         /// <remarks>This overload will allow up to 20 results to be returned, and will not resolve redirects.</remarks>
         public Task<IList<OpenSearchResultEntry>> OpenSearchAsync(string searchExpression)
         {
-            return OpenSearchAsync(searchExpression, 20, OpenSearchOptions.None);
+            return OpenSearchAsync(searchExpression, 20, 0, OpenSearchOptions.None);
         }
 
 
@@ -675,7 +675,7 @@ namespace WikiClientLibrary
         /// <remarks>This overload will allow up to 20 results to be returned.</remarks>
         public Task<IList<OpenSearchResultEntry>> OpenSearchAsync(string searchExpression, OpenSearchOptions options)
         {
-            return OpenSearchAsync(searchExpression, 20, options);
+            return OpenSearchAsync(searchExpression, 20, 0, options);
         }
 
         /// <summary>
@@ -689,7 +689,7 @@ namespace WikiClientLibrary
         /// <remarks>This overload will not resolve redirects.</remarks>
         public Task<IList<OpenSearchResultEntry>> OpenSearchAsync(string searchExpression, int maxCount)
         {
-            return OpenSearchAsync(searchExpression, maxCount, OpenSearchOptions.None);
+            return OpenSearchAsync(searchExpression, maxCount, 0, OpenSearchOptions.None);
         }
 
         /// <summary>
@@ -700,8 +700,22 @@ namespace WikiClientLibrary
         /// <param name="maxCount">Maximum number of results to return. No more than 500 (5000 for bots) allowed.</param>
         /// <param name="options">Other options.</param>
         /// <returns>Search result.</returns>
-        public async Task<IList<OpenSearchResultEntry>> OpenSearchAsync(string searchExpression,
-            int maxCount, OpenSearchOptions options)
+        public Task<IList<OpenSearchResultEntry>> OpenSearchAsync(string searchExpression, int maxCount, OpenSearchOptions options)
+        {
+            return OpenSearchAsync(searchExpression, maxCount, 0, options);
+        }
+
+        /// <summary>
+        /// Performs an opensearch and get results, often used for search box suggestions.
+        /// (MediaWiki 1.25 or OpenSearch extension)
+        /// </summary>
+        /// <param name="searchExpression">The beginning part of the title to be searched.</param>
+        /// <param name="maxCount">Maximum number of results to return. No more than 500 (5000 for bots) allowed.</param>
+        /// <param name="defaultNamespaceId">Default namespace id to search. See <see cref="BuiltInNamespaces"/> for a list of possible namespace ids.</param>
+        /// <param name="options">Other options.</param>
+        /// <returns>Search result.</returns>
+        public async Task<IList<OpenSearchResultEntry>> OpenSearchAsync(string searchExpression, int maxCount,
+            int defaultNamespaceId, OpenSearchOptions options)
         {
             /*
 [
@@ -725,6 +739,7 @@ namespace WikiClientLibrary
             var jresult = await PostValuesAsync(new
             {
                 action = "opensearch",
+                @namespace = defaultNamespaceId,
                 search = searchExpression,
                 limit = maxCount,
                 redirects = (options & OpenSearchOptions.ResolveRedirects) == OpenSearchOptions.ResolveRedirects,
