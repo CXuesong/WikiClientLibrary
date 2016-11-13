@@ -144,6 +144,7 @@ namespace WikiClientLibrary
         /// <summary>
         /// Content model. (MediaWiki 1.22)
         /// </summary>
+        /// <remarks>See <see cref="ContentModels"/> for a list of commonly-used content model names.</remarks>
         public string ContentModel { get; private set; }
 
         /// <summary>

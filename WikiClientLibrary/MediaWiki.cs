@@ -199,6 +199,24 @@ namespace WikiClientLibrary
         }
     }
 
+    /// <summary>
+    /// Contains commonly-used content model names for MediaWiki pages. (MediaWiki 1.22+)
+    /// </summary>
+    public static class ContentModels
+    {
+        /// <summary>
+        /// Normal wikitext.
+        /// </summary>
+        public const string Wikitext = "wikitext";
+        public const string JavaScript = "javascript";
+        public const string Css = "css";
+        /// <summary>
+        /// Scribunto LUA model.
+        /// </summary>
+        public const string Scribunto = "Scribunto";
+
+    }
+
     internal static class MediaWikiUtility
     {
         private static readonly Regex ProtocolMatcher = new Regex(@"^[A-Za-z\-]+(?=://)");
