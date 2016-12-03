@@ -52,6 +52,11 @@ namespace WikiClientLibrary.Generators
         public string UserName { get; set; }
 
         /// <summary>
+        /// Do not list changes made by this user.
+        /// </summary>
+        public string ExcludedUserName { get; set; }
+
+        /// <summary>
         /// Only list changes tagged with this tag.
         /// </summary>
         public string Tag { get; set; }
@@ -119,6 +124,7 @@ namespace WikiClientLibrary.Generators
             addParam("rcend", EndTime);
             addParam("rcnamespace", NamespaceIds == null ? null : string.Join("|", NamespaceIds));
             addParam("rcuser", UserName);
+            addParam("rcexcludeuser", ExcludedUserName);
             addParam("rctag", Tag);
             addParam("rctype", ParseRecentChangesTypes(TypeFilters));
             addParam("rcshow", ParseFilters());
