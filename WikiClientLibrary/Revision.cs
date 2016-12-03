@@ -150,7 +150,7 @@ namespace WikiClientLibrary
             if (Minor) Flags |= RevisionFlags.Minor;
             if (Bot) Flags |= RevisionFlags.Bot;
             if (New) Flags |= RevisionFlags.Create;
-            if (Anon) Flags |= RevisionFlags.Annonymous;
+            if (Anon) Flags |= RevisionFlags.Anonymous;
             HiddenFields = RevisionHiddenFields.None;
             if (UserHidden) HiddenFields |= RevisionHiddenFields.User;
         }
@@ -183,7 +183,7 @@ namespace WikiClientLibrary
         /// </summary>
         Bot = 2,
         Create = 4,
-        Annonymous = 8,
+        Anonymous = 8,
     }
 
     /// <summary>

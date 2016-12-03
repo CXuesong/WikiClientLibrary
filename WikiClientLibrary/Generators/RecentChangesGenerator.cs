@@ -65,7 +65,7 @@ namespace WikiClientLibrary.Generators
 
         public PropertyFilterOption BotFilter { get; set; }
 
-        public PropertyFilterOption AnnonymousFilter { get; set; }
+        public PropertyFilterOption AnonymousFilter { get; set; }
 
         /// <summary>
         /// Whether to list edits to pages that are currently redirects.
@@ -101,7 +101,7 @@ namespace WikiClientLibrary.Generators
         {
             var types = MinorFilter.ToString("|minor", "|!minor", "")
                         + BotFilter.ToString("|bot", "|!bot", "")
-                        + AnnonymousFilter.ToString("|anon", "|!anon", "")
+                        + AnonymousFilter.ToString("|anon", "|!anon", "")
                         + RedirectsFilter.ToString("|redirect", "|!redirect", "")
                         + PatrolledFilter.ToString("|patrolled", "|!patrolled", "");
             return types.Length > 1 ? types.Substring(1) : null;

@@ -154,7 +154,7 @@ namespace WikiClientLibrary
             if (Minor) Flags |= RevisionFlags.Minor;
             if (Bot) Flags |= RevisionFlags.Bot;
             if (New) Flags |= RevisionFlags.Create;
-            if (Anon) Flags |= RevisionFlags.Annonymous;
+            if (Anon) Flags |= RevisionFlags.Anonymous;
             if (Patrolled) PatrolStatus = PatrolStatus.Patrolled;
             else if (Unpatrolled) PatrolStatus = PatrolStatus.Unpatrolled;
             else PatrolStatus = PatrolStatus.Unknown;

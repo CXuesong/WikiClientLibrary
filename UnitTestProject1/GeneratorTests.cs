@@ -149,7 +149,7 @@ namespace UnitTestProject1
                 LastRevisionsOnly = true,
                 // BotFilter = PropertyFilterOption.WithProperty,
                 MinorFilter = PropertyFilterOption.WithProperty,
-                AnnonymousFilter = PropertyFilterOption.WithoutProperty,
+                AnonymousFilter = PropertyFilterOption.WithoutProperty,
                 TypeFilters = RecentChangesFilterTypes.Create | RecentChangesFilterTypes.Edit,
             };
             var pages = generator.EnumPages(PageQueryOptions.FetchContent).Take(100).ToList();
@@ -159,7 +159,7 @@ namespace UnitTestProject1
             {
                 var flags = p.LastRevision.Flags;
                 Assert.IsTrue(flags != RevisionFlags.None);
-                Assert.IsFalse(flags.HasFlag(RevisionFlags.Annonymous));
+                Assert.IsFalse(flags.HasFlag(RevisionFlags.Anonymous));
                 Assert.IsTrue(flags.HasFlag(RevisionFlags.Minor));
             }
         }
