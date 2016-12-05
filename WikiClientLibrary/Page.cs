@@ -1,10 +1,12 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Dynamic;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.Serialization;
 using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
@@ -177,7 +179,7 @@ namespace WikiClientLibrary
         /// <summary>
         /// Gets the properties of the page.
         /// </summary>
-        public PagePropertyInfo PageProperties { get; private set; }
+        public PagePropertyCollection PageProperties { get; private set; }
 
 
         /// <summary>
@@ -191,7 +193,7 @@ namespace WikiClientLibrary
         /// <exception cref="InvalidOperationException">The page does not exist.</exception>
         /// <remarks>
         /// It's recommended to use this method instead of accessing
-        /// <see cref="PagePropertyInfo.Disambiguation"/> directly. Because the latter
+        /// <see cref="PagePropertyCollection.Disambiguation"/> directly. Because the latter
         /// property is available only if there's Disambiguator extension installed
         /// on the MediaWiki site.
         /// </remarks>
@@ -314,8 +316,8 @@ namespace WikiClientLibrary
                     Utility.WikiJsonSerializer);
                 RestrictionTypes = jpage["restrictiontypes"]?.ToObject<IReadOnlyCollection<string>>(
                     Utility.WikiJsonSerializer) ?? EmptyStrings;
-                PageProperties = jpage["pageprops"]?.ToObject<PagePropertyInfo>(Utility.WikiJsonSerializer)
-                                 ?? PagePropertyInfo.Empty;
+                PageProperties = jpage["pageprops"]?.ToObject<PagePropertyCollection>(Utility.WikiJsonSerializer)
+                                 ?? PagePropertyCollection.Empty;
             }
             else
             {
@@ -891,34 +893,152 @@ namespace WikiClientLibrary
     }
 
     /// <summary>
-    /// Contains additional page properties.
+    /// A read-only collection Containing additional page properties.
     /// </summary>
-    [JsonObject(MemberSerialization.OptIn)]
-    public class PagePropertyInfo
+    [JsonDictionary]
+    public class PagePropertyCollection : IDictionary<string, string>
     {
         /// <summary>
         /// An empty instance.
         /// </summary>
-        internal static readonly PagePropertyInfo Empty = new PagePropertyInfo();
+        internal static readonly PagePropertyCollection Empty = new PagePropertyCollection();
+
+        static PagePropertyCollection()
+        {
+            Empty._IsReadOnly = true;
+        }
+
+        private readonly IDictionary<string, string> myDict = new ConcurrentDictionary<string, string>();
+        private bool _IsReadOnly = false;
 
         /// <summary>
         /// Determines whether the page is a disambiguation page.
         /// This is raw value and only works when Extension:Disambiguator presents.
         /// Please use <see cref="Page.IsDisambiguationAsync"/> instead.
         /// </summary>
-        [JsonProperty]
-        public bool Disambiguation { get; private set; }
+        public bool Disambiguation => this["disambiguation"] != null;
 
-        [JsonProperty]
-        public string DisplayTitle { get; private set; }
+        public string DisplayTitle => this["DisplayTitle"];
 
-        [JsonProperty("page_image")]
-        public string PageImage { get; private set; }
+        public string PageImage => this["page_image"];
 
-        [JsonProperty("hiddencat")]
-        public bool IsHiddenCategory { get; private set; }
+        public bool IsHiddenCategory => this["hiddencat"] != null;
 
-        [JsonExtensionData]
-        public IDictionary<string, object> Others { get; private set; }
+        /// <summary>
+        /// Gets the count of all properties.
+        /// </summary>
+        public int Count => myDict.Count;
+
+        /// <summary>
+        /// Gets the value of the specified property.
+        /// </summary>
+        /// <param name="key">The property name.</param>
+        /// <returns>The <see cref="string"/> representation of the property value, OR <c>null</c> if such property cannot be found.</returns>
+        public string this[string key]
+        {
+            get
+            {
+                string value;
+                if (myDict.TryGetValue(key, out value)) return value;
+                return null;
+            }
+        } 
+
+        /// <inheritdoc />
+        public ICollection<string> Keys => myDict.Keys;
+
+        [OnDeserialized]
+        private void OnDeserialized(StreamingContext context)
+        {
+            _IsReadOnly = true;
+        }
+
+        #region Explict Interface Implementations
+
+        /// <inheritdoc />
+        IEnumerator<KeyValuePair<string, string>> IEnumerable<KeyValuePair<string, string>>.GetEnumerator()
+        {
+            return myDict.GetEnumerator();
+        }
+
+        /// <inheritdoc />
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return ((IEnumerable) myDict).GetEnumerator();
+        }
+
+        /// <inheritdoc />
+        void ICollection<KeyValuePair<string, string>>.Add(KeyValuePair<string, string> item)
+        {
+            throw new NotSupportedException();
+        }
+
+        /// <inheritdoc />
+        void ICollection<KeyValuePair<string, string>>.Clear()
+        {
+            throw new NotSupportedException();
+        }
+
+        /// <inheritdoc />
+        bool ICollection<KeyValuePair<string, string>>.Contains(KeyValuePair<string, string> item)
+        {
+            return myDict.Contains(item);
+        }
+
+        /// <inheritdoc />
+        void ICollection<KeyValuePair<string, string>>.CopyTo(KeyValuePair<string, string>[] array, int arrayIndex)
+        {
+            myDict.CopyTo(array, arrayIndex);
+        }
+
+        /// <inheritdoc />
+        bool ICollection<KeyValuePair<string, string>>.Remove(KeyValuePair<string, string> item)
+        {
+            throw new NotSupportedException();
+        }
+
+        /// <inheritdoc />
+        bool ICollection<KeyValuePair<string, string>>.IsReadOnly => _IsReadOnly;
+
+        /// <inheritdoc />
+        void IDictionary<string, string>.Add(string key, string value)
+        {
+            if (_IsReadOnly) throw new NotSupportedException();
+            myDict.Add(key, value);
+        }
+
+        /// <inheritdoc />
+        bool IDictionary<string, string>.Remove(string key)
+        {
+            throw new NotSupportedException();
+        }
+
+        /// <inheritdoc />
+        bool IDictionary<string, string>.ContainsKey(string key)
+        {
+            return myDict.ContainsKey(key);
+        }
+
+        /// <inheritdoc />
+        bool IDictionary<string, string>.TryGetValue(string key, out string value)
+        {
+            return myDict.TryGetValue(key, out value);
+        }
+
+        /// <inheritdoc />
+        string IDictionary<string, string>.this[string key]
+        {
+            get { return this[key]; }
+            set
+            {
+                if (_IsReadOnly) throw new NotSupportedException();
+                myDict[key] = value;
+            }
+        }
+
+        /// <inheritdoc />
+        ICollection<string> IDictionary<string, string>.Values => myDict.Values;
+
+        #endregion
     }
 }
