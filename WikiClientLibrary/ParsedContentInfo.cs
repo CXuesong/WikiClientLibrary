@@ -267,13 +267,28 @@ namespace WikiClientLibrary
         /// <summary>
         /// Limit report name.
         /// </summary>
+        /// <remarks>E.g. smw-limitreport-intext-parsertime, limitreport-templateargumentsize .</remarks>
         [JsonProperty]
         public string Name { get; private set; }
 
         /// <summary>
-        /// Limit report content, as a collection of JSON.
+        /// Current value of the report.
         /// </summary>
-        [JsonExtensionData]
-        public IDictionary<string, JToken> Content { get; private set; }
+        [JsonProperty("0")]
+        public double Value { get; private set; }
+
+        /// <summary>
+        /// Value limit of the report, if available.
+        /// </summary>
+        [JsonProperty("1")]
+        public double? Limit { get; private set; }
+
+        /// <inheritdoc />
+        public override string ToString()
+        {
+            var s = Name + ": " + Value;
+            if (Limit != null) s += "/" + Limit;
+            return s;
+        }
     }
 }

@@ -45,17 +45,17 @@ namespace UnitTestProject1
             var site = WpTestSite;
             var result = AwaitSync(
                 site.ParseContentAsync("{{DISPLAYTITLE:''TITLE''}}\nText '''Text'''\n\n{{PAGENAME}}", "Summary.",
-                    "TITLE", ParsingOptions.LimitReport));
+                    "TITLE", ParsingOptions.DisableLimitReport));
             ShallowTrace(result, 3);
-            Assert.AreEqual(result.Title, "TITLE");
-            Assert.AreEqual(result.DisplayTitle, "<i>TITLE</i>");
-            Assert.AreEqual(result.Content.Trim(), "<p>Text <b>Text</b></p>\n<p>TITLE</p>");
+            Assert.AreEqual("TITLE", result.Title);
+            Assert.AreEqual("<i>TITLE</i>", result.DisplayTitle);
+            Assert.AreEqual("<p>Text <b>Text</b></p>\n<p>TITLE</p>", result.Content.Trim());
+            /////////////////////
             result = AwaitSync(site.ParseContentAsync("{{ambox}}", "Summary.", "TITLE",
                 ParsingOptions.LimitReport | ParsingOptions.TranscludedPages));
             ShallowTrace(result, 4);
             Assert.IsTrue(result.TranscludedPages.Any(p => p.Title == "Template:Ambox"));
-            Assert.IsTrue((int) result.ParserLimitReports.First(r => r.Name == "limitreport")
-                              .Content["expansiondepth"]["value"] > 1);
+            Assert.IsTrue((int) result.ParserLimitReports.First(r => r.Name == "limitreport-expansiondepth").Value > 1);
         }
     }
 }

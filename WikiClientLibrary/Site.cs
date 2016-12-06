@@ -893,6 +893,13 @@ namespace WikiClientLibrary
                 p["prop"] += "|templates";
             if ((options & ParsingOptions.LimitReport) == ParsingOptions.LimitReport)
                 p["prop"] += "|limitreportdata";
+            if ((options & ParsingOptions.DisableLimitReport) == ParsingOptions.DisableLimitReport)
+            {
+                if (SiteInfo.Version >= new Version("1.26"))
+                    p["disablelimitreport"] = true;
+                else
+                    p["disablepp"] = true;
+            }
             return p;
         }
 
@@ -1138,17 +1145,25 @@ namespace WikiClientLibrary
         /// </summary>
         NoImages = 0x20,
         /// <summary>
-        /// Gives the limit report. (1.23+)
+        /// Gives the structured limit report. (1.23+)
+        /// This flag fills <see cref="ParsedContentInfo.ParserLimitReports"/>.
         /// </summary>
         LimitReport = 0x40,
         /// <summary>
+        /// Omit the limit report ("NewPP limit report") from the parser output. (1.17+, disablepp; 1.23+, disablelimitreport)
+        /// <see cref="ParsedContentInfo.ParserLimitReports"/> will be empty if both this flag and <see cref="LimitReport"/> is set.
+        /// </summary>
+        /// <remarks>By default, the limit report will be included as comment in the parsed HTML content.
+        /// This flag can supress such output.</remarks>
+        DisableLimitReport = 0x80,
+        /// <summary>
         /// Includes language links supplied by extensions. (1.22+)
         /// </summary>
-        EffectiveLanguageLinks = 0x80,
+        EffectiveLanguageLinks = 0x100,
         /// <summary>
         /// Gives the templates and other transcluded pages/modules in the parsed wikitext.
         /// </summary>
-        TranscludedPages = 0x100,
+        TranscludedPages = 0x200,
     }
 
     /// <summary>
