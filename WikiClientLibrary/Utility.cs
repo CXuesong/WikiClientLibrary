@@ -2,10 +2,12 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Dynamic;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Reflection;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
@@ -65,7 +67,7 @@ namespace WikiClientLibrary
             return IterateWikiStringValuePairs(values);
         }
 
-        private static string ToWikiQueryValue(object value)
+        public static string ToWikiQueryValue(object value)
         {
             if (value == null)
                 return null;
@@ -150,6 +152,29 @@ namespace WikiClientLibrary
                 default:
                     throw new ArgumentOutOfRangeException(nameof(value), value, null);
             }
+        }
+
+        /// <summary>
+        /// A cancellable version of StreamReader.ReadToEndAsync .
+        /// </summary>
+        public static async Task<string> ReadAllStringAsync(this Stream stream, CancellationToken cancellationToken)
+        {
+            const int BufferSize = 4*1024*1024;
+            if (stream == null) throw new ArgumentNullException(nameof(stream));
+            cancellationToken.ThrowIfCancellationRequested();
+            var buffer = new char[BufferSize];
+            var builder = new StringBuilder();
+            using (var reader = new StreamReader(stream, Encoding.UTF8, false, BufferSize))
+            {
+                int count ;
+                while ((count = await reader.ReadAsync(buffer, 0, BufferSize)) > 0)
+                {
+                    cancellationToken.ThrowIfCancellationRequested();
+                    builder.Append(buffer, 0, count);
+                }
+            }
+            cancellationToken.ThrowIfCancellationRequested();
+            return builder.ToString();
         }
 
         /// <summary>

@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.Serialization;
+using System.Threading;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 
@@ -40,7 +41,7 @@ namespace WikiClientLibrary
         /// <remarks>
         /// <para>The returned sequence will have the SAME order as specified in <paramref name="revisionIds"/>.</para>
         /// <para>The <see cref="Page"/> of returned <see cref="Revision"/> will be a valid object.
-        /// However, its <see cref="Page.LastRevision"/> and <see cref="Page.Text"/> will corresponds
+        /// However, its <see cref="Page.LastRevision"/> and <see cref="Page.Content"/> will corresponds
         /// to the lastest revision fetched in this invocation, and pages with the same title
         /// share the same reference.</para>
         /// <para>If there's invalid revision id in <paramref name="revIds"/>, an <see cref="ArgumentException"/>
@@ -48,7 +49,7 @@ namespace WikiClientLibrary
         /// </remarks>
         public static IAsyncEnumerable<Revision> FetchRevisionsAsync(Site site, params int[] revisionIds)
         {
-            return FetchRevisionsAsync(site, revisionIds, PageQueryOptions.FetchContent);
+            return FetchRevisionsAsync(site, revisionIds, PageQueryOptions.FetchContent, CancellationToken.None);
         }
 
         /// <summary>
@@ -57,7 +58,7 @@ namespace WikiClientLibrary
         /// <remarks>
         /// <para>The returned sequence will have the SAME order as specified in <paramref name="revisionIds"/>.</para>
         /// <para>The <see cref="Page"/> of returned <see cref="Revision"/> will be a valid object.
-        /// However, its <see cref="Page.LastRevision"/> and <see cref="Page.Text"/> will corresponds
+        /// However, its <see cref="Page.LastRevision"/> and <see cref="Page.Content"/> will corresponds
         /// to the lastest revision fetched in this invocation, and pages with the same title
         /// share the same reference.</para>
         /// <para>If there's invalid revision id in <paramref name="revIds"/>, an <see cref="ArgumentException"/>
@@ -65,7 +66,7 @@ namespace WikiClientLibrary
         /// </remarks>
         public static IAsyncEnumerable<Revision> FetchRevisionsAsync(Site site, IEnumerable<int> revisionIds)
         {
-            return FetchRevisionsAsync(site, revisionIds, PageQueryOptions.FetchContent);
+            return FetchRevisionsAsync(site, revisionIds, PageQueryOptions.FetchContent, CancellationToken.None);
         }
 
         /// <summary>
@@ -74,15 +75,32 @@ namespace WikiClientLibrary
         /// <remarks>
         /// <para>The returned sequence will have the SAME order as specified in <paramref name="revisionIds"/>.</para>
         /// <para>The <see cref="Page"/> of returned <see cref="Revision"/> will be a valid object.
-        /// However, its <see cref="Page.LastRevision"/> and <see cref="Page.Text"/> will corresponds
+        /// However, its <see cref="Page.LastRevision"/> and <see cref="Page.Content"/> will corresponds
         /// to the lastest revision fetched in this invocation, and pages with the same title
         /// share the same reference.</para>
-        /// <para>If there's invalid revision id in <paramref name="revIds"/>, an <see cref="ArgumentException"/>
+        /// <para>If there's invalid revision id in <paramref name="revisionIds"/>, an <see cref="ArgumentException"/>
         /// will be thrown while enumerating.</para>
         /// </remarks>
         public static IAsyncEnumerable<Revision> FetchRevisionsAsync(Site site, IEnumerable<int> revisionIds, PageQueryOptions options)
         {
-            return RequestManager.FetchRevisionsAsync(site, revisionIds, options);
+            return FetchRevisionsAsync(site, revisionIds, options, new CancellationToken());
+        }
+
+        /// <summary>
+        /// Fetch revisions by revid sequence.
+        /// </summary>
+        /// <remarks>
+        /// <para>The returned sequence will have the SAME order as specified in <paramref name="revisionIds"/>.</para>
+        /// <para>The <see cref="Page"/> of returned <see cref="Revision"/> will be a valid object.
+        /// However, its <see cref="Page.LastRevision"/> and <see cref="Page.Content"/> will corresponds
+        /// to the lastest revision fetched in this invocation, and pages with the same title
+        /// share the same reference.</para>
+        /// <para>If there's invalid revision id in <paramref name="revisionIds"/>, an <see cref="ArgumentException"/>
+        /// will be thrown while enumerating.</para>
+        /// </remarks>
+        public static IAsyncEnumerable<Revision> FetchRevisionsAsync(Site site, IEnumerable<int> revisionIds, PageQueryOptions options, CancellationToken cancellationToken)
+        {
+            return RequestManager.FetchRevisionsAsync(site, revisionIds, options, cancellationToken);
         }
 
         /// <summary>

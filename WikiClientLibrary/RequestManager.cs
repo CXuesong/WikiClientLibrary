@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -60,7 +61,7 @@ namespace WikiClientLibrary
         /// <summary>
         /// Refresh a sequence of pages.
         /// </summary>
-        public static async Task RefreshPagesAsync(IEnumerable<Page> pages, PageQueryOptions options)
+        public static async Task RefreshPagesAsync(IEnumerable<Page> pages, PageQueryOptions options, CancellationToken cancellationToken)
         {
             if (pages == null) throw new ArgumentNullException(nameof(pages));
             // You can even fetch pages from different sites.
@@ -76,7 +77,7 @@ namespace WikiClientLibrary
                     site.Logger?.Trace($"Fetching {partition.Count} pages.");
                     // We use titles to query pages.
                     queryParams["titles"] = string.Join("|", partition.Select(p => p.Title));
-                    var jobj = await site.PostValuesAsync(queryParams);
+                    var jobj = await site.PostValuesAsync(queryParams, cancellationToken);
                     // Process title normalization.
                     var normalized = jobj["query"]["normalized"]?.ToDictionary(n => (string) n["from"],
                         n => (string) n["to"]);
@@ -118,7 +119,7 @@ namespace WikiClientLibrary
         /// <remarks>
         /// <para>If there's invalid revision id in <paramref name="revIds"/>, an <see cref="ArgumentException"/> will be thrown while enumerating.</para>
         /// </remarks>
-        public static IAsyncEnumerable<Revision> FetchRevisionsAsync(Site site, IEnumerable<int> revIds, PageQueryOptions options)
+        public static IAsyncEnumerable<Revision> FetchRevisionsAsync(Site site, IEnumerable<int> revIds, PageQueryOptions options, CancellationToken cancellationToken)
         {
             if (revIds == null) throw new ArgumentNullException(nameof(revIds));
             var queryParams = GetPageFetchingParams(options);
@@ -132,7 +133,7 @@ namespace WikiClientLibrary
                 {
                     site.Logger?.Trace($"Fetching {partition.Count} revisions.");
                     queryParams["revids"] = string.Join("|", partition);
-                    var jobj = await site.PostValuesAsync(queryParams);
+                    var jobj = await site.PostValuesAsync(queryParams, cancellationToken);
                     var jpages = (JObject) jobj["query"]["pages"];
                     // Generate converters first
                     // Use DelegateCreationConverter to create Revision with constructor
@@ -215,7 +216,8 @@ namespace WikiClientLibrary
         /// Asynchronously purges the pages.
         /// </summary>
         /// <returns>A collection of pages that haven't been successfully purged, because of either missing or invalid titles.</returns>
-        public static async Task<IReadOnlyCollection<Page>> PurgePagesAsync(IEnumerable<Page> pages, PagePurgeOptions options)
+        public static async Task<IReadOnlyCollection<Page>> PurgePagesAsync(IEnumerable<Page> pages, 
+            PagePurgeOptions options, CancellationToken cancellationToken)
         {
             if (pages == null) throw new ArgumentNullException(nameof(pages));
             var failedPages = new List<Page>();
@@ -241,7 +243,7 @@ namespace WikiClientLibrary
                             forcerecursivelinkupdate =
                                 (options & PagePurgeOptions.ForceRecursiveLinkUpdate) ==
                                 PagePurgeOptions.ForceRecursiveLinkUpdate,
-                        });
+                        }, cancellationToken);
                         // Now check whether the pages have been purged successfully.
                         // Process title normalization.
                         var normalized = jresult["normalized"]?.ToDictionary(n => (string) n["from"],
@@ -272,7 +274,7 @@ namespace WikiClientLibrary
             return failedPages;
         }
 
-        public static async Task PatrolAsync(Site site, int? recentChangeId, int? revisionId)
+        public static async Task PatrolAsync(Site site, int? recentChangeId, int? revisionId, CancellationToken cancellationToken)
         {
             if (site == null) throw new ArgumentNullException(nameof(site));
             if (recentChangeId == null && revisionId == null)
@@ -291,7 +293,7 @@ namespace WikiClientLibrary
                     rcid = recentChangeId,
                     revid = revisionId,
                     token = token,
-                });
+                }, cancellationToken);
                 if (recentChangeId != null) Debug.Assert((int) jresult["patrol"]["rcid"] == recentChangeId.Value);
             }
             catch (OperationFailedException ex)
@@ -347,7 +349,7 @@ namespace WikiClientLibrary
             {
                 pa["modules"] = moduleName;
             }
-            var jresult = await site.PostValuesAsync(pa);
+            var jresult = await site.PostValuesAsync(pa, CancellationToken.None);
             var jmodules =
                 ((JObject) jresult["paraminfo"]).Properties().FirstOrDefault(p => p.Name.EndsWith("modules"))?.Value;
             // For now we use the method internally.

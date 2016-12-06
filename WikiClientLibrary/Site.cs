@@ -10,6 +10,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using WikiClientLibrary.Client;
 using System.Security;
+using System.Threading;
 
 namespace WikiClientLibrary
 {
@@ -96,7 +97,7 @@ namespace WikiClientLibrary
                 action = "query",
                 meta = "siteinfo",
                 siprop = "general|namespaces|namespacealiases|interwikimap|extensions"
-            });
+            }, CancellationToken.None);
             var qg = (JObject) jobj["query"]["general"];
             var ns = (JObject) jobj["query"]["namespaces"];
             var aliases = (JArray) jobj["query"]["namespacealiases"];
@@ -144,7 +145,7 @@ namespace WikiClientLibrary
                 action = "query",
                 meta = "userinfo",
                 uiprop = "blockinfo|groups|hasmsg|rights"
-            });
+            }, CancellationToken.None);
             _UserInfo = ((JObject) jobj["query"]["userinfo"]).ToObject<UserInfo>(Utility.WikiJsonSerializer);
             ListingPagingSize = _UserInfo.HasRight(UserRights.ApiHighLimits) ? 5000 : 500;
         }
@@ -243,12 +244,13 @@ namespace WikiClientLibrary
         /// Invokes API and get JSON result.
         /// </summary>
         /// <exception cref="InvalidActionException">Specified action is not supported.</exception>
+        /// <exception cref="OperationCanceledException">The operation has been cancelled via <paramref name="cancellationToken"/>.</exception>
         /// <exception cref="UnauthorizedOperationException">Permission denied.</exception>
         /// <exception cref="OperationFailedException">There's "error" node in returned JSON.</exception>
         /// <remarks>The request is sent via HTTP POST.</remarks>
-        public Task<JToken> PostValuesAsync(IEnumerable<KeyValuePair<string, string>> queryParams)
+        public Task<JToken> PostValuesAsync(IEnumerable<KeyValuePair<string, string>> queryParams, CancellationToken cancellationToken)
         {
-            return WikiClient.GetJsonAsync(siteOptions.ApiEndpoint, queryParams);
+            return WikiClient.GetJsonAsync(siteOptions.ApiEndpoint, queryParams, cancellationToken);
         }
 
 
@@ -256,18 +258,20 @@ namespace WikiClientLibrary
         /// Invoke API and get JSON result.
         /// </summary>
         /// <param name="queryParams">An object whose proeprty-value pairs will be converted into key-value pairs and sent.</param>
+        /// <param name="cancellationToken">The cancellation token that will be checked prior to completing the returned task.</param>
         /// <exception cref="InvalidActionException">Specified action is not supported.</exception>
+        /// <exception cref="OperationCanceledException">The operation has been cancelled via <paramref name="cancellationToken"/>.</exception>
         /// <exception cref="OperationFailedException">There's "error" node in returned JSON.</exception>
-        public Task<JToken> PostValuesAsync(object queryParams)
+        public Task<JToken> PostValuesAsync(object queryParams, CancellationToken cancellationToken)
         {
-            return WikiClient.GetJsonAsync(siteOptions.ApiEndpoint, queryParams);
+            return WikiClient.GetJsonAsync(siteOptions.ApiEndpoint, queryParams, cancellationToken);
         }
 
         // No, we cannot guarantee the returned value is JSON, so this function is internal.
         // It depends on caller's conscious.
-        internal Task<JToken> PostContentAsync(HttpContent postContent)
+        internal Task<JToken> PostContentAsync(HttpContent postContent, CancellationToken cancellationToken)
         {
-            return WikiClient.GetJsonAsync(siteOptions.ApiEndpoint, postContent);
+            return WikiClient.GetJsonAsync(siteOptions.ApiEndpoint, postContent, cancellationToken);
         }
 
         #endregion
@@ -289,14 +293,15 @@ namespace WikiClientLibrary
         /// Fetch tokens. (MediaWiki 1.24)
         /// </summary>
         /// <param name="tokenTypeExpr">Token types, joined by | .</param>
-        private async Task<JObject> FetchTokensAsync2(string tokenTypeExpr)
+        /// <param name="cancellationToken">The cancellation token that will be checked prior to completing the returned task.</param>
+        private async Task<JObject> FetchTokensAsync2(string tokenTypeExpr, CancellationToken cancellationToken)
         {
             var jobj = await PostValuesAsync(new
             {
                 action = "query",
                 meta = "tokens",
                 type = tokenTypeExpr,
-            });
+            }, cancellationToken);
             var warnings = jobj["warnings"]?["tokens"];
             if (warnings != null)
             {
@@ -313,7 +318,8 @@ namespace WikiClientLibrary
         /// Fetch tokens. (MediaWiki &lt; 1.24)
         /// </summary>
         /// <param name="tokenTypeExpr">Token types, joined by | .</param>
-        private async Task<JObject> FetchTokensAsync(string tokenTypeExpr)
+        /// <param name="cancellationToken"></param>
+        private async Task<JObject> FetchTokensAsync(string tokenTypeExpr, CancellationToken cancellationToken)
         {
             Debug.Assert(!tokenTypeExpr.Contains("patrol"));
             var jobj = await PostValuesAsync(new
@@ -322,7 +328,7 @@ namespace WikiClientLibrary
                 prop = "info",
                 titles = "Dummy Title",
                 intoken = tokenTypeExpr,
-            });
+            }, cancellationToken);
             var page = (JObject) ((JProperty) jobj["query"]["pages"].First).Value;
             return new JObject(page.Properties().Where(p => p.Name.EndsWith("token")));
         }
@@ -331,10 +337,11 @@ namespace WikiClientLibrary
         /// Request tokens for operations.
         /// </summary>
         /// <param name="tokenTypes">The names of token.</param>
+        /// <param name="cancellationToken">The cancellation token that will be checked prior to completing the returned task.</param>
         /// <remarks>See https://www.mediawiki.org/wiki/API:Tokens .</remarks>
-        public Task<IDictionary<string, string>> GetTokensAsync(IEnumerable<string> tokenTypes)
+        public Task<IDictionary<string, string>> GetTokensAsync(IEnumerable<string> tokenTypes, CancellationToken cancellationToken)
         {
-            return GetTokensAsync(tokenTypes, false);
+            return GetTokensAsync(tokenTypes, false, cancellationToken);
         }
 
         /// <summary>
@@ -342,9 +349,10 @@ namespace WikiClientLibrary
         /// </summary>
         /// <param name="tokenTypes">The names of token. Names should be as accurate as possible (E.g. use "edit" instead of "csrf").</param>
         /// <param name="forceRefetch">Whether to fetch token from server, regardless of the cache.</param>
+        /// <param name="cancellationToken">The cancellation token that will be checked prior to completing the returned task.</param>
         /// <exception cref="InvalidOperationException">One or more specified token types cannot be recognized.</exception>
         /// <remarks>See https://www.mediawiki.org/wiki/API:Tokens .</remarks>
-        public async Task<IDictionary<string, string>> GetTokensAsync(IEnumerable<string> tokenTypes, bool forceRefetch)
+        public async Task<IDictionary<string, string>> GetTokensAsync(IEnumerable<string> tokenTypes, bool forceRefetch, CancellationToken cancellationToken)
         {
             if (tokenTypes == null) throw new ArgumentNullException(nameof(tokenTypes));
             var tokenTypesList = tokenTypes as IReadOnlyList<string> ?? tokenTypes.ToList();
@@ -375,12 +383,12 @@ namespace WikiClientLibrary
                             meta = "recentchanges",
                             rctoken = "patrol",
                             rclimit = 1
-                        });
+                        }, cancellationToken);
                         _TokensCache["patrol"] = (string) jobj["query"]["recentchanges"]["patroltoken"];
                     }
                 }
                 if (pendingtokens.Count > 0)
-                    fetchedTokens = await FetchTokensAsync(string.Join("|", pendingtokens));
+                    fetchedTokens = await FetchTokensAsync(string.Join("|", pendingtokens), cancellationToken);
             }
             else
             {
@@ -396,7 +404,7 @@ namespace WikiClientLibrary
                 }
                 if (pendingtokens.Count > 0)
                 {
-                    fetchedTokens = await FetchTokensAsync2(string.Join("|", pendingtokens));
+                    fetchedTokens = await FetchTokensAsync2(string.Join("|", pendingtokens), cancellationToken);
                     var csrf = (string) fetchedTokens["csrftoken"];
                     if (csrf != null)
                     {
@@ -434,7 +442,7 @@ namespace WikiClientLibrary
         /// <remarks>See https://www.mediawiki.org/wiki/API:Tokens .</remarks>
         public Task<string> GetTokenAsync(string tokenType)
         {
-            return GetTokenAsync(tokenType, false);
+            return GetTokenAsync(tokenType, false, CancellationToken.None);
         }
 
         /// <summary>
@@ -443,12 +451,23 @@ namespace WikiClientLibrary
         /// <param name="tokenType">The name of token.</param>
         /// <param name="forceRefetch">Whether to fetch token from server, regardless of the cache.</param>
         /// <remarks>See https://www.mediawiki.org/wiki/API:Tokens .</remarks>
-        public async Task<string> GetTokenAsync(string tokenType, bool forceRefetch)
+        public Task<string> GetTokenAsync(string tokenType, bool forceRefetch)
+        {
+            return GetTokenAsync(tokenType, forceRefetch, new CancellationToken());
+        }
+
+        /// <summary>
+        /// Request a token for operation.
+        /// </summary>
+        /// <param name="tokenType">The name of token.</param>
+        /// <param name="forceRefetch">Whether to fetch token from server, regardless of the cache.</param>
+        /// <remarks>See https://www.mediawiki.org/wiki/API:Tokens .</remarks>
+        public async Task<string> GetTokenAsync(string tokenType, bool forceRefetch, CancellationToken cancellationToken)
         {
             if (tokenType == null) throw new ArgumentNullException(nameof(tokenType));
             if (tokenType.Contains("|"))
                 throw new ArgumentException("Pipe character in token type name.", nameof(tokenType));
-            var dict = await GetTokensAsync(new[] {tokenType}, forceRefetch);
+            var dict = await GetTokensAsync(new[] {tokenType}, forceRefetch, cancellationToken);
             return dict.Values.Single();
         }
 
@@ -465,7 +484,7 @@ namespace WikiClientLibrary
         /// <remarks>This operation will refresh <see cref="UserInfo"/>.</remarks>
         public Task LoginAsync(string userName, string password)
         {
-            return LoginAsync(userName, password, null);
+            return LoginAsync(userName, password, null, CancellationToken.None);
         }
 
         /// <summary>
@@ -476,7 +495,21 @@ namespace WikiClientLibrary
         /// <param name="domain">Domain name. <c>null</c> is usually a good choice.</param>
         /// <exception cref="ArgumentNullException">Either <paramref name="userName"/> or <paramref name="password"/> is <c>null</c> or empty.</exception>
         /// <remarks>This operation will refresh <see cref="UserInfo"/>.</remarks>
-        public async Task LoginAsync(string userName, string password, string domain)
+        public Task LoginAsync(string userName, string password, string domain)
+        {
+            return LoginAsync(userName, password, domain, new CancellationToken());
+        }
+
+        /// <summary>
+        /// Logins into the wiki site.
+        /// </summary>
+        /// <param name="userName">User name of the account.</param>
+        /// <param name="password">Password of the account.</param>
+        /// <param name="domain">Domain name. <c>null</c> is usually a good choice.</param>
+        /// <param name="cancellationToken">The cancellation token that will be checked prior to completing the returned task.</param>
+        /// <exception cref="ArgumentNullException">Either <paramref name="userName"/> or <paramref name="password"/> is <c>null</c> or empty.</exception>
+        /// <remarks>This operation will refresh <see cref="UserInfo"/>.</remarks>
+        public async Task LoginAsync(string userName, string password, string domain, CancellationToken cancellationToken)
         {
             // Note: this method may be invoked BEFORE the initialization of _SiteInfo.
             if (string.IsNullOrEmpty(userName)) throw new ArgumentNullException(nameof(userName));
@@ -486,7 +519,7 @@ namespace WikiClientLibrary
             Debug.Assert(siteOptions.ExplicitInfoRefresh || _SiteInfo != null);
             // For MedaiWiki 1.27+
             if (!siteOptions.ExplicitInfoRefresh && _SiteInfo.Version >= new Version("1.27"))
-                token = await GetTokenAsync("login", true);
+                token = await GetTokenAsync("login", true, cancellationToken);
             // For MedaiWiki < 1.27, We'll have to request twice.
             // If options.ExplicitInfoRefresh is true, we just treat it as MedaiWiki < 1.27,
             //  because any "query" operation might raise readapidenied error.
@@ -498,7 +531,7 @@ namespace WikiClientLibrary
                 lgpassword = password,
                 lgtoken = token,
                 lgdomain = domain,
-            });
+            }, cancellationToken);
             var result = (string) jobj["login"]["result"];
             string message = null;
             switch (result)
@@ -515,7 +548,7 @@ namespace WikiClientLibrary
                 case "Throttled":
                     var time = (int) jobj["login"]["wait"];
                     Logger?.Warn($"Throttled: {time}sec.");
-                    await Task.Delay(TimeSpan.FromSeconds(time));
+                    await Task.Delay(TimeSpan.FromSeconds(time), cancellationToken);
                     goto RETRY;
                 case "NeedToken":
                     token = (string) jobj["login"]["token"];
@@ -540,7 +573,7 @@ namespace WikiClientLibrary
             var jobj = await PostValuesAsync(new
             {
                 action = "logout",
-            });
+            }, CancellationToken.None);
             _TokensCache.Clear();
             if (siteOptions.ExplicitInfoRefresh)
                 _UserInfo = null;
@@ -552,16 +585,16 @@ namespace WikiClientLibrary
 
         #region Query
 
-        private IDictionary<string, string> _CachedMessages = new Dictionary<string, string>();
+        private readonly IDictionary<string, string> _CachedMessages = new Dictionary<string, string>();
 
-        private async Task<JArray> FetchMessagesAsync(string messagesExpr)
+        private async Task<JArray> FetchMessagesAsync(string messagesExpr, CancellationToken cancellationToken)
         {
             var jresult = await PostValuesAsync(new
             {
                 action = "query",
                 meta = "allmessages",
                 ammessages = messagesExpr,
-            });
+            }, cancellationToken);
             return (JArray) jresult["query"]["allmessages"];
             //return jresult.ToDictionary(m => , m => (string) m["*"]);
         }
@@ -581,9 +614,31 @@ namespace WikiClientLibrary
         /// <exception cref="InvalidOperationException">
         /// Trying to fetch all the messages with "*" input.
         /// </exception>
-        public async Task<IDictionary<string, string>> GetMessagesAsync(IEnumerable<string> messages)
+        public Task<IDictionary<string, string>> GetMessagesAsync(IEnumerable<string> messages)
+        {
+            return GetMessagesAsync(messages, new CancellationToken());
+        }
+
+        /// <summary>
+        /// Get the content of some or all MediaWiki interface messages.
+        /// </summary>
+        /// <param name="messages">A sequence of message names.</param>
+        /// <param name="cancellationToken">The cancellation token that will be checked prior to completing the returned task.</param>
+        /// <returns>
+        /// A dictionary of message name - message content pairs.
+        /// If some messages cannot be found, the corresponding value will be <c>null</c>.
+        /// </returns>
+        /// <exception cref="ArgumentException">
+        /// <paramref name="messages"/> contains <c>null</c> item.
+        /// OR one of the <paramref name="messages"/> contains pipe character (|).
+        /// </exception>
+        /// <exception cref="InvalidOperationException">
+        /// Trying to fetch all the messages with "*" input.
+        /// </exception>
+        public async Task<IDictionary<string, string>> GetMessagesAsync(IEnumerable<string> messages, CancellationToken cancellationToken)
         {
             if (messages == null) throw new ArgumentNullException(nameof(messages));
+            cancellationToken.ThrowIfCancellationRequested();
             var impending = new List<string>();
             var result = new Dictionary<string, string>();
             foreach (var m in messages)
@@ -600,7 +655,7 @@ namespace WikiClientLibrary
             }
             if (impending.Count > 0)
             {
-                var jr = await FetchMessagesAsync(string.Join("|", impending));
+                var jr = await FetchMessagesAsync(string.Join("|", impending), cancellationToken);
                 foreach (var entry in jr)
                 {
                     var name = (string) entry["name"];
@@ -628,24 +683,51 @@ namespace WikiClientLibrary
         /// <exception cref="InvalidOperationException">
         /// Trying to fetch all the messages with "*" input.
         /// </exception>
-        public async Task<string> GetMessageAsync(string message)
+        public Task<string> GetMessageAsync(string message)
+        {
+            return GetMessageAsync(message, new CancellationToken());
+        }
+
+        /// <summary>
+        /// Get the content of MediaWiki interface message.
+        /// </summary>
+        /// <param name="message">The message name.</param>
+        /// <param name="cancellationToken">The cancellation token that will be checked prior to completing the returned task.</param>
+        /// <returns>
+        /// The message content. OR <c>null</c> if the messages cannot be found.
+        /// </returns>
+        /// <exception cref="ArgumentException">
+        /// <paramref name="message"/> contains pipe character (|).
+        /// </exception>
+        /// <exception cref="InvalidOperationException">
+        /// Trying to fetch all the messages with "*" input.
+        /// </exception>
+        public async Task<string> GetMessageAsync(string message, CancellationToken cancellationToken)
         {
             if (message == null) throw new ArgumentNullException(nameof(message));
-            var result = await GetMessagesAsync(new[] {message});
+            var result = await GetMessagesAsync(new[] {message}, cancellationToken);
             return result.Values.FirstOrDefault();
         }
 
         /// <summary>
         /// Gets the statistical information of the MediaWiki site.
         /// </summary>
-        public async Task<SiteStatistics> GetStatisticsAsync()
+        public Task<SiteStatistics> GetStatisticsAsync()
+        {
+            return GetStatisticsAsync(new CancellationToken());
+        }
+
+        /// <summary>
+        /// Gets the statistical information of the MediaWiki site.
+        /// </summary>
+        public async Task<SiteStatistics> GetStatisticsAsync(CancellationToken cancellationToken)
         {
             var jobj = await PostValuesAsync(new
             {
                 action = "query",
                 meta = "siteinfo",
                 siprop = "statistics",
-            });
+            }, cancellationToken);
             var jstat = (JObject) jobj["query"]?["statistics"];
             if (jstat == null) throw new UnexpectedDataException();
             var parsed = jstat.ToObject<SiteStatistics>();
@@ -661,7 +743,7 @@ namespace WikiClientLibrary
         /// <remarks>This overload will allow up to 20 results to be returned, and will not resolve redirects.</remarks>
         public Task<IList<OpenSearchResultEntry>> OpenSearchAsync(string searchExpression)
         {
-            return OpenSearchAsync(searchExpression, 20, 0, OpenSearchOptions.None);
+            return OpenSearchAsync(searchExpression, 20, 0, OpenSearchOptions.None, CancellationToken.None);
         }
 
 
@@ -675,7 +757,7 @@ namespace WikiClientLibrary
         /// <remarks>This overload will allow up to 20 results to be returned.</remarks>
         public Task<IList<OpenSearchResultEntry>> OpenSearchAsync(string searchExpression, OpenSearchOptions options)
         {
-            return OpenSearchAsync(searchExpression, 20, 0, options);
+            return OpenSearchAsync(searchExpression, 20, 0, options, CancellationToken.None);
         }
 
         /// <summary>
@@ -689,7 +771,7 @@ namespace WikiClientLibrary
         /// <remarks>This overload will not resolve redirects.</remarks>
         public Task<IList<OpenSearchResultEntry>> OpenSearchAsync(string searchExpression, int maxCount)
         {
-            return OpenSearchAsync(searchExpression, maxCount, 0, OpenSearchOptions.None);
+            return OpenSearchAsync(searchExpression, maxCount, 0, OpenSearchOptions.None, CancellationToken.None);
         }
 
         /// <summary>
@@ -702,7 +784,22 @@ namespace WikiClientLibrary
         /// <returns>Search result.</returns>
         public Task<IList<OpenSearchResultEntry>> OpenSearchAsync(string searchExpression, int maxCount, OpenSearchOptions options)
         {
-            return OpenSearchAsync(searchExpression, maxCount, 0, options);
+            return OpenSearchAsync(searchExpression, maxCount, 0, options, CancellationToken.None);
+        }
+
+
+        /// <summary>
+        /// Performs an opensearch and get results, often used for search box suggestions.
+        /// (MediaWiki 1.25 or OpenSearch extension)
+        /// </summary>
+        /// <param name="searchExpression">The beginning part of the title to be searched.</param>
+        /// <param name="maxCount">Maximum number of results to return. No more than 500 (5000 for bots) allowed.</param>
+        /// <param name="options">Other options.</param>
+        /// <param name="cancellationToken">The cancellation token that will be checked prior to completing the returned task.</param>
+        /// <returns>Search result.</returns>
+        public Task<IList<OpenSearchResultEntry>> OpenSearchAsync(string searchExpression, int maxCount, OpenSearchOptions options, CancellationToken cancellationToken)
+        {
+            return OpenSearchAsync(searchExpression, maxCount, 0, options, cancellationToken);
         }
 
         /// <summary>
@@ -714,8 +811,24 @@ namespace WikiClientLibrary
         /// <param name="defaultNamespaceId">Default namespace id to search. See <see cref="BuiltInNamespaces"/> for a list of possible namespace ids.</param>
         /// <param name="options">Other options.</param>
         /// <returns>Search result.</returns>
-        public async Task<IList<OpenSearchResultEntry>> OpenSearchAsync(string searchExpression, int maxCount,
+        public Task<IList<OpenSearchResultEntry>> OpenSearchAsync(string searchExpression, int maxCount,
             int defaultNamespaceId, OpenSearchOptions options)
+        {
+            return OpenSearchAsync(searchExpression, maxCount, defaultNamespaceId, options, CancellationToken.None);
+        }
+
+        /// <summary>
+        /// Performs an opensearch and get results, often used for search box suggestions.
+        /// (MediaWiki 1.25 or OpenSearch extension)
+        /// </summary>
+        /// <param name="searchExpression">The beginning part of the title to be searched.</param>
+        /// <param name="maxCount">Maximum number of results to return. No more than 500 (5000 for bots) allowed.</param>
+        /// <param name="defaultNamespaceId">Default namespace id to search. See <see cref="BuiltInNamespaces"/> for a list of possible namespace ids.</param>
+        /// <param name="options">Other options.</param>
+        /// <param name="cancellationToken">The cancellation token that will be checked prior to completing the returned task.</param>
+        /// <returns>Search result.</returns>
+        public async Task<IList<OpenSearchResultEntry>> OpenSearchAsync(string searchExpression, int maxCount,
+            int defaultNamespaceId, OpenSearchOptions options, CancellationToken cancellationToken)
         {
             /*
 [
@@ -743,7 +856,7 @@ namespace WikiClientLibrary
                 search = searchExpression,
                 limit = maxCount,
                 redirects = (options & OpenSearchOptions.ResolveRedirects) == OpenSearchOptions.ResolveRedirects,
-            });
+            }, cancellationToken);
             var result = new List<OpenSearchResultEntry>();
             var titles = (JArray) jresult[1];
             var descs = jresult[2] as JArray;
@@ -791,7 +904,7 @@ namespace WikiClientLibrary
         /// <remarks>This overload will not follow the redirects.</remarks>
         public Task<ParsedContentInfo> ParsePageAsync(string title)
         {
-            return ParsePageAsync(title, ParsingOptions.None);
+            return ParsePageAsync(title, ParsingOptions.None, CancellationToken.None);
         }
 
         /// <summary>
@@ -800,12 +913,24 @@ namespace WikiClientLibrary
         /// <param name="title">Title of the page to be parsed.</param>
         /// <param name="options">Options for parsing.</param>
         /// <exception cref="ArgumentNullException"><paramref name="title"/> is <c>null</c>.</exception>
-        public async Task<ParsedContentInfo> ParsePageAsync(string title, ParsingOptions options)
+        public Task<ParsedContentInfo> ParsePageAsync(string title, ParsingOptions options)
+        {
+            return ParsePageAsync(title, options, new CancellationToken());
+        }
+
+        /// <summary>
+        /// Parsing the specific page, gets HTML and more information. (MediaWiki 1.12)
+        /// </summary>
+        /// <param name="title">Title of the page to be parsed.</param>
+        /// <param name="options">Options for parsing.</param>
+        /// <param name="cancellationToken">The cancellation token that will be checked prior to completing the returned task.</param>
+        /// <exception cref="ArgumentNullException"><paramref name="title"/> is <c>null</c>.</exception>
+        public async Task<ParsedContentInfo> ParsePageAsync(string title, ParsingOptions options, CancellationToken cancellationToken)
         {
             if (string.IsNullOrEmpty(title)) throw new ArgumentNullException(nameof(title));
             var p = BuildParsingParams(options);
             p["page"] = title;
-            var jobj = await PostValuesAsync(p);
+            var jobj = await PostValuesAsync(p, cancellationToken);
             var parsed = ((JObject)jobj["parse"]).ToObject<ParsedContentInfo>(Utility.WikiJsonSerializer);
             return parsed;
         }
@@ -818,7 +943,7 @@ namespace WikiClientLibrary
         /// <remarks>This overload will not follow the redirects.</remarks>
         public Task<ParsedContentInfo> ParsePageAsync(int id)
         {
-            return ParsePageAsync(id, ParsingOptions.None);
+            return ParsePageAsync(id, ParsingOptions.None, CancellationToken.None);
         }
 
         /// <summary>
@@ -827,12 +952,24 @@ namespace WikiClientLibrary
         /// <param name="id">Id of the page to be parsed.</param>
         /// <param name="options">Options for parsing.</param>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="id"/> is zero or negative.</exception>
-        public async Task<ParsedContentInfo> ParsePageAsync(int id, ParsingOptions options)
+        public Task<ParsedContentInfo> ParsePageAsync(int id, ParsingOptions options)
+        {
+            return ParsePageAsync(id, options, CancellationToken.None);
+        }
+
+        /// <summary>
+        /// Parsing the specific page, gets HTML and more information. (MediaWiki 1.12)
+        /// </summary>
+        /// <param name="id">Id of the page to be parsed.</param>
+        /// <param name="options">Options for parsing.</param>
+        /// <param name="cancellationToken">The cancellation token that will be checked prior to completing the returned task.</param>
+        /// <exception cref="ArgumentOutOfRangeException"><paramref name="id"/> is zero or negative.</exception>
+        public async Task<ParsedContentInfo> ParsePageAsync(int id, ParsingOptions options, CancellationToken cancellationToken)
         {
             if (id <= 0) throw new ArgumentOutOfRangeException(nameof(id));
             var p = BuildParsingParams(options);
             p["pageid"] = id;
-            var jobj = await PostValuesAsync(p);
+            var jobj = await PostValuesAsync(p, cancellationToken);
             var parsed = ((JObject)jobj["parse"]).ToObject<ParsedContentInfo>(Utility.WikiJsonSerializer);
             return parsed;
         }
@@ -844,7 +981,7 @@ namespace WikiClientLibrary
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="revId"/> is zero or negative.</exception>
         public Task<ParsedContentInfo> ParseRevisionAsync(int revId)
         {
-            return ParseRevisionAsync(revId, ParsingOptions.None);
+            return ParseRevisionAsync(revId, ParsingOptions.None, CancellationToken.None);
         }
 
         /// <summary>
@@ -853,12 +990,24 @@ namespace WikiClientLibrary
         /// <param name="revId">Id of the revision to be parsed.</param>
         /// <param name="options">Options for parsing.</param>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="revId"/> is zero or negative.</exception>
-        public async Task<ParsedContentInfo> ParseRevisionAsync(int revId, ParsingOptions options)
+        public Task<ParsedContentInfo> ParseRevisionAsync(int revId, ParsingOptions options)
+        {
+            return ParseRevisionAsync(revId, options, new CancellationToken());
+        }
+
+        /// <summary>
+        /// Parsing the specific page revision, gets HTML and more information. (MediaWiki 1.12)
+        /// </summary>
+        /// <param name="revId">Id of the revision to be parsed.</param>
+        /// <param name="options">Options for parsing.</param>
+        /// <param name="cancellationToken">The cancellation token that will be checked prior to completing the returned task.</param>
+        /// <exception cref="ArgumentOutOfRangeException"><paramref name="revId"/> is zero or negative.</exception>
+        public async Task<ParsedContentInfo> ParseRevisionAsync(int revId, ParsingOptions options, CancellationToken cancellationToken)
         {
             if (revId <= 0) throw new ArgumentOutOfRangeException(nameof(revId));
             var p = BuildParsingParams(options);
             p["oldid"] = revId;
-            var jobj = await PostValuesAsync(p);
+            var jobj = await PostValuesAsync(p, cancellationToken);
             var parsed = ((JObject)jobj["parse"]).ToObject<ParsedContentInfo>(Utility.WikiJsonSerializer);
             return parsed;
         }
@@ -878,24 +1027,44 @@ namespace WikiClientLibrary
         /// <exception cref="ArgumentException">Both <paramref name="content"/> and <paramref name="summary"/> is <c>null</c>.</exception>
         public Task<ParsedContentInfo> ParseContentAsync(string content, string summary, string title, ParsingOptions options)
         {
-            return ParseContentAsync(content, summary, title, null, options);
+            return ParseContentAsync(content, summary, title, null, options, CancellationToken.None);
         }
 
         /// <summary>
         /// Parsing the specific page content and/or summary, gets HTML and more information. (MediaWiki 1.12)
         /// </summary>
         /// <param name="content">The content to parse.</param>
-        /// <param name="summary">The summary to parse.</param>
+        /// <param name="summary">The summary to parse. Can be <c>null</c>.</param>
         /// <param name="title">Act like the wikitext is on this page.
-        /// This only really matters when parsing links to the page itself or subpages,
-        /// or when using magic words like {{PAGENAME}}.
-        /// If <c>null</c> is given, the default value "API" will be used.</param>
-        /// <param name="contentModel">The content model name of the text specified in <paramref name="content"/>.</param>
-        /// <remarks>If both <paramref name="title"/> and <paramref name="contentModel"/> is <c>null</c>, the content model will be assumed as wikitext.</remarks>
+        ///     This only really matters when parsing links to the page itself or subpages,
+        ///     or when using magic words like {{PAGENAME}}.
+        ///     If <c>null</c> is given, the default value "API" will be used.</param>
+        /// <param name="contentModel">The content model name of the text specified in <paramref name="content"/>. <c>null</c> makes the server to infer content model from <paramref name="title"/>.</param>
         /// <param name="options">Options for parsing.</param>
+        /// <remarks>If both <paramref name="title"/> and <paramref name="contentModel"/> is <c>null</c>, the content model will be assumed as wikitext.</remarks>
         /// <exception cref="ArgumentException">Both <paramref name="content"/> and <paramref name="summary"/> is <c>null</c>.</exception>
-        public async Task<ParsedContentInfo> ParseContentAsync(string content, string summary, string title,
+        public Task<ParsedContentInfo> ParseContentAsync(string content, string summary, string title, 
             string contentModel, ParsingOptions options)
+        {
+            return ParseContentAsync(content, summary, title, contentModel, options, new CancellationToken());
+        }
+
+        /// <summary>
+        /// Parsing the specific page content and/or summary, gets HTML and more information. (MediaWiki 1.12)
+        /// </summary>
+        /// <param name="content">The content to parse.</param>
+        /// <param name="summary">The summary to parse. Can be <c>null</c>.</param>
+        /// <param name="title">Act like the wikitext is on this page.
+        ///     This only really matters when parsing links to the page itself or subpages,
+        ///     or when using magic words like {{PAGENAME}}.
+        ///     If <c>null</c> is given, the default value "API" will be used.</param>
+        /// <param name="contentModel">The content model name of the text specified in <paramref name="content"/>. <c>null</c> makes the server to infer content model from <paramref name="title"/>.</param>
+        /// <param name="options">Options for parsing.</param>
+        /// <param name="cancellationToken">The cancellation token that will be checked prior to completing the returned task.</param>
+        /// <remarks>If both <paramref name="title"/> and <paramref name="contentModel"/> is <c>null</c>, the content model will be assumed as wikitext.</remarks>
+        /// <exception cref="ArgumentException">Both <paramref name="content"/> and <paramref name="summary"/> is <c>null</c>.</exception>
+        public async Task<ParsedContentInfo> ParseContentAsync(string content, string summary, string title, 
+            string contentModel, ParsingOptions options, CancellationToken cancellationToken)
         {
             if (content == null && summary == null) throw new ArgumentException(nameof(content));
             var p = BuildParsingParams(options);
@@ -903,7 +1072,7 @@ namespace WikiClientLibrary
             p["summary"] = summary;
             p["title"] = title;
             p["title"] = title;
-            var jobj = await PostValuesAsync(p);
+            var jobj = await PostValuesAsync(p, cancellationToken);
             var parsed = ((JObject) jobj["parse"]).ToObject<ParsedContentInfo>(Utility.WikiJsonSerializer);
             return parsed;
         }

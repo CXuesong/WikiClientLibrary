@@ -7,6 +7,7 @@ using System.Linq;
 using System.Net.Http;
 using System.Runtime.InteropServices;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -53,8 +54,39 @@ namespace WikiClientLibrary
         public static Task<UploadResult> UploadAsync(Site site, string url, string title,
             string comment, bool ignoreWarnings)
         {
-            return UploadAsyncInternal(site, url, title, comment, ignoreWarnings, AutoWatchBehavior.Default);
+            return UploadAsyncInternal(site, url, title, comment, ignoreWarnings, AutoWatchBehavior.Default, CancellationToken.None);
         }
+
+
+        /// <summary>
+        /// Asynchronously uploads a file from an external URL.
+        /// </summary>
+        /// <param name="site">MedaiWiki site.</param>
+        /// <param name="url">The URL of the file to be uploaded.</param>
+        /// <param name="title">Title of the file, with or without File: prefix.</param>
+        /// <param name="comment">Comment of the upload, as well as the page content if it doesn't exist.</param>
+        /// <param name="ignoreWarnings">Ignore any warnings. This must be set to upload a new version of an existing image.</param>
+        /// <param name="cancellationToken"></param>
+        /// <exception cref="UploadException">
+        /// There's warning from server, and <paramref name="ignoreWarnings"/> is <c>false</c>.
+        /// Check <see cref="UploadException.UploadResult"/> for the warning message or continuing the upload.
+        /// </exception>
+        /// <exception cref="OperationFailedException"> There's an error while uploading the file. </exception>
+        /// <exception cref="TimeoutException">
+        /// Timeout specified in <see cref="WikiClient.Timeout"/> has been reached. Note in this
+        /// invocation, there will be no retries.
+        /// </exception>
+        /// <returns>An <see cref="UploadResult"/>.</returns>
+        /// <remarks>
+        /// Upload from external source may take a while, so be sure to set a long <see cref="WikiClient.Timeout"/>
+        /// in case the response from the server is delayed.
+        /// </remarks>
+        public static Task<UploadResult> UploadAsync(Site site, string url, string title, string comment,
+            bool ignoreWarnings, CancellationToken cancellationToken)
+        {
+            return UploadAsyncInternal(site, url, title, comment, ignoreWarnings, AutoWatchBehavior.Default, cancellationToken);
+        }
+
 
         /// <summary>
         /// Asynchronously uploads a file, again.
@@ -80,7 +112,7 @@ namespace WikiClientLibrary
         public static Task<UploadResult> UploadAsync(Site site, UploadResult previousResult, string title,
             string comment, bool ignoreWarnings)
         {
-            return UploadAsyncInternal(site, previousResult, title, comment, ignoreWarnings, AutoWatchBehavior.Default);
+            return UploadAsyncInternal(site, previousResult, title, comment, ignoreWarnings, AutoWatchBehavior.Default, CancellationToken.None);
         }
 
         /// <summary>
@@ -104,7 +136,7 @@ namespace WikiClientLibrary
         public static Task<UploadResult> UploadAsync(Site site, Stream content, string title,
             string comment, bool ignoreWarnings)
         {
-            return UploadAsyncInternal(site, content, title, comment, ignoreWarnings, AutoWatchBehavior.Default);
+            return UploadAsyncInternal(site, content, title, comment, ignoreWarnings, AutoWatchBehavior.Default, CancellationToken.None);
         }
 
         /// <summary>
@@ -116,6 +148,7 @@ namespace WikiClientLibrary
         /// <param name="comment">Comment of the upload, as well as the page content if it doesn't exist.</param>
         /// <param name="ignoreWarnings">Ignore any warnings. This must be set to upload a new version of an existing image.</param>
         /// <param name="watch">Whether to add the file into your watchlist.</param>
+        /// <param name="cancellationToken">The cancellation token that will be checked prior to completing the returned task.</param>
         /// <exception cref="UploadException">
         /// There's warning from server, and <paramref name="ignoreWarnings"/> is <c>false</c>.
         /// Check <see cref="UploadException.UploadResult"/> for the warning message or continuing the upload.
@@ -127,9 +160,9 @@ namespace WikiClientLibrary
         /// </exception>
         /// <returns>An <see cref="UploadResult"/>.</returns>
         public static Task<UploadResult> UploadAsync(Site site, Stream content, string title,
-            string comment, bool ignoreWarnings, AutoWatchBehavior watch)
+            string comment, bool ignoreWarnings, AutoWatchBehavior watch, CancellationToken cancellationToken)
         {
-            return UploadAsyncInternal(site, content, title, comment, ignoreWarnings, watch);
+            return UploadAsyncInternal(site, content, title, comment, ignoreWarnings, watch, cancellationToken);
         }
 
         //content can be
@@ -137,7 +170,7 @@ namespace WikiClientLibrary
         //  string          url to fetch
         //  UploadResult    the previous failed upload
         private static async Task<UploadResult> UploadAsyncInternal(Site site, object content, string title, string comment,
-            bool ignoreWarnings, AutoWatchBehavior watch)
+            bool ignoreWarnings, AutoWatchBehavior watch, CancellationToken cancellationToken)
         {
             if (site == null) throw new ArgumentNullException(nameof(site));
             if (content == null) throw new ArgumentNullException(nameof(content));
@@ -150,6 +183,7 @@ namespace WikiClientLibrary
             {
                 {new StringContent("json"), "format"},
                 {new StringContent("upload"), "action"},
+                {new StringContent(Utility.ToWikiQueryValue(watch)), "watchlist"},
                 {new StringContent(token), "token"},
                 {new StringContent(link.Title), "filename"},
                 {new StringContent(comment), "comment"},
@@ -171,7 +205,7 @@ namespace WikiClientLibrary
                 Debug.Assert(false, "Unrecognized content argument type.");
             if (ignoreWarnings) requestContent.Add(new StringContent(""), "ignorewarnings");
             site.Logger?.Trace($"Uploading: {link.Title} .");
-            var jresult = await site.PostContentAsync(requestContent);
+            var jresult = await site.PostContentAsync(requestContent, cancellationToken);
             var result = jresult["upload"].ToObject<UploadResult>(Utility.WikiJsonSerializer);
             site.Logger?.Trace($"Upload[{link.Title}]: {result}.");
             switch (result.ResultCode)

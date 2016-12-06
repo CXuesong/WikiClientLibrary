@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Threading;
 
 namespace WikiClientLibrary.Client
 {
@@ -105,9 +106,9 @@ namespace WikiClientLibrary.Client
         /// <summary>
         /// Returns a task which finishes after the time specified in <see cref="ThrottleTime"/> .
         /// </summary>
-        internal Task WaitForThrottleAsync()
+        internal Task WaitForThrottleAsync(CancellationToken cancellationToken)
         {
-            return Task.Delay(ThrottleTime);
+            return Task.Delay(ThrottleTime, cancellationToken);
         }
 
         /// <summary>
@@ -117,7 +118,8 @@ namespace WikiClientLibrary.Client
         /// <exception cref="UnauthorizedOperationException">Permission denied.</exception>
         /// <exception cref="OperationFailedException">There's "error" node in returned JSON.</exception>
         /// <remarks>"Get" means the returned value is JSON, though the request is sent via HTTP POST.</remarks>
-        public async Task<JToken> GetJsonAsync(string endPointUrl, IEnumerable<KeyValuePair<string, string>> queryParams)
+        public async Task<JToken> GetJsonAsync(string endPointUrl, IEnumerable<KeyValuePair<string, string>> queryParams,
+            CancellationToken cancellationToken)
         {
             if (queryParams == null) throw new ArgumentNullException(nameof(queryParams));
             var requestUrl = endPointUrl + "?format=json&" + queryParams;
@@ -125,20 +127,20 @@ namespace WikiClientLibrary.Client
             {
                 Content = new FormUrlEncodedContent(new[] {new KeyValuePair<string, string>("format", "json")}
                     .Concat(queryParams)),
-            }, true);
+            }, true, cancellationToken);
             return result;
         }
 
         // No, we cannot guarantee the returned value is JSON, so this function is internal.
         // It depends on caller's conscious.
-        internal async Task<JToken> GetJsonAsync(string endPointUrl, HttpContent postContent)
+        internal async Task<JToken> GetJsonAsync(string endPointUrl, HttpContent postContent, CancellationToken cancellationToken)
         {
             if (postContent == null) throw new ArgumentNullException(nameof(postContent));
             // Implies we want JSON result.
             var result = await SendAsync(() => new HttpRequestMessage(HttpMethod.Post, endPointUrl)
             {
                 Content = postContent,
-            }, false);
+            }, false, cancellationToken);
             // No, we don't retry.
             // HttpContent will usually be disposed after a request.
             // We cannot ask for a HttpContent factory becuase in this case,
@@ -151,9 +153,9 @@ namespace WikiClientLibrary.Client
         /// </summary>
         /// <exception cref="InvalidActionException">Specified action is not supported.</exception>
         /// <exception cref="OperationFailedException">There's "error" node in returned JSON.</exception>
-        public Task<JToken> GetJsonAsync(string endPointUrl, object queryParams)
+        public Task<JToken> GetJsonAsync(string endPointUrl, object queryParams, CancellationToken cancellationToken)
         {
-            return GetJsonAsync(endPointUrl, Utility.ToWikiStringValuePairs(queryParams));
+            return GetJsonAsync(endPointUrl, Utility.ToWikiStringValuePairs(queryParams), cancellationToken);
         }
 
         public WikiClient()

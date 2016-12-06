@@ -15,11 +15,13 @@ namespace WikiClientLibrary.Client
     {
         #region the json client
 
-        private async Task<JToken> SendAsync(Func<HttpRequestMessage> requestFactory, bool allowsRetry)
+        private async Task<JToken> SendAsync(Func<HttpRequestMessage> requestFactory, bool allowsRetry,
+            CancellationToken cancellationToken)
         {
             HttpResponseMessage response;
             var retries = -1;
             RETRY:
+            cancellationToken.ThrowIfCancellationRequested();
             var request = requestFactory();
             Debug.Assert(request != null);
             retries++;
@@ -30,14 +32,24 @@ namespace WikiClientLibrary.Client
                 // Use await instead of responseTask.Result to unwrap Exceptions.
                 // Or AggregateException might be thrown.
                 using (var responseCancellation = new CancellationTokenSource(Timeout))
-                    response = await HttpClient.SendAsync(request, responseCancellation.Token);
+                using (var linkedCts = CancellationTokenSource.CreateLinkedTokenSource(
+                    cancellationToken, responseCancellation.Token))
+                    response = await HttpClient.SendAsync(request, linkedCts.Token);
                 // The request has been finished.
             }
             catch (OperationCanceledException)
             {
-                Logger?.Warn($"Timeout: {request.RequestUri}");
+                if (cancellationToken.IsCancellationRequested)
+                {
+                    Logger?.Warn($"Cancelled: {request.RequestUri}");
+                    throw new OperationCanceledException();
+                }
+                else
+                {
+                    Logger?.Warn($"Timeout: {request.RequestUri}");
+                }
                 if (!allowsRetry || retries >= MaxRetries) throw new TimeoutException();
-                await Task.Delay(RetryDelay);
+                await Task.Delay(RetryDelay, cancellationToken);
                 goto RETRY;
             }
             // Validate response.
@@ -55,7 +67,7 @@ namespace WikiClientLibrary.Client
                     if (offset != null)
                     {
                         if (offset > RetryDelay) offset = RetryDelay;
-                        await Task.Delay(offset.Value);
+                        await Task.Delay(offset.Value, cancellationToken);
                         goto RETRY;
                     }
                 }
@@ -63,7 +75,8 @@ namespace WikiClientLibrary.Client
             response.EnsureSuccessStatusCode();
             try
             {
-                var jresp = await ProcessResponseAsync(response);
+                cancellationToken.ThrowIfCancellationRequested();
+                var jresp = await ProcessResponseAsync(response, cancellationToken);
                 CheckErrors(jresp);
                 return jresp;
             }
@@ -76,20 +89,20 @@ namespace WikiClientLibrary.Client
             }
         }
 
-        private async Task<JToken> ProcessResponseAsync(HttpResponseMessage webResponse)
+        private async Task<JToken> ProcessResponseAsync(HttpResponseMessage webResponse,
+            CancellationToken cancellationToken)
         {
             using (webResponse)
             {
-                using (var stream = await webResponse.Content.ReadAsStreamAsync())
+                string content;
+                using (var s = await webResponse.Content.ReadAsStreamAsync())
                 {
-                    using (var reader = new StreamReader(stream))
-                    using (var jreader = new JsonTextReader(reader))
-                    {
-                        var obj = JToken.Load(jreader);
-                        //Logger?.Trace(obj.ToString());
-                        return obj;
-                    }
+                    cancellationToken.ThrowIfCancellationRequested();
+                    content = await s.ReadAllStringAsync(cancellationToken);
                 }
+                //Logger?.Trace(content);
+                var obj = JToken.Parse(content);
+                return obj;
             }
         }
 

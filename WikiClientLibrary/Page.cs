@@ -8,6 +8,7 @@ using System.Linq;
 using System.Reflection;
 using System.Runtime.Serialization;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -388,7 +389,7 @@ namespace WikiClientLibrary
         /// </remarks>
         public Task RefreshAsync()
         {
-            return RefreshAsync(PageQueryOptions.None);
+            return RefreshAsync(PageQueryOptions.None, CancellationToken.None);
         }
 
         /// <summary>
@@ -401,7 +402,21 @@ namespace WikiClientLibrary
         /// <exception cref="InvalidOperationException">Circular redirect detected when resolving redirects.</exception>
         public Task RefreshAsync(PageQueryOptions options)
         {
-            return RequestManager.RefreshPagesAsync(new[] {this}, options);
+            return RefreshAsync(options, new CancellationToken());
+        }
+
+        /// <summary>
+        /// Fetch information for the page.
+        /// </summary>
+        /// <param name="options">Options when querying for the pages.</param>
+        /// <param name="cancellationToken">The cancellation token that will be checked prior to completing the returned task.</param>
+        /// <remarks>
+        /// For fetching multiple pages at one time, see <see cref="PageExtensions.RefreshAsync(IEnumerable{Page}, PageQueryOptions)"/>.
+        /// </remarks>
+        /// <exception cref="InvalidOperationException">Circular redirect detected when resolving redirects.</exception>
+        public Task RefreshAsync(PageQueryOptions options, CancellationToken cancellationToken)
+        {
+            return RequestManager.RefreshPagesAsync(new[] {this}, options, cancellationToken);
         }
 
         /// <summary>
@@ -479,7 +494,7 @@ namespace WikiClientLibrary
         /// </remarks>
         public Task UpdateContentAsync(string summary)
         {
-            return UpdateContentAsync(summary, false, true, AutoWatchBehavior.Default);
+            return UpdateContentAsync(summary, false, true, AutoWatchBehavior.Default, CancellationToken.None);
         }
 
         /// <summary>
@@ -490,12 +505,11 @@ namespace WikiClientLibrary
         /// This action will refill <see cref="Id" />, <see cref="Title"/>,
         /// <see cref="ContentModel"/>, <see cref="LastRevisionId"/>, and invalidates
         /// <see cref="ContentLength"/>, <see cref="LastRevision"/>, and <see cref="LastTouched"/>.
-        /// You should call <see cref="RefreshInfoAsync"/> or <see cref="RefreshContentAsync"/> again
-        /// if you're interested in them.
+        /// You should call <see cref="RefreshAsync(WikiClientLibrary.PageQueryOptions,System.Threading.CancellationToken)" /> again if you're interested in them.
         /// </remarks>
         public Task UpdateContentAsync(string summary, bool minor)
         {
-            return UpdateContentAsync(summary, minor, true, AutoWatchBehavior.Default);
+            return UpdateContentAsync(summary, minor, true, AutoWatchBehavior.Default, CancellationToken.None);
         }
 
         /// <summary>
@@ -506,12 +520,11 @@ namespace WikiClientLibrary
         /// This action will refill <see cref="Id" />, <see cref="Title"/>,
         /// <see cref="ContentModel"/>, <see cref="LastRevisionId"/>, and invalidates
         /// <see cref="ContentLength"/>, <see cref="LastRevision"/>, and <see cref="LastTouched"/>.
-        /// You should call <see cref="RefreshInfoAsync"/> or <see cref="RefreshContentAsync"/> again
-        /// if you're interested in them.
+        /// You should call <see cref="RefreshAsync(WikiClientLibrary.PageQueryOptions,System.Threading.CancellationToken)" /> again if you're interested in them.
         /// </remarks>
         public Task UpdateContentAsync(string summary, bool minor, bool bot)
         {
-            return UpdateContentAsync(summary, minor, bot, AutoWatchBehavior.Default);
+            return UpdateContentAsync(summary, minor, bot, AutoWatchBehavior.Default, CancellationToken.None);
         }
 
         /// <summary>
@@ -528,10 +541,30 @@ namespace WikiClientLibrary
         /// </remarks>
         /// <exception cref="OperationConflictException">Edit conflict detected.</exception>
         /// <exception cref="UnauthorizedOperationException">You have no rights to edit the page.</exception>
-        public async Task<bool> UpdateContentAsync(string summary, bool minor, bool bot, AutoWatchBehavior watch)
+        public Task<bool> UpdateContentAsync(string summary, bool minor, bool bot, AutoWatchBehavior watch)
+        {
+            return UpdateContentAsync(summary, minor, bot, watch, new CancellationToken());
+        }
+
+        /// <summary>
+        /// Submits content contained in <see cref="Content"/>, making edit to the page.
+        /// (MediaWiki 1.16)
+        /// </summary>
+        /// <returns><c>true</c> if page content has been changed; <c>false</c> otherwise.</returns>
+        /// <remarks>
+        /// This action will refill <see cref="Id" />, <see cref="Title"/>,
+        /// <see cref="ContentModel"/>, <see cref="LastRevisionId"/>, and invalidate
+        /// <see cref="ContentLength"/>, <see cref="LastRevision"/>, and <see cref="LastTouched"/>.
+        /// You should call <see cref="RefreshAsync()"/> again
+        /// if you're interested in them.
+        /// </remarks>
+        /// <exception cref="OperationConflictException">Edit conflict detected.</exception>
+        /// <exception cref="UnauthorizedOperationException">You have no rights to edit the page.</exception>
+        public async Task<bool> UpdateContentAsync(string summary, bool minor, bool bot, AutoWatchBehavior watch, 
+            CancellationToken cancellationToken)
         {
             var tokenTask = Site.GetTokenAsync("edit");
-            await WikiClient.WaitForThrottleAsync();
+            await WikiClient.WaitForThrottleAsync(cancellationToken);
             var token = await tokenTask;
             // When passing this to the Edit API, always pass the token parameter last
             // (or at least after the text parameter). That way, if the edit gets interrupted,
@@ -553,7 +586,7 @@ namespace WikiClientLibrary
                     summary = summary,
                     text = Content,
                     token = token,
-                });
+                }, cancellationToken);
             }
             catch (OperationFailedException ex)
             {
@@ -587,10 +620,10 @@ namespace WikiClientLibrary
         /// <summary>
         /// Get token and wait for a while.
         /// </summary>
-        private async Task<string> GetTokenAndWaitAsync(string tokenType)
+        private async Task<string> GetTokenAndWaitAsync(string tokenType, CancellationToken cancellationToken)
         {
-            var tokenTask = Site.GetTokenAsync("csrf");
-            await WikiClient.WaitForThrottleAsync();
+            var tokenTask = Site.GetTokenAsync(tokenType);
+            await WikiClient.WaitForThrottleAsync(cancellationToken);
             return await tokenTask;
         }
 
@@ -599,7 +632,7 @@ namespace WikiClientLibrary
         /// </summary>
         public Task MoveAsync(string newTitle, string reason, PageMovingOptions options)
         {
-            return MoveAsync(newTitle, reason, options, AutoWatchBehavior.Default);
+            return MoveAsync(newTitle, reason, options, AutoWatchBehavior.Default, CancellationToken.None);
         }
 
         /// <summary>
@@ -607,7 +640,7 @@ namespace WikiClientLibrary
         /// </summary>
         public Task MoveAsync(string newTitle, string reason)
         {
-            return MoveAsync(newTitle, reason, PageMovingOptions.None, AutoWatchBehavior.Default);
+            return MoveAsync(newTitle, reason, PageMovingOptions.None, AutoWatchBehavior.Default, CancellationToken.None);
         }
 
         /// <summary>
@@ -615,17 +648,18 @@ namespace WikiClientLibrary
         /// </summary>
         public Task MoveAsync(string newTitle)
         {
-            return MoveAsync(newTitle, null, PageMovingOptions.None, AutoWatchBehavior.Default);
+            return MoveAsync(newTitle, null, PageMovingOptions.None, AutoWatchBehavior.Default, CancellationToken.None);
         }
 
         /// <summary>
         /// Moves (renames) a page. (MediaWiki 1.12)
         /// </summary>
-        public async Task MoveAsync(string newTitle, string reason, PageMovingOptions options, AutoWatchBehavior watch)
+        public async Task MoveAsync(string newTitle, string reason, PageMovingOptions options, AutoWatchBehavior watch,
+            CancellationToken cancellationToken)
         {
             if (newTitle == null) throw new ArgumentNullException(nameof(newTitle));
             if (newTitle == Title) return;
-            var token = await GetTokenAndWaitAsync("csrf");
+            var token = await GetTokenAndWaitAsync("move", cancellationToken);
             // When passing this to the Edit API, always pass the token parameter last
             // (or at least after the text parameter). That way, if the edit gets interrupted,
             // the token won't be passed and the edit will fail.
@@ -646,7 +680,7 @@ namespace WikiClientLibrary
                     watchlist = watch,
                     reason = reason,
                     token = token,
-                });
+                }, cancellationToken);
             }
             catch (OperationFailedException ex)
             {
@@ -673,15 +707,23 @@ namespace WikiClientLibrary
         /// </summary>
         public Task<bool> DeleteAsync(string reason)
         {
-            return DeleteAsync(reason, AutoWatchBehavior.Default);
+            return DeleteAsync(reason, AutoWatchBehavior.Default, CancellationToken.None);
         }
 
         /// <summary>
         /// Deletes the current page.
         /// </summary>
-        public async Task<bool> DeleteAsync(string reason, AutoWatchBehavior watch)
+        public Task<bool> DeleteAsync(string reason, AutoWatchBehavior watch)
         {
-            var token = await GetTokenAndWaitAsync("csrf");
+            return DeleteAsync(reason, watch, new CancellationToken());
+        }
+
+        /// <summary>
+        /// Deletes the current page.
+        /// </summary>
+        public async Task<bool> DeleteAsync(string reason, AutoWatchBehavior watch, CancellationToken cancellationToken)
+        {
+            var token = await GetTokenAndWaitAsync("delete", cancellationToken);
             JToken jresult;
             try
             {
@@ -693,7 +735,7 @@ namespace WikiClientLibrary
                     watchlist = watch,
                     reason = reason,
                     token = token,
-                });
+                }, cancellationToken);
             }
             catch (OperationFailedException ex)
             {
@@ -721,16 +763,25 @@ namespace WikiClientLibrary
         /// <returns><c>true</c> if the page has been successfully purged.</returns>
         public Task<bool> PurgeAsync()
         {
-            return PurgeAsync(PagePurgeOptions.None);
+            return PurgeAsync(PagePurgeOptions.None, CancellationToken.None);
         }
 
         /// <summary>
         /// Asynchronously purges the current page with the given options.
         /// </summary>
         /// <returns><c>true</c> if the page has been successfully purged.</returns>
-        public async Task<bool> PurgeAsync(PagePurgeOptions options)
+        public Task<bool> PurgeAsync(PagePurgeOptions options)
         {
-            var failure = await RequestManager.PurgePagesAsync(new[] { this }, options);
+            return PurgeAsync(options, new CancellationToken());
+        }
+
+        /// <summary>
+        /// Asynchronously purges the current page with the given options.
+        /// </summary>
+        /// <returns><c>true</c> if the page has been successfully purged.</returns>
+        public async Task<bool> PurgeAsync(PagePurgeOptions options, CancellationToken cancellationToken)
+        {
+            var failure = await RequestManager.PurgePagesAsync(new[] { this }, options, cancellationToken);
             return failure.Count == 0;
         }
 

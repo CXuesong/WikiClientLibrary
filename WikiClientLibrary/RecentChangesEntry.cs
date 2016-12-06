@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Runtime.Serialization;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -173,10 +174,25 @@ namespace WikiClientLibrary
         /// <exception cref="NotSupportedException">Patrolling is disabled on this wiki.</exception>
         public Task PatrolAsync()
         {
+            return PatrolAsync(CancellationToken.None);
+        }
+
+        /// <summary>
+        /// Asynchronously patrol the change.
+        /// </summary>
+        /// <param name="cancellationToken">The cancellation token that will be checked prior to completing the returned task.</param>
+        /// <exception cref="UnauthorizedOperationException">
+        /// <para>You don't have permission to patrol changes. Only users with the patrol right can do this.</para>
+        /// <para>OR You don't have permission to patrol your own changes. Only users with the autopatrol right can do this.</para>
+        /// </exception>
+        /// <remarks>It's suggested that the caller only patrol the pages whose <see cref="PatrolStatus"/> is <see cref="WikiClientLibrary.PatrolStatus.Unpatrolled"/>.</remarks>
+        /// <exception cref="NotSupportedException">Patrolling is disabled on this wiki.</exception>
+        public Task PatrolAsync(CancellationToken cancellationToken)
+        {
             if (PatrolStatus == PatrolStatus.Patrolled)
                 throw new InvalidOperationException("The change has already been patrolled.");
             Site.UserInfo.AssertRight(UserRights.Patrol);
-            return RequestManager.PatrolAsync(Site, Id, null);
+            return RequestManager.PatrolAsync(Site, Id, null, cancellationToken);
         }
 
         /// <summary>
