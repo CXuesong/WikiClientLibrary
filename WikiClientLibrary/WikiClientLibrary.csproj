@@ -38,8 +38,11 @@
     <Compile Include="Category.cs" />
     <Compile Include="Exceptions.cs" />
     <Compile Include="FilePage.cs" />
-    <Compile Include="Flow\FlowBoard.cs" />
+    <Compile Include="Flow\Board.cs" />
+    <Compile Include="Flow\BoardHeader.cs" />
+    <Compile Include="Flow\FlowNamespaces.cs" />
     <Compile Include="Flow\FlowRequestHelper.cs" />
+    <Compile Include="Flow\Topic.cs" />
     <Compile Include="Generators\AllCategoriesGenerator.cs" />
     <Compile Include="Generators\AllPagesGenerator.cs" />
     <Compile Include="Generators\CategoryMembersGenerator.cs" />

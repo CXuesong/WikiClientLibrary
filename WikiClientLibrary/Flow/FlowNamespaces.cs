@@ -6,8 +6,8 @@ using System.Threading.Tasks;
 
 namespace WikiClientLibrary.Flow
 {
-    internal static class FlowRequestHelper
+    public static class FlowNamespaces
     {
-
+        public const int Topic = 2600;
     }
 }

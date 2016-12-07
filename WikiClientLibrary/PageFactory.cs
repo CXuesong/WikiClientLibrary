@@ -83,7 +83,12 @@ namespace WikiClientLibrary
                 if (page.Value["categoryinfo"] != null)
                     newInst = new Category(site);
                 else if ((string) page.Value["contentmodel"] == ContentModels.FlowBoard)
-                    newInst = new FlowBoard(site);
+                {
+                    if ((int) page["ns"] == FlowNamespaces.Topic)
+                        newInst = new Topic(site);
+                    else
+                        newInst = new Board(site);
+                }
                 else
                     newInst = new Page(site);
                 newInst.LoadFromJson(page, options);

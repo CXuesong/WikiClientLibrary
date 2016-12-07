@@ -63,6 +63,7 @@
   </Choose>
   <ItemGroup>
     <Compile Include="CredentialManager.cs" />
+    <Compile Include="FlowTests.cs" />
     <Compile Include="GeneratorTests.cs" />
     <Compile Include="Initializer.cs" />
     <Compile Include="SiteTests.cs" />

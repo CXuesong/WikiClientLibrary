@@ -16,9 +16,14 @@ using Newtonsoft.Json.Linq;
 
 namespace UnitTestProject1
 {
-    internal static partial class Utility
+    internal static class Utility
     {
         public const string EntryPointWikipediaTest2 = "https://test2.wikipedia.org/w/api.php";
+
+        /// <summary>
+        /// WMF beta test site. We only apply the tests that cannot be performed in test2.wikipedia.org (e.g. Flow boards).
+        /// </summary>
+        public const string EntryPointWikipediaBetaEn = "https://en.wikipedia.beta.wmflabs.org/w/api.php";
 
         /// <summary>
         /// This is NOT a test site so do not make modifications to the site.

@@ -39,6 +39,8 @@ namespace WikiClientLibrary
     /// </summary>
     /// <remarks>
     /// See https://www.mediawiki.org/wiki/API:Data_formats#Boolean_values .
+    /// Aside from this convention, the converter can also recognize string values such as "false" or "False".
+    /// Note this convention is used in Flow extension.
     /// </remarks>
     public class WikiBooleanJsonConverter : JsonConverter
     {
@@ -61,7 +63,8 @@ namespace WikiClientLibrary
         public override object ReadJson(JsonReader reader, Type objectType, object existingValue,
             JsonSerializer serializer)
         {
-            return existingValue != null;
+            var str = existingValue as string;
+            return existingValue != null && !string.Equals(str, "false", StringComparison.OrdinalIgnoreCase);
         }
 
         /// <summary>

@@ -36,7 +36,7 @@ namespace WikiClientLibrary
             Title = WikiLink.NormalizeWikiLink(site, title, defaultNamespaceId);
         }
 
-        protected Page(Site site)
+        internal Page(Site site)
         {
             if (site == null) throw new ArgumentNullException(nameof(site));
             Site = site;
@@ -110,7 +110,7 @@ namespace WikiClientLibrary
         /// Normalized title is a title with underscores(_) replaced by spaces,
         /// and the first letter is usually upper-case.
         /// </remarks>
-        public string Title { get; private set; }
+        public string Title { get; protected set; }
 
         /// <summary>
         /// Gets / Sets the content of the page.
