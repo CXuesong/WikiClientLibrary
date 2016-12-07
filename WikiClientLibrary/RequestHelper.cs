@@ -14,7 +14,7 @@ namespace WikiClientLibrary
     /// <summary>
     /// Provides static methods for API queries.
     /// </summary>
-    internal static class RequestManager
+    internal static class RequestHelper
     {
         #region Page/Revision query
 

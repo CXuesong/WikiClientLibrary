@@ -20,7 +20,7 @@ namespace WikiClientLibrary
     /// <summary>
     /// Represents a page on MediaWiki site.
     /// </summary>
-    public class Page
+    public partial class Page
     {
         public Page(Site site, string title) : this(site, title, BuiltInNamespaces.Main)
         {
@@ -43,59 +43,6 @@ namespace WikiClientLibrary
             WikiClient = Site.WikiClient;
             Debug.Assert(WikiClient != null);
             Site = site;
-        }
-
-        /// <summary>
-        /// Create an instance of <see cref="Page"/> or its derived class,
-        /// depending on the namespace the page is in.
-        /// </summary>
-        /// <param name="site">Site instance.</param>
-        /// <param name="title">Title of the page.</param>
-        /// <exception cref="ArgumentNullException">Either <paramref name="site"/> or <paramref name="title"/> is <c>null</c>.</exception>
-        /// <exception cref="ArgumentException"><paramref name="title"/> has invalid title patterns.</exception>
-        /// <exception cref="InvalidOperationException"><paramref name="title"/> is an interwiki link.</exception>
-        public static Page FromTitle(Site site, string title)
-        {
-            return FromTitle(site, title, 0);
-        }
-
-        /// <summary>
-        /// Create an instance of <see cref="Page"/> or its derived class,
-        /// depending on the namespace the page is in.
-        /// </summary>
-        /// <param name="site">Site instance.</param>
-        /// <param name="title">Title of the page, with or without namespace prefix.</param>
-        /// <param name="defaultNamespaceId">
-        /// The namespace id of the page used when there's no explicit namespace prefix in <paramref name="title"/>.
-        /// See <see cref="BuiltInNamespaces"/> for a list of possible values.
-        /// </param>
-        /// <exception cref="ArgumentNullException">Either <paramref name="site"/> or <paramref name="title"/> is <c>null</c>.</exception>
-        /// <exception cref="ArgumentException"><paramref name="title"/> has invalid title patterns.</exception>
-        /// <exception cref="InvalidOperationException"><paramref name="title"/> is an interwiki link.</exception>
-        public static Page FromTitle(Site site, string title, int defaultNamespaceId)
-        {
-            if (site == null) throw new ArgumentNullException(nameof(site));
-            if (title == null) throw new ArgumentNullException(nameof(title));
-            WikiLink link;
-            try
-            {
-                link = WikiLink.Parse(site, title, defaultNamespaceId);
-            }
-            catch (ArgumentException ex)
-            {
-                throw new ArgumentException(ex.Message, nameof(title), ex);
-            }
-            if (link.Interwiki != null)
-                throw new InvalidOperationException($"Interwiki title is not supported: {title} .");
-            switch (link.Namespace.Id)
-            {
-                case BuiltInNamespaces.Category:
-                    return new Category(site, title);
-                case BuiltInNamespaces.File:
-                    return new Category(site, title);
-                default:
-                    return new Page(site, title, defaultNamespaceId);
-            }
         }
 
         /// <summary>
@@ -206,7 +153,7 @@ namespace WikiClientLibrary
                 return PageProperties.Disambiguation;
             // Check whether the page has transcluded one of the DAB templates.
             var dabt = await Site.GetDisambiguationTemplatesAsync();
-            var dabp = await RequestManager.EnumTransclusionsAsync(Site, Title,
+            var dabp = await RequestHelper.EnumTransclusionsAsync(Site, Title,
                 new[] {BuiltInNamespaces.Template}, dabt, 1).Any();
             return dabp;
         }
@@ -356,31 +303,6 @@ namespace WikiClientLibrary
         }
 
         /// <summary>
-        /// Creates a list of <see cref="Page"/> based on JSON query result.
-        /// </summary>
-        /// <param name="site">A <see cref="Site"/> object.</param>
-        /// <param name="queryNode">The <c>qurey</c> node value object of JSON result.</param>
-        /// <param name="options">Provides options when performing the query.</param>
-        /// <returns>Retrived pages.</returns>
-        internal static IList<Page> FromJsonQueryResult(Site site, JObject queryNode, PageQueryOptions options)
-        {
-            if (site == null) throw new ArgumentNullException(nameof(site));
-            if (queryNode == null) throw new ArgumentNullException(nameof(queryNode));
-            var pages = (JObject) queryNode["pages"];
-            if (pages == null) return EmptyPages;
-            return pages.Properties().Select(page =>
-            {
-                Page newInst;
-                if (page.Value["categoryinfo"] != null)
-                    newInst = new Category(site);
-                else
-                    newInst = new Page(site);
-                newInst.LoadFromJson(page, options);
-                return newInst;
-            }).ToList();
-        }
-
-        /// <summary>
         /// Fetch information for the page.
         /// This overload will not fetch content.
         /// </summary>
@@ -416,7 +338,7 @@ namespace WikiClientLibrary
         /// <exception cref="InvalidOperationException">Circular redirect detected when resolving redirects.</exception>
         public Task RefreshAsync(PageQueryOptions options, CancellationToken cancellationToken)
         {
-            return RequestManager.RefreshPagesAsync(new[] {this}, options, cancellationToken);
+            return RequestHelper.RefreshPagesAsync(new[] {this}, options, cancellationToken);
         }
 
         /// <summary>
@@ -425,7 +347,7 @@ namespace WikiClientLibrary
         /// <param name="options">Options for revision listing.</param>
         public IAsyncEnumerable<Revision> EnumRevisionsAsync(RevisionsQueryOptions options)
         {
-            return RequestManager.EnumRevisionsAsync(Site, this, options);
+            return RequestHelper.EnumRevisionsAsync(Site, this, options);
         }
 
         /// <summary>
@@ -453,7 +375,7 @@ namespace WikiClientLibrary
         /// </param>
         public IAsyncEnumerable<string> EnumLinksAsync(IEnumerable<int> namespaces)
         {
-            return RequestManager.EnumLinksAsync(Site, Title, namespaces);
+            return RequestHelper.EnumLinksAsync(Site, Title, namespaces);
         }
 
         /// <summary>
@@ -473,7 +395,7 @@ namespace WikiClientLibrary
         /// </param>
         public IAsyncEnumerable<string> EnumTransclusionsAsync(IEnumerable<int> namespaces)
         {
-            return RequestManager.EnumTransclusionsAsync(Site, Title, namespaces);
+            return RequestHelper.EnumTransclusionsAsync(Site, Title, namespaces);
         }
 
 
@@ -781,7 +703,7 @@ namespace WikiClientLibrary
         /// <returns><c>true</c> if the page has been successfully purged.</returns>
         public async Task<bool> PurgeAsync(PagePurgeOptions options, CancellationToken cancellationToken)
         {
-            var failure = await RequestManager.PurgePagesAsync(new[] { this }, options, cancellationToken);
+            var failure = await RequestHelper.PurgePagesAsync(new[] { this }, options, cancellationToken);
             return failure.Count == 0;
         }
 

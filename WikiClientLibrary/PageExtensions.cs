@@ -54,7 +54,7 @@ namespace WikiClientLibrary
         /// <exception cref="InvalidOperationException">Circular redirect detected when resolving redirects.</exception>
         public static Task RefreshAsync(this IEnumerable<Page> pages, PageQueryOptions options, CancellationToken cancellationToken)
         {
-            return RequestManager.RefreshPagesAsync(pages, options, cancellationToken);
+            return RequestHelper.RefreshPagesAsync(pages, options, cancellationToken);
         }
 
         /// <summary>
@@ -83,7 +83,7 @@ namespace WikiClientLibrary
         public static Task<IReadOnlyCollection<Page>> PurgeAsync(this IEnumerable<Page> pages,
             PagePurgeOptions options, CancellationToken cancellationToken)
         {
-            return RequestManager.PurgePagesAsync(pages, options, cancellationToken);
+            return RequestHelper.PurgePagesAsync(pages, options, cancellationToken);
         }
     }
 }

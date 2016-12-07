@@ -211,10 +211,14 @@ namespace WikiClientLibrary
         public const string JavaScript = "javascript";
         public const string Css = "css";
         /// <summary>
-        /// Scribunto LUA model.
+        /// Scribunto LUA module.
         /// </summary>
         public const string Scribunto = "Scribunto";
-
+        /// <summary>
+        /// Flow board page.
+        /// </summary>
+        /// <remarks>See https://www.mediawiki.org/wiki/Extension:Flow/API .</remarks>
+        public const string FlowBoard = "flow-board";
     }
 
     internal static class MediaWikiUtility

@@ -138,7 +138,7 @@ namespace WikiClientLibrary.Generators
         /// <param name="options">Options when querying for the pages.</param>
         public IAsyncEnumerable<T> EnumPagesAsync(PageQueryOptions options)
         {
-            return RequestManager.EnumPagesAsync(this, options).Cast<T>();
+            return RequestHelper.EnumPagesAsync(this, options).Cast<T>();
         }
     }
 }

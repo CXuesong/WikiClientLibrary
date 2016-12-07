@@ -38,6 +38,8 @@
     <Compile Include="Category.cs" />
     <Compile Include="Exceptions.cs" />
     <Compile Include="FilePage.cs" />
+    <Compile Include="Flow\FlowBoard.cs" />
+    <Compile Include="Flow\FlowRequestHelper.cs" />
     <Compile Include="Generators\AllCategoriesGenerator.cs" />
     <Compile Include="Generators\AllPagesGenerator.cs" />
     <Compile Include="Generators\CategoryMembersGenerator.cs" />
@@ -50,8 +52,9 @@
     <Compile Include="DelegateEnumerable.cs" />
     <Compile Include="PageExtensions.cs" />
     <Compile Include="PagedQueryAsyncEnumerable.cs" />
+    <Compile Include="PageFactory.cs" />
     <Compile Include="ParsedContentInfo.cs" />
-    <Compile Include="RequestManager.cs" />
+    <Compile Include="RequestHelper.cs" />
     <Compile Include="RecentChangesEntry.cs" />
     <Compile Include="Revision.cs" />
     <Compile Include="Site.cs" />

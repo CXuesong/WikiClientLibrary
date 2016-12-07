@@ -100,7 +100,7 @@ namespace WikiClientLibrary
         /// </remarks>
         public static IAsyncEnumerable<Revision> FetchRevisionsAsync(Site site, IEnumerable<int> revisionIds, PageQueryOptions options, CancellationToken cancellationToken)
         {
-            return RequestManager.FetchRevisionsAsync(site, revisionIds, options, cancellationToken);
+            return RequestHelper.FetchRevisionsAsync(site, revisionIds, options, cancellationToken);
         }
 
         /// <summary>

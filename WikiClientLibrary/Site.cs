@@ -223,7 +223,7 @@ namespace WikiClientLibrary
         {
             if (disambiguationTemplates == null)
             {
-                var dabPages = await RequestManager
+                var dabPages = await RequestHelper
                     .EnumLinksAsync(this, "MediaWiki:Disambiguationspage", new[] {BuiltInNamespaces.Template})
                     .ToList();
                 if (dabPages.Count == 0)

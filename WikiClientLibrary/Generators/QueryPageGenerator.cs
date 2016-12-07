@@ -30,7 +30,7 @@ namespace WikiClientLibrary.Generators
         /// <returns>A list of titles of available QueryPage-based special pages.</returns>
         public static async Task<IList<string>> GetQueryPageNamesAsync(Site site)
         {
-            var module = await RequestManager.QueryParameterInformationAsync(site, "query+querypage");
+            var module = await RequestHelper.QueryParameterInformationAsync(site, "query+querypage");
             var pa = module["parameters"].First(p => (string) p["name"] == "page");
             return ((JArray) pa["type"]).ToObject<IList<string>>();
         }
