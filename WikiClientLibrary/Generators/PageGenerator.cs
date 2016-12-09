@@ -11,21 +11,21 @@ using WikiClientLibrary.Client;
 
 namespace WikiClientLibrary.Generators
 {
+    /// <summary>
+    /// Represents a generator (or iterator) of <see cref="Page"/>.
+    /// Generator implementations should use its generic version, <see cref="PageGenerator{T}"/>, as base class.
+    /// </summary>
     public abstract class PageGeneratorBase
     {
         private int? _PagingSize;
 
-        public PageGeneratorBase(Site site)
+        internal PageGeneratorBase(Site site)
         {
             if (site == null) throw new ArgumentNullException(nameof(site));
             Site = site;
-            WikiClient = site.WikiClient;
-            Debug.Assert(WikiClient != null);
         }
 
         public Site Site { get; }
-
-        public WikiClient WikiClient { get; }
 
         /// <summary>
         /// Maximum items returned per request.
@@ -57,7 +57,7 @@ namespace WikiClientLibrary.Generators
         /// <summary>
         /// When overridden, fills generator parameters for action=query request.
         /// </summary>
-        /// <returns>The dictioanry containing request value pairs.</returns>
+        /// <returns>The dictioanry containing request value pairs, which will be overrided by the basic query parameters.</returns>
         protected abstract IEnumerable<KeyValuePair<string, object>> GetGeneratorParams();
 
         /// <summary>

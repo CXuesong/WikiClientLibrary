@@ -177,39 +177,32 @@ namespace WikiClientLibrary
         /// Enumerate revisions from the page.
         /// </summary>
         /// <remarks>Redirect resolution is disabled in this operation.</remarks>
-        public static IAsyncEnumerable<Revision> EnumRevisionsAsync(Site site,
-            Page page, RevisionsQueryOptions options)
+        public static IAsyncEnumerable<Revision> EnumRevisionsAsync(RevisionGenerator generator, PageQueryOptions options)
         {
-            if (site == null) throw new ArgumentNullException(nameof(site));
-            if (page == null) throw new ArgumentNullException(nameof(page));
-            var pa = GetPageFetchingParams(
-                (options & RevisionsQueryOptions.FetchContent) == RevisionsQueryOptions.FetchContent
-                    ? PageQueryOptions.FetchContent
-                    : PageQueryOptions.None);
-            pa["rvlimit"] = site.ListingPagingSize;
-            pa["rvdir"] = (options & RevisionsQueryOptions.TimeAscending) == RevisionsQueryOptions.TimeAscending
-                ? "newer"
-                : "older";
-            pa["titles"] = page.Title;
+            Debug.Assert(generator != null);
+            Debug.Assert(generator.Page != null);
+            Debug.Assert((options & PageQueryOptions.ResolveRedirects) != PageQueryOptions.ResolveRedirects);
+            var site = generator.Site;
+            var pa = GetPageFetchingParams(options);
+            foreach (var p in generator.GetGeneratorParams()) pa[p.Key] = p.Value;
             var serializer = Utility.CreateWikiJsonSerializer();
-            serializer.Converters.Add(new DelegateCreationConverter<Revision>(t => new Revision(page)));
+            serializer.Converters.Add(new DelegateCreationConverter<Revision>(t => new Revision(generator.Page)));
             var resultCounter = 0;
             return new PagedQueryAsyncEnumerable(site, pa)
                 .SelectMany(jresult =>
                 {
                     var jpage = jresult["pages"].Values().First();
-                    var revisions = (JArray) jpage?["revisions"];
+                    var revisions = (JArray)jpage?["revisions"];
                     if (revisions != null)
                     {
                         resultCounter += revisions.Count;
-                        site.Logger?.Trace($"Loaded {resultCounter} revisions of {page.Title}.");
+                        site.Logger?.Trace($"Loaded {resultCounter} revisions of {generator.Page}.");
                         var result = revisions.ToObject<IList<Revision>>(serializer);
                         return result.ToAsyncEnumerable();
                     }
                     return AsyncEnumerable.Empty<Revision>();
                 });
         }
-
         #endregion
 
         /// <summary>

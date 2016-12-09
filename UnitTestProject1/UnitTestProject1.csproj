@@ -70,6 +70,7 @@
     <Compile Include="PageTests.cs" />
     <Compile Include="PageTestsDirty.cs" />
     <Compile Include="RenderingTests.cs" />
+    <Compile Include="RevisionGeneratorTests.cs" />
     <Compile Include="WebClientTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Utility.cs" />

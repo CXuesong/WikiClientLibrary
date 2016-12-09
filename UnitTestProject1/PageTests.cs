@@ -22,7 +22,9 @@ namespace UnitTestProject1
         private static readonly Lazy<Site> _WpLzhSite = new Lazy<Site>(() => CreateWikiSite(EntryWikipediaLzh));
 
         public static Site WpTestSite => _WpTestSite.Value;
+
         public static Site WikiaTestSite => _WikiaTestSite.Value;
+
         public static Site WpLzhSite => _WpLzhSite.Value;
 
         [ClassCleanup]
@@ -132,45 +134,6 @@ namespace UnitTestProject1
             var page = new Page(site, "Test (Disambiguation)");
             AwaitSync(page.RefreshAsync());
             Assert.IsTrue(AwaitSync(page.IsDisambiguationAsync()));
-        }
-
-        [TestMethod]
-        public void WpTestEnumRevisionsTest1()
-        {
-            var site = WpTestSite;
-            var page = new Page(site, "Page:Edit_page_for_chrome");
-            var revisions = AwaitSync(page.EnumRevisionsAsync().Skip(5).Take(5).ToList());
-            Assert.AreEqual(5, revisions.Count);
-            ShallowTrace(revisions);
-        }
-
-        [TestMethod]
-        public void WpTestEnumRevisionsTest2()
-        {
-            var site = WpTestSite;
-            // 5,100 revisions in total
-            var page = new Page(site, "Page:Edit_page_for_chrome");
-            var revisions = AwaitSync(page.EnumRevisionsAsync().Take(2000).ToList());
-            ShallowTrace(revisions);
-        }
-
-        [TestMethod]
-        public void WikiaEnumRevisionsTest1()
-        {
-            var site = WikiaTestSite;
-            var page = new Page(site, "Project:Sandbox");
-            var revisions = AwaitSync(page.EnumRevisionsAsync().Skip(5).Take(5).ToList());
-            Assert.AreEqual(5, revisions.Count);
-            ShallowTrace(revisions);
-        }
-
-        [TestMethod]
-        public void WikiaEnumRevisionsTest2()
-        {
-            var site = WikiaTestSite;
-            var page = new Page(site, "Project:Sandbox");
-            var revisions = AwaitSync(page.EnumRevisionsAsync().Take(2000).ToList());
-            ShallowTrace(revisions);
         }
 
         [TestMethod]
