@@ -135,17 +135,37 @@ namespace UnitTestProject1
         }
 
         [TestMethod]
-        public void WpTestEnumRevisionsTest()
+        public void WpTestEnumRevisionsTest1()
         {
             var site = WpTestSite;
-            // 5,100 revisions
+            var page = new Page(site, "Page:Edit_page_for_chrome");
+            var revisions = AwaitSync(page.EnumRevisionsAsync().Skip(5).Take(5).ToList());
+            Assert.AreEqual(5, revisions.Count);
+            ShallowTrace(revisions);
+        }
+
+        [TestMethod]
+        public void WpTestEnumRevisionsTest2()
+        {
+            var site = WpTestSite;
+            // 5,100 revisions in total
             var page = new Page(site, "Page:Edit_page_for_chrome");
             var revisions = AwaitSync(page.EnumRevisionsAsync().Take(2000).ToList());
             ShallowTrace(revisions);
         }
 
         [TestMethod]
-        public void WikiaEnumRevisionsTest()
+        public void WikiaEnumRevisionsTest1()
+        {
+            var site = WikiaTestSite;
+            var page = new Page(site, "Project:Sandbox");
+            var revisions = AwaitSync(page.EnumRevisionsAsync().Skip(5).Take(5).ToList());
+            Assert.AreEqual(5, revisions.Count);
+            ShallowTrace(revisions);
+        }
+
+        [TestMethod]
+        public void WikiaEnumRevisionsTest2()
         {
             var site = WikiaTestSite;
             var page = new Page(site, "Project:Sandbox");

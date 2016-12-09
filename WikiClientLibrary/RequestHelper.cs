@@ -197,7 +197,7 @@ namespace WikiClientLibrary
             return new PagedQueryAsyncEnumerable(site, pa)
                 .SelectMany(jresult =>
                 {
-                    var jpage = jresult["query"]?["pages"].Values().First();
+                    var jpage = jresult["pages"].Values().First();
                     var revisions = (JArray) jpage?["revisions"];
                     if (revisions != null)
                     {
