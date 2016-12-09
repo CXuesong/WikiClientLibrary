@@ -16,12 +16,14 @@ namespace WikiClientLibrary.Client
     public partial class WikiClient : IDisposable
     {
 
+        private const string WikiClientUserAgent = "WikiClientLibrary/0.3 (.NET Portable; http://github.com/cxuesong/WikiClientLibrary)";
+
         #region Configurations
 
         private int _MaxRetries = 3;
         private string _ClientUserAgent;
         private TimeSpan _ThrottleTime = TimeSpan.FromSeconds(5);
-        private HttpClientHandler _HttpClientHandler;
+        private readonly HttpClientHandler _HttpClientHandler;
 
         /// <summary>
         /// User Agent for client-side application.
@@ -36,7 +38,7 @@ namespace WikiClientLibrary.Client
                     var ua = HttpClient.DefaultRequestHeaders.UserAgent;
                     if (!string.IsNullOrWhiteSpace(value))
                         ua.ParseAdd(value);
-                    ua.ParseAdd("WikiClientLibrary/1.0 (.NET Portable; http://github.com/cxuesong/WikiClientLibrary)");
+                    ua.ParseAdd(WikiClientUserAgent);
                     _ClientUserAgent = value;
                 }
             }
