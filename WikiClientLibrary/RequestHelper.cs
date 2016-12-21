@@ -252,7 +252,7 @@ namespace WikiClientLibrary
                             var jpage = purgeStatusDict[title];
                             if (jpage["invalid"] != null || jpage["missing"] != null)
                             {
-                                site.Logger.Trace($"Cannot purge the page: {page}. {jpage["invalidreason"]}");
+                                site.Logger?.Warn($"Cannot purge the page: {page}. {jpage["invalidreason"]}");
                                 failedPages.Add(page);
                             }
                         }
