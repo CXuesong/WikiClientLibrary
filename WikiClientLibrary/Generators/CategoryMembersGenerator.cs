@@ -68,15 +68,16 @@ namespace WikiClientLibrary.Generators
         /// <summary>
         /// When overridden, fills generator parameters for action=query request.
         /// </summary>
+        /// <param name="actualPagingSize"></param>
         /// <returns>The dictioanry containing request value pairs.</returns>
-        protected override IEnumerable<KeyValuePair<string, object>> GetGeneratorParams()
+        protected override IEnumerable<KeyValuePair<string, object>> GetGeneratorParams(int actualPagingSize)
         {
             if (string.IsNullOrEmpty(CategoryTitle)) throw new InvalidOperationException("CateogryTitle is empty.");
             return new Dictionary<string, object>
             {
                 {"generator", "categorymembers"},
                 {"gcmtitle", CategoryTitle},
-                {"gcmlimit", ActualPagingSize},
+                {"gcmlimit", GetActualPagingSize()},
                 {"gcmnamespace", NamespaceIds == null ? null : string.Join("|", NamespaceIds)},
                 {"gcmtype", ParseMemberTypes(MemberTypes)}
             };

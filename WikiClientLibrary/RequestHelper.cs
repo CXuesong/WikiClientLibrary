@@ -44,13 +44,13 @@ namespace WikiClientLibrary
         /// <summary>
         /// Enumerate pages from the generator.
         /// </summary>
-        public static IAsyncEnumerable<Page> EnumPagesAsync(PageGeneratorBase generator, PageQueryOptions options)
+        public static IAsyncEnumerable<Page> EnumPagesAsync(PageGeneratorBase generator, PageQueryOptions options, int actualPagingSize)
         {
             if (generator == null) throw new ArgumentNullException(nameof(generator));
             if ((options & PageQueryOptions.ResolveRedirects) == PageQueryOptions.ResolveRedirects)
                 throw new ArgumentException("Cannot resolve redirects when using generators.", nameof(options));
             var queryParams = GetPageFetchingParams(options);
-            return generator.EnumJsonAsync(queryParams).SelectMany(jresult =>
+            return generator.EnumJsonAsync(queryParams, actualPagingSize).SelectMany(jresult =>
             {
                 var pages = Page.FromJsonQueryResult(generator.Site, jresult, options);
                 generator.Site.Logger?.Trace($"Loaded {pages.Count} pages from {generator}.");

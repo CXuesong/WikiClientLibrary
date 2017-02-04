@@ -112,7 +112,7 @@ namespace WikiClientLibrary.Generators
             return types.Length > 1 ? types.Substring(1) : null;
         }
 
-        private IEnumerable<KeyValuePair<string, object>> GetParams(bool asList)
+        private IEnumerable<KeyValuePair<string, object>> GetParams(bool asList, int actualPagingSize)
         {
             var dict = new Dictionary<string, object>
             {
@@ -129,7 +129,7 @@ namespace WikiClientLibrary.Generators
             addParam("rctype", ParseRecentChangesTypes(TypeFilters));
             addParam("rcshow", ParseFilters());
             addParam("rctoponly", LastRevisionsOnly);
-            addParam("rclimit", ActualPagingSize);
+            addParam("rclimit", actualPagingSize);
             if (asList)
             {
                 // All except userid .
@@ -150,10 +150,11 @@ namespace WikiClientLibrary.Generators
         /// <summary>
         /// When overridden, fills generator parameters for action=query request.
         /// </summary>
+        /// <param name="actualPagingSize"></param>
         /// <returns>The dictioanry containing request value pairs.</returns>
-        protected override IEnumerable<KeyValuePair<string, object>> GetGeneratorParams()
+        protected override IEnumerable<KeyValuePair<string, object>> GetGeneratorParams(int actualPagingSize)
         {
-            return GetParams(false);
+            return GetParams(false, actualPagingSize);
         }
 
         /// <summary>
@@ -166,7 +167,7 @@ namespace WikiClientLibrary.Generators
                 {"action", "query"},
                 {"maxlag", 5}
             };
-            foreach (var v in GetParams(true))
+            foreach (var v in GetParams(true, GetActualPagingSize(PageQueryOptions.None)))
                 valuesDict[v.Key] = v.Value;
             Debug.Assert((string) valuesDict["action"] == "query");
             var paging = new PagedQueryAsyncEnumerable(Site, valuesDict);

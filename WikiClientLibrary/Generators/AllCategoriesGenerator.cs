@@ -43,15 +43,16 @@ namespace WikiClientLibrary.Generators
         /// <summary>
         /// When overridden, fills generator parameters for action=query request.
         /// </summary>
+        /// <param name="actualPagingSize"></param>
         /// <returns>The dictioanry containing request value pairs.</returns>
-        protected override IEnumerable<KeyValuePair<string, object>> GetGeneratorParams()
+        protected override IEnumerable<KeyValuePair<string, object>> GetGeneratorParams(int actualPagingSize)
         {
             return new Dictionary<string, object>
             {
                 {"generator", "allcategories"},
                 {"gacfrom", StartTitle},
                 {"gacto", EndTitle},
-                {"gaclimit", ActualPagingSize},
+                {"gaclimit", actualPagingSize},
                 {"gacprefix", Prefix},
                 {"acmin", MinChildrenCount},
                 {"acmax", MaxChildrenCount},

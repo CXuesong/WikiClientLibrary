@@ -33,6 +33,11 @@ namespace WikiClientLibrary.Generators
         /// <c>null</c> if using the default limit.
         /// (5000 for bots and 500 for users.)
         /// </value>
+        /// <remarks>
+        /// If you're also requesting for the content of each page,
+        /// you might need to reduce this value to somewhere below 50,
+        /// or the content might be <c>null</c> for some retrieved pages.
+        /// </remarks>
         public int? PagingSize
         {
             get { return _PagingSize; }

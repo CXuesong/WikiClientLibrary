@@ -53,15 +53,16 @@ namespace WikiClientLibrary.Generators
         /// <summary>
         /// When overridden, fills generator parameters for action=query request.
         /// </summary>
+        /// <param name="actualPagingSize"></param>
         /// <returns>The dictioanry containing request value pairs.</returns>
-        protected override IEnumerable<KeyValuePair<string, object>> GetGeneratorParams()
+        protected override IEnumerable<KeyValuePair<string, object>> GetGeneratorParams(int actualPagingSize)
         {
             return new Dictionary<string, object>
             {
                 {"generator", "allpages"},
                 {"gapfrom", StartTitle},
                 {"gapto", EndTitle},
-                {"gaplimit", ActualPagingSize},
+                {"gaplimit", actualPagingSize},
                 {"gapnamespace", NamespaceId},
                 {"gapprefix", Prefix},
                 {"gapfilterredir", RedirectsFilter.ToString("redirects", "nonredirects")},

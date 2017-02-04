@@ -54,7 +54,7 @@ namespace WikiClientLibrary.Generators
         /// When overridden, fills generator parameters for action=query request.
         /// </summary>
         /// <returns>The dictioanry containing request value pairs.</returns>
-        protected override IEnumerable<KeyValuePair<string, object>> GetGeneratorParams()
+        protected override IEnumerable<KeyValuePair<string, object>> GetGeneratorParams(int actualPagingSize)
         {
             if (string.IsNullOrWhiteSpace(QueryPageName))
                 throw new InvalidOperationException("Invalid QueryPageName.");
@@ -62,7 +62,7 @@ namespace WikiClientLibrary.Generators
             {
                 {"generator", "querypage"},
                 {"gqppage", QueryPageName},
-                {"gqplimit", ActualPagingSize}
+                {"gqplimit", actualPagingSize}
             };
         }
 
