@@ -46,10 +46,8 @@ namespace UnitTestProject1
             var site = WpTestSite;
             // 5,100 revisions in total
             var page = new Page(site, "Page:Edit_page_for_chrome");
-            // Note that we use DateTimeKind.Unspecified here, and in WikiClientLibrary's
-            // internal DateTime convertion it's assumed as local time. 
-            var t1 = new DateTime(2014, 10, 20, 10, 0, 0);
-            var t2 = new DateTime(2014, 10, 22, 10, 0, 0);
+            var t1 = new DateTime(2014, 10, 20, 10, 0, 0, DateTimeKind.Utc);
+            var t2 = new DateTime(2014, 10, 22, 10, 0, 0, DateTimeKind.Utc);
             var gen = new RevisionGenerator(page)
             {
                 TimeAscending = true,
