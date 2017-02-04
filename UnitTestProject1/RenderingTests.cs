@@ -55,7 +55,7 @@ namespace UnitTestProject1
                 ParsingOptions.LimitReport | ParsingOptions.TranscludedPages));
             ShallowTrace(result, 4);
             Assert.IsTrue(result.TranscludedPages.Any(p => p.Title == "Template:Ambox"));
-            Assert.IsTrue((int) result.ParserLimitReports.First(r => r.Name == "limitreport-expansiondepth").Value > 1);
+            Assert.IsTrue(result.ParserLimitReports.First(r => r.Name == "limitreport-expansiondepth").Value > 1);
         }
     }
 }

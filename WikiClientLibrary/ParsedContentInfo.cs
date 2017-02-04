@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
+using System.Runtime.Serialization;
 using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
@@ -272,16 +274,51 @@ namespace WikiClientLibrary
         public string Name { get; private set; }
 
         /// <summary>
-        /// Current value of the report.
+        /// Current value of the report, if available.
         /// </summary>
-        [JsonProperty("0")]
-        public double Value { get; private set; }
+        public double? Value { get; private set; }
 
         /// <summary>
         /// Value limit of the report, if available.
         /// </summary>
-        [JsonProperty("1")]
         public double? Limit { get; private set; }
+
+        private static double? TryParseAsDouble(JToken token)
+        {
+            var s = (string) token;
+            double v;
+            if (double.TryParse(s, out v)) return v;
+            return null;
+        }
+
+        /// <summary>
+        /// All the content of the report.
+        /// </summary>
+        [JsonExtensionData] private IDictionary<string, JToken> _Content;
+
+        public IReadOnlyDictionary<string, JToken> Content { get; private set; }
+
+        private static readonly IReadOnlyDictionary<string, JToken> EmptyContent =
+            new ReadOnlyDictionary<string, JToken>(new Dictionary<string, JToken>(0));
+
+        [OnDeserialized]
+        private void OnDeserialized(StreamingContext context)
+        {
+            Value = Limit = null;
+            if (_Content != null)
+            {
+                JToken jt;
+                if (_Content.TryGetValue("0", out jt))
+                    Value = TryParseAsDouble(jt);
+                if (_Content.TryGetValue("1", out jt))
+                    Limit = TryParseAsDouble(jt);
+                Content = new ReadOnlyDictionary<string, JToken>(_Content);
+            }
+            else
+            {
+                Content = EmptyContent;
+            }
+        }
 
         /// <inheritdoc />
         public override string ToString()
