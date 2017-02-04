@@ -351,12 +351,21 @@ namespace WikiClientLibrary
         /// <param name="forceRefetch">Whether to fetch token from server, regardless of the cache.</param>
         /// <param name="cancellationToken">The cancellation token that will be checked prior to completing the returned task.</param>
         /// <exception cref="InvalidOperationException">One or more specified token types cannot be recognized.</exception>
-        /// <remarks>See https://www.mediawiki.org/wiki/API:Tokens .</remarks>
+        /// <remarks>
+        /// <para>This method is thread-safe.</para>
+        /// <para>See https://www.mediawiki.org/wiki/API:Tokens .</para>
+        /// </remarks>
         public async Task<IDictionary<string, string>> GetTokensAsync(IEnumerable<string> tokenTypes, bool forceRefetch, CancellationToken cancellationToken)
         {
+            // TODO wait for other threads to fetch a token, instead of fetching whenever it's not
+            // available, even if there's already another thread requesting it.
             if (tokenTypes == null) throw new ArgumentNullException(nameof(tokenTypes));
             var tokenTypesList = tokenTypes as IReadOnlyList<string> ?? tokenTypes.ToList();
-            var pendingtokens = tokenTypesList.Where(tt => forceRefetch || !_TokensCache.ContainsKey(tt)).ToList();
+            List<string> pendingtokens;
+            lock (_TokensCache)
+            {
+                pendingtokens = tokenTypesList.Where(tt => forceRefetch || !_TokensCache.ContainsKey(tt)).ToList();
+            }
             JObject fetchedTokens = null;
             if (SiteInfo.Version < new Version("1.24"))
             {
@@ -367,24 +376,33 @@ namespace WikiClientLibrary
                  list recentchanges.
                  */
                 var needPatrolFromRC = false;
+                // Check whether we need a patrol token.
                 if (SiteInfo.Version < new Version("1.20"))
                     needPatrolFromRC = pendingtokens.Remove("patrol");
                 if (needPatrolFromRC)
                 {
-                    if (SiteInfo.Version < new Version("1.17"))
+                    string patrolToken;
+                    lock (_TokensCache)
+                        if (!_TokensCache.TryGetValue("patrol", out patrolToken)) patrolToken = null;
+                    if (patrolToken == null)
                     {
-                        _TokensCache["patrol"] = await GetTokenAsync("edit");
-                    }
-                    else
-                    {
-                        var jobj = await PostValuesAsync(new
+                        if (SiteInfo.Version < new Version("1.17"))
                         {
-                            action = "query",
-                            meta = "recentchanges",
-                            rctoken = "patrol",
-                            rclimit = 1
-                        }, cancellationToken);
-                        _TokensCache["patrol"] = (string) jobj["query"]["recentchanges"]["patroltoken"];
+                            patrolToken = await GetTokenAsync("edit");
+                        }
+                        else
+                        {
+                            var jobj = await PostValuesAsync(new
+                            {
+                                action = "query",
+                                meta = "recentchanges",
+                                rctoken = "patrol",
+                                rclimit = 1
+                            }, cancellationToken);
+                            patrolToken = (string) jobj["query"]["recentchanges"]["patroltoken"];
+                        }
+                        lock (_TokensCache)
+                            _TokensCache["patrol"] = patrolToken;
                     }
                 }
                 if (pendingtokens.Count > 0)
@@ -408,7 +426,8 @@ namespace WikiClientLibrary
                     var csrf = (string) fetchedTokens["csrftoken"];
                     if (csrf != null)
                     {
-                        foreach (var t in CsrfTokens) _TokensCache[t] = csrf;
+                        lock (_TokensCache)
+                            foreach (var t in CsrfTokens) _TokensCache[t] = csrf;
                     }
                 }
             }
@@ -421,7 +440,10 @@ namespace WikiClientLibrary
                     var tokenName = p.Name.EndsWith("token")
                         ? p.Name.Substring(0, p.Name.Length - 5)
                         : p.Name;
-                    _TokensCache[tokenName] = (string) p.Value;
+                    lock (_TokensCache)
+                    {
+                        _TokensCache[tokenName] = (string) p.Value;
+                    }
                     pendingtokens.Remove(tokenName);
                 }
                 if (pendingtokens.Count > 0)
@@ -431,7 +453,8 @@ namespace WikiClientLibrary
                 }
             }
             // Then return.
-            return tokenTypesList.ToDictionary(t => t, t => _TokensCache[t]);
+            lock (_TokensCache)
+                return tokenTypesList.ToDictionary(t => t, t => _TokensCache[t]);
         }
 
         /// <summary>
