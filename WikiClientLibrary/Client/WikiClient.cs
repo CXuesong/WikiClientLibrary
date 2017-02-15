@@ -124,10 +124,9 @@ namespace WikiClientLibrary.Client
             CancellationToken cancellationToken)
         {
             if (queryParams == null) throw new ArgumentNullException(nameof(queryParams));
-            var requestUrl = endPointUrl + "?format=json&" + queryParams;
             var result = await SendAsync(() => new HttpRequestMessage(HttpMethod.Post, endPointUrl)
             {
-                Content = new FormUrlEncodedContent(new[] {new KeyValuePair<string, string>("format", "json")}
+                Content = new FormLongUrlEncodedContent(new[] {new KeyValuePair<string, string>("format", "json")}
                     .Concat(queryParams)),
             }, true, cancellationToken);
             return result;
