@@ -11,10 +11,10 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("WikiClientLibrary")]
-[assembly: AssemblyCopyright("版权所有(C)  2016")]
+[assembly: AssemblyCopyright("Copyright (C) CXuesong 2016")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
-[assembly: NeutralResourcesLanguage("zh-Hans")]
+[assembly: NeutralResourcesLanguage("en-US")]
 
 // 程序集的版本信息由下列四个值组成: 
 //
