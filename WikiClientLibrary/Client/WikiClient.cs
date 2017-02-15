@@ -16,7 +16,7 @@ namespace WikiClientLibrary.Client
     public partial class WikiClient : IDisposable
     {
 
-        private const string WikiClientUserAgent = "WikiClientLibrary/0.3 (.NET Portable; http://github.com/cxuesong/WikiClientLibrary)";
+        private const string WikiClientUserAgent = "WikiClientLibrary/0.4 (.NET Portable; http://github.com/cxuesong/WikiClientLibrary)";
 
         #region Configurations
 
