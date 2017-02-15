@@ -313,6 +313,8 @@ namespace WikiClientLibrary
 
         private static readonly KeyValuePair<string, string>[] EmptyWarnings = {};
 
+        private static readonly DateTime[] EmptyDateTime = {};
+
         /// <summary>
         /// Try to convert the specified warning code and context into a user-fridendly
         /// warning message.
@@ -328,7 +330,7 @@ namespace WikiClientLibrary
         {
             string msg;
             if (UploadWarnings.TryGetValue(warningCode, out msg))
-                return string.Format(msg, warningCode, context);
+                return string.Format(msg, context);
             return $"{warningCode}: {context}";
         }
 
@@ -387,13 +389,27 @@ namespace WikiClientLibrary
         /// </remarks>
         public IList<KeyValuePair<string, string>> Warnings { get; private set; } = EmptyWarnings;
 
+        /// <summary>
+        /// Gets a list of timestamps indicating the duplicate file versions, if any.
+        /// </summary>
+        public IList<DateTime> DuplicateVersions { get; private set; } = EmptyDateTime;
+
         [JsonProperty("warnings")]
         private JObject RawWarnings
         {
             set
             {
-                var l = value.Properties().Select(p => new KeyValuePair<string, string>(p.Name, (string) p.Value)).ToList();
+                var l = value.Properties()
+                    .Where(p => p.Value.Type == JTokenType.String)
+                    .Select(p => new KeyValuePair<string, string>(p.Name, (string) p.Value)).ToList();
                 Warnings = new ReadOnlyCollection<KeyValuePair<string, string>>(l);
+                var dv = value["duplicateversions"];
+                if (dv != null)
+                {
+                    var m = dv.Children<JProperty>().Where(p => p.Name == "timestamp")
+                        .Select(p => (DateTime) p.Value).ToList();
+                    DuplicateVersions = new ReadOnlyCollection<DateTime>(m);
+                } 
             }
         }
 
