@@ -1,6 +1,10 @@
 A .NET Portable & asynchronous MediaWiki API client library for wiki sites. This library aims for human users, as well as bots.
 
-The repository is still under constructions. The roadmap can be found in the [repository wiki](https://github.com/CXuesong/WikiClientLibrary/wiki).
+This package is now available on NuGet. You may install the package using the following command in the Package Management Console
+
+```powershell
+Install-Package CXuesong.MW.WikiClientLibrary -Pre
+```
 
 Before running the test cases, please take a look at the [last section](#setting-up-test-cases).
 

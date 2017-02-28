@@ -1,0 +1,30 @@
+<?xml version="1.0"?>
+<package >
+    <metadata>
+        <id>CXuesong.MW.WikiClientLibrary</id>
+        <version>0.3-beta</version>
+        <title>WikiClientLibrary</title>
+        <authors>CXuesong</authors>
+        <owners>CXuesong</owners>
+        <licenseUrl>http://www.apache.org/licenses/LICENSE-2.0</licenseUrl>
+        <projectUrl>https://github.com/CXuesong/WikiClientLibrary</projectUrl>
+        <requireLicenseAcceptance>false</requireLicenseAcceptance>
+        <description>Wiki Client Library is a .NET Portable &amp; asynchronous client library for MediaWiki sites.</description>
+        <summary>Wiki Client Library is a .NET Portable &amp; asynchronous client library for MediaWiki sites.</summary>
+        <releaseNotes>See https://github.com/CXuesong/WikiClientLibrary/releases .</releaseNotes>
+        <copyright>Copyright (C) CXuesong, 2017</copyright>
+        <tags>MediaWiki API Client</tags>
+        <dependencies>
+            <group targetFramework=".NETStandard1.1">
+                <dependency id="Microsoft.NETCore.Portable.Compatibility" version="1.0" />
+                <dependency id="NETStandard.Library" version="1.6" />
+                <dependency id="Newtonsoft.Json" version="9.0" />
+                <dependency id="System.Interactive.Async" version="3.1" />
+            </group>
+        </dependencies>
+    </metadata>
+     <files>
+         <file src="bin\Release\WikiClientLibrary.dll" target="lib\netstandard1.1\WikiClientLibrary.dll" />
+         <file src="bin\Release\WikiClientLibrary.xml" target="lib\netstandard1.1\WikiClientLibrary.xml" />
+     </files>
+</package>
