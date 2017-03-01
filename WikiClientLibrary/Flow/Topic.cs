@@ -56,7 +56,7 @@ namespace WikiClientLibrary.Flow
             IsLocked = (bool) jrevision["isLocked"];
             IsModerated = (bool) jrevision["isModerated"];
             var expr = (string) jrevision["timestamp"];
-            TimeStamp = DateTime.ParseExact(expr, "yyyyMMddhhmmss", null, DateTimeStyles.AssumeUniversal);
+            TimeStamp = DateTime.ParseExact(expr, "yyyyMMddHHmmss", null, DateTimeStyles.AssumeUniversal);
         }
 
         /// <summary>
