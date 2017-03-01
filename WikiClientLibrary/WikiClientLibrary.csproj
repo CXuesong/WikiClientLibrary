@@ -67,6 +67,8 @@
     <Compile Include="Revision.cs" />
     <Compile Include="Site.cs" />
     <Compile Include="SiteInfo.cs" />
+    <Compile Include="SiteOptions.cs" />
+    <Compile Include="TaskUtility.cs" />
     <Compile Include="UserInfo.cs" />
     <Compile Include="Utility.cs" />
     <Compile Include="Client\WikiClient-json.cs" />
@@ -77,6 +79,7 @@
   <ItemGroup>
     <None Include="project.json" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Portable\$(TargetFrameworkVersion)\Microsoft.Portable.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

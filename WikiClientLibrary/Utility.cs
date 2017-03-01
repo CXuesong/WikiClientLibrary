@@ -13,6 +13,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using WikiClientLibrary.Client;
 using WikiClientLibrary.Generators;
+using System.Runtime.CompilerServices;
 
 namespace WikiClientLibrary
 {

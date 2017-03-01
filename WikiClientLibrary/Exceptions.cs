@@ -8,12 +8,39 @@ using System.Threading.Tasks;
 namespace WikiClientLibrary
 {
     /// <summary>
+    /// Base exception class for WikiClientLibrary.
+    /// </summary>
+    public class WikiClientException : Exception
+    {
+        public WikiClientException() : base("An error has occurred performing MediaWiki operation.")
+        {
+
+        }
+
+        public WikiClientException(string message) : base(message)
+        {
+
+        }
+
+        public WikiClientException(string message, Exception innerException) : base(message, innerException)
+        {
+            
+        }
+    }
+
+    /// <summary>
     /// An exception indicating the requested operation has failed.
     /// </summary>
-    public class OperationFailedException : InvalidOperationException
+    public class OperationFailedException : WikiClientException
     {
+        /// <summary>
+        /// Error code provided by MediaWiki API.
+        /// </summary>
         public string ErrorCode { get; }
 
+        /// <summary>
+        /// Detailed error message provided by MediaWiki API.
+        /// </summary>
         public string ErrorMessage { get; }
 
         public OperationFailedException()
@@ -56,10 +83,23 @@ namespace WikiClientLibrary
         }
     }
 
+
+    /// <summary>
+    /// Raises when the account assertion fails when performing MediaWiki
+    /// API requests.
+    /// </summary>
+    /// <remarks>See https://www.mediawiki.org/wiki/API:Assert .</remarks>
+    public class AccountAssertionFailureException : OperationFailedException
+    {
+        public AccountAssertionFailureException(string errorCode, string message)
+            : base(message)
+        { }
+    }
+
     /// <summary>
     /// Raises when user has no rights for certain operations.
     /// </summary>
-    public class UnauthorizedOperationException : Exception
+    public class UnauthorizedOperationException : WikiClientException
     {
         public UnauthorizedOperationException(string message)
             : base(message)
@@ -91,7 +131,7 @@ namespace WikiClientLibrary
     /// <summary>
     /// An exception indicating the upload operation has at least one warning.
     /// </summary>
-    public class UploadException : Exception
+    public class UploadException : WikiClientException
     {
         /// <summary>
         /// The upload result that caused the exception.
@@ -120,7 +160,7 @@ namespace WikiClientLibrary
     /// Raises when the received network data is out of expectation.
     /// This may indicate the client library code is out of date.
     /// </summary>
-    public class UnexpectedDataException : InvalidOperationException
+    public class UnexpectedDataException : WikiClientException
     {
         public UnexpectedDataException()
             : this("Unexpected data received.")

@@ -19,9 +19,21 @@ namespace WikiClientLibrary
     /// </summary>
     public class Site
     {
+
+        private readonly SiteOptions options;
+
+        #region Services
+
         public WikiClient WikiClient { get; }
 
         public ILogger Logger { get; set; }
+
+        /// <summary>
+        /// A handler used to re-login when account assertion fails.
+        /// </summary>
+        public IAccountAssertionFailureHandler AccountAssertionFailureHandler { get; set; }
+
+        #endregion
 
         /// <summary>
         /// Initialize a <see cref="Site"/> instance with the given API Endpoint URL.
@@ -49,11 +61,6 @@ namespace WikiClientLibrary
             if (string.IsNullOrEmpty(options.ApiEndpoint))
                 throw new ArgumentException("Invalid API endpoint url.", nameof(options));
             var site = new Site(wikiClient, options);
-            if (options.DisambiguationTemplates != null)
-            {
-                site.disambiguationTemplates = options.DisambiguationTemplates
-                    .Concat(new[] {SiteOptions.DefaultDisambiguationTemplate}).ToList();
-            }
             if (!options.ExplicitInfoRefresh)
                 await Task.WhenAll(site.RefreshSiteInfoAsync(), site.RefreshUserInfoAsync());
             return site;
@@ -78,8 +85,25 @@ namespace WikiClientLibrary
             Debug.Assert(wikiClient != null);
             Debug.Assert(options != null);
             WikiClient = wikiClient;
-            this.siteOptions = options;
-            this.ApiEndpoint = options.ApiEndpoint;
+            this.options = options.Clone();
+            DisambiguationTemplatesAsync = new AsyncLazy<ICollection<string>>(async () =>
+            {
+                if (this.options.DisambiguationTemplates == null)
+                {
+                    var dabPages = await RequestHelper
+                        .EnumLinksAsync(this, "MediaWiki:Disambiguationspage", new[] { BuiltInNamespaces.Template })
+                        .ToList();
+                    if (dabPages.Count == 0)
+                    {
+                        // Try to fetch from mw messages
+                        var msg = await GetMessageAsync("disambiguationspage");
+                        if (msg != null) dabPages.Add(msg);
+                    }
+                    dabPages.Add(SiteOptions.DefaultDisambiguationTemplate);
+                    return dabPages;
+                }
+                return this.options.DisambiguationTemplates;
+            });
         }
 
         /// <summary>
@@ -97,12 +121,12 @@ namespace WikiClientLibrary
                 action = "query",
                 meta = "siteinfo",
                 siprop = "general|namespaces|namespacealiases|interwikimap|extensions"
-            }, CancellationToken.None);
-            var qg = (JObject) jobj["query"]["general"];
-            var ns = (JObject) jobj["query"]["namespaces"];
-            var aliases = (JArray) jobj["query"]["namespacealiases"];
-            var interwiki = (JArray) jobj["query"]["interwikimap"];
-            var extensions = (JArray) jobj["query"]["extensions"];
+            }, true, CancellationToken.None);
+            var qg = (JObject)jobj["query"]["general"];
+            var ns = (JObject)jobj["query"]["namespaces"];
+            var aliases = (JArray)jobj["query"]["namespacealiases"];
+            var interwiki = (JArray)jobj["query"]["interwikimap"];
+            var extensions = (JArray)jobj["query"]["extensions"];
             try
             {
                 _SiteInfo = qg.ToObject<SiteInfo>(Utility.WikiJsonSerializer);
@@ -145,18 +169,20 @@ namespace WikiClientLibrary
                 action = "query",
                 meta = "userinfo",
                 uiprop = "blockinfo|groups|hasmsg|rights"
-            }, CancellationToken.None);
-            _UserInfo = ((JObject) jobj["query"]["userinfo"]).ToObject<UserInfo>(Utility.WikiJsonSerializer);
+            }, true, CancellationToken.None);
+            _UserInfo = ((JObject)jobj["query"]["userinfo"]).ToObject<UserInfo>(Utility.WikiJsonSerializer);
             ListingPagingSize = _UserInfo.HasRight(UserRights.ApiHighLimits) ? 5000 : 500;
         }
 
-        private readonly SiteOptions siteOptions;
         private SiteInfo _SiteInfo;
         private UserInfo _UserInfo;
         private NamespaceCollection _Namespaces;
         private InterwikiMap _InterwikiMap;
         private ExtensionCollection _Extensions;
 
+        /// <summary>
+        /// Gets the basic site information.
+        /// </summary>
         public SiteInfo SiteInfo
         {
             get
@@ -166,6 +192,9 @@ namespace WikiClientLibrary
             }
         }
 
+        /// <summary>
+        /// Gets the currrent user's account information.
+        /// </summary>
         public UserInfo UserInfo
         {
             get
@@ -177,6 +206,9 @@ namespace WikiClientLibrary
             }
         }
 
+        /// <summary>
+        /// Gets a collection of namespaces used on this MediaWiki site.
+        /// </summary>
         public NamespaceCollection Namespaces
         {
             get
@@ -195,6 +227,9 @@ namespace WikiClientLibrary
             }
         }
 
+        /// <summary>
+        /// Gets a collection of installed extensions on this MediaWiki site.
+        /// </summary>
         public ExtensionCollection Extensions
         {
             get
@@ -204,7 +239,10 @@ namespace WikiClientLibrary
             }
         }
 
-        public string ApiEndpoint { get; }
+        /// <summary>
+        /// The endpoint URL for MediaWiki API.
+        /// </summary>
+        public string ApiEndpoint => options.ApiEndpoint;
 
         /// <summary>
         /// Gets the default result limit per page for current user.
@@ -213,32 +251,20 @@ namespace WikiClientLibrary
         // Use 500 for default. This value will be updated along with UserInfo.
         internal int ListingPagingSize { get; private set; } = 500;
 
-        private List<string> disambiguationTemplates;
-
         /// <summary>
         /// Gets a list of titles of disambiguation templates. The default DAB template title
-        /// will be included in the list.
+        /// will NOT be included in the list.
         /// </summary>
-        internal async Task<IEnumerable<string>> GetDisambiguationTemplatesAsync()
-        {
-            if (disambiguationTemplates == null)
-            {
-                var dabPages = await RequestHelper
-                    .EnumLinksAsync(this, "MediaWiki:Disambiguationspage", new[] {BuiltInNamespaces.Template})
-                    .ToList();
-                if (dabPages.Count == 0)
-                {
-                    // Try to fetch from mw messages
-                    var msg = await GetMessageAsync("disambiguationspage");
-                    if (msg != null) dabPages.Add(msg);
-                }
-                dabPages.Add(SiteOptions.DefaultDisambiguationTemplate);
-                disambiguationTemplates = dabPages;
-            }
-            return disambiguationTemplates;
-        }
+        internal readonly AsyncLazy<ICollection<string>> DisambiguationTemplatesAsync;
 
-        #region API
+        #region Basic API
+
+        private static readonly IList<KeyValuePair<string, string>> accountAssertionUser = new[]
+            {new KeyValuePair<string, string>("assert", "user")};
+
+        private static readonly IList<KeyValuePair<string, string>> accountAssertionBot = new[]
+            {new KeyValuePair<string, string>("assert", "bot")};
+
 
         /// <summary>
         /// Invokes API and get JSON result.
@@ -248,11 +274,53 @@ namespace WikiClientLibrary
         /// <exception cref="UnauthorizedOperationException">Permission denied.</exception>
         /// <exception cref="OperationFailedException">There's "error" node in returned JSON.</exception>
         /// <remarks>The request is sent via HTTP POST.</remarks>
-        public Task<JToken> PostValuesAsync(IEnumerable<KeyValuePair<string, string>> queryParams, CancellationToken cancellationToken)
-        {
-            return WikiClient.GetJsonAsync(siteOptions.ApiEndpoint, queryParams, cancellationToken);
-        }
+        public Task<JToken> PostValuesAsync(IEnumerable<KeyValuePair<string, string>> queryParams,
+                CancellationToken cancellationToken)
+            => PostValuesAsync(queryParams, false, cancellationToken);
 
+        /// <summary>
+        /// Invokes API and get JSON result.
+        /// </summary>
+        /// <exception cref="InvalidActionException">Specified action is not supported.</exception>
+        /// <exception cref="OperationCanceledException">The operation has been cancelled via <paramref name="cancellationToken"/>.</exception>
+        /// <exception cref="UnauthorizedOperationException">Permission denied.</exception>
+        /// <exception cref="OperationFailedException">There's "error" node in returned JSON.</exception>
+        /// <remarks>The request is sent via HTTP POST.</remarks>
+        public async Task<JToken> PostValuesAsync(IEnumerable<KeyValuePair<string, string>> queryParams, bool supressAccountAssertion,
+            CancellationToken cancellationToken)
+        {
+            var queryParams1 = queryParams as ICollection<KeyValuePair<string, string>> ?? queryParams.ToArray();
+            RETRY:
+            IEnumerable<KeyValuePair<string, string>> pa = queryParams1;
+            if (!supressAccountAssertion && _UserInfo != null)
+            {
+                if ((options.AccountAssertion & AccountAssertionBehavior.AssertBot) ==
+                    AccountAssertionBehavior.AssertBot && _UserInfo.IsBot)
+                    pa = pa.Concat(accountAssertionBot);
+                else if ((options.AccountAssertion & AccountAssertionBehavior.AssertUser) ==
+                         AccountAssertionBehavior.AssertUser && _UserInfo.IsUser)
+                    pa = pa.Concat(accountAssertionUser);
+            }
+            try
+            {
+                return await WikiClient.GetJsonAsync(options.ApiEndpoint, pa, cancellationToken);
+            }
+            catch (AccountAssertionFailureException)
+            {
+                if (AccountAssertionFailureHandler != null)
+                {
+                    // TODO Not thread safe?
+                    if (reLoginTask == null)
+                    {
+                        reLoginTask = Relogin();
+                        Logger?.Warn("Account assertion failed. Try to handle this.");
+                    }
+                    var result = await reLoginTask;
+                    if (result) goto RETRY;
+                }
+                throw;
+            }
+        }
 
         /// <summary>
         /// Invoke API and get JSON result.
@@ -263,15 +331,27 @@ namespace WikiClientLibrary
         /// <exception cref="OperationCanceledException">The operation has been cancelled via <paramref name="cancellationToken"/>.</exception>
         /// <exception cref="OperationFailedException">There's "error" node in returned JSON.</exception>
         public Task<JToken> PostValuesAsync(object queryParams, CancellationToken cancellationToken)
+            => PostValuesAsync(queryParams, false, cancellationToken);
+
+        /// <summary>
+        /// Invoke API and get JSON result.
+        /// </summary>
+        /// <param name="queryParams">An object whose proeprty-value pairs will be converted into key-value pairs and sent.</param>
+        /// <param name="supressAccountAssertion">Whether to temporarily disable account assertion as set in <see cref="SiteOptions.AccountAssertion"/>.</param>
+        /// <param name="cancellationToken">The cancellation token that will be checked prior to completing the returned task.</param>
+        /// <exception cref="InvalidActionException">Specified action is not supported.</exception>
+        /// <exception cref="OperationCanceledException">The operation has been cancelled via <paramref name="cancellationToken"/>.</exception>
+        /// <exception cref="OperationFailedException">There's "error" node in returned JSON.</exception>
+        public Task<JToken> PostValuesAsync(object queryParams, bool supressAccountAssertion, CancellationToken cancellationToken)
         {
-            return WikiClient.GetJsonAsync(siteOptions.ApiEndpoint, queryParams, cancellationToken);
+            return PostValuesAsync(Utility.ToWikiStringValuePairs(queryParams), supressAccountAssertion, cancellationToken);
         }
 
         // No, we cannot guarantee the returned value is JSON, so this function is internal.
         // It depends on caller's conscious.
         internal Task<JToken> PostContentAsync(HttpContent postContent, CancellationToken cancellationToken)
         {
-            return WikiClient.GetJsonAsync(siteOptions.ApiEndpoint, postContent, cancellationToken);
+            return WikiClient.GetJsonAsync(options.ApiEndpoint, postContent, cancellationToken);
         }
 
         #endregion
@@ -306,12 +386,12 @@ namespace WikiClientLibrary
             if (warnings != null)
             {
                 // "*": "Unrecognized value for parameter 'type': xxxx"
-                var warn = (string) warnings["*"];
+                var warn = (string)warnings["*"];
                 if (warn != null && warn.Contains("Unrecognized value") && warn.Contains("type"))
                     throw new ArgumentException(warn, nameof(tokenTypeExpr));
                 throw new OperationFailedException(warnings.ToString());
             }
-            return (JObject) jobj["query"]["tokens"];
+            return (JObject)jobj["query"]["tokens"];
         }
 
         /// <summary>
@@ -329,7 +409,7 @@ namespace WikiClientLibrary
                 titles = "Dummy Title",
                 intoken = tokenTypeExpr,
             }, cancellationToken);
-            var page = (JObject) ((JProperty) jobj["query"]["pages"].First).Value;
+            var page = (JObject)((JProperty)jobj["query"]["pages"].First).Value;
             return new JObject(page.Properties().Where(p => p.Name.EndsWith("token")));
         }
 
@@ -399,7 +479,7 @@ namespace WikiClientLibrary
                                 rctoken = "patrol",
                                 rclimit = 1
                             }, cancellationToken);
-                            patrolToken = (string) jobj["query"]["recentchanges"]["patroltoken"];
+                            patrolToken = (string)jobj["query"]["recentchanges"]["patroltoken"];
                         }
                         lock (_TokensCache)
                             _TokensCache["patrol"] = patrolToken;
@@ -423,7 +503,7 @@ namespace WikiClientLibrary
                 if (pendingtokens.Count > 0)
                 {
                     fetchedTokens = await FetchTokensAsync2(string.Join("|", pendingtokens), cancellationToken);
-                    var csrf = (string) fetchedTokens["csrftoken"];
+                    var csrf = (string)fetchedTokens["csrftoken"];
                     if (csrf != null)
                     {
                         lock (_TokensCache)
@@ -442,14 +522,14 @@ namespace WikiClientLibrary
                         : p.Name;
                     lock (_TokensCache)
                     {
-                        _TokensCache[tokenName] = (string) p.Value;
+                        _TokensCache[tokenName] = (string)p.Value;
                     }
                     pendingtokens.Remove(tokenName);
                 }
                 if (pendingtokens.Count > 0)
                 {
-                    throw new InvalidOperationException("Unrecognized token(s): " + string.Join(", ", pendingtokens) +
-                                                        ".");
+                    throw new InvalidOperationException(
+                        "Unrecognized token(s): " + string.Join(", ", pendingtokens) + ".");
                 }
             }
             // Then return.
@@ -490,7 +570,7 @@ namespace WikiClientLibrary
             if (tokenType == null) throw new ArgumentNullException(nameof(tokenType));
             if (tokenType.Contains("|"))
                 throw new ArgumentException("Pipe character in token type name.", nameof(tokenType));
-            var dict = await GetTokensAsync(new[] {tokenType}, forceRefetch, cancellationToken);
+            var dict = await GetTokensAsync(new[] { tokenType }, forceRefetch, cancellationToken);
             return dict.Values.Single();
         }
 
@@ -539,9 +619,9 @@ namespace WikiClientLibrary
             if (string.IsNullOrEmpty(password)) throw new ArgumentNullException(nameof(password));
             string token = null;
             // If _SiteInfo is null, it indicates options.ExplicitInfoRefresh must be true.
-            Debug.Assert(siteOptions.ExplicitInfoRefresh || _SiteInfo != null);
+            Debug.Assert(options.ExplicitInfoRefresh || _SiteInfo != null);
             // For MedaiWiki 1.27+
-            if (!siteOptions.ExplicitInfoRefresh && _SiteInfo.Version >= new Version("1.27"))
+            if (!options.ExplicitInfoRefresh && _SiteInfo.Version >= new Version("1.27"))
                 token = await GetTokenAsync("login", true, cancellationToken);
             // For MedaiWiki < 1.27, We'll have to request twice.
             // If options.ExplicitInfoRefresh is true, we just treat it as MedaiWiki < 1.27,
@@ -554,8 +634,8 @@ namespace WikiClientLibrary
                 lgpassword = password,
                 lgtoken = token,
                 lgdomain = domain,
-            }, cancellationToken);
-            var result = (string) jobj["login"]["result"];
+            }, true, cancellationToken);
+            var result = (string)jobj["login"]["result"];
             string message = null;
             switch (result)
             {
@@ -569,17 +649,17 @@ namespace WikiClientLibrary
                         "The login using the main account password (rather than a bot password) cannot proceed because user interaction is required. The clientlogin action should be used instead.";
                     break;
                 case "Throttled":
-                    var time = (int) jobj["login"]["wait"];
+                    var time = (int)jobj["login"]["wait"];
                     Logger?.Warn($"Throttled: {time}sec.");
                     await Task.Delay(TimeSpan.FromSeconds(time), cancellationToken);
                     goto RETRY;
                 case "NeedToken":
-                    token = (string) jobj["login"]["token"];
+                    token = (string)jobj["login"]["token"];
                     goto RETRY;
                 case "WrongToken": // We should have got correct token.
                     throw new UnexpectedDataException($"Unexpected login result: {result} .");
             }
-            message = (string) jobj["login"]["reason"] ?? message;
+            message = (string)jobj["login"]["reason"] ?? message;
             throw new OperationFailedException(result, message);
         }
 
@@ -596,18 +676,28 @@ namespace WikiClientLibrary
             var jobj = await PostValuesAsync(new
             {
                 action = "logout",
-            }, CancellationToken.None);
+            }, true, CancellationToken.None);
             _TokensCache.Clear();
-            if (siteOptions.ExplicitInfoRefresh)
+            if (options.ExplicitInfoRefresh)
                 _UserInfo = null;
             else
                 await RefreshUserInfoAsync();
         }
 
+        private volatile Task<bool> reLoginTask;
+
+        private async Task<bool> Relogin()
+        {
+            Debug.Assert(AccountAssertionFailureHandler != null);
+            var result = await AccountAssertionFailureHandler.Login(this);
+            reLoginTask = null;
+            return result;
+        }
+
         #endregion
 
         #region Query
-
+        private readonly AsyncReaderWriterLock cachedMessagesLock = new AsyncReaderWriterLock();
         private readonly IDictionary<string, string> _CachedMessages = new Dictionary<string, string>();
 
         private async Task<JArray> FetchMessagesAsync(string messagesExpr, CancellationToken cancellationToken)
@@ -618,7 +708,7 @@ namespace WikiClientLibrary
                 meta = "allmessages",
                 ammessages = messagesExpr,
             }, cancellationToken);
-            return (JArray) jresult["query"]["allmessages"];
+            return (JArray)jresult["query"]["allmessages"];
             //return jresult.ToDictionary(m => , m => (string) m["*"]);
         }
 
@@ -658,36 +748,46 @@ namespace WikiClientLibrary
         /// <exception cref="InvalidOperationException">
         /// Trying to fetch all the messages with "*" input.
         /// </exception>
-        public async Task<IDictionary<string, string>> GetMessagesAsync(IEnumerable<string> messages, CancellationToken cancellationToken)
+        public async Task<IDictionary<string, string>> GetMessagesAsync(IEnumerable<string> messages,
+            CancellationToken cancellationToken)
         {
             if (messages == null) throw new ArgumentNullException(nameof(messages));
             cancellationToken.ThrowIfCancellationRequested();
             var impending = new List<string>();
             var result = new Dictionary<string, string>();
-            foreach (var m in messages)
+            using (await cachedMessagesLock.ReaderLockAsync(cancellationToken))
             {
-                if (m == null) throw new ArgumentException("The sequence contains null item.", nameof(messages));
-                if (m.Contains("|"))
-                    throw new ArgumentException($"The message name \"{m}\" contains pipe character.", nameof(messages));
-                if (m == "*") throw new InvalidOperationException("Getting all the messages is deprecated.");
-                string content;
-                if (_CachedMessages.TryGetValue(m.ToLowerInvariant(), out content))
-                    result[m] = content;
-                else
-                    impending.Add(m);
+                cancellationToken.ThrowIfCancellationRequested();
+                foreach (var m in messages)
+                {
+                    if (m == null) throw new ArgumentException("The sequence contains null item.", nameof(messages));
+                    if (m.Contains("|"))
+                        throw new ArgumentException($"The message name \"{m}\" contains pipe character.",
+                            nameof(messages));
+                    if (m == "*") throw new InvalidOperationException("Getting all the messages is deprecated.");
+                    string content;
+                    if (_CachedMessages.TryGetValue(m.ToLowerInvariant(), out content))
+                        result[m] = content;
+                    else
+                        impending.Add(m);
+                }
             }
             if (impending.Count > 0)
             {
-                var jr = await FetchMessagesAsync(string.Join("|", impending), cancellationToken);
-                foreach (var entry in jr)
+                using (await cachedMessagesLock.WriterLockAsync(cancellationToken))
                 {
-                    var name = (string) entry["name"];
-                    //var nname = (string)entry["normalizedname"];
-                    // for Wikia, there's no normalizedname
-                    var message = (string) entry["*"];
-                    //var missing = entry["missing"] != null;       message will be null
-                    result[name] = message;
-                    _CachedMessages[name] = message;
+                    cancellationToken.ThrowIfCancellationRequested();
+                    var jr = await FetchMessagesAsync(string.Join("|", impending), cancellationToken);
+                    foreach (var entry in jr)
+                    {
+                        var name = (string)entry["name"];
+                        //var nname = (string)entry["normalizedname"];
+                        // for Wikia, there's no normalizedname
+                        var message = (string)entry["*"];
+                        //var missing = entry["missing"] != null;       message will be null
+                        result[name] = message;
+                        _CachedMessages[name] = message;
+                    }
                 }
             }
             return result;
@@ -728,7 +828,7 @@ namespace WikiClientLibrary
         public async Task<string> GetMessageAsync(string message, CancellationToken cancellationToken)
         {
             if (message == null) throw new ArgumentNullException(nameof(message));
-            var result = await GetMessagesAsync(new[] {message}, cancellationToken);
+            var result = await GetMessagesAsync(new[] { message }, cancellationToken);
             return result.Values.FirstOrDefault();
         }
 
@@ -751,7 +851,7 @@ namespace WikiClientLibrary
                 meta = "siteinfo",
                 siprop = "statistics",
             }, cancellationToken);
-            var jstat = (JObject) jobj["query"]?["statistics"];
+            var jstat = (JObject)jobj["query"]?["statistics"];
             if (jstat == null) throw new UnexpectedDataException();
             var parsed = jstat.ToObject<SiteStatistics>();
             return parsed;
@@ -881,14 +981,14 @@ namespace WikiClientLibrary
                 redirects = (options & OpenSearchOptions.ResolveRedirects) == OpenSearchOptions.ResolveRedirects,
             }, cancellationToken);
             var result = new List<OpenSearchResultEntry>();
-            var titles = (JArray) jresult[1];
+            var titles = (JArray)jresult[1];
             var descs = jresult[2] as JArray;
             var urls = jresult[3] as JArray;
             for (int i = 0; i < titles.Count; i++)
             {
-                var entry = new OpenSearchResultEntry {Title = (string) titles[i]};
-                if (descs != null) entry.Description = (string) descs[i];
-                if (urls != null) entry.Url = (string) urls[i];
+                var entry = new OpenSearchResultEntry { Title = (string)titles[i] };
+                if (descs != null) entry.Description = (string)descs[i];
+                if (urls != null) entry.Url = (string)urls[i];
                 result.Add(entry);
             }
             return result;
@@ -1073,7 +1173,7 @@ namespace WikiClientLibrary
         /// <param name="options">Options for parsing.</param>
         /// <remarks>If both <paramref name="title"/> and <paramref name="contentModel"/> is <c>null</c>, the content model will be assumed as wikitext.</remarks>
         /// <exception cref="ArgumentException">Both <paramref name="content"/> and <paramref name="summary"/> is <c>null</c>.</exception>
-        public Task<ParsedContentInfo> ParseContentAsync(string content, string summary, string title, 
+        public Task<ParsedContentInfo> ParseContentAsync(string content, string summary, string title,
             string contentModel, ParsingOptions options)
         {
             return ParseContentAsync(content, summary, title, contentModel, options, new CancellationToken());
@@ -1093,7 +1193,7 @@ namespace WikiClientLibrary
         /// <param name="cancellationToken">The cancellation token that will be checked prior to completing the returned task.</param>
         /// <remarks>If both <paramref name="title"/> and <paramref name="contentModel"/> is <c>null</c>, the content model will be assumed as wikitext.</remarks>
         /// <exception cref="ArgumentException">Both <paramref name="content"/> and <paramref name="summary"/> is <c>null</c>.</exception>
-        public async Task<ParsedContentInfo> ParseContentAsync(string content, string summary, string title, 
+        public async Task<ParsedContentInfo> ParseContentAsync(string content, string summary, string title,
             string contentModel, ParsingOptions options, CancellationToken cancellationToken)
         {
             if (content == null && summary == null) throw new ArgumentException(nameof(content));
@@ -1103,7 +1203,7 @@ namespace WikiClientLibrary
             p["title"] = title;
             p["title"] = title;
             var jobj = await PostValuesAsync(p, cancellationToken);
-            var parsed = ((JObject) jobj["parse"]).ToObject<ParsedContentInfo>(Utility.WikiJsonSerializer);
+            var parsed = ((JObject)jobj["parse"]).ToObject<ParsedContentInfo>(Utility.WikiJsonSerializer);
             return parsed;
         }
 
@@ -1117,7 +1217,7 @@ namespace WikiClientLibrary
         /// </returns>
         public override string ToString()
         {
-            return string.IsNullOrEmpty(SiteInfo.SiteName) ? siteOptions.ApiEndpoint : SiteInfo.SiteName;
+            return string.IsNullOrEmpty(SiteInfo.SiteName) ? options.ApiEndpoint : SiteInfo.SiteName;
         }
     }
 
@@ -1127,6 +1227,9 @@ namespace WikiClientLibrary
     [Flags]
     public enum OpenSearchOptions
     {
+        /// <summary>
+        /// No options.
+        /// </summary>
         None = 0,
 
         /// <summary>
@@ -1218,92 +1321,6 @@ namespace WikiClientLibrary
         public override string ToString()
         {
             return Title + (Description != null ? ":" + Description : null);
-        }
-    }
-
-    /// <summary>
-    /// Client options for creating a <see cref="Site"/> instance.
-    /// </summary>
-    public class SiteOptions
-    {
-        /// <summary>
-        /// The name of default disambiguation template.
-        /// </summary>
-        /// <remarks>
-        /// The default disambiguation template {{Disambig}} is always included in the
-        /// list, implicitly.
-        /// </remarks>
-        public const string DefaultDisambiguationTemplate = "Template:Disambig";
-
-        /// <summary>
-        /// Specifies a list of disambiguation templates explicitly.
-        /// </summary>
-        /// <remarks>
-        /// <para>This list is used when there's no Disambiguator on the MediaWiki site,
-        /// and WikiClientLibrary is deciding wheter a page is a disambiguation page.
-        /// The default disambiguation template {{Disambig}} is always included in the
-        /// list, implicitly.</para>
-        /// <para>If this value is <c>null</c>, WikiClientLibrary will try to
-        /// infer the disambiguation template from [[MediaWiki:Disambiguationspage]].</para>
-        /// </remarks>
-        public IList<string> DisambiguationTemplates { get; set; }
-
-        /// <summary>
-        /// Sets the URL of MedaiWiki API endpoint.
-        /// </summary>
-        public string ApiEndpoint { get; set; }
-
-        /// <summary>
-        /// Whether to disable the refresh of site info and user info
-        /// until <see cref="Site.RefreshSiteInfoAsync"/> and <see cref="Site.RefreshUserInfoAsync"/>
-        /// are called explicitly.
-        /// </summary>
-        /// <remarks>
-        /// <para>This property affects the initialization of site info (<see cref="Site.SiteInfo"/>,
-        /// <see cref="Site.Extensions"/>, <see cref="Site.InterwikiMap"/>,
-        /// and <see cref="Site.Namespaces"/>), as well as <see cref="Site.UserInfo"/>.
-        /// If the value is <c>true</c>, these info will not be initialized
-        /// when calling <see cref="Site.CreateAsync(WikiClient,SiteOptions)"/>, and by the
-        /// invocation of <see cref="Site.LogoutAsync"/>, user info will just be invalidated,
-        /// with no further internal invocation of <see cref="Site.RefreshUserInfoAsync"/>.</para>
-        /// <para>For the priviate wiki where anonymous users cannot access query API,
-        /// it's recommended that this property be set to <c>true</c>.
-        /// You can first check whether you have already logged in,
-        /// and call <see cref="Site.LoginAsync(string,string)"/> If necessary.</para>
-        /// <para>The site info and user info should always be initialized before most of the MediaWiki
-        /// operations. Otherwise an <see cref="InvalidOperationException"/> will be thrown when
-        /// attempting to perform those operations.</para>
-        /// <para>In order to decide whether you have already logged in into a private wiki, you can
-        /// <list type="number">
-        /// <item><description>Call <see cref="Site.CreateAsync(WikiClient,SiteOptions)"/>, with <see cref="ExplicitInfoRefresh"/> set to <c>true</c>.</description></item>
-        /// <item><description>Call and <c>await</c> for <see cref="Site.RefreshUserInfoAsync"/>. (Do not use <see cref="Site.RefreshSiteInfoAsync"/>. See the explanation below.)</description></item>
-        /// <item><description>If an <see cref="UnauthorizedOperationException"/> is raised, then you should call <see cref="Site.LoginAsync(string,string)"/> to login.</description></item>
-        /// <item><description>Otherwise, since you've called <see cref="Site.RefreshUserInfoAsync"/>, you can directly check <see cref="UserInfo.IsUser"/>.
-        /// Usually it would be <c>true</c>, since you've already logged in during a previous session. Otherwise, which is a rare case, you may also need to login.</description></item>
-        /// </list>
-        /// Note that <see cref="Site.RefreshUserInfoAsync"/> will be refreshed automatically after a sucessful
-        /// login operation, so you only have to call <see cref="Site.RefreshSiteInfoAsync"/> afterwards.
-        /// Nonetheless, both the user info and the site info should be initially refreshed before
-        /// you can perform other opertations.
-        /// </para>
-        /// </remarks>
-        public bool ExplicitInfoRefresh { get; set; }
-
-        /// <summary>
-        /// Initializes with empty settings.
-        /// </summary>
-        public SiteOptions()
-        {
-
-        }
-
-        /// <summary>
-        /// Initializes with API endpoint URL.
-        /// </summary>
-        /// <param name="apiEndpoint">The URL of MedaiWiki API endpoint.</param>
-        public SiteOptions(string apiEndpoint)
-        {
-            ApiEndpoint = apiEndpoint;
         }
     }
 }

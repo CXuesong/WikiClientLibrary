@@ -127,6 +127,8 @@ namespace WikiClientLibrary.Client
                         throw new UnauthorizedOperationException(errmessage);
                     case "unknown_action":
                         throw new InvalidActionException(errcode, errmessage);
+                    case "assertuserfailed":
+                        throw new AccountAssertionFailureException(errcode, errmessage);
                     default:
                         if (errcode.EndsWith("conflict"))
                             throw new OperationConflictException(errcode, errmessage);

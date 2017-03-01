@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Newtonsoft.Json.Serialization;
 using WikiClientLibrary;
 using System.Diagnostics;
 using System.IO;
@@ -12,7 +11,6 @@ using System.Reflection;
 using System.Runtime.ExceptionServices;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using WikiClientLibrary.Client;
-using Newtonsoft.Json.Linq;
 
 namespace UnitTestProject1
 {
@@ -48,7 +46,7 @@ namespace UnitTestProject1
             var client = new WikiClient
             {
                 Logger = new TraceLogger(),
-                Timeout = TimeSpan.FromSeconds(10),
+                Timeout = TimeSpan.FromSeconds(20),
                 ThrottleTime = TimeSpan.FromSeconds(1),
                 RetryDelay = TimeSpan.FromSeconds(5),
                 ClientUserAgent = "UnitTest/1.0 (.NET CLR " + Environment.Version + ")",

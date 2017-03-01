@@ -152,7 +152,7 @@ namespace WikiClientLibrary
             if (Site.Extensions.Contains("Disambiguator"))
                 return PageProperties.Disambiguation;
             // Check whether the page has transcluded one of the DAB templates.
-            var dabt = await Site.GetDisambiguationTemplatesAsync();
+            var dabt = await Site.DisambiguationTemplatesAsync;
             var dabp = await RequestHelper.EnumTransclusionsAsync(Site, Title,
                 new[] {BuiltInNamespaces.Template}, dabt, 1).Any();
             return dabp;

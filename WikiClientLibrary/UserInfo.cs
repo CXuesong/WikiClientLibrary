@@ -35,6 +35,14 @@ namespace WikiClientLibrary
         /// </summary>
         public bool IsUser => Groups.Contains(UserGroups.User);
 
+        /// <summary>
+        /// Determines wheter current user is in "bot" group.
+        /// </summary>
+        public bool IsBot => Groups.Contains(UserGroups.Bot);
+
+        /// <summary>
+        /// Determins whether the current user has been blocked.
+        /// </summary>
         public bool IsBlocked => BlockId != 0;
 
         [JsonProperty]
@@ -111,6 +119,12 @@ namespace WikiClientLibrary
             if (rightName == null) throw new ArgumentNullException(nameof(rightName));
             if (!HasRight(rightName))
                 throw new UnauthorizedOperationException($"Current user doesn't have the right: {rightName}.");
+        }
+
+        /// <inheritdoc />
+        public override string ToString()
+        {
+            return Name;
         }
 
         internal UserInfo()
