@@ -40,13 +40,13 @@ namespace ConsoleTestApplication1
             // Access site information via Site.SiteInfo
             Console.WriteLine("API version: {0}", site.SiteInfo.Generator);
             // Access user information via Site.UserInfo
-            Console.WriteLine("Hello, {0}!", site.UserInfo.Name);
-            Console.WriteLine("You're in the following groups: {0}.", string.Join(",", site.UserInfo.Groups));
+            Console.WriteLine("Hello, {0}!", site.AccountInfo.Name);
+            Console.WriteLine("You're in the following groups: {0}.", string.Join(",", site.AccountInfo.Groups));
             // Site login
             if (Confirm($"Do you want to login into {site.SiteInfo.SiteName}?"))
             {
                 await site.LoginAsync(Input("Username"), Input("Password"));
-                Console.WriteLine("You have successfully logged in as {0}.", site.UserInfo.Name);
+                Console.WriteLine("You have successfully logged in as {0}.", site.AccountInfo.Name);
             }
             // Find out more members in Site class, such as
             //  page.Namespaces
