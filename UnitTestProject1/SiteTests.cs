@@ -243,8 +243,9 @@ namespace UnitTestProject1
             Assert.IsFalse(site.UserInfo.IsUser, "You should have not logged in… Wierd.");
             // Make believe that we're bots…
             typeof(UserInfo).GetProperty("Groups").SetValue(site.UserInfo, new[] {"*", "user", "bot"});
+            Assert.IsTrue(site.UserInfo.IsUser, "Cannot militate user information.");
             // Send a request…
-            var token = AwaitSync(site.GetTokenAsync("edit"));
+            var message = AwaitSync(site.GetMessageAsync("edit"));
         }
 
         [TestMethod]
@@ -259,7 +260,8 @@ namespace UnitTestProject1
             });
             Assert.IsFalse(site.UserInfo.IsUser, "You should have not logged in… Wierd.");
             // Make believe that we're bots…
-            typeof(UserInfo).GetProperty("Groups").SetValue(site.UserInfo, new[] { "*", "user", "bot" });
+            typeof(UserInfo).GetProperty("Groups").SetValue(site.UserInfo, new[] {"*", "user", "bot"});
+            Assert.IsTrue(site.UserInfo.IsUser, "Cannot militate user information.");
             // Send a request…
             var message = AwaitSync(site.GetMessageAsync("edit"));
             Trace.WriteLine("Message(edit) = " + message);

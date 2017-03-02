@@ -82,7 +82,7 @@ namespace WikiClientLibrary
         /// <exception cref="ArgumentException"><paramref name="text"/> does not contain a valid page title.</exception>
         public static WikiLink Parse(Site site, string text, int defaultNamespaceId)
         {
-            return ParseInternalAsync(site, null, text, defaultNamespaceId, true).Result;
+            return ParseInternalAsync(site, null, text, defaultNamespaceId, true).GetAwaiter().GetResult();
         }
 
         /// <summary>
@@ -141,7 +141,7 @@ namespace WikiClientLibrary
 
         public static WikiLink TryParse(Site site, string text, int defaultNamespaceId)
         {
-            return ParseInternalAsync(site, null, text, defaultNamespaceId, false).Result;
+            return ParseInternalAsync(site, null, text, defaultNamespaceId, false).GetAwaiter().GetResult();
         }
 
         private static async Task<WikiLink> ParseInternalAsync(Site site, IFamily family, string text, int defaultNamespaceId, bool exceptionOnFailure)
@@ -302,7 +302,7 @@ namespace WikiClientLibrary
                                 interwiki = part.ToLowerInvariant();
                                 // For interwiki, we do not parse namespace name.
                                 // Instead, we treat it as a part of page title.
-                                nsname = "";
+                                nsname = null;
                                 state = 2;
                             }
                             else
@@ -321,14 +321,25 @@ namespace WikiClientLibrary
             END_OF_PARSING:
             Debug.Assert(pagetitle != null, "pagetitle != null");
             if (pagetitle.Length == 0) goto EMPTY_TITLE;
-            if (nsname == null) nsname = site.Namespaces[defaultNamespace].CustomName;
+            // nsname == null means that the expression has interwiki prefix, while family == null
+            if (nsname == null && interwiki == null)
+                nsname = site.Namespaces[defaultNamespace].CustomName;
             return Tuple.Create(interwiki, nsname, pagetitle);
             EMPTY_TITLE:
             throw new ArgumentException($"The title \"{rawTitle}\" does not contain page title.");
         }
 
+        /// <summary>
+        /// Interwiki prefix of the wikilink. If this link is not an interwiki link,
+        /// the value is <c>null</c>.
+        /// </summary>
         public string InterwikiPrefix { get; private set; }
 
+        /// <summary>
+        /// Namespace name. If the title is in main namespace, the value is empty string.
+        /// If this is not applicable (e.g. parsed a interwiki link without family information given),
+        /// the value is <c>null</c>.
+        /// </summary>
         public string NamespaceName { get; private set; }
 
         public NamespaceInfo Namespace { get; private set; }
