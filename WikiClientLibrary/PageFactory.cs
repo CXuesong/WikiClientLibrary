@@ -51,7 +51,7 @@ namespace WikiClientLibrary
             {
                 throw new ArgumentException(ex.Message, nameof(title), ex);
             }
-            if (link.Interwiki != null)
+            if (link.InterwikiPrefix != null)
                 throw new InvalidOperationException($"Interwiki title is not supported: {title} .");
             switch (link.Namespace.Id)
             {
