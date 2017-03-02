@@ -64,9 +64,11 @@ The original title of the page is '''{title}'''.
         {
             AssertModify(); // We're doing dirty work in this calss.
             // Prepare test environment.
+            if (CredentialManager.DirtyTestsEntryPointUrl == null)
+                Assert.Inconclusive("You need to specify CredentialManager.DirtyTestsEntryPointUrl before running this group of tests.");
             site = CreateWikiSite(CredentialManager.DirtyTestsEntryPointUrl);
             CredentialManager.Login(site);
-            site.UserInfo.AssertInGroup("sysop");
+            site.AccountInfo.AssertInGroup("sysop");
             GetOrCreatePage(site, TestPage1Title);
             GetOrCreatePage(site, TestPage11Title);
             GetOrCreatePage(site, TestPage2Title);
