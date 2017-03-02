@@ -15,7 +15,7 @@ namespace UnitTestProject1
         public static Site WikiaTestSite => _WikiaTestSite.Value;
 
         [TestMethod]
-        public void TestMethod1()
+        public void WikiLinkTest1()
         {
             var link1 = WikiLink.Parse(WpTestSite, "____proJEct__talk_:___sandbox_");
             var link2 = WikiLink.Parse(WpTestSite, "__ _pROject_ _talk_:___sandbox_", BuiltInNamespaces.Category);

@@ -283,8 +283,8 @@ namespace WikiClientLibrary
     /// <remarks>Note the namespace name is case-insensitive.</remarks>
     public class NamespaceCollection : ICollection<NamespaceInfo>
     {
-        private readonly IDictionary<int, NamespaceInfo> idNsDict;
-        private readonly IDictionary<string, NamespaceInfo> nameNsDict;
+        private readonly IDictionary<int, NamespaceInfo> idNsDict;          // id -- ns
+        private readonly IDictionary<string, NamespaceInfo> nameNsDict;     // name/custom/alias -- ns
 
         internal NamespaceCollection(Site site, JObject namespaces, JArray jaliases)
         {

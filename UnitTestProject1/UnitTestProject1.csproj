@@ -69,6 +69,7 @@
     <Compile Include="PageTestsDirty.cs" />
     <Compile Include="RenderingTests.cs" />
     <Compile Include="RevisionGeneratorTests.cs" />
+    <Compile Include="WikiFamilyTests.cs" />
     <Compile Include="WebClientTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Utility.cs" />

@@ -74,6 +74,7 @@
     <Compile Include="Client\WikiClient-json.cs" />
     <Compile Include="Client\WikiClient.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Family.cs" />
     <Compile Include="WikiLink.cs" />
   </ItemGroup>
   <ItemGroup>
