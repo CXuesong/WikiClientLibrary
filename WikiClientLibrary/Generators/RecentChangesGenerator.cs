@@ -135,7 +135,7 @@ namespace WikiClientLibrary.Generators
                 // All except userid .
                 // rcpermissiondenied
                 var fields = "user|comment|parsedcomment|flags|timestamp|title|ids|sizes|redirect|loginfo|tags|sha1";
-                if (Site.UserInfo.HasRight(UserRights.Patrol)) fields += "|patrolled";
+                if (Site.AccountInfo.HasRight(UserRights.Patrol)) fields += "|patrolled";
                 addParam("rcprop", fields);
             }
             return dict;

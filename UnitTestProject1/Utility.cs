@@ -197,7 +197,7 @@ namespace UnitTestProject1
         public static void AssertLoggedIn(Site site)
         {
             if (site == null) throw new ArgumentNullException(nameof(site));
-            if (!site.UserInfo.IsUser) Assert.Inconclusive($"User {site.UserInfo} has not logged into {site}.");
+            if (!site.AccountInfo.IsUser) Assert.Inconclusive($"User {site.AccountInfo} has not logged into {site}.");
         }
 
         public static Tuple<Stream, string> GetDemoImage()

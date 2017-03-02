@@ -46,7 +46,7 @@ namespace WikiClientLibrary
         /// <remarks>
         /// <para>This property affects the initialization of site info (<see cref="Site.SiteInfo"/>,
         /// <see cref="Site.Extensions"/>, <see cref="Site.InterwikiMap"/>,
-        /// and <see cref="Site.Namespaces"/>), as well as <see cref="Site.UserInfo"/>.
+        /// and <see cref="Site.Namespaces"/>), as well as <see cref="Site.AccountInfo"/>.
         /// If the value is <c>true</c>, these info will not be initialized
         /// when calling <see cref="Site.CreateAsync(WikiClient,SiteOptions)"/>, and by the
         /// invocation of <see cref="Site.LogoutAsync"/>, user info will just be invalidated,
@@ -63,7 +63,7 @@ namespace WikiClientLibrary
         /// <item><description>Call <see cref="Site.CreateAsync(WikiClient,SiteOptions)"/>, with <see cref="ExplicitInfoRefresh"/> set to <c>true</c>.</description></item>
         /// <item><description>Call and <c>await</c> for <see cref="Site.RefreshUserInfoAsync"/>. (Do not use <see cref="Site.RefreshSiteInfoAsync"/>. See the explanation below.)</description></item>
         /// <item><description>If an <see cref="UnauthorizedOperationException"/> is raised, then you should call <see cref="Site.LoginAsync(string,string)"/> to login.</description></item>
-        /// <item><description>Otherwise, since you've called <see cref="Site.RefreshUserInfoAsync"/>, you can directly check <see cref="UserInfo.IsUser"/>.
+        /// <item><description>Otherwise, since you've called <see cref="Site.RefreshUserInfoAsync"/>, you can directly check <see cref="AccountInfo.IsUser"/>.
         /// Usually it would be <c>true</c>, since you've already logged in during a previous session. Otherwise, which is a rare case, you may also need to login.</description></item>
         /// </list>
         /// Note that <see cref="Site.RefreshUserInfoAsync"/> will be refreshed automatically after a sucessful
@@ -116,13 +116,13 @@ namespace WikiClientLibrary
         /// </summary>
         None = 0,
         /// <summary>
-        /// Asserts that your account is logged in per request, if <see cref="Site.UserInfo"/>
+        /// Asserts that your account is logged in per request, if <see cref="Site.AccountInfo"/>
         /// indicates that you should have logged in. If the assertion failed,
         /// an <see cref="AccountAssertionFailureException"/> will be thrown.
         /// </summary>
         AssertUser = 1,
         /// <summary>
-        /// Checks that your account has the "bot" user right per request, if <see cref="Site.UserInfo"/>
+        /// Checks that your account has the "bot" user right per request, if <see cref="Site.AccountInfo"/>
         /// indicates that you should have logged in as bot. If the assertion failed,
         /// an <see cref="AccountAssertionFailureException"/> will be thrown.
         /// </summary>

@@ -12,7 +12,7 @@ namespace WikiClientLibrary
     /// </summary>
     /// <remarks>See https://www.mediawiki.org/wiki/API:Userinfo .</remarks>
     [JsonObject(MemberSerialization.OptIn)]
-    public class UserInfo
+    public class AccountInfo
     {
         [JsonProperty]
         public int Id { get; private set; }
@@ -127,7 +127,7 @@ namespace WikiClientLibrary
             return Name;
         }
 
-        internal UserInfo()
+        internal AccountInfo()
         {
             
         }

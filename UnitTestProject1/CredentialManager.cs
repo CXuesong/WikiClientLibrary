@@ -60,7 +60,7 @@ namespace UnitTestProject1
         {
             if (site == null) throw new ArgumentNullException(nameof(site));
             LoginCore(site);
-            if (!site.UserInfo.IsUser)
+            if (!site.AccountInfo.IsUser)
                 // This is usually because LoginCore hasn't been implemented yet.
                 throw new NotSupportedException("To enable login feature, you should implement LoginCore private function. See http://github.com/cxuesong/WikiClientLibrary for more information.");
         }

@@ -69,7 +69,7 @@
     <Compile Include="SiteInfo.cs" />
     <Compile Include="SiteOptions.cs" />
     <Compile Include="TaskUtility.cs" />
-    <Compile Include="UserInfo.cs" />
+    <Compile Include="AccountInfo.cs" />
     <Compile Include="Utility.cs" />
     <Compile Include="Client\WikiClient-json.cs" />
     <Compile Include="Client\WikiClient.cs" />

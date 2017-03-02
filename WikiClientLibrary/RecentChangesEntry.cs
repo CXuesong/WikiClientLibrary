@@ -191,7 +191,7 @@ namespace WikiClientLibrary
         {
             if (PatrolStatus == PatrolStatus.Patrolled)
                 throw new InvalidOperationException("The change has already been patrolled.");
-            Site.UserInfo.AssertRight(UserRights.Patrol);
+            Site.AccountInfo.AssertRight(UserRights.Patrol);
             return RequestHelper.PatrolAsync(Site, Id, null, cancellationToken);
         }
 

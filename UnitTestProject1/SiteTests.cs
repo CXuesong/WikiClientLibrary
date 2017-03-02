@@ -113,13 +113,13 @@ namespace UnitTestProject1
         {
             var site = WpTestSite;
             CredentialManager.Login(site);
-            Assert.IsTrue(site.UserInfo.IsUser);
-            Assert.IsFalse(site.UserInfo.IsAnonymous);
-            Trace.WriteLine($"{site.UserInfo.Name} has logged into {site}");
+            Assert.IsTrue(site.AccountInfo.IsUser);
+            Assert.IsFalse(site.AccountInfo.IsAnonymous);
+            Trace.WriteLine($"{site.AccountInfo.Name} has logged into {site}");
             CredentialManager.Logout(site);
-            Assert.IsFalse(site.UserInfo.IsUser);
-            Assert.IsTrue(site.UserInfo.IsAnonymous);
-            Trace.WriteLine($"{site.UserInfo.Name} has logged out.");
+            Assert.IsFalse(site.AccountInfo.IsUser);
+            Assert.IsTrue(site.AccountInfo.IsAnonymous);
+            Trace.WriteLine($"{site.AccountInfo.Name} has logged out.");
         }
 
         /// <summary>
@@ -173,7 +173,7 @@ namespace UnitTestProject1
                 // If the attempt is succcessful, it means we should have logged in.
                 // After all, it's a private wiki, where anonymous users shouldn't have
                 // access to reading the wiki.
-                needsLogin = !site.UserInfo.IsUser;
+                needsLogin = !site.AccountInfo.IsUser;
                 // If needsLogin evaluates to true here... Well, you'd better
                 // check if your private wiki is private enough.
                 // Nonetheless, the code still works XD
@@ -187,7 +187,7 @@ namespace UnitTestProject1
             {
                 // Login if needed.
                 CredentialManager.Login(site);
-                Debug.Assert(site.UserInfo.IsUser);
+                Debug.Assert(site.AccountInfo.IsUser);
             }
             // Login succeeded. We should initialize site information.
             AwaitSync(site.RefreshSiteInfoAsync());
@@ -201,13 +201,13 @@ namespace UnitTestProject1
         {
             var site = WikiaTestSite;
             CredentialManager.Login(site);
-            Assert.IsTrue(site.UserInfo.IsUser);
-            Assert.IsFalse(site.UserInfo.IsAnonymous);
-            Trace.WriteLine($"{site.UserInfo.Name} has logged into {site}");
+            Assert.IsTrue(site.AccountInfo.IsUser);
+            Assert.IsFalse(site.AccountInfo.IsAnonymous);
+            Trace.WriteLine($"{site.AccountInfo.Name} has logged into {site}");
             CredentialManager.Logout(site);
-            Assert.IsFalse(site.UserInfo.IsUser);
-            Assert.IsTrue(site.UserInfo.IsAnonymous);
-            Trace.WriteLine($"{site.UserInfo.Name} has logged out.");
+            Assert.IsFalse(site.AccountInfo.IsUser);
+            Assert.IsTrue(site.AccountInfo.IsAnonymous);
+            Trace.WriteLine($"{site.AccountInfo.Name} has logged out.");
         }
 
         [TestMethod]
@@ -240,10 +240,10 @@ namespace UnitTestProject1
         {
             // This method will militate the Site instance…
             var site = CreateWikiSite(EntryPointWikipediaTest2);
-            Assert.IsFalse(site.UserInfo.IsUser, "You should have not logged in… Wierd.");
+            Assert.IsFalse(site.AccountInfo.IsUser, "You should have not logged in… Wierd.");
             // Make believe that we're bots…
-            typeof(UserInfo).GetProperty("Groups").SetValue(site.UserInfo, new[] {"*", "user", "bot"});
-            Assert.IsTrue(site.UserInfo.IsUser, "Cannot militate user information.");
+            typeof(AccountInfo).GetProperty("Groups").SetValue(site.AccountInfo, new[] {"*", "user", "bot"});
+            Assert.IsTrue(site.AccountInfo.IsUser, "Cannot militate user information.");
             // Send a request…
             var message = AwaitSync(site.GetMessageAsync("edit"));
         }
@@ -258,10 +258,10 @@ namespace UnitTestProject1
                 CredentialManager.Login(site);
                 return Task.FromResult(true);
             });
-            Assert.IsFalse(site.UserInfo.IsUser, "You should have not logged in… Wierd.");
+            Assert.IsFalse(site.AccountInfo.IsUser, "You should have not logged in… Wierd.");
             // Make believe that we're bots…
-            typeof(UserInfo).GetProperty("Groups").SetValue(site.UserInfo, new[] {"*", "user", "bot"});
-            Assert.IsTrue(site.UserInfo.IsUser, "Cannot militate user information.");
+            typeof(AccountInfo).GetProperty("Groups").SetValue(site.AccountInfo, new[] {"*", "user", "bot"});
+            Assert.IsTrue(site.AccountInfo.IsUser, "Cannot militate user information.");
             // Send a request…
             var message = AwaitSync(site.GetMessageAsync("edit"));
             Trace.WriteLine("Message(edit) = " + message);

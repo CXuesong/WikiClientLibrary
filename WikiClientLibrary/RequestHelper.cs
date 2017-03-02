@@ -69,7 +69,7 @@ namespace WikiClientLibrary
             {
                 var site = sitePages.Key.Item1;
                 var queryParams = GetPageFetchingParams(options);
-                var titleLimit = site.UserInfo.HasRight(UserRights.ApiHighLimits)
+                var titleLimit = site.AccountInfo.HasRight(UserRights.ApiHighLimits)
                     ? 500
                     : 50;
                 foreach (var partition in sitePages.Partition(titleLimit).Select(partition => partition.ToList()))
@@ -123,7 +123,7 @@ namespace WikiClientLibrary
         {
             if (revIds == null) throw new ArgumentNullException(nameof(revIds));
             var queryParams = GetPageFetchingParams(options);
-            var titleLimit = site.UserInfo.HasRight(UserRights.ApiHighLimits)
+            var titleLimit = site.AccountInfo.HasRight(UserRights.ApiHighLimits)
                 ? 500
                 : 50;
             // PageId --> JsonSerializer that can new Revision(Page)
@@ -218,7 +218,7 @@ namespace WikiClientLibrary
             foreach (var sitePages in pages.GroupBy(p => Tuple.Create(p.Site, p.GetType())))
             {
                 var site = sitePages.Key.Item1;
-                var titleLimit = site.UserInfo.HasRight(UserRights.ApiHighLimits)
+                var titleLimit = site.AccountInfo.HasRight(UserRights.ApiHighLimits)
                     ? 500
                     : 50;
                 foreach (var partition in sitePages.Partition(titleLimit).Select(partition => partition.ToList()))

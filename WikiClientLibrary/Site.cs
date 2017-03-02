@@ -159,7 +159,7 @@ namespace WikiClientLibrary
         /// Refreshes user account information.
         /// </summary>
         /// <remarks>
-        /// This method affects <see cref="UserInfo"/> property.
+        /// This method affects <see cref="AccountInfo"/> property.
         /// </remarks>
         /// <exception cref="UnauthorizedOperationException">Cannot access query API module due to target site permission settings. You may need to login first.</exception>
         public async Task RefreshUserInfoAsync()
@@ -170,12 +170,12 @@ namespace WikiClientLibrary
                 meta = "userinfo",
                 uiprop = "blockinfo|groups|hasmsg|rights"
             }, true, CancellationToken.None);
-            _UserInfo = ((JObject)jobj["query"]["userinfo"]).ToObject<UserInfo>(Utility.WikiJsonSerializer);
-            ListingPagingSize = _UserInfo.HasRight(UserRights.ApiHighLimits) ? 5000 : 500;
+            _AccountInfo = ((JObject)jobj["query"]["userinfo"]).ToObject<AccountInfo>(Utility.WikiJsonSerializer);
+            ListingPagingSize = _AccountInfo.HasRight(UserRights.ApiHighLimits) ? 5000 : 500;
         }
 
         private SiteInfo _SiteInfo;
-        private UserInfo _UserInfo;
+        private AccountInfo _AccountInfo;
         private NamespaceCollection _Namespaces;
         private InterwikiMap _InterwikiMap;
         private ExtensionCollection _Extensions;
@@ -195,14 +195,14 @@ namespace WikiClientLibrary
         /// <summary>
         /// Gets the currrent user's account information.
         /// </summary>
-        public UserInfo UserInfo
+        public AccountInfo AccountInfo
         {
             get
             {
-                if (_UserInfo == null)
+                if (_AccountInfo == null)
                     throw new InvalidOperationException(
                         "Site.RefreshUserInfoAsync should be successfully invoked before performing the operation.");
-                return _UserInfo;
+                return _AccountInfo;
             }
         }
 
@@ -295,13 +295,13 @@ namespace WikiClientLibrary
             var queryParams1 = queryParams as ICollection<KeyValuePair<string, string>> ?? queryParams.ToArray();
             RETRY:
             IEnumerable<KeyValuePair<string, string>> pa = queryParams1;
-            if (!supressAccountAssertion && _UserInfo != null)
+            if (!supressAccountAssertion && _AccountInfo != null)
             {
                 if ((options.AccountAssertion & AccountAssertionBehavior.AssertBot) ==
-                    AccountAssertionBehavior.AssertBot && _UserInfo.IsBot)
+                    AccountAssertionBehavior.AssertBot && _AccountInfo.IsBot)
                     pa = pa.Concat(accountAssertionBot);
                 else if ((options.AccountAssertion & AccountAssertionBehavior.AssertUser) ==
-                         AccountAssertionBehavior.AssertUser && _UserInfo.IsUser)
+                         AccountAssertionBehavior.AssertUser && _AccountInfo.IsUser)
                     pa = pa.Concat(accountAssertionUser);
             }
             try
@@ -587,7 +587,7 @@ namespace WikiClientLibrary
         /// <param name="userName">User name of the account.</param>
         /// <param name="password">Password of the account.</param>
         /// <exception cref="ArgumentNullException">Either <paramref name="userName"/> or <paramref name="password"/> is <c>null</c> or empty.</exception>
-        /// <remarks>This operation will refresh <see cref="UserInfo"/>.</remarks>
+        /// <remarks>This operation will refresh <see cref="AccountInfo"/>.</remarks>
         public Task LoginAsync(string userName, string password)
         {
             return LoginAsync(userName, password, null, CancellationToken.None);
@@ -600,7 +600,7 @@ namespace WikiClientLibrary
         /// <param name="password">Password of the account.</param>
         /// <param name="domain">Domain name. <c>null</c> is usually a good choice.</param>
         /// <exception cref="ArgumentNullException">Either <paramref name="userName"/> or <paramref name="password"/> is <c>null</c> or empty.</exception>
-        /// <remarks>This operation will refresh <see cref="UserInfo"/>.</remarks>
+        /// <remarks>This operation will refresh <see cref="AccountInfo"/>.</remarks>
         public Task LoginAsync(string userName, string password, string domain)
         {
             return LoginAsync(userName, password, domain, new CancellationToken());
@@ -614,7 +614,7 @@ namespace WikiClientLibrary
         /// <param name="domain">Domain name. <c>null</c> is usually a good choice.</param>
         /// <param name="cancellationToken">The cancellation token that will be checked prior to completing the returned task.</param>
         /// <exception cref="ArgumentNullException">Either <paramref name="userName"/> or <paramref name="password"/> is <c>null</c> or empty.</exception>
-        /// <remarks>This operation will refresh <see cref="UserInfo"/>.</remarks>
+        /// <remarks>This operation will refresh <see cref="AccountInfo"/>.</remarks>
         public async Task LoginAsync(string userName, string password, string domain, CancellationToken cancellationToken)
         {
             // Note: this method may be invoked BEFORE the initialization of _SiteInfo.
@@ -645,7 +645,7 @@ namespace WikiClientLibrary
                 case "Success":
                     _TokensCache.Clear();
                     await RefreshUserInfoAsync();
-                    Debug.Assert(UserInfo.IsUser);
+                    Debug.Assert(AccountInfo.IsUser);
                     return;
                 case "Aborted":
                     message =
@@ -669,9 +669,9 @@ namespace WikiClientLibrary
         /// <summary>
         /// Logouts from the wiki site.
         /// </summary>
-        /// <remarks>This operation will refresh <see cref="UserInfo"/>,
+        /// <remarks>This operation will refresh <see cref="AccountInfo"/>,
         /// unless <see cref="SiteOptions.ExplicitInfoRefresh"/> is <c>true</c> when initializing
-        /// the instance. In the latter case, <see cref="UserInfo"/> will be invalidated,
+        /// the instance. In the latter case, <see cref="AccountInfo"/> will be invalidated,
         /// and any attempt to read the property will raise <see cref="InvalidOperationException"/>
         /// until the next successful login.</remarks>
         public async Task LogoutAsync()
@@ -682,7 +682,7 @@ namespace WikiClientLibrary
             }, true, CancellationToken.None);
             _TokensCache.Clear();
             if (options.ExplicitInfoRefresh)
-                _UserInfo = null;
+                _AccountInfo = null;
             else
                 await RefreshUserInfoAsync();
         }
