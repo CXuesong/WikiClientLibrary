@@ -57,7 +57,11 @@ namespace UnitTestProject1
         public static Site CreateWikiSite(string entryPointUrl, bool login = false)
         {
             var client = CreateWikiClient();
-            var site = AwaitSync(Site.CreateAsync(client, entryPointUrl));
+            var options = new SiteOptions(entryPointUrl)
+            {
+                AccountAssertion = AccountAssertionBehavior.AssertAll
+            };
+            var site = AwaitSync(Site.CreateAsync(client, options));
             site.Logger = new TraceLogger();
             if (login) CredentialManager.Login(site);
             return site;

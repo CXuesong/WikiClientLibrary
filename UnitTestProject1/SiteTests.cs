@@ -3,6 +3,7 @@ using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
 using System.Threading;
+using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -231,6 +232,55 @@ namespace UnitTestProject1
             Assert.AreEqual("http://mediawiki119.wikia.com/api.php", result);
             result = AwaitSync(Site.SearchApiEndpointAsync(client, "wikipedia.org"));
             Assert.AreEqual(null, result);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(AccountAssertionFailureException))]
+        public void AccountAssertionTest1()
+        {
+            // This method will militate the Site instance…
+            var site = CreateWikiSite(EntryPointWikipediaTest2);
+            Assert.IsFalse(site.UserInfo.IsUser, "You should have not logged in… Wierd.");
+            // Make believe that we're bots…
+            typeof(UserInfo).GetProperty("Groups").SetValue(site.UserInfo, new[] {"*", "user", "bot"});
+            // Send a request…
+            var token = AwaitSync(site.GetTokenAsync("edit"));
+        }
+
+        [TestMethod]
+        public void AccountAssertionTest2()
+        {
+            // This method will militate the Site instance…
+            var site = CreateWikiSite(EntryPointWikipediaTest2);
+            site.AccountAssertionFailureHandler = new MyAccountAssertionFailureHandler(s =>
+            {
+                CredentialManager.Login(site);
+                return Task.FromResult(true);
+            });
+            Assert.IsFalse(site.UserInfo.IsUser, "You should have not logged in… Wierd.");
+            // Make believe that we're bots…
+            typeof(UserInfo).GetProperty("Groups").SetValue(site.UserInfo, new[] { "*", "user", "bot" });
+            // Send a request…
+            var message = AwaitSync(site.GetMessageAsync("edit"));
+            Trace.WriteLine("Message(edit) = " + message);
+        }
+
+        private class MyAccountAssertionFailureHandler : IAccountAssertionFailureHandler
+        {
+            private readonly Func<Site, Task<bool>> _Handler;
+
+            public MyAccountAssertionFailureHandler(Func<Site, Task<bool>> handler)
+            {
+                if (handler == null) throw new ArgumentNullException(nameof(handler));
+                _Handler = handler;
+            }
+
+            /// <inheritdoc />
+            public Task<bool> Login(Site site)
+            {
+                if (site == null) throw new ArgumentNullException(nameof(site));
+                return _Handler(site);
+            }
         }
     }
 }

@@ -134,7 +134,7 @@ namespace WikiClientLibrary
     }
 
     /// <summary>
-    /// Provides a way for client code to automatic re-login, and continue the
+    /// Provides a way for client code to automatically re-login, and continue the
     /// impeded requests without raising <see cref="AccountAssertionFailureException"/>,
     /// when account assertion has failed.
     /// </summary>

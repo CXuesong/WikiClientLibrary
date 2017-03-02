@@ -128,6 +128,7 @@ namespace WikiClientLibrary.Client
                     case "unknown_action":
                         throw new InvalidActionException(errcode, errmessage);
                     case "assertuserfailed":
+                    case "assertbotfailed":
                         throw new AccountAssertionFailureException(errcode, errmessage);
                     default:
                         if (errcode.EndsWith("conflict"))

@@ -218,6 +218,9 @@ namespace WikiClientLibrary
             }
         }
 
+        /// <summary>
+        /// Gets the interwiki map information on this wiki site.
+        /// </summary>
         public InterwikiMap InterwikiMap
         {
             get
@@ -381,7 +384,7 @@ namespace WikiClientLibrary
                 action = "query",
                 meta = "tokens",
                 type = tokenTypeExpr,
-            }, cancellationToken);
+            }, true, cancellationToken);
             var warnings = jobj["warnings"]?["tokens"];
             if (warnings != null)
             {
@@ -398,7 +401,7 @@ namespace WikiClientLibrary
         /// Fetch tokens. (MediaWiki &lt; 1.24)
         /// </summary>
         /// <param name="tokenTypeExpr">Token types, joined by | .</param>
-        /// <param name="cancellationToken"></param>
+        /// <param name="cancellationToken">The cancellation token that will be checked prior to completing the returned task.</param>
         private async Task<JObject> FetchTokensAsync(string tokenTypeExpr, CancellationToken cancellationToken)
         {
             Debug.Assert(!tokenTypeExpr.Contains("patrol"));
@@ -408,7 +411,7 @@ namespace WikiClientLibrary
                 prop = "info",
                 titles = "Dummy Title",
                 intoken = tokenTypeExpr,
-            }, cancellationToken);
+            }, true, cancellationToken);
             var page = (JObject)((JProperty)jobj["query"]["pages"].First).Value;
             return new JObject(page.Properties().Where(p => p.Name.EndsWith("token")));
         }
