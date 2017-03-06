@@ -169,7 +169,7 @@ namespace UnitTestProject1
             try
             {
                 // It's better to get user (rather than site) info here.
-                AwaitSync(site.RefreshUserInfoAsync());
+                AwaitSync(site.RefreshAccountInfoAsync());
                 // If the attempt is succcessful, it means we should have logged in.
                 // After all, it's a private wiki, where anonymous users shouldn't have
                 // access to reading the wiki.

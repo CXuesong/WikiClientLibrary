@@ -40,7 +40,7 @@ namespace WikiClientLibrary
 
         /// <summary>
         /// Whether to disable the refresh of site info and user info
-        /// until <see cref="Site.RefreshSiteInfoAsync"/> and <see cref="Site.RefreshUserInfoAsync"/>
+        /// until <see cref="Site.RefreshSiteInfoAsync"/> and <see cref="Site.RefreshAccountInfoAsync"/>
         /// are called explicitly.
         /// </summary>
         /// <remarks>
@@ -50,7 +50,7 @@ namespace WikiClientLibrary
         /// If the value is <c>true</c>, these info will not be initialized
         /// when calling <see cref="Site.CreateAsync(WikiClient,SiteOptions)"/>, and by the
         /// invocation of <see cref="Site.LogoutAsync"/>, user info will just be invalidated,
-        /// with no further internal invocation of <see cref="Site.RefreshUserInfoAsync"/>.</para>
+        /// with no further internal invocation of <see cref="Site.RefreshAccountInfoAsync"/>.</para>
         /// <para>For the priviate wiki where anonymous users cannot access query API,
         /// it's recommended that this property be set to <c>true</c>.
         /// You can first check whether you have already logged in,
@@ -61,12 +61,12 @@ namespace WikiClientLibrary
         /// <para>In order to decide whether you have already logged in into a private wiki, you can
         /// <list type="number">
         /// <item><description>Call <see cref="Site.CreateAsync(WikiClient,SiteOptions)"/>, with <see cref="ExplicitInfoRefresh"/> set to <c>true</c>.</description></item>
-        /// <item><description>Call and <c>await</c> for <see cref="Site.RefreshUserInfoAsync"/>. (Do not use <see cref="Site.RefreshSiteInfoAsync"/>. See the explanation below.)</description></item>
+        /// <item><description>Call and <c>await</c> for <see cref="Site.RefreshAccountInfoAsync"/>. (Do not use <see cref="Site.RefreshSiteInfoAsync"/>. See the explanation below.)</description></item>
         /// <item><description>If an <see cref="UnauthorizedOperationException"/> is raised, then you should call <see cref="Site.LoginAsync(string,string)"/> to login.</description></item>
-        /// <item><description>Otherwise, since you've called <see cref="Site.RefreshUserInfoAsync"/>, you can directly check <see cref="AccountInfo.IsUser"/>.
+        /// <item><description>Otherwise, since you've called <see cref="Site.RefreshAccountInfoAsync"/>, you can directly check <see cref="AccountInfo.IsUser"/>.
         /// Usually it would be <c>true</c>, since you've already logged in during a previous session. Otherwise, which is a rare case, you may also need to login.</description></item>
         /// </list>
-        /// Note that <see cref="Site.RefreshUserInfoAsync"/> will be refreshed automatically after a sucessful
+        /// Note that <see cref="Site.RefreshAccountInfoAsync"/> will be refreshed automatically after a sucessful
         /// login operation, so you only have to call <see cref="Site.RefreshSiteInfoAsync"/> afterwards.
         /// Nonetheless, both the user info and the site info should be initially refreshed before
         /// you can perform other opertations.

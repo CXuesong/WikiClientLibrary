@@ -62,7 +62,7 @@ namespace WikiClientLibrary
                 throw new ArgumentException("Invalid API endpoint url.", nameof(options));
             var site = new Site(wikiClient, options);
             if (!options.ExplicitInfoRefresh)
-                await Task.WhenAll(site.RefreshSiteInfoAsync(), site.RefreshUserInfoAsync());
+                await Task.WhenAll(site.RefreshSiteInfoAsync(), site.RefreshAccountInfoAsync());
             return site;
         }
 
@@ -162,7 +162,7 @@ namespace WikiClientLibrary
         /// This method affects <see cref="AccountInfo"/> property.
         /// </remarks>
         /// <exception cref="UnauthorizedOperationException">Cannot access query API module due to target site permission settings. You may need to login first.</exception>
-        public async Task RefreshUserInfoAsync()
+        public async Task RefreshAccountInfoAsync()
         {
             var jobj = await PostValuesAsync(new
             {
@@ -644,7 +644,7 @@ namespace WikiClientLibrary
             {
                 case "Success":
                     _TokensCache.Clear();
-                    await RefreshUserInfoAsync();
+                    await RefreshAccountInfoAsync();
                     Debug.Assert(AccountInfo.IsUser);
                     return;
                 case "Aborted":
@@ -684,7 +684,7 @@ namespace WikiClientLibrary
             if (options.ExplicitInfoRefresh)
                 _AccountInfo = null;
             else
-                await RefreshUserInfoAsync();
+                await RefreshAccountInfoAsync();
         }
 
         private volatile Task<bool> reLoginTask;

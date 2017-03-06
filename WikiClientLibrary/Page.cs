@@ -52,8 +52,14 @@ namespace WikiClientLibrary
 
         public Site Site { get; }
 
+        /// <summary>
+        /// Id of the page.
+        /// </summary>
         public int Id { get; private set; }
 
+        /// <summary>
+        /// Namespace id of the page.
+        /// </summary>
         public int NamespaceId { get; private set; }
 
         /// <summary>
