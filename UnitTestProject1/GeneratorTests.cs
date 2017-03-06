@@ -15,13 +15,12 @@ namespace UnitTestProject1
     {
         private static readonly Lazy<Site> _WpTestSite = new Lazy<Site>(() => CreateWikiSite(EntryPointWikipediaTest2));
         private static readonly Lazy<Site> _WikiaTestSite = new Lazy<Site>(() => CreateWikiSite(EntryPointWikiaTest));
-        private static readonly Lazy<Site> _WpSite = new Lazy<Site>(() => CreateWikiSite(EntryWikipediaLzh));
-
+        private static readonly Lazy<Site> _WpLzhSite = new Lazy<Site>(() => CreateWikiSite(EntryWikipediaLzh));
         public static Site WpTestSite => _WpTestSite.Value;
 
         public static Site WikiaTestSite => _WikiaTestSite.Value;
 
-        public static Site WpLzhSite => _WpSite.Value;
+        public static Site WpLzhSite => _WpLzhSite.Value;
 
 
         private void AssertTitlesDistinct(IReadOnlyCollection<Page> pages)
@@ -253,6 +252,30 @@ namespace UnitTestProject1
             var sp = AwaitSync(QueryPageGenerator.GetQueryPageNamesAsync(site));
             Assert.IsTrue(sp.Contains("Uncategorizedpages"));
             ShallowTrace(sp);
+        }
+
+        [TestMethod]
+        public void WpTestGetSearchTest()
+        {
+            var site = WpTestSite;
+            var generator = new SearchGenerator(site, "test");
+            var pages = generator.EnumPages().Take(100).ToList();
+            TracePages(pages);
+            AssertTitlesDistinct(pages);
+        }
+
+        [TestMethod]
+        public void WpLzhGetSearchTest()
+        {
+            var site = WpLzhSite;
+            var generator = new SearchGenerator(site, "維基");
+            var pages = generator.EnumPages().Take(100).ToList();
+            TracePages(pages);
+            AssertTitlesDistinct(pages);
+            //Assert.IsTrue(pages.Any(p => p.Title == "維基"));
+            //Assert.IsTrue(pages.Any(p => p.Title == "維基媒體基金會"));
+            //Assert.IsTrue(pages.Any(p => p.Title == "維基大典"));
+            //Assert.IsTrue(pages.Any(p => p.Title == "文言維基大典"));
         }
 
         [TestMethod]
