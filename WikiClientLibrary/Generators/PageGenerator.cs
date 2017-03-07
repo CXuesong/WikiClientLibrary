@@ -87,7 +87,9 @@ namespace WikiClientLibrary.Generators
         /// If <see cref="PagingSize"/> is <c>null</c>, and <see cref="PageQueryOptions.FetchContent"/> is specified,
         /// the default limit will be 1/10 of the original default limit (500 for bots and 50 for users).
         /// (See https://www.mediawiki.org/wiki/API:Revisions .)
-        /// This will not affect the manually set <see cref="PagingSize"/>.
+        /// If you have manually set <see cref="PagingSize"/>, this function will directly return the value you have set,
+        /// but any value exceeding the server limit will case problems, such as empty content retrieved (even if
+        /// you have set <see cref="PageQueryOptions.FetchContent"/>), or <see cref="WikiClientException"/>.
         /// </remarks>
         public int GetActualPagingSize(PageQueryOptions options)
         {

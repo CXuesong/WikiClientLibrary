@@ -75,25 +75,30 @@ namespace WikiClientLibrary
         {
             if (site == null) throw new ArgumentNullException(nameof(site));
             if (queryNode == null) throw new ArgumentNullException(nameof(queryNode));
-            var pages = (JObject)queryNode["pages"];
+            var pages = (JObject) queryNode["pages"];
             if (pages == null) return EmptyPages;
-            return pages.Properties().Select(page =>
-            {
-                Page newInst;
-                if (page.Value["categoryinfo"] != null)
-                    newInst = new Category(site);
-                else if ((string)page.Value["contentmodel"] == ContentModels.FlowBoard)
+            // If query.xxx.index exists, sort the pages by the given index.
+            // This is specifically used with SearchGenerator, to keep the search result in order.
+            // For other generators, this property simply does not exist.
+            // See https://www.mediawiki.org/wiki/API_talk:Query#On_the_order_of_titles_taken_out_of_generator .
+            return pages.Properties().OrderBy(page => (int?) page.Value["index"])
+                .Select(page =>
                 {
-                    if ((int)page.Value["ns"] == FlowNamespaces.Topic)
-                        newInst = new Topic(site);
+                    Page newInst;
+                    if (page.Value["categoryinfo"] != null)
+                        newInst = new Category(site);
+                    else if ((string) page.Value["contentmodel"] == ContentModels.FlowBoard)
+                    {
+                        if ((int) page.Value["ns"] == FlowNamespaces.Topic)
+                            newInst = new Topic(site);
+                        else
+                            newInst = new Board(site);
+                    }
                     else
-                        newInst = new Board(site);
-                }
-                else
-                    newInst = new Page(site);
-                newInst.LoadFromJson(page, options);
-                return newInst;
-            }).ToList();
+                        newInst = new Page(site);
+                    newInst.LoadFromJson(page, options);
+                    return newInst;
+                }).ToList();
         }
 
     }

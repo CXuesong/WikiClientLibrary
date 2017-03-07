@@ -43,8 +43,6 @@ namespace WikiClientLibrary.Generators
         /// <summary>
         /// Search inside the text or titles.
         /// </summary>
-        /// <remarks>Default: <see cref="SearchableField.Text"/>. This is slightly different from
-        /// the MediaWiki default behavior.</remarks>
         public SearchableField MatchingField
         {
             get { return _MatchingField; }
@@ -103,9 +101,13 @@ namespace WikiClientLibrary.Generators
     public enum SearchableField
     {
         /// <summary>
+        /// Use the site MediaWiki site default behavior.
+        /// </summary>
+        Default,
+        /// <summary>
         /// Search in page titles. Note that Wikipedia does not support this flag.
         /// </summary>
-        Title = 0,
+        Title,
         /// <summary>
         /// Search in page text.
         /// </summary>

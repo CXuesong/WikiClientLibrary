@@ -258,24 +258,26 @@ namespace UnitTestProject1
         public void WpTestGetSearchTest()
         {
             var site = WpTestSite;
-            var generator = new SearchGenerator(site, "test");
+            var generator = new SearchGenerator(site, "test") {PagingSize = 20};
             var pages = generator.EnumPages().Take(100).ToList();
             TracePages(pages);
             AssertTitlesDistinct(pages);
         }
 
         [TestMethod]
-        public void WpLzhGetSearchTest()
+        public void WpLzhSearchTest()
         {
             var site = WpLzhSite;
             var generator = new SearchGenerator(site, "維基");
-            var pages = generator.EnumPages().Take(100).ToList();
+            var pages = generator.EnumPages().Take(50).ToList();
             TracePages(pages);
             AssertTitlesDistinct(pages);
+            // Note as 2017-03-07, [[維基]] actually exists on lzh wiki, but it's a redirect to [[維基媒體基金會]].
+            // Maybe that's why it's not included in the search result.
             //Assert.IsTrue(pages.Any(p => p.Title == "維基"));
-            //Assert.IsTrue(pages.Any(p => p.Title == "維基媒體基金會"));
-            //Assert.IsTrue(pages.Any(p => p.Title == "維基大典"));
-            //Assert.IsTrue(pages.Any(p => p.Title == "文言維基大典"));
+            Assert.IsTrue(pages.Any(p => p.Title == "維基媒體基金會"));
+            Assert.IsTrue(pages.Any(p => p.Title == "維基大典"));
+            Assert.IsTrue(pages.Any(p => p.Title == "文言維基大典"));
         }
 
         [TestMethod]
