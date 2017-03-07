@@ -5,24 +5,23 @@ using System.Net;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
 using System.Net.Http;
-using System.Net.Http.Headers;
 using System.Threading;
 
 namespace WikiClientLibrary.Client
 {
     /// <summary>
-    /// Provides basic operations for MediaWiki API.
+    /// Provides basic operations for MediaWiki API via HTTP(S).
     /// </summary>
-    public partial class WikiClient : IDisposable
+    public partial class WikiClient : WikiClientBase
     {
-
-        private const string WikiClientUserAgent = "WikiClientLibrary/0.5 (.NET Portable; http://github.com/cxuesong/WikiClientLibrary)";
+        /// <summary>
+        /// The User Agent of Wiki Client Library.
+        /// </summary>
+        public const string WikiClientUserAgent = "WikiClientLibrary/0.5 (.NET Portable; http://github.com/cxuesong/WikiClientLibrary)";
 
         #region Configurations
 
-        private int _MaxRetries = 3;
         private string _ClientUserAgent;
-        private TimeSpan _ThrottleTime = TimeSpan.FromSeconds(5);
         private readonly HttpClientHandler _HttpClientHandler;
 
         /// <summary>
@@ -50,29 +49,6 @@ namespace WikiClientLibrary.Client
         public string Referer { get; set; }
 
         /// <summary>
-        /// Timeout for each query.
-        /// </summary>
-        public TimeSpan Timeout { get; set; } = TimeSpan.FromSeconds(10);
-
-        /// <summary>
-        /// Delay before each retry.
-        /// </summary>
-        public TimeSpan RetryDelay { get; set; } = TimeSpan.FromSeconds(10);
-
-        /// <summary>
-        /// Max retries count.
-        /// </summary>
-        public int MaxRetries
-        {
-            get { return _MaxRetries; }
-            set
-            {
-                if (value < 0) throw new ArgumentOutOfRangeException(nameof(value));
-                _MaxRetries = value;
-            }
-        }
-
-        /// <summary>
         /// Gets/Sets the cookies used in the requests.
         /// </summary>
         /// <remarks>
@@ -91,43 +67,12 @@ namespace WikiClientLibrary.Client
             }
         }
 
-        public ILogger Logger { get; set; }
-
-        /// <summary>
-        /// Time to wait before any modification operations.
-        /// </summary>
-        /// <remarks>Note that the delay is simply inserted before every modification operations, without queuing.
-        /// This won't work as you expect when you attempt to perform multi-threaded operations.</remarks>
-        public TimeSpan ThrottleTime
-        {
-            get { return _ThrottleTime; }
-            set
-            {
-                if (value < TimeSpan.Zero) throw new ArgumentOutOfRangeException(nameof(value));
-                _ThrottleTime = value;
-            }
-        }
-
         internal HttpClient HttpClient { get; }
 
         #endregion
 
-        /// <summary>
-        /// Returns a task which finishes after the time specified in <see cref="ThrottleTime"/> .
-        /// </summary>
-        internal Task WaitForThrottleAsync(CancellationToken cancellationToken)
-        {
-            return Task.Delay(ThrottleTime, cancellationToken);
-        }
-
-        /// <summary>
-        /// Invokes API and get JSON result.
-        /// </summary>
-        /// <exception cref="InvalidActionException">Specified action is not supported.</exception>
-        /// <exception cref="UnauthorizedOperationException">Permission denied.</exception>
-        /// <exception cref="OperationFailedException">There's "error" node in returned JSON.</exception>
-        /// <remarks>"Get" means the returned value is JSON, though the request is sent via HTTP POST.</remarks>
-        public async Task<JToken> GetJsonAsync(string endPointUrl, IEnumerable<KeyValuePair<string, string>> queryParams,
+        /// <inheritdoc />
+        public override async Task<JToken> GetJsonAsync(string endPointUrl, IEnumerable<KeyValuePair<string, string>> queryParams,
             CancellationToken cancellationToken)
         {
             if (queryParams == null) throw new ArgumentNullException(nameof(queryParams));
@@ -139,9 +84,8 @@ namespace WikiClientLibrary.Client
             return result;
         }
 
-        // No, we cannot guarantee the returned value is JSON, so this function is internal.
-        // It depends on caller's conscious.
-        internal async Task<JToken> GetJsonAsync(string endPointUrl, HttpContent postContent, CancellationToken cancellationToken)
+        /// <inheritdoc />
+        public override async Task<JToken> GetJsonAsync(string endPointUrl, HttpContent postContent, CancellationToken cancellationToken)
         {
             if (postContent == null) throw new ArgumentNullException(nameof(postContent));
             // Implies we want JSON result.
@@ -161,7 +105,7 @@ namespace WikiClientLibrary.Client
         /// </summary>
         /// <exception cref="InvalidActionException">Specified action is not supported.</exception>
         /// <exception cref="OperationFailedException">There's "error" node in returned JSON.</exception>
-        public Task<JToken> GetJsonAsync(string endPointUrl, object queryParams, CancellationToken cancellationToken)
+        public override Task<JToken> GetJsonAsync(string endPointUrl, object queryParams, CancellationToken cancellationToken)
         {
             return GetJsonAsync(endPointUrl, Utility.ToWikiStringValuePairs(queryParams), cancellationToken);
         }
@@ -206,9 +150,14 @@ namespace WikiClientLibrary.Client
             return $"{GetType()}";
         }
 
-        public void Dispose()
+        /// <inheritdoc />
+        protected override void Dispose(bool disposing)
         {
-            HttpClient.Dispose();
+            if (disposing)
+            {
+                HttpClient.Dispose();
+            }
+            base.Dispose(disposing);
         }
     }
 }

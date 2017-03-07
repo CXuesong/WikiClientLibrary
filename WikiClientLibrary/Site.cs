@@ -24,7 +24,7 @@ namespace WikiClientLibrary
 
         #region Services
 
-        public WikiClient WikiClient { get; }
+        public WikiClientBase WikiClient { get; }
 
         public ILogger Logger { get; set; }
 
@@ -41,7 +41,7 @@ namespace WikiClientLibrary
         /// <exception cref="ArgumentNullException"><paramref name="wikiClient"/> or <paramref name="apiEndpoint"/> is <c>null</c>.</exception>
         /// <exception cref="ArgumentException"><paramref name="apiEndpoint"/> is invalid.</exception>
         /// <exception cref="UnauthorizedOperationException">Cannot access query API module due to target site permission settings. You may take a look at <see cref="SiteOptions.ExplicitInfoRefresh"/>.</exception>
-        public static Task<Site> CreateAsync(WikiClient wikiClient, string apiEndpoint)
+        public static Task<Site> CreateAsync(WikiClientBase wikiClient, string apiEndpoint)
         {
             if (wikiClient == null) throw new ArgumentNullException(nameof(wikiClient));
             if (apiEndpoint == null) throw new ArgumentNullException(nameof(apiEndpoint));
@@ -54,7 +54,7 @@ namespace WikiClientLibrary
         /// <exception cref="ArgumentNullException"><paramref name="wikiClient"/> or <paramref name="options"/> is <c>null</c>.</exception>
         /// <exception cref="ArgumentException">One or more settings in <paramref name="options"/> is invalid.</exception>
         /// <exception cref="UnauthorizedOperationException">Cannot access query API module due to target site permission settings. You may take a look at <see cref="SiteOptions.ExplicitInfoRefresh"/>.</exception>
-        public static async Task<Site> CreateAsync(WikiClient wikiClient, SiteOptions options)
+        public static async Task<Site> CreateAsync(WikiClientBase wikiClient, SiteOptions options)
         {
             if (wikiClient == null) throw new ArgumentNullException(nameof(wikiClient));
             if (options == null) throw new ArgumentNullException(nameof(options));
@@ -79,7 +79,7 @@ namespace WikiClientLibrary
             return MediaWikiUtility.SearchApiEndpointAsync(client, urlExpression);
         }
 
-        protected Site(WikiClient wikiClient, SiteOptions options)
+        protected Site(WikiClientBase wikiClient, SiteOptions options)
         {
             // Perform basic checks.
             Debug.Assert(wikiClient != null);

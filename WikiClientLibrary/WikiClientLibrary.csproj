@@ -37,6 +37,7 @@
     <DocumentationFile>bin\Release\WikiClientLibrary.XML</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="Client\WikiClientBase.cs" />
     <Compile Include="FormLongUrlEncodedContent.cs" />
     <Compile Include="DelegateCreationConverter.cs" />
     <Compile Include="Category.cs" />

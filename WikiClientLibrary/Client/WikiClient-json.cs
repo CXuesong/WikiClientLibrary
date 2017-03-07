@@ -15,8 +15,8 @@ namespace WikiClientLibrary.Client
     {
         #region the json client
 
-        private async Task<JToken> SendAsync(Func<HttpRequestMessage> requestFactory, bool allowsRetry,
-            CancellationToken cancellationToken)
+        /// <inheritdoc />
+        private async Task<JToken> SendAsync(Func<HttpRequestMessage> requestFactory, bool allowsRetry,CancellationToken cancellationToken)
         {
             HttpResponseMessage response;
             var retries = -1;

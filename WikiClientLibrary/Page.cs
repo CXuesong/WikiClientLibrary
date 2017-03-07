@@ -48,8 +48,11 @@ namespace WikiClientLibrary
         /// <summary>
         /// Synonym for <c>Site.WikiClient</c> .
         /// </summary>
-        public WikiClient WikiClient { get; }
+        public WikiClientBase WikiClient { get; }
 
+        /// <summary>
+        /// Gets the Site the page is on.
+        /// </summary>
         public Site Site { get; }
 
         /// <summary>

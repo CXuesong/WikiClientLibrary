@@ -47,7 +47,7 @@ namespace WikiClientLibrary
     public class Family : IFamily, IReadOnlyCollection<string>
     {
 
-        public WikiClient WikiClient { get; }
+        public WikiClientBase WikiClient { get; }
 
         private class SiteEntry
         {
