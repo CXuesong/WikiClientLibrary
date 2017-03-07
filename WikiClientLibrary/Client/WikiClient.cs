@@ -79,28 +79,16 @@ namespace WikiClientLibrary.Client
         /// <para>To persist user's login information, you can persist the value of this property.</para>
         /// <para>You can use the same CookieContainer with different <see cref="WikiClient"/>s.</para>
         /// </remarks>
+        /// <exception cref="NotSupportedException">You have initialized this Client with a HttpMessageHandler that is not a HttpClientHandler.</exception>
         public CookieContainer CookieContainer
         {
             get { return _HttpClientHandler.CookieContainer; }
-            set { _HttpClientHandler.CookieContainer = value; }
-        }
-
-        /// <summary>
-        /// Gets/sets authentication information used by this client.
-        /// </summary>
-        public ICredentials Credentials
-        {
-            get { return _HttpClientHandler.Credentials; }
-            set { _HttpClientHandler.Credentials = value; }
-        }
-
-        /// <summary>
-        /// Gets/sets a value that controls whether default credentials are sent with requests by the client.
-        /// </summary>
-        public bool UseDefaultCredentials
-        {
-            get { return _HttpClientHandler.UseDefaultCredentials; }
-            set { _HttpClientHandler.UseDefaultCredentials = value; }
+            set
+            {
+                if (_HttpClientHandler == null)
+                    throw new NotSupportedException("Not supported when working with a HttpMessageHandler that is not a HttpClientHandler.");
+                _HttpClientHandler.CookieContainer = value;
+            }
         }
 
         public ILogger Logger { get; set; }
@@ -178,14 +166,9 @@ namespace WikiClientLibrary.Client
             return GetJsonAsync(endPointUrl, Utility.ToWikiStringValuePairs(queryParams), cancellationToken);
         }
 
-        public WikiClient()
+        public WikiClient() : this(new HttpClientHandler(), true)
         {
-            _HttpClientHandler = new HttpClientHandler
-            {
-                UseCookies = true
-            };
-            HttpClient = new HttpClient(_HttpClientHandler, true);
-            ClientUserAgent = null;
+            _HttpClientHandler.UseCookies = true;
             // https://www.mediawiki.org/wiki/API:Client_code
             // Please use GZip compression when making API calls (Accept-Encoding: gzip).
             // Bots eat up a lot of bandwidth, which is not free.
@@ -193,6 +176,23 @@ namespace WikiClientLibrary.Client
             {
                 _HttpClientHandler.AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate;
             }
+        }
+
+        /// <param name="handler">The HttpMessageHandler responsible for processing the HTTP response messages.</param>
+        /// <exception cref="ArgumentNullException"><paramref name="handler"/> is <c>null</c>.</exception>
+        public WikiClient(HttpMessageHandler handler) : this(handler, true)
+        {
+        }
+
+        /// <param name="handler">The HttpMessageHandler responsible for processing the HTTP response messages.</param>
+        /// <param name="disposeHandler">Whether to automatically dispose the handler when disposing this Client.</param>
+        /// <exception cref="ArgumentNullException"><paramref name="handler"/> is <c>null</c>.</exception>
+        public WikiClient(HttpMessageHandler handler, bool disposeHandler)
+        {
+            if (handler == null) throw new ArgumentNullException(nameof(handler));
+            HttpClient = new HttpClient(handler, disposeHandler);
+            ClientUserAgent = null;
+            _HttpClientHandler = handler as HttpClientHandler;
         }
 
         /// <summary>
