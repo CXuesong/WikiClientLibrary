@@ -1,41 +1,45 @@
 <?xml version="1.0"?>
 <package >
-    <metadata>
-        <id>CXuesong.MW.WikiClientLibrary</id>
-        <version>0.5-alpha</version>
-        <title>WikiClientLibrary</title>
-        <authors>CXuesong</authors>
-        <owners>CXuesong</owners>
-        <licenseUrl>http://www.apache.org/licenses/LICENSE-2.0</licenseUrl>
-        <projectUrl>https://github.com/CXuesong/WikiClientLibrary</projectUrl>
-        <requireLicenseAcceptance>false</requireLicenseAcceptance>
-        <description>Wiki Client Library is a .NET Portable &amp; asynchronous client library for MediaWiki sites.
+  <metadata>
+    <id>CXuesong.MW.WikiClientLibrary</id>
+    <version>0.5-int0</version>
+    <title>WikiClientLibrary</title>
+    <authors>CXuesong</authors>
+    <owners>CXuesong</owners>
+    <licenseUrl>http://www.apache.org/licenses/LICENSE-2.0</licenseUrl>
+    <projectUrl>https://github.com/CXuesong/WikiClientLibrary</projectUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>
+      Wiki Client Library is a .NET Portable &amp; asynchronous client library for MediaWiki sites.
 
-This portable &amp; asynchronous MediaWiki API client provides an easy and asynchronous access to commonly-used MediaWiki API. It has the following features:
+      This portable &amp; asynchronous MediaWiki API client provides an easy and asynchronous access to commonly-used MediaWiki API. It has the following features:
 
-* Queries and edits for pages, including standard pages, category pages, and file pages.
-* Queries for category statistical info and its members.
-* Queries for basic file info, and file uploading.
-* Login/logout via simple asynchronous functions.
-* Client code has access to CookieContainer, and have chance to persist it.
-* Tokens are hidden in the library functions, so that client won't bother to retrieve them over and over again.
-* Query continuations are hidden by IAsyncEnumerable, which will ease the pain when using page generators.
-* Other miscellaneous MediaWiki API, such as OpenSearch, Page parsing, and Patrol.</description>
-        <summary>Wiki Client Library is a .NET Portable &amp; asynchronous client library for MediaWiki sites.</summary>
-        <releaseNotes>See https://github.com/CXuesong/WikiClientLibrary/releases .</releaseNotes>
-        <copyright>Copyright (C) CXuesong, 2017</copyright>
-        <tags>MediaWiki API Client</tags>
-        <dependencies>
-            <group targetFramework=".NETStandard1.1">
-                <dependency id="Microsoft.NETCore.Portable.Compatibility" version="1.0" />
-                <dependency id="NETStandard.Library" version="1.6" />
-                <dependency id="Newtonsoft.Json" version="9.0" />
-                <dependency id="System.Interactive.Async" version="3.0" />
-            </group>
-        </dependencies>
-    </metadata>
-     <files>
-         <file src="bin\Release\WikiClientLibrary.dll" target="lib\netstandard1.1\WikiClientLibrary.dll" />
-         <file src="bin\Release\WikiClientLibrary.xml" target="lib\netstandard1.1\WikiClientLibrary.xml" />
-     </files>
+      * Queries and edits for pages, including standard pages, category pages, and file pages.
+      * Queries for category statistical info and its members.
+      * Queries for basic file info, and file uploading.
+      * Login/logout via simple asynchronous functions.
+      * Client code has access to CookieContainer, and have chance to persist it.
+      * Tokens are hidden in the library functions, so that client won't bother to retrieve them over and over again.
+      * Query continuations are hidden by IAsyncEnumerable, which will ease the pain when using page generators.
+      * Other miscellaneous MediaWiki API, such as OpenSearch, Page parsing, and Patrol.
+    </description>
+    <summary>Wiki Client Library is a .NET Portable &amp; asynchronous client library for MediaWiki sites.</summary>
+    <releaseNotes>See https://github.com/CXuesong/WikiClientLibrary/releases .</releaseNotes>
+    <copyright>Copyright (C) CXuesong, 2017</copyright>
+    <tags>MediaWiki API Client</tags>
+    <dependencies>
+      <group targetFramework=".NETStandard1.1">
+        <dependency id="NETStandard.Library" version="1.6" />
+        <dependency id="Newtonsoft.Json" version="9.0" />
+        <dependency id="System.Interactive.Async" version="3.0" />
+      </group>
+    </dependencies>
+    <frameworkAssemblies>
+      <frameworkAssembly assemblyName="System.Net.Http"  />
+    </frameworkAssemblies>
+  </metadata>
+  <files>
+    <file src="bin\Release\WikiClientLibrary.dll" target="lib\netstandard1.1\WikiClientLibrary.dll" />
+    <file src="bin\Release\WikiClientLibrary.xml" target="lib\netstandard1.1\WikiClientLibrary.xml" />
+  </files>
 </package>
