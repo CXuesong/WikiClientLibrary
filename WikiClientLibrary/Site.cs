@@ -146,7 +146,7 @@ namespace WikiClientLibrary
         }
 
         /// <summary>
-        /// Asserts that site info have been loaded.
+        /// Asserts that <see cref="SiteInfo"/> has been loaded.
         /// </summary>
         private void AssertSiteInfoInitialized()
         {
@@ -613,6 +613,7 @@ namespace WikiClientLibrary
         /// <param name="password">Password of the account.</param>
         /// <param name="domain">Domain name. <c>null</c> is usually a good choice.</param>
         /// <param name="cancellationToken">The cancellation token that will be checked prior to completing the returned task.</param>
+        /// <exception cref="OperationFailedException">Canoot login with the specified credential.</exception>
         /// <exception cref="ArgumentNullException">Either <paramref name="userName"/> or <paramref name="password"/> is <c>null</c> or empty.</exception>
         /// <remarks>This operation will refresh <see cref="AccountInfo"/>.</remarks>
         public async Task LoginAsync(string userName, string password, string domain, CancellationToken cancellationToken)
@@ -627,7 +628,7 @@ namespace WikiClientLibrary
             if (!options.ExplicitInfoRefresh && _SiteInfo.Version >= new Version("1.27"))
                 token = await GetTokenAsync("login", true, cancellationToken);
             // For MedaiWiki < 1.27, We'll have to request twice.
-            // If options.ExplicitInfoRefresh is true, we just treat it as MedaiWiki < 1.27,
+            // If options.ExplicitInfoRefresh is true, we just treat it the same as MedaiWiki < 1.27,
             //  because any "query" operation might raise readapidenied error.
             RETRY:
             var jobj = await PostValuesAsync(new
@@ -1230,9 +1231,7 @@ namespace WikiClientLibrary
     [Flags]
     public enum OpenSearchOptions
     {
-        /// <summary>
-        /// No options.
-        /// </summary>
+        /// <summary>No options.</summary>
         None = 0,
 
         /// <summary>

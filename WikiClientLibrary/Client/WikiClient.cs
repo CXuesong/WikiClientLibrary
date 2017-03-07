@@ -85,12 +85,31 @@ namespace WikiClientLibrary.Client
             set { _HttpClientHandler.CookieContainer = value; }
         }
 
+        /// <summary>
+        /// Gets/sets authentication information used by this client.
+        /// </summary>
+        public ICredentials Credentials
+        {
+            get { return _HttpClientHandler.Credentials; }
+            set { _HttpClientHandler.Credentials = value; }
+        }
+
+        /// <summary>
+        /// Gets/sets a value that controls whether default credentials are sent with requests by the client.
+        /// </summary>
+        public bool UseDefaultCredentials
+        {
+            get { return _HttpClientHandler.UseDefaultCredentials; }
+            set { _HttpClientHandler.UseDefaultCredentials = value; }
+        }
+
         public ILogger Logger { get; set; }
 
         /// <summary>
         /// Time to wait before any modification operations.
         /// </summary>
-        /// <remarks>Note this won't work as you may expected when you attemt to perform multi-threaded operations.</remarks>
+        /// <remarks>Note that the delay is simply inserted before every modification operations, without queuing.
+        /// This won't work as you expect when you attempt to perform multi-threaded operations.</remarks>
         public TimeSpan ThrottleTime
         {
             get { return _ThrottleTime; }
