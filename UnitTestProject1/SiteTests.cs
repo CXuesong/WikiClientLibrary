@@ -221,6 +221,19 @@ namespace UnitTestProject1
         }
 
         [TestMethod]
+        public void WikiaOpenSearchTest()
+        {
+            var site = WikiaTestSite;
+            var result = AwaitSync(Task.WhenAll(site.OpenSearchAsync("San"),
+                site.OpenSearchAsync("THIS_TITLE_DOES_NOT_EXIST")));
+            ShallowTrace(result[0]);
+            ShallowTrace(result[1]);
+            Assert.IsTrue(result[0].Count > 0);
+            Assert.IsTrue(result[0].Any(e => e.Title == "Sandbox"));
+            Assert.IsTrue(result[1].Count == 0);
+        }
+
+        [TestMethod]
         public void SearchApiEndpointTest()
         {
             var client = CreateWikiClient();

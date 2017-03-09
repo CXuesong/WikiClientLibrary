@@ -985,15 +985,19 @@ namespace WikiClientLibrary
                 redirects = (options & OpenSearchOptions.ResolveRedirects) == OpenSearchOptions.ResolveRedirects,
             }, cancellationToken);
             var result = new List<OpenSearchResultEntry>();
-            var titles = (JArray)jresult[1];
-            var descs = jresult[2] as JArray;
-            var urls = jresult[3] as JArray;
-            for (int i = 0; i < titles.Count; i++)
+            var jarray = (JArray) jresult;
+            var titles = jarray.Count > 1 ? (JArray) jarray[1] : null;
+            var descs = jarray.Count > 2 ? (JArray) jarray[2] : null;
+            var urls = jarray.Count > 3 ? (JArray)jarray[3] : null;
+            if (titles != null)
             {
-                var entry = new OpenSearchResultEntry { Title = (string)titles[i] };
-                if (descs != null) entry.Description = (string)descs[i];
-                if (urls != null) entry.Url = (string)urls[i];
-                result.Add(entry);
+                for (int i = 0; i < titles.Count; i++)
+                {
+                    var entry = new OpenSearchResultEntry {Title = (string) titles[i]};
+                    if (descs != null) entry.Description = (string) descs[i];
+                    if (urls != null) entry.Url = (string) urls[i];
+                    result.Add(entry);
+                }
             }
             return result;
         }
