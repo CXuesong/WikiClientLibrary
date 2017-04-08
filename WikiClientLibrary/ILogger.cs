@@ -11,13 +11,13 @@ namespace WikiClientLibrary
     /// </summary>
     public interface ILogger
     {
-        void Trace(string message);
+        void Trace(object source, string message);
 
-        void Info(string message);
+        void Info(object source, string message);
 
-        void Warn(string message);
+        void Warn(object source, string message);
 
-        void Error(Exception exception, string message);
+        void Error(object source, Exception exception, string message);
 
     }
 }

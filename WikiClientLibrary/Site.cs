@@ -316,7 +316,7 @@ namespace WikiClientLibrary
                     if (reLoginTask == null)
                     {
                         reLoginTask = Relogin();
-                        Logger?.Warn("Account assertion failed. Try to handle this.");
+                        Logger?.Warn(this, "Account assertion failed. Try to handle this.");
                     }
                     var result = await reLoginTask;
                     if (result) goto RETRY;
@@ -654,7 +654,7 @@ namespace WikiClientLibrary
                     break;
                 case "Throttled":
                     var time = (int)jobj["login"]["wait"];
-                    Logger?.Warn($"Throttled: {time}sec.");
+                    Logger?.Warn(this, $"Throttled: {time}sec.");
                     await Task.Delay(TimeSpan.FromSeconds(time), cancellationToken);
                     goto RETRY;
                 case "NeedToken":

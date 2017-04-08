@@ -241,7 +241,7 @@ namespace WikiClientLibrary
             if ((options & PageQueryOptions.ResolveRedirects) != PageQueryOptions.ResolveRedirects
                 && Id != 0 && !AreIdEquals(Id, id))
                 // The page has been overwritten, or deleted.
-                WikiClient.Logger?.Warn($"Detected change of page id: {Title}, {Id}");
+                WikiClient.Logger?.Warn(this, $"Detected change of page id: {Title}, {Id}");
             Id = id;
             var page = (JObject) prop.Value;
             OnLoadPageInfo(page);
@@ -647,7 +647,7 @@ namespace WikiClientLibrary
             }
             var fromTitle = (string) jresult["move"]["from"];
             var toTitle = (string) jresult["move"]["to"];
-            Site.Logger.Info($"Page {fromTitle} has been moved to {toTitle} .");
+            Site.Logger.Info(this, $"Page {fromTitle} has been moved to {toTitle} .");
             Title = toTitle;
         }
 
@@ -702,7 +702,7 @@ namespace WikiClientLibrary
             Exists = false;
             LastRevision = null;
             LastRevisionId = 0;
-            Site.Logger.Info($"Page {title} has been deleted.");
+            Site.Logger.Info(this, $"Page {title} has been deleted.");
             return true;
         }
 

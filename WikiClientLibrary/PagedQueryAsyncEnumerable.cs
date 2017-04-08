@@ -80,13 +80,13 @@ namespace WikiClientLibrary
                             }
                         }
                         foreach (var k in duplicateKeys) pages.Remove(k);
-                        _Site.Logger?.Warn($"Received {pages.Count} distinct results.");
+                        _Site.Logger?.Warn(this, $"Received {pages.Count} distinct results.");
                     }
                     return Tuple.Create(queryNode, true);
                 }
                 // If so, let's see if there're more results.
                 if (continuation != null)
-                    _Site.Logger?.Warn("Empty query page with continuation received.");
+                    _Site.Logger?.Warn(this, "Empty query page with continuation received.");
                 goto BEGIN;
             });
             return ienu.GetEnumerator();

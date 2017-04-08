@@ -317,7 +317,7 @@ namespace WikiClientLibrary
                             // If the namespace alias already exists, check if they're pointing
                             // to the same NamespaceInfo
                             if (varns != ns)
-                                site.Logger?.Warn($"Namespace alias collision: {name} for {ns} and {varns}.");
+                                site.Logger?.Warn(this, $"Namespace alias collision: {name} for {ns} and {varns}.");
                         }
                         else
                         {
@@ -326,7 +326,7 @@ namespace WikiClientLibrary
                     }
                     else
                     {
-                        site.Logger?.Warn($"Cannot find namespace {id} for alias {name} .");
+                        site.Logger?.Warn(this, $"Cannot find namespace {id} for alias {name} .");
                     }
                 }
             }

@@ -26,7 +26,7 @@ namespace WikiClientLibrary.Client
             Debug.Assert(request != null);
             retries++;
             if (retries > 0)
-                Logger?.Trace($"Retry x{retries}: {request.RequestUri}");
+                Logger?.Trace(this, $"Retry x{retries}: {request.RequestUri}");
             try
             {
                 // Use await instead of responseTask.Result to unwrap Exceptions.
@@ -41,19 +41,19 @@ namespace WikiClientLibrary.Client
             {
                 if (cancellationToken.IsCancellationRequested)
                 {
-                    Logger?.Warn($"Cancelled: {request.RequestUri}");
+                    Logger?.Warn(this, $"Cancelled: {request.RequestUri}");
                     throw new OperationCanceledException();
                 }
                 else
                 {
-                    Logger?.Warn($"Timeout: {request.RequestUri}");
+                    Logger?.Warn(this, $"Timeout: {request.RequestUri}");
                 }
                 if (!allowsRetry || retries >= MaxRetries) throw new TimeoutException();
                 await Task.Delay(RetryDelay, cancellationToken);
                 goto RETRY;
             }
             // Validate response.
-            Logger?.Trace($"{response.StatusCode}: {request.RequestUri}");
+            Logger?.Trace(this, $"{response.StatusCode}: {request.RequestUri}");
             var statusCode = (int) response.StatusCode;
             if (statusCode >= 500 && statusCode <= 599)
             {
@@ -83,7 +83,7 @@ namespace WikiClientLibrary.Client
             catch (JsonReaderException)
             {
                 // Input is not a valid json.
-                Logger?.Warn($"Received non-json content: {request.RequestUri}");
+                Logger?.Warn(this, $"Received non-json content: {request.RequestUri}");
                 if (!allowsRetry || retries >= MaxRetries) throw;
                 goto RETRY;
             }
@@ -113,7 +113,7 @@ namespace WikiClientLibrary.Client
             // See https://www.mediawiki.org/wiki/API:Errors_and_warnings .
             if (jresponse["warnings"] != null)
             {
-                Logger?.Warn(jresponse["warnings"].ToString());
+                Logger?.Warn(this, jresponse["warnings"].ToString());
             }
             if (jresponse["error"] != null)
             {

@@ -204,10 +204,10 @@ namespace WikiClientLibrary
             else
                 Debug.Assert(false, "Unrecognized content argument type.");
             if (ignoreWarnings) requestContent.Add(new StringContent(""), "ignorewarnings");
-            site.Logger?.Trace($"Uploading: {link.Title} .");
+            site.Logger?.Trace(site, $"Uploading: {link.Title} .");
             var jresult = await site.PostContentAsync(requestContent, cancellationToken);
             var result = jresult["upload"].ToObject<UploadResult>(Utility.WikiJsonSerializer);
-            site.Logger?.Trace($"Upload[{link.Title}]: {result}.");
+            site.Logger?.Trace(site, $"Upload[{link.Title}]: {result}.");
             switch (result.ResultCode)
             {
                 case UploadResultCode.Warning:

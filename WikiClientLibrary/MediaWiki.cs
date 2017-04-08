@@ -314,7 +314,7 @@ namespace WikiClientLibrary
                 url = "http:" + url;
             try
             {
-                client.Logger?.Trace("Test MediaWiki API: " + url);
+                client.Logger?.Trace(client, "Test MediaWiki API: " + url);
                 var result = await DownloadStringAsync(client, url + "?action=query&format=json", false);
                 if (result == null) return null;
                 var content = result.Item2;

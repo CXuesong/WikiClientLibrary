@@ -41,11 +41,13 @@ namespace UnitTestProject1
 #endif
         }
 
+        public static ILogger DefaultTraceLogger = new TraceLogger();
+
         public static WikiClient CreateWikiClient()
         {
             var client = new WikiClient
             {
-                Logger = new TraceLogger(),
+                Logger = DefaultTraceLogger,
                 Timeout = TimeSpan.FromSeconds(20),
                 ThrottleTime = TimeSpan.FromSeconds(1),
                 RetryDelay = TimeSpan.FromSeconds(5),
@@ -62,29 +64,29 @@ namespace UnitTestProject1
                 AccountAssertion = AccountAssertionBehavior.AssertAll
             };
             var site = AwaitSync(Site.CreateAsync(client, options));
-            site.Logger = new TraceLogger();
+            site.Logger = DefaultTraceLogger;
             if (login) CredentialManager.Login(site);
             return site;
         }
 
         private class TraceLogger : ILogger
         {
-            public void Trace(string message)
+            public void Trace(object source, string message)
             {
                 System.Diagnostics.Trace.WriteLine(message);
             }
 
-            public void Info(string message)
+            public void Info(object source, string message)
             {
                 System.Diagnostics.Trace.WriteLine(message);
             }
 
-            public void Warn(string message)
+            public void Warn(object source, string message)
             {
                 System.Diagnostics.Trace.WriteLine(message);
             }
 
-            public void Error(Exception exception, string message)
+            public void Error(object source, Exception exception, string message)
             {
                 System.Diagnostics.Trace.WriteLine(string.Format("{0}, {1}", message, exception));
             }
