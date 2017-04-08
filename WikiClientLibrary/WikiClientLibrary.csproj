@@ -27,7 +27,7 @@
     <RepositoryUrl>https://github.com/CXuesong/WikiClientLibrary</RepositoryUrl>
     <RepositoryType>Git</RepositoryType>
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
-    <Version>0.5-int2a</Version>
+    <Version>0.5-int3</Version>
     <Authors>CXuesong</Authors>
     <Company />
   </PropertyGroup>

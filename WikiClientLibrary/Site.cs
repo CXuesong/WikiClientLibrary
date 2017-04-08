@@ -559,7 +559,7 @@ namespace WikiClientLibrary
         /// <remarks>See https://www.mediawiki.org/wiki/API:Tokens .</remarks>
         public Task<string> GetTokenAsync(string tokenType, bool forceRefetch)
         {
-            return GetTokenAsync(tokenType, forceRefetch, new CancellationToken());
+            return GetTokenAsync(tokenType, forceRefetch, CancellationToken.None);
         }
 
         /// <summary>
@@ -603,7 +603,7 @@ namespace WikiClientLibrary
         /// <remarks>This operation will refresh <see cref="AccountInfo"/>.</remarks>
         public Task LoginAsync(string userName, string password, string domain)
         {
-            return LoginAsync(userName, password, domain, new CancellationToken());
+            return LoginAsync(userName, password, domain, CancellationToken.None);
         }
 
         /// <summary>
@@ -733,7 +733,7 @@ namespace WikiClientLibrary
         /// </exception>
         public Task<IDictionary<string, string>> GetMessagesAsync(IEnumerable<string> messages)
         {
-            return GetMessagesAsync(messages, new CancellationToken());
+            return GetMessagesAsync(messages, CancellationToken.None);
         }
 
         /// <summary>
@@ -812,7 +812,7 @@ namespace WikiClientLibrary
         /// </exception>
         public Task<string> GetMessageAsync(string message)
         {
-            return GetMessageAsync(message, new CancellationToken());
+            return GetMessageAsync(message, CancellationToken.None);
         }
 
         /// <summary>
@@ -841,7 +841,7 @@ namespace WikiClientLibrary
         /// </summary>
         public Task<SiteStatistics> GetStatisticsAsync()
         {
-            return GetStatisticsAsync(new CancellationToken());
+            return GetStatisticsAsync(CancellationToken.None);
         }
 
         /// <summary>
@@ -985,17 +985,17 @@ namespace WikiClientLibrary
                 redirects = (options & OpenSearchOptions.ResolveRedirects) == OpenSearchOptions.ResolveRedirects,
             }, cancellationToken);
             var result = new List<OpenSearchResultEntry>();
-            var jarray = (JArray) jresult;
-            var titles = jarray.Count > 1 ? (JArray) jarray[1] : null;
-            var descs = jarray.Count > 2 ? (JArray) jarray[2] : null;
+            var jarray = (JArray)jresult;
+            var titles = jarray.Count > 1 ? (JArray)jarray[1] : null;
+            var descs = jarray.Count > 2 ? (JArray)jarray[2] : null;
             var urls = jarray.Count > 3 ? (JArray)jarray[3] : null;
             if (titles != null)
             {
                 for (int i = 0; i < titles.Count; i++)
                 {
-                    var entry = new OpenSearchResultEntry {Title = (string) titles[i]};
-                    if (descs != null) entry.Description = (string) descs[i];
-                    if (urls != null) entry.Url = (string) urls[i];
+                    var entry = new OpenSearchResultEntry { Title = (string)titles[i] };
+                    if (descs != null) entry.Description = (string)descs[i];
+                    if (urls != null) entry.Url = (string)urls[i];
                     result.Add(entry);
                 }
             }
@@ -1042,7 +1042,7 @@ namespace WikiClientLibrary
         /// <remarks>This overload will not follow the redirects.</remarks>
         public Task<ParsedContentInfo> ParsePageAsync(string title)
         {
-            return ParsePageAsync(title, ParsingOptions.None, CancellationToken.None);
+            return ParsePageAsync(title, null, ParsingOptions.None, CancellationToken.None);
         }
 
         /// <summary>
@@ -1053,7 +1053,7 @@ namespace WikiClientLibrary
         /// <exception cref="ArgumentNullException"><paramref name="title"/> is <c>null</c>.</exception>
         public Task<ParsedContentInfo> ParsePageAsync(string title, ParsingOptions options)
         {
-            return ParsePageAsync(title, options, new CancellationToken());
+            return ParsePageAsync(title, null, options, CancellationToken.None);
         }
 
         /// <summary>
@@ -1063,11 +1063,25 @@ namespace WikiClientLibrary
         /// <param name="options">Options for parsing.</param>
         /// <param name="cancellationToken">The cancellation token that will be checked prior to completing the returned task.</param>
         /// <exception cref="ArgumentNullException"><paramref name="title"/> is <c>null</c>.</exception>
-        public async Task<ParsedContentInfo> ParsePageAsync(string title, ParsingOptions options, CancellationToken cancellationToken)
+        public Task<ParsedContentInfo> ParsePageAsync(string title, ParsingOptions options, CancellationToken cancellationToken)
+        {
+            return ParsePageAsync(title, null, options, CancellationToken.None);
+        }
+
+        /// <summary>
+        /// Parsing the specific page, gets HTML and more information. (MediaWiki 1.12)
+        /// </summary>
+        /// <param name="title">Title of the page to be parsed.</param>
+        /// <param name="lang">The language (variant) used to render the content. E.g. <c>zh-cn</c>, <c>zh-tw</c>. specify <c>content</c> to use this wiki's content language.</param>
+        /// <param name="options">Options for parsing.</param>
+        /// <param name="cancellationToken">The cancellation token that will be checked prior to completing the returned task.</param>
+        /// <exception cref="ArgumentNullException"><paramref name="title"/> is <c>null</c>.</exception>
+        public async Task<ParsedContentInfo> ParsePageAsync(string title, string lang, ParsingOptions options, CancellationToken cancellationToken)
         {
             if (string.IsNullOrEmpty(title)) throw new ArgumentNullException(nameof(title));
             var p = BuildParsingParams(options);
             p["page"] = title;
+            p["uselang"] = lang;
             var jobj = await PostValuesAsync(p, cancellationToken);
             var parsed = ((JObject)jobj["parse"]).ToObject<ParsedContentInfo>(Utility.WikiJsonSerializer);
             return parsed;
@@ -1081,7 +1095,7 @@ namespace WikiClientLibrary
         /// <remarks>This overload will not follow the redirects.</remarks>
         public Task<ParsedContentInfo> ParsePageAsync(int id)
         {
-            return ParsePageAsync(id, ParsingOptions.None, CancellationToken.None);
+            return ParsePageAsync(id, null, ParsingOptions.None, CancellationToken.None);
         }
 
         /// <summary>
@@ -1092,7 +1106,7 @@ namespace WikiClientLibrary
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="id"/> is zero or negative.</exception>
         public Task<ParsedContentInfo> ParsePageAsync(int id, ParsingOptions options)
         {
-            return ParsePageAsync(id, options, CancellationToken.None);
+            return ParsePageAsync(id, null, options, CancellationToken.None);
         }
 
         /// <summary>
@@ -1102,11 +1116,25 @@ namespace WikiClientLibrary
         /// <param name="options">Options for parsing.</param>
         /// <param name="cancellationToken">The cancellation token that will be checked prior to completing the returned task.</param>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="id"/> is zero or negative.</exception>
-        public async Task<ParsedContentInfo> ParsePageAsync(int id, ParsingOptions options, CancellationToken cancellationToken)
+        public Task<ParsedContentInfo> ParsePageAsync(int id, ParsingOptions options, CancellationToken cancellationToken)
+        {
+            return ParsePageAsync(id, null, options, CancellationToken.None);
+        }
+
+        /// <summary>
+        /// Parsing the specific page, gets HTML and more information. (MediaWiki 1.12)
+        /// </summary>
+        /// <param name="id">Id of the page to be parsed.</param>
+        /// <param name="lang">The language (variant) used to render the content. E.g. <c>zh-cn</c>, <c>zh-tw</c>. specify <c>content</c> to use this wiki's content language.</param>
+        /// <param name="options">Options for parsing.</param>
+        /// <param name="cancellationToken">The cancellation token that will be checked prior to completing the returned task.</param>
+        /// <exception cref="ArgumentOutOfRangeException"><paramref name="id"/> is zero or negative.</exception>
+        public async Task<ParsedContentInfo> ParsePageAsync(int id, string lang, ParsingOptions options, CancellationToken cancellationToken)
         {
             if (id <= 0) throw new ArgumentOutOfRangeException(nameof(id));
             var p = BuildParsingParams(options);
             p["pageid"] = id;
+            p["uselang"] = lang;
             var jobj = await PostValuesAsync(p, cancellationToken);
             var parsed = ((JObject)jobj["parse"]).ToObject<ParsedContentInfo>(Utility.WikiJsonSerializer);
             return parsed;
@@ -1119,7 +1147,7 @@ namespace WikiClientLibrary
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="revId"/> is zero or negative.</exception>
         public Task<ParsedContentInfo> ParseRevisionAsync(int revId)
         {
-            return ParseRevisionAsync(revId, ParsingOptions.None, CancellationToken.None);
+            return ParseRevisionAsync(revId, null, ParsingOptions.None, CancellationToken.None);
         }
 
         /// <summary>
@@ -1130,7 +1158,7 @@ namespace WikiClientLibrary
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="revId"/> is zero or negative.</exception>
         public Task<ParsedContentInfo> ParseRevisionAsync(int revId, ParsingOptions options)
         {
-            return ParseRevisionAsync(revId, options, new CancellationToken());
+            return ParseRevisionAsync(revId, null, options, CancellationToken.None);
         }
 
         /// <summary>
@@ -1140,7 +1168,20 @@ namespace WikiClientLibrary
         /// <param name="options">Options for parsing.</param>
         /// <param name="cancellationToken">The cancellation token that will be checked prior to completing the returned task.</param>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="revId"/> is zero or negative.</exception>
-        public async Task<ParsedContentInfo> ParseRevisionAsync(int revId, ParsingOptions options, CancellationToken cancellationToken)
+        public Task<ParsedContentInfo> ParseRevisionAsync(int revId, ParsingOptions options, CancellationToken cancellationToken)
+        {
+            return ParseRevisionAsync(revId, null, options, CancellationToken.None);
+        }
+
+        /// <summary>
+        /// Parsing the specific page revision, gets HTML and more information. (MediaWiki 1.12)
+        /// </summary>
+        /// <param name="revId">Id of the revision to be parsed.</param>
+        /// <param name="lang">The language (variant) used to render the content. E.g. <c>zh-cn</c>, <c>zh-tw</c>. specify <c>content</c> to use this wiki's content language.</param>
+        /// <param name="options">Options for parsing.</param>
+        /// <param name="cancellationToken">The cancellation token that will be checked prior to completing the returned task.</param>
+        /// <exception cref="ArgumentOutOfRangeException"><paramref name="revId"/> is zero or negative.</exception>
+        public async Task<ParsedContentInfo> ParseRevisionAsync(int revId, string lang, ParsingOptions options, CancellationToken cancellationToken)
         {
             if (revId <= 0) throw new ArgumentOutOfRangeException(nameof(revId));
             var p = BuildParsingParams(options);
@@ -1165,7 +1206,7 @@ namespace WikiClientLibrary
         /// <exception cref="ArgumentException">Both <paramref name="content"/> and <paramref name="summary"/> is <c>null</c>.</exception>
         public Task<ParsedContentInfo> ParseContentAsync(string content, string summary, string title, ParsingOptions options)
         {
-            return ParseContentAsync(content, summary, title, null, options, CancellationToken.None);
+            return ParseContentAsync(content, summary, title, null, null, options, CancellationToken.None);
         }
 
         /// <summary>
@@ -1184,7 +1225,7 @@ namespace WikiClientLibrary
         public Task<ParsedContentInfo> ParseContentAsync(string content, string summary, string title,
             string contentModel, ParsingOptions options)
         {
-            return ParseContentAsync(content, summary, title, contentModel, options, new CancellationToken());
+            return ParseContentAsync(content, summary, title, contentModel, null, options, CancellationToken.None);
         }
 
         /// <summary>
@@ -1201,15 +1242,36 @@ namespace WikiClientLibrary
         /// <param name="cancellationToken">The cancellation token that will be checked prior to completing the returned task.</param>
         /// <remarks>If both <paramref name="title"/> and <paramref name="contentModel"/> is <c>null</c>, the content model will be assumed as wikitext.</remarks>
         /// <exception cref="ArgumentException">Both <paramref name="content"/> and <paramref name="summary"/> is <c>null</c>.</exception>
-        public async Task<ParsedContentInfo> ParseContentAsync(string content, string summary, string title,
+        public Task<ParsedContentInfo> ParseContentAsync(string content, string summary, string title,
             string contentModel, ParsingOptions options, CancellationToken cancellationToken)
+        {
+            return ParseContentAsync(content, summary, title, contentModel, null, options, CancellationToken.None);
+        }
+
+        /// <summary>
+        /// Parsing the specific page content and/or summary, gets HTML and more information. (MediaWiki 1.12)
+        /// </summary>
+        /// <param name="content">The content to parse.</param>
+        /// <param name="summary">The summary to parse. Can be <c>null</c>.</param>
+        /// <param name="title">Act like the wikitext is on this page.
+        ///     This only really matters when parsing links to the page itself or subpages,
+        ///     or when using magic words like {{PAGENAME}}.
+        ///     If <c>null</c> is given, the default value "API" will be used.</param>
+        /// <param name="contentModel">The content model name of the text specified in <paramref name="content"/>. <c>null</c> makes the server to infer content model from <paramref name="title"/>.</param>
+        /// <param name="lang">The language (variant) used to render the content. E.g. <c>zh-cn</c>, <c>zh-tw</c>. specify <c>content</c> to use this wiki's content language.</param>
+        /// <param name="options">Options for parsing.</param>
+        /// <param name="cancellationToken">The cancellation token that will be checked prior to completing the returned task.</param>
+        /// <remarks>If both <paramref name="title"/> and <paramref name="contentModel"/> is <c>null</c>, the content model will be assumed as wikitext.</remarks>
+        /// <exception cref="ArgumentException">Both <paramref name="content"/> and <paramref name="summary"/> is <c>null</c>.</exception>
+        public async Task<ParsedContentInfo> ParseContentAsync(string content, string summary, string title,
+            string contentModel, string lang, ParsingOptions options, CancellationToken cancellationToken)
         {
             if (content == null && summary == null) throw new ArgumentException(nameof(content));
             var p = BuildParsingParams(options);
             p["text"] = content;
             p["summary"] = summary;
             p["title"] = title;
-            p["title"] = title;
+            p["uselang"] = lang;
             var jobj = await PostValuesAsync(p, cancellationToken);
             var parsed = ((JObject)jobj["parse"]).ToObject<ParsedContentInfo>(Utility.WikiJsonSerializer);
             return parsed;
