@@ -27,9 +27,13 @@
     <RepositoryUrl>https://github.com/CXuesong/WikiClientLibrary</RepositoryUrl>
     <RepositoryType>Git</RepositoryType>
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
-    <Version>0.5-int2</Version>
+    <Version>0.5-int2.1</Version>
     <Authors>CXuesong</Authors>
     <Company />
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <DocumentationFile>bin\Release\netstandard1.1\WikiClientLibrary.xml</DocumentationFile>
   </PropertyGroup>
 
   <ItemGroup>
