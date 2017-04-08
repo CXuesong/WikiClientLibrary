@@ -108,6 +108,11 @@ namespace WikiClientLibrary
         /// <inheritdoc />
         public string Name { get; set; }
 
+        /// <summary>
+        /// The logger used on this object, and all the generated <see cref="Site"/>s.
+        /// </summary>
+        public ILogger Logger { get; set; }
+
         /// <inheritdoc />
         public string TryNormalize(string prefix)
         {
@@ -139,11 +144,25 @@ namespace WikiClientLibrary
                 {
                     task = entry.Task;
                     if (task == null)
-                        entry.Task = task = Site.CreateAsync(WikiClient, entry.ApiEndpoint);
+                        entry.Task = task = CreateSiteAsync(entry.Prefix, entry.ApiEndpoint);
                     return task;
                 }
             }
             return Task.FromResult((Site) null);
+        }
+
+        /// <summary>
+        /// Asynchronously create a <see cref="Site"/> instance.
+        /// </summary>
+        /// <param name="prefix">Site prefix, as is registered.</param>
+        /// <param name="apiEndpoint">Site API endpoint URL.</param>
+        /// <returns>A <see cref="Site"/> instance.</returns>
+        protected virtual async Task<Site> CreateSiteAsync(string prefix, string apiEndpoint)
+        {
+            var site = await Site.CreateAsync(WikiClient, apiEndpoint);
+            site.Logger = Logger;
+            Logger?.Trace(this, $"Site {prefix} has been instantiated.");
+            return site;
         }
 
         /// <inheritdoc />
