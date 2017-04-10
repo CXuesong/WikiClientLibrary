@@ -1351,7 +1351,7 @@ namespace WikiClientLibrary
         /// This flag can supress such output.</remarks>
         DisableLimitReport = 0x80,
         /// <summary>
-        /// Includes language links supplied by extensions. (1.22+)
+        /// Includes language links supplied by extensions, in addition to the links specified on the page. (1.22+)
         /// </summary>
         EffectiveLanguageLinks = 0x100,
         /// <summary>

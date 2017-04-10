@@ -26,7 +26,7 @@ namespace WikiClientLibrary
         /// <summary>
         /// The displayed title HTML.
         /// </summary>
-        /// <remarks>The actual displayed title can be reformatted by DISPLAYTITLE magic word.</remarks>
+        /// <remarks>The actual displayed title can be reformatted by DISPLAYTITLE magic word, and language variant conversions may be applied.</remarks>
         [JsonProperty]
         public string DisplayTitle { get; private set; }
 
@@ -57,7 +57,7 @@ namespace WikiClientLibrary
             set { Summary = (string)value["*"]; }
         }
 
-        [JsonProperty]
+        [JsonProperty("langlinks")]
         public IReadOnlyCollection<InterlanguageInfo> Interlanguages { get; private set; }
 
         [JsonProperty]

@@ -31,10 +31,12 @@ namespace UnitTestProject1
         {
             var site = WpLzhSite;
             // 一九五二年
-            var result = AwaitSync(site.ParseRevisionAsync(240575));
+            var result = AwaitSync(site.ParseRevisionAsync(240575, ParsingOptions.EffectiveLanguageLinks));
             ShallowTrace(result);
             Assert.AreEqual(result.Title, "一九五二年");
             Assert.AreEqual(result.DisplayTitle, "一九五二年");
+            Assert.IsTrue(result.Interlanguages.First(l => l.Language == "en").PageTitle == "1952");
+            Assert.IsTrue(result.Interlanguages.First(l => l.Language == "zh").PageTitle == "1952年");
             Assert.IsTrue(result.Content.StartsWith("<p><b>一九五二年</b>，繼<b>"));
             Assert.IsTrue(result.Sections.Any(s => s.Heading == "大事"));
         }
