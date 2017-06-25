@@ -497,18 +497,18 @@ namespace WikiClientLibrary
                 {
                     fetchTokensAsyncCoreSemaphore.Release();
                 }
-            }
-            lock (_TokensCache)
-            {
-                foreach (var key in pendingtokens)
+                lock (_TokensCache)
                 {
-                    if (_TokensCache.TryGetValue(key, out var value))
+                    foreach (var key in pendingtokens)
                     {
-                        result[key] = value;
-                    }
-                    else
-                    {
-                        throw new InvalidOperationException("Unrecognized token: " + key + ".");
+                        if (_TokensCache.TryGetValue(key, out var value))
+                        {
+                            result[key] = value;
+                        }
+                        else
+                        {
+                            throw new InvalidOperationException("Unrecognized token: " + key + ".");
+                        }
                     }
                 }
             }
