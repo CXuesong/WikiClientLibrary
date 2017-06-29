@@ -1,9 +1,9 @@
-A .NET Portable & asynchronous MediaWiki API client library for wiki sites. This library aims for human users, as well as bots.
+A .NET Standard asynchronous MediaWiki API client library for wiki sites. This library aims for human users, as well as bots.
 
 This package is now available on NuGet. You may install the package using the following command in the Package Management Console
 
 ```powershell
-Install-Package CXuesong.MW.WikiClientLibrary -Pre
+Install-Package CXuesong.MW.WikiClientLibrary
 ```
 
 Before running the test cases, please take a look at the [last section](#setting-up-test-cases).
@@ -12,7 +12,7 @@ Before running the test cases, please take a look at the [last section](#setting
 
 ## Overview
 
-This portable & asynchronous MediaWiki API client provides an easy and asynchronous access to commonly-used MediaWiki API. Developed in Visual Studio 2015, The portable library targets at .NET Framework 4.5, ASP.NET Core 1.0, Xamarin.iOS, and Xamarin.Android. It has the following features
+This portable & asynchronous MediaWiki API client provides an easy and asynchronous access to commonly-used MediaWiki API. Developed in Visual Studio 2017, the portable library targets at .NET Standard 1.1 (See [Supported Platforms](https://docs.microsoft.com/zh-cn/dotnet/standard/net-standard#net-platforms-support)). It has the following features
 
 *   Queries and edits for pages, including standard pages, category pages, and file pages.
 
@@ -25,7 +25,7 @@ This portable & asynchronous MediaWiki API client provides an easy and asynchron
 
 *   Tokens are hidden in the library functions, so that client won't bother to retrieve them over and over again.
 
-*   Query continuations are hidden by `IAsyncEnumerable`, which will ease the pain when using page generators.
+*   Query continuations are encapsulated by `IAsyncEnumerable`, which will ease the pain when using page generators.
 
 *   Other miscellaneous MediaWiki API, such as
 
