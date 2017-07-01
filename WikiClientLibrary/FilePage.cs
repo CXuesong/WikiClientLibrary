@@ -191,28 +191,35 @@ namespace WikiClientLibrary
                     {new StringContent(link.Title), "filename"},
                     {new StringContent(comment), "comment"},
                 };
-                if (content is Stream s)
+                if (content is Stream streamContent)
                 {
                     if (streamPosition < 0) return null;
                     // Memorize/reset the stream position.
-                    if (s.CanSeek)
+                    if (streamContent.CanSeek)
                     {
-                        if (streamPosition == null) streamPosition = s.Position;
-                        else s.Position = streamPosition.Value;
+                        if (streamPosition == null) streamPosition = streamContent.Position;
+                        else streamContent.Position = streamPosition.Value;
+                        Debug.Assert(streamPosition >= 0);
                     }
-                    requestContent.Add(new KeepAlivingStreamContent(s), "file", title);
+                    else
+                    {
+                        // Mark for do-not-retry.
+                        streamPosition = -1;
+                    }
+                    requestContent.Add(new KeepAlivingStreamContent(streamContent), "file", title);
                 }
-                else if (content is string)
+                else if (content is string stringContent)
                 {
-                    requestContent.Add(new StringContent((string) content), "url");
+                    requestContent.Add(new StringContent(stringContent), "url");
                 }
-                else if (content is UploadResult)
+                else if (content is UploadResult resultContent)
                 {
-                    var key = ((UploadResult) content).FileKey;
+                    var key = (resultContent).FileKey;
                     if (string.IsNullOrEmpty(key))
                         throw new InvalidOperationException("The specified UploadResult has no valid FileKey.");
                     // sessionkey: Same as filekey, maintained for backward compatibility (deprecated in 1.18)
-                    requestContent.Add(new StringContent(key), site.SiteInfo.Version >= new Version(1, 18) ? "filekey" : "sessionkey");
+                    requestContent.Add(new StringContent(key),
+                        site.SiteInfo.Version >= new Version(1, 18) ? "filekey" : "sessionkey");
                 }
                 else
                 {
