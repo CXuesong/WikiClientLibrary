@@ -4,9 +4,7 @@
 
 using System;
 using System.Diagnostics;
-using System.Globalization;
 using System.IO;
-using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
 using static UnitTestProject1.Utility;
@@ -125,7 +123,6 @@ The original title of the page is '''{title}'''.
         [ExpectedException(typeof(TimeoutException))]
         public void LocalFileUploadRetryTest1()
         {
-            Thread.CurrentThread.CurrentUICulture = new CultureInfo("en-US");
             const string FileName = "File:Test image.jpg";
             var client = CreateWikiClient();
             var localSite = AwaitSync(Site.CreateAsync(client, CredentialManager.DirtyTestsEntryPointUrl));

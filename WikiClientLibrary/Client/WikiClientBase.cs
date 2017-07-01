@@ -75,12 +75,19 @@ namespace WikiClientLibrary.Client
         /// Invokes API and gets JSON result.
         /// </summary>
         /// <param name="endPointUrl">The API endpoint URL.</param>
-        /// <param name="postContentFactory"></param>
+        /// <param name="postContentFactory">The factory function that returns a new <see cref="HttpContent"/> per invocation.</param>
         /// <param name="cancellationToken">The cancellation token that will be checked prior to completing the returned task.</param>
+        /// <exception cref="ArgumentException"><paramref name="postContentFactory" /> returns <c>null</c> for the first invocation.</exception>
         /// <exception cref="InvalidActionException">Specified action is not supported.</exception>
         /// <exception cref="UnauthorizedOperationException">Permission denied.</exception>
         /// <exception cref="OperationFailedException">There's "error" node in returned JSON.</exception>
-        /// <remarks><para>"Get" means the returned value is JSON, though the request is sent via HTTP POST.</para> </remarks>
+        /// <remarks>
+        /// <para>"Get" means the returned value is JSON, though the request is sent via HTTP POST.</para>
+        /// <para>If <paramref name="postContentFactory" /> returns <c>null</c> for the first invocation, an
+        /// <see cref="ArgumentException"/> will be thrown. If it returns <c>null</c> for subsequent invocations
+        /// (often when retrying the request), no further retry will be performed.</para>
+        /// <para>You need to specify format=json manually in the request content.</para>
+        /// </remarks>
         public abstract Task<JToken> GetJsonAsync(string endPointUrl, Func<HttpContent> postContentFactory, CancellationToken cancellationToken);
 
         /// <summary>
