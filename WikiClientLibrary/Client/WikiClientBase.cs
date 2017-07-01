@@ -72,19 +72,16 @@ namespace WikiClientLibrary.Client
             CancellationToken cancellationToken);
 
         /// <summary>
-        /// Invokes API and gets JSON result. This method will not attmpt to retry
+        /// Invokes API and gets JSON result.
         /// </summary>
         /// <param name="endPointUrl">The API endpoint URL.</param>
-        /// <param name="postContent">The content of the query.</param>
+        /// <param name="postContentFactory"></param>
         /// <param name="cancellationToken">The cancellation token that will be checked prior to completing the returned task.</param>
         /// <exception cref="InvalidActionException">Specified action is not supported.</exception>
         /// <exception cref="UnauthorizedOperationException">Permission denied.</exception>
         /// <exception cref="OperationFailedException">There's "error" node in returned JSON.</exception>
-        /// <remarks><para>"Get" means the returned value is JSON, though the request is sent via HTTP POST.</para>
-        /// <para>The implementation should not retry, because <paramref name="postContent"/> is probably disposed after one request.</para>
-        /// </remarks>
-        public abstract Task<JToken> GetJsonAsync(string endPointUrl, HttpContent postContent,
-            CancellationToken cancellationToken);
+        /// <remarks><para>"Get" means the returned value is JSON, though the request is sent via HTTP POST.</para> </remarks>
+        public abstract Task<JToken> GetJsonAsync(string endPointUrl, Func<HttpContent> postContentFactory, CancellationToken cancellationToken);
 
         /// <summary>
         /// Invokes API and gets JSON result.

@@ -82,13 +82,13 @@
     <EmbeddedResource Include="DemoImage.txt" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
     <ProjectReference Include="..\WikiClientLibrary\WikiClientLibrary.csproj">
       <Project>{15e595db-4ff0-4722-ac16-1881c6b811cc}</Project>
       <Name>WikiClientLibrary</Name>
     </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="packages.config" />
   </ItemGroup>
   <Choose>
     <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">

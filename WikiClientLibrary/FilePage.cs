@@ -43,12 +43,12 @@ namespace WikiClientLibrary
         /// </exception>
         /// <exception cref="OperationFailedException"> There's an error while uploading the file. </exception>
         /// <exception cref="TimeoutException">
-        /// Timeout specified in <see cref="WikiClient.Timeout"/> has been reached. Note in this
+        /// Timeout specified in <see cref="WikiClientBase.Timeout"/> has been reached. Note in this
         /// invocation, there will be no retries.
         /// </exception>
         /// <returns>An <see cref="UploadResult"/>.</returns>
         /// <remarks>
-        /// Upload from external source may take a while, so be sure to set a long <see cref="WikiClient.Timeout"/>
+        /// Upload from external source may take a while, so be sure to set a long <see cref="WikiClientBase.Timeout"/>
         /// in case the response from the server is delayed.
         /// </remarks>
         public static Task<UploadResult> UploadAsync(Site site, string url, string title,
@@ -73,12 +73,12 @@ namespace WikiClientLibrary
         /// </exception>
         /// <exception cref="OperationFailedException"> There's an error while uploading the file. </exception>
         /// <exception cref="TimeoutException">
-        /// Timeout specified in <see cref="WikiClient.Timeout"/> has been reached. Note in this
+        /// Timeout specified in <see cref="WikiClientBase.Timeout"/> has been reached. Note in this
         /// invocation, there will be no retries.
         /// </exception>
         /// <returns>An <see cref="UploadResult"/>.</returns>
         /// <remarks>
-        /// Upload from external source may take a while, so be sure to set a long <see cref="WikiClient.Timeout"/>
+        /// Upload from external source may take a while, so be sure to set a long <see cref="WikiClientBase.Timeout"/>
         /// in case the response from the server is delayed.
         /// </remarks>
         public static Task<UploadResult> UploadAsync(Site site, string url, string title, string comment,
@@ -102,7 +102,7 @@ namespace WikiClientLibrary
         /// </exception>
         /// <exception cref="OperationFailedException"> There's an error while uploading the file. </exception>
         /// <exception cref="TimeoutException">
-        /// Timeout specified in <see cref="WikiClient.Timeout"/> has been reached. Note in this
+        /// Timeout specified in <see cref="WikiClientBase.Timeout"/> has been reached. Note in this
         /// invocation, there will be no retries.
         /// </exception>
         /// <returns>An <see cref="UploadResult"/>.</returns>
@@ -129,7 +129,7 @@ namespace WikiClientLibrary
         /// </exception>
         /// <exception cref="OperationFailedException"> There's an error while uploading the file. </exception>
         /// <exception cref="TimeoutException">
-        /// Timeout specified in <see cref="WikiClient.Timeout"/> has been reached. Note in this
+        /// Timeout specified in <see cref="WikiClientBase.Timeout"/> has been reached. Note in this
         /// invocation, there will be no retries.
         /// </exception>
         /// <returns>An <see cref="UploadResult"/>.</returns>
@@ -155,7 +155,7 @@ namespace WikiClientLibrary
         /// </exception>
         /// <exception cref="OperationFailedException"> There's an error while uploading the file. </exception>
         /// <exception cref="TimeoutException">
-        /// Timeout specified in <see cref="WikiClient.Timeout"/> has been reached. Note in this
+        /// Timeout specified in <see cref="WikiClientBase.Timeout"/> has been reached. Note in this
         /// invocation, there will be no retries.
         /// </exception>
         /// <returns>An <see cref="UploadResult"/>.</returns>
@@ -179,35 +179,52 @@ namespace WikiClientLibrary
             if (link.Namespace.Id != BuiltInNamespaces.File)
                 throw new ArgumentException($"Invalid namespace for file title: {title} .", nameof(title));
             var token = await site.GetTokenAsync("edit");
-            var requestContent = new MultipartFormDataContent
+            long? streamPosition = null;
+            HttpContent RequestFactory()
             {
-                {new StringContent("json"), "format"},
-                {new StringContent("upload"), "action"},
-                {new StringContent(Utility.ToWikiQueryValue(watch)), "watchlist"},
-                {new StringContent(token), "token"},
-                {new StringContent(link.Title), "filename"},
-                {new StringContent(comment), "comment"},
-            };
-            if (content is Stream)
-                requestContent.Add(new StreamContent((Stream) content), "file", title);
-            else if (content is string)
-                requestContent.Add(new StringContent((string) content), "url");
-            else if (content is UploadResult)
-            {
-                var key = ((UploadResult) content).FileKey;
-                if (string.IsNullOrEmpty(key))
-                    throw new InvalidOperationException("The specified UploadResult has no valid FileKey.");
-                // sessionkey: Same as filekey, maintained for backward compatibility (deprecated in 1.18)
-                requestContent.Add(new StringContent(key),
-                    site.SiteInfo.Version >= new Version(1, 18) ? "filekey" : "sessionkey");
+                var requestContent = new MultipartFormDataContent
+                {
+                    {new StringContent("json"), "format"},
+                    {new StringContent("upload"), "action"},
+                    {new StringContent(Utility.ToWikiQueryValue(watch)), "watchlist"},
+                    {new StringContent(token), "token"},
+                    {new StringContent(link.Title), "filename"},
+                    {new StringContent(comment), "comment"},
+                };
+                if (content is Stream s)
+                {
+                    if (streamPosition < 0) return null;
+                    // Memorize/reset the stream position.
+                    if (s.CanSeek)
+                    {
+                        if (streamPosition == null) streamPosition = s.Position;
+                        else s.Position = streamPosition.Value;
+                    }
+                    requestContent.Add(new KeepAlivingStreamContent(s), "file", title);
+                }
+                else if (content is string)
+                {
+                    requestContent.Add(new StringContent((string) content), "url");
+                }
+                else if (content is UploadResult)
+                {
+                    var key = ((UploadResult) content).FileKey;
+                    if (string.IsNullOrEmpty(key))
+                        throw new InvalidOperationException("The specified UploadResult has no valid FileKey.");
+                    // sessionkey: Same as filekey, maintained for backward compatibility (deprecated in 1.18)
+                    requestContent.Add(new StringContent(key), site.SiteInfo.Version >= new Version(1, 18) ? "filekey" : "sessionkey");
+                }
+                else
+                {
+                    Debug.Assert(false, "Unrecognized content argument type.");
+                }
+                if (ignoreWarnings) requestContent.Add(new StringContent(""), "ignorewarnings");
+                return requestContent;
             }
-            else
-                Debug.Assert(false, "Unrecognized content argument type.");
-            if (ignoreWarnings) requestContent.Add(new StringContent(""), "ignorewarnings");
-            site.Logger?.Trace(site, $"Uploading: {link.Title} .");
-            var jresult = await site.PostContentAsync(requestContent, cancellationToken);
+            site.Logger?.Info(site, $"Uploading: {link.Title} .");
+            var jresult = await site.PostContentAsync(RequestFactory, cancellationToken);
             var result = jresult["upload"].ToObject<UploadResult>(Utility.WikiJsonSerializer);
-            site.Logger?.Trace(site, $"Upload[{link.Title}]: {result}.");
+            site.Logger?.Info(site, $"Upload[{link.Title}]: {result}.");
             switch (result.ResultCode)
             {
                 case UploadResultCode.Warning:

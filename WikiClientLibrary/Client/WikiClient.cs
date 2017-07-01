@@ -75,28 +75,26 @@ namespace WikiClientLibrary.Client
         public override async Task<JToken> GetJsonAsync(string endPointUrl, IEnumerable<KeyValuePair<string, string>> queryParams,
             CancellationToken cancellationToken)
         {
+            if (endPointUrl == null) throw new ArgumentNullException(nameof(endPointUrl));
             if (queryParams == null) throw new ArgumentNullException(nameof(queryParams));
             var result = await SendAsync(() => new HttpRequestMessage(HttpMethod.Post, endPointUrl)
             {
                 Content = new FormLongUrlEncodedContent(new[] {new KeyValuePair<string, string>("format", "json")}
                     .Concat(queryParams)),
-            }, true, cancellationToken);
+            }, cancellationToken);
             return result;
         }
 
         /// <inheritdoc />
-        public override async Task<JToken> GetJsonAsync(string endPointUrl, HttpContent postContent, CancellationToken cancellationToken)
+        public override async Task<JToken> GetJsonAsync(string endPointUrl, Func<HttpContent> postContentFactory, CancellationToken cancellationToken)
         {
-            if (postContent == null) throw new ArgumentNullException(nameof(postContent));
+            if (endPointUrl == null) throw new ArgumentNullException(nameof(endPointUrl));
+            if (postContentFactory == null) throw new ArgumentNullException(nameof(postContentFactory));
             // Implies we want JSON result.
             var result = await SendAsync(() => new HttpRequestMessage(HttpMethod.Post, endPointUrl)
             {
-                Content = postContent,
-            }, false, cancellationToken);
-            // No, we don't retry.
-            // HttpContent will usually be disposed after a request.
-            // We cannot ask for a HttpContent factory becuase in this case,
-            // caller may have Stream to pass in, which cannot be rebuilt.
+                Content = postContentFactory(),
+            }, cancellationToken);
             return result;
         }
 

@@ -354,14 +354,29 @@ namespace WikiClientLibrary
         /// <exception cref="OperationFailedException">There's "error" node in returned JSON.</exception>
         public Task<JToken> PostValuesAsync(object queryParams, bool supressAccountAssertion, CancellationToken cancellationToken)
         {
+            if (queryParams == null) throw new ArgumentNullException(nameof(queryParams));
             return PostValuesAsync(Utility.ToWikiStringValuePairs(queryParams), supressAccountAssertion, cancellationToken);
         }
 
-        // No, we cannot guarantee the returned value is JSON, so this function is internal.
-        // It depends on caller's conscious.
-        internal Task<JToken> PostContentAsync(HttpContent postContent, CancellationToken cancellationToken)
+        /// <summary>
+        /// Invokes API and gets JSON result.
+        /// </summary>
+        /// <param name="postContentFactory">The factory function that returns a new <see cref="HttpContent"/> per invocation.</param>
+        /// <param name="cancellationToken">The cancellation token that will be checked prior to completing the returned task.</param>
+        /// <exception cref="ArgumentException"><paramref name="postContentFactory" /> returns <c>null</c> for the first invocation.</exception>
+        /// <exception cref="InvalidActionException">Specified action is not supported.</exception>
+        /// <exception cref="UnauthorizedOperationException">Permission denied.</exception>
+        /// <exception cref="OperationFailedException">There's "error" node in returned JSON.</exception>
+        /// <remarks>
+        /// <para>If <paramref name="postContentFactory" /> returns <c>null</c> for the first invocation, an
+        /// <see cref="ArgumentException"/> will be thrown. If it returns <c>null</c> for subsequent invocations
+        /// (often when retrying the request), no further retry will be performed.</para>
+        /// <para>You need to specify format=json manually in the request content.</para>
+        /// </remarks>
+        internal Task<JToken> PostContentAsync(Func<HttpContent> postContentFactory, CancellationToken cancellationToken)
         {
-            return WikiClient.GetJsonAsync(options.ApiEndpoint, postContent, cancellationToken);
+            if (postContentFactory == null) throw new ArgumentNullException(nameof(postContentFactory));
+            return WikiClient.GetJsonAsync(options.ApiEndpoint, postContentFactory, cancellationToken);
         }
 
         #endregion

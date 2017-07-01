@@ -4,12 +4,15 @@
 
 using System;
 using System.Diagnostics;
+using System.Globalization;
 using System.IO;
 using System.Runtime.InteropServices;
+using System.Threading;
 using System.Threading.Tasks;
 using static UnitTestProject1.Utility;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using WikiClientLibrary;
+using WikiClientLibrary.Client;
 
 namespace UnitTestProject1
 {
@@ -68,10 +71,10 @@ The original title of the page is '''{title}'''.
                 Assert.Inconclusive("You need to specify CredentialManager.DirtyTestsEntryPointUrl before running this group of tests.");
             site = CreateWikiSite(CredentialManager.DirtyTestsEntryPointUrl);
             CredentialManager.Login(site);
-            site.AccountInfo.AssertInGroup("sysop");
-            GetOrCreatePage(site, TestPage1Title);
-            GetOrCreatePage(site, TestPage11Title);
-            GetOrCreatePage(site, TestPage2Title);
+            //site.AccountInfo.AssertInGroup("sysop");
+            //GetOrCreatePage(site, TestPage1Title);
+            //GetOrCreatePage(site, TestPage11Title);
+            //GetOrCreatePage(site, TestPage2Title);
         }
 
         [ClassCleanup]
@@ -116,6 +119,38 @@ The original title of the page is '''{title}'''.
             ShallowTrace(fp);
             Assert.IsTrue(fp.Exists);
             Assert.AreEqual(FileSHA1, fp.LastFileRevision.Sha1.ToUpperInvariant());
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(TimeoutException))]
+        public void LocalFileUploadRetryTest1()
+        {
+            Thread.CurrentThread.CurrentUICulture = new CultureInfo("en-US");
+            const string FileName = "File:Test image.jpg";
+            var client = CreateWikiClient();
+            var localSite = AwaitSync(Site.CreateAsync(client, CredentialManager.DirtyTestsEntryPointUrl));
+            localSite.Logger = DefaultTraceLogger;
+            // Cahce the token first so it won't be affected by the short timeout.
+            AwaitSync(localSite.GetTokenAsync("edit"));
+            Trace.WriteLine("Try uploading…");
+            // We want to timeout and retry.
+            client.Timeout = TimeSpan.FromSeconds(0.5);
+            client.RetryDelay = TimeSpan.FromSeconds(1);
+            client.MaxRetries = 1;
+            var buffer = new byte[1024 * 1024 * 2];     // 2MB, I think this size is fairly large.
+                                                        // If your connection speed is too fast then, well, trottle it plz.
+            using (var ms = new MemoryStream(buffer))
+            {
+                try
+                {
+                    AwaitSync(FilePage.UploadAsync(localSite, ms, FileName, "This is an upload that is destined to fail. Upload timeout test.", false));
+                }
+                catch (UploadException ex)
+                {
+                    Assert.Inconclusive("Your network speed might be too fast for the current timeout.\nException:" +
+                                        ex.Message);
+                }
+            }
         }
 
         [TestMethod]

@@ -16,14 +16,20 @@ namespace WikiClientLibrary.Client
         #region the json client
 
         /// <inheritdoc />
-        private async Task<JToken> SendAsync(Func<HttpRequestMessage> requestFactory, bool allowsRetry,CancellationToken cancellationToken)
+        private async Task<JToken> SendAsync(Func<HttpRequestMessage> requestFactory,
+            CancellationToken cancellationToken)
         {
             HttpResponseMessage response;
-            var retries = -1;
+            var retries = -1; // Current retries count.
+            var request = requestFactory();
+            if (request == null)
+            {
+                throw new ArgumentException(
+                    "requestFactory should return an HttpRequestMessage instance for the 1st invocation.",
+                    nameof(requestFactory));
+            }
             RETRY:
             cancellationToken.ThrowIfCancellationRequested();
-            var request = requestFactory();
-            Debug.Assert(request != null);
             retries++;
             if (retries > 0)
                 Logger?.Trace(this, $"Retry x{retries}: {request.RequestUri}");
@@ -48,7 +54,8 @@ namespace WikiClientLibrary.Client
                 {
                     Logger?.Warn(this, $"Timeout: {request.RequestUri}");
                 }
-                if (!allowsRetry || retries >= MaxRetries) throw new TimeoutException();
+                request = requestFactory();
+                if (request == null || retries >= MaxRetries) throw new TimeoutException();
                 await Task.Delay(RetryDelay, cancellationToken);
                 goto RETRY;
             }
@@ -59,7 +66,8 @@ namespace WikiClientLibrary.Client
             {
                 // Service Error. We can retry.
                 // HTTP 503 : https://www.mediawiki.org/wiki/Manual:Maxlag_parameter
-                if (allowsRetry && retries < MaxRetries)
+                request = requestFactory();
+                if (request != null && retries < MaxRetries)
                 {
                     var date = response.Headers.RetryAfter?.Date;
                     var offset = response.Headers.RetryAfter?.Delta;
@@ -73,6 +81,7 @@ namespace WikiClientLibrary.Client
                 }
             }
             response.EnsureSuccessStatusCode();
+            Debug.Assert(request != null);      // For HTTP 500~599, EnsureSuccessStatusCode will throw an Exception.
             try
             {
                 cancellationToken.ThrowIfCancellationRequested();
@@ -84,7 +93,8 @@ namespace WikiClientLibrary.Client
             {
                 // Input is not a valid json.
                 Logger?.Warn(this, $"Received non-json content: {request.RequestUri}");
-                if (!allowsRetry || retries >= MaxRetries) throw;
+                request = requestFactory();
+                if (request == null || retries >= MaxRetries) throw;
                 goto RETRY;
             }
         }
@@ -118,12 +128,12 @@ namespace WikiClientLibrary.Client
             if (jresponse["error"] != null)
             {
                 var err = jresponse["error"];
-                var errcode = (string)err["code"];
-                var errmessage = ((string)err["info"] + ". " + (string)err["*"]).Trim();
+                var errcode = (string) err["code"];
+                var errmessage = ((string) err["info"] + ". " + (string) err["*"]).Trim();
                 switch (errcode)
                 {
                     case "permissiondenied":
-                    case "readapidenied":       // You need read permission to use this module
+                    case "readapidenied": // You need read permission to use this module
                         throw new UnauthorizedOperationException(errmessage);
                     case "unknown_action":
                         throw new InvalidActionException(errcode, errmessage);
