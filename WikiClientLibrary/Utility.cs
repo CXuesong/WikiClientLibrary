@@ -14,6 +14,8 @@ using Newtonsoft.Json.Serialization;
 using WikiClientLibrary.Client;
 using WikiClientLibrary.Generators;
 using System.Runtime.CompilerServices;
+using WikiClientLibrary.Infrastructures;
+using WikiClientLibrary.Pages;
 
 namespace WikiClientLibrary
 {

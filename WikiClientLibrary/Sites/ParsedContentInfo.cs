@@ -1,19 +1,15 @@
-ï»¿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Linq;
 using System.Runtime.Serialization;
-using System.Text;
-using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
-namespace WikiClientLibrary
+namespace WikiClientLibrary.Sites
 {
     /// <summary>
     /// Contains parsed content of specific page or wikitext.
     /// </summary>
-    /// <remarks>Use <see cref="Site.ParsePageAsync(string)"/> or other relative methods to get parsed content.</remarks>
+    /// <remarks>Use <see cref="Site.ParsePageAsync(string)"/> or other related methods to get parsed content.</remarks>
     [JsonObject(MemberSerialization.OptIn)]
     public class ParsedContentInfo
     {
@@ -173,10 +169,10 @@ namespace WikiClientLibrary
         public int? ByteOffset { get; private set; }
 
         /// <summary>
-        /// è¿”å›è¡¨ç¤ºå½“å‰å¯¹è±¡çš„å­—ç¬¦ä¸²ã€‚
+        /// ·µ»Ø±íÊ¾µ±Ç°¶ÔÏóµÄ×Ö·û´®¡£
         /// </summary>
         /// <returns>
-        /// è¡¨ç¤ºå½“å‰å¯¹è±¡çš„å­—ç¬¦ä¸²ã€‚
+        /// ±íÊ¾µ±Ç°¶ÔÏóµÄ×Ö·û´®¡£
         /// </returns>
         public override string ToString()
         {

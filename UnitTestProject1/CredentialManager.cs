@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using WikiClientLibrary;
 using WikiClientLibrary.Client;
+using WikiClientLibrary.Sites;
 
 namespace UnitTestProject1
 {

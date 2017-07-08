@@ -8,6 +8,9 @@ using System.Threading;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
 using WikiClientLibrary.Client;
+using WikiClientLibrary.Infrastructures;
+using WikiClientLibrary.Pages;
+using WikiClientLibrary.Sites;
 
 namespace WikiClientLibrary.Generators
 {

@@ -5,8 +5,10 @@ using System.Runtime.Serialization;
 using System.Threading;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
+using WikiClientLibrary.Generators;
+using WikiClientLibrary.Sites;
 
-namespace WikiClientLibrary
+namespace WikiClientLibrary.Pages
 {
     /// <summary>
     /// Represents a revision of a page.

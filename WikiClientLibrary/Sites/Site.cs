@@ -1,19 +1,16 @@
 ﻿using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Linq;
 using System.Net.Http;
-using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
-using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using WikiClientLibrary.Client;
-using System.Security;
-using System.Threading;
+using WikiClientLibrary.Infrastructures;
+using WikiClientLibrary.Pages;
 
-namespace WikiClientLibrary
+namespace WikiClientLibrary.Sites
 {
     /// <summary>
     /// Represents a MediaWiki site.

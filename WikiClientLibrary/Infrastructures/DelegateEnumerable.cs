@@ -1,13 +1,9 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using Newtonsoft.Json.Linq;
 
-namespace WikiClientLibrary
+namespace WikiClientLibrary.Infrastructures
 {
     /// <summary>
     /// An <see cref="IAsyncEnumerable{T}"/> implementation that uses delegate to generate items.

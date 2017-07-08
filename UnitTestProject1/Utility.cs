@@ -11,6 +11,7 @@ using System.Reflection;
 using System.Runtime.ExceptionServices;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using WikiClientLibrary.Client;
+using WikiClientLibrary.Sites;
 
 namespace UnitTestProject1
 {

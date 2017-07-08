@@ -2,16 +2,14 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Runtime.Serialization;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using System.Collections.Specialized;
-using System.Diagnostics;
-using System.Runtime.Serialization;
+using WikiClientLibrary.Pages;
 
-namespace WikiClientLibrary
+namespace WikiClientLibrary.Sites
 {
     /// <summary>
     /// Provides read-only access to site information.

@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
 using System.Net.Http;
 using System.Threading;
+using WikiClientLibrary.Infrastructures;
 
 namespace WikiClientLibrary.Client
 {

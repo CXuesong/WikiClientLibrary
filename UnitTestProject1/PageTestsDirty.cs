@@ -11,6 +11,8 @@ using static UnitTestProject1.Utility;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using WikiClientLibrary;
 using WikiClientLibrary.Client;
+using WikiClientLibrary.Pages;
+using WikiClientLibrary.Sites;
 
 namespace UnitTestProject1
 {

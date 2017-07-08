@@ -1,12 +1,11 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
 using WikiClientLibrary.Flow;
+using WikiClientLibrary.Sites;
 
-namespace WikiClientLibrary
+namespace WikiClientLibrary.Pages
 {
     // Factory methods
     partial class Page

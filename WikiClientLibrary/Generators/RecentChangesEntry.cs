@@ -1,15 +1,14 @@
-ï»¿using System;
+using System;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
 using System.Runtime.Serialization;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
+using WikiClientLibrary.Pages;
+using WikiClientLibrary.Sites;
 
-namespace WikiClientLibrary
+namespace WikiClientLibrary.Generators
 {
     /// <summary>
     /// Represents an item in RecentChanges list.
@@ -170,7 +169,7 @@ namespace WikiClientLibrary
         /// <para>You don't have permission to patrol changes. Only users with the patrol right can do this.</para>
         /// <para>OR You don't have permission to patrol your own changes. Only users with the autopatrol right can do this.</para>
         /// </exception>
-        /// <remarks>It's suggested that the caller only patrol the pages whose <see cref="PatrolStatus"/> is <see cref="WikiClientLibrary.PatrolStatus.Unpatrolled"/>.</remarks>
+        /// <remarks>It's suggested that the caller only patrol the pages whose <see cref="PatrolStatus"/> is <see cref="Generators.PatrolStatus.Unpatrolled"/>.</remarks>
         /// <exception cref="NotSupportedException">Patrolling is disabled on this wiki.</exception>
         public Task PatrolAsync()
         {
@@ -185,7 +184,7 @@ namespace WikiClientLibrary
         /// <para>You don't have permission to patrol changes. Only users with the patrol right can do this.</para>
         /// <para>OR You don't have permission to patrol your own changes. Only users with the autopatrol right can do this.</para>
         /// </exception>
-        /// <remarks>It's suggested that the caller only patrol the pages whose <see cref="PatrolStatus"/> is <see cref="WikiClientLibrary.PatrolStatus.Unpatrolled"/>.</remarks>
+        /// <remarks>It's suggested that the caller only patrol the pages whose <see cref="PatrolStatus"/> is <see cref="Generators.PatrolStatus.Unpatrolled"/>.</remarks>
         /// <exception cref="NotSupportedException">Patrolling is disabled on this wiki.</exception>
         public Task PatrolAsync(CancellationToken cancellationToken)
         {
@@ -196,10 +195,10 @@ namespace WikiClientLibrary
         }
 
         /// <summary>
-        /// è¿”å›è¡¨ç¤ºå½“å‰å¯¹è±¡çš„å­—ç¬¦ä¸²ã€‚
+        /// ·µ»Ø±íÊ¾µ±Ç°¶ÔÏóµÄ×Ö·û´®¡£
         /// </summary>
         /// <returns>
-        /// è¡¨ç¤ºå½“å‰å¯¹è±¡çš„å­—ç¬¦ä¸²ã€‚
+        /// ±íÊ¾µ±Ç°¶ÔÏóµÄ×Ö·û´®¡£
         /// </returns>
         public override string ToString()
         {

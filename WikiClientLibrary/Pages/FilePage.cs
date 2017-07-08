@@ -5,15 +5,15 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
-using System.Runtime.InteropServices;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using WikiClientLibrary.Client;
+using WikiClientLibrary.Infrastructures;
+using WikiClientLibrary.Sites;
 
-namespace WikiClientLibrary
+namespace WikiClientLibrary.Pages
 {
     /// <summary>
     /// Represents a file page on MediaWiki site.

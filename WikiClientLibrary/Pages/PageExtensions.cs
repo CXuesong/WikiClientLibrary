@@ -1,12 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using WikiClientLibrary.Generators;
 
-namespace WikiClientLibrary
+namespace WikiClientLibrary.Pages
 {
     /// <summary>
     /// Provides extension methods for a sequence of <see cref="Page"/>.

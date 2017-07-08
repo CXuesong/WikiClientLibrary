@@ -9,6 +9,8 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Serialization;
 using WikiClientLibrary;
+using WikiClientLibrary.Pages;
+using WikiClientLibrary.Sites;
 using static UnitTestProject1.Utility;
 
 namespace UnitTestProject1

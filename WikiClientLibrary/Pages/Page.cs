@@ -3,19 +3,18 @@ using System.Collections;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Dynamic;
 using System.Linq;
-using System.Reflection;
 using System.Runtime.Serialization;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using WikiClientLibrary.Client;
 using WikiClientLibrary.Generators;
+using WikiClientLibrary.Infrastructures;
+using WikiClientLibrary.Sites;
 
-namespace WikiClientLibrary
+namespace WikiClientLibrary.Pages
 {
     /// <summary>
     /// Represents a page on MediaWiki site.
@@ -454,7 +453,7 @@ namespace WikiClientLibrary
         /// This action will refill <see cref="Id" />, <see cref="Title"/>,
         /// <see cref="ContentModel"/>, <see cref="LastRevisionId"/>, and invalidates
         /// <see cref="ContentLength"/>, <see cref="LastRevision"/>, and <see cref="LastTouched"/>.
-        /// You should call <see cref="RefreshAsync(WikiClientLibrary.PageQueryOptions,System.Threading.CancellationToken)" /> again if you're interested in them.
+        /// You should call <see cref="RefreshAsync(WikiClientLibrary.Pages.PageQueryOptions,System.Threading.CancellationToken)" /> again if you're interested in them.
         /// </remarks>
         public Task UpdateContentAsync(string summary, bool minor)
         {
@@ -469,7 +468,7 @@ namespace WikiClientLibrary
         /// This action will refill <see cref="Id" />, <see cref="Title"/>,
         /// <see cref="ContentModel"/>, <see cref="LastRevisionId"/>, and invalidates
         /// <see cref="ContentLength"/>, <see cref="LastRevision"/>, and <see cref="LastTouched"/>.
-        /// You should call <see cref="RefreshAsync(WikiClientLibrary.PageQueryOptions,System.Threading.CancellationToken)" /> again if you're interested in them.
+        /// You should call <see cref="RefreshAsync(WikiClientLibrary.Pages.PageQueryOptions,System.Threading.CancellationToken)" /> again if you're interested in them.
         /// </remarks>
         public Task UpdateContentAsync(string summary, bool minor, bool bot)
         {

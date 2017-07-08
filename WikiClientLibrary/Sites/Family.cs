@@ -1,15 +1,11 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
-using System.Reflection.Emit;
-using System.Text;
-using System.Threading;
 using System.Threading.Tasks;
 using WikiClientLibrary.Client;
 
-namespace WikiClientLibrary
+namespace WikiClientLibrary.Sites
 {
     /// <summary>
     /// Represents a set of wiki <see cref="Site"/> instances, identified by their names (often the same as interwiki prefix).

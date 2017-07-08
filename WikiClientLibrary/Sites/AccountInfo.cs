@@ -1,11 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Newtonsoft.Json;
 
-namespace WikiClientLibrary
+namespace WikiClientLibrary.Sites
 {
     /// <summary>
     /// Provides read-only access to the current logged-in information.

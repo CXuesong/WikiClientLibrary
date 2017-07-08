@@ -6,6 +6,8 @@ using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using WikiClientLibrary;
 using WikiClientLibrary.Flow;
+using WikiClientLibrary.Pages;
+using WikiClientLibrary.Sites;
 using static UnitTestProject1.Utility;
 
 namespace UnitTestProject1

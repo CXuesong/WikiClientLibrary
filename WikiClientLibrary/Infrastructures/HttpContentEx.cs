@@ -1,16 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.IO;
 using System.Linq;
-using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Reflection;
 using System.Reflection.Emit;
 using System.Text;
 
-namespace WikiClientLibrary
+namespace WikiClientLibrary.Infrastructures
 {
     /// <summary>
     /// A container for name/value tuples encoded using application/x-www-form-urlencoded MIME type.

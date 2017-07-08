@@ -1,12 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
+using WikiClientLibrary.Sites;
 
-namespace WikiClientLibrary
+namespace WikiClientLibrary.Infrastructures
 {
     /// <summary>
     /// Asynchronously enumerate paged query results. This AsyncEnumerable enumerates
@@ -22,7 +20,7 @@ namespace WikiClientLibrary
         {
         }
 
-        // distinctPages: Used by RecentChangesGenerator, remove duplicate page results generated from generator results.
+        // distinctPages: Used by RecentChangesGenerator, removes duplicate page results generated from generator results.
         public PagedQueryAsyncEnumerable(Site site, IDictionary<string, object> parameters, bool distinctPages)
         {
             _Site = site;

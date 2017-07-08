@@ -4,7 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using WikiClientLibrary.Client;
 
-namespace WikiClientLibrary
+namespace WikiClientLibrary.Sites
 {
     /// <summary>
     /// Client options for creating a <see cref="Site"/> instance.
