@@ -511,9 +511,8 @@ namespace WikiClientLibrary.Pages
         public async Task<bool> UpdateContentAsync(string summary, bool minor, bool bot, AutoWatchBehavior watch, 
             CancellationToken cancellationToken)
         {
-            var tokenTask = Site.GetTokenAsync("edit");
-            await WikiClient.WaitForThrottleAsync(cancellationToken);
-            var token = await tokenTask;
+            await Site.ModificationThrottler.QueueWorkAsync("Edit: " + this, cancellationToken);
+            var token = await Site.GetTokenAsync("edit", cancellationToken);
             // When passing this to the Edit API, always pass the token parameter last
             // (or at least after the text parameter). That way, if the edit gets interrupted,
             // the token won't be passed and the edit will fail.
@@ -566,16 +565,6 @@ namespace WikiClientLibrary.Pages
         #region Management
 
         /// <summary>
-        /// Get token and wait for a while.
-        /// </summary>
-        private async Task<string> GetTokenAndWaitAsync(string tokenType, CancellationToken cancellationToken)
-        {
-            var tokenTask = Site.GetTokenAsync(tokenType);
-            await WikiClient.WaitForThrottleAsync(cancellationToken);
-            return await tokenTask;
-        }
-
-        /// <summary>
         /// Moves (renames) a page. (MediaWiki 1.12)
         /// </summary>
         public Task MoveAsync(string newTitle, string reason, PageMovingOptions options)
@@ -607,7 +596,8 @@ namespace WikiClientLibrary.Pages
         {
             if (newTitle == null) throw new ArgumentNullException(nameof(newTitle));
             if (newTitle == Title) return;
-            var token = await GetTokenAndWaitAsync("move", cancellationToken);
+            await Site.ModificationThrottler.QueueWorkAsync("Move: " + this, cancellationToken);
+            var token = await Site.GetTokenAsync("move", cancellationToken);
             // When passing this to the Edit API, always pass the token parameter last
             // (or at least after the text parameter). That way, if the edit gets interrupted,
             // the token won't be passed and the edit will fail.
@@ -671,7 +661,8 @@ namespace WikiClientLibrary.Pages
         /// </summary>
         public async Task<bool> DeleteAsync(string reason, AutoWatchBehavior watch, CancellationToken cancellationToken)
         {
-            var token = await GetTokenAndWaitAsync("delete", cancellationToken);
+            await Site.ModificationThrottler.QueueWorkAsync("Delete: " + this, cancellationToken);
+            var token = await Site.GetTokenAsync("delete", cancellationToken);
             JToken jresult;
             try
             {
@@ -743,7 +734,7 @@ namespace WikiClientLibrary.Pages
         /// </returns>
         public override string ToString()
         {
-            return Title;
+            return string.IsNullOrEmpty(Title) ? ("#" + Id) : Title;
         }
     }
 

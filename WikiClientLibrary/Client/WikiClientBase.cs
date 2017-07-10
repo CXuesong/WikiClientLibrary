@@ -15,25 +15,10 @@ namespace WikiClientLibrary.Client
     /// </summary>
     public abstract class WikiClientBase : IDisposable
     {
-        private TimeSpan _ThrottleTime = TimeSpan.FromSeconds(5);
+
         private int _MaxRetries = 3;
 
         public ILogger Logger { get; set; }
-
-        /// <summary>
-        /// Time to wait before any modification operations.
-        /// </summary>
-        /// <remarks>Note that the delay is simply inserted before every modification operations, without queuing.
-        /// This won't work as you expect when you attempt to perform multi-threaded operations.</remarks>
-        public TimeSpan ThrottleTime
-        {
-            get { return _ThrottleTime; }
-            set
-            {
-                if (value < TimeSpan.Zero) throw new ArgumentOutOfRangeException(nameof(value));
-                _ThrottleTime = value;
-            }
-        }
 
         /// <summary>
         /// Timeout for each query.
@@ -101,14 +86,6 @@ namespace WikiClientLibrary.Client
         public virtual Task<JToken> GetJsonAsync(string endPointUrl, object queryParams, CancellationToken cancellationToken)
         {
             return GetJsonAsync(endPointUrl, Utility.ToWikiStringValuePairs(queryParams), cancellationToken);
-        }
-
-        /// <summary>
-        /// Returns a task which finishes after the time specified in <see cref="ThrottleTime"/> .
-        /// </summary>
-        public virtual Task WaitForThrottleAsync(CancellationToken cancellationToken)
-        {
-            return Task.Delay(ThrottleTime, cancellationToken);
         }
 
         /// <inheritdoc />

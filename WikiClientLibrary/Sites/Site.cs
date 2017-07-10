@@ -37,6 +37,17 @@ namespace WikiClientLibrary.Sites
         /// </summary>
         public IAccountAssertionFailureHandler AccountAssertionFailureHandler { get; set; }
 
+        private Throttler _ModificationThrottler = new Throttler();
+
+        /// <summary>
+        /// A throttler used to enforce the speed limitation when performing edit/move/delete operations.
+        /// </summary>
+        public Throttler ModificationThrottler
+        {
+            get => _ModificationThrottler;
+            set => _ModificationThrottler = value ?? new Throttler();
+        }
+
         #endregion
 
         /// <summary>
@@ -620,6 +631,16 @@ namespace WikiClientLibrary.Sites
         public Task<string> GetTokenAsync(string tokenType, bool forceRefetch)
         {
             return GetTokenAsync(tokenType, forceRefetch, CancellationToken.None);
+        }
+
+        /// <summary>
+        /// Request a token for operation.
+        /// </summary>
+        /// <param name="tokenType">The name of token.</param>
+        /// <remarks>See https://www.mediawiki.org/wiki/API:Tokens .</remarks>
+        public Task<string> GetTokenAsync(string tokenType, CancellationToken cancellationToken)
+        {
+            return GetTokenAsync(tokenType, false, cancellationToken);
         }
 
         /// <summary>

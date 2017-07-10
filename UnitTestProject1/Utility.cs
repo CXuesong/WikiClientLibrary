@@ -50,7 +50,6 @@ namespace UnitTestProject1
             {
                 Logger = DefaultTraceLogger,
                 Timeout = TimeSpan.FromSeconds(20),
-                ThrottleTime = TimeSpan.FromSeconds(1),
                 RetryDelay = TimeSpan.FromSeconds(5),
                 ClientUserAgent = "UnitTest/1.0 (.NET CLR " + Environment.Version + ")",
             };

@@ -18,6 +18,7 @@ namespace UnitTestProject1
         private static readonly Lazy<Site> _WpTestSite = new Lazy<Site>(() => CreateWikiSite(EntryPointWikipediaTest2));
         private static readonly Lazy<Site> _WikiaTestSite = new Lazy<Site>(() => CreateWikiSite(EntryPointWikiaTest));
         private static readonly Lazy<Site> _WpLzhSite = new Lazy<Site>(() => CreateWikiSite(EntryWikipediaLzh));
+
         public static Site WpTestSite => _WpTestSite.Value;
 
         public static Site WikiaTestSite => _WikiaTestSite.Value;
