@@ -3,6 +3,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Net;
 using System.Net.Http;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
@@ -81,7 +82,7 @@ namespace WikiClientLibrary.Client
                 }
             }
             response.EnsureSuccessStatusCode();
-            Debug.Assert(request != null);      // For HTTP 500~599, EnsureSuccessStatusCode will throw an Exception.
+            Debug.Assert(request != null); // For HTTP 500~599, EnsureSuccessStatusCode will throw an Exception.
             try
             {
                 cancellationToken.ThrowIfCancellationRequested();
@@ -121,15 +122,37 @@ namespace WikiClientLibrary.Client
             var obj = jresponse as JObject;
             if (obj == null) return;
             // See https://www.mediawiki.org/wiki/API:Errors_and_warnings .
+            /*
+    "warnings": {
+        "main": {
+            "*": "xxxx"
+        },
+        "login": {
+            "*": "xxxx"
+        }
+    }
+             */
             if (jresponse["warnings"] != null)
             {
-                Logger?.Warn(this, jresponse["warnings"].ToString());
+                if (Logger != null)
+                {
+                    var sb = new StringBuilder();
+                    foreach (var module in ((JObject) jresponse["warnings"]).Properties())
+                    {
+                        if (sb.Length > 0) sb.AppendLine();
+                        sb.Append(module.Name);
+                        sb.Append(": ");
+                        sb.Append(module.Value["*"] ?? module.Value);
+                    }
+                    Logger.Warn(this, sb.ToString());
+                }
             }
             if (jresponse["error"] != null)
             {
                 var err = jresponse["error"];
                 var errcode = (string) err["code"];
-                var errmessage = ((string) err["info"] + ". " + (string) err["*"]).Trim();
+                // err["*"]: API usage.
+                var errmessage = ((string) err["info"]).Trim();
                 switch (errcode)
                 {
                     case "permissiondenied":
