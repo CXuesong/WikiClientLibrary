@@ -106,7 +106,7 @@ namespace WikiClientLibrary.Sites
                 if (this.options.DisambiguationTemplates == null)
                 {
                     var dabPages = await RequestHelper
-                        .EnumLinksAsync(this, "MediaWiki:Disambiguationspage", new[] { BuiltInNamespaces.Template })
+                        .EnumLinksAsync(this, "MediaWiki:Disambiguationspage", new[] {BuiltInNamespaces.Template})
                         .ToList();
                     if (dabPages.Count == 0)
                     {
@@ -137,11 +137,11 @@ namespace WikiClientLibrary.Sites
                 meta = "siteinfo",
                 siprop = "general|namespaces|namespacealiases|interwikimap|extensions"
             }, true, CancellationToken.None);
-            var qg = (JObject)jobj["query"]["general"];
-            var ns = (JObject)jobj["query"]["namespaces"];
-            var aliases = (JArray)jobj["query"]["namespacealiases"];
-            var interwiki = (JArray)jobj["query"]["interwikimap"];
-            var extensions = (JArray)jobj["query"]["extensions"];
+            var qg = (JObject) jobj["query"]["general"];
+            var ns = (JObject) jobj["query"]["namespaces"];
+            var aliases = (JArray) jobj["query"]["namespacealiases"];
+            var interwiki = (JArray) jobj["query"]["interwikimap"];
+            var extensions = (JArray) jobj["query"]["extensions"];
             try
             {
                 _SiteInfo = qg.ToObject<SiteInfo>(Utility.WikiJsonSerializer);
@@ -185,7 +185,7 @@ namespace WikiClientLibrary.Sites
                 meta = "userinfo",
                 uiprop = "blockinfo|groups|hasmsg|rights"
             }, true, CancellationToken.None);
-            _AccountInfo = ((JObject)jobj["query"]["userinfo"]).ToObject<AccountInfo>(Utility.WikiJsonSerializer);
+            _AccountInfo = ((JObject) jobj["query"]["userinfo"]).ToObject<AccountInfo>(Utility.WikiJsonSerializer);
             ListingPagingSize = _AccountInfo.HasRight(UserRights.ApiHighLimits) ? 5000 : 500;
         }
 
@@ -293,7 +293,7 @@ namespace WikiClientLibrary.Sites
         /// <exception cref="OperationFailedException">There's "error" node in returned JSON.</exception>
         /// <remarks>The request is sent via HTTP POST.</remarks>
         public Task<JToken> PostValuesAsync(IEnumerable<KeyValuePair<string, string>> queryParams,
-                CancellationToken cancellationToken)
+            CancellationToken cancellationToken)
             => PostValuesAsync(queryParams, false, cancellationToken);
 
         /// <summary>
@@ -304,8 +304,8 @@ namespace WikiClientLibrary.Sites
         /// <exception cref="UnauthorizedOperationException">Permission denied.</exception>
         /// <exception cref="OperationFailedException">There's "error" node in returned JSON.</exception>
         /// <remarks>The request is sent via HTTP POST.</remarks>
-        public async Task<JToken> PostValuesAsync(IEnumerable<KeyValuePair<string, string>> queryParams, bool supressAccountAssertion,
-            CancellationToken cancellationToken)
+        public async Task<JToken> PostValuesAsync(IEnumerable<KeyValuePair<string, string>> queryParams,
+            bool supressAccountAssertion, CancellationToken cancellationToken)
         {
             var queryParams1 = queryParams as ICollection<KeyValuePair<string, string>> ?? queryParams.ToArray();
             RETRY:
@@ -360,10 +360,12 @@ namespace WikiClientLibrary.Sites
         /// <exception cref="InvalidActionException">Specified action is not supported.</exception>
         /// <exception cref="OperationCanceledException">The operation has been cancelled via <paramref name="cancellationToken"/>.</exception>
         /// <exception cref="OperationFailedException">There's "error" node in returned JSON.</exception>
-        public Task<JToken> PostValuesAsync(object queryParams, bool supressAccountAssertion, CancellationToken cancellationToken)
+        public Task<JToken> PostValuesAsync(object queryParams, bool supressAccountAssertion,
+            CancellationToken cancellationToken)
         {
             if (queryParams == null) throw new ArgumentNullException(nameof(queryParams));
-            return PostValuesAsync(Utility.ToWikiStringValuePairs(queryParams), supressAccountAssertion, cancellationToken);
+            return PostValuesAsync(Utility.ToWikiStringValuePairs(queryParams), supressAccountAssertion,
+                cancellationToken);
         }
 
         /// <summary>
@@ -381,7 +383,8 @@ namespace WikiClientLibrary.Sites
         /// (often when retrying the request), no further retry will be performed.</para>
         /// <para>You need to specify format=json manually in the request content.</para>
         /// </remarks>
-        internal Task<JToken> PostContentAsync(Func<HttpContent> postContentFactory, CancellationToken cancellationToken)
+        internal Task<JToken> PostContentAsync(Func<HttpContent> postContentFactory,
+            CancellationToken cancellationToken)
         {
             if (postContentFactory == null) throw new ArgumentNullException(nameof(postContentFactory));
             return WikiClient.GetJsonAsync(options.ApiEndpoint, postContentFactory, cancellationToken);
@@ -419,12 +422,12 @@ namespace WikiClientLibrary.Sites
             if (warnings != null)
             {
                 // "*": "Unrecognized value for parameter 'type': xxxx"
-                var warn = (string)warnings["*"];
+                var warn = (string) warnings["*"];
                 if (warn != null && warn.Contains("Unrecognized value") && warn.Contains("type"))
                     throw new ArgumentException(warn, nameof(tokenTypeExpr));
                 throw new OperationFailedException(warnings.ToString());
             }
-            return (JObject)jobj["query"]["tokens"];
+            return (JObject) jobj["query"]["tokens"];
         }
 
         /// <summary>
@@ -442,7 +445,7 @@ namespace WikiClientLibrary.Sites
                 titles = "Dummy Title",
                 intoken = tokenTypeExpr,
             }, true, cancellationToken);
-            var page = (JObject)((JProperty)jobj["query"]["pages"].First).Value;
+            var page = (JObject) ((JProperty) jobj["query"]["pages"].First).Value;
             return new JObject(page.Properties().Where(p => p.Name.EndsWith("token")));
         }
 
@@ -452,7 +455,8 @@ namespace WikiClientLibrary.Sites
         /// <param name="tokenTypes">The names of token.</param>
         /// <param name="cancellationToken">The cancellation token that will be checked prior to completing the returned task.</param>
         /// <remarks>See https://www.mediawiki.org/wiki/API:Tokens .</remarks>
-        public Task<IDictionary<string, string>> GetTokensAsync(IEnumerable<string> tokenTypes, CancellationToken cancellationToken)
+        public Task<IDictionary<string, string>> GetTokensAsync(IEnumerable<string> tokenTypes,
+            CancellationToken cancellationToken)
         {
             return GetTokensAsync(tokenTypes, false, cancellationToken);
         }
@@ -607,7 +611,7 @@ namespace WikiClientLibrary.Sites
                 var tokenName = p.Name.EndsWith("token")
                     ? p.Name.Substring(0, p.Name.Length - 5)
                     : p.Name;
-                    _TokensCache[tokenName] = (string) p.Value;
+                _TokensCache[tokenName] = (string) p.Value;
             }
         }
 
@@ -649,18 +653,21 @@ namespace WikiClientLibrary.Sites
         /// <param name="tokenType">The name of token.</param>
         /// <param name="forceRefetch">Whether to fetch token from server, regardless of the cache.</param>
         /// <remarks>See https://www.mediawiki.org/wiki/API:Tokens .</remarks>
-        public async Task<string> GetTokenAsync(string tokenType, bool forceRefetch, CancellationToken cancellationToken)
+        public async Task<string> GetTokenAsync(string tokenType, bool forceRefetch,
+            CancellationToken cancellationToken)
         {
             if (tokenType == null) throw new ArgumentNullException(nameof(tokenType));
             if (tokenType.Contains("|"))
                 throw new ArgumentException("Pipe character in token type name.", nameof(tokenType));
-            var dict = await GetTokensAsync(new[] { tokenType }, forceRefetch, cancellationToken);
+            var dict = await GetTokensAsync(new[] {tokenType}, forceRefetch, cancellationToken);
             return dict.Values.Single();
         }
 
         #endregion
 
         #region Authentication
+
+        private int isLoggingInOut = 0;
 
         /// <summary>
         /// Logins into the wiki site.
@@ -694,58 +701,70 @@ namespace WikiClientLibrary.Sites
         /// <param name="password">Password of the account.</param>
         /// <param name="domain">Domain name. <c>null</c> is usually a good choice.</param>
         /// <param name="cancellationToken">The cancellation token that will be checked prior to completing the returned task.</param>
+        /// <exception cref="InvalidOperationException">Attempt to login/logout concurrently.</exception>
         /// <exception cref="OperationFailedException">Canoot login with the specified credential.</exception>
         /// <exception cref="ArgumentNullException">Either <paramref name="userName"/> or <paramref name="password"/> is <c>null</c> or empty.</exception>
         /// <remarks>This operation will refresh <see cref="AccountInfo"/>.</remarks>
-        public async Task LoginAsync(string userName, string password, string domain, CancellationToken cancellationToken)
+        public async Task LoginAsync(string userName, string password, string domain,
+            CancellationToken cancellationToken)
         {
             // Note: this method may be invoked BEFORE the initialization of _SiteInfo.
             if (string.IsNullOrEmpty(userName)) throw new ArgumentNullException(nameof(userName));
             if (string.IsNullOrEmpty(password)) throw new ArgumentNullException(nameof(password));
-            string token = null;
-            // If _SiteInfo is null, it indicates options.ExplicitInfoRefresh must be true.
-            Debug.Assert(options.ExplicitInfoRefresh || _SiteInfo != null);
-            // For MedaiWiki 1.27+
-            if (!options.ExplicitInfoRefresh && _SiteInfo.Version >= new Version("1.27"))
-                token = await GetTokenAsync("login", true, cancellationToken);
-            // For MedaiWiki < 1.27, We'll have to request twice.
-            // If options.ExplicitInfoRefresh is true, we just treat it the same as MedaiWiki < 1.27,
-            //  because any "query" operation might raise readapidenied error.
-            RETRY:
-            var jobj = await PostValuesAsync(new
+            if (Interlocked.Exchange(ref isLoggingInOut, 1) != 0)
+                throw new InvalidOperationException("Cannot login/logout concurrently.");
+            try
             {
-                action = "login",
-                lgname = userName,
-                lgpassword = password,
-                lgtoken = token,
-                lgdomain = domain,
-            }, true, cancellationToken);
-            var result = (string)jobj["login"]["result"];
-            string message = null;
-            switch (result)
-            {
-                case "Success":
-                    lock (_TokensCache) _TokensCache.Clear();
-                    await RefreshAccountInfoAsync();
-                    Debug.Assert(AccountInfo.IsUser);
-                    return;
-                case "Aborted":
-                    message =
-                        "The login using the main account password (rather than a bot password) cannot proceed because user interaction is required. The clientlogin action should be used instead.";
-                    break;
-                case "Throttled":
-                    var time = (int)jobj["login"]["wait"];
-                    Logger?.Warn(this, $"Throttled: {time}sec.");
-                    await Task.Delay(TimeSpan.FromSeconds(time), cancellationToken);
-                    goto RETRY;
-                case "NeedToken":
-                    token = (string)jobj["login"]["token"];
-                    goto RETRY;
-                case "WrongToken": // We should have got correct token.
-                    throw new UnexpectedDataException($"Unexpected login result: {result} .");
+                string token = null;
+                // If _SiteInfo is null, it indicates options.ExplicitInfoRefresh must be true.
+                Debug.Assert(options.ExplicitInfoRefresh || _SiteInfo != null);
+                // For MedaiWiki 1.27+
+                if (!options.ExplicitInfoRefresh && _SiteInfo.Version >= new Version("1.27"))
+                    token = await GetTokenAsync("login", true, cancellationToken);
+                // For MedaiWiki < 1.27, We'll have to request twice.
+                // If options.ExplicitInfoRefresh is true, we just treat it the same as MedaiWiki < 1.27,
+                //  because any "query" operation might raise readapidenied error.
+                RETRY:
+                var jobj = await PostValuesAsync(new
+                {
+                    action = "login",
+                    lgname = userName,
+                    lgpassword = password,
+                    lgtoken = token,
+                    lgdomain = domain,
+                }, true, cancellationToken);
+                var result = (string) jobj["login"]["result"];
+                string message = null;
+                switch (result)
+                {
+                    case "Success":
+                        lock (_TokensCache) _TokensCache.Clear();
+                        await RefreshAccountInfoAsync();
+                        Debug.Assert(AccountInfo.IsUser,
+                            "API result indicates the login is successful, but you are not currently in \"user\" group. Are you logging out on the other Site instance with the same API endpoint and the same WikiClient?");
+                        return;
+                    case "Aborted":
+                        message =
+                            "The login using the main account password (rather than a bot password) cannot proceed because user interaction is required. The clientlogin action should be used instead.";
+                        break;
+                    case "Throttled":
+                        var time = (int) jobj["login"]["wait"];
+                        Logger?.Warn(this, $"Throttled: {time}sec.");
+                        await Task.Delay(TimeSpan.FromSeconds(time), cancellationToken);
+                        goto RETRY;
+                    case "NeedToken":
+                        token = (string) jobj["login"]["token"];
+                        goto RETRY;
+                    case "WrongToken": // We should have got correct token.
+                        throw new UnexpectedDataException($"Unexpected login result: {result} .");
+                }
+                message = (string) jobj["login"]["reason"] ?? message;
+                throw new OperationFailedException(result, message);
             }
-            message = (string)jobj["login"]["reason"] ?? message;
-            throw new OperationFailedException(result, message);
+            finally
+            {
+                Interlocked.Exchange(ref isLoggingInOut, 0);
+            }
         }
 
         /// <summary>
@@ -756,17 +775,27 @@ namespace WikiClientLibrary.Sites
         /// the instance. In the latter case, <see cref="AccountInfo"/> will be invalidated,
         /// and any attempt to read the property will raise <see cref="InvalidOperationException"/>
         /// until the next successful login.</remarks>
+        /// <exception cref="InvalidOperationException">Attempt to login/logout concurrently.</exception>
         public async Task LogoutAsync()
         {
-            var jobj = await PostValuesAsync(new
+            if (Interlocked.Exchange(ref isLoggingInOut, 1) != 0)
+                throw new InvalidOperationException("Cannot login/logout concurrently.");
+            try
             {
-                action = "logout",
-            }, true, CancellationToken.None);
-            lock (_TokensCache) _TokensCache.Clear();
-            if (options.ExplicitInfoRefresh)
-                _AccountInfo = null;
-            else
-                await RefreshAccountInfoAsync();
+                var jobj = await PostValuesAsync(new
+                {
+                    action = "logout",
+                }, true, CancellationToken.None);
+                lock (_TokensCache) _TokensCache.Clear();
+                if (options.ExplicitInfoRefresh)
+                    _AccountInfo = null;
+                else
+                    await RefreshAccountInfoAsync();
+            }
+            finally
+            {
+                Interlocked.Exchange(ref isLoggingInOut, 0);
+            }
         }
 
         private volatile Task<bool> reLoginTask;
