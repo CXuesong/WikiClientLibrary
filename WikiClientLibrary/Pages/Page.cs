@@ -32,7 +32,9 @@ namespace WikiClientLibrary.Pages
             Site = site;
             WikiClient = Site.WikiClient;
             Debug.Assert(WikiClient != null);
-            Title = WikiLink.NormalizeWikiLink(site, title, defaultNamespaceId);
+            var parsedTitle = WikiLink.Parse(site, title, defaultNamespaceId);
+            Title = parsedTitle.FullTitle;
+            NamespaceId = parsedTitle.Namespace.Id;
         }
 
         internal Page(Site site)
@@ -98,6 +100,11 @@ namespace WikiClientLibrary.Pages
         /// For category, gets whether the categories description page exists.
         /// </summary>
         public bool Exists { get; private set; }
+
+        /// <summary>
+        /// Gets whether the page is a Special page.
+        /// </summary>
+        public bool IsSpecialPage { get; private set; }
 
         /// <summary>
         /// Content model. (MediaWiki 1.22)
@@ -262,8 +269,9 @@ namespace WikiClientLibrary.Pages
             Exists = jpage["missing"] == null;
             ContentModel = (string) jpage["contentmodel"];
             PageLanguage = (string) jpage["pagelanguage"];
+            IsSpecialPage = jpage["special"] != null;
             IsRedirect = jpage["redirect"] != null;
-            if (Exists)
+            if (Exists && !IsSpecialPage)
             {
                 ContentLength = (int) jpage["length"];
                 LastRevisionId = (int) jpage["lastrevid"];
@@ -440,6 +448,9 @@ namespace WikiClientLibrary.Pages
         /// You should call <see cref="RefreshAsync()"/> again
         /// if you're interested in them.
         /// </remarks>
+        /// <exception cref="InvalidOperationException">Cannot create actual page in the specified namespace.</exception>
+        /// <exception cref="OperationConflictException">Edit conflict detected.</exception>
+        /// <exception cref="UnauthorizedOperationException">You have no rights to edit the page.</exception>
         public Task UpdateContentAsync(string summary)
         {
             return UpdateContentAsync(summary, false, true, AutoWatchBehavior.Default, CancellationToken.None);
@@ -455,6 +466,9 @@ namespace WikiClientLibrary.Pages
         /// <see cref="ContentLength"/>, <see cref="LastRevision"/>, and <see cref="LastTouched"/>.
         /// You should call <see cref="RefreshAsync(WikiClientLibrary.Pages.PageQueryOptions,System.Threading.CancellationToken)" /> again if you're interested in them.
         /// </remarks>
+        /// <exception cref="InvalidOperationException">Cannot create actual page in the specified namespace.</exception>
+        /// <exception cref="OperationConflictException">Edit conflict detected.</exception>
+        /// <exception cref="UnauthorizedOperationException">You have no rights to edit the page.</exception>
         public Task UpdateContentAsync(string summary, bool minor)
         {
             return UpdateContentAsync(summary, minor, true, AutoWatchBehavior.Default, CancellationToken.None);
@@ -470,6 +484,9 @@ namespace WikiClientLibrary.Pages
         /// <see cref="ContentLength"/>, <see cref="LastRevision"/>, and <see cref="LastTouched"/>.
         /// You should call <see cref="RefreshAsync(WikiClientLibrary.Pages.PageQueryOptions,System.Threading.CancellationToken)" /> again if you're interested in them.
         /// </remarks>
+        /// <exception cref="InvalidOperationException">Cannot create actual page in the specified namespace.</exception>
+        /// <exception cref="OperationConflictException">Edit conflict detected.</exception>
+        /// <exception cref="UnauthorizedOperationException">You have no rights to edit the page.</exception>
         public Task UpdateContentAsync(string summary, bool minor, bool bot)
         {
             return UpdateContentAsync(summary, minor, bot, AutoWatchBehavior.Default, CancellationToken.None);
@@ -487,6 +504,7 @@ namespace WikiClientLibrary.Pages
         /// You should call <see cref="RefreshAsync()"/> again
         /// if you're interested in them.
         /// </remarks>
+        /// <exception cref="InvalidOperationException">Cannot create actual page in the specified namespace.</exception>
         /// <exception cref="OperationConflictException">Edit conflict detected.</exception>
         /// <exception cref="UnauthorizedOperationException">You have no rights to edit the page.</exception>
         public Task<bool> UpdateContentAsync(string summary, bool minor, bool bot, AutoWatchBehavior watch)
@@ -506,6 +524,7 @@ namespace WikiClientLibrary.Pages
         /// You should call <see cref="RefreshAsync()"/> again
         /// if you're interested in them.
         /// </remarks>
+        /// <exception cref="InvalidOperationException">Cannot create actual page in the specified namespace.</exception>
         /// <exception cref="OperationConflictException">Edit conflict detected.</exception>
         /// <exception cref="UnauthorizedOperationException">You have no rights to edit the page.</exception>
         public async Task<bool> UpdateContentAsync(string summary, bool minor, bool bot, AutoWatchBehavior watch, 
@@ -541,6 +560,8 @@ namespace WikiClientLibrary.Pages
                 {
                     case "protectedpage":
                         throw new UnauthorizedOperationException(ex);
+                    case "pagecannotexist":
+                        throw new InvalidOperationException(ex.ErrorMessage, ex);
                     default:
                         throw;
                 }
