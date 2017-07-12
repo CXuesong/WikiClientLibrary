@@ -121,7 +121,7 @@ namespace WikiClientLibrary.Sites
         /// especially when the heading is included in a template.
         /// </remarks>
         [JsonProperty]
-        public int? Index { get; private set; }
+        public string Index { get; private set; }
 
         /// <summary>
         /// Heading text.
