@@ -41,7 +41,7 @@
                 <Label Content="Page title: "/>
                 <TextBox x:Name="TitleTextBox" Grid.Column="1" TextWrapping="Wrap" Text="TextBox" VerticalContentAlignment="Center" KeyDown="TitleTextBox_KeyDown"/>
             </Grid>
-            <WebBrowser x:Name="PageFrame" Grid.Row="1" LoadCompleted="PageFrame_LoadCompleted"/>
+            <WebBrowser x:Name="PageFrame" Grid.Row="1" LoadCompleted="PageFrame_LoadCompleted" Navigating="PageFrame_Navigating"/>
         </Grid>
         <GridSplitter Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Stretch" Width="5"/>
         <StatusBar Grid.ColumnSpan="3" Grid.Row="1">

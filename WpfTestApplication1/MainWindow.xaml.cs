@@ -3,8 +3,10 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Resources;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
@@ -29,8 +31,8 @@ namespace WpfTestApplication1
     {
         private WikiClient client;
         private Site site;
-        private Dictionary<string, ParsedContentInfo> parsedPages = new Dictionary<string, ParsedContentInfo>();
         private CancellationTokenSource LastNavigationCancellation;
+        private Regex articleUrlMatcher = null;
 
         public const string EndPointUrl = "https://en.wikipedia.org/w/api.php";
 
@@ -54,11 +56,12 @@ namespace WpfTestApplication1
 
         private async Task NavigateCoreAsync(string title, CancellationToken token)
         {
+            TitleTextBox.Text = title;
             SetStatus("Navigating to: " + title);
             ParsedContentInfo parsed;
             try
             {
-                parsed = await site.ParsePageAsync(title, ParsingOptions.DisableToc);
+                parsed = await site.ParsePageAsync(title, ParsingOptions.DisableToc, token);
             }
             catch (Exception ex)
             {
@@ -71,10 +74,10 @@ namespace WpfTestApplication1
             TitleTextBox.Text = parsed.Title;
             // Fill the page.
             var text = PageTemplate;
-            Action<string, string> fillParam = (name, value) => text = text.Replace("<!-- " + name + " -->", value);
-            fillParam("SITE NAME", site.SiteInfo.SiteName);
-            fillParam("DISPLAY TITLE", parsed.DisplayTitle);
-            fillParam("CONTENT", parsed.Content);
+            void FillParam(string name, string value) => text = text.Replace("<!-- " + name + " -->", value);
+            FillParam("SITE NAME", site.SiteInfo.SiteName);
+            FillParam("DISPLAY TITLE", parsed.DisplayTitle);
+            FillParam("CONTENT", parsed.Content);
             if (token.IsCancellationRequested) goto CLEANUP;
             PageFrame.NavigateToString(text);
             if (token.IsCancellationRequested) goto CLEANUP;
@@ -104,6 +107,7 @@ namespace WpfTestApplication1
             };
             SetStatus("Loading wiki site info: " + EndPointUrl);
             site = await Site.CreateAsync(client, EndPointUrl);
+            articleUrlMatcher = new Regex(Regex.Escape(site.SiteInfo.ArticlePath).Replace(@"\$1", "(.+?)") + "$");
             Navigate(site.SiteInfo.MainPage);
         }
 
@@ -128,11 +132,24 @@ namespace WpfTestApplication1
                 if (section != null)
                 {
                     dynamic doc = PageFrame.Document;
-                    var anchor = doc.getElementById(section.Anchor);
-                    if (anchor != null)
-                    {
+                    var anchor = doc?.getElementById(section.Anchor);
+                    if (anchor != null && !Convert.IsDBNull(anchor))
                         anchor.ScrollIntoView(true);
-                    }
+                }
+            }
+        }
+
+        private void PageFrame_Navigating(object sender, NavigatingCancelEventArgs e)
+        {
+            if (e.Uri != null)
+            {
+                // Actual navigation is to take place.
+                TocListBox.Items.Clear();
+                var titleMatch = articleUrlMatcher.Match(e.Uri.ToString());
+                if (titleMatch.Success)
+                {
+                    e.Cancel = true;
+                    Navigate(WebUtility.UrlDecode(titleMatch.Groups[1].Value));
                 }
             }
         }
