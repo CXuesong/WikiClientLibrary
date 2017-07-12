@@ -154,9 +154,4 @@ namespace WpfTestApplication1
             }
         }
     }
-
-    class AbortionIndicator
-    {
-        public bool Aborted { get; set; }
-    }
 }

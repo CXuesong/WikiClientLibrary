@@ -117,8 +117,8 @@ namespace WikiClientLibrary.Sites
         /// Index of the section.
         /// </summary>
         /// <remarks>
-        /// Note that sometimes this property is not available,
-        /// especially when the heading is included in a template.
+        /// This value is usually a number.
+        /// For titles in transcluded templates, this property may have a value like "T-1", "T-2", etc.
         /// </remarks>
         [JsonProperty]
         public string Index { get; private set; }
