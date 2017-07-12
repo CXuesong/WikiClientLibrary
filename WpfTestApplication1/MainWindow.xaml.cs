@@ -18,6 +18,7 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using WikiClientLibrary;
 using WikiClientLibrary.Client;
+using WikiClientLibrary.Sites;
 
 namespace WpfTestApplication1
 {
@@ -99,7 +100,7 @@ namespace WpfTestApplication1
             // Play with some real wiki.
             client = new WikiClient
             {
-                ClientUserAgent = "ApplicationTest/1.0 (.NET CLR " + Environment.Version + ")",
+                ClientUserAgent = "WpfApplicationTest/1.0 (.NET CLR " + Environment.Version + ")",
             };
             SetStatus("Loading wiki site info: " + EndPointUrl);
             site = await Site.CreateAsync(client, EndPointUrl);
@@ -128,7 +129,10 @@ namespace WpfTestApplication1
                 {
                     dynamic doc = PageFrame.Document;
                     var anchor = doc.getElementById(section.Anchor);
-                    anchor.ScrollIntoView(true);
+                    if (anchor != null)
+                    {
+                        anchor.ScrollIntoView(true);
+                    }
                 }
             }
         }

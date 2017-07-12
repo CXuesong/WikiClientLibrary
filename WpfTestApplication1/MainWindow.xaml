@@ -4,7 +4,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:WpfTestApplication1"
-        xmlns:wcl="clr-namespace:WikiClientLibrary;assembly=WikiClientLibrary"
+        xmlns:sites="clr-namespace:WikiClientLibrary.Sites;assembly=WikiClientLibrary"
         mc:Ignorable="d"
         Title="Test Wiki Browser" Height="350" Width="525" Loaded="Window_Loaded">
     <Grid>
@@ -19,7 +19,7 @@
         </Grid.ColumnDefinitions>
         <ListBox x:Name="TocListBox" SelectionChanged="TocListBox_SelectionChanged">
             <ListBox.ItemTemplate>
-                <DataTemplate DataType="{x:Type wcl:ContentSectionInfo}">
+                <DataTemplate DataType="{x:Type sites:ContentSectionInfo}">
                     <StackPanel Orientation="Vertical">
                         <TextBlock Text="{Binding Number}" FontSize="9pt"/>
                         <TextBlock Text="{Binding Heading}" FontSize="12pt" />
