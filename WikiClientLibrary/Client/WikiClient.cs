@@ -136,6 +136,9 @@ namespace WikiClientLibrary.Client
             HttpClient = new HttpClient(handler, disposeHandler);
             ClientUserAgent = null;
             _HttpClientHandler = handler as HttpClientHandler;
+#if DEBUG
+            HttpClient.DefaultRequestHeaders.Add("X-WCL-DEBUG-CLIENT-ID", GetHashCode().ToString());
+#endif
         }
 
         /// <summary>
