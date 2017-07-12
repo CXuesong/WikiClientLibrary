@@ -3,87 +3,84 @@ using System.Text;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System.Threading.Tasks;
 using WikiClientLibrary;
 using WikiClientLibrary.Generators;
 using WikiClientLibrary.Pages;
 using WikiClientLibrary.Sites;
+using Xunit;
+using Xunit.Abstractions;
 using static UnitTestProject1.Utility;
 
 namespace UnitTestProject1
 {
-    [TestClass]
-    public class GeneratorTests
+
+    public class GeneratorTests : WikiSiteTestsBase
     {
-        private static readonly Lazy<Site> _WpTestSite = new Lazy<Site>(() => CreateWikiSite(EntryPointWikipediaTest2));
-        private static readonly Lazy<Site> _WikiaTestSite = new Lazy<Site>(() => CreateWikiSite(EntryPointWikiaTest));
-        private static readonly Lazy<Site> _WpLzhSite = new Lazy<Site>(() => CreateWikiSite(EntryWikipediaLzh));
 
-        public static Site WpTestSite => _WpTestSite.Value;
-
-        public static Site WikiaTestSite => _WikiaTestSite.Value;
-
-        public static Site WpLzhSite => _WpLzhSite.Value;
-
+        /// <inheritdoc />
+        public GeneratorTests(ITestOutputHelper output) : base(output)
+        {
+        }
 
         private void AssertTitlesDistinct(IReadOnlyCollection<Page> pages)
         {
             var distinctTitles = pages.Select(p => p.Title).Distinct().Count();
-            Assert.AreEqual(pages.Count, distinctTitles);
+            Assert.Equal(pages.Count, distinctTitles);
         }
 
         private void TracePages(IReadOnlyCollection<Page> pages)
         {
             const string lineFormat = "{0,-20} {1,10} {2,10} {3,10} {4,10}";
-            Trace.WriteLine(pages.Count + " pages.");
-            Trace.WriteLine(string.Format(lineFormat, "Title", "Length", "Last Revision", "Last Touched", "Children"));
+            Output.WriteLine(pages.Count + " pages.");
+            Output.WriteLine(string.Format(lineFormat, "Title", "Length", "Last Revision", "Last Touched", "Children"));
             foreach (var page in pages)
             {
                 var childrenField = "";
-                var cat = page as Category;
-                if (cat != null) childrenField = $"{cat.MembersCount}(sub:{cat.SubcategoriesCount})";
-                Trace.WriteLine(string.Format(lineFormat, page.Title, page.ContentLength, page.LastRevisionId,
+                if (page is Category cat)
+                    childrenField = $"{cat.MembersCount}(sub:{cat.SubcategoriesCount})";
+                Output.WriteLine(string.Format(lineFormat, page.Title, page.ContentLength, page.LastRevisionId,
                     page.LastTouched, childrenField));
                 if (page.Content != null)
-                    Trace.WriteLine(page.Content.Length > 100 ? page.Content.Substring(0, 100) + "..." : page.Content);
+                    Output.WriteLine(page.Content.Length > 100 ? page.Content.Substring(0, 100) + "..." : page.Content);
             }
         }
 
-        [TestMethod]
-        public void WpAllPagesGeneratorTest1()
+        [Fact]
+        public async Task WpAllPagesGeneratorTest1()
         {
-            var site = WpTestSite;
+            var site = await WpTest2SiteAsync;
             var generator = new AllPagesGenerator(site);
             var pages = generator.EnumPages().Take(2000).ToList();
             TracePages(pages);
             AssertTitlesDistinct(pages);
         }
 
-        [TestMethod]
-        public void WpAllPagesGeneratorTest2()
+        [Fact]
+        public async Task WpAllPagesGeneratorTest2()
         {
-            var site = WpTestSite;
+            var site = await WpTest2SiteAsync;
             var generator = new AllPagesGenerator(site) {StartTitle = "W", PagingSize = 20};
             var pages = generator.EnumPages(PageQueryOptions.FetchContent).Take(100).ToList();
             TracePages(pages);
-            Assert.IsTrue(pages[0].Title[0] == 'W');
+            Assert.True(pages[0].Title[0] == 'W');
             AssertTitlesDistinct(pages);
         }
 
-        [TestMethod]
-        public void WikiaAllPagesGeneratorTest()
+        [Fact]
+        public async Task WikiaAllPagesGeneratorTest()
         {
-            var site = WikiaTestSite;
+            var site = await WikiaTestSiteAsync;
             var generator = new AllPagesGenerator(site) {NamespaceId = BuiltInNamespaces.Template};
             var pages = generator.EnumPages().Take(2000).ToList();
             TracePages(pages);
             AssertTitlesDistinct(pages);
         }
 
-        [TestMethod]
-        public void WpAllCategoriesGeneratorTest()
+        [Fact]
+        public async Task WpAllCategoriesGeneratorTest()
         {
-            var site = WpTestSite;
+            var site = await WpTest2SiteAsync;
             var generator = new AllCategoriesGenerator(site);
             var pages = generator.EnumPages().Take(2000).ToList();
             TracePages(pages);
@@ -93,59 +90,59 @@ namespace UnitTestProject1
             AssertTitlesDistinct(pages);
         }
 
-        [TestMethod]
-        public void WikiaAllCategoriesGeneratorTest()
+        [Fact]
+        public async Task WikiaAllCategoriesGeneratorTest()
         {
-            var site = WikiaTestSite;
+            var site = await WikiaTestSiteAsync;
             var generator = new AllCategoriesGenerator(site);
             var pages = generator.EnumPages().Take(2000).ToList();
             TracePages(pages);
             AssertTitlesDistinct(pages);
         }
 
-        [TestMethod]
-        public void WpCategoryMembersGeneratorTest()
+        [Fact]
+        public async Task WpCategoryMembersGeneratorTest()
         {
-            var site = WpTestSite;
+            var site = await WpTest2SiteAsync;
             var cat = new Category(site, "Category:Template documentation pages‏‎");
-            AwaitSync(cat.RefreshAsync());
-            Trace.WriteLine(cat);
+            await cat.RefreshAsync();
+            Output.WriteLine(cat.ToString());
             var generator = new CategoryMembersGenerator(cat) {PagingSize = 50};
             var pages = generator.EnumPages().ToList();
             TracePages(pages);
             AssertTitlesDistinct(pages);
-            Assert.AreEqual(cat.MembersCount, pages.Count);
+            Assert.Equal(cat.MembersCount, pages.Count);
         }
 
-        [TestMethod]
-        public void WikiaCategoryMembersGeneratorTest()
+        [Fact]
+        public async Task WikiaCategoryMembersGeneratorTest()
         {
-            var site = WikiaTestSite;
+            var site = await WikiaTestSiteAsync;
             var cat = new Category(site, "Category:BlogListingPage‏‎‏‎");
-            AwaitSync(cat.RefreshAsync());
-            Trace.WriteLine(cat);
+            await cat.RefreshAsync();
+            Output.WriteLine(cat.ToString());
             var generator = new CategoryMembersGenerator(cat) {PagingSize = 50};
             var pages = generator.EnumPages().ToList();
             TracePages(pages);
             AssertTitlesDistinct(pages);
-            Assert.AreEqual(cat.MembersCount, pages.Count);
+            Assert.Equal(cat.MembersCount, pages.Count);
         }
 
 
-        [TestMethod]
-        public void WpTest2RecentChangesGeneratorTest1()
+        [Fact]
+        public async Task WpTest2RecentChangesGeneratorTest1()
         {
-            var site = WpTestSite;
+            var site = await WpTest2SiteAsync;
             var generator = new RecentChangesGenerator(site) {LastRevisionsOnly = true, PagingSize = 20};
             var pages = generator.EnumPages().Take(1000).ToList();
             TracePages(pages);
             AssertTitlesDistinct(pages);
         }
 
-        [TestMethod]
-        public void WpLzhRecentChangesGeneratorTest1()
+        [Fact]
+        public async Task WpLzhRecentChangesGeneratorTest1()
         {
-            var site = WpLzhSite;
+            var site = await WpLzhSiteAsync;
             var generator = new RecentChangesGenerator(site)
             {
                 LastRevisionsOnly = true,
@@ -160,16 +157,16 @@ namespace UnitTestProject1
             foreach (var p in pages)
             {
                 var flags = p.LastRevision.Flags;
-                Assert.IsTrue(flags != RevisionFlags.None);
-                Assert.IsFalse(flags.HasFlag(RevisionFlags.Anonymous));
-                Assert.IsTrue(flags.HasFlag(RevisionFlags.Minor));
+                Assert.True(flags != RevisionFlags.None);
+                Assert.False(flags.HasFlag(RevisionFlags.Anonymous));
+                Assert.True(flags.HasFlag(RevisionFlags.Minor));
             }
         }
 
-        [TestMethod]
-        public void WikiaRecentChangesGeneratorTest1()
+        [Fact]
+        public async Task WikiaRecentChangesGeneratorTest1()
         {
-            var site = WikiaTestSite;
+            var site = await WikiaTestSiteAsync;
             var generator = new RecentChangesGenerator(site)
             {
                 LastRevisionsOnly = true,
@@ -181,10 +178,10 @@ namespace UnitTestProject1
             AssertTitlesDistinct(pages);
         }
 
-        [TestMethod]
-        public void WpLzhRecentChangesListTest()
+        [Fact]
+        public async Task WpLzhRecentChangesListTest()
         {
-            var site = WpLzhSite;
+            var site = await WpLzhSiteAsync;
             var generator = new RecentChangesGenerator(site)
             {
                 LastRevisionsOnly = true,
@@ -196,16 +193,16 @@ namespace UnitTestProject1
             foreach (var p in rc)
             {
                 var flags = p.Flags;
-                Assert.IsTrue(flags != RevisionFlags.None);
-                Assert.IsTrue(flags.HasFlag(RevisionFlags.Bot));
-                Assert.IsTrue(flags.HasFlag(RevisionFlags.Minor));
+                Assert.True(flags != RevisionFlags.None);
+                Assert.True(flags.HasFlag(RevisionFlags.Bot));
+                Assert.True(flags.HasFlag(RevisionFlags.Minor));
             }
         }
 
-        [TestMethod]
-        public void WikiaRecentChangesListTest()
+        [Fact]
+        public async Task WikiaRecentChangesListTest()
         {
-            var site = WikiaTestSite;
+            var site = await WikiaTestSiteAsync;
             var generator = new RecentChangesGenerator(site)
             {
                 LastRevisionsOnly = true,
@@ -214,82 +211,82 @@ namespace UnitTestProject1
             ShallowTrace(rc, 1);
         }
 
-        [TestMethod]
-        [ExpectedException(typeof(UnauthorizedOperationException))]
-        public void WpTest2PatrolTest1()
+        [Fact]
+        public async Task WpTest2PatrolTest1()
         {
-            var site = WpTestSite;
+            var site = await WpTest2SiteAsync;
             var generator = new RecentChangesGenerator(site)
             {
                 LastRevisionsOnly = true,
             };
             var rc = generator.EnumRecentChanges().Take(2).ToList();
-            if (rc.Count < 1) Assert.Inconclusive();
-            AwaitSync(rc[0].PatrolAsync());
+            if (rc.Count < 1) Utility.Inconclusive();
+            await Assert.ThrowsAsync<UnauthorizedOperationException>(() => rc[0].PatrolAsync());
         }
 
-        [TestMethod]
-        public void WpQueryPageGeneratorTest1()
+        [Fact]
+        public async Task WpQueryPageGeneratorTest1()
         {
-            var site = WpTestSite;
+            var site = await WpTest2SiteAsync;
             var generator = new QueryPageGenerator(site, "Ancientpages");
             var pages = generator.EnumPages().Take(2000).ToList();
             TracePages(pages);
             AssertTitlesDistinct(pages);
         }
 
-        [TestMethod]
-        public void WikiaQueryPageGeneratorTest1()
+        [Fact]
+        public async Task WikiaQueryPageGeneratorTest1()
         {
-            var site = WikiaTestSite;
+            var site = await WikiaTestSiteAsync;
             var generator = new QueryPageGenerator(site, "Ancientpages");
             var pages = generator.EnumPages().Take(2000).ToList();
             TracePages(pages);
             AssertTitlesDistinct(pages);
         }
 
-        [TestMethod]
-        public void WpGetQueryPageNamesTest()
+        [Fact]
+        public async Task WpGetQueryPageNamesTest()
         {
-            var site = WpTestSite;
-            var sp = AwaitSync(QueryPageGenerator.GetQueryPageNamesAsync(site));
-            Assert.IsTrue(sp.Contains("Uncategorizedpages"));
+            var site = await WpTest2SiteAsync;
+            var sp = await QueryPageGenerator.GetQueryPageNamesAsync(site);
+            Assert.True(sp.Contains("Uncategorizedpages"));
             ShallowTrace(sp);
         }
 
-        [TestMethod]
-        public void WpTestGetSearchTest()
+        [Fact]
+        public async Task WpTestGetSearchTest()
         {
-            var site = WpTestSite;
+            var site = await WpTest2SiteAsync;
             var generator = new SearchGenerator(site, "test") {PagingSize = 20};
             var pages = generator.EnumPages().Take(100).ToList();
             TracePages(pages);
             AssertTitlesDistinct(pages);
         }
 
-        [TestMethod]
-        public void WpLzhSearchTest()
+        [Fact]
+        public async Task WpLzhSearchTest()
         {
-            var site = WpLzhSite;
+            var site = await WpLzhSiteAsync;
             var generator = new SearchGenerator(site, "維基");
             var pages = generator.EnumPages().Take(50).ToList();
             TracePages(pages);
             AssertTitlesDistinct(pages);
             // Note as 2017-03-07, [[維基]] actually exists on lzh wiki, but it's a redirect to [[維基媒體基金會]].
             // Maybe that's why it's not included in the search result.
-            //Assert.IsTrue(pages.Any(p => p.Title == "維基"));
-            Assert.IsTrue(pages.Any(p => p.Title == "維基媒體基金會"));
-            Assert.IsTrue(pages.Any(p => p.Title == "維基大典"));
-            Assert.IsTrue(pages.Any(p => p.Title == "文言維基大典"));
+            //Assert.True(pages.Any(p => p.Title == "維基"));
+            Assert.True(pages.Any(p => p.Title == "維基媒體基金會"));
+            Assert.True(pages.Any(p => p.Title == "維基大典"));
+            Assert.True(pages.Any(p => p.Title == "文言維基大典"));
         }
 
-        [TestMethod]
-        public void WikiaGetQueryPageNamesTest()
+        [Fact]
+        public async Task WikiaGetQueryPageNamesTest()
         {
-            var site = WikiaTestSite;
-            var sp = AwaitSync(QueryPageGenerator.GetQueryPageNamesAsync(site));
-            Assert.IsTrue(sp.Contains("Uncategorizedpages"));
+            var site = await WikiaTestSiteAsync;
+            var sp = await QueryPageGenerator.GetQueryPageNamesAsync(site);
+            Assert.True(sp.Contains("Uncategorizedpages"));
             ShallowTrace(sp);
         }
+
     }
 }

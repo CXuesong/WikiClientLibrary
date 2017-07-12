@@ -1,51 +1,52 @@
 ﻿using System;
 using System.Linq;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System.Threading.Tasks;
 using WikiClientLibrary;
 using WikiClientLibrary.Generators;
 using WikiClientLibrary.Pages;
 using WikiClientLibrary.Sites;
+using Xunit;
+using Xunit.Abstractions;
 using static UnitTestProject1.Utility;
 
 namespace UnitTestProject1
 {
-    [TestClass]
-    public class RevisionGeneratorTests
+
+    public class RevisionGeneratorTests : WikiSiteTestsBase
     {
-        private static readonly Lazy<Site> _WpTestSite = new Lazy<Site>(() => CreateWikiSite(EntryPointWikipediaTest2));
-        private static readonly Lazy<Site> _WikiaTestSite = new Lazy<Site>(() => CreateWikiSite(EntryPointWikiaTest));
 
-        public static Site WpTestSite => _WpTestSite.Value;
-
-        public static Site WikiaTestSite => _WikiaTestSite.Value;
-
-        [TestMethod]
-        public void WpTestEnumRevisionsTest1()
+        /// <inheritdoc />
+        public RevisionGeneratorTests(ITestOutputHelper output) : base(output)
         {
-            var site = WpTestSite;
+        }
+
+        [Fact]
+        public async Task WpTestEnumRevisionsTest1()
+        {
+            var site = await WpTest2SiteAsync;
             var page = new Page(site, "Page:Edit_page_for_chrome");
-            var revisions = AwaitSync(page.EnumRevisionsAsync(20).Skip(5).Take(5).ToList());
-            Assert.AreEqual(5, revisions.Count);
-            Assert.IsTrue(revisions.SequenceEqual(revisions.OrderByDescending(r => r.TimeStamp)));
+            var revisions = await page.EnumRevisionsAsync(20).Skip(5).Take(5).ToList();
+            Assert.Equal(5, revisions.Count);
+            Assert.True(revisions.SequenceEqual(revisions.OrderByDescending(r => r.TimeStamp)));
             ShallowTrace(revisions);
         }
 
-        [TestMethod]
-        public void WpTestEnumRevisionsTest2()
+        [Fact]
+        public async Task WpTestEnumRevisionsTest2()
         {
-            var site = WpTestSite;
+            var site = await WpTest2SiteAsync;
             // 5,100 revisions in total
             var page = new Page(site, "Page:Edit_page_for_chrome");
-            var revisions = AwaitSync(page.EnumRevisionsAsync(2000).Take(2000).ToList());
-            Assert.IsTrue(revisions.SequenceEqual(revisions.OrderByDescending(r => r.TimeStamp)));
+            var revisions = await page.EnumRevisionsAsync(2000).Take(2000).ToList();
+            Assert.True(revisions.SequenceEqual(revisions.OrderByDescending(r => r.TimeStamp)));
             ShallowTrace(revisions);
         }
 
 
-        [TestMethod]
-        public void WpTestEnumRevisionsTest3()
+        [Fact]
+        public async Task WpTestEnumRevisionsTest3()
         {
-            var site = WpTestSite;
+            var site = await WpTest2SiteAsync;
             // 5,100 revisions in total
             var page = new Page(site, "Page:Edit_page_for_chrome");
             var t1 = new DateTime(2014, 10, 20, 10, 0, 0, DateTimeKind.Utc);
@@ -56,33 +57,33 @@ namespace UnitTestProject1
                 StartTime = t1,
                 EndTime = t2,
             };
-            var revisions = AwaitSync(gen.EnumRevisionsAsync().ToList());
-            Assert.IsTrue(revisions.SequenceEqual(revisions.OrderBy(r => r.TimeStamp)));
-            Assert.IsTrue(revisions.First().TimeStamp >= t1);
-            Assert.IsTrue(revisions.Last().TimeStamp <= t2);
+            var revisions = await gen.EnumRevisionsAsync().ToList();
+            Assert.True(revisions.SequenceEqual(revisions.OrderBy(r => r.TimeStamp)));
+            Assert.True(revisions.First().TimeStamp >= t1);
+            Assert.True(revisions.Last().TimeStamp <= t2);
             // This holds on 2016-12-09
-            Assert.AreEqual(32, revisions.Count);
+            Assert.Equal(32, revisions.Count);
             ShallowTrace(revisions);
         }
 
-        [TestMethod]
-        public void WikiaEnumRevisionsTest1()
+        [Fact]
+        public async Task WikiaEnumRevisionsTest1()
         {
-            var site = WikiaTestSite;
+            var site = await WikiaTestSiteAsync;
             var page = new Page(site, "Project:Sandbox");
-            var revisions = AwaitSync(page.EnumRevisionsAsync().Skip(5).Take(5).ToList());
-            Assert.AreEqual(5, revisions.Count);
-            Assert.IsTrue(revisions.SequenceEqual(revisions.OrderByDescending(r => r.TimeStamp)));
+            var revisions = await page.EnumRevisionsAsync().Skip(5).Take(5).ToList();
+            Assert.Equal(5, revisions.Count);
+            Assert.True(revisions.SequenceEqual(revisions.OrderByDescending(r => r.TimeStamp)));
             ShallowTrace(revisions);
         }
 
-        [TestMethod]
-        public void WikiaEnumRevisionsTest2()
+        [Fact]
+        public async Task WikiaEnumRevisionsTest2()
         {
-            var site = WikiaTestSite;
+            var site = await WikiaTestSiteAsync;
             var page = new Page(site, "Project:Sandbox");
-            var revisions = AwaitSync(page.EnumRevisionsAsync().Take(2000).ToList());
-            Assert.IsTrue(revisions.SequenceEqual(revisions.OrderByDescending(r => r.TimeStamp)));
+            var revisions = await page.EnumRevisionsAsync().Take(2000).ToList();
+            Assert.True(revisions.SequenceEqual(revisions.OrderByDescending(r => r.TimeStamp)));
             ShallowTrace(revisions);
         }
 

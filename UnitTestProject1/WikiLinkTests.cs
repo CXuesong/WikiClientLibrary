@@ -1,67 +1,72 @@
 ﻿using System;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System.Threading.Tasks;
 using WikiClientLibrary;
 using WikiClientLibrary.Pages;
 using WikiClientLibrary.Sites;
+using Xunit;
+using Xunit.Abstractions;
 using static UnitTestProject1.Utility;
 
 namespace UnitTestProject1
 {
-    [TestClass]
-    public class WikiLinkTests
+
+    public class WikiLinkTests : WikiSiteTestsBase
     {
-        private static readonly Lazy<Site> _WpTestSite = new Lazy<Site>(() => CreateWikiSite(EntryPointWikipediaTest2));
-        private static readonly Lazy<Site> _WikiaTestSite = new Lazy<Site>(() => CreateWikiSite(EntryPointWikiaTest));
 
-        public static Site WpTestSite => _WpTestSite.Value;
-        public static Site WikiaTestSite => _WikiaTestSite.Value;
-
-        [TestMethod]
-        public void WikiLinkTest1()
+        /// <inheritdoc />
+        public WikiLinkTests(ITestOutputHelper output) : base(output)
         {
+        }
+
+        [Fact]
+        public async Task WikiLinkTest1()
+        {
+            var WpTestSite = await WpTest2SiteAsync;
             var link1 = WikiLink.Parse(WpTestSite, "____proJEct__talk_:___sandbox_");
             var link2 = WikiLink.Parse(WpTestSite, "__ _pROject_ _talk_:___sandbox_", BuiltInNamespaces.Category);
             var link3 = WikiLink.Parse(WpTestSite, "___sandbox_  test__", BuiltInNamespaces.Category);
             var link4 = WikiLink.Parse(WpTestSite, "__:   sandbox test  ", BuiltInNamespaces.Template);
             var link5 = WikiLink.Parse(WpTestSite, "___lZh__:project:test", BuiltInNamespaces.Template);
-            Assert.AreEqual("Wikipedia talk:Sandbox", link1.ToString());
-            Assert.AreEqual("Wikipedia talk", link1.NamespaceName);
-            Assert.AreEqual("Sandbox", link1.Title);
-            Assert.AreEqual(null, link1.InterwikiPrefix);
-            Assert.AreEqual(null, link1.Section);
-            Assert.AreEqual(null, link1.Anchor);
-            Assert.AreEqual("Wikipedia talk:Sandbox", link2.ToString());
-            Assert.AreEqual("Category:Sandbox test", link3.ToString());
-            Assert.AreEqual("Sandbox test", link4.ToString());
-            Assert.AreEqual("lzh:Project:test", link5.ToString());
-            Assert.AreEqual("lzh", link5.InterwikiPrefix);
+            Assert.Equal("Wikipedia talk:Sandbox", link1.ToString());
+            Assert.Equal("Wikipedia talk", link1.NamespaceName);
+            Assert.Equal("Sandbox", link1.Title);
+            Assert.Null(link1.InterwikiPrefix);
+            Assert.Null(link1.Section);
+            Assert.Null(link1.Anchor);
+            Assert.Equal("Wikipedia talk:Sandbox", link2.ToString());
+            Assert.Equal("Category:Sandbox test", link3.ToString());
+            Assert.Equal("Sandbox test", link4.ToString());
+            Assert.Equal("lzh:Project:test", link5.ToString());
+            Assert.Equal("lzh", link5.InterwikiPrefix);
             var link6 = WikiLink.Parse(WpTestSite, "sandbox#sect|anchor", BuiltInNamespaces.Template);
-            Assert.AreEqual("Template:Sandbox#sect|anchor", link6.ToString());
-            Assert.AreEqual("sect", link6.Section);
-            Assert.AreEqual("anchor", link6.Anchor);
+            Assert.Equal("Template:Sandbox#sect|anchor", link6.ToString());
+            Assert.Equal("sect", link6.Section);
+            Assert.Equal("anchor", link6.Anchor);
         }
 
-        [TestMethod]
-        public void TestMethod2()
+        [Fact]
+        public async Task TestMethod2()
         {
+            var WikiaTestSite = await WikiaTestSiteAsync;
             var link1 = WikiLink.Parse(WikiaTestSite, "__ _project_ _talk_:___sandbox_", BuiltInNamespaces.Category);
-            var link2= WikiLink.Parse(WikiaTestSite, "part1:part2:part3", BuiltInNamespaces.Category);
-            Assert.AreEqual("Mediawiki 1.19 test Wiki talk:Sandbox", link1.ToString());
-            Assert.AreEqual("Category:Part1:part2:part3", link2.ToString());
+            var link2 = WikiLink.Parse(WikiaTestSite, "part1:part2:part3", BuiltInNamespaces.Category);
+            Assert.Equal("Mediawiki 1.19 test Wiki talk:Sandbox", link1.ToString());
+            Assert.Equal("Category:Part1:part2:part3", link2.ToString());
         }
 
-        [TestMethod]
-        [ExpectedException(typeof(ArgumentException))]
-        public void TestMethod3()
+        [Fact]
+        public async Task TestMethod3()
         {
-            var link = WikiLink.Parse(WpTestSite, ":");
+            var site = await WpTest2SiteAsync;
+            Assert.Throws<ArgumentException>(() => WikiLink.Parse(site, ":"));
         }
 
-        [TestMethod]
-        [ExpectedException(typeof(ArgumentException))]
-        public void TestMethod4()
+        [Fact]
+        public async Task TestMethod4()
         {
-            var link = WikiLink.Parse(WpTestSite, "Project:");
+            var site = await WpTest2SiteAsync;
+            Assert.Throws<ArgumentException>(() => WikiLink.Parse(site, "Project:"));
         }
+
     }
 }

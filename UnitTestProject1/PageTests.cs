@@ -5,248 +5,242 @@
 using System;
 using System.Diagnostics;
 using System.Linq;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System.Threading.Tasks;
 using WikiClientLibrary;
 using WikiClientLibrary.Generators;
 using WikiClientLibrary.Pages;
 using WikiClientLibrary.Sites;
-using static UnitTestProject1.Utility;
+using Xunit;
+using Xunit.Abstractions;
 
 namespace UnitTestProject1
 {
-    [TestClass]
-    public class PageTests
+
+    public class PageTests : WikiSiteTestsBase
     {
         private const string SummaryPrefix = "WikiClientLibrary test. ";
 
-        private static readonly Lazy<Site> _WpTestSite = new Lazy<Site>(() => CreateWikiSite(EntryPointWikipediaTest2, true));
-        private static readonly Lazy<Site> _WikiaTestSite = new Lazy<Site>(() => CreateWikiSite(EntryPointWikiaTest, true));
-        private static readonly Lazy<Site> _WpLzhSite = new Lazy<Site>(() => CreateWikiSite(EntryWikipediaLzh));
 
-        public static Site WpTestSite => _WpTestSite.Value;
-
-        public static Site WikiaTestSite => _WikiaTestSite.Value;
-
-        public static Site WpLzhSite => _WpLzhSite.Value;
-
-        [ClassCleanup]
-        public static void OnClassCleanup()
+        /// <inheritdoc />
+        public PageTests(ITestOutputHelper output) : base(output)
         {
-            if (_WpTestSite.IsValueCreated) CredentialManager.Logout(WpTestSite);
-            if (_WikiaTestSite.IsValueCreated) CredentialManager.Logout(WikiaTestSite);
+            SiteNeedsLogin(Utility.EntryPointWikipediaTest2);
+            SiteNeedsLogin(Utility.EntryPointWikiaTest);
+            SiteNeedsLogin(Utility.EntryWikipediaLzh);
         }
 
-        [TestMethod]
-        public void WpTest2PageReadTest1()
+        [Fact]
+        public async Task WpTest2PageReadTest1()
         {
-            var site = WpTestSite;
+            var site = await WpTest2SiteAsync;
             var page = new Page(site, "project:sandbox");
-            AwaitSync(page.RefreshAsync(PageQueryOptions.FetchContent));
+            await page.RefreshAsync(PageQueryOptions.FetchContent);
             ShallowTrace(page);
-            Assert.IsTrue(page.Exists);
-            Assert.AreEqual("Wikipedia:Sandbox", page.Title);
-            Assert.AreEqual(4, page.NamespaceId);
-            Assert.AreEqual("en", page.PageLanguage);
+            Assert.True(page.Exists);
+            Assert.Equal("Wikipedia:Sandbox", page.Title);
+            Assert.Equal(4, page.NamespaceId);
+            Assert.Equal("en", page.PageLanguage);
             // Chars vs. Bytes
-            Assert.IsTrue(page.Content.Length <= page.ContentLength);
-            Trace.WriteLine(new string('-', 10));
+            Assert.True(page.Content.Length <= page.ContentLength);
+            Output.WriteLine(new string('-', 10));
             page = new Page(site, "file:inexistent_file.jpg");
-            AwaitSync(page.RefreshAsync());
+            await page.RefreshAsync();
             ShallowTrace(page);
-            Assert.IsFalse(page.Exists);
-            Assert.AreEqual("File:Inexistent file.jpg", page.Title);
-            Assert.AreEqual(6, page.NamespaceId);
-            Assert.AreEqual("en", page.PageLanguage);
+            Assert.False(page.Exists);
+            Assert.Equal("File:Inexistent file.jpg", page.Title);
+            Assert.Equal(6, page.NamespaceId);
+            Assert.Equal("en", page.PageLanguage);
         }
 
-        [TestMethod]
-        public void WpTest2PageReadTest2()
+        [Fact]
+        public async Task WpTest2PageReadTest2()
         {
-            var site = WpTestSite;
-            var search = AwaitSync(site.OpenSearchAsync("A", 10));
+            var site = await WpTest2SiteAsync;
+            var search = await site.OpenSearchAsync("A", 10);
             var pages = search.Select(e => new Page(site, e.Title)).ToList();
-            AwaitSync(pages.RefreshAsync());
+            await pages.RefreshAsync();
             ShallowTrace(pages);
         }
 
-        [TestMethod]
-        public void WpTest2PageReadRedirectTest()
+        [Fact]
+        public async Task WpTest2PageReadRedirectTest()
         {
-            var site = WpTestSite;
+            var site = await WpTest2SiteAsync;
             var page = new Page(site, "Foo");
-            AwaitSync(page.RefreshAsync());
-            Assert.IsTrue(page.IsRedirect);
-            var target = AwaitSync(page.GetRedirectTargetAsync());
+            await page.RefreshAsync();
+            Assert.True(page.IsRedirect);
+            var target = await page.GetRedirectTargetAsync();
             ShallowTrace(target);
-            Assert.AreEqual("Foo24", target.Title);
-            Assert.IsTrue(target.RedirectPath.SequenceEqual(new[] {"Foo", "Foo2", "Foo23"}));
+            Assert.Equal("Foo24", target.Title);
+            Assert.True(target.RedirectPath.SequenceEqual(new[] {"Foo", "Foo2", "Foo23"}));
         }
 
-        [TestMethod]
-        public void WpLzhPageReadDisambigTest()
+        [Fact]
+        public async Task WpLzhPageReadDisambigTest()
         {
-            var site = WpLzhSite;
+            var site = await WpLzhSiteAsync;
             var page = new Page(site, "中國_(釋義)");
-            AwaitSync(page.RefreshAsync());
-            Assert.IsTrue(AwaitSync(page.IsDisambiguationAsync()));
+            await page.RefreshAsync();
+            Assert.True(await page.IsDisambiguationAsync());
         }
 
-        [TestMethod]
-        public void WpLzhFetchRevisionsTest()
+        [Fact]
+        public async Task WpLzhFetchRevisionsTest()
         {
-            var site = WpLzhSite;
+            var site = await WpLzhSiteAsync;
             var revIds = new[] {248199, 248197, 255289};
             var pageTitles = new[] {"清", "清", "香草"};
-            var rev = AwaitSync(Revision.FetchRevisionsAsync(site, revIds).ToList());
+            var rev = await Revision.FetchRevisionsAsync(site, revIds).ToList();
             ShallowTrace(rev);
-            Assert.IsTrue(rev.Select(r => r.Id).SequenceEqual(revIds));
-            Assert.IsTrue(rev.Select(r => r.Page.Title).SequenceEqual(pageTitles));
+            Assert.True(rev.Select(r => r.Id).SequenceEqual(revIds));
+            Assert.True(rev.Select(r => r.Page.Title).SequenceEqual(pageTitles));
             // Asserts that pages with the same title shares the same reference
             // Or an Exception will raise.
             var pageDict = rev.Select(r => r.Page).Distinct().ToDictionary(p => p.Title);
         }
 
-        [TestMethod]
-        public void WpLzhFetchFileTest()
+        [Fact]
+        public async Task WpLzhFetchFileTest()
         {
-            var site = WpLzhSite;
+            var site = await WpLzhSiteAsync;
             var file = new FilePage(site, "File:Empress Suiko.jpg");
-            AwaitSync(file.RefreshAsync());
+            await file.RefreshAsync();
             ShallowTrace(file);
-            //Assert.IsTrue(file.Exists);   //It's on WikiMedia!
-            Assert.AreEqual(58865, file.LastFileRevision.Size);
-            Assert.AreEqual("7aa12c613c156dd125212d85a072b250625ae39f", file.LastFileRevision.Sha1.ToLowerInvariant());
+            //Assert.True(file.Exists);   //It's on WikiMedia!
+            Assert.Equal(58865, file.LastFileRevision.Size);
+            Assert.Equal("7aa12c613c156dd125212d85a072b250625ae39f", file.LastFileRevision.Sha1.ToLowerInvariant());
         }
 
-        [TestMethod]
-        public void WikiaPageReadTest()
+        [Fact]
+        public async Task WikiaPageReadTest()
         {
-            var site = WikiaTestSite;
+            var site = await WikiaTestSiteAsync;
             var page = new Page(site, "Project:Sandbox");
-            AwaitSync(page.RefreshAsync(PageQueryOptions.FetchContent));
-            Assert.AreEqual("Mediawiki 1.19 test Wiki:Sandbox", page.Title);
-            Assert.AreEqual(4, page.NamespaceId);
+            await page.RefreshAsync(PageQueryOptions.FetchContent);
+            Assert.Equal("Mediawiki 1.19 test Wiki:Sandbox", page.Title);
+            Assert.Equal(4, page.NamespaceId);
             ShallowTrace(page);
         }
 
-        [TestMethod]
-        public void WikiaPageReadDisambigTest()
+        [Fact]
+        public async Task WikiaPageReadDisambigTest()
         {
-            var site = WikiaTestSite;
+            var site = await WikiaTestSiteAsync;
             var page = new Page(site, "Test (Disambiguation)");
-            AwaitSync(page.RefreshAsync());
-            Assert.IsTrue(AwaitSync(page.IsDisambiguationAsync()));
+            await page.RefreshAsync();
+            Assert.True(await page.IsDisambiguationAsync());
         }
 
-        [TestMethod]
-        public void WpTestEnumPageLinksTest()
+        [Fact]
+        public async Task WpTestEnumPageLinksTest()
         {
-            var site = WpLzhSite;
+            var site = await WpLzhSiteAsync;
             var page = new Page(site, site.SiteInfo.MainPage);
-            Trace.WriteLine(page);
-            var links = AwaitSync(page.EnumLinksAsync().ToList());
+            Output.WriteLine(page.ToString());
+            var links = await page.EnumLinksAsync().ToList();
             ShallowTrace(links);
-            Assert.IsTrue(links.Contains("維基大典:條目指引"));
-            Assert.IsTrue(links.Contains("幫助:凡例"));
-            Assert.IsTrue(links.Contains("維基大典:卓著"));
+            Assert.True(links.Contains("文言維基大典"));
+            Assert.True(links.Contains("幫助:凡例"));
+            Assert.True(links.Contains("維基大典:卓著"));
         }
 
-        [TestMethod]
-        public void WpLzhRedirectedPageReadTest()
+        [Fact]
+        public async Task WpLzhRedirectedPageReadTest()
         {
-            var site = WpLzhSite;
+            var site = await WpLzhSiteAsync;
             var page = new Page(site, "project:sandbox");
-            AwaitSync(page.RefreshAsync(PageQueryOptions.ResolveRedirects));
-            Assert.AreEqual("維基大典:沙盒", page.Title);
-            Assert.AreEqual(4, page.NamespaceId);
+            await page.RefreshAsync(PageQueryOptions.ResolveRedirects);
+            Assert.Equal("維基大典:沙盒", page.Title);
+            Assert.Equal(4, page.NamespaceId);
             ShallowTrace(page);
         }
 
-        [TestMethod]
-        public void WpTest2PageWriteTest1()
+        [Fact]
+        public async Task WpTest2PageWriteTest1()
         {
             AssertModify();
-            var site = WpTestSite;
+            var site = await WpTest2SiteAsync;
             var page = new Page(site, "project:sandbox");
-            AwaitSync(page.RefreshAsync(PageQueryOptions.FetchContent));
+            await page.RefreshAsync(PageQueryOptions.FetchContent);
             page.Content += "\n\nTest from WikiClientLibrary.";
-            Trace.WriteLine(page.Content);
-            AwaitSync(page.UpdateContentAsync(SummaryPrefix + "Edit sandbox page."));
+            Output.WriteLine(page.Content);
+            await page.UpdateContentAsync(SummaryPrefix + "Edit sandbox page.");
         }
 
-        [TestMethod]
-        [ExpectedException(typeof(UnauthorizedOperationException))]
-        public void WpTest2PageWriteTest2()
+        [Fact]
+        public async Task WpTest2PageWriteTest2()
         {
             AssertModify();
-            var site = WpTestSite;
+            var site = await WpTest2SiteAsync;
             var page = new Page(site, "Test page");
-            AwaitSync(page.RefreshAsync(PageQueryOptions.FetchContent));
-            Assert.IsTrue(page.Protections.Any(), "To perform this test, the working page should be protected.");
+            await page.RefreshAsync(PageQueryOptions.FetchContent);
+            Assert.True(page.Protections.Any(), "To perform this test, the working page should be protected.");
             page.Content += "\n\nTest from WikiClientLibrary.";
-            AwaitSync(page.UpdateContentAsync(SummaryPrefix + "Attempt to edit a protected page."));
+            await Assert.ThrowsAsync<UnauthorizedOperationException>(() =>
+                page.UpdateContentAsync(SummaryPrefix + "Attempt to edit a protected page."));
         }
 
-        [TestMethod]
-        [ExpectedException(typeof(ArgumentException))]
-        public void WpTest2PageWriteTest3()
+        [Fact]
+        public async Task WpTest2PageWriteTest3()
         {
             AssertModify();
-            var site = WpTestSite;
-            var page = new Page(site, "Special:");
-            AwaitSync(page.RefreshAsync(PageQueryOptions.FetchContent));
+            var site = await WpTest2SiteAsync;
+            var page = new Page(site, "Special:RecentChanges");
+            await page.RefreshAsync(PageQueryOptions.FetchContent);
+            Assert.True(page.IsSpecialPage);
             page.Content += "\n\nTest from WikiClientLibrary.";
-            AwaitSync(page.UpdateContentAsync(SummaryPrefix + "Attempt to edit a special page."));
+            await Assert.ThrowsAsync<InvalidOperationException>(() =>
+                page.UpdateContentAsync(SummaryPrefix + "Attempt to edit a special page."));
         }
 
-        [TestMethod]
-        public void WpTest2BulkPurgeTest()
+        [Fact]
+        public async Task WpTest2BulkPurgeTest()
         {
             AssertModify();
-            var site = WpTestSite;
+            var site = await WpTest2SiteAsync;
             // Usually 500 is the limit for normal users.
             var pages = new AllPagesGenerator(site) {PagingSize = 300}.EnumPages().Take(300).ToList();
             var badPage = new Page(site, "Inexistent page title");
             pages.Insert(pages.Count/2, badPage);
-            Trace.WriteLine("Attempt to purge: ");
+            Output.WriteLine("Attempt to purge: ");
             ShallowTrace(pages, 1);
             // Do a normal purge. It may take a while.
-            var failedPages = AwaitSync(pages.PurgeAsync());
-            Trace.WriteLine("Failed pages: ");
+            var failedPages = await pages.PurgeAsync();
+            Output.WriteLine("Failed pages: ");
             ShallowTrace(failedPages, 1);
-            Assert.AreEqual(1, failedPages.Count);
-            Assert.AreSame(badPage, failedPages.Single());
+            Assert.Equal(1, failedPages.Count);
+            Assert.Same(badPage, failedPages.Single());
         }
 
-        [TestMethod]
-        public void WpTest2PagePurgeTest()
+        [Fact]
+        public async Task WpTest2PagePurgeTest()
         {
             AssertModify();
-            var site = WpTestSite;
+            var site = await WpTest2SiteAsync;
             // We do not need to login.
             var page = new Page(site, "project:sandbox");
-            var result = AwaitSync(page.PurgeAsync(PagePurgeOptions.ForceLinkUpdate | PagePurgeOptions.ForceRecursiveLinkUpdate));
-            Assert.IsTrue(result);
+            var result = await page.PurgeAsync(PagePurgeOptions.ForceLinkUpdate | PagePurgeOptions.ForceRecursiveLinkUpdate);
+            Assert.True(result);
             // Now an ArgumentException should be thrown from Page.ctor.
             //page = new Page(site, "special:");
             //result = AwaitSync(page.PurgeAsync());
-            //Assert.IsFalse(result);
+            //Assert.False(result);
             page = new Page(site, "the page should be inexistent");
-            result = AwaitSync(page.PurgeAsync());
-            Assert.IsFalse(result);
+            result = await page.PurgeAsync();
+            Assert.False(result);
         }
 
-        [TestMethod]
-        public void WikiaPageWriteTest1()
+        [Fact]
+        public async Task WikiaPageWriteTest1()
         {
             AssertModify();
-            var site = WikiaTestSite;
-            AssertLoggedIn(site);
+            var site = await WikiaTestSiteAsync;
+            Utility.AssertLoggedIn(site);
             var page = new Page(site, "project:sandbox");
-            AwaitSync(page.RefreshAsync(PageQueryOptions.FetchContent));
+            await page.RefreshAsync(PageQueryOptions.FetchContent);
             page.Content += "\n\nTest from WikiClientLibrary.";
-            Trace.WriteLine(page.Content);
-            AwaitSync(page.UpdateContentAsync(SummaryPrefix + "Edit sandbox page."));
+            Output.WriteLine(page.Content);
+            await page.UpdateContentAsync(SummaryPrefix + "Edit sandbox page.");
         }
     }
 }

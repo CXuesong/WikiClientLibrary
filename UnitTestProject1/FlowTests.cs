@@ -3,11 +3,12 @@ using System.Text;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using WikiClientLibrary;
 using WikiClientLibrary.Flow;
 using WikiClientLibrary.Pages;
 using WikiClientLibrary.Sites;
+using Xunit;
+using Xunit.Abstractions;
 using static UnitTestProject1.Utility;
 
 namespace UnitTestProject1
@@ -15,22 +16,24 @@ namespace UnitTestProject1
     /// <summary>
     /// FlowTests 的摘要说明
     /// </summary>
-    [TestClass]
-    public class FlowTests
+    public class FlowTests : WikiSiteTestsBase
     {
-        private static readonly Lazy<Site> _WpBetaSite = new Lazy<Site>(() => CreateWikiSite(EntryPointWikipediaBetaEn));
 
-        public static Site WpBetaSite => _WpBetaSite.Value;
-
-        [TestMethod]
-        public void BoardTest()
+        /// <inheritdoc />
+        public FlowTests(ITestOutputHelper output) : base(output)
         {
-            var board = new Board(WpBetaSite, "Talk:Flow QA");
-            AwaitSync(Task.WhenAll(board.RefreshAsync(), board.Header.RefreshAsync()));
+        }
+
+        [Fact]
+        public async Task BoardTest()
+        {
+            var board = new Board(await WpBetaSiteAsync, "Talk:Flow QA");
+            await Task.WhenAll(board.RefreshAsync(), board.Header.RefreshAsync());
             ShallowTrace(board);
-            Assert.AreEqual(ContentModels.FlowBoard, board.ContentModel);
-            var topics = AwaitSync(board.EnumTopicsAsync(10).Take(10).ToArray());
+            Assert.Equal(ContentModels.FlowBoard, board.ContentModel);
+            var topics = await board.EnumTopicsAsync(10).Take(10).ToArray();
             ShallowTrace(topics);
         }
+
     }
 }
