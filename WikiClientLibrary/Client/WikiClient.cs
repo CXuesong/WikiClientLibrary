@@ -18,7 +18,7 @@ namespace WikiClientLibrary.Client
         /// <summary>
         /// The User Agent of Wiki Client Library.
         /// </summary>
-        public const string WikiClientUserAgent = "WikiClientLibrary/0.5 (.NET Portable; http://github.com/cxuesong/WikiClientLibrary)";
+        public const string WikiClientUserAgent = "WikiClientLibrary/0.6 (.NET Portable; http://github.com/cxuesong/WikiClientLibrary)";
 
         #region Configurations
 
