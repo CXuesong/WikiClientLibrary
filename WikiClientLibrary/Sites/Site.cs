@@ -674,6 +674,8 @@ namespace WikiClientLibrary.Sites
         /// </summary>
         /// <param name="userName">User name of the account.</param>
         /// <param name="password">Password of the account.</param>
+        /// <exception cref="InvalidOperationException">Attempt to login/logout concurrently.</exception>
+        /// <exception cref="OperationFailedException">Canoot login with the specified credential.</exception>
         /// <exception cref="ArgumentNullException">Either <paramref name="userName"/> or <paramref name="password"/> is <c>null</c> or empty.</exception>
         /// <remarks>This operation will refresh <see cref="AccountInfo"/>.</remarks>
         public Task LoginAsync(string userName, string password)
@@ -687,6 +689,8 @@ namespace WikiClientLibrary.Sites
         /// <param name="userName">User name of the account.</param>
         /// <param name="password">Password of the account.</param>
         /// <param name="domain">Domain name. <c>null</c> is usually a good choice.</param>
+        /// <exception cref="InvalidOperationException">Attempt to login/logout concurrently.</exception>
+        /// <exception cref="OperationFailedException">Canoot login with the specified credential.</exception>
         /// <exception cref="ArgumentNullException">Either <paramref name="userName"/> or <paramref name="password"/> is <c>null</c> or empty.</exception>
         /// <remarks>This operation will refresh <see cref="AccountInfo"/>.</remarks>
         public Task LoginAsync(string userName, string password, string domain)

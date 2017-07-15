@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using WikiClientLibrary;
 using WikiClientLibrary.Client;
 using WikiClientLibrary.Generators;
 using WikiClientLibrary.Pages;
@@ -16,10 +17,10 @@ namespace ConsoleTestApplication1
         {
             try
             {
-                //HelloWikiWorld().Wait();
+                HelloWikiWorld().Wait();
                 //HelloWikiGenerators().Wait();
                 //HelloRecentChanges().Wait();
-                InteractivePatrol().Wait();
+                //InteractivePatrol().Wait();
             }
             catch (Exception ex)
             {
@@ -42,12 +43,22 @@ namespace ConsoleTestApplication1
             Console.WriteLine("API version: {0}", site.SiteInfo.Generator);
             // Access user information via Site.UserInfo
             Console.WriteLine("Hello, {0}!", site.AccountInfo.Name);
-            Console.WriteLine("You're in the following groups: {0}.", string.Join(",", site.AccountInfo.Groups));
             // Site login
+            Console.WriteLine("We will edit [[Project:Sandbox]].");
             if (Confirm($"Do you want to login into {site.SiteInfo.SiteName}?"))
             {
+                LOGIN_RETRY:
+                try
+                {
                 await site.LoginAsync(Input("Username"), Input("Password"));
+                }
+                catch (OperationFailedException ex)
+                {
+                    Console.WriteLine(ex.ErrorMessage);
+                    goto LOGIN_RETRY;
+                }
                 Console.WriteLine("You have successfully logged in as {0}.", site.AccountInfo.Name);
+                Console.WriteLine("You're in the following groups: {0}.", string.Join(",", site.AccountInfo.Groups));
             }
             // Find out more members in Site class, such as
             //  page.Namespaces
@@ -190,20 +201,20 @@ namespace ConsoleTestApplication1
         static string Input(string prompt)
         {
             Console.Write(prompt);
-            Console.Write(" >");
+            Console.Write("> ");
             return Console.ReadLine();
         }
 
         static bool Confirm(string prompt)
         {
             Console.Write(prompt);
-            Console.Write(" [Y/N]>");
+            Console.Write("[Y/N]> ");
             while (true)
             {
                 var input = Console.ReadLine().ToUpperInvariant();
                 if (input == "Y") return true;
                 if (input == "N") return false;
-                Console.Write(">");
+                Console.Write("> ");
             }
         }
 
