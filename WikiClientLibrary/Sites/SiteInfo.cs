@@ -284,7 +284,7 @@ namespace WikiClientLibrary.Sites
         private readonly IDictionary<int, NamespaceInfo> idNsDict;          // id -- ns
         private readonly IDictionary<string, NamespaceInfo> nameNsDict;     // name/custom/alias -- ns
 
-        internal NamespaceCollection(Site site, JObject namespaces, JArray jaliases)
+        internal NamespaceCollection(WikiSite site, JObject namespaces, JArray jaliases)
         {
             // jaliases : query.namespacealiases
             if (site == null) throw new ArgumentNullException(nameof(site));
@@ -580,7 +580,7 @@ namespace WikiClientLibrary.Sites
     {
         private readonly IDictionary<string, InterwikiEntry> nameIwDict;
 
-        internal InterwikiMap(Site site, JArray interwikiMap)
+        internal InterwikiMap(WikiSite site, JArray interwikiMap)
         {
             // interwikiMap : query.namespacealiases
             if (site == null) throw new ArgumentNullException(nameof(site));
@@ -709,7 +709,7 @@ namespace WikiClientLibrary.Sites
         private readonly IList<ExtensionInfo> extensions;
         private readonly ILookup<string, ExtensionInfo> nameLookup;
 
-        internal ExtensionCollection(Site site, JArray jextensions)
+        internal ExtensionCollection(WikiSite site, JArray jextensions)
         {
             // extensions : query.extensions
             if (site == null) throw new ArgumentNullException(nameof(site));

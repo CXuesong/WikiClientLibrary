@@ -21,11 +21,11 @@ namespace WikiClientLibrary.Pages
     public class FilePage : Page
     {
         // Use FilePage to distinguish from System.IO.File
-        public FilePage(Site site, string title) : base(site, title, BuiltInNamespaces.File)
+        public FilePage(WikiSite site, string title) : base(site, title, BuiltInNamespaces.File)
         {
         }
 
-        internal FilePage(Site site) : base(site)
+        internal FilePage(WikiSite site) : base(site)
         {
         }
 
@@ -51,7 +51,7 @@ namespace WikiClientLibrary.Pages
         /// Upload from external source may take a while, so be sure to set a long <see cref="WikiClientBase.Timeout"/>
         /// in case the response from the server is delayed.
         /// </remarks>
-        public static Task<UploadResult> UploadAsync(Site site, string url, string title,
+        public static Task<UploadResult> UploadAsync(WikiSite site, string url, string title,
             string comment, bool ignoreWarnings)
         {
             return UploadAsyncInternal(site, url, title, comment, ignoreWarnings, AutoWatchBehavior.Default, CancellationToken.None);
@@ -81,7 +81,7 @@ namespace WikiClientLibrary.Pages
         /// Upload from external source may take a while, so be sure to set a long <see cref="WikiClientBase.Timeout"/>
         /// in case the response from the server is delayed.
         /// </remarks>
-        public static Task<UploadResult> UploadAsync(Site site, string url, string title, string comment,
+        public static Task<UploadResult> UploadAsync(WikiSite site, string url, string title, string comment,
             bool ignoreWarnings, CancellationToken cancellationToken)
         {
             return UploadAsyncInternal(site, url, title, comment, ignoreWarnings, AutoWatchBehavior.Default, cancellationToken);
@@ -109,7 +109,7 @@ namespace WikiClientLibrary.Pages
         /// <remarks>
         /// You should have obtained the previous upload result via <see cref="UploadException.UploadResult"/>.
         /// </remarks>
-        public static Task<UploadResult> UploadAsync(Site site, UploadResult previousResult, string title,
+        public static Task<UploadResult> UploadAsync(WikiSite site, UploadResult previousResult, string title,
             string comment, bool ignoreWarnings)
         {
             return UploadAsyncInternal(site, previousResult, title, comment, ignoreWarnings, AutoWatchBehavior.Default, CancellationToken.None);
@@ -133,7 +133,7 @@ namespace WikiClientLibrary.Pages
         /// invocation, there will be no retries.
         /// </exception>
         /// <returns>An <see cref="UploadResult"/>.</returns>
-        public static Task<UploadResult> UploadAsync(Site site, Stream content, string title,
+        public static Task<UploadResult> UploadAsync(WikiSite site, Stream content, string title,
             string comment, bool ignoreWarnings)
         {
             return UploadAsyncInternal(site, content, title, comment, ignoreWarnings, AutoWatchBehavior.Default, CancellationToken.None);
@@ -159,7 +159,7 @@ namespace WikiClientLibrary.Pages
         /// invocation, there will be no retries.
         /// </exception>
         /// <returns>An <see cref="UploadResult"/>.</returns>
-        public static Task<UploadResult> UploadAsync(Site site, Stream content, string title,
+        public static Task<UploadResult> UploadAsync(WikiSite site, Stream content, string title,
             string comment, bool ignoreWarnings, AutoWatchBehavior watch, CancellationToken cancellationToken)
         {
             return UploadAsyncInternal(site, content, title, comment, ignoreWarnings, watch, cancellationToken);
@@ -169,7 +169,7 @@ namespace WikiClientLibrary.Pages
         //  Stream          file content
         //  string          url to fetch
         //  UploadResult    the previous failed upload
-        private static async Task<UploadResult> UploadAsyncInternal(Site site, object content, string title, string comment,
+        private static async Task<UploadResult> UploadAsyncInternal(WikiSite site, object content, string title, string comment,
             bool ignoreWarnings, AutoWatchBehavior watch, CancellationToken cancellationToken)
         {
             if (site == null) throw new ArgumentNullException(nameof(site));

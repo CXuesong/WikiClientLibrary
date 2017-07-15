@@ -25,7 +25,7 @@ namespace WikiClientLibrary.Generators
             Site = page.Site;
         }
 
-        public Site Site { get; }
+        public WikiSite Site { get; }
 
         /// <summary>
         /// Maximum items returned per request.

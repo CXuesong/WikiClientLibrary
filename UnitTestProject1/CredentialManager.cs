@@ -34,9 +34,9 @@ namespace UnitTestProject1
         /// <summary>
         /// When implemented in your own credential file,
         /// set this property to a function that can login into specific site.
-        /// You can use <see cref="Site.ApiEndpoint"/> to determine which site to login into.
+        /// You can use <see cref="WikiSite.ApiEndpoint"/> to determine which site to login into.
         /// </summary>
-        private static Func<Site, Task> LoginCoreAsyncHandler { get; set; }
+        private static Func<WikiSite, Task> LoginCoreAsyncHandler { get; set; }
 
         /// <summary>
         /// Initialize confidential information.
@@ -47,7 +47,7 @@ namespace UnitTestProject1
         /// <summary>
         /// Use predefined credential routine, login to the specified site.
         /// </summary>
-        public static async Task LoginAsync(Site site)
+        public static async Task LoginAsync(WikiSite site)
         {
             if (site == null) throw new ArgumentNullException(nameof(site));
             if (LoginCoreAsyncHandler == null)

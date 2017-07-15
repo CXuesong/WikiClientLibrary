@@ -18,7 +18,7 @@ namespace WikiClientLibrary.Generators
     /// </summary>
     public class RecentChangesGenerator : PageGenerator<Page>
     {
-        public RecentChangesGenerator(Site site) : base(site)
+        public RecentChangesGenerator(WikiSite site) : base(site)
         {
         }
 
@@ -190,13 +190,13 @@ namespace WikiClientLibrary.Generators
 
         private class RcEntryCreator : CustomCreationConverter<RecentChangesEntry>
         {
-            public RcEntryCreator(Site site)
+            public RcEntryCreator(WikiSite site)
             {
                 if (site == null) throw new ArgumentNullException(nameof(site));
                 Site = site;
             }
 
-            public Site Site { get; }
+            public WikiSite Site { get; }
 
             public override RecentChangesEntry Create(Type objectType)
             {

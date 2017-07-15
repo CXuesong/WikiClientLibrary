@@ -16,9 +16,9 @@ namespace WikiClientLibrary.Generators
     [JsonObject(MemberSerialization.OptIn)]
     public class RecentChangesEntry
     {
-        public Site Site { get; }
+        public WikiSite Site { get; }
 
-        public RecentChangesEntry(Site site)
+        public RecentChangesEntry(WikiSite site)
         {
             if (site == null) throw new ArgumentNullException(nameof(site));
             Site = site;

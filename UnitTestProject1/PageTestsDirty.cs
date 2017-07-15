@@ -34,7 +34,7 @@ namespace UnitTestProject1
         // The following pages will NOT be created at first.
         private const string TestPage12Title = "WCL test page 1/2";
 
-        public Task<Site> SiteAsync => GetWikiSiteAsync(CredentialManager.DirtyTestsEntryPointUrl);
+        public Task<WikiSite> SiteAsync => GetWikiSiteAsync(CredentialManager.DirtyTestsEntryPointUrl);
 
         /// <inheritdoc />
         public PageTestsDirty(ITestOutputHelper output) : base(output)
@@ -44,7 +44,7 @@ namespace UnitTestProject1
             SiteNeedsLogin(CredentialManager.DirtyTestsEntryPointUrl);
         }
 
-        private async Task<Page> GetOrCreatePage(Site site, string title)
+        private async Task<Page> GetOrCreatePage(WikiSite site, string title)
         {
             if (site == null) throw new ArgumentNullException(nameof(site));
             var page = new Page(site, title);

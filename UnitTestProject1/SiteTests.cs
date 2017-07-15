@@ -27,7 +27,7 @@ namespace UnitTestProject1
         {
         }
 
-        private void ValidateNamespace(Site site, int id, string name, bool isContent, string normalizedName = null)
+        private void ValidateNamespace(WikiSite site, int id, string name, bool isContent, string normalizedName = null)
         {
             Assert.True(site.Namespaces.Contains(id), $"Cannot find namespace id={id}.");
             var ns = site.Namespaces[id];
@@ -36,7 +36,7 @@ namespace UnitTestProject1
             Assert.Equal(isContent, site.Namespaces[id].IsContent);
         }
 
-        private void ValidateNamespaces(Site site)
+        private void ValidateNamespaces(WikiSite site)
         {
             Assert.True(site.Namespaces.Contains(0));
             Assert.True(site.Namespaces[0].IsContent);
@@ -118,7 +118,7 @@ namespace UnitTestProject1
         [Fact]
         public async Task LoginWpTest2_3()
         {
-            var site = await Site.CreateAsync(CreateWikiClient(),
+            var site = await WikiSite.CreateAsync(CreateWikiClient(),
                 new SiteOptions(EntryPointWikipediaTest2) {ExplicitInfoRefresh = true});
             Assert.Throws<InvalidOperationException>(() => site.SiteInfo.Version);
         }
@@ -131,7 +131,7 @@ namespace UnitTestProject1
         [Fact]
         public async Task LoginWpTest2_4()
         {
-            var site = await Site.CreateAsync(CreateWikiClient(),
+            var site = await WikiSite.CreateAsync(CreateWikiClient(),
                 new SiteOptions(EntryPointWikipediaTest2) {ExplicitInfoRefresh = true});
             await CredentialManager.LoginAsync(site);
             await site.RefreshSiteInfoAsync();
@@ -149,7 +149,7 @@ namespace UnitTestProject1
                 Utility.Inconclusive("The test needs CredentialManager.PrivateWikiTestsEntryPointUrl to be set.");
             var client = CreateWikiClient();
             // Load cookies, if any. Here we just create a client from scratch.
-            var site = await Site.CreateAsync(client,
+            var site = await WikiSite.CreateAsync(client,
                 new SiteOptions(CredentialManager.PrivateWikiTestsEntryPointUrl)
                 {
                     ExplicitInfoRefresh = true
@@ -226,13 +226,13 @@ namespace UnitTestProject1
         public async Task SearchApiEndpointTest()
         {
             var client = CreateWikiClient();
-            var result = await Site.SearchApiEndpointAsync(client, "en.wikipedia.org");
+            var result = await WikiSite.SearchApiEndpointAsync(client, "en.wikipedia.org");
             Assert.Equal("https://en.wikipedia.org/w/api.php", result);
-            result = await Site.SearchApiEndpointAsync(client, "mediawiki119.wikia.com");
+            result = await WikiSite.SearchApiEndpointAsync(client, "mediawiki119.wikia.com");
             Assert.Equal("http://mediawiki119.wikia.com/api.php", result);
-            result = await Site.SearchApiEndpointAsync(client, "mediawiki119.wikia.com/abc/def");
+            result = await WikiSite.SearchApiEndpointAsync(client, "mediawiki119.wikia.com/abc/def");
             Assert.Equal("http://mediawiki119.wikia.com/api.php", result);
-            result = await Site.SearchApiEndpointAsync(client, "wikipedia.org");
+            result = await WikiSite.SearchApiEndpointAsync(client, "wikipedia.org");
             Assert.Null(result);
         }
 
@@ -284,16 +284,16 @@ namespace UnitTestProject1
 
         private class MyAccountAssertionFailureHandler : IAccountAssertionFailureHandler
         {
-            private readonly Func<Site, Task<bool>> _Handler;
+            private readonly Func<WikiSite, Task<bool>> _Handler;
 
-            public MyAccountAssertionFailureHandler(Func<Site, Task<bool>> handler)
+            public MyAccountAssertionFailureHandler(Func<WikiSite, Task<bool>> handler)
             {
                 if (handler == null) throw new ArgumentNullException(nameof(handler));
                 _Handler = handler;
             }
 
             /// <inheritdoc />
-            public Task<bool> Login(Site site)
+            public Task<bool> Login(WikiSite site)
             {
                 if (site == null) throw new ArgumentNullException(nameof(site));
                 return _Handler(site);

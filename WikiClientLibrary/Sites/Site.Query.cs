@@ -9,7 +9,7 @@ using WikiClientLibrary.Pages;
 
 namespace WikiClientLibrary.Sites
 {
-    partial class Site
+    partial class WikiSite
     {
 
         private async Task<JArray> FetchMessagesAsync(string messagesExpr, CancellationToken cancellationToken)

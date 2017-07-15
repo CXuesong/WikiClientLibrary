@@ -92,7 +92,7 @@ namespace UnitTestProject1
             return DumpObject(obj, 0, maxDepth);
         }
 
-        public static void AssertLoggedIn(Site site)
+        public static void AssertLoggedIn(WikiSite site)
         {
             if (site == null) throw new ArgumentNullException(nameof(site));
             if (!site.AccountInfo.IsUser) Utility.Inconclusive($"User {site.AccountInfo} has not logged into {site}.");

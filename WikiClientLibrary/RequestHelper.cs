@@ -122,7 +122,7 @@ namespace WikiClientLibrary
         /// <remarks>
         /// <para>If there's invalid revision id in <paramref name="revIds"/>, an <see cref="ArgumentException"/> will be thrown while enumerating.</para>
         /// </remarks>
-        public static IAsyncEnumerable<Revision> FetchRevisionsAsync(Site site, IEnumerable<int> revIds, PageQueryOptions options, CancellationToken cancellationToken)
+        public static IAsyncEnumerable<Revision> FetchRevisionsAsync(WikiSite site, IEnumerable<int> revIds, PageQueryOptions options, CancellationToken cancellationToken)
         {
             if (revIds == null) throw new ArgumentNullException(nameof(revIds));
             var queryParams = GetPageFetchingParams(options);
@@ -270,7 +270,7 @@ namespace WikiClientLibrary
             return failedPages;
         }
 
-        public static async Task PatrolAsync(Site site, int? recentChangeId, int? revisionId, CancellationToken cancellationToken)
+        public static async Task PatrolAsync(WikiSite site, int? recentChangeId, int? revisionId, CancellationToken cancellationToken)
         {
             if (site == null) throw new ArgumentNullException(nameof(site));
             if (recentChangeId == null && revisionId == null)
@@ -315,7 +315,7 @@ namespace WikiClientLibrary
         /// <param name="site"></param>
         /// <param name="moduleName">Name of the module.</param>
         /// <returns>The paraminfo.modules[0] item.</returns>
-        public static async Task<JObject> QueryParameterInformationAsync(Site site, string moduleName)
+        public static async Task<JObject> QueryParameterInformationAsync(WikiSite site, string moduleName)
         {
             if (site == null) throw new ArgumentNullException(nameof(site));
             var pa = new Dictionary<string, object> {{"action", "paraminfo"}};
@@ -356,7 +356,7 @@ namespace WikiClientLibrary
         /// <summary>
         /// Enumerate links from the page.
         /// </summary>
-        public static IAsyncEnumerable<string> EnumLinksAsync(Site site, string titlesExpr, /* optional */
+        public static IAsyncEnumerable<string> EnumLinksAsync(WikiSite site, string titlesExpr, /* optional */
             IEnumerable<int> namespaces)
         {
             var pa = new Dictionary<string, object>
@@ -386,7 +386,7 @@ namespace WikiClientLibrary
         /// <summary>
         /// Enumerate transcluded pages trans from the page.
         /// </summary>
-        public static IAsyncEnumerable<string> EnumTransclusionsAsync(Site site, string titlesExpr,
+        public static IAsyncEnumerable<string> EnumTransclusionsAsync(WikiSite site, string titlesExpr,
             IEnumerable<int> namespaces = null, IEnumerable<string> transcludedTitlesExpr = null, int limit = -1)
         {
             // transcludedTitlesExpr should be full titles with ns prefix.

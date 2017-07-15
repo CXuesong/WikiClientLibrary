@@ -53,14 +53,14 @@ namespace UnitTestProject1
         public WikiClient WikiClient { get; }
 
         private readonly HashSet<string> sitesNeedsLogin = new HashSet<string>();
-        private readonly Dictionary<string, Task<Site>> siteCache = new Dictionary<string, Task<Site>>();
+        private readonly Dictionary<string, Task<WikiSite>> siteCache = new Dictionary<string, Task<WikiSite>>();
 
         protected void SiteNeedsLogin(string endpointUrl)
         {
             sitesNeedsLogin.Add(endpointUrl);
         }
 
-        protected Task<Site> GetWikiSiteAsync(string endpointUrl)
+        protected Task<WikiSite> GetWikiSiteAsync(string endpointUrl)
         {
             lock (siteCache)
             {
@@ -73,19 +73,19 @@ namespace UnitTestProject1
             }
         }
 
-        protected Task<Site> CreateIsolatedWikiSiteAsync(string apiEndpoint)
+        protected Task<WikiSite> CreateIsolatedWikiSiteAsync(string apiEndpoint)
         {
             var isolatedClient = CreateWikiClient();
             return CreateWikiSiteAsync(isolatedClient, apiEndpoint);
         }
 
-        private async Task<Site> CreateWikiSiteAsync(WikiClientBase wikiClient, string url)
+        private async Task<WikiSite> CreateWikiSiteAsync(WikiClientBase wikiClient, string url)
         {
             var options = new SiteOptions(url)
             {
                 AccountAssertion = AccountAssertionBehavior.AssertAll
             };
-            var site = await Site.CreateAsync(wikiClient, options);
+            var site = await WikiSite.CreateAsync(wikiClient, options);
             site.Logger = new TestOutputLogger(Output);
             if (sitesNeedsLogin.Contains(url))
             {
@@ -104,13 +104,13 @@ namespace UnitTestProject1
 #endif
         }
 
-        protected Task<Site> WpTest2SiteAsync => GetWikiSiteAsync(Utility.EntryPointWikipediaTest2);
+        protected Task<WikiSite> WpTest2SiteAsync => GetWikiSiteAsync(Utility.EntryPointWikipediaTest2);
 
-        protected Task<Site> WikiaTestSiteAsync => GetWikiSiteAsync(Utility.EntryPointWikiaTest);
+        protected Task<WikiSite> WikiaTestSiteAsync => GetWikiSiteAsync(Utility.EntryPointWikiaTest);
 
-        protected Task<Site> WpLzhSiteAsync => GetWikiSiteAsync(Utility.EntryWikipediaLzh);
+        protected Task<WikiSite> WpLzhSiteAsync => GetWikiSiteAsync(Utility.EntryWikipediaLzh);
 
-        protected Task<Site> WpBetaSiteAsync => GetWikiSiteAsync(Utility.EntryPointWikipediaBetaEn);
+        protected Task<WikiSite> WpBetaSiteAsync => GetWikiSiteAsync(Utility.EntryPointWikipediaBetaEn);
 
         protected WikiClient CreateWikiClient()
         {

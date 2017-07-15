@@ -12,16 +12,16 @@ namespace WikiClientLibrary.Infrastructures
     /// </summary>
     internal class PagedQueryAsyncEnumerable : IAsyncEnumerable<JObject>
     {
-        private readonly Site _Site;
+        private readonly WikiSite _Site;
         private readonly IDictionary<string, object> _Parameters;
         private readonly bool _DistinctPages;
 
-        public PagedQueryAsyncEnumerable(Site site, IDictionary<string, object> parameters) : this(site, parameters, false)
+        public PagedQueryAsyncEnumerable(WikiSite site, IDictionary<string, object> parameters) : this(site, parameters, false)
         {
         }
 
         // distinctPages: Used by RecentChangesGenerator, removes duplicate page results generated from generator results.
-        public PagedQueryAsyncEnumerable(Site site, IDictionary<string, object> parameters, bool distinctPages)
+        public PagedQueryAsyncEnumerable(WikiSite site, IDictionary<string, object> parameters, bool distinctPages)
         {
             _Site = site;
             _Parameters = parameters;

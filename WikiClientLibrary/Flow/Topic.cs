@@ -17,25 +17,25 @@ namespace WikiClientLibrary.Flow
     public class Topic : Page
     {
         /// <inheritdoc />
-        public Topic(Site site, string title) : this(site, title, FlowNamespaces.Topic)
+        public Topic(WikiSite site, string title) : this(site, title, FlowNamespaces.Topic)
         {
 
         }
 
         /// <inheritdoc />
-        public Topic(Site site, string title, int defaultNamespaceId) : base(site, title, defaultNamespaceId)
+        public Topic(WikiSite site, string title, int defaultNamespaceId) : base(site, title, defaultNamespaceId)
         {
 
         }
         
         /// <inheritdoc />
-        internal Topic(Site site) : base(site)
+        internal Topic(WikiSite site) : base(site)
         {
 
         }
 
         /// <param name="topicList">The topiclist node of a view-topiclist query result.</param>
-        internal static IList<Topic> FromJsonTopicListResult(Site site, JObject topicList)
+        internal static IList<Topic> FromJsonTopicListResult(WikiSite site, JObject topicList)
         {
             Debug.Assert(site != null);
             return topicList["roots"].Select(jroot =>

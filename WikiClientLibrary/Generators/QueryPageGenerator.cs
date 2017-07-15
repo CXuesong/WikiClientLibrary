@@ -15,11 +15,11 @@ namespace WikiClientLibrary.Generators
     /// <remarks>See https://www.mediawiki.org/wiki/API:Querypage .</remarks>
     public class QueryPageGenerator : PageGenerator<Page>
     {
-        public QueryPageGenerator(Site site) : base(site)
+        public QueryPageGenerator(WikiSite site) : base(site)
         {
         }
 
-        public QueryPageGenerator(Site site, string queryPageName) : base(site)
+        public QueryPageGenerator(WikiSite site, string queryPageName) : base(site)
         {
             QueryPageName = queryPageName;
         }
@@ -30,7 +30,7 @@ namespace WikiClientLibrary.Generators
         /// </summary>
         /// <param name="site">MediaWiki site.</param>
         /// <returns>A list of titles of available QueryPage-based special pages.</returns>
-        public static async Task<IList<string>> GetQueryPageNamesAsync(Site site)
+        public static async Task<IList<string>> GetQueryPageNamesAsync(WikiSite site)
         {
             var module = await RequestHelper.QueryParameterInformationAsync(site, "query+querypage");
             var pa = module["parameters"].First(p => (string) p["name"] == "page");

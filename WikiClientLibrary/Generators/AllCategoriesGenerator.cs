@@ -13,7 +13,7 @@ namespace WikiClientLibrary.Generators
     /// </summary>
     public class AllCategoriesGenerator : PageGenerator<Category>
     {
-        public AllCategoriesGenerator(Site site) : base(site)
+        public AllCategoriesGenerator(WikiSite site) : base(site)
         {
         }
 

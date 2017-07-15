@@ -9,7 +9,7 @@ namespace WikiClientLibrary.Sites
     /// <summary>
     /// Contains parsed content of specific page or wikitext.
     /// </summary>
-    /// <remarks>Use <see cref="Site.ParsePageAsync(string)"/> or other related methods to get parsed content.</remarks>
+    /// <remarks>Use <see cref="WikiSite.ParsePageAsync(string)"/> or other related methods to get parsed content.</remarks>
     [JsonObject(MemberSerialization.OptIn)]
     public class ParsedContentInfo
     {

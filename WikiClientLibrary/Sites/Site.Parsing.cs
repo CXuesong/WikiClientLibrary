@@ -6,7 +6,7 @@ using Newtonsoft.Json.Linq;
 
 namespace WikiClientLibrary.Sites
 {
-    partial class Site
+    partial class WikiSite
     {
 
         private IDictionary<string, object> BuildParsingParams(ParsingOptions options)

@@ -11,11 +11,11 @@ namespace WikiClientLibrary.Pages
     public class Category : Page
     {
 
-        public Category(Site site, string title) : base(site, title, BuiltInNamespaces.Category)
+        public Category(WikiSite site, string title) : base(site, title, BuiltInNamespaces.Category)
         {
         }
 
-        internal Category(Site site) : base(site)
+        internal Category(WikiSite site) : base(site)
         {
         }
 

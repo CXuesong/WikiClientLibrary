@@ -42,7 +42,7 @@ namespace WikiClientLibrary
         /// <param name="text">Wikilink expression, without square brackets.</param>
         /// <exception cref="ArgumentNullException">Either <paramref name="site"/> or <paramref name="text"/> is <c>null</c>.</exception>
         /// <exception cref="ArgumentException"><paramref name="text"/> does not contain a valid page title.</exception>
-        public static Task<WikiLink> ParseAsync(Site site, IFamily family, string text)
+        public static Task<WikiLink> ParseAsync(WikiSite site, IFamily family, string text)
         {
             return ParseAsync(site, family, text, 0);
         }
@@ -56,7 +56,7 @@ namespace WikiClientLibrary
         /// <param name="defaultNamespaceId">Id of default namespace. See <see cref="BuiltInNamespaces"/> for a list of possible values.</param>
         /// <exception cref="ArgumentNullException">Either <paramref name="site"/> or <paramref name="text"/> is <c>null</c>.</exception>
         /// <exception cref="ArgumentException"><paramref name="text"/> does not contain a valid page title.</exception>
-        public static Task<WikiLink> ParseAsync(Site site, IFamily family, string text, int defaultNamespaceId)
+        public static Task<WikiLink> ParseAsync(WikiSite site, IFamily family, string text, int defaultNamespaceId)
         {
             return ParseInternalAsync(site, family, text, defaultNamespaceId, true);
         }
@@ -69,7 +69,7 @@ namespace WikiClientLibrary
         /// <exception cref="ArgumentNullException">Either <paramref name="site"/> or <paramref name="text"/> is <c>null</c>.</exception>
         /// <exception cref="ArgumentException"><paramref name="text"/> does not contain a valid page title.</exception>
 
-        public static WikiLink Parse(Site site, string text)
+        public static WikiLink Parse(WikiSite site, string text)
         {
             return Parse(site, text, 0);
         }
@@ -82,7 +82,7 @@ namespace WikiClientLibrary
         /// <param name="defaultNamespaceId">Id of default namespace. See <see cref="BuiltInNamespaces"/> for a list of possible values.</param>
         /// <exception cref="ArgumentNullException">Either <paramref name="site"/> or <paramref name="text"/> is <c>null</c>.</exception>
         /// <exception cref="ArgumentException"><paramref name="text"/> does not contain a valid page title.</exception>
-        public static WikiLink Parse(Site site, string text, int defaultNamespaceId)
+        public static WikiLink Parse(WikiSite site, string text, int defaultNamespaceId)
         {
             return ParseInternalAsync(site, null, text, defaultNamespaceId, true).GetAwaiter().GetResult();
         }
@@ -95,7 +95,7 @@ namespace WikiClientLibrary
         /// <returns>A <see cref="WikiLink"/> instance, or <c>null</c> if the parsing failed.</returns>
         /// <exception cref="ArgumentNullException">Either <paramref name="site"/> or <paramref name="text"/> is <c>null</c>.</exception>
         /// <exception cref="ArgumentException"><paramref name="text"/> does not contain a valid page title.</exception>
-        public static WikiLink TryParse(Site site, string text)
+        public static WikiLink TryParse(WikiSite site, string text)
         {
             return TryParse(site, text, 0);
         }
@@ -110,7 +110,7 @@ namespace WikiClientLibrary
         /// <exception cref="ArgumentNullException">Either <paramref name="site"/> or <paramref name="text"/> is <c>null</c>.</exception>
         /// <exception cref="ArgumentException"><paramref name="text"/> does not contain a valid page title.</exception>
 
-        public static Task<WikiLink> TryParseAsync(Site site, IFamily family, string text)
+        public static Task<WikiLink> TryParseAsync(WikiSite site, IFamily family, string text)
         {
             return TryParseAsync(site, family, text, 0);
         }
@@ -126,7 +126,7 @@ namespace WikiClientLibrary
         /// <exception cref="ArgumentNullException">Either <paramref name="site"/> or <paramref name="text"/> is <c>null</c>.</exception>
         /// <exception cref="ArgumentException"><paramref name="text"/> does not contain a valid page title.</exception>
 
-        public static Task<WikiLink> TryParseAsync(Site site, IFamily family, string text, int defaultNamespaceId)
+        public static Task<WikiLink> TryParseAsync(WikiSite site, IFamily family, string text, int defaultNamespaceId)
         {
             return ParseInternalAsync(site, family, text, defaultNamespaceId, false);
         }
@@ -141,12 +141,12 @@ namespace WikiClientLibrary
         /// <exception cref="ArgumentNullException">Either <paramref name="site"/> or <paramref name="text"/> is <c>null</c>.</exception>
         /// <exception cref="ArgumentException"><paramref name="text"/> does not contain a valid page title.</exception>
 
-        public static WikiLink TryParse(Site site, string text, int defaultNamespaceId)
+        public static WikiLink TryParse(WikiSite site, string text, int defaultNamespaceId)
         {
             return ParseInternalAsync(site, null, text, defaultNamespaceId, false).GetAwaiter().GetResult();
         }
 
-        private static async Task<WikiLink> ParseInternalAsync(Site site, IFamily family, string text, int defaultNamespaceId, bool exceptionOnFailure)
+        private static async Task<WikiLink> ParseInternalAsync(WikiSite site, IFamily family, string text, int defaultNamespaceId, bool exceptionOnFailure)
         {
             if (site == null) throw new ArgumentNullException(nameof(site));
             if (text == null) throw new ArgumentNullException(nameof(text));
@@ -228,7 +228,7 @@ namespace WikiClientLibrary
         /// The original wiki site provided to resolve this wikilink.
         /// </summary>
         /// <seealso cref="TargetSite"/>
-        public Site Site { get; }
+        public WikiSite Site { get; }
 
         /// <summary>
         /// The wiki site containing the specified page title. If the parsed wikilink expression
@@ -237,15 +237,15 @@ namespace WikiClientLibrary
         /// prefix, this property will be <c>null</c>.
         /// </summary>
         /// <seealso cref="Site"/>
-        public Site TargetSite { get; private set; }
+        public WikiSite TargetSite { get; private set; }
 
-        private WikiLink(Site site, string originalText)
+        private WikiLink(WikiSite site, string originalText)
         {
             this.Site = site;
             this.OriginalText = originalText;
         }
         
-        private static async Task<Tuple<string, string, string>> TitlePartitionAsync(Site site, IFamily family, string rawTitle, int defaultNamespace)
+        private static async Task<Tuple<string, string, string>> TitlePartitionAsync(WikiSite site, IFamily family, string rawTitle, int defaultNamespace)
         {
             // Tuple<interwiki, namespace, title>
             Debug.Assert(site != null);
@@ -380,7 +380,7 @@ namespace WikiClientLibrary
         /// <exception cref="ArgumentNullException">Either <paramref name="site"/> or <paramref name="text"/> is <c>null</c>.</exception>
         /// <exception cref="ArgumentException"><paramref name="text"/> does not contain a valid page title.</exception>
         /// <returns>Normalized wikilink expression.</returns>
-        public static string NormalizeWikiLink(Site site, string text)
+        public static string NormalizeWikiLink(WikiSite site, string text)
         {
             return NormalizeWikiLink(site, text, BuiltInNamespaces.Main);
         }
@@ -394,7 +394,7 @@ namespace WikiClientLibrary
         /// <exception cref="ArgumentNullException">Either <paramref name="site"/> or <paramref name="text"/> is <c>null</c>.</exception>
         /// <exception cref="ArgumentException"><paramref name="text"/> does not contain a valid page title.</exception>
         /// <returns>Normalized wikilink expression.</returns>
-        public static string NormalizeWikiLink(Site site, string text, int defaultNamespaceId)
+        public static string NormalizeWikiLink(WikiSite site, string text, int defaultNamespaceId)
         {
             var link = Parse(site, text, defaultNamespaceId);
             return link._FormattedText;

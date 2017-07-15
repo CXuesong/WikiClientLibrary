@@ -32,7 +32,7 @@ namespace WikiClientLibrary.Pages
         /// share the same reference.</para>
         /// </remarks>
         /// <exception cref="ArgumentException"><paramref name="revisionId"/> is not an existing revision id.</exception>
-        public static Task<Revision> FetchRevisionAsync(Site site, int revisionId)
+        public static Task<Revision> FetchRevisionAsync(WikiSite site, int revisionId)
         {
             return FetchRevisionsAsync(site, new[] {revisionId}, PageQueryOptions.FetchContent).First();
         }
@@ -49,7 +49,7 @@ namespace WikiClientLibrary.Pages
         /// <para>If there's invalid revision id in <paramref name="revIds"/>, an <see cref="ArgumentException"/>
         /// will be thrown while enumerating.</para>
         /// </remarks>
-        public static IAsyncEnumerable<Revision> FetchRevisionsAsync(Site site, params int[] revisionIds)
+        public static IAsyncEnumerable<Revision> FetchRevisionsAsync(WikiSite site, params int[] revisionIds)
         {
             return FetchRevisionsAsync(site, revisionIds, PageQueryOptions.FetchContent, CancellationToken.None);
         }
@@ -66,7 +66,7 @@ namespace WikiClientLibrary.Pages
         /// <para>If there's invalid revision id in <paramref name="revIds"/>, an <see cref="ArgumentException"/>
         /// will be thrown while enumerating.</para>
         /// </remarks>
-        public static IAsyncEnumerable<Revision> FetchRevisionsAsync(Site site, IEnumerable<int> revisionIds)
+        public static IAsyncEnumerable<Revision> FetchRevisionsAsync(WikiSite site, IEnumerable<int> revisionIds)
         {
             return FetchRevisionsAsync(site, revisionIds, PageQueryOptions.FetchContent, CancellationToken.None);
         }
@@ -83,7 +83,7 @@ namespace WikiClientLibrary.Pages
         /// <para>If there's invalid revision id in <paramref name="revisionIds"/>, an <see cref="ArgumentException"/>
         /// will be thrown while enumerating.</para>
         /// </remarks>
-        public static IAsyncEnumerable<Revision> FetchRevisionsAsync(Site site, IEnumerable<int> revisionIds, PageQueryOptions options)
+        public static IAsyncEnumerable<Revision> FetchRevisionsAsync(WikiSite site, IEnumerable<int> revisionIds, PageQueryOptions options)
         {
             return FetchRevisionsAsync(site, revisionIds, options, new CancellationToken());
         }
@@ -100,7 +100,7 @@ namespace WikiClientLibrary.Pages
         /// <para>If there's invalid revision id in <paramref name="revisionIds"/>, an <see cref="ArgumentException"/>
         /// will be thrown while enumerating.</para>
         /// </remarks>
-        public static IAsyncEnumerable<Revision> FetchRevisionsAsync(Site site, IEnumerable<int> revisionIds, PageQueryOptions options, CancellationToken cancellationToken)
+        public static IAsyncEnumerable<Revision> FetchRevisionsAsync(WikiSite site, IEnumerable<int> revisionIds, PageQueryOptions options, CancellationToken cancellationToken)
         {
             return RequestHelper.FetchRevisionsAsync(site, revisionIds, options, cancellationToken);
         }

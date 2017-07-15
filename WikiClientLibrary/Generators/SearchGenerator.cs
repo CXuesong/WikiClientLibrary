@@ -20,12 +20,12 @@ namespace WikiClientLibrary.Generators
         private static readonly IList<int> defaultNamespace = new ReadOnlyCollection<int>(new[] {0});
 
         /// <inheritdoc />
-        public SearchGenerator(Site site) : base(site)
+        public SearchGenerator(WikiSite site) : base(site)
         {
         }
 
         /// <inheritdoc />
-        public SearchGenerator(Site site, string keyword) : base(site)
+        public SearchGenerator(WikiSite site, string keyword) : base(site)
         {
             Keyword = keyword;
         }

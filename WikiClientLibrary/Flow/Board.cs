@@ -22,18 +22,18 @@ namespace WikiClientLibrary.Flow
     public class Board : Page
     {
         /// <inheritdoc />
-        public Board(Site site, string title) : this(site, title, BuiltInNamespaces.Main)
+        public Board(WikiSite site, string title) : this(site, title, BuiltInNamespaces.Main)
         {
         }
 
         /// <inheritdoc />
-        public Board(Site site, string title, int defaultNamespaceId) : base(site, title, defaultNamespaceId)
+        public Board(WikiSite site, string title, int defaultNamespaceId) : base(site, title, defaultNamespaceId)
         {
             Header = new BoardHeader(site, title);
         }
 
         /// <inheritdoc />
-        internal Board(Site site) : base(site)
+        internal Board(WikiSite site) : base(site)
         {
 
         }

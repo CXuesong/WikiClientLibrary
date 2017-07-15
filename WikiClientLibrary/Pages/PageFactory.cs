@@ -19,7 +19,7 @@ namespace WikiClientLibrary.Pages
         /// <exception cref="ArgumentNullException">Either <paramref name="site"/> or <paramref name="title"/> is <c>null</c>.</exception>
         /// <exception cref="ArgumentException"><paramref name="title"/> has invalid title patterns.</exception>
         /// <exception cref="InvalidOperationException"><paramref name="title"/> is an interwiki link.</exception>
-        public static Page FromTitle(Site site, string title)
+        public static Page FromTitle(WikiSite site, string title)
         {
             return FromTitle(site, title, 0);
         }
@@ -37,7 +37,7 @@ namespace WikiClientLibrary.Pages
         /// <exception cref="ArgumentNullException">Either <paramref name="site"/> or <paramref name="title"/> is <c>null</c>.</exception>
         /// <exception cref="ArgumentException"><paramref name="title"/> has invalid title patterns.</exception>
         /// <exception cref="InvalidOperationException"><paramref name="title"/> is an interwiki link.</exception>
-        public static Page FromTitle(Site site, string title, int defaultNamespaceId)
+        public static Page FromTitle(WikiSite site, string title, int defaultNamespaceId)
         {
             if (site == null) throw new ArgumentNullException(nameof(site));
             if (title == null) throw new ArgumentNullException(nameof(title));
@@ -70,7 +70,7 @@ namespace WikiClientLibrary.Pages
         /// <param name="queryNode">The <c>qurey</c> node value object of JSON result.</param>
         /// <param name="options">Provides options when performing the query.</param>
         /// <returns>Retrived pages.</returns>
-        internal static IList<Page> FromJsonQueryResult(Site site, JObject queryNode, PageQueryOptions options)
+        internal static IList<Page> FromJsonQueryResult(WikiSite site, JObject queryNode, PageQueryOptions options)
         {
             if (site == null) throw new ArgumentNullException(nameof(site));
             if (queryNode == null) throw new ArgumentNullException(nameof(queryNode));

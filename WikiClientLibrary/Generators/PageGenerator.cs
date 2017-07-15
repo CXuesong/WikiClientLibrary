@@ -22,13 +22,13 @@ namespace WikiClientLibrary.Generators
     {
         private int? _PagingSize;
 
-        internal PageGeneratorBase(Site site)
+        internal PageGeneratorBase(WikiSite site)
         {
             if (site == null) throw new ArgumentNullException(nameof(site));
             Site = site;
         }
 
-        public Site Site { get; }
+        public WikiSite Site { get; }
 
         /// <summary>
         /// Maximum items returned per request.
@@ -152,7 +152,7 @@ namespace WikiClientLibrary.Generators
     public abstract class PageGenerator<T> : PageGeneratorBase
         where T : Page
     {
-        public PageGenerator(Site site) : base(site)
+        public PageGenerator(WikiSite site) : base(site)
         {
         }
 

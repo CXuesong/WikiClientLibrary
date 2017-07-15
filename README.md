@@ -8,6 +8,11 @@ Install-Package CXuesong.MW.WikiClientLibrary
 
 Before running the test cases, please take a look at the [last section](#setting-up-test-cases).
 
+!!!
+This document is for WCL 0.5. WCL 0.6 is currently in development, which may involve some API changes.
+See [Releases](https://github.com/CXuesong/WikiClientLibrary/releases) page for more information.
+!!!
+
 [TOC]
 
 ## Overview

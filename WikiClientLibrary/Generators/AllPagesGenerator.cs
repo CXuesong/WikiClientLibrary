@@ -75,7 +75,7 @@ namespace WikiClientLibrary.Generators
             };
         }
 
-        public AllPagesGenerator(Site site) : base(site)
+        public AllPagesGenerator(WikiSite site) : base(site)
         {
         }
     }

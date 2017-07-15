@@ -30,7 +30,7 @@ namespace WpfTestApplication1
     public partial class MainWindow : Window
     {
         private WikiClient client;
-        private Site site;
+        private WikiSite site;
         private CancellationTokenSource LastNavigationCancellation;
         private Regex articleUrlMatcher = null;
 
@@ -106,7 +106,7 @@ namespace WpfTestApplication1
                 ClientUserAgent = "WpfApplicationTest/1.0 (.NET CLR " + Environment.Version + ")",
             };
             SetStatus("Loading wiki site info: " + EndPointUrl);
-            site = await Site.CreateAsync(client, EndPointUrl);
+            site = await WikiSite.CreateAsync(client, EndPointUrl);
             articleUrlMatcher = new Regex(Regex.Escape(site.SiteInfo.ArticlePath).Replace(@"\$1", "(.+?)") + "$");
             Navigate(site.SiteInfo.MainPage);
         }

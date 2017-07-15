@@ -13,14 +13,14 @@ namespace WikiClientLibrary.Flow
     /// </summary>
     public class BoardHeader
     {
-        public BoardHeader(Site site, string boardTitle)
+        public BoardHeader(WikiSite site, string boardTitle)
         {
             if (site == null) throw new ArgumentNullException(nameof(site));
             Site = site;
             BoardTitle = WikiLink.NormalizeWikiLink(site, boardTitle);
         }
 
-        public Site Site { get; set; }
+        public WikiSite Site { get; set; }
 
         public string BoardTitle { get; private set; }
 

@@ -7,7 +7,7 @@ using WikiClientLibrary.Client;
 namespace WikiClientLibrary.Sites
 {
     /// <summary>
-    /// Client options for creating a <see cref="Site"/> instance.
+    /// Client options for creating a <see cref="WikiSite"/> instance.
     /// </summary>
     public class SiteOptions
     {
@@ -40,34 +40,34 @@ namespace WikiClientLibrary.Sites
 
         /// <summary>
         /// Whether to disable the refresh of site info and user info
-        /// until <see cref="Site.RefreshSiteInfoAsync"/> and <see cref="Site.RefreshAccountInfoAsync"/>
+        /// until <see cref="WikiSite.RefreshSiteInfoAsync"/> and <see cref="WikiSite.RefreshAccountInfoAsync"/>
         /// are called explicitly.
         /// </summary>
         /// <remarks>
-        /// <para>This property affects the initialization of site info (<see cref="Site.SiteInfo"/>,
-        /// <see cref="Site.Extensions"/>, <see cref="Site.InterwikiMap"/>,
-        /// and <see cref="Site.Namespaces"/>), as well as <see cref="Site.AccountInfo"/>.
+        /// <para>This property affects the initialization of site info (<see cref="WikiSite.SiteInfo"/>,
+        /// <see cref="WikiSite.Extensions"/>, <see cref="WikiSite.InterwikiMap"/>,
+        /// and <see cref="WikiSite.Namespaces"/>), as well as <see cref="WikiSite.AccountInfo"/>.
         /// If the value is <c>true</c>, these info will not be initialized
-        /// when calling <see cref="Site.CreateAsync(WikiClient,SiteOptions)"/>, and by the
-        /// invocation of <see cref="Site.LogoutAsync"/>, user info will just be invalidated,
-        /// with no further internal invocation of <see cref="Site.RefreshAccountInfoAsync"/>.</para>
+        /// when calling <see cref="WikiSite.CreateAsync(WikiClient,SiteOptions)"/>, and by the
+        /// invocation of <see cref="WikiSite.LogoutAsync"/>, user info will just be invalidated,
+        /// with no further internal invocation of <see cref="WikiSite.RefreshAccountInfoAsync"/>.</para>
         /// <para>For the priviate wiki where anonymous users cannot access query API,
         /// it's recommended that this property be set to <c>true</c>.
         /// You can first check whether you have already logged in,
-        /// and call <see cref="Site.LoginAsync(string,string)"/> If necessary.</para>
+        /// and call <see cref="WikiSite.LoginAsync(string,string)"/> If necessary.</para>
         /// <para>The site info and user info should always be initialized before most of the MediaWiki
         /// operations. Otherwise an <see cref="InvalidOperationException"/> will be thrown when
         /// attempting to perform those operations.</para>
         /// <para>In order to decide whether you have already logged in into a private wiki, you can
         /// <list type="number">
-        /// <item><description>Call <see cref="Site.CreateAsync(WikiClient,SiteOptions)"/>, with <see cref="ExplicitInfoRefresh"/> set to <c>true</c>.</description></item>
-        /// <item><description>Call and <c>await</c> for <see cref="Site.RefreshAccountInfoAsync"/>. (Do not use <see cref="Site.RefreshSiteInfoAsync"/>. See the explanation below.)</description></item>
-        /// <item><description>If an <see cref="UnauthorizedOperationException"/> is raised, then you should call <see cref="Site.LoginAsync(string,string)"/> to login.</description></item>
-        /// <item><description>Otherwise, since you've called <see cref="Site.RefreshAccountInfoAsync"/>, you can directly check <see cref="AccountInfo.IsUser"/>.
+        /// <item><description>Call <see cref="WikiSite.CreateAsync(WikiClient,SiteOptions)"/>, with <see cref="ExplicitInfoRefresh"/> set to <c>true</c>.</description></item>
+        /// <item><description>Call and <c>await</c> for <see cref="WikiSite.RefreshAccountInfoAsync"/>. (Do not use <see cref="WikiSite.RefreshSiteInfoAsync"/>. See the explanation below.)</description></item>
+        /// <item><description>If an <see cref="UnauthorizedOperationException"/> is raised, then you should call <see cref="WikiSite.LoginAsync(string,string)"/> to login.</description></item>
+        /// <item><description>Otherwise, since you've called <see cref="WikiSite.RefreshAccountInfoAsync"/>, you can directly check <see cref="AccountInfo.IsUser"/>.
         /// Usually it would be <c>true</c>, since you've already logged in during a previous session. Otherwise, which is a rare case, you may also need to login.</description></item>
         /// </list>
-        /// Note that <see cref="Site.RefreshAccountInfoAsync"/> will be refreshed automatically after a sucessful
-        /// login operation, so you only have to call <see cref="Site.RefreshSiteInfoAsync"/> afterwards.
+        /// Note that <see cref="WikiSite.RefreshAccountInfoAsync"/> will be refreshed automatically after a sucessful
+        /// login operation, so you only have to call <see cref="WikiSite.RefreshSiteInfoAsync"/> afterwards.
         /// Nonetheless, both the user info and the site info should be initially refreshed before
         /// you can perform other opertations.
         /// </para>
@@ -116,13 +116,13 @@ namespace WikiClientLibrary.Sites
         /// </summary>
         None = 0,
         /// <summary>
-        /// Asserts that your account is logged in per request, if <see cref="Site.AccountInfo"/>
+        /// Asserts that your account is logged in per request, if <see cref="WikiSite.AccountInfo"/>
         /// indicates that you should have logged in. If the assertion failed,
         /// an <see cref="AccountAssertionFailureException"/> will be thrown.
         /// </summary>
         AssertUser = 1,
         /// <summary>
-        /// Checks that your account has the "bot" user right per request, if <see cref="Site.AccountInfo"/>
+        /// Checks that your account has the "bot" user right per request, if <see cref="WikiSite.AccountInfo"/>
         /// indicates that you should have logged in as bot. If the assertion failed,
         /// an <see cref="AccountAssertionFailureException"/> will be thrown.
         /// </summary>
@@ -149,7 +149,7 @@ namespace WikiClientLibrary.Sites
         /// A task that returns a <c>bool</c>, indicating whether user should have logged in. If this method still cannot make user correctly logged in, it should be <c>false</c>,
         /// in which case, an <see cref="AccountAssertionFailureException"/> will still be thrown to the API invoker.
         /// </returns>
-        /// <summary>The implementation should call <see cref="Site.LoginAsync(string,string)"/> or one of its overloads.</summary>
-        Task<bool> Login(Site site);
+        /// <summary>The implementation should call <see cref="WikiSite.LoginAsync(string,string)"/> or one of its overloads.</summary>
+        Task<bool> Login(WikiSite site);
     }
 }

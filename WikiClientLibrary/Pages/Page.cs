@@ -21,11 +21,11 @@ namespace WikiClientLibrary.Pages
     /// </summary>
     public partial class Page
     {
-        public Page(Site site, string title) : this(site, title, BuiltInNamespaces.Main)
+        public Page(WikiSite site, string title) : this(site, title, BuiltInNamespaces.Main)
         {
         }
 
-        public Page(Site site, string title, int defaultNamespaceId)
+        public Page(WikiSite site, string title, int defaultNamespaceId)
         {
             if (site == null) throw new ArgumentNullException(nameof(site));
             if (string.IsNullOrWhiteSpace(title)) throw new ArgumentNullException(nameof(title));
@@ -37,7 +37,7 @@ namespace WikiClientLibrary.Pages
             NamespaceId = parsedTitle.Namespace.Id;
         }
 
-        internal Page(Site site)
+        internal Page(WikiSite site)
         {
             if (site == null) throw new ArgumentNullException(nameof(site));
             Site = site;
@@ -54,7 +54,7 @@ namespace WikiClientLibrary.Pages
         /// <summary>
         /// Gets the Site the page is on.
         /// </summary>
-        public Site Site { get; }
+        public WikiSite Site { get; }
 
         /// <summary>
         /// Id of the page.

@@ -15,7 +15,7 @@ namespace WikiClientLibrary.Sites
     /// <summary>
     /// Represents a MediaWiki site.
     /// </summary>
-    public partial class Site
+    public partial class WikiSite
     {
 
         private readonly SiteOptions options;
@@ -51,12 +51,12 @@ namespace WikiClientLibrary.Sites
         #endregion
 
         /// <summary>
-        /// Initialize a <see cref="Site"/> instance with the given API Endpoint URL.
+        /// Initialize a <see cref="WikiSite"/> instance with the given API Endpoint URL.
         /// </summary>
         /// <exception cref="ArgumentNullException"><paramref name="wikiClient"/> or <paramref name="apiEndpoint"/> is <c>null</c>.</exception>
         /// <exception cref="ArgumentException"><paramref name="apiEndpoint"/> is invalid.</exception>
         /// <exception cref="UnauthorizedOperationException">Cannot access query API module due to target site permission settings. You may take a look at <see cref="SiteOptions.ExplicitInfoRefresh"/>.</exception>
-        public static Task<Site> CreateAsync(WikiClientBase wikiClient, string apiEndpoint)
+        public static Task<WikiSite> CreateAsync(WikiClientBase wikiClient, string apiEndpoint)
         {
             if (wikiClient == null) throw new ArgumentNullException(nameof(wikiClient));
             if (apiEndpoint == null) throw new ArgumentNullException(nameof(apiEndpoint));
@@ -64,18 +64,18 @@ namespace WikiClientLibrary.Sites
         }
 
         /// <summary>
-        /// Initialize a <see cref="Site"/> instance with the specified settings.
+        /// Initialize a <see cref="WikiSite"/> instance with the specified settings.
         /// </summary>
         /// <exception cref="ArgumentNullException"><paramref name="wikiClient"/> or <paramref name="options"/> is <c>null</c>.</exception>
         /// <exception cref="ArgumentException">One or more settings in <paramref name="options"/> is invalid.</exception>
         /// <exception cref="UnauthorizedOperationException">Cannot access query API module due to target site permission settings. You may take a look at <see cref="SiteOptions.ExplicitInfoRefresh"/>.</exception>
-        public static async Task<Site> CreateAsync(WikiClientBase wikiClient, SiteOptions options)
+        public static async Task<WikiSite> CreateAsync(WikiClientBase wikiClient, SiteOptions options)
         {
             if (wikiClient == null) throw new ArgumentNullException(nameof(wikiClient));
             if (options == null) throw new ArgumentNullException(nameof(options));
             if (string.IsNullOrEmpty(options.ApiEndpoint))
                 throw new ArgumentException("Invalid API endpoint url.", nameof(options));
-            var site = new Site(wikiClient, options);
+            var site = new WikiSite(wikiClient, options);
             if (!options.ExplicitInfoRefresh)
                 await Task.WhenAll(site.RefreshSiteInfoAsync(), site.RefreshAccountInfoAsync());
             return site;
@@ -94,7 +94,7 @@ namespace WikiClientLibrary.Sites
             return MediaWikiUtility.SearchApiEndpointAsync(client, urlExpression);
         }
 
-        protected Site(WikiClientBase wikiClient, SiteOptions options)
+        protected WikiSite(WikiClientBase wikiClient, SiteOptions options)
         {
             // Perform basic checks.
             Debug.Assert(wikiClient != null);

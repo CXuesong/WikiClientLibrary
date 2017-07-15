@@ -8,7 +8,7 @@ using WikiClientLibrary.Client;
 namespace WikiClientLibrary.Sites
 {
     /// <summary>
-    /// Represents a set of wiki <see cref="Site"/> instances, identified by their names (often the same as interwiki prefix).
+    /// Represents a set of wiki <see cref="WikiSite"/> instances, identified by their names (often the same as interwiki prefix).
     /// </summary>
     /// <remarks>The wiki names here should be case-insensitive. For interwiki prefixes, the names are often lower-case.</remarks>
     public interface IFamily
@@ -27,13 +27,13 @@ namespace WikiClientLibrary.Sites
         string TryNormalize(string prefix);
 
         /// <summary>
-        /// Asynchronously gets a <see cref="Site"/> instance from the specified family name.
+        /// Asynchronously gets a <see cref="WikiSite"/> instance from the specified family name.
         /// </summary>
         /// <param name="prefix">The member name in the family. Usually this is the interwiki prefix.</param>
         /// <returns>A site instance, or <c>null</c> if no site with the specified family name found..</returns>
         /// <remarks>The implementation should be thread-safe, if multiple threads are to use this instance with other classes.</remarks>
         /// <exception cref="ArgumentNullException"><paramref name="prefix"/> is <c>null</c>.</exception>
-        Task<Site> GetSiteAsync(string prefix);
+        Task<WikiSite> GetSiteAsync(string prefix);
     }
 
     /// <summary>
@@ -47,7 +47,7 @@ namespace WikiClientLibrary.Sites
 
         private class SiteEntry
         {
-            private volatile Task<Site> _Task;
+            private volatile Task<WikiSite> _Task;
 
             public SiteEntry(string prefix, string apiEndpoint)
             {
@@ -61,7 +61,7 @@ namespace WikiClientLibrary.Sites
 
             public string ApiEndpoint { get; }
 
-            public Task<Site> Task
+            public Task<WikiSite> Task
             {
                 get { return _Task; }
                 set { _Task = value; }
@@ -105,7 +105,7 @@ namespace WikiClientLibrary.Sites
         public string Name { get; set; }
 
         /// <summary>
-        /// The logger used on this object, and all the generated <see cref="Site"/>s.
+        /// The logger used on this object, and all the generated <see cref="WikiSite"/>s.
         /// </summary>
         public ILogger Logger { get; set; }
 
@@ -120,14 +120,14 @@ namespace WikiClientLibrary.Sites
         }
 
         /// <summary>
-        /// Asynchronously gets a <see cref="Site"/> instance from the specified family name. (Case-insensitive)
+        /// Asynchronously gets a <see cref="WikiSite"/> instance from the specified family name. (Case-insensitive)
         /// This method will create the Site instance, if necessary; otherwise it will return the created one.
         /// </summary>
         /// <param name="prefix">The member name in the family. Usually this is the interwiki prefix.</param>
         /// <returns>A site instance, or <c>null</c> if no site with the specified family name found..</returns>
         /// <remarks>The implementation should be thread-safe, if multiple threads are to use this instance with other classes.</remarks>
         /// <exception cref="ArgumentNullException"><paramref name="prefix"/> is <c>null</c>.</exception>
-        public Task<Site> GetSiteAsync(string prefix)
+        public Task<WikiSite> GetSiteAsync(string prefix)
         {
             if (prefix == null) throw new ArgumentNullException(nameof(prefix));
             prefix = prefix.ToLower();
@@ -144,18 +144,18 @@ namespace WikiClientLibrary.Sites
                     return task;
                 }
             }
-            return Task.FromResult((Site) null);
+            return Task.FromResult((WikiSite) null);
         }
 
         /// <summary>
-        /// Asynchronously create a <see cref="Site"/> instance.
+        /// Asynchronously create a <see cref="WikiSite"/> instance.
         /// </summary>
         /// <param name="prefix">Site prefix, as is registered.</param>
         /// <param name="apiEndpoint">Site API endpoint URL.</param>
-        /// <returns>A <see cref="Site"/> instance.</returns>
-        protected virtual async Task<Site> CreateSiteAsync(string prefix, string apiEndpoint)
+        /// <returns>A <see cref="WikiSite"/> instance.</returns>
+        protected virtual async Task<WikiSite> CreateSiteAsync(string prefix, string apiEndpoint)
         {
-            var site = await Site.CreateAsync(WikiClient, apiEndpoint);
+            var site = await WikiSite.CreateAsync(WikiClient, apiEndpoint);
             site.Logger = Logger;
             Logger?.Trace(this, $"Site {prefix} has been instantiated.");
             return site;
