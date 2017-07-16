@@ -344,6 +344,9 @@ namespace WikiClientLibrary
         /// </summary>
         public string NamespaceName { get; private set; }
 
+        /// <summary>
+        /// The namespace information.
+        /// </summary>
         public NamespaceInfo Namespace { get; private set; }
 
         /// <summary>
@@ -356,10 +359,20 @@ namespace WikiClientLibrary
         /// </summary>
         public string FullTitle { get; private set; }
 
+        /// <summary>
+        /// The section title of a section on the page.
+        /// </summary>
         public string Section { get; private set; }
 
+        /// <summary>
+        /// For wikilink expression in the form [[target|anchor]], excluding the brackets,
+        /// gets the actual displayed text (anchor) for the link.
+        /// </summary>
         public string Anchor { get; private set; }
 
+        /// <summary>
+        /// Gets the original wikitext expression that was passed to the Parse or ParseAsync methods.
+        /// </summary>
         public string OriginalText { get; }
 
         private string _FormattedText;

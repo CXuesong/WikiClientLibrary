@@ -9,7 +9,7 @@ namespace WikiClientLibrary.Infrastructures
     /// An <see cref="IAsyncEnumerable{T}"/> implementation that uses delegate to generate items.
     /// </summary>
     /// <typeparam name="T">The type of items.</typeparam>
-    public class DelegateAsyncEnumerable<T> : IAsyncEnumerable<T>
+    internal class DelegateAsyncEnumerable<T> : IAsyncEnumerable<T>
     {
         /// <summary>
         /// A delegate used to generate next item of the sequence.

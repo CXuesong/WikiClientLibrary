@@ -11,6 +11,9 @@ namespace WikiClientLibrary.Infrastructures
     /// <summary>
     /// Used to throttle a sequence of incoming actions.
     /// </summary>
+    /// <remarks>
+    /// The usage of throttler implies the forced serial operations.
+    /// </remarks>
     public class Throttler
     {
         private WorkItem lastWork;
