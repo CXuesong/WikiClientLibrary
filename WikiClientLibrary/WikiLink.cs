@@ -42,7 +42,7 @@ namespace WikiClientLibrary
         /// <param name="text">Wikilink expression, without square brackets.</param>
         /// <exception cref="ArgumentNullException">Either <paramref name="site"/> or <paramref name="text"/> is <c>null</c>.</exception>
         /// <exception cref="ArgumentException"><paramref name="text"/> does not contain a valid page title.</exception>
-        public static Task<WikiLink> ParseAsync(WikiSite site, IFamily family, string text)
+        public static Task<WikiLink> ParseAsync(WikiSite site, IWikiFamily family, string text)
         {
             return ParseAsync(site, family, text, 0);
         }
@@ -56,7 +56,7 @@ namespace WikiClientLibrary
         /// <param name="defaultNamespaceId">Id of default namespace. See <see cref="BuiltInNamespaces"/> for a list of possible values.</param>
         /// <exception cref="ArgumentNullException">Either <paramref name="site"/> or <paramref name="text"/> is <c>null</c>.</exception>
         /// <exception cref="ArgumentException"><paramref name="text"/> does not contain a valid page title.</exception>
-        public static Task<WikiLink> ParseAsync(WikiSite site, IFamily family, string text, int defaultNamespaceId)
+        public static Task<WikiLink> ParseAsync(WikiSite site, IWikiFamily family, string text, int defaultNamespaceId)
         {
             return ParseInternalAsync(site, family, text, defaultNamespaceId, true);
         }
@@ -110,7 +110,7 @@ namespace WikiClientLibrary
         /// <exception cref="ArgumentNullException">Either <paramref name="site"/> or <paramref name="text"/> is <c>null</c>.</exception>
         /// <exception cref="ArgumentException"><paramref name="text"/> does not contain a valid page title.</exception>
 
-        public static Task<WikiLink> TryParseAsync(WikiSite site, IFamily family, string text)
+        public static Task<WikiLink> TryParseAsync(WikiSite site, IWikiFamily family, string text)
         {
             return TryParseAsync(site, family, text, 0);
         }
@@ -126,7 +126,7 @@ namespace WikiClientLibrary
         /// <exception cref="ArgumentNullException">Either <paramref name="site"/> or <paramref name="text"/> is <c>null</c>.</exception>
         /// <exception cref="ArgumentException"><paramref name="text"/> does not contain a valid page title.</exception>
 
-        public static Task<WikiLink> TryParseAsync(WikiSite site, IFamily family, string text, int defaultNamespaceId)
+        public static Task<WikiLink> TryParseAsync(WikiSite site, IWikiFamily family, string text, int defaultNamespaceId)
         {
             return ParseInternalAsync(site, family, text, defaultNamespaceId, false);
         }
@@ -146,7 +146,7 @@ namespace WikiClientLibrary
             return ParseInternalAsync(site, null, text, defaultNamespaceId, false).GetAwaiter().GetResult();
         }
 
-        private static async Task<WikiLink> ParseInternalAsync(WikiSite site, IFamily family, string text, int defaultNamespaceId, bool exceptionOnFailure)
+        private static async Task<WikiLink> ParseInternalAsync(WikiSite site, IWikiFamily family, string text, int defaultNamespaceId, bool exceptionOnFailure)
         {
             if (site == null) throw new ArgumentNullException(nameof(site));
             if (text == null) throw new ArgumentNullException(nameof(text));
@@ -233,7 +233,7 @@ namespace WikiClientLibrary
         /// <summary>
         /// The wiki site containing the specified page title. If the parsed wikilink expression
         /// does not contain interwiki prefix, this property is the same as <see cref="Site"/>.
-        /// If this wikilink is parsed with no <see cref="IFamily"/> provided, while it contains inerwiki
+        /// If this wikilink is parsed with no <see cref="IWikiFamily"/> provided, while it contains inerwiki
         /// prefix, this property will be <c>null</c>.
         /// </summary>
         /// <seealso cref="Site"/>
@@ -245,7 +245,7 @@ namespace WikiClientLibrary
             this.OriginalText = originalText;
         }
         
-        private static async Task<Tuple<string, string, string>> TitlePartitionAsync(WikiSite site, IFamily family, string rawTitle, int defaultNamespace)
+        private static async Task<Tuple<string, string, string>> TitlePartitionAsync(WikiSite site, IWikiFamily family, string rawTitle, int defaultNamespace)
         {
             // Tuple<interwiki, namespace, title>
             Debug.Assert(site != null);

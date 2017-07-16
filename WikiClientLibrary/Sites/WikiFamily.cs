@@ -11,7 +11,7 @@ namespace WikiClientLibrary.Sites
     /// Represents a set of wiki <see cref="WikiSite"/> instances, identified by their names (often the same as interwiki prefix).
     /// </summary>
     /// <remarks>The wiki names here should be case-insensitive. For interwiki prefixes, the names are often lower-case.</remarks>
-    public interface IFamily
+    public interface IWikiFamily
     {
         /// <summary>
         /// Gets the name of this wiki family.
@@ -37,10 +37,10 @@ namespace WikiClientLibrary.Sites
     }
 
     /// <summary>
-    /// Provides a simple <see cref="IFamily"/> implementation based on
+    /// Provides a simple <see cref="IWikiFamily"/> implementation based on
     /// a list of API endpoint URLs.
     /// </summary>
-    public class Family : IFamily, IReadOnlyCollection<string>
+    public class WikiFamily : IWikiFamily, IReadOnlyCollection<string>
     {
 
         public WikiClientBase WikiClient { get; }
@@ -73,7 +73,7 @@ namespace WikiClientLibrary.Sites
         /// <summary>
         /// Initializes the instance with a <see cref="Client.WikiClient"/> and family name.
         /// </summary>
-        public Family(WikiClient wikiClient) : this(wikiClient, null)
+        public WikiFamily(WikiClient wikiClient) : this(wikiClient, null)
         {
         }
 
@@ -81,7 +81,7 @@ namespace WikiClientLibrary.Sites
         /// Initializes the instance with a <see cref="Client.WikiClient"/> and family name.
         /// </summary>
         /// <exception cref="ArgumentNullException"><paramref name="wikiClient"/> is <c>null</c>.</exception>
-        public Family(WikiClient wikiClient, string name)
+        public WikiFamily(WikiClient wikiClient, string name)
         {
             if (wikiClient == null) throw new ArgumentNullException(nameof(wikiClient));
             WikiClient = wikiClient;

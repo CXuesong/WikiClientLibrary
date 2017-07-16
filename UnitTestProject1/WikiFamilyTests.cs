@@ -12,16 +12,16 @@ namespace UnitTestProject1
     public class WikiFamilyTests : WikiSiteTestsBase
     {
 
-        private readonly Lazy<Family> _Family;
+        private readonly Lazy<WikiFamily> _Family;
 
-        private Family Family => _Family.Value;
+        private WikiFamily Family => _Family.Value;
 
         /// <inheritdoc />
         public WikiFamilyTests(ITestOutputHelper output) : base(output)
         {
-            _Family = new Lazy<Family>(() =>
+            _Family = new Lazy<WikiFamily>(() =>
             {
-                var f = new Family(CreateWikiClient(), "Wikipedia");
+                var f = new WikiFamily(CreateWikiClient(), "Wikipedia");
                 f.Logger = new TestOutputLogger(output);
                 f.Register("en", GetWPEntrypoint("en"));
                 f.Register("fr", GetWPEntrypoint("fr"));
