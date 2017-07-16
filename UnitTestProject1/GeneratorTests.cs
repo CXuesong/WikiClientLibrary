@@ -23,13 +23,13 @@ namespace UnitTestProject1
         {
         }
 
-        private void AssertTitlesDistinct(IReadOnlyCollection<Page> pages)
+        private void AssertTitlesDistinct(IReadOnlyCollection<WikiPage> pages)
         {
             var distinctTitles = pages.Select(p => p.Title).Distinct().Count();
             Assert.Equal(pages.Count, distinctTitles);
         }
 
-        private void TracePages(IReadOnlyCollection<Page> pages)
+        private void TracePages(IReadOnlyCollection<WikiPage> pages)
         {
             const string lineFormat = "{0,-20} {1,10} {2,10} {3,10} {4,10}";
             Output.WriteLine(pages.Count + " pages.");
@@ -37,7 +37,7 @@ namespace UnitTestProject1
             foreach (var page in pages)
             {
                 var childrenField = "";
-                if (page is Category cat)
+                if (page is CategoryPage cat)
                     childrenField = $"{cat.MembersCount}(sub:{cat.SubcategoriesCount})";
                 Output.WriteLine(string.Format(lineFormat, page.Title, page.ContentLength, page.LastRevisionId,
                     page.LastTouched, childrenField));
@@ -104,7 +104,7 @@ namespace UnitTestProject1
         public async Task WpCategoryMembersGeneratorTest()
         {
             var site = await WpTest2SiteAsync;
-            var cat = new Category(site, "Category:Template documentation pages‏‎");
+            var cat = new CategoryPage(site, "Category:Template documentation pages‏‎");
             await cat.RefreshAsync();
             Output.WriteLine(cat.ToString());
             var generator = new CategoryMembersGenerator(cat) {PagingSize = 50};
@@ -118,7 +118,7 @@ namespace UnitTestProject1
         public async Task WikiaCategoryMembersGeneratorTest()
         {
             var site = await WikiaTestSiteAsync;
-            var cat = new Category(site, "Category:BlogListingPage‏‎‏‎");
+            var cat = new CategoryPage(site, "Category:BlogListingPage‏‎‏‎");
             await cat.RefreshAsync();
             Output.WriteLine(cat.ToString());
             var generator = new CategoryMembersGenerator(cat) {PagingSize = 50};

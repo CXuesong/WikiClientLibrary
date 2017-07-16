@@ -11,7 +11,7 @@ namespace WikiClientLibrary.Generators
     /// <summary>
     /// List of pages that belong to a given category, ordered by page sort title.
     /// </summary>
-    public class CategoryMembersGenerator : PageGenerator<Page>
+    public class CategoryMembersGenerator : PageGenerator<WikiPage>
     {
         // We cannot decide whether generated item is a page or category,
         // so we just use the base class Page for PageGenerator<T>.
@@ -31,9 +31,9 @@ namespace WikiClientLibrary.Generators
         }
 
         /// <summary>
-        /// Initializes <see cref="CategoryTitle"/> from specified <see cref="Category"/> .
+        /// Initializes <see cref="CategoryTitle"/> from specified <see cref="CategoryPage"/> .
         /// </summary>
-        public CategoryMembersGenerator(Category category) : base(category.Site)
+        public CategoryMembersGenerator(CategoryPage category) : base(category.Site)
         {
             if (category == null) throw new ArgumentNullException(nameof(category));
             CategoryTitle = category.Title;

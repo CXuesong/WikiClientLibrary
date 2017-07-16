@@ -18,7 +18,7 @@ namespace WikiClientLibrary.Pages
     /// <summary>
     /// Represents a file page on MediaWiki site.
     /// </summary>
-    public class FilePage : Page
+    public class FilePage : WikiPage
     {
         // Use FilePage to distinguish from System.IO.File
         public FilePage(WikiSite site, string title) : base(site, title, BuiltInNamespaces.File)

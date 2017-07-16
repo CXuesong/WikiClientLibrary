@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 namespace WikiClientLibrary.Pages
 {
     /// <summary>
-    /// Provides extension methods for a sequence of <see cref="Page"/>.
+    /// Provides extension methods for a sequence of <see cref="WikiPage"/>.
     /// </summary>
     public static class PageExtensions
     {
@@ -18,7 +18,7 @@ namespace WikiClientLibrary.Pages
         /// It's recommended that <paramref name="pages"/> is a list or a subset of a list
         /// that is hold by caller, beccause this method will not return the refreshed pages.
         /// </remarks>
-        public static Task RefreshAsync(this IEnumerable<Page> pages)
+        public static Task RefreshAsync(this IEnumerable<WikiPage> pages)
         {
             return RefreshAsync(pages, PageQueryOptions.None);
         }
@@ -33,7 +33,7 @@ namespace WikiClientLibrary.Pages
         /// that is hold by caller, because this method will not return the refreshed pages.
         /// </remarks>
         /// <exception cref="InvalidOperationException">Circular redirect detected when resolving redirects.</exception>
-        public static Task RefreshAsync(this IEnumerable<Page> pages, PageQueryOptions options)
+        public static Task RefreshAsync(this IEnumerable<WikiPage> pages, PageQueryOptions options)
         {
             return RefreshAsync(pages, options, new CancellationToken());
         }
@@ -49,7 +49,7 @@ namespace WikiClientLibrary.Pages
         /// that is hold by caller, because this method will not return the refreshed pages.
         /// </remarks>
         /// <exception cref="InvalidOperationException">Circular redirect detected when resolving redirects.</exception>
-        public static Task RefreshAsync(this IEnumerable<Page> pages, PageQueryOptions options, CancellationToken cancellationToken)
+        public static Task RefreshAsync(this IEnumerable<WikiPage> pages, PageQueryOptions options, CancellationToken cancellationToken)
         {
             return RequestHelper.RefreshPagesAsync(pages, options, cancellationToken);
         }
@@ -58,7 +58,7 @@ namespace WikiClientLibrary.Pages
         /// Asynchronously purges a sequence of pages.
         /// </summary>
         /// <returns>A collection of pages that haven't been successfully purged, because of either missing or invalid titles.</returns>
-        public static Task<IReadOnlyCollection<Page>> PurgeAsync(this IEnumerable<Page> pages)
+        public static Task<IReadOnlyCollection<WikiPage>> PurgeAsync(this IEnumerable<WikiPage> pages)
         {
             return PurgeAsync(pages, PagePurgeOptions.None, CancellationToken.None);
         }
@@ -67,7 +67,7 @@ namespace WikiClientLibrary.Pages
         /// Asynchronously purges a sequence of pages with the given options.
         /// </summary>
         /// <returns>A collection of pages that haven't been successfully purged, because of either missing or invalid titles.</returns>
-        public static Task<IReadOnlyCollection<Page>> PurgeAsync(this IEnumerable<Page> pages,
+        public static Task<IReadOnlyCollection<WikiPage>> PurgeAsync(this IEnumerable<WikiPage> pages,
             PagePurgeOptions options)
         {
             return PurgeAsync(pages, options, new CancellationToken());
@@ -77,7 +77,7 @@ namespace WikiClientLibrary.Pages
         /// Asynchronously purges a sequence of pages with the given options.
         /// </summary>
         /// <returns>A collection of pages that haven't been successfully purged, because of either missing or invalid titles.</returns>
-        public static Task<IReadOnlyCollection<Page>> PurgeAsync(this IEnumerable<Page> pages,
+        public static Task<IReadOnlyCollection<WikiPage>> PurgeAsync(this IEnumerable<WikiPage> pages,
             PagePurgeOptions options, CancellationToken cancellationToken)
         {
             return RequestHelper.PurgePagesAsync(pages, options, cancellationToken);

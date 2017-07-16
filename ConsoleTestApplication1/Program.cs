@@ -66,7 +66,7 @@ namespace ConsoleTestApplication1
 
             // Page Operations
             // Fetch information and content
-            var page = new Page(site, site.SiteInfo.MainPage);
+            var page = new WikiPage(site, site.SiteInfo.MainPage);
             Console.WriteLine("Retriving {0}...", page);
             await page.RefreshAsync(PageQueryOptions.FetchContent);
 
@@ -79,7 +79,7 @@ namespace ConsoleTestApplication1
             if (await page.PurgeAsync())
                 Console.WriteLine("  The page has been purged successfully.");
             // Edit the page
-            page = new Page(site, "Project:Sandbox");
+            page = new WikiPage(site, "Project:Sandbox");
             await page.RefreshAsync(PageQueryOptions.FetchContent);
             if (!page.Exists) Console.WriteLine("Warning: The page {0} doesn't exist.", page);
             page.Content += "\n\n'''Hello''' ''world''!";

@@ -11,7 +11,7 @@ namespace WikiClientLibrary.Generators
     /// <summary>
     /// Generates all the categories with or without description pages.
     /// </summary>
-    public class AllCategoriesGenerator : PageGenerator<Category>
+    public class AllCategoriesGenerator : PageGenerator<CategoryPage>
     {
         public AllCategoriesGenerator(WikiSite site) : base(site)
         {

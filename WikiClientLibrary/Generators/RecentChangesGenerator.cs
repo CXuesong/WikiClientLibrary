@@ -16,7 +16,7 @@ namespace WikiClientLibrary.Generators
     /// <summary>
     /// Get all recent changes to the wiki, à la Special:Recentchanges.
     /// </summary>
-    public class RecentChangesGenerator : PageGenerator<Page>
+    public class RecentChangesGenerator : PageGenerator<WikiPage>
     {
         public RecentChangesGenerator(WikiSite site) : base(site)
         {

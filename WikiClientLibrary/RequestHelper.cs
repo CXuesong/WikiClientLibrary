@@ -47,7 +47,7 @@ namespace WikiClientLibrary
         /// <summary>
         /// Enumerate pages from the generator.
         /// </summary>
-        public static IAsyncEnumerable<Page> EnumPagesAsync(PageGeneratorBase generator, PageQueryOptions options, int actualPagingSize)
+        public static IAsyncEnumerable<WikiPage> EnumPagesAsync(PageGeneratorBase generator, PageQueryOptions options, int actualPagingSize)
         {
             if (generator == null) throw new ArgumentNullException(nameof(generator));
             if ((options & PageQueryOptions.ResolveRedirects) == PageQueryOptions.ResolveRedirects)
@@ -55,7 +55,7 @@ namespace WikiClientLibrary
             var queryParams = GetPageFetchingParams(options);
             return generator.EnumJsonAsync(queryParams, actualPagingSize).SelectMany(jresult =>
             {
-                var pages = Page.FromJsonQueryResult(generator.Site, jresult, options);
+                var pages = WikiPage.FromJsonQueryResult(generator.Site, jresult, options);
                 generator.Site.Logger?.Trace(generator.Site, $"Loaded {pages.Count} pages from {generator}.");
                 return pages.ToAsyncEnumerable();
             });
@@ -64,7 +64,7 @@ namespace WikiClientLibrary
         /// <summary>
         /// Refresh a sequence of pages.
         /// </summary>
-        public static async Task RefreshPagesAsync(IEnumerable<Page> pages, PageQueryOptions options, CancellationToken cancellationToken)
+        public static async Task RefreshPagesAsync(IEnumerable<WikiPage> pages, PageQueryOptions options, CancellationToken cancellationToken)
         {
             if (pages == null) throw new ArgumentNullException(nameof(pages));
             // You can even fetch pages from different sites.
@@ -140,7 +140,7 @@ namespace WikiClientLibrary
                     var jpages = (JObject) jobj["query"]["pages"];
                     // Generate converters first
                     // Use DelegateCreationConverter to create Revision with constructor
-                    var pages = Page.FromJsonQueryResult(site, (JObject) jobj["query"], options);
+                    var pages = WikiPage.FromJsonQueryResult(site, (JObject) jobj["query"], options);
                     foreach (var p in pages)
                     {
                         if (!pagePool.ContainsKey(p.Id))
@@ -212,11 +212,11 @@ namespace WikiClientLibrary
         /// Asynchronously purges the pages.
         /// </summary>
         /// <returns>A collection of pages that haven't been successfully purged, because of either missing or invalid titles.</returns>
-        public static async Task<IReadOnlyCollection<Page>> PurgePagesAsync(IEnumerable<Page> pages, 
+        public static async Task<IReadOnlyCollection<WikiPage>> PurgePagesAsync(IEnumerable<WikiPage> pages, 
             PagePurgeOptions options, CancellationToken cancellationToken)
         {
             if (pages == null) throw new ArgumentNullException(nameof(pages));
-            var failedPages = new List<Page>();
+            var failedPages = new List<WikiPage>();
             // You can even purge pages from different sites.
             foreach (var sitePages in pages.GroupBy(p => Tuple.Create(p.Site, p.GetType())))
             {

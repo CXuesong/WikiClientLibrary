@@ -33,7 +33,7 @@ namespace UnitTestProject1
         public async Task WpTest2PageReadTest1()
         {
             var site = await WpTest2SiteAsync;
-            var page = new Page(site, "project:sandbox");
+            var page = new WikiPage(site, "project:sandbox");
             await page.RefreshAsync(PageQueryOptions.FetchContent);
             ShallowTrace(page);
             Assert.True(page.Exists);
@@ -43,7 +43,7 @@ namespace UnitTestProject1
             // Chars vs. Bytes
             Assert.True(page.Content.Length <= page.ContentLength);
             Output.WriteLine(new string('-', 10));
-            page = new Page(site, "file:inexistent_file.jpg");
+            page = new WikiPage(site, "file:inexistent_file.jpg");
             await page.RefreshAsync();
             ShallowTrace(page);
             Assert.False(page.Exists);
@@ -57,7 +57,7 @@ namespace UnitTestProject1
         {
             var site = await WpTest2SiteAsync;
             var search = await site.OpenSearchAsync("A", 10);
-            var pages = search.Select(e => new Page(site, e.Title)).ToList();
+            var pages = search.Select(e => new WikiPage(site, e.Title)).ToList();
             await pages.RefreshAsync();
             ShallowTrace(pages);
         }
@@ -66,7 +66,7 @@ namespace UnitTestProject1
         public async Task WpTest2PageReadRedirectTest()
         {
             var site = await WpTest2SiteAsync;
-            var page = new Page(site, "Foo");
+            var page = new WikiPage(site, "Foo");
             await page.RefreshAsync();
             Assert.True(page.IsRedirect);
             var target = await page.GetRedirectTargetAsync();
@@ -79,7 +79,7 @@ namespace UnitTestProject1
         public async Task WpLzhPageReadDisambigTest()
         {
             var site = await WpLzhSiteAsync;
-            var page = new Page(site, "中國_(釋義)");
+            var page = new WikiPage(site, "中國_(釋義)");
             await page.RefreshAsync();
             Assert.True(await page.IsDisambiguationAsync());
         }
@@ -115,7 +115,7 @@ namespace UnitTestProject1
         public async Task WikiaPageReadTest()
         {
             var site = await WikiaTestSiteAsync;
-            var page = new Page(site, "Project:Sandbox");
+            var page = new WikiPage(site, "Project:Sandbox");
             await page.RefreshAsync(PageQueryOptions.FetchContent);
             Assert.Equal("Mediawiki 1.19 test Wiki:Sandbox", page.Title);
             Assert.Equal(4, page.NamespaceId);
@@ -126,7 +126,7 @@ namespace UnitTestProject1
         public async Task WikiaPageReadDisambigTest()
         {
             var site = await WikiaTestSiteAsync;
-            var page = new Page(site, "Test (Disambiguation)");
+            var page = new WikiPage(site, "Test (Disambiguation)");
             await page.RefreshAsync();
             Assert.True(await page.IsDisambiguationAsync());
         }
@@ -135,7 +135,7 @@ namespace UnitTestProject1
         public async Task WpTestEnumPageLinksTest()
         {
             var site = await WpLzhSiteAsync;
-            var page = new Page(site, site.SiteInfo.MainPage);
+            var page = new WikiPage(site, site.SiteInfo.MainPage);
             Output.WriteLine(page.ToString());
             var links = await page.EnumLinksAsync().ToList();
             ShallowTrace(links);
@@ -148,7 +148,7 @@ namespace UnitTestProject1
         public async Task WpLzhRedirectedPageReadTest()
         {
             var site = await WpLzhSiteAsync;
-            var page = new Page(site, "project:sandbox");
+            var page = new WikiPage(site, "project:sandbox");
             await page.RefreshAsync(PageQueryOptions.ResolveRedirects);
             Assert.Equal("維基大典:沙盒", page.Title);
             Assert.Equal(4, page.NamespaceId);
@@ -160,7 +160,7 @@ namespace UnitTestProject1
         {
             AssertModify();
             var site = await WpTest2SiteAsync;
-            var page = new Page(site, "project:sandbox");
+            var page = new WikiPage(site, "project:sandbox");
             await page.RefreshAsync(PageQueryOptions.FetchContent);
             page.Content += "\n\nTest from WikiClientLibrary.";
             Output.WriteLine(page.Content);
@@ -172,7 +172,7 @@ namespace UnitTestProject1
         {
             AssertModify();
             var site = await WpTest2SiteAsync;
-            var page = new Page(site, "Test page");
+            var page = new WikiPage(site, "Test page");
             await page.RefreshAsync(PageQueryOptions.FetchContent);
             Assert.True(page.Protections.Any(), "To perform this test, the working page should be protected.");
             page.Content += "\n\nTest from WikiClientLibrary.";
@@ -185,7 +185,7 @@ namespace UnitTestProject1
         {
             AssertModify();
             var site = await WpTest2SiteAsync;
-            var page = new Page(site, "Special:RecentChanges");
+            var page = new WikiPage(site, "Special:RecentChanges");
             await page.RefreshAsync(PageQueryOptions.FetchContent);
             Assert.True(page.IsSpecialPage);
             page.Content += "\n\nTest from WikiClientLibrary.";
@@ -200,7 +200,7 @@ namespace UnitTestProject1
             var site = await WpTest2SiteAsync;
             // Usually 500 is the limit for normal users.
             var pages = new AllPagesGenerator(site) {PagingSize = 300}.EnumPages().Take(300).ToList();
-            var badPage = new Page(site, "Inexistent page title");
+            var badPage = new WikiPage(site, "Inexistent page title");
             pages.Insert(pages.Count/2, badPage);
             Output.WriteLine("Attempt to purge: ");
             ShallowTrace(pages, 1);
@@ -218,14 +218,14 @@ namespace UnitTestProject1
             AssertModify();
             var site = await WpTest2SiteAsync;
             // We do not need to login.
-            var page = new Page(site, "project:sandbox");
+            var page = new WikiPage(site, "project:sandbox");
             var result = await page.PurgeAsync(PagePurgeOptions.ForceLinkUpdate | PagePurgeOptions.ForceRecursiveLinkUpdate);
             Assert.True(result);
             // Now an ArgumentException should be thrown from Page.ctor.
             //page = new Page(site, "special:");
             //result = AwaitSync(page.PurgeAsync());
             //Assert.False(result);
-            page = new Page(site, "the page should be inexistent");
+            page = new WikiPage(site, "the page should be inexistent");
             result = await page.PurgeAsync();
             Assert.False(result);
         }
@@ -236,7 +236,7 @@ namespace UnitTestProject1
             AssertModify();
             var site = await WikiaTestSiteAsync;
             Utility.AssertLoggedIn(site);
-            var page = new Page(site, "project:sandbox");
+            var page = new WikiPage(site, "project:sandbox");
             await page.RefreshAsync(PageQueryOptions.FetchContent);
             page.Content += "\n\nTest from WikiClientLibrary.";
             Output.WriteLine(page.Content);

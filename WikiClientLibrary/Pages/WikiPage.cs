@@ -19,13 +19,13 @@ namespace WikiClientLibrary.Pages
     /// <summary>
     /// Represents a page on MediaWiki site.
     /// </summary>
-    public partial class Page
+    public partial class WikiPage
     {
-        public Page(WikiSite site, string title) : this(site, title, BuiltInNamespaces.Main)
+        public WikiPage(WikiSite site, string title) : this(site, title, BuiltInNamespaces.Main)
         {
         }
 
-        public Page(WikiSite site, string title, int defaultNamespaceId)
+        public WikiPage(WikiSite site, string title, int defaultNamespaceId)
         {
             if (site == null) throw new ArgumentNullException(nameof(site));
             if (string.IsNullOrWhiteSpace(title)) throw new ArgumentNullException(nameof(title));
@@ -37,7 +37,7 @@ namespace WikiClientLibrary.Pages
             NamespaceId = parsedTitle.Namespace.Id;
         }
 
-        internal Page(WikiSite site)
+        internal WikiPage(WikiSite site)
         {
             if (site == null) throw new ArgumentNullException(nameof(site));
             Site = site;
@@ -196,18 +196,18 @@ namespace WikiClientLibrary.Pages
         /// Tries to get the final target of the redirect page.
         /// </summary>
         /// <returns>
-        /// A <see cref="Page"/> of the target.
+        /// A <see cref="WikiPage"/> of the target.
         /// OR <c>null</c> if the page is not a redirect page.
         /// </returns>
         /// <remarks>
-        /// The method will create a new <see cref="Page"/> instance with the
+        /// The method will create a new <see cref="WikiPage"/> instance with the
         /// same <see cref="Title"/> of current instance, and invoke 
         /// <c>Page.RefreshAsync(PageQueryOptions.ResolveRedirects)</c>
         /// to resolve the redirects.
         /// </remarks>
-        public async Task<Page> GetRedirectTargetAsync()
+        public async Task<WikiPage> GetRedirectTargetAsync()
         {
-            var newPage = new Page(Site, Title);
+            var newPage = new WikiPage(Site, Title);
             await newPage.RefreshAsync(PageQueryOptions.ResolveRedirects);
             if (newPage.RedirectPath.Count > 0) return newPage;
             return null;
@@ -225,7 +225,7 @@ namespace WikiClientLibrary.Pages
 
         #region Query
 
-        private static readonly Page[] EmptyPages = new Page[0];
+        private static readonly WikiPage[] EmptyPages = new WikiPage[0];
 
         private static readonly string[] EmptyStrings = new string[0];
 
@@ -323,7 +323,7 @@ namespace WikiClientLibrary.Pages
         /// This overload will not fetch content.
         /// </summary>
         /// <remarks>
-        /// For fetching multiple pages at one time, see <see cref="PageExtensions.RefreshAsync(IEnumerable{Page})"/>.
+        /// For fetching multiple pages at one time, see <see cref="PageExtensions.RefreshAsync(IEnumerable{WikiPage})"/>.
         /// </remarks>
         public Task RefreshAsync()
         {
@@ -335,7 +335,7 @@ namespace WikiClientLibrary.Pages
         /// </summary>
         /// <param name="options">Options when querying for the pages.</param>
         /// <remarks>
-        /// For fetching multiple pages at one time, see <see cref="PageExtensions.RefreshAsync(IEnumerable{Page}, PageQueryOptions)"/>.
+        /// For fetching multiple pages at one time, see <see cref="PageExtensions.RefreshAsync(IEnumerable{WikiPage}, PageQueryOptions)"/>.
         /// </remarks>
         /// <exception cref="InvalidOperationException">Circular redirect detected when resolving redirects.</exception>
         public Task RefreshAsync(PageQueryOptions options)
@@ -349,7 +349,7 @@ namespace WikiClientLibrary.Pages
         /// <param name="options">Options when querying for the pages.</param>
         /// <param name="cancellationToken">The cancellation token that will be checked prior to completing the returned task.</param>
         /// <remarks>
-        /// For fetching multiple pages at one time, see <see cref="PageExtensions.RefreshAsync(IEnumerable{Page}, PageQueryOptions)"/>.
+        /// For fetching multiple pages at one time, see <see cref="PageExtensions.RefreshAsync(IEnumerable{WikiPage}, PageQueryOptions)"/>.
         /// </remarks>
         /// <exception cref="InvalidOperationException">Circular redirect detected when resolving redirects.</exception>
         public Task RefreshAsync(PageQueryOptions options, CancellationToken cancellationToken)
@@ -809,7 +809,7 @@ namespace WikiClientLibrary.Pages
     }
 
     /// <summary>
-    /// Options for refreshing a <see cref="Page"/> object.
+    /// Options for refreshing a <see cref="WikiPage"/> object.
     /// </summary>
     [Flags]
     public enum PageQueryOptions
@@ -822,7 +822,7 @@ namespace WikiClientLibrary.Pages
         FetchContent = 1,
 
         /// <summary>
-        /// Resolves directs automatically. This may later change <see cref="Page.Title"/>.
+        /// Resolves directs automatically. This may later change <see cref="WikiPage.Title"/>.
         /// This option cannot be used with generators.
         /// In the case of multiple redirects, all redirects will be resolved.
         /// </summary>
@@ -920,7 +920,7 @@ namespace WikiClientLibrary.Pages
         /// <summary>
         /// Determines whether the page is a disambiguation page.
         /// This is raw value and only works when Extension:Disambiguator presents.
-        /// Please use <see cref="Page.IsDisambiguationAsync"/> instead.
+        /// Please use <see cref="WikiPage.IsDisambiguationAsync"/> instead.
         /// </summary>
         public bool Disambiguation => this["disambiguation"] != null;
 

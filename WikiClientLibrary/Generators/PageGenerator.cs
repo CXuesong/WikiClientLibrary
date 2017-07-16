@@ -15,7 +15,7 @@ using WikiClientLibrary.Sites;
 namespace WikiClientLibrary.Generators
 {
     /// <summary>
-    /// Represents a generator (or iterator) of <see cref="Page"/>.
+    /// Represents a generator (or iterator) of <see cref="WikiPage"/>.
     /// Generator implementations should use its generic version, <see cref="PageGenerator{T}"/>, as base class.
     /// </summary>
     public abstract class PageGeneratorBase
@@ -146,11 +146,11 @@ namespace WikiClientLibrary.Generators
     }
 
     /// <summary>
-    /// Represents a generator (or iterator) of <see cref="Page"/>.
+    /// Represents a generator (or iterator) of <see cref="WikiPage"/>.
     /// </summary>
     /// <typeparam name="T">The type of generated page instances.</typeparam>
     public abstract class PageGenerator<T> : PageGeneratorBase
-        where T : Page
+        where T : WikiPage
     {
         public PageGenerator(WikiSite site) : base(site)
         {

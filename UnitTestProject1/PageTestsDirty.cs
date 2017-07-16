@@ -44,10 +44,10 @@ namespace UnitTestProject1
             SiteNeedsLogin(CredentialManager.DirtyTestsEntryPointUrl);
         }
 
-        private async Task<Page> GetOrCreatePage(WikiSite site, string title)
+        private async Task<WikiPage> GetOrCreatePage(WikiSite site, string title)
         {
             if (site == null) throw new ArgumentNullException(nameof(site));
-            var page = new Page(site, title);
+            var page = new WikiPage(site, title);
             await page.RefreshAsync();
             if (!page.Exists)
             {
@@ -73,8 +73,8 @@ The original title of the page is '''{title}'''.
         [Fact]
         public async Task PageMoveAndDeleteTest1()
         {
-            var page1 = new Page(await SiteAsync, TestPage11Title);
-            var page2 = new Page(await SiteAsync, TestPage12Title);
+            var page1 = new WikiPage(await SiteAsync, TestPage11Title);
+            var page2 = new WikiPage(await SiteAsync, TestPage12Title);
             Output.WriteLine("Deleted:" + await page2.DeleteAsync(SummaryPrefix + "Delete the move destination."));
             await page1.MoveAsync(TestPage12Title, SummaryPrefix + "Move a page.", PageMovingOptions.IgnoreWarnings);
             await page2.DeleteAsync(SummaryPrefix + "Delete the moved page.");

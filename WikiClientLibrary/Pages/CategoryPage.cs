@@ -8,14 +8,14 @@ namespace WikiClientLibrary.Pages
     /// <summary>
     /// Represents a category on MediaWiki site.
     /// </summary>
-    public class Category : Page
+    public class CategoryPage : WikiPage
     {
 
-        public Category(WikiSite site, string title) : base(site, title, BuiltInNamespaces.Category)
+        public CategoryPage(WikiSite site, string title) : base(site, title, BuiltInNamespaces.Category)
         {
         }
 
-        internal Category(WikiSite site) : base(site)
+        internal CategoryPage(WikiSite site) : base(site)
         {
         }
 
@@ -45,22 +45,22 @@ namespace WikiClientLibrary.Pages
 
         public int SubcategoriesCount { get; private set; }
 
-        public IAsyncEnumerable<Page> EnumMembersAsync(PageQueryOptions options)
+        public IAsyncEnumerable<WikiPage> EnumMembersAsync(PageQueryOptions options)
         {
             return new CategoryMembersGenerator(Site, Title).EnumPagesAsync(options);
         }
 
-        public IAsyncEnumerable<Page> EnumMembersAsync()
+        public IAsyncEnumerable<WikiPage> EnumMembersAsync()
         {
             return new CategoryMembersGenerator(Site, Title).EnumPagesAsync();
         }
 
-        public IEnumerable<Page> EnumMembers(PageQueryOptions options)
+        public IEnumerable<WikiPage> EnumMembers(PageQueryOptions options)
         {
             return new CategoryMembersGenerator(Site, Title).EnumPages(options);
         }
 
-        public IEnumerable<Page> EnumMembers()
+        public IEnumerable<WikiPage> EnumMembers()
         {
             return new CategoryMembersGenerator(Site, Title).EnumPages();
         }

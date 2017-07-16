@@ -14,7 +14,7 @@ namespace WikiClientLibrary.Flow
     /// <summary>
     /// Reporesents a topic on a Flow board.
     /// </summary>
-    public class Topic : Page
+    public class Topic : WikiPage
     {
         /// <inheritdoc />
         public Topic(WikiSite site, string title) : this(site, title, FlowNamespaces.Topic)

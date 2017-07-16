@@ -16,7 +16,7 @@ namespace WikiClientLibrary.Pages
     [JsonObject(MemberSerialization.OptIn)]
     public class Revision
     {
-        internal Revision(Page page)
+        internal Revision(WikiPage page)
         {
             if (page == null) throw new ArgumentNullException(nameof(page));
             Page = page;
@@ -108,7 +108,7 @@ namespace WikiClientLibrary.Pages
         /// <summary>
         /// Gets the page this revision applies to.
         /// </summary>
-        public Page Page { get; private set; }
+        public WikiPage Page { get; private set; }
 
         [JsonProperty("revid")]
         public int Id { get; private set; }

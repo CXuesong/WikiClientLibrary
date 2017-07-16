@@ -24,7 +24,7 @@ namespace UnitTestProject1
         public async Task WpTestEnumRevisionsTest1()
         {
             var site = await WpTest2SiteAsync;
-            var page = new Page(site, "Page:Edit_page_for_chrome");
+            var page = new WikiPage(site, "Page:Edit_page_for_chrome");
             var revisions = await page.EnumRevisionsAsync(20).Skip(5).Take(5).ToList();
             Assert.Equal(5, revisions.Count);
             Assert.True(revisions.SequenceEqual(revisions.OrderByDescending(r => r.TimeStamp)));
@@ -36,7 +36,7 @@ namespace UnitTestProject1
         {
             var site = await WpTest2SiteAsync;
             // 5,100 revisions in total
-            var page = new Page(site, "Page:Edit_page_for_chrome");
+            var page = new WikiPage(site, "Page:Edit_page_for_chrome");
             var revisions = await page.EnumRevisionsAsync(2000).Take(2000).ToList();
             Assert.True(revisions.SequenceEqual(revisions.OrderByDescending(r => r.TimeStamp)));
             ShallowTrace(revisions);
@@ -48,7 +48,7 @@ namespace UnitTestProject1
         {
             var site = await WpTest2SiteAsync;
             // 5,100 revisions in total
-            var page = new Page(site, "Page:Edit_page_for_chrome");
+            var page = new WikiPage(site, "Page:Edit_page_for_chrome");
             var t1 = new DateTime(2014, 10, 20, 10, 0, 0, DateTimeKind.Utc);
             var t2 = new DateTime(2014, 10, 22, 10, 0, 0, DateTimeKind.Utc);
             var gen = new RevisionGenerator(page)
@@ -70,7 +70,7 @@ namespace UnitTestProject1
         public async Task WikiaEnumRevisionsTest1()
         {
             var site = await WikiaTestSiteAsync;
-            var page = new Page(site, "Project:Sandbox");
+            var page = new WikiPage(site, "Project:Sandbox");
             var revisions = await page.EnumRevisionsAsync().Skip(5).Take(5).ToList();
             Assert.Equal(5, revisions.Count);
             Assert.True(revisions.SequenceEqual(revisions.OrderByDescending(r => r.TimeStamp)));
@@ -81,7 +81,7 @@ namespace UnitTestProject1
         public async Task WikiaEnumRevisionsTest2()
         {
             var site = await WikiaTestSiteAsync;
-            var page = new Page(site, "Project:Sandbox");
+            var page = new WikiPage(site, "Project:Sandbox");
             var revisions = await page.EnumRevisionsAsync().Take(2000).ToList();
             Assert.True(revisions.SequenceEqual(revisions.OrderByDescending(r => r.TimeStamp)));
             ShallowTrace(revisions);

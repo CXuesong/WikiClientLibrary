@@ -17,7 +17,7 @@ namespace WikiClientLibrary.Generators
     {
         private int? _PagingSize;
 
-        public RevisionGenerator(Page page)
+        public RevisionGenerator(WikiPage page)
         {
             if (page == null) throw new ArgumentNullException(nameof(page));
             Debug.Assert(page.Site != null);
@@ -62,7 +62,7 @@ namespace WikiClientLibrary.Generators
         /// <summary>
         /// The page to query for revisions.
         /// </summary>
-        public Page Page { get; }
+        public WikiPage Page { get; }
 
         /// <summary>
         /// Whether to list revisions in an ascending order of time.

@@ -19,7 +19,7 @@ namespace WikiClientLibrary.Flow
     /// <para>See https://www.mediawiki.org/wiki/Extension:Flow for more information about Flow extension.</para>
     /// <para>Note that the development of Flow extension seems now paused. See https://en.wikipedia.org/wiki/Wikipedia:Flow for more information.</para>
     /// </remarks>
-    public class Board : Page
+    public class Board : WikiPage
     {
         /// <inheritdoc />
         public Board(WikiSite site, string title) : this(site, title, BuiltInNamespaces.Main)

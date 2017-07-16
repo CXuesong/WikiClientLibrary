@@ -8,10 +8,10 @@ using WikiClientLibrary.Sites;
 namespace WikiClientLibrary.Pages
 {
     // Factory methods
-    partial class Page
+    partial class WikiPage
     {
         /// <summary>
-        /// Create an instance of <see cref="Page"/> or its derived class,
+        /// Create an instance of <see cref="WikiPage"/> or its derived class,
         /// depending on the namespace the page is in.
         /// </summary>
         /// <param name="site">Site instance.</param>
@@ -19,13 +19,13 @@ namespace WikiClientLibrary.Pages
         /// <exception cref="ArgumentNullException">Either <paramref name="site"/> or <paramref name="title"/> is <c>null</c>.</exception>
         /// <exception cref="ArgumentException"><paramref name="title"/> has invalid title patterns.</exception>
         /// <exception cref="InvalidOperationException"><paramref name="title"/> is an interwiki link.</exception>
-        public static Page FromTitle(WikiSite site, string title)
+        public static WikiPage FromTitle(WikiSite site, string title)
         {
             return FromTitle(site, title, 0);
         }
 
         /// <summary>
-        /// Create an instance of <see cref="Page"/> or its derived class,
+        /// Create an instance of <see cref="WikiPage"/> or its derived class,
         /// depending on the namespace the page is in.
         /// </summary>
         /// <param name="site">Site instance.</param>
@@ -37,7 +37,7 @@ namespace WikiClientLibrary.Pages
         /// <exception cref="ArgumentNullException">Either <paramref name="site"/> or <paramref name="title"/> is <c>null</c>.</exception>
         /// <exception cref="ArgumentException"><paramref name="title"/> has invalid title patterns.</exception>
         /// <exception cref="InvalidOperationException"><paramref name="title"/> is an interwiki link.</exception>
-        public static Page FromTitle(WikiSite site, string title, int defaultNamespaceId)
+        public static WikiPage FromTitle(WikiSite site, string title, int defaultNamespaceId)
         {
             if (site == null) throw new ArgumentNullException(nameof(site));
             if (title == null) throw new ArgumentNullException(nameof(title));
@@ -55,22 +55,22 @@ namespace WikiClientLibrary.Pages
             switch (link.Namespace.Id)
             {
                 case BuiltInNamespaces.Category:
-                    return new Category(site, title);
+                    return new CategoryPage(site, title);
                 case BuiltInNamespaces.File:
-                    return new Category(site, title);
+                    return new CategoryPage(site, title);
                 default:
-                    return new Page(site, title, defaultNamespaceId);
+                    return new WikiPage(site, title, defaultNamespaceId);
             }
         }
 
         /// <summary>
-        /// Creates a list of <see cref="Page"/> based on JSON query result.
+        /// Creates a list of <see cref="WikiPage"/> based on JSON query result.
         /// </summary>
         /// <param name="site">A <see cref="Site"/> object.</param>
         /// <param name="queryNode">The <c>qurey</c> node value object of JSON result.</param>
         /// <param name="options">Provides options when performing the query.</param>
         /// <returns>Retrived pages.</returns>
-        internal static IList<Page> FromJsonQueryResult(WikiSite site, JObject queryNode, PageQueryOptions options)
+        internal static IList<WikiPage> FromJsonQueryResult(WikiSite site, JObject queryNode, PageQueryOptions options)
         {
             if (site == null) throw new ArgumentNullException(nameof(site));
             if (queryNode == null) throw new ArgumentNullException(nameof(queryNode));
@@ -83,9 +83,9 @@ namespace WikiClientLibrary.Pages
             return pages.Properties().OrderBy(page => (int?) page.Value["index"])
                 .Select(page =>
                 {
-                    Page newInst;
+                    WikiPage newInst;
                     if (page.Value["categoryinfo"] != null)
-                        newInst = new Category(site);
+                        newInst = new CategoryPage(site);
                     else if ((string) page.Value["contentmodel"] == ContentModels.FlowBoard)
                     {
                         if ((int) page.Value["ns"] == FlowNamespaces.Topic)
@@ -94,7 +94,7 @@ namespace WikiClientLibrary.Pages
                             newInst = new Board(site);
                     }
                     else
-                        newInst = new Page(site);
+                        newInst = new WikiPage(site);
                     newInst.LoadFromJson(page, options);
                     return newInst;
                 }).ToList();
