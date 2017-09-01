@@ -932,7 +932,7 @@ namespace WikiClientLibrary.Pages
         /// </summary>
         public bool Disambiguation => this["disambiguation"] != null;
 
-        public string DisplayTitle => this["DisplayTitle"];
+        public string DisplayTitle => this["displaytitle"];
 
         public string PageImage => this["page_image"];
 
