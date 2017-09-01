@@ -279,7 +279,7 @@ namespace WikiClientLibrary.Pages
                 Protections = jpage["protection"].ToObject<IReadOnlyCollection<ProtectionInfo>>(
                     Utility.WikiJsonSerializer);
                 RestrictionTypes = jpage["restrictiontypes"]?.ToObject<IReadOnlyCollection<string>>(
-                    Utility.WikiJsonSerializer) ?? EmptyStrings;
+                                       Utility.WikiJsonSerializer) ?? EmptyStrings;
                 PageProperties = jpage["pageprops"]?.ToObject<PagePropertyCollection>(Utility.WikiJsonSerializer)
                                  ?? PagePropertyCollection.Empty;
             }
@@ -527,58 +527,60 @@ namespace WikiClientLibrary.Pages
         /// <exception cref="InvalidOperationException">Cannot create actual page in the specified namespace.</exception>
         /// <exception cref="OperationConflictException">Edit conflict detected.</exception>
         /// <exception cref="UnauthorizedOperationException">You have no rights to edit the page.</exception>
-        public async Task<bool> UpdateContentAsync(string summary, bool minor, bool bot, AutoWatchBehavior watch, 
+        public async Task<bool> UpdateContentAsync(string summary, bool minor, bool bot, AutoWatchBehavior watch,
             CancellationToken cancellationToken)
         {
-            await Site.ModificationThrottler.QueueWorkAsync("Edit: " + this, cancellationToken);
-            var token = await Site.GetTokenAsync("edit", cancellationToken);
-            // When passing this to the Edit API, always pass the token parameter last
-            // (or at least after the text parameter). That way, if the edit gets interrupted,
-            // the token won't be passed and the edit will fail.
-            // This is done automatically by mw.Api.
-            JToken jresult;
-            try
+            using (await Site.ModificationThrottler.QueueWorkAsync("Edit: " + this, cancellationToken))
             {
-                jresult = await Site.PostValuesAsync(new
+                var token = await Site.GetTokenAsync("edit", cancellationToken);
+                // When passing this to the Edit API, always pass the token parameter last
+                // (or at least after the text parameter). That way, if the edit gets interrupted,
+                // the token won't be passed and the edit will fail.
+                // This is done automatically by mw.Api.
+                JToken jresult;
+                try
                 {
-                    action = "edit",
-                    title = Title,
-                    minor = minor,
-                    bot = bot,
-                    recreate = true,
-                    maxlag = 5,
-                    basetimestamp = LastRevision?.TimeStamp,
-                    watchlist = watch,
-                    summary = summary,
-                    text = Content,
-                    token = token,
-                }, cancellationToken);
-            }
-            catch (OperationFailedException ex)
-            {
-                switch (ex.ErrorCode)
-                {
-                    case "protectedpage":
-                        throw new UnauthorizedOperationException(ex);
-                    case "pagecannotexist":
-                        throw new InvalidOperationException(ex.ErrorMessage, ex);
-                    default:
-                        throw;
+                    jresult = await Site.PostValuesAsync(new
+                    {
+                        action = "edit",
+                        title = Title,
+                        minor = minor,
+                        bot = bot,
+                        recreate = true,
+                        maxlag = 5,
+                        basetimestamp = LastRevision?.TimeStamp,
+                        watchlist = watch,
+                        summary = summary,
+                        text = Content,
+                        token = token,
+                    }, cancellationToken);
                 }
+                catch (OperationFailedException ex)
+                {
+                    switch (ex.ErrorCode)
+                    {
+                        case "protectedpage":
+                            throw new UnauthorizedOperationException(ex);
+                        case "pagecannotexist":
+                            throw new InvalidOperationException(ex.ErrorMessage, ex);
+                        default:
+                            throw;
+                    }
+                }
+                var jedit = jresult["edit"];
+                var result = (string) jedit["result"];
+                if (result == "Success")
+                {
+                    if (jedit["nochange"] != null) return false;
+                    ContentModel = (string) jedit["contentmodel"];
+                    LastRevisionId = (int) jedit["newrevid"];
+                    Id = (int) jedit["pageid"];
+                    Title = (string) jedit["title"];
+                    return true;
+                }
+                // No "errors" in json result but result is not Success.
+                throw new OperationFailedException(result, (string) null);
             }
-            var jedit = jresult["edit"];
-            var result = (string) jedit["result"];
-            if (result == "Success")
-            {
-                if (jedit["nochange"] != null) return false;
-                ContentModel = (string) jedit["contentmodel"];
-                LastRevisionId = (int) jedit["newrevid"];
-                Id = (int) jedit["pageid"];
-                Title = (string) jedit["title"];
-                return true;
-            }
-            // No "errors" in json result but result is not Success.
-            throw new OperationFailedException(result, (string) null);
         }
 
         #endregion
@@ -598,7 +600,8 @@ namespace WikiClientLibrary.Pages
         /// </summary>
         public Task MoveAsync(string newTitle, string reason)
         {
-            return MoveAsync(newTitle, reason, PageMovingOptions.None, AutoWatchBehavior.Default, CancellationToken.None);
+            return MoveAsync(newTitle, reason, PageMovingOptions.None, AutoWatchBehavior.Default,
+                CancellationToken.None);
         }
 
         /// <summary>
@@ -617,48 +620,51 @@ namespace WikiClientLibrary.Pages
         {
             if (newTitle == null) throw new ArgumentNullException(nameof(newTitle));
             if (newTitle == Title) return;
-            await Site.ModificationThrottler.QueueWorkAsync("Move: " + this, cancellationToken);
-            var token = await Site.GetTokenAsync("move", cancellationToken);
-            // When passing this to the Edit API, always pass the token parameter last
-            // (or at least after the text parameter). That way, if the edit gets interrupted,
-            // the token won't be passed and the edit will fail.
-            // This is done automatically by mw.Api.
-            JToken jresult;
-            try
+            using (await Site.ModificationThrottler.QueueWorkAsync("Move: " + this, cancellationToken))
             {
-                jresult = await Site.PostValuesAsync(new
+                var token = await Site.GetTokenAsync("move", cancellationToken);
+                // When passing this to the Edit API, always pass the token parameter last
+                // (or at least after the text parameter). That way, if the edit gets interrupted,
+                // the token won't be passed and the edit will fail.
+                // This is done automatically by mw.Api.
+                JToken jresult;
+                try
                 {
-                    action = "move",
-                    from = Title,
-                    to = newTitle,
-                    maxlag = 5,
-                    movetalk = (options & PageMovingOptions.LeaveTalk) != PageMovingOptions.LeaveTalk,
-                    movesubpages = (options & PageMovingOptions.MoveSubpages) == PageMovingOptions.MoveSubpages,
-                    noredirect = (options & PageMovingOptions.NoRedirect) == PageMovingOptions.NoRedirect,
-                    ignorewarnings = (options & PageMovingOptions.IgnoreWarnings) == PageMovingOptions.IgnoreWarnings,
-                    watchlist = watch,
-                    reason = reason,
-                    token = token,
-                }, cancellationToken);
-            }
-            catch (OperationFailedException ex)
-            {
-                switch (ex.ErrorCode)
-                {
-                    case "cantmove":
-                    case "protectedpage":
-                    case "protectedtitle":
-                        throw new UnauthorizedOperationException(ex);
-                    default:
-                        if (ex.ErrorCode.StartsWith("cantmove"))
-                            throw new UnauthorizedOperationException(ex);
-                        throw;
+                    jresult = await Site.PostValuesAsync(new
+                    {
+                        action = "move",
+                        from = Title,
+                        to = newTitle,
+                        maxlag = 5,
+                        movetalk = (options & PageMovingOptions.LeaveTalk) != PageMovingOptions.LeaveTalk,
+                        movesubpages = (options & PageMovingOptions.MoveSubpages) == PageMovingOptions.MoveSubpages,
+                        noredirect = (options & PageMovingOptions.NoRedirect) == PageMovingOptions.NoRedirect,
+                        ignorewarnings = (options & PageMovingOptions.IgnoreWarnings) ==
+                                         PageMovingOptions.IgnoreWarnings,
+                        watchlist = watch,
+                        reason = reason,
+                        token = token,
+                    }, cancellationToken);
                 }
+                catch (OperationFailedException ex)
+                {
+                    switch (ex.ErrorCode)
+                    {
+                        case "cantmove":
+                        case "protectedpage":
+                        case "protectedtitle":
+                            throw new UnauthorizedOperationException(ex);
+                        default:
+                            if (ex.ErrorCode.StartsWith("cantmove"))
+                                throw new UnauthorizedOperationException(ex);
+                            throw;
+                    }
+                }
+                var fromTitle = (string) jresult["move"]["from"];
+                var toTitle = (string) jresult["move"]["to"];
+                Site.Logger?.Info(this, $"Page {fromTitle} has been moved to {toTitle} .");
+                Title = toTitle;
             }
-            var fromTitle = (string) jresult["move"]["from"];
-            var toTitle = (string) jresult["move"]["to"];
-            Site.Logger.Info(this, $"Page {fromTitle} has been moved to {toTitle} .");
-            Title = toTitle;
         }
 
         /// <summary>
@@ -682,39 +688,41 @@ namespace WikiClientLibrary.Pages
         /// </summary>
         public async Task<bool> DeleteAsync(string reason, AutoWatchBehavior watch, CancellationToken cancellationToken)
         {
-            await Site.ModificationThrottler.QueueWorkAsync("Delete: " + this, cancellationToken);
-            var token = await Site.GetTokenAsync("delete", cancellationToken);
-            JToken jresult;
-            try
+            using (await Site.ModificationThrottler.QueueWorkAsync("Delete: " + this, cancellationToken))
             {
-                jresult = await Site.PostValuesAsync(new
+                var token = await Site.GetTokenAsync("delete", cancellationToken);
+                JToken jresult;
+                try
                 {
-                    action = "delete",
-                    title = Title,
-                    maxlag = 5,
-                    watchlist = watch,
-                    reason = reason,
-                    token = token,
-                }, cancellationToken);
-            }
-            catch (OperationFailedException ex)
-            {
-                switch (ex.ErrorCode)
-                {
-                    case "cantdelete": // Couldn't delete "title". Maybe it was deleted already by someone else
-                    case "missingtitle":
-                        return false;
-                    case "permissiondenied":
-                        throw new UnauthorizedOperationException(ex);
+                    jresult = await Site.PostValuesAsync(new
+                    {
+                        action = "delete",
+                        title = Title,
+                        maxlag = 5,
+                        watchlist = watch,
+                        reason = reason,
+                        token = token,
+                    }, cancellationToken);
                 }
-                throw;
+                catch (OperationFailedException ex)
+                {
+                    switch (ex.ErrorCode)
+                    {
+                        case "cantdelete": // Couldn't delete "title". Maybe it was deleted already by someone else
+                        case "missingtitle":
+                            return false;
+                        case "permissiondenied":
+                            throw new UnauthorizedOperationException(ex);
+                    }
+                    throw;
+                }
+                var title = (string) jresult["delete"]["title"];
+                Exists = false;
+                LastRevision = null;
+                LastRevisionId = 0;
+                Site.Logger?.Info(this, $"Page {title} has been deleted.");
+                return true;
             }
-            var title = (string) jresult["delete"]["title"];
-            Exists = false;
-            LastRevision = null;
-            LastRevisionId = 0;
-            Site.Logger.Info(this, $"Page {title} has been deleted.");
-            return true;
         }
 
         /// <summary>
@@ -741,7 +749,7 @@ namespace WikiClientLibrary.Pages
         /// <returns><c>true</c> if the page has been successfully purged.</returns>
         public async Task<bool> PurgeAsync(PagePurgeOptions options, CancellationToken cancellationToken)
         {
-            var failure = await RequestHelper.PurgePagesAsync(new[] { this }, options, cancellationToken);
+            var failure = await RequestHelper.PurgePagesAsync(new[] {this}, options, cancellationToken);
             return failure.Count == 0;
         }
 
@@ -948,7 +956,7 @@ namespace WikiClientLibrary.Pages
                 if (myDict.TryGetValue(key, out value)) return value;
                 return null;
             }
-        } 
+        }
 
         /// <inheritdoc />
         public ICollection<string> Keys => myDict.Keys;
