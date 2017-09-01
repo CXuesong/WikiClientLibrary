@@ -247,7 +247,10 @@ namespace UnitTestProject1
             await CredentialManager.LoginAsync(site2);
             await site2.LogoutAsync();
             await site1.RefreshAccountInfoAsync();
-            Assert.True(site1.AccountInfo.IsUser);
+            // This is a known issue of MediaWiki.
+            // MediaWiki Phabricator Task T51890: Logging out on a different device logs me out everywhere else
+            Assert.False(site1.AccountInfo.IsUser,
+                "T51890 seems have been resolved. If this test continue to fail, please re-open the issue: https://github.com/CXuesong/WikiClientLibrary/issues/11 .");
         }
 
         [Fact]
