@@ -55,7 +55,7 @@ static async Task HelloWikiWorld()
         ClientUserAgent = "ConsoleTestApplication1/1.0",
     };
     // Create a MediaWiki Site instance with the URL of API endpoint.
-    var site = await Site.CreateAsync(wikiClient, "https://test2.wikipedia.org/w/api.php");
+    var site = await WikiSite.CreateAsync(wikiClient, "https://test2.wikipedia.org/w/api.php");
     // Access site information via Site.SiteInfo
     Console.WriteLine("API version: {0}", site.SiteInfo.Generator);
     // Access user information via Site.AccountInfo
