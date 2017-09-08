@@ -1,0 +1,4 @@
+WikiClientLibrary
+---------------
+
+Copyright 2017 CXuesong.
