@@ -323,7 +323,7 @@ namespace WikiClientLibrary.Pages
         /// This overload will not fetch content.
         /// </summary>
         /// <remarks>
-        /// For fetching multiple pages at one time, see <see cref="PageExtensions.RefreshAsync(IEnumerable{WikiPage})"/>.
+        /// For fetching multiple pages at one time, see <see cref="WikiPageExtensions.RefreshAsync(IEnumerable{WikiPage})"/>.
         /// </remarks>
         public Task RefreshAsync()
         {
@@ -335,7 +335,7 @@ namespace WikiClientLibrary.Pages
         /// </summary>
         /// <param name="options">Options when querying for the pages.</param>
         /// <remarks>
-        /// For fetching multiple pages at one time, see <see cref="PageExtensions.RefreshAsync(IEnumerable{WikiPage}, PageQueryOptions)"/>.
+        /// For fetching multiple pages at one time, see <see cref="WikiPageExtensions.RefreshAsync(IEnumerable{WikiPage}, PageQueryOptions)"/>.
         /// </remarks>
         /// <exception cref="InvalidOperationException">Circular redirect detected when resolving redirects.</exception>
         public Task RefreshAsync(PageQueryOptions options)
@@ -349,7 +349,7 @@ namespace WikiClientLibrary.Pages
         /// <param name="options">Options when querying for the pages.</param>
         /// <param name="cancellationToken">The cancellation token that will be checked prior to completing the returned task.</param>
         /// <remarks>
-        /// For fetching multiple pages at one time, see <see cref="PageExtensions.RefreshAsync(IEnumerable{WikiPage}, PageQueryOptions)"/>.
+        /// For fetching multiple pages at one time, see <see cref="WikiPageExtensions.RefreshAsync(IEnumerable{WikiPage}, PageQueryOptions)"/>.
         /// </remarks>
         /// <exception cref="InvalidOperationException">Circular redirect detected when resolving redirects.</exception>
         public Task RefreshAsync(PageQueryOptions options, CancellationToken cancellationToken)

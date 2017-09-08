@@ -8,7 +8,7 @@ namespace WikiClientLibrary.Pages
     /// <summary>
     /// Provides extension methods for a sequence of <see cref="WikiPage"/>.
     /// </summary>
-    public static class PageExtensions
+    public static class WikiPageExtensions
     {
         /// <summary>
         /// Asynchronously fetch information for a sequence of pages.
