@@ -50,7 +50,7 @@ namespace ConsoleTestApplication1
                 LOGIN_RETRY:
                 try
                 {
-                await site.LoginAsync(Input("Username"), Input("Password"));
+                await site.LoginAsync(Input("User name"), Input("Password"));
                 }
                 catch (OperationFailedException ex)
                 {
@@ -157,7 +157,7 @@ namespace ConsoleTestApplication1
             var wikiClient = new WikiClient();
             // Create a MediaWiki Site instance.
             var site = await WikiSite.CreateAsync(wikiClient, Input("Wiki site API URL"));
-            await site.LoginAsync(Input("Username"), Input("Password"));
+            await site.LoginAsync(Input("User name"), Input("Password"));
             var rcg = new RecentChangesGenerator(site)
             {
                 TypeFilters = RecentChangesFilterTypes.Create,
