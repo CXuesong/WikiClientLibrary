@@ -1,3 +1,5 @@
+# Wiki Client Library
+
 A .NET Standard asynchronous MediaWiki API client library for wiki sites. This library aims for human users, as well as bots.
 
 This package is now available on NuGet. You may install the package using the following command in the Package Management Console
@@ -8,10 +10,9 @@ Install-Package CXuesong.MW.WikiClientLibrary
 
 Before running the test cases, please take a look at the [last section](#setting-up-test-cases).
 
-!!!
-This document is for WCL 0.5. WCL 0.6 is currently in development, which may involve some API changes.
-See [Releases](https://github.com/CXuesong/WikiClientLibrary/releases) page for more information.
-!!!
+>   The current v0.6-int pre-release of WCL contains some reorganization and renaming of classes. If you are a v0.5.x user, see [v0.5.1](https://github.com/CXuesong/WikiClientLibrary/tree/0.5.1) for the README of latest stable version.
+>
+>   However, we suggest you to use the latest pre-release, if possible. See [Releases](https://github.com/CXuesong/WikiClientLibrary/releases) page for the improvements since v0.6.0-int0.
 
 [TOC]
 
@@ -56,24 +57,34 @@ static async Task HelloWikiWorld()
     };
     // Create a MediaWiki Site instance with the URL of API endpoint.
     var site = await WikiSite.CreateAsync(wikiClient, "https://test2.wikipedia.org/w/api.php");
-    // Access site information via Site.SiteInfo
+    // Access site information via WikiSite.SiteInfo
     Console.WriteLine("API version: {0}", site.SiteInfo.Generator);
-    // Access user information via Site.AccountInfo
+    // Access user information via WikiSite.UserInfo
     Console.WriteLine("Hello, {0}!", site.AccountInfo.Name);
-    Console.WriteLine("You're in the following groups: {0}.", string.Join(",", site.AccountInfo.Groups));
     // Site login
+    Console.WriteLine("We will edit [[Project:Sandbox]].");
     if (Confirm($"Do you want to login into {site.SiteInfo.SiteName}?"))
     {
-        await site.LoginAsync(Input("Username"), Input("Password"));
+        LOGIN_RETRY:
+        try
+        {
+        await site.LoginAsync(Input("User name"), Input("Password"));
+        }
+        catch (OperationFailedException ex)
+        {
+            Console.WriteLine(ex.ErrorMessage);
+            goto LOGIN_RETRY;
+        }
         Console.WriteLine("You have successfully logged in as {0}.", site.AccountInfo.Name);
+        Console.WriteLine("You're in the following groups: {0}.", string.Join(",", site.AccountInfo.Groups));
     }
     // Find out more members in Site class, such as
-    //  site.Namespaces
-    //  site.InterwikiMap
+    //  page.Namespaces
+    //  page.InterwikiMap
 
     // Page Operations
     // Fetch information and content
-    var page = new Page(site, site.SiteInfo.MainPage);
+    var page = new WikiPage(site, site.SiteInfo.MainPage);
     Console.WriteLine("Retriving {0}...", page);
     await page.RefreshAsync(PageQueryOptions.FetchContent);
 
@@ -86,13 +97,13 @@ static async Task HelloWikiWorld()
     if (await page.PurgeAsync())
         Console.WriteLine("  The page has been purged successfully.");
     // Edit the page
-    page = new Page(site, "Project:Sandbox");
+    page = new WikiPage(site, "Project:Sandbox");
     await page.RefreshAsync(PageQueryOptions.FetchContent);
     if (!page.Exists) Console.WriteLine("Warning: The page {0} doesn't exist.", page);
     page.Content += "\n\n'''Hello''' ''world''!";
     await page.UpdateContentAsync("Test edit from WikiClientLibrary.");
     Console.WriteLine("{0} has been saved. RevisionId = {1}.", page, page.LastRevisionId);
-    // Find out more operations in Page class, such as
+    // Find out more operations in WikiPage class, such as
     //  page.MoveAsync()
     //  page.DeleteAsync()
     // Logout
@@ -104,38 +115,36 @@ static async Task HelloWikiWorld()
 Here's the output
 
 ```
-API version: MediaWiki 1.28.0-wmf.16
-Hello, 115.154.***.***!
-You're in the following groups: *.
-Do you want to login into Wikipedia? [Y/N]>y
-Username >XuesongBot
-Password >******
+API version: MediaWiki 1.30.0-wmf.17
+Hello, 206.161.*.*!
+We will edit [[Project:Sandbox]].
+Do you want to login into Wikipedia?[Y/N]> Y
+User name> XuesongBot
+Password> ******
 You have successfully logged in as XuesongBot.
+You're in the following groups: bot,editor,*,user,autoconfirmed.
 Retriving Main Page...
-Last touched at 2016/8/27 AM 6:10:56.
-Last revision 285903 by Luke081515Bot at 2016/5/27 上午 1:54:34.
-Content length: 3527 bytes ----------
+Last touched at 2017/8/27 PM 4:25:06.
+Last revision 318038 by MacFan4000 at 2017/5/27 PM 1:07:11.
+Content length: 3687 bytes ----------
 Welcome to '''test2.wikipedia.org'''! This wiki is currently running a test release of the {{CURRENTVERSION}} version of MediaWiki.
 
-== What is the purpose of test2? ==
-test2 is primarily used to trial and debug global and cross-wiki features in conjunction with test.wikipedia.org and test.wikidata.org.
+== What is the purpose of Test2? ==
+Test2 is primarily used to trial and debug global and cross-wiki features in conjunction with <span class="plainlinks">https://test.wikipedia.org</span> and <span class="plainlinks">https://test.wikidata.org</span>.
 
-The primary wiki that is used for testing new features and code in MediaWiki is [https://test.wikipedia.org test.wikipedia.org]. Although you're more than welcome to test things out on this wiki as well, you may wish to concentrate your testing efforts on [https://test.wikipedia.org test.wikipedia.org] wiki instead to help keep everything in one place.
-
-[The text has been trucated.]
+[more]
 
   The page has been purged successfully.
-Wikipedia:Sandbox has been saved. RevisionId = 296329.
+Wikipedia:Sandbox has been saved. RevisionId = 327700.
 You have successfully logged out.
+Press any key to continue. . .
 ```
-
-
 
 ## Bulk fetching and generators
 
-You can fetch multiple pages at one time with `PageExtensions.RefreshAsync` extension method, as long as you have a sequence of `Page` objects. However, it's often the case that you're actually fetching pages using [generators](https://www.mediawiki.org/wiki/API:Generator), and that's what we're discussing in the section.
+You can fetch multiple pages at one time with `WikiPageExtensions.RefreshAsync` extension method, as long as you have a sequence of `WikiPage` objects. However, it's often the case that you're actually fetching pages using [generators](https://www.mediawiki.org/wiki/API:Generator), and that's what we're discussing in the section.
 
-You can query a list of pages, fetching their information (with or without content) with lists (i.e. generators), such as [`allpages`](https://www.mediawiki.org/wiki/API:Allpages), [`allcategories`](https://www.mediawiki.org/wiki/API:Allcategories), [`querypage`](https://www.mediawiki.org/wiki/API:Querypage), and [`recentchanges`](https://www.mediawiki.org/wiki/API:Recentchanges). Such generators are implemented in `WikiClientLibrary.Generators` namespace. Though there're still a lot of types of generators yet to be supported, the routine for implementing a `Generator` class is quite the same. Up till now, the following generators have been implemented
+You can query for a list of pages, fetching their information (with or without content) with lists (i.e. generators), such as [`allpages`](https://www.mediawiki.org/wiki/API:Allpages), [`allcategories`](https://www.mediawiki.org/wiki/API:Allcategories), [`querypage`](https://www.mediawiki.org/wiki/API:Querypage), and [`recentchanges`](https://www.mediawiki.org/wiki/API:Recentchanges). Such generators are implemented in `WikiClientLibrary.Generators` namespace. Though there're still a lot of types of generators yet to be supported, the routine for implementing a `Generator` class is quite the same. Up till now, the following generators have been implemented
 
 *   allpages
 *   allcategories
@@ -150,8 +159,8 @@ static async Task HelloWikiGenerators()
 {
     // Create a MediaWiki API client.
     var wikiClient = new WikiClient();
-    // Create a MediaWiki Site instance.
-    var site = await Site.CreateAsync(wikiClient, "https://en.wikipedia.org/w/api.php");
+    // Create a MediaWiki site instance.
+    var site = await WikiSite.CreateAsync(wikiClient, "https://en.wikipedia.org/w/api.php");
     // List all pages starting from item "Wiki", without redirect pages.
     var allpages = new AllPagesGenerator(site)
     {
@@ -185,8 +194,8 @@ static async Task HelloRecentChanges()
 {
     // Create a MediaWiki API client.
     var wikiClient = new WikiClient();
-    // Create a MediaWiki Site instance.
-    var site = await Site.CreateAsync(wikiClient, "https://en.wikipedia.org/w/api.php");
+    // Create a MediaWiki site instance.
+    var site = await WikiSite.CreateAsync(wikiClient, "https://en.wikipedia.org/w/api.php");
     var rcg = new RecentChangesGenerator(site)
     {
         TypeFilters = RecentChangesFilterTypes.Create,
@@ -246,8 +255,8 @@ static async Task InteractivePatrol()
 
     // Create a MediaWiki API client.
     var wikiClient = new WikiClient();
-    // Create a MediaWiki Site instance.
-    var site = await Site.CreateAsync(wikiClient, Input("Wiki site API URL"));
+    // Create a MediaWiki site instance.
+    var site = await WikiSite.CreateAsync(wikiClient, Input("Wiki site API URL"));
     await site.LoginAsync(Input("Username"), Input("Password"));
     var rcg = new RecentChangesGenerator(site)
     {
@@ -294,16 +303,14 @@ You can get/set/persist cookies with `WikiClient.CookieContainer` property.
 
 The following APIs have also been taken or partially taken into the library
 
-*   `opensearch`: See `Site.OpenSearch`.
-*   `parse`: See `Site.ParsePageAsync`,  `Site.ParseRevisionAsync`, and `Site.ParseContentAsync`. There's also a demo in `WpfTestApplication1`.
+*   `opensearch`: See `WikiSite.OpenSearch`.
+*   `parse`: See `WikiSite.ParsePageAsync`,  `WikiSite.ParseRevisionAsync`, and `WikiSite.ParseContentAsync`. There's also a demo in `WpfTestApplication1`.
 
-You can search for a valid MediaWiki entry point with `Site.SearchApiEndpointAsync`, given the URL of the website or the URL of a page on it. See `UnitTestProject1.SiteTests.SearchApiEndpointTest` for example.
+You can search for a valid MediaWiki entry point with `WikiSite.SearchApiEndpointAsync`, given the URL of the website or the URL of a page on it. See `UnitTestProject1.SiteTests.SearchApiEndpointTest` for example.
 
 For private wiki users, please take a look at Issue #4 of this repository.
 
 Lately I've been working on a .NET Wikitext parser, [MwParserFromScratch](https://github.com/CXuesong/MwParserFromScratch) , but it's not quite done yet.
-
-
 
 ## Behavior
 
