@@ -175,10 +175,10 @@ namespace WikiClientLibrary.Pages
             if (site == null) throw new ArgumentNullException(nameof(site));
             if (content == null) throw new ArgumentNullException(nameof(content));
             if (title == null) throw new ArgumentNullException(nameof(title));
-            var link = WikiLink.Parse(site, title);
+            var link = WikiLink.Parse(site, title, BuiltInNamespaces.File);
             if (link.Namespace.Id != BuiltInNamespaces.File)
                 throw new ArgumentException($"Invalid namespace for file title: {title} .", nameof(title));
-            var token = await site.GetTokenAsync("edit");
+            var token = await site.GetTokenAsync("edit", cancellationToken);
             long? streamPosition = null;
             HttpContent RequestFactory()
             {
@@ -214,7 +214,7 @@ namespace WikiClientLibrary.Pages
                 }
                 else if (content is UploadResult resultContent)
                 {
-                    var key = (resultContent).FileKey;
+                    var key = resultContent.FileKey;
                     if (string.IsNullOrEmpty(key))
                         throw new InvalidOperationException("The specified UploadResult has no valid FileKey.");
                     // sessionkey: Same as filekey, maintained for backward compatibility (deprecated in 1.18)
@@ -385,6 +385,10 @@ namespace WikiClientLibrary.Pages
             }
         }
 
+        /// <summary>
+        /// For <see cref="UploadResultCode.Warning"/> and <see cref="UploadResultCode.Continue"/>,
+        /// the file key to be passed into the next upload attempt. 
+        /// </summary>
         [JsonProperty]
         public string FileKey { get; private set; }
 

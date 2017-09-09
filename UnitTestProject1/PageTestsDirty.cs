@@ -80,16 +80,18 @@ The original title of the page is '''{title}'''.
             await page2.DeleteAsync(SummaryPrefix + "Delete the moved page.");
         }
 
-        [Fact]
-        public async Task LocalFileUploadTest1()
+        [Theory]
+        [InlineData("File:Test image.jpg")]
+        [InlineData("Test image.jpg")]
+        public async Task LocalFileUploadTest1(string fileName)
         {
-            const string FileName = "File:Test image.jpg";
             const string FileSHA1 = "81ED69FA2C2BDEEBBA277C326D1AAC9E0E57B346";
             const string ReuploadSuffix = "\n\nReuploaded.";
             var file = GetDemoImage();
+            UploadResult result;
             try
             {
-                await FilePage.UploadAsync(await SiteAsync, file.Item1, FileName, file.Item2, false);
+                result = await FilePage.UploadAsync(await SiteAsync, file.Item1, fileName, file.Item2, false);
             }
             catch (UploadException ex)
             {
@@ -97,11 +99,13 @@ The original title of the page is '''{title}'''.
                 // Usually we should notify the user.
                 if (ex.UploadResult.Warnings[0].Key == "exists")
                     // Just re-upload
-                    await FilePage.UploadAsync(await SiteAsync, ex.UploadResult, FileName, file.Item2 + ReuploadSuffix, true);
+                    result = await FilePage.UploadAsync(await SiteAsync, ex.UploadResult, fileName,
+                        file.Item2 + ReuploadSuffix, true);
                 else
                     throw;
             }
-            var fp = new FilePage(await SiteAsync, FileName);
+            ShallowTrace(result);
+            var fp = new FilePage(await SiteAsync, fileName);
             await fp.RefreshAsync();
             ShallowTrace(fp);
             Assert.True(fp.Exists);
