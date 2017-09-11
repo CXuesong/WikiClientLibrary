@@ -31,14 +31,20 @@ namespace WikiClientLibrary.Generators
         public WikiSite Site { get; }
 
         /// <summary>
-        /// Maximum items returned per request.
+        /// Maximum items requested per MediaWiki API invocation.
         /// </summary>
         /// <value>
-        /// Maximum count of items returned per request.
+        /// Maximum count of items returned per MediaWiki API invocation.
         /// <c>null</c> if using the default limit.
         /// (5000 for bots and 500 for users for normal requests,
         /// and 1/10 of the value when requesting for page content.)
         /// </value>
+        /// <remarks>
+        /// This property decides how many items returned at most per MediaWiki API invocation.
+        /// Note that the returned enumerator of <see cref="PageGenerator{T}.EnumPagesAsync()"/>
+        /// will automatically make MediaWiki API invocation to ask for the next batch of results,
+        /// when needed.
+        /// </remarks>
         public int? PagingSize
         {
             get { return _PagingSize; }
@@ -48,22 +54,6 @@ namespace WikiClientLibrary.Generators
                 _PagingSize = value;
             }
         }
-
-        /// <summary>
-        /// Gets the actual value of <see cref="PagingSize"/> used for request,
-        /// assuming the page content is not needed when enumerating pages.
-        /// </summary>
-        /// <value>
-        /// The same of <see cref="PagingSize"/> if specified, or the default limit
-        /// (5000 for bots and 500 for users) otherwise.
-        /// </value>
-        /// <remarks>
-        /// If <see cref="PagingSize"/> is <c>null</c>, and <see cref="PageQueryOptions.FetchContent"/> is specified when enumerating pages,
-        /// the default limit will be 1/10 of the original default limit (500 for bots and 50 for users),
-        /// but this property will only reflect the original default limit. (See https://www.mediawiki.org/wiki/API:Revisions .)
-        /// </remarks>
-        [Obsolete("Please use GetActualPagingSize(PageQueryOptions) instead.")]
-        public int ActualPagingSize => GetActualPagingSize();
 
         /// <summary>
         /// Gets the actual value of <see cref="PagingSize"/> used for request,
