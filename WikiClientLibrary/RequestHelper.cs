@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using WikiClientLibrary.Generators;
@@ -56,7 +57,7 @@ namespace WikiClientLibrary
             return generator.EnumJsonAsync(queryParams, actualPagingSize).SelectMany(jresult =>
             {
                 var pages = WikiPage.FromJsonQueryResult(generator.Site, jresult, options);
-                generator.Site.Logger?.Trace(generator.Site, $"Loaded {pages.Count} pages from {generator}.");
+                generator.logger.LogDebug("Loaded {Count} pages.", generator);
                 return pages.ToAsyncEnumerable();
             });
         }
@@ -77,7 +78,7 @@ namespace WikiClientLibrary
                     : 50;
                 foreach (var partition in sitePages.Partition(titleLimit).Select(partition => partition.ToList()))
                 {
-                    site.Logger?.Trace(site, $"Fetching {partition.Count} pages.");
+                    site.logger.LogDebug("Fetching {Count} pages from {Site}.", partition.Count, site);
                     // We use titles to query pages.
                     queryParams["titles"] = string.Join("|", partition.Select(p => p.Title));
                     var jobj = await site.PostValuesAsync(queryParams, cancellationToken);
@@ -134,7 +135,7 @@ namespace WikiClientLibrary
             var revPartition = revIds.Partition(titleLimit).Select(partition => partition.ToList())
                 .SelectAsync(async partition =>
                 {
-                    site.Logger?.Trace(site, $"Fetching {partition.Count} revisions.");
+                    site.logger.LogDebug("Fetching {Count} revisions from {Site}.", partition.Count, site);
                     queryParams["revids"] = string.Join("|", partition);
                     var jobj = await site.PostValuesAsync(queryParams, cancellationToken);
                     var jpages = (JObject) jobj["query"]["pages"];
@@ -199,7 +200,7 @@ namespace WikiClientLibrary
                     if (revisions != null)
                     {
                         resultCounter += revisions.Count;
-                        site.Logger?.Trace(site, $"Loaded {resultCounter} revisions of {generator.Page}.");
+                        site.logger.LogDebug("Fetching {Count} revisions from [[{Page}]].", resultCounter, generator.Page);
                         var result = revisions.ToObject<IList<Revision>>(serializer);
                         return result.ToAsyncEnumerable();
                     }
@@ -226,8 +227,8 @@ namespace WikiClientLibrary
                     : 50;
                 foreach (var partition in sitePages.Partition(titleLimit).Select(partition => partition.ToList()))
                 {
-                    site.Logger?.Trace(site, $"Purging {partition.Count} pages.");
-                    // We use titles to purge pages.
+                    site.logger.LogDebug("Purging {Count} pages on {Site}.", partition.Count, site);
+                    // We purge pages by titles.
                     try
                     {
                         var jresult = await site.PostValuesAsync(new
@@ -255,7 +256,8 @@ namespace WikiClientLibrary
                             var jpage = purgeStatusDict[title];
                             if (jpage["invalid"] != null || jpage["missing"] != null)
                             {
-                                site.Logger?.Warn(site, $"Cannot purge the page: {page}. {jpage["invalidreason"]}");
+                                site.logger.LogWarning("Cannot purge the page: [[{Page}]] on {Site}. {Reason}",
+                                    page, site, jpage["invalidreason"]);
                                 failedPages.Add(page);
                             }
                         }
@@ -376,7 +378,8 @@ namespace WikiClientLibrary
                     if (links != null)
                     {
                         resultCounter += links.Count;
-                        site.Logger?.Trace(site, $"Loaded {resultCounter} links out of {titlesExpr}.");
+                        site.logger.LogDebug("Loaded {Count} items linking to [[{Title}]] on {Site}.",
+                            resultCounter, titlesExpr, site);
                         return links.Select(l => (string) l["title"]).ToAsyncEnumerable();
                     }
                     return AsyncEnumerable.Empty<string>();
@@ -408,7 +411,8 @@ namespace WikiClientLibrary
                     if (links != null)
                     {
                         resultCounter += links.Count;
-                        site.Logger?.Trace(site, $"Loaded {resultCounter} links out of {titlesExpr}.");
+                        site.logger.LogDebug("Loaded {Count} items transcluded by [[{Title}]] on {Site}.",
+                            resultCounter, titlesExpr, site);
                         return links.Select(l => (string) l["title"]).ToAsyncEnumerable();
                     }
                     return AsyncEnumerable.Empty<string>();

@@ -6,6 +6,8 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
 using Newtonsoft.Json.Linq;
 using WikiClientLibrary.Client;
 using WikiClientLibrary.Infrastructures;
@@ -18,8 +20,10 @@ namespace WikiClientLibrary.Generators
     /// Represents a generator (or iterator) of <see cref="WikiPage"/>.
     /// Generator implementations should use its generic version, <see cref="PageGenerator{T}"/>, as base class.
     /// </summary>
-    public abstract class PageGeneratorBase
+    public abstract class PageGeneratorBase : IWikiClientLoggable
     {
+
+        internal ILogger logger = NullLogger.Instance;
         private int? _PagingSize;
 
         internal PageGeneratorBase(WikiSite site)
@@ -132,6 +136,11 @@ namespace WikiClientLibrary.Generators
         public override string ToString()
         {
             return GetType().Name;
+        }
+
+        public void SetLoggerFactory(ILoggerFactory factory)
+        {
+            logger = factory == null ? (ILogger)NullLogger.Instance : factory.CreateLogger(GetType());
         }
     }
 

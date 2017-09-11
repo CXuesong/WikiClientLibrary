@@ -4,6 +4,7 @@ using System.Runtime.Serialization;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using WikiClientLibrary.Pages;
 using WikiClientLibrary.Sites;
@@ -159,7 +160,7 @@ namespace WikiClientLibrary.Generators
             else if (Unpatrolled) PatrolStatus = PatrolStatus.Unpatrolled;
             else PatrolStatus = PatrolStatus.Unknown;
             if (Patrolled && Unpatrolled)
-                Site.Logger?.Warn(this, $"Patrolled and Unpatrolled are both set for rcid={Id}.");
+                Site.logger.LogWarning("Patrolled and Unpatrolled are both set for rcid={Id}, page {Page}.", Id, Title);
         }
 
         /// <summary>

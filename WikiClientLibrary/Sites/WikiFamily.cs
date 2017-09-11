@@ -3,6 +3,8 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
 using WikiClientLibrary.Client;
 
 namespace WikiClientLibrary.Sites
@@ -40,34 +42,11 @@ namespace WikiClientLibrary.Sites
     /// Provides a simple <see cref="IWikiFamily"/> implementation based on
     /// a list of API endpoint URLs.
     /// </summary>
-    public class WikiFamily : IWikiFamily, IReadOnlyCollection<string>
+    public class WikiFamily : IWikiFamily, IWikiClientLoggable, IReadOnlyCollection<string>
     {
 
-        public WikiClientBase WikiClient { get; }
-
-        private class SiteEntry
-        {
-            private volatile Task<WikiSite> _Task;
-
-            public SiteEntry(string prefix, string apiEndpoint)
-            {
-                Debug.Assert(prefix != null);
-                Debug.Assert(apiEndpoint != null);
-                Prefix = prefix;
-                ApiEndpoint = apiEndpoint;
-            }
-
-            public string Prefix { get; }
-
-            public string ApiEndpoint { get; }
-
-            public Task<WikiSite> Task
-            {
-                get { return _Task; }
-                set { _Task = value; }
-            }
-        }
-
+        private ILoggerFactory loggerFactory;
+        private ILogger logger = NullLogger.Instance;
         private readonly Dictionary<string, SiteEntry> sites = new Dictionary<string, SiteEntry>();
 
         /// <summary>
@@ -86,8 +65,11 @@ namespace WikiClientLibrary.Sites
             if (wikiClient == null) throw new ArgumentNullException(nameof(wikiClient));
             WikiClient = wikiClient;
             Name = name;
+            SetLoggerFactory(wikiClient.loggerFactory);
         }
 
+        public WikiClientBase WikiClient { get; }
+        
         /// <summary>
         /// Add a new wiki site into this family.
         /// </summary>
@@ -103,11 +85,6 @@ namespace WikiClientLibrary.Sites
 
         /// <inheritdoc />
         public string Name { get; set; }
-
-        /// <summary>
-        /// The logger used on this object, and all the generated <see cref="WikiSite"/>s.
-        /// </summary>
-        public ILogger Logger { get; set; }
 
         /// <inheritdoc />
         public string TryNormalize(string prefix)
@@ -156,8 +133,8 @@ namespace WikiClientLibrary.Sites
         protected virtual async Task<WikiSite> CreateSiteAsync(string prefix, string apiEndpoint)
         {
             var site = await WikiSite.CreateAsync(WikiClient, apiEndpoint);
-            site.Logger = Logger;
-            Logger?.Trace(this, $"Site {prefix} has been instantiated.");
+            site.SetLoggerFactory(loggerFactory);
+            logger.LogTrace("[[{Family}:{prefix}:]] has been instantiated.", Name, prefix);
             return site;
         }
 
@@ -172,5 +149,34 @@ namespace WikiClientLibrary.Sites
 
         /// <inheritdoc />
         public int Count => sites.Count;
+
+        public void SetLoggerFactory(ILoggerFactory factory)
+        {
+            logger = factory == null ? (ILogger) NullLogger.Instance : factory.CreateLogger<WikiFamily>();
+            loggerFactory = factory;
+        }
+
+        private class SiteEntry
+        {
+            private volatile Task<WikiSite> _Task;
+
+            public SiteEntry(string prefix, string apiEndpoint)
+            {
+                Debug.Assert(prefix != null);
+                Debug.Assert(apiEndpoint != null);
+                Prefix = prefix;
+                ApiEndpoint = apiEndpoint;
+            }
+
+            public string Prefix { get; }
+
+            public string ApiEndpoint { get; }
+
+            public Task<WikiSite> Task
+            {
+                get { return _Task; }
+                set { _Task = value; }
+            }
+        }
     }
 }

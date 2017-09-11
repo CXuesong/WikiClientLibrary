@@ -4,6 +4,7 @@ using System.Net.Http;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using WikiClientLibrary.Client;
@@ -100,7 +101,7 @@ namespace WikiClientLibrary
                 url = "http:" + url;
             try
             {
-                client.Logger?.Trace(client, "Test MediaWiki API: " + url);
+                client.logger.LogDebug("Test MediaWiki API endpoint: {Url}.", url);
                 var result = await DownloadStringAsync(client, url + "?action=query&format=json", false);
                 if (result == null) return null;
                 var content = result.Item2;

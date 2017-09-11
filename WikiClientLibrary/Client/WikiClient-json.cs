@@ -6,9 +6,9 @@ using System.Net.Http;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using Newtonsoft.Json.Serialization;
 
 namespace WikiClientLibrary.Client
 {
@@ -33,7 +33,7 @@ namespace WikiClientLibrary.Client
             cancellationToken.ThrowIfCancellationRequested();
             retries++;
             if (retries > 0)
-                Logger?.Trace(this, $"Retry x{retries}: {request.RequestUri}");
+                logger.LogDebug("Retry x{Retries}: {Uri}", retries, request.RequestUri);
             try
             {
                 // Use await instead of responseTask.Result to unwrap Exceptions.
@@ -48,12 +48,12 @@ namespace WikiClientLibrary.Client
             {
                 if (cancellationToken.IsCancellationRequested)
                 {
-                    Logger?.Warn(this, $"Cancelled: {request.RequestUri}");
+                    logger.LogWarning("Cancelled: {Uri}", request.RequestUri);
                     throw new OperationCanceledException();
                 }
                 else
                 {
-                    Logger?.Warn(this, $"Timeout: {request.RequestUri}");
+                    logger.LogWarning("Timeout: {Uri}", request.RequestUri);
                 }
                 request = requestFactory();
                 if (request == null || retries >= MaxRetries) throw new TimeoutException();
@@ -61,8 +61,8 @@ namespace WikiClientLibrary.Client
                 goto RETRY;
             }
             // Validate response.
-            Logger?.Trace(this, $"{response.StatusCode}: {request.RequestUri}");
-            var statusCode = (int) response.StatusCode;
+            logger.LogDebug("{Status}: {Uri}", response.StatusCode, request.RequestUri);
+            var statusCode = (int)response.StatusCode;
             if (statusCode >= 500 && statusCode <= 599)
             {
                 // Service Error. We can retry.
@@ -93,7 +93,7 @@ namespace WikiClientLibrary.Client
             catch (JsonReaderException)
             {
                 // Input is not a valid json.
-                Logger?.Warn(this, $"Received non-json content: {request.RequestUri}");
+                logger.LogWarning("Received non-json content: {Uri}", request.RequestUri);
                 request = requestFactory();
                 if (request == null || retries >= MaxRetries) throw;
                 goto RETRY;
@@ -132,27 +132,19 @@ namespace WikiClientLibrary.Client
         }
     }
              */
-            if (jresponse["warnings"] != null)
+            if (jresponse["warnings"] != null && logger.IsEnabled(LogLevel.Debug))
             {
-                if (Logger != null)
+                foreach (var module in ((JObject)jresponse["warnings"]).Properties())
                 {
-                    var sb = new StringBuilder();
-                    foreach (var module in ((JObject) jresponse["warnings"]).Properties())
-                    {
-                        if (sb.Length > 0) sb.AppendLine();
-                        sb.Append(module.Name);
-                        sb.Append(": ");
-                        sb.Append(module.Value["*"] ?? module.Value);
-                    }
-                    Logger.Warn(this, sb.ToString());
+                    logger.LogWarning("{Module}: {Warning}", module.Name, module.Value);
                 }
             }
             if (jresponse["error"] != null)
             {
                 var err = jresponse["error"];
-                var errcode = (string) err["code"];
+                var errcode = (string)err["code"];
                 // err["*"]: API usage.
-                var errmessage = ((string) err["info"]).Trim();
+                var errmessage = ((string)err["info"]).Trim();
                 switch (errcode)
                 {
                     case "permissiondenied":

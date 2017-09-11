@@ -7,6 +7,7 @@ using System.Linq;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using WikiClientLibrary.Client;
@@ -228,10 +229,11 @@ namespace WikiClientLibrary.Pages
                 if (ignoreWarnings) requestContent.Add(new StringContent(""), "ignorewarnings");
                 return requestContent;
             }
-            site.Logger?.Info(site, $"Uploading: {link.Title} .");
+            site.logger.LogDebug( "Uploading [[{Title}]] on {Site}.", link, site);
             var jresult = await site.PostContentAsync(RequestFactory, cancellationToken);
             var result = jresult["upload"].ToObject<UploadResult>(Utility.WikiJsonSerializer);
-            site.Logger?.Info(site, $"Upload[{link.Title}]: {result}.");
+            site.logger.LogInformation("Uploaded [[{Title}]] on {Site}. Result={Result}.",
+                link, site, result.ResultCode);
             switch (result.ResultCode)
             {
                 case UploadResultCode.Warning:

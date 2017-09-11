@@ -5,6 +5,7 @@ using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Linq;
 using System.Runtime.Serialization;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using WikiClientLibrary.Pages;
@@ -315,7 +316,9 @@ namespace WikiClientLibrary.Sites
                             // If the namespace alias already exists, check if they're pointing
                             // to the same NamespaceInfo
                             if (varns != ns)
-                                site.Logger?.Warn(this, $"Namespace alias collision: {name} for {ns} and {varns}.");
+                                site.logger.LogWarning(
+                                    "Namespace alias collision on {Site}: {Name} for {Value1} and {Value2}.",
+                                    site, name, ns, varns);
                         }
                         else
                         {
@@ -324,7 +327,7 @@ namespace WikiClientLibrary.Sites
                     }
                     else
                     {
-                        site.Logger?.Warn(this, $"Cannot find namespace {id} for alias {name} .");
+                        site.logger.LogWarning("Cannot find namespace {Id} for alias {Name}.", id, name);
                     }
                 }
             }

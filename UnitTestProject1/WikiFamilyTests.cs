@@ -22,7 +22,6 @@ namespace UnitTestProject1
             _Family = new Lazy<WikiFamily>(() =>
             {
                 var f = new WikiFamily(CreateWikiClient(), "Wikipedia");
-                f.Logger = new TestOutputLogger(output);
                 f.Register("en", GetWPEntrypoint("en"));
                 f.Register("fr", GetWPEntrypoint("fr"));
                 f.Register("test2", GetWPEntrypoint("test2"));

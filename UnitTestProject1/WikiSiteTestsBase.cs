@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 using WikiClientLibrary.Client;
 using WikiClientLibrary.Sites;
 using Xunit;
@@ -86,7 +87,6 @@ namespace UnitTestProject1
                 AccountAssertion = AccountAssertionBehavior.AssertAll
             };
             var site = await WikiSite.CreateAsync(wikiClient, options);
-            site.Logger = new TestOutputLogger(Output);
             if (sitesNeedsLogin.Contains(url))
             {
                 await CredentialManager.LoginAsync(site);
@@ -116,11 +116,13 @@ namespace UnitTestProject1
         {
             var client = new WikiClient
             {
-                Logger = new TestOutputLogger(Output),
                 Timeout = TimeSpan.FromSeconds(20),
                 RetryDelay = TimeSpan.FromSeconds(5),
                 ClientUserAgent = "UnitTest/1.0 (.NET CLR)",
             };
+            var lf = new LoggerFactory();
+            lf.AddProvider(new TestOutputLoggerProvider(Output));
+            client.SetLoggerFactory(lf);
             return client;
         }
 

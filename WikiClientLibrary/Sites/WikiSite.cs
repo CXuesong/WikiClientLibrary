@@ -5,6 +5,8 @@ using System.Linq;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
 using Newtonsoft.Json.Linq;
 using WikiClientLibrary.Client;
 using WikiClientLibrary.Infrastructures;
@@ -15,10 +17,12 @@ namespace WikiClientLibrary.Sites
     /// <summary>
     /// Represents a MediaWiki site.
     /// </summary>
-    public partial class WikiSite
+    public partial class WikiSite : IWikiClientLoggable
     {
 
         private readonly SiteOptions options;
+        internal ILoggerFactory loggerFactory;
+        internal ILogger logger = NullLogger.Instance;
 
         #region Services
 
@@ -26,11 +30,6 @@ namespace WikiClientLibrary.Sites
         /// Gets the <see cref="WikiClientBase" /> used to perform the requests.
         /// </summary>
         public WikiClientBase WikiClient { get; }
-
-        /// <summary>
-        /// Gets or sets the <see cref="ILogger"/> used to log the requests.
-        /// </summary>
-        public ILogger Logger { get; set; }
 
         /// <summary>
         /// A handler used to re-login when account assertion fails.
@@ -76,6 +75,7 @@ namespace WikiClientLibrary.Sites
             if (string.IsNullOrEmpty(options.ApiEndpoint))
                 throw new ArgumentException("Invalid API endpoint url.", nameof(options));
             var site = new WikiSite(wikiClient, options);
+            site.SetLoggerFactory(wikiClient.loggerFactory);
             if (!options.ExplicitInfoRefresh)
                 await Task.WhenAll(site.RefreshSiteInfoAsync(), site.RefreshAccountInfoAsync());
             return site;
@@ -327,11 +327,11 @@ namespace WikiClientLibrary.Sites
             {
                 if (AccountAssertionFailureHandler != null)
                 {
-                    // TODO Not thread safe?
+                    // TODO Relogin might be called nultiple times.
                     if (reLoginTask == null)
                     {
                         reLoginTask = Relogin();
-                        Logger?.Warn(this, "Account assertion failed. Try to handle this.");
+                        logger.LogWarning("{Site} account assertion failed. Try to relogin.", ToString());
                     }
                     var result = await reLoginTask;
                     if (result) goto RETRY;
@@ -753,7 +753,7 @@ namespace WikiClientLibrary.Sites
                         break;
                     case "Throttled":
                         var time = (int) jobj["login"]["wait"];
-                        Logger?.Warn(this, $"Throttled: {time}sec.");
+                        logger.LogWarning("{Site} login throttled: {Time}sec.", ToString(), time);
                         await Task.Delay(TimeSpan.FromSeconds(time), cancellationToken);
                         goto RETRY;
                     case "NeedToken":
@@ -823,6 +823,13 @@ namespace WikiClientLibrary.Sites
         public override string ToString()
         {
             return string.IsNullOrEmpty(SiteInfo.SiteName) ? options.ApiEndpoint : SiteInfo.SiteName;
+        }
+
+        /// <inheritdoc />
+        public void SetLoggerFactory(ILoggerFactory factory)
+        {
+            logger = factory == null ? (ILogger)NullLogger.Instance : factory.CreateLogger<WikiSite>();
+            loggerFactory = factory;
         }
     }
 

@@ -5,6 +5,8 @@ using System.Linq;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
@@ -13,13 +15,13 @@ namespace WikiClientLibrary.Client
     /// <summary>
     /// Provides basic operations for MediaWiki API.
     /// </summary>
-    public abstract class WikiClientBase : IDisposable
+    public abstract class WikiClientBase : IWikiClientLoggable, IDisposable
     {
 
         private int _MaxRetries = 3;
-
-        public ILogger Logger { get; set; }
-
+        internal ILoggerFactory loggerFactory = null;
+        internal ILogger logger = NullLogger.Instance;
+        
         /// <summary>
         /// Timeout for each query.
         /// </summary>
@@ -109,5 +111,13 @@ namespace WikiClientLibrary.Client
         {
             Dispose(false);
         }
+
+        /// <inheritdoc />
+        public void SetLoggerFactory(ILoggerFactory factory)
+        {
+            logger = factory == null ? (ILogger) NullLogger.Instance : factory.CreateLogger<WikiClient>();
+            loggerFactory = factory;
+        }
+
     }
 }
