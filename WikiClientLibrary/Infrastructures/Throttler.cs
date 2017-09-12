@@ -5,6 +5,8 @@ using System.Diagnostics;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
 
 namespace WikiClientLibrary.Infrastructures
 {
@@ -14,8 +16,10 @@ namespace WikiClientLibrary.Infrastructures
     /// <remarks>
     /// The usage of throttler implies the forced serial operations.
     /// </remarks>
-    public class Throttler
+    public class Throttler : IWikiClientLoggable
     {
+
+        private ILogger logger = NullLogger.Instance;
         private WorkItem lastWork;
         private int _QueuedWorkCount;
         private readonly object workQueueLock = new object();
@@ -41,6 +45,10 @@ namespace WikiClientLibrary.Infrastructures
                     if (previousWork != null)
                     {
                         // Wait for previous work.
+                        if (logger.IsEnabled(LogLevel.Debug))
+                        {
+                            logger.LogDebug("{Work}: Waiting for {WorkItems} WorkItem(s).", thisWork, QueuedWorkCount);
+                        }
                         if (ct.CanBeCanceled)
                         {
                             // With cancellation support.
@@ -56,6 +64,7 @@ namespace WikiClientLibrary.Infrastructures
                         }
                     }
                     ct.ThrowIfCancellationRequested();
+                    logger.LogDebug("{Work}: Waiting for delay {Delay}.", thisWork, _ThrottleTime);
                     await Task.Delay(_ThrottleTime, ct);
                 }
                 catch (OperationCanceledException)
@@ -114,8 +123,8 @@ namespace WikiClientLibrary.Infrastructures
                 lock (workQueueLock) return lastWork?.Completion ?? completedTask;
             }
         }
-
-        [DebuggerDisplay("{Name}")]
+        
+        [DebuggerDisplay("{Name}#{GetHashCode()}")]
         private class WorkItem : IDisposable
         {
             private readonly TaskCompletionSource<bool> completionTcs = new TaskCompletionSource<bool>();
@@ -136,7 +145,16 @@ namespace WikiClientLibrary.Infrastructures
             {
                 completionTcs.TrySetResult(true);
             }
+
+            public override string ToString()
+            {
+                return Name + "#" + GetHashCode();
+            }
         }
 
+        public void SetLoggerFactory(ILoggerFactory factory)
+        {
+            logger = factory == null ? (ILogger) NullLogger.Instance : factory.CreateLogger(GetType());
+        }
     }
 }

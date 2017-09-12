@@ -36,15 +36,23 @@ namespace WikiClientLibrary.Sites
         /// </summary>
         public IAccountAssertionFailureHandler AccountAssertionFailureHandler { get; set; }
 
-        private Throttler _ModificationThrottler = new Throttler();
+        private Throttler _ModificationThrottler;
 
         /// <summary>
         /// A throttler used to enforce the speed limitation when performing edit/move/delete operations.
         /// </summary>
         public Throttler ModificationThrottler
         {
-            get => _ModificationThrottler;
-            set => _ModificationThrottler = value ?? new Throttler();
+            get
+            {
+                return LazyInitializer.EnsureInitialized(ref _ModificationThrottler, () =>
+                {
+                    var t = new Throttler();
+                    t.SetLoggerFactory(loggerFactory);
+                    return t;
+                });
+            }
+            set { _ModificationThrottler = value; }
         }
 
         #endregion
@@ -828,7 +836,7 @@ namespace WikiClientLibrary.Sites
         /// <inheritdoc />
         public void SetLoggerFactory(ILoggerFactory factory)
         {
-            logger = factory == null ? (ILogger)NullLogger.Instance : factory.CreateLogger<WikiSite>();
+            logger = factory == null ? (ILogger) NullLogger.Instance : factory.CreateLogger<WikiSite>();
             loggerFactory = factory;
         }
     }

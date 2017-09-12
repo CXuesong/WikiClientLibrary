@@ -23,7 +23,7 @@ namespace WikiClientLibrary.Pages
     /// </summary>
     public partial class WikiPage : IWikiClientLoggable
     {
-
+        
         private ILogger logger = NullLogger.Instance;
 
         public WikiPage(WikiSite site, string title) : this(site, title, BuiltInNamespaces.Main)
