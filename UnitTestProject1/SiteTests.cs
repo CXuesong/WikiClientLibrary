@@ -206,7 +206,7 @@ namespace UnitTestProject1
             var result = await site.OpenSearchAsync("San");
             ShallowTrace(result);
             Assert.True(result.Count > 0);
-            Assert.True(result.Any(e => e.Title == "Sandbox"));
+            Assert.Contains(result, e => e.Title == "Sandbox");
         }
 
         [Fact]
@@ -218,7 +218,7 @@ namespace UnitTestProject1
             ShallowTrace(result[0]);
             ShallowTrace(result[1]);
             Assert.True(result[0].Count > 0);
-            Assert.True(result[0].Any(e => e.Title == "Sandbox"));
+            Assert.Contains(result[0], e => e.Title == "Sandbox");
             Assert.True(result[1].Count == 0);
         }
 

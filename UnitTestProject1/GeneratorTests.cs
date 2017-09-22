@@ -250,7 +250,7 @@ namespace UnitTestProject1
         {
             var site = await WpTest2SiteAsync;
             var sp = await QueryPageGenerator.GetQueryPageNamesAsync(site);
-            Assert.True(sp.Contains("Uncategorizedpages"));
+            Assert.Contains("Uncategorizedpages", sp);
             ShallowTrace(sp);
         }
 
@@ -275,9 +275,9 @@ namespace UnitTestProject1
             // Note as 2017-03-07, [[維基]] actually exists on lzh wiki, but it's a redirect to [[維基媒體基金會]].
             // Maybe that's why it's not included in the search result.
             //Assert.True(pages.Any(p => p.Title == "維基"));
-            Assert.True(pages.Any(p => p.Title == "維基媒體基金會"));
-            Assert.True(pages.Any(p => p.Title == "維基大典"));
-            Assert.True(pages.Any(p => p.Title == "文言維基大典"));
+            Assert.Contains(pages, p => p.Title == "維基媒體基金會");
+            Assert.Contains(pages, p => p.Title == "維基大典");
+            Assert.Contains(pages, p => p.Title == "文言維基大典");
         }
 
         [Fact]
@@ -285,7 +285,7 @@ namespace UnitTestProject1
         {
             var site = await WikiaTestSiteAsync;
             var sp = await QueryPageGenerator.GetQueryPageNamesAsync(site);
-            Assert.True(sp.Contains("Uncategorizedpages"));
+            Assert.Contains("Uncategorizedpages", sp);
             ShallowTrace(sp);
         }
 

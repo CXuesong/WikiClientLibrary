@@ -29,7 +29,7 @@ namespace UnitTestProject1
             Assert.True(result.Interlanguages.First(l => l.Language == "en").PageTitle == "1952");
             Assert.True(result.Interlanguages.First(l => l.Language == "zh").PageTitle == "1952年");
             Assert.Contains("<p><b>一九五二年</b>，繼<b>", result.Content);
-            Assert.True(result.Sections.Any(s => s.Heading == "大事"));
+            Assert.Contains(result.Sections, s => s.Heading == "大事");
         }
 
         [Fact]
@@ -46,7 +46,7 @@ namespace UnitTestProject1
             result = await site.ParseContentAsync("{{ambox}}", "Summary.", "TITLE",
                 ParsingOptions.LimitReport | ParsingOptions.TranscludedPages);
             ShallowTrace(result, 4);
-            Assert.True(result.TranscludedPages.Any(p => p.Title == "Template:Ambox"));
+            Assert.Contains(result.TranscludedPages, p => p.Title == "Template:Ambox");
             Assert.True(result.ParserLimitReports.First(r => r.Name == "limitreport-expansiondepth").Value > 1);
         }
     }

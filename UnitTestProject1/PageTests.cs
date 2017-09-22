@@ -139,9 +139,9 @@ namespace UnitTestProject1
             Output.WriteLine(page.ToString());
             var links = await page.EnumLinksAsync().ToList();
             ShallowTrace(links);
-            Assert.True(links.Contains("文言維基大典"));
-            Assert.True(links.Contains("幫助:凡例"));
-            Assert.True(links.Contains("維基大典:卓著"));
+            Assert.Contains("文言維基大典", links);
+            Assert.Contains("幫助:凡例", links);
+            Assert.Contains("維基大典:卓著", links);
         }
 
         [Fact]
