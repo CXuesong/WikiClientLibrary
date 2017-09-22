@@ -78,7 +78,7 @@ namespace WikiClientLibrary.Infrastructures
                                 duplicateKeys.Add(jpage.Key);
                             }
                         }
-                        var originalPageCount = pages;
+                        var originalPageCount = pages.Count;
                         foreach (var k in duplicateKeys) pages.Remove(k);
                         _Site.logger.LogWarning("Received {Count} results on {Site}, {DistinctCount} distinct results.",
                             originalPageCount, _Site, pages.Count);
