@@ -1,4 +1,9 @@
-﻿using System;
+﻿// Enables the following conditional switch here
+// to prevent test cases from making any edits.
+
+//#define DRY_RUN
+
+using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading;
@@ -100,7 +105,7 @@ namespace UnitTestProject1
         protected static void AssertModify()
         {
 #if DRY_RUN
-            Utility.Inconclusive("Remove #define DRY_RUN to perform edit tests.");
+            throw new SkipException("Remove #define DRY_RUN to perform edit tests.");
 #endif
         }
 

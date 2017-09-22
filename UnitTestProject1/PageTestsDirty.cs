@@ -1,6 +1,4 @@
-﻿// Enables the following conditional switch in the project options
-// to prevent test cases from making any edits.
-//          DRY_RUN
+﻿// To prevent test cases from making any edits, See WikiSiteTestsBase.cs.
 
 using System;
 using System.Diagnostics;
@@ -40,7 +38,7 @@ namespace UnitTestProject1
         public PageTestsDirty(ITestOutputHelper output) : base(output)
         {
             if (CredentialManager.DirtyTestsEntryPointUrl == null)
-                Utility.Inconclusive("You need to specify CredentialManager.DirtyTestsEntryPointUrl before running this group of tests.");
+                throw new SkipException("You need to specify CredentialManager.DirtyTestsEntryPointUrl before running this group of tests.");
             SiteNeedsLogin(CredentialManager.DirtyTestsEntryPointUrl);
         }
 
@@ -137,7 +135,7 @@ The original title of the page is '''{title}'''.
                     }
                     catch (UploadException ex)
                     {
-                        Utility.Inconclusive(
+                        throw new SkipException(
                             "Your network speed might be too fast for the current timeout.\nException:" +
                             ex.Message);
                     }
@@ -154,7 +152,7 @@ The original title of the page is '''{title}'''.
                 "File:Null.png", "This upload should have failed.", false));
         }
 
-        [Fact]
+        [SkippableFact]
         public async Task ExternalFileUploadTest1()
         {
             const string SourceUrl = "https://upload.wikimedia.org/wikipedia/commons/5/55/8-cell-simple.gif";

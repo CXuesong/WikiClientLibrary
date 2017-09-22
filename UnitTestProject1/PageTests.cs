@@ -155,7 +155,7 @@ namespace UnitTestProject1
             ShallowTrace(page);
         }
 
-        [Fact]
+        [SkippableFact]
         public async Task WpTest2PageWriteTest1()
         {
             AssertModify();
@@ -167,7 +167,7 @@ namespace UnitTestProject1
             await page.UpdateContentAsync(SummaryPrefix + "Edit sandbox page.");
         }
 
-        [Fact]
+        [SkippableFact]
         public async Task WpTest2PageWriteTest2()
         {
             AssertModify();
@@ -180,7 +180,7 @@ namespace UnitTestProject1
                 page.UpdateContentAsync(SummaryPrefix + "Attempt to edit a protected page."));
         }
 
-        [Fact]
+        [SkippableFact]
         public async Task WpTest2PageWriteTest3()
         {
             AssertModify();
@@ -193,7 +193,7 @@ namespace UnitTestProject1
                 page.UpdateContentAsync(SummaryPrefix + "Attempt to edit a special page."));
         }
 
-        [Fact]
+        [SkippableFact]
         public async Task WpTest2BulkPurgeTest()
         {
             AssertModify();
@@ -212,7 +212,7 @@ namespace UnitTestProject1
             Assert.Same(badPage, failedPages.Single());
         }
 
-        [Fact]
+        [SkippableFact]
         public async Task WpTest2PagePurgeTest()
         {
             AssertModify();
@@ -230,7 +230,7 @@ namespace UnitTestProject1
             Assert.False(result);
         }
 
-        [Fact]
+        [SkippableFact]
         public async Task WikiaPageWriteTest1()
         {
             AssertModify();

@@ -211,7 +211,7 @@ namespace UnitTestProject1
             ShallowTrace(rc, 1);
         }
 
-        [Fact]
+        [SkippableFact]
         public async Task WpTest2PatrolTest1()
         {
             var site = await WpTest2SiteAsync;
@@ -220,7 +220,8 @@ namespace UnitTestProject1
                 LastRevisionsOnly = true,
             };
             var rc = generator.EnumRecentChanges().Take(2).ToList();
-            if (rc.Count < 1) Utility.Inconclusive();
+            Skip.If(rc.Count < 1);
+            // We haven't logged in.
             await Assert.ThrowsAsync<UnauthorizedOperationException>(() => rc[0].PatrolAsync());
         }
 

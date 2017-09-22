@@ -142,11 +142,11 @@ namespace UnitTestProject1
         /// <summary>
         /// Tests <see cref="SiteOptions.ExplicitInfoRefresh"/>.
         /// </summary>
-        [Fact]
+        [SkippableFact]
         public async Task LoginPrivateWikiTest()
         {
             if (string.IsNullOrEmpty(CredentialManager.PrivateWikiTestsEntryPointUrl))
-                Utility.Inconclusive("The test needs CredentialManager.PrivateWikiTestsEntryPointUrl to be set.");
+                throw new SkipException("The test needs CredentialManager.PrivateWikiTestsEntryPointUrl to be set.");
             var client = CreateWikiClient();
             // Load cookies, if any. Here we just create a client from scratch.
             var site = await WikiSite.CreateAsync(client,

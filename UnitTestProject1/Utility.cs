@@ -12,6 +12,7 @@ using System.Runtime.ExceptionServices;
 using WikiClientLibrary.Client;
 using WikiClientLibrary.Sites;
 using Xunit;
+using Xunit.Abstractions;
 
 namespace UnitTestProject1
 {
@@ -95,7 +96,7 @@ namespace UnitTestProject1
         public static void AssertLoggedIn(WikiSite site)
         {
             if (site == null) throw new ArgumentNullException(nameof(site));
-            if (!site.AccountInfo.IsUser) Utility.Inconclusive($"User {site.AccountInfo} has not logged into {site}.");
+            if (!site.AccountInfo.IsUser) throw new SkipException($"User {site.AccountInfo} has not logged into {site}.");
         }
 
         public static Tuple<Stream, string> GetDemoImage()
@@ -108,16 +109,6 @@ namespace UnitTestProject1
                 var desc = r.ReadToEnd();
                 return Tuple.Create(content, desc);
             }
-        }
-
-        public static void Inconclusive()
-        {
-            Inconclusive(null);
-        }
-
-        public static void Inconclusive(string message)
-        {
-            throw new Exception("[Inconclusive]" + message);
         }
     }
 }
