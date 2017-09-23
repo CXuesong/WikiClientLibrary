@@ -93,7 +93,7 @@ namespace WikiClientLibrary
     public class AccountAssertionFailureException : OperationFailedException
     {
         public AccountAssertionFailureException(string errorCode, string message)
-            : base(message)
+            : base(errorCode, message)
         { }
     }
 
