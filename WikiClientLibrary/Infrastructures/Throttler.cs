@@ -153,11 +153,6 @@ namespace WikiClientLibrary.Infrastructures
             }
         }
 
-        public void SetLoggerFactory(ILoggerFactory factory)
-        {
-            logger = factory == null ? (ILogger) NullLogger.Instance : factory.CreateLogger(GetType());
-        }
-
         /// <inheritdoc />
         public ILoggerFactory LoggerFactory
         {

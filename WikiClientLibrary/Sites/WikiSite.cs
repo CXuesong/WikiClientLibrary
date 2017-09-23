@@ -21,7 +21,6 @@ namespace WikiClientLibrary.Sites
     {
 
         private readonly SiteOptions options;
-        internal ILoggerFactory loggerFactory;
 
         #region Services
 
@@ -36,6 +35,7 @@ namespace WikiClientLibrary.Sites
         public IAccountAssertionFailureHandler AccountAssertionFailureHandler { get; set; }
 
         private Throttler _ModificationThrottler;
+        private readonly TokensManager tokensManager;
 
         /// <summary>
         /// A throttler used to enforce the speed limitation when performing edit/move/delete operations.
@@ -46,8 +46,7 @@ namespace WikiClientLibrary.Sites
             {
                 return LazyInitializer.EnsureInitialized(ref _ModificationThrottler, () =>
                 {
-                    var t = new Throttler();
-                    t.SetLoggerFactory(loggerFactory);
+                    var t = new Throttler {LoggerFactory = LoggerFactory};
                     return t;
                 });
             }
@@ -81,8 +80,7 @@ namespace WikiClientLibrary.Sites
             if (options == null) throw new ArgumentNullException(nameof(options));
             if (string.IsNullOrEmpty(options.ApiEndpoint))
                 throw new ArgumentException("Invalid API endpoint url.", nameof(options));
-            var site = new WikiSite(wikiClient, options);
-            site.LoggerFactory = wikiClient.LoggerFactory;
+            var site = new WikiSite(wikiClient, options) {LoggerFactory = wikiClient.LoggerFactory};
             if (!options.ExplicitInfoRefresh)
                 await Task.WhenAll(site.RefreshSiteInfoAsync(), site.RefreshAccountInfoAsync());
             return site;
@@ -111,6 +109,7 @@ namespace WikiClientLibrary.Sites
             Debug.Assert(options != null);
             WikiClient = wikiClient;
             this.options = options.Clone();
+            tokensManager = new TokensManager(this);
             DisambiguationTemplatesAsync = new AsyncLazy<ICollection<string>>(async () =>
             {
                 if (this.options.DisambiguationTemplates == null)
@@ -405,75 +404,6 @@ namespace WikiClientLibrary.Sites
         #region Tokens
 
         /// <summary>
-        /// Tokens that have been merged into CSRF token since MediaWiki 1.24 .
-        /// </summary>
-        private static readonly string[] CsrfTokens =
-        {
-            "edit", "delete", "protect", "move", "block", "unblock", "email",
-            "import"
-        };
-
-        private readonly Dictionary<string, string> _TokensCache = new Dictionary<string, string>();
-
-        /// <summary>
-        /// Fetch tokens. (MediaWiki 1.24)
-        /// </summary>
-        /// <param name="tokenTypeExpr">Token types, joined by | .</param>
-        /// <param name="cancellationToken">The cancellation token that will be checked prior to completing the returned task.</param>
-        private async Task<JObject> FetchTokensAsync2(string tokenTypeExpr, CancellationToken cancellationToken)
-        {
-            var jobj = await PostValuesAsync(new
-            {
-                action = "query",
-                meta = "tokens",
-                type = tokenTypeExpr,
-            }, true, cancellationToken);
-            var warnings = jobj["warnings"]?["tokens"];
-            if (warnings != null)
-            {
-                // "*": "Unrecognized value for parameter 'type': xxxx"
-                var warn = (string) warnings["*"];
-                if (warn != null && warn.Contains("Unrecognized value") && warn.Contains("type"))
-                    throw new ArgumentException(warn, nameof(tokenTypeExpr));
-                throw new OperationFailedException(warnings.ToString());
-            }
-            return (JObject) jobj["query"]["tokens"];
-        }
-
-        /// <summary>
-        /// Fetch tokens. (MediaWiki &lt; 1.24)
-        /// </summary>
-        /// <param name="tokenTypeExpr">Token types, joined by | .</param>
-        /// <param name="cancellationToken">The cancellation token that will be checked prior to completing the returned task.</param>
-        private async Task<JObject> FetchTokensAsync(string tokenTypeExpr, CancellationToken cancellationToken)
-        {
-            Debug.Assert(!tokenTypeExpr.Contains("patrol"));
-            var jobj = await PostValuesAsync(new
-            {
-                action = "query",
-                prop = "info",
-                titles = "Dummy Title",
-                intoken = tokenTypeExpr,
-            }, true, cancellationToken);
-            var page = (JObject) ((JProperty) jobj["query"]["pages"].First).Value;
-            return new JObject(page.Properties().Where(p => p.Name.EndsWith("token")));
-        }
-
-        /// <summary>
-        /// Request tokens for operations.
-        /// </summary>
-        /// <param name="tokenTypes">The names of token.</param>
-        /// <param name="cancellationToken">The cancellation token that will be checked prior to completing the returned task.</param>
-        /// <remarks>See https://www.mediawiki.org/wiki/API:Tokens .</remarks>
-        public Task<IDictionary<string, string>> GetTokensAsync(IEnumerable<string> tokenTypes,
-            CancellationToken cancellationToken)
-        {
-            return GetTokensAsync(tokenTypes, false, cancellationToken);
-        }
-
-        private readonly SemaphoreSlim fetchTokensAsyncCoreSemaphore = new SemaphoreSlim(1, 1);
-
-        /// <summary>
         /// Request tokens for operations.
         /// </summary>
         /// <param name="tokenTypes">The names of token. Names should be as accurate as possible (E.g. use "edit" instead of "csrf").</param>
@@ -484,145 +414,10 @@ namespace WikiClientLibrary.Sites
         /// <para>This method is thread-safe.</para>
         /// <para>See https://www.mediawiki.org/wiki/API:Tokens .</para>
         /// </remarks>
-        public async Task<IDictionary<string, string>> GetTokensAsync(IEnumerable<string> tokenTypes, bool forceRefetch,
+        public Task<IDictionary<string, string>> GetTokensAsync(IEnumerable<string> tokenTypes, bool forceRefetch,
             CancellationToken cancellationToken)
         {
-            if (tokenTypes == null) throw new ArgumentNullException(nameof(tokenTypes));
-            List<string> pendingtokens = null;
-            var result = new Dictionary<string, string>();
-            lock (_TokensCache)
-            {
-                foreach (var tt in tokenTypes)
-                {
-                    if (string.IsNullOrEmpty(tt))
-                        throw new ArgumentException("tokenTypes contains null or empty item.", nameof(tokenTypes));
-                    if (forceRefetch || !_TokensCache.TryGetValue(tt, out var value))
-                    {
-                        if (pendingtokens == null) pendingtokens = new List<string>();
-                        pendingtokens.Add(tt);
-                    }
-                    else
-                    {
-                        result[tt] = value;
-                    }
-                }
-            }
-            if (pendingtokens != null)
-            {
-                await fetchTokensAsyncCoreSemaphore.WaitAsync(cancellationToken);
-                try
-                {
-                    // In case some tokens have just been fetched…
-                    if (!forceRefetch)
-                    {
-                        lock (_TokensCache)
-                        {
-                            for (int i = 0; i < pendingtokens.Count; i++)
-                            {
-                                if (_TokensCache.TryGetValue(pendingtokens[i], out var value))
-                                {
-                                    result[pendingtokens[i]] = value;
-                                    pendingtokens.RemoveAt(i);
-                                    i--;
-                                }
-                            }
-                        }
-                    }
-                    await FetchTokensAsyncCore(pendingtokens, cancellationToken);
-                }
-                finally
-                {
-                    fetchTokensAsyncCoreSemaphore.Release();
-                }
-                lock (_TokensCache)
-                {
-                    foreach (var key in pendingtokens)
-                    {
-                        if (_TokensCache.TryGetValue(key, out var value))
-                        {
-                            result[key] = value;
-                        }
-                        else
-                        {
-                            throw new InvalidOperationException("Unrecognized token: " + key + ".");
-                        }
-                    }
-                }
-            }
-            return result;
-        }
-
-        private async Task FetchTokensAsyncCore(IList<string> tokenTypes, CancellationToken cancellationToken)
-        {
-            JObject fetchedTokens = null;
-            var localTokenTypes = tokenTypes.ToList();
-            if (SiteInfo.Version < new Version("1.24"))
-            {
-                /*
-                 Patrol was added in v1.14.
-                 Until v1.16, the patrol token is same as the edit token.
-                 For v1.17-19, the patrol token must be obtained from the query
-                 list recentchanges.
-                 */
-                // Check whether we need a patrol token.
-                if (SiteInfo.Version < new Version("1.20") && localTokenTypes.Remove("patrol"))
-                {
-                    if (!_TokensCache.ContainsKey("patrol"))
-                    {
-                        string patrolToken;
-                        if (SiteInfo.Version < new Version("1.17"))
-                        {
-                            patrolToken = await GetTokenAsync("edit");
-                        }
-                        else
-                        {
-                            var jobj = await PostValuesAsync(new
-                            {
-                                action = "query",
-                                meta = "recentchanges",
-                                rctoken = "patrol",
-                                rclimit = 1
-                            }, cancellationToken);
-                            patrolToken = (string) jobj["query"]["recentchanges"]["patroltoken"];
-                        }
-                        _TokensCache["patrol"] = patrolToken;
-                    }
-                }
-                if (localTokenTypes.Count > 0)
-                    fetchedTokens = await FetchTokensAsync(string.Join("|", localTokenTypes), cancellationToken);
-            }
-            else
-            {
-                // Use csrf token if possible.
-                if (!localTokenTypes.Contains("csrf"))
-                {
-                    var needCsrf = false;
-                    foreach (var t in CsrfTokens)
-                    {
-                        if (localTokenTypes.Remove(t)) needCsrf = true;
-                    }
-                    if (needCsrf) localTokenTypes.Add("csrf");
-                }
-                if (localTokenTypes.Count > 0)
-                {
-                    fetchedTokens = await FetchTokensAsync2(string.Join("|", localTokenTypes), cancellationToken);
-                    var csrf = (string) fetchedTokens["csrftoken"];
-                    if (csrf != null)
-                    {
-                        foreach (var t in CsrfTokens) _TokensCache[t] = csrf;
-                    }
-                }
-            }
-            // Put tokens into cache first.
-            if (fetchedTokens == null) return;
-            foreach (var p in fetchedTokens.Properties())
-            {
-                // Remove "token" in the result
-                var tokenName = p.Name.EndsWith("token")
-                    ? p.Name.Substring(0, p.Name.Length - 5)
-                    : p.Name;
-                _TokensCache[tokenName] = (string) p.Value;
-            }
+            return tokensManager.GetTokensAsync(tokenTypes, forceRefetch, cancellationToken);
         }
 
         /// <summary>
@@ -663,14 +458,9 @@ namespace WikiClientLibrary.Sites
         /// <param name="tokenType">The name of token.</param>
         /// <param name="forceRefetch">Whether to fetch token from server, regardless of the cache.</param>
         /// <remarks>See https://www.mediawiki.org/wiki/API:Tokens .</remarks>
-        public async Task<string> GetTokenAsync(string tokenType, bool forceRefetch,
-            CancellationToken cancellationToken)
+        public Task<string> GetTokenAsync(string tokenType, bool forceRefetch, CancellationToken cancellationToken)
         {
-            if (tokenType == null) throw new ArgumentNullException(nameof(tokenType));
-            if (tokenType.Contains("|"))
-                throw new ArgumentException("Pipe character in token type name.", nameof(tokenType));
-            var dict = await GetTokensAsync(new[] {tokenType}, forceRefetch, cancellationToken);
-            return dict.Values.Single();
+            return tokensManager.GetTokenAsync(tokenType, forceRefetch, cancellationToken);
         }
 
         #endregion
@@ -752,7 +542,7 @@ namespace WikiClientLibrary.Sites
                 switch (result)
                 {
                     case "Success":
-                        lock (_TokensCache) _TokensCache.Clear();
+                        tokensManager.ClearCache();
                         await RefreshAccountInfoAsync();
                         Debug.Assert(AccountInfo.IsUser,
                             "API result indicates the login is successful, but you are not currently in \"user\" group. Are you logging out on the other Site instance with the same API endpoint and the same WikiClient?");
@@ -800,7 +590,7 @@ namespace WikiClientLibrary.Sites
                 {
                     action = "logout",
                 }, true, CancellationToken.None);
-                lock (_TokensCache) _TokensCache.Clear();
+                tokensManager.ClearCache();
                 if (options.ExplicitInfoRefresh)
                     _AccountInfo = null;
                 else
