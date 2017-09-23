@@ -111,6 +111,12 @@ namespace WikiClientLibrary
             : base(message, innerException)
         {
         }
+
+        public UnauthorizedOperationException(OperationFailedException ex)
+            : base(ex.ErrorCode, ex.ErrorMessage)
+        {
+        }
+
     }
 
     /// <summary>
