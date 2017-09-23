@@ -18,15 +18,15 @@ namespace WikiClientLibrary.Generators
 {
     /// <summary>
     /// Represents a generator (or iterator) of <see cref="WikiPage"/>.
-    /// Generator implementations should use its generic version, <see cref="PageGenerator{T}"/>, as base class.
+    /// Generator implementations should use its generic version, <see cref="WikiPageGenerator{T}"/>, as base class.
     /// </summary>
-    public abstract class PageGeneratorBase : IWikiClientLoggable
+    public abstract class WikiPageGeneratorBase : IWikiClientLoggable
     {
 
         internal ILogger logger = NullLogger.Instance;
         private int? _PagingSize;
 
-        internal PageGeneratorBase(WikiSite site)
+        internal WikiPageGeneratorBase(WikiSite site)
         {
             if (site == null) throw new ArgumentNullException(nameof(site));
             Site = site;
@@ -45,7 +45,7 @@ namespace WikiClientLibrary.Generators
         /// </value>
         /// <remarks>
         /// This property decides how many items returned at most per MediaWiki API invocation.
-        /// Note that the returned enumerator of <see cref="PageGenerator{T}.EnumPagesAsync()"/>
+        /// Note that the returned enumerator of <see cref="WikiPageGenerator{T}.EnumPagesAsync()"/>
         /// will automatically make MediaWiki API invocation to ask for the next batch of results,
         /// when needed.
         /// </remarks>
@@ -147,11 +147,14 @@ namespace WikiClientLibrary.Generators
     /// <summary>
     /// Represents a generator (or iterator) of <see cref="WikiPage"/>.
     /// </summary>
-    /// <typeparam name="T">The type of generated page instances.</typeparam>
-    public abstract class PageGenerator<T> : PageGeneratorBase
+    /// <typeparam name="T">
+    /// The type of generated page instances.
+    /// The actual runtime subtype will be automatically inferred.
+    /// </typeparam>
+    public abstract class WikiPageGenerator<T> : WikiPageGeneratorBase
         where T : WikiPage
     {
-        public PageGenerator(WikiSite site) : base(site)
+        public WikiPageGenerator(WikiSite site) : base(site)
         {
         }
 

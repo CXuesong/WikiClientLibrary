@@ -48,7 +48,7 @@ namespace WikiClientLibrary
         /// <summary>
         /// Enumerate pages from the generator.
         /// </summary>
-        public static IAsyncEnumerable<WikiPage> EnumPagesAsync(PageGeneratorBase generator, PageQueryOptions options, int actualPagingSize)
+        public static IAsyncEnumerable<WikiPage> EnumPagesAsync(WikiPageGeneratorBase generator, PageQueryOptions options, int actualPagingSize)
         {
             if (generator == null) throw new ArgumentNullException(nameof(generator));
             if ((options & PageQueryOptions.ResolveRedirects) == PageQueryOptions.ResolveRedirects)

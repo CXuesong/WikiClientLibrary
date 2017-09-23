@@ -15,11 +15,11 @@ namespace WikiClientLibrary.Generators
     /// Represents an item in RecentChanges list.
     /// </summary>
     [JsonObject(MemberSerialization.OptIn)]
-    public class RecentChangesEntry
+    public class RecentChangeItem
     {
         public WikiSite Site { get; }
 
-        public RecentChangesEntry(WikiSite site)
+        public RecentChangeItem(WikiSite site)
         {
             if (site == null) throw new ArgumentNullException(nameof(site));
             Site = site;
@@ -243,7 +243,7 @@ namespace WikiClientLibrary.Generators
     }
 
     /// <summary>
-    /// Types of recent changes. Used in <see cref="RecentChangesEntry"/>.
+    /// Types of recent changes. Used in <see cref="RecentChangeItem"/>.
     /// </summary>
     public enum RecentChangesType
     {

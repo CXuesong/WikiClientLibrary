@@ -11,7 +11,7 @@ namespace WikiClientLibrary.Generators
     /// <summary>
     /// List of pages that belong to a given category, ordered by page sort title.
     /// </summary>
-    public class CategoryMembersGenerator : PageGenerator<WikiPage>
+    public class CategoryMembersGenerator : WikiPageGenerator<WikiPage>
     {
         // We cannot decide whether generated item is a page or category,
         // so we just use the base class Page for PageGenerator<T>.

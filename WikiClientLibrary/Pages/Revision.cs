@@ -199,7 +199,7 @@ namespace WikiClientLibrary.Pages
 
         /// <summary>
         /// The operation is performed by bot.
-        /// This flag can only be access via <see cref="RecentChangesEntry.Flags"/>.
+        /// This flag can only be access via <see cref="RecentChangeItem.Flags"/>.
         /// </summary>
         Bot = 2,
         Create = 4,

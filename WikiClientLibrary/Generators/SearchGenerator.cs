@@ -13,7 +13,7 @@ namespace WikiClientLibrary.Generators
     /// Search titles and text.
     /// </summary>
     /// <remarks>See https://www.mediawiki.org/wiki/API:Search .</remarks>
-    public class SearchGenerator : PageGenerator<WikiPage>
+    public class SearchGenerator : WikiPageGenerator<WikiPage>
     {
         private SearchableField _MatchingField = SearchableField.Text;
 

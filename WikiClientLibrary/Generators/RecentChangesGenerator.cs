@@ -16,7 +16,7 @@ namespace WikiClientLibrary.Generators
     /// <summary>
     /// Get all recent changes to the wiki, à la Special:Recentchanges.
     /// </summary>
-    public class RecentChangesGenerator : PageGenerator<WikiPage>
+    public class RecentChangesGenerator : WikiPageGenerator<WikiPage>
     {
         public RecentChangesGenerator(WikiSite site) : base(site)
         {
@@ -161,9 +161,9 @@ namespace WikiClientLibrary.Generators
         }
 
         /// <summary>
-        /// Asynchronously generate a sequence of <see cref="RecentChangesEntry"/>.
+        /// Asynchronously generate a sequence of <see cref="RecentChangeItem"/>.
         /// </summary>
-        public IAsyncEnumerable<RecentChangesEntry> EnumRecentChangesAsync()
+        public IAsyncEnumerable<RecentChangeItem> EnumRecentChangesAsync()
         {
             var valuesDict = new Dictionary<string, object>
             {
@@ -177,18 +177,18 @@ namespace WikiClientLibrary.Generators
             var serializer = Utility.CreateWikiJsonSerializer();
             serializer.Converters.Insert(0, new RcEntryCreator(Site));
             return paging.SelectMany(jquery => jquery["recentchanges"]
-                .ToObject<IList<RecentChangesEntry>>(serializer).ToAsyncEnumerable());
+                .ToObject<IList<RecentChangeItem>>(serializer).ToAsyncEnumerable());
         }
 
         /// <summary>
-        /// Generate a sequence of <see cref="RecentChangesEntry"/>.
+        /// Generate a sequence of <see cref="RecentChangeItem"/>.
         /// </summary>
-        public IEnumerable<RecentChangesEntry> EnumRecentChanges()
+        public IEnumerable<RecentChangeItem> EnumRecentChanges()
         {
             return EnumRecentChangesAsync().ToEnumerable();
         }
 
-        private class RcEntryCreator : CustomCreationConverter<RecentChangesEntry>
+        private class RcEntryCreator : CustomCreationConverter<RecentChangeItem>
         {
             public RcEntryCreator(WikiSite site)
             {
@@ -198,9 +198,9 @@ namespace WikiClientLibrary.Generators
 
             public WikiSite Site { get; }
 
-            public override RecentChangesEntry Create(Type objectType)
+            public override RecentChangeItem Create(Type objectType)
             {
-                return new RecentChangesEntry(Site);
+                return new RecentChangeItem(Site);
             }
         }
     }

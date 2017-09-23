@@ -13,7 +13,7 @@ namespace WikiClientLibrary.Generators
     /// Get a list provided by a QueryPage-based special page. (MediaWiki 1.18)
     /// </summary>
     /// <remarks>See https://www.mediawiki.org/wiki/API:Querypage .</remarks>
-    public class QueryPageGenerator : PageGenerator<WikiPage>
+    public class QueryPageGenerator : WikiPageGenerator<WikiPage>
     {
         public QueryPageGenerator(WikiSite site) : base(site)
         {

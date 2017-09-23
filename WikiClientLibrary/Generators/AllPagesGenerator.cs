@@ -13,7 +13,7 @@ namespace WikiClientLibrary.Generators
     /// <summary>
     /// Generates all the pages in a specific namespace.
     /// </summary>
-    public class AllPagesGenerator : PageGenerator<WikiPage>
+    public class AllPagesGenerator : WikiPageGenerator<WikiPage>
     {
         public int NamespaceId { get; set; } = 0;
 
