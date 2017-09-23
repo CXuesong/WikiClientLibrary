@@ -301,5 +301,15 @@ namespace UnitTestProject1
             Assert.Contains(pages, p => p.Title == "United States");
         }
 
+        [Fact]
+        public async Task WpTranscludedInGeneratorTest()
+        {
+            var site = await WpTest2SiteAsync;
+            var tig = new TranscludedInGenerator(site, "Module:Portal‏‎") { PagingSize = 100 };
+            var pages = await tig.EnumPagesAsync().Take(100).ToList();
+            ShallowTrace(pages, 1);
+            Assert.Contains(pages, p => p.Title == "Template:Portal bar");
+        }
+
     }
 }
