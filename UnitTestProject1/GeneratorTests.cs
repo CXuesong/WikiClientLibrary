@@ -285,8 +285,20 @@ namespace UnitTestProject1
         {
             var site = await WikiaTestSiteAsync;
             var sp = await QueryPageGenerator.GetQueryPageNamesAsync(site);
-            Assert.Contains("Uncategorizedpages", sp);
             ShallowTrace(sp);
+            Assert.Contains("Uncategorizedpages", sp);
+        }
+
+        [Fact]
+        public async Task WpBackLinksGeneratorTest()
+        {
+            var site = await WpTest2SiteAsync;
+            var blg = new BacklinksGenerator(site, "Albert Einstein‏‎") {PagingSize = 100};
+            var pages = await blg.EnumPagesAsync().Take(100).ToList();
+            ShallowTrace(pages, 1);
+            Assert.Contains(pages, p => p.Title == "Judaism");
+            Assert.Contains(pages, p => p.Title == "Physics");
+            Assert.Contains(pages, p => p.Title == "United States");
         }
 
     }
