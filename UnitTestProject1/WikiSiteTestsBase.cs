@@ -119,15 +119,15 @@ namespace UnitTestProject1
 
         protected WikiClient CreateWikiClient()
         {
+            var lf = new LoggerFactory();
+            lf.AddProvider(new TestOutputLoggerProvider(Output));
             var client = new WikiClient
             {
                 Timeout = TimeSpan.FromSeconds(20),
                 RetryDelay = TimeSpan.FromSeconds(5),
                 ClientUserAgent = "UnitTest/1.0 (.NET CLR)",
+                LoggerFactory = lf,
             };
-            var lf = new LoggerFactory();
-            lf.AddProvider(new TestOutputLoggerProvider(Output));
-            client.SetLoggerFactory(lf);
             return client;
         }
 

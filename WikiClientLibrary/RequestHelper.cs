@@ -78,7 +78,7 @@ namespace WikiClientLibrary
                     : 50;
                 foreach (var partition in sitePages.Partition(titleLimit).Select(partition => partition.ToList()))
                 {
-                    site.logger.LogDebug("Fetching {Count} pages from {Site}.", partition.Count, site);
+                    site.Logger.LogDebug("Fetching {Count} pages from {Site}.", partition.Count, site);
                     // We use titles to query pages.
                     queryParams["titles"] = string.Join("|", partition.Select(p => p.Title));
                     var jobj = await site.PostValuesAsync(queryParams, cancellationToken);
@@ -135,7 +135,7 @@ namespace WikiClientLibrary
             var revPartition = revIds.Partition(titleLimit).Select(partition => partition.ToList())
                 .SelectAsync(async partition =>
                 {
-                    site.logger.LogDebug("Fetching {Count} revisions from {Site}.", partition.Count, site);
+                    site.Logger.LogDebug("Fetching {Count} revisions from {Site}.", partition.Count, site);
                     queryParams["revids"] = string.Join("|", partition);
                     var jobj = await site.PostValuesAsync(queryParams, cancellationToken);
                     var jpages = (JObject) jobj["query"]["pages"];
@@ -200,7 +200,7 @@ namespace WikiClientLibrary
                     if (revisions != null)
                     {
                         resultCounter += revisions.Count;
-                        site.logger.LogDebug("Fetching {Count} revisions from [[{Page}]].", resultCounter, generator.Page);
+                        site.Logger.LogDebug("Fetching {Count} revisions from [[{Page}]].", resultCounter, generator.Page);
                         var result = revisions.ToObject<IList<Revision>>(serializer);
                         return result.ToAsyncEnumerable();
                     }
@@ -227,7 +227,7 @@ namespace WikiClientLibrary
                     : 50;
                 foreach (var partition in sitePages.Partition(titleLimit).Select(partition => partition.ToList()))
                 {
-                    site.logger.LogDebug("Purging {Count} pages on {Site}.", partition.Count, site);
+                    site.Logger.LogDebug("Purging {Count} pages on {Site}.", partition.Count, site);
                     // We purge pages by titles.
                     try
                     {
@@ -256,7 +256,7 @@ namespace WikiClientLibrary
                             var jpage = purgeStatusDict[title];
                             if (jpage["invalid"] != null || jpage["missing"] != null)
                             {
-                                site.logger.LogWarning("Cannot purge the page: [[{Page}]] on {Site}. {Reason}",
+                                site.Logger.LogWarning("Cannot purge the page: [[{Page}]] on {Site}. {Reason}",
                                     page, site, jpage["invalidreason"]);
                                 failedPages.Add(page);
                             }
@@ -378,7 +378,7 @@ namespace WikiClientLibrary
                     if (links != null)
                     {
                         resultCounter += links.Count;
-                        site.logger.LogDebug("Loaded {Count} items linking to [[{Title}]] on {Site}.",
+                        site.Logger.LogDebug("Loaded {Count} items linking to [[{Title}]] on {Site}.",
                             resultCounter, titlesExpr, site);
                         return links.Select(l => (string) l["title"]).ToAsyncEnumerable();
                     }
@@ -411,7 +411,7 @@ namespace WikiClientLibrary
                     if (links != null)
                     {
                         resultCounter += links.Count;
-                        site.logger.LogDebug("Loaded {Count} items transcluded by [[{Title}]] on {Site}.",
+                        site.Logger.LogDebug("Loaded {Count} items transcluded by [[{Title}]] on {Site}.",
                             resultCounter, titlesExpr, site);
                         return links.Select(l => (string) l["title"]).ToAsyncEnumerable();
                     }

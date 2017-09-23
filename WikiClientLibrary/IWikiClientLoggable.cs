@@ -17,13 +17,12 @@ namespace WikiClientLibrary
         /// <summary>
         /// Sets/replaces the logger factory of the specified class.
         /// </summary>
-        /// <param name="factory">The new logger factory to be used on the current class.</param>
         /// <remarks>
         /// By default the logger factory is passed from <see cref="WikiClient"/> to <see cref="WikiSite"/>,
         /// and from WikiSite to <see cref="WikiPage"/>. To disable the logging for the latter classes, you
         /// may call this method on those classes, passing <c>null</c> as parameter.
         /// </remarks>
-        void SetLoggerFactory(ILoggerFactory factory);
+        ILoggerFactory LoggerFactory { get; set; }
 
     }
 }

@@ -9,6 +9,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using WikiClientLibrary.Infrastructures;
 
 namespace WikiClientLibrary.Client
 {
@@ -19,9 +20,8 @@ namespace WikiClientLibrary.Client
     {
 
         private int _MaxRetries = 3;
-        internal ILoggerFactory loggerFactory = null;
-        internal ILogger logger = NullLogger.Instance;
-        
+        private ILoggerFactory _LoggerFactory = null;
+
         /// <summary>
         /// Timeout for each query.
         /// </summary>
@@ -75,7 +75,8 @@ namespace WikiClientLibrary.Client
         /// (often when retrying the request), no further retry will be performed.</para>
         /// <para>You need to specify format=json manually in the request content.</para>
         /// </remarks>
-        public abstract Task<JToken> GetJsonAsync(string endPointUrl, Func<HttpContent> postContentFactory, CancellationToken cancellationToken);
+        public abstract Task<JToken> GetJsonAsync(string endPointUrl, Func<HttpContent> postContentFactory,
+            CancellationToken cancellationToken);
 
         /// <summary>
         /// Invokes API and gets JSON result.
@@ -85,7 +86,8 @@ namespace WikiClientLibrary.Client
         /// <param name="cancellationToken">The cancellation token that will be checked prior to completing the returned task.</param>
         /// <exception cref="InvalidActionException">Specified action is not supported.</exception>
         /// <exception cref="OperationFailedException">There's "error" node in returned JSON.</exception>
-        public virtual Task<JToken> GetJsonAsync(string endPointUrl, object queryParams, CancellationToken cancellationToken)
+        public virtual Task<JToken> GetJsonAsync(string endPointUrl, object queryParams,
+            CancellationToken cancellationToken)
         {
             return GetJsonAsync(endPointUrl, Utility.ToWikiStringValuePairs(queryParams), cancellationToken);
         }
@@ -113,11 +115,12 @@ namespace WikiClientLibrary.Client
         }
 
         /// <inheritdoc />
-        public void SetLoggerFactory(ILoggerFactory factory)
+        public ILoggerFactory LoggerFactory
         {
-            logger = factory == null ? (ILogger) NullLogger.Instance : factory.CreateLogger<WikiClient>();
-            loggerFactory = factory;
+            get => _LoggerFactory;
+            set => Logger = Utility.SetLoggerFactory(ref _LoggerFactory, value, GetType());
         }
 
+        protected ILogger Logger { get; private set; } = NullLogger.Instance;
     }
 }

@@ -25,6 +25,7 @@ namespace WikiClientLibrary.Generators
 
         internal ILogger logger = NullLogger.Instance;
         private int? _PagingSize;
+        private ILoggerFactory _LoggerFactory;
 
         internal WikiPageGeneratorBase(WikiSite site)
         {
@@ -92,7 +93,7 @@ namespace WikiClientLibrary.Generators
         {
             if (PagingSize != null) return PagingSize.Value;
             return (options & PageQueryOptions.FetchContent) == PageQueryOptions.FetchContent
-                ? Site.ListingPagingSize/10
+                ? Site.ListingPagingSize / 10
                 : Site.ListingPagingSize;
         }
 
@@ -112,7 +113,8 @@ namespace WikiClientLibrary.Generators
         /// Gets JSON result of the query operation with the specific generator.
         /// </summary>
         /// <returns>The root of JSON result. You may need to access query result by ["query"].</returns>
-        internal IAsyncEnumerable<JObject> EnumJsonAsync(IEnumerable<KeyValuePair<string, object>> overridingParams, int actualPagingSize)
+        internal IAsyncEnumerable<JObject> EnumJsonAsync(IEnumerable<KeyValuePair<string, object>> overridingParams,
+            int actualPagingSize)
         {
             var valuesDict = new Dictionary<string, object>
             {
@@ -138,9 +140,11 @@ namespace WikiClientLibrary.Generators
             return GetType().Name;
         }
 
-        public void SetLoggerFactory(ILoggerFactory factory)
+        /// <inheritdoc />
+        public ILoggerFactory LoggerFactory
         {
-            logger = factory == null ? (ILogger)NullLogger.Instance : factory.CreateLogger(GetType());
+            get => _LoggerFactory;
+            set => logger = Utility.SetLoggerFactory(ref _LoggerFactory, value, GetType());
         }
     }
 

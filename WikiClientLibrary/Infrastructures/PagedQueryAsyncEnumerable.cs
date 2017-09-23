@@ -80,14 +80,14 @@ namespace WikiClientLibrary.Infrastructures
                         }
                         var originalPageCount = pages.Count;
                         foreach (var k in duplicateKeys) pages.Remove(k);
-                        _Site.logger.LogWarning("Received {Count} results on {Site}, {DistinctCount} distinct results.",
+                        _Site.Logger.LogWarning("Received {Count} results on {Site}, {DistinctCount} distinct results.",
                             originalPageCount, _Site, pages.Count);
                     }
                     return Tuple.Create(queryNode, true);
                 }
                 // If so, let's see if there're more results.
                 if (continuation != null)
-                    _Site.logger.LogWarning("Empty query page with continuation received on {Site}.", _Site);
+                    _Site.Logger.LogWarning("Empty query page with continuation received on {Site}.", _Site);
                 goto BEGIN;
             });
             return ienu.GetEnumerator();

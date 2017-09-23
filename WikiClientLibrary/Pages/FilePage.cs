@@ -229,10 +229,10 @@ namespace WikiClientLibrary.Pages
                 if (ignoreWarnings) requestContent.Add(new StringContent(""), "ignorewarnings");
                 return requestContent;
             }
-            site.logger.LogDebug( "Uploading [[{Title}]] on {Site}.", link, site);
+            site.Logger.LogDebug( "Uploading [[{Title}]] on {Site}.", link, site);
             var jresult = await site.PostContentAsync(RequestFactory, cancellationToken);
             var result = jresult["upload"].ToObject<UploadResult>(Utility.WikiJsonSerializer);
-            site.logger.LogInformation("Uploaded [[{Title}]] on {Site}. Result={Result}.",
+            site.Logger.LogInformation("Uploaded [[{Title}]] on {Site}. Result={Result}.",
                 link, site, result.ResultCode);
             switch (result.ResultCode)
             {

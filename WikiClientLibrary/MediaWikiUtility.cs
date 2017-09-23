@@ -28,14 +28,14 @@ namespace WikiClientLibrary
         }
 
         // See Site.SearchApiEndpointAsync .
-        public static async Task<string> SearchApiEndpointAsync(WikiClient client, string urlExpression)
+        public static async Task<string> SearchApiEndpointAsync(WikiClient client, string urlExpression, ILogger logger)
         {
             if (client == null) throw new ArgumentNullException(nameof(client));
             if (urlExpression == null) throw new ArgumentNullException(nameof(urlExpression));
             urlExpression = urlExpression.Trim();
             if (urlExpression == "") return null;
             // Directly try the given URL.
-            var current = await TestApiEndpointAsync(client, urlExpression);
+            var current = await TestApiEndpointAsync(client, urlExpression, logger);
             if (current != null) return current;
             // Try to infer from the page content.
             var result = await DownloadStringAsync(client, urlExpression, true);
@@ -47,7 +47,7 @@ namespace WikiClientLibrary
                 if (match.Success)
                 {
                     var v = NavigateTo(current, match.Value);
-                    v = await TestApiEndpointAsync(client, v);
+                    v = await TestApiEndpointAsync(client, v, logger);
                     if (v != null) return v;
                 }
             }
@@ -91,7 +91,7 @@ namespace WikiClientLibrary
         /// Tests whether the specific URL is a valid MediaWiki API endpoint, and
         /// returns the final URL, if redirected.
         /// </summary>
-        private static async Task<string> TestApiEndpointAsync(WikiClient client, string url)
+        private static async Task<string> TestApiEndpointAsync(WikiClient client, string url, ILogger logger)
         {
             // Append default protocol.
             if (!ProtocolMatcher.IsMatch(url))
@@ -101,7 +101,7 @@ namespace WikiClientLibrary
                 url = "http:" + url;
             try
             {
-                client.logger.LogDebug("Test MediaWiki API endpoint: {Url}.", url);
+                logger.LogDebug("Test MediaWiki API endpoint: {Url}.", url);
                 var result = await DownloadStringAsync(client, url + "?action=query&format=json", false);
                 if (result == null) return null;
                 var content = result.Item2;

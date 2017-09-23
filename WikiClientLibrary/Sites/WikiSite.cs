@@ -22,7 +22,6 @@ namespace WikiClientLibrary.Sites
 
         private readonly SiteOptions options;
         internal ILoggerFactory loggerFactory;
-        internal ILogger logger = NullLogger.Instance;
 
         #region Services
 
@@ -83,7 +82,7 @@ namespace WikiClientLibrary.Sites
             if (string.IsNullOrEmpty(options.ApiEndpoint))
                 throw new ArgumentException("Invalid API endpoint url.", nameof(options));
             var site = new WikiSite(wikiClient, options);
-            site.SetLoggerFactory(wikiClient.loggerFactory);
+            site.LoggerFactory = wikiClient.LoggerFactory;
             if (!options.ExplicitInfoRefresh)
                 await Task.WhenAll(site.RefreshSiteInfoAsync(), site.RefreshAccountInfoAsync());
             return site;
@@ -99,7 +98,10 @@ namespace WikiClientLibrary.Sites
         /// <returns>The URL of Api Endpoint. OR <c>null</c> if such search has failed.</returns>
         public static Task<string> SearchApiEndpointAsync(WikiClient client, string urlExpression)
         {
-            return MediaWikiUtility.SearchApiEndpointAsync(client, urlExpression);
+            var logger = client.LoggerFactory == null
+                ? NullLogger.Instance
+                : (ILogger) client.LoggerFactory.CreateLogger<WikiSite>();
+            return MediaWikiUtility.SearchApiEndpointAsync(client, urlExpression, logger);
         }
 
         protected WikiSite(WikiClientBase wikiClient, SiteOptions options)
@@ -339,7 +341,7 @@ namespace WikiClientLibrary.Sites
                     if (reLoginTask == null)
                     {
                         reLoginTask = Relogin();
-                        logger.LogWarning("{Site} account assertion failed. Try to relogin.", ToString());
+                        Logger.LogWarning("{Site} account assertion failed. Try to relogin.", ToString());
                     }
                     var result = await reLoginTask;
                     if (result) goto RETRY;
@@ -550,7 +552,7 @@ namespace WikiClientLibrary.Sites
             return result;
         }
 
-        public async Task FetchTokensAsyncCore(IList<string> tokenTypes, CancellationToken cancellationToken)
+        private async Task FetchTokensAsyncCore(IList<string> tokenTypes, CancellationToken cancellationToken)
         {
             JObject fetchedTokens = null;
             var localTokenTypes = tokenTypes.ToList();
@@ -761,7 +763,7 @@ namespace WikiClientLibrary.Sites
                         break;
                     case "Throttled":
                         var time = (int) jobj["login"]["wait"];
-                        logger.LogWarning("{Site} login throttled: {Time}sec.", ToString(), time);
+                        Logger.LogWarning("{Site} login throttled: {Time}sec.", ToString(), time);
                         await Task.Delay(TimeSpan.FromSeconds(time), cancellationToken);
                         goto RETRY;
                     case "NeedToken":
@@ -811,6 +813,7 @@ namespace WikiClientLibrary.Sites
         }
 
         private volatile Task<bool> reLoginTask;
+        private ILoggerFactory _LoggerFactory;
 
         private async Task<bool> Relogin()
         {
@@ -833,11 +836,13 @@ namespace WikiClientLibrary.Sites
             return string.IsNullOrEmpty(SiteInfo.SiteName) ? options.ApiEndpoint : SiteInfo.SiteName;
         }
 
+        protected internal ILogger Logger { get; private set; } = NullLogger.Instance;
+
         /// <inheritdoc />
-        public void SetLoggerFactory(ILoggerFactory factory)
+        public ILoggerFactory LoggerFactory
         {
-            logger = factory == null ? (ILogger) NullLogger.Instance : factory.CreateLogger<WikiSite>();
-            loggerFactory = factory;
+            get => _LoggerFactory;
+            set => Logger = Utility.SetLoggerFactory(ref _LoggerFactory, value, GetType());
         }
     }
 

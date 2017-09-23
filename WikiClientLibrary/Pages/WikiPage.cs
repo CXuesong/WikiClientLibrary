@@ -24,7 +24,7 @@ namespace WikiClientLibrary.Pages
     public partial class WikiPage : IWikiClientLoggable
     {
         
-        private ILogger logger = NullLogger.Instance;
+        private ILoggerFactory _LoggerFactory;
 
         public WikiPage(WikiSite site, string title) : this(site, title, BuiltInNamespaces.Main)
         {
@@ -40,7 +40,7 @@ namespace WikiClientLibrary.Pages
             var parsedTitle = WikiLink.Parse(site, title, defaultNamespaceId);
             Title = parsedTitle.FullTitle;
             NamespaceId = parsedTitle.Namespace.Id;
-            SetLoggerFactory(site.loggerFactory);
+            LoggerFactory = site.LoggerFactory;
         }
 
         internal WikiPage(WikiSite site)
@@ -253,7 +253,7 @@ namespace WikiClientLibrary.Pages
             if ((options & PageQueryOptions.ResolveRedirects) != PageQueryOptions.ResolveRedirects
                 && Id != 0 && !AreIdEquals(Id, id))
                 // The page has been overwritten, or deleted.
-                logger.LogWarning("Detected change of page id for [[{Title}]]: {Id1} -> {Id2}.", Title, Id, id);
+                Logger.LogWarning("Detected change of page id for [[{Title}]]: {Id1} -> {Id2}.", Title, Id, id);
             Id = id;
             var page = (JObject) prop.Value;
             OnLoadPageInfo(page);
@@ -579,14 +579,14 @@ namespace WikiClientLibrary.Pages
                 {
                     if (jedit["nochange"] != null)
                     {
-                        logger.LogInformation("Submitted empty edit to page [[{Page}]] on {Site}.", this, Site);
+                        Logger.LogInformation("Submitted empty edit to page [[{Page}]] on {Site}.", this, Site);
                         return false;
                     }
                     ContentModel = (string) jedit["contentmodel"];
                     LastRevisionId = (int) jedit["newrevid"];
                     Id = (int) jedit["pageid"];
                     Title = (string) jedit["title"];
-                    logger.LogInformation("Edited page [[{Page}]] on {Site}. New revid={RevisionId}.", this, Site,
+                    Logger.LogInformation("Edited page [[{Page}]] on {Site}. New revid={RevisionId}.", this, Site,
                         LastRevisionId);
                     return true;
                 }
@@ -674,7 +674,7 @@ namespace WikiClientLibrary.Pages
                 }
                 var fromTitle = (string) jresult["move"]["from"];
                 var toTitle = (string) jresult["move"]["to"];
-                logger.LogInformation("Page [[{fromTitle}]] has been moved to [[{toTitle}]].", fromTitle, toTitle);
+                Logger.LogInformation("Page [[{fromTitle}]] has been moved to [[{toTitle}]].", fromTitle, toTitle);
                 Title = toTitle;
             }
         }
@@ -732,7 +732,7 @@ namespace WikiClientLibrary.Pages
                 Exists = false;
                 LastRevision = null;
                 LastRevisionId = 0;
-                logger.LogInformation("[[{Page}]] has been deleted.", title);
+                Logger.LogInformation("[[{Page}]] has been deleted.", title);
                 return true;
             }
         }
@@ -778,11 +778,13 @@ namespace WikiClientLibrary.Pages
             return string.IsNullOrEmpty(Title) ? ("#" + Id) : Title;
         }
 
+        protected ILogger Logger { get; private set; } = NullLogger.Instance;
 
         /// <inheritdoc />
-        public void SetLoggerFactory(ILoggerFactory factory)
+        public ILoggerFactory LoggerFactory
         {
-            logger = factory == null ? (ILogger) NullLogger.Instance : factory.CreateLogger(GetType());
+            get => _LoggerFactory;
+            set => Logger = Utility.SetLoggerFactory(ref _LoggerFactory, value, GetType());
         }
     }
 

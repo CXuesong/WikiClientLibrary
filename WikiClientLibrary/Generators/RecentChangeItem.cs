@@ -160,7 +160,7 @@ namespace WikiClientLibrary.Generators
             else if (Unpatrolled) PatrolStatus = PatrolStatus.Unpatrolled;
             else PatrolStatus = PatrolStatus.Unknown;
             if (Patrolled && Unpatrolled)
-                Site.logger.LogWarning("Patrolled and Unpatrolled are both set for rcid={Id}, page {Page}.", Id, Title);
+                Site.Logger.LogWarning("Patrolled and Unpatrolled are both set for rcid={Id}, page {Page}.", Id, Title);
         }
 
         /// <summary>

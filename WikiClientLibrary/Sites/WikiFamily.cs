@@ -45,8 +45,7 @@ namespace WikiClientLibrary.Sites
     public class WikiFamily : IWikiFamily, IWikiClientLoggable, IReadOnlyCollection<string>
     {
 
-        private ILoggerFactory loggerFactory;
-        private ILogger logger = NullLogger.Instance;
+        private ILoggerFactory _LoggerFactory;
         private readonly Dictionary<string, SiteEntry> sites = new Dictionary<string, SiteEntry>();
 
         /// <summary>
@@ -65,11 +64,13 @@ namespace WikiClientLibrary.Sites
             if (wikiClient == null) throw new ArgumentNullException(nameof(wikiClient));
             WikiClient = wikiClient;
             Name = name;
-            SetLoggerFactory(wikiClient.loggerFactory);
+            LoggerFactory = wikiClient.LoggerFactory;
         }
 
         public WikiClientBase WikiClient { get; }
-        
+
+        protected ILogger Logger { get; private set; } = NullLogger.Instance;
+
         /// <summary>
         /// Add a new wiki site into this family.
         /// </summary>
@@ -133,8 +134,8 @@ namespace WikiClientLibrary.Sites
         protected virtual async Task<WikiSite> CreateSiteAsync(string prefix, string apiEndpoint)
         {
             var site = await WikiSite.CreateAsync(WikiClient, apiEndpoint);
-            site.SetLoggerFactory(loggerFactory);
-            logger.LogTrace("[[{Family}:{prefix}:]] has been instantiated.", Name, prefix);
+            site.LoggerFactory = LoggerFactory;
+            Logger.LogTrace("[[{Family}:{prefix}:]] has been instantiated.", Name, prefix);
             return site;
         }
 
@@ -149,12 +150,6 @@ namespace WikiClientLibrary.Sites
 
         /// <inheritdoc />
         public int Count => sites.Count;
-
-        public void SetLoggerFactory(ILoggerFactory factory)
-        {
-            logger = factory == null ? (ILogger) NullLogger.Instance : factory.CreateLogger<WikiFamily>();
-            loggerFactory = factory;
-        }
 
         private class SiteEntry
         {
@@ -178,5 +173,13 @@ namespace WikiClientLibrary.Sites
                 set { _Task = value; }
             }
         }
+
+        /// <inheritdoc />
+        public ILoggerFactory LoggerFactory
+        {
+            get => _LoggerFactory;
+            set => Logger = Utility.SetLoggerFactory(ref _LoggerFactory, value, GetType());
+        }
+
     }
 }

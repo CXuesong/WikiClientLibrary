@@ -14,6 +14,8 @@ using Newtonsoft.Json.Serialization;
 using WikiClientLibrary.Client;
 using WikiClientLibrary.Generators;
 using System.Runtime.CompilerServices;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
 using WikiClientLibrary.Infrastructures;
 using WikiClientLibrary.Pages;
 
@@ -259,6 +261,17 @@ namespace WikiClientLibrary
                 var result = await selector(enu.Current);
                 return Tuple.Create(result, true);
             });
+        }
+
+        public static ILogger SetLoggerFactory<TOwner>(ref ILoggerFactory loggerFactoryField, ILoggerFactory value)
+        {
+            return SetLoggerFactory(ref loggerFactoryField, value, typeof(TOwner));
+        }
+
+        public static ILogger SetLoggerFactory(ref ILoggerFactory loggerFactoryField, ILoggerFactory value, Type ownerType)
+        {
+            loggerFactoryField = value;
+            return value == null ? (ILogger) NullLogger.Instance : value.CreateLogger(ownerType);
         }
     }
 }

@@ -33,7 +33,7 @@ namespace WikiClientLibrary.Client
             cancellationToken.ThrowIfCancellationRequested();
             retries++;
             if (retries > 0)
-                logger.LogDebug("Retry x{Retries}: {Uri}", retries, request.RequestUri);
+                Logger.LogDebug("Retry x{Retries}: {Uri}", retries, request.RequestUri);
             try
             {
                 // Use await instead of responseTask.Result to unwrap Exceptions.
@@ -48,12 +48,12 @@ namespace WikiClientLibrary.Client
             {
                 if (cancellationToken.IsCancellationRequested)
                 {
-                    logger.LogWarning("Cancelled: {Uri}", request.RequestUri);
+                    Logger.LogWarning("Cancelled: {Uri}", request.RequestUri);
                     throw new OperationCanceledException();
                 }
                 else
                 {
-                    logger.LogWarning("Timeout: {Uri}", request.RequestUri);
+                    Logger.LogWarning("Timeout: {Uri}", request.RequestUri);
                 }
                 request = requestFactory();
                 if (request == null || retries >= MaxRetries) throw new TimeoutException();
@@ -61,7 +61,7 @@ namespace WikiClientLibrary.Client
                 goto RETRY;
             }
             // Validate response.
-            logger.LogDebug("{Status}: {Uri}", response.StatusCode, request.RequestUri);
+            Logger.LogDebug("{Status}: {Uri}", response.StatusCode, request.RequestUri);
             var statusCode = (int)response.StatusCode;
             if (statusCode >= 500 && statusCode <= 599)
             {
@@ -93,7 +93,7 @@ namespace WikiClientLibrary.Client
             catch (JsonReaderException)
             {
                 // Input is not a valid json.
-                logger.LogWarning("Received non-json content: {Uri}", request.RequestUri);
+                Logger.LogWarning("Received non-json content: {Uri}", request.RequestUri);
                 request = requestFactory();
                 if (request == null || retries >= MaxRetries) throw;
                 goto RETRY;
@@ -132,11 +132,11 @@ namespace WikiClientLibrary.Client
         }
     }
              */
-            if (jresponse["warnings"] != null && logger.IsEnabled(LogLevel.Debug))
+            if (jresponse["warnings"] != null && Logger.IsEnabled(LogLevel.Debug))
             {
                 foreach (var module in ((JObject)jresponse["warnings"]).Properties())
                 {
-                    logger.LogWarning("{Module}: {Warning}", module.Name, module.Value);
+                    Logger.LogWarning("{Module}: {Warning}", module.Name, module.Value);
                 }
             }
             if (jresponse["error"] != null)
