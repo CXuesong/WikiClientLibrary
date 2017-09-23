@@ -72,11 +72,9 @@ namespace WikiClientLibrary.Pages
         /// There's warning from server, and <paramref name="ignoreWarnings"/> is <c>false</c>.
         /// Check <see cref="UploadException.UploadResult"/> for the warning message or continuing the upload.
         /// </exception>
+        /// <exception cref="UnauthorizedAccessException">You do not have the permission to upload the file.</exception>
         /// <exception cref="OperationFailedException"> There's an error while uploading the file. </exception>
-        /// <exception cref="TimeoutException">
-        /// Timeout specified in <see cref="WikiClientBase.Timeout"/> has been reached. Note in this
-        /// invocation, there will be no retries.
-        /// </exception>
+        /// <exception cref="TimeoutException">Timeout specified in <see cref="WikiClientBase.Timeout"/> has been reached.</exception>
         /// <returns>An <see cref="UploadResult"/>.</returns>
         /// <remarks>
         /// Upload from external source may take a while, so be sure to set a long <see cref="WikiClientBase.Timeout"/>
@@ -101,11 +99,9 @@ namespace WikiClientLibrary.Pages
         /// There's warning from server, and <paramref name="ignoreWarnings"/> is <c>false</c>.
         /// Check <see cref="UploadException.UploadResult"/> for the warning message or continuing the upload.
         /// </exception>
+        /// <exception cref="UnauthorizedAccessException">You do not have the permission to upload the file.</exception>
         /// <exception cref="OperationFailedException"> There's an error while uploading the file. </exception>
-        /// <exception cref="TimeoutException">
-        /// Timeout specified in <see cref="WikiClientBase.Timeout"/> has been reached. Note in this
-        /// invocation, there will be no retries.
-        /// </exception>
+        /// <exception cref="TimeoutException">Timeout specified in <see cref="WikiClientBase.Timeout"/> has been reached.</exception>
         /// <returns>An <see cref="UploadResult"/>.</returns>
         /// <remarks>
         /// You should have obtained the previous upload result via <see cref="UploadException.UploadResult"/>.
@@ -128,11 +124,9 @@ namespace WikiClientLibrary.Pages
         /// There's warning from server, and <paramref name="ignoreWarnings"/> is <c>false</c>.
         /// Check <see cref="UploadException.UploadResult"/> for the warning message or continuing the upload.
         /// </exception>
+        /// <exception cref="UnauthorizedAccessException">You do not have the permission to upload the file.</exception>
         /// <exception cref="OperationFailedException"> There's an error while uploading the file. </exception>
-        /// <exception cref="TimeoutException">
-        /// Timeout specified in <see cref="WikiClientBase.Timeout"/> has been reached. Note in this
-        /// invocation, there will be no retries.
-        /// </exception>
+        /// <exception cref="TimeoutException">Timeout specified in <see cref="WikiClientBase.Timeout"/> has been reached.</exception>
         /// <returns>An <see cref="UploadResult"/>.</returns>
         public static Task<UploadResult> UploadAsync(WikiSite site, Stream content, string title,
             string comment, bool ignoreWarnings)
@@ -154,11 +148,9 @@ namespace WikiClientLibrary.Pages
         /// There's warning from server, and <paramref name="ignoreWarnings"/> is <c>false</c>.
         /// Check <see cref="UploadException.UploadResult"/> for the warning message or continuing the upload.
         /// </exception>
+        /// <exception cref="UnauthorizedAccessException">You do not have the permission to upload the file.</exception>
         /// <exception cref="OperationFailedException"> There's an error while uploading the file. </exception>
-        /// <exception cref="TimeoutException">
-        /// Timeout specified in <see cref="WikiClientBase.Timeout"/> has been reached. Note in this
-        /// invocation, there will be no retries.
-        /// </exception>
+        /// <exception cref="TimeoutException">Timeout specified in <see cref="WikiClientBase.Timeout"/> has been reached.</exception>
         /// <returns>An <see cref="UploadResult"/>.</returns>
         public static Task<UploadResult> UploadAsync(WikiSite site, Stream content, string title,
             string comment, bool ignoreWarnings, AutoWatchBehavior watch, CancellationToken cancellationToken)
