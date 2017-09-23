@@ -61,7 +61,7 @@ namespace WikiClientLibrary
         }
 
         public OperationFailedException(string message)
-            : base(message)
+            : this(null, message)
         {
             ErrorMessage = message;
         }
@@ -100,20 +100,15 @@ namespace WikiClientLibrary
     /// <summary>
     /// Raises when user has no rights for certain operations.
     /// </summary>
-    public class UnauthorizedOperationException : WikiClientException
+    public class UnauthorizedOperationException : OperationFailedException
     {
-        public UnauthorizedOperationException(string message)
-            : base(message)
+        public UnauthorizedOperationException(string errorCode, string message)
+            : base(errorCode, message)
         {
         }
 
         public UnauthorizedOperationException(string message, Exception innerException)
             : base(message, innerException)
-        {
-        }
-
-        public UnauthorizedOperationException(OperationFailedException innerException)
-            : base(innerException?.Message, innerException)
         {
         }
     }

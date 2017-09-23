@@ -92,7 +92,7 @@ namespace WikiClientLibrary.Sites
         {
             if (groupName == null) throw new ArgumentNullException(nameof(groupName));
             if (!IsInGroup(groupName))
-                throw new UnauthorizedOperationException($"Current user is not in the group: {groupName}.");
+                throw new UnauthorizedOperationException(null, $"Current user is not in the group: {groupName}.");
         }
 
         /// <summary>
@@ -116,7 +116,7 @@ namespace WikiClientLibrary.Sites
         {
             if (rightName == null) throw new ArgumentNullException(nameof(rightName));
             if (!HasRight(rightName))
-                throw new UnauthorizedOperationException($"Current user doesn't have the right: {rightName}.");
+                throw new UnauthorizedOperationException(null, $"Current user doesn't have the right: {rightName}.");
         }
 
         /// <inheritdoc />

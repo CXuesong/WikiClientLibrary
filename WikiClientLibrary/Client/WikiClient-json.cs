@@ -149,7 +149,8 @@ namespace WikiClientLibrary.Client
                 {
                     case "permissiondenied":
                     case "readapidenied": // You need read permission to use this module
-                        throw new UnauthorizedOperationException(errmessage);
+                    case "mustbeloggedin": // You must be logged in to upload this file.
+                        throw new UnauthorizedOperationException(errcode, errmessage);
                     case "unknown_action":
                         throw new InvalidActionException(errcode, errmessage);
                     case "assertuserfailed":
