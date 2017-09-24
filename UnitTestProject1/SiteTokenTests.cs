@@ -58,6 +58,7 @@ namespace UnitTestProject1
         [InlineData(Utility.EntryPointWikiaTest, "Project:Sandbox")]
         public async Task BadTokenTest(string endpointUrl, string sandboxPageTitle)
         {
+            const string invalidToken = @"INVALID_TOKEN+\";
             var site = await CreateIsolatedWikiSiteAsync(endpointUrl);
             var page = WikiPage.FromTitle(site, sandboxPageTitle);
             await page.RefreshAsync(PageQueryOptions.FetchContent);
@@ -67,7 +68,9 @@ namespace UnitTestProject1
             var tokensCache = (IDictionary<string, object>) tokensManager.GetType()
                 .GetField("tokensCache", BindingFlags.Instance | BindingFlags.NonPublic).GetValue(tokensManager);
             // Place an invalid token in the cache.
-            tokensCache["edit"]= @"INVALID_TOKEN+\";
+            tokensCache["edit"] = invalidToken;
+            tokensCache["csrf"] = invalidToken;
+            Assert.Equal(invalidToken, await site.GetTokenAsync("edit"));
             // This should cause token cache invalidation.
             await page.UpdateContentAsync("Make an empty update.", true);
             // This is a valid token

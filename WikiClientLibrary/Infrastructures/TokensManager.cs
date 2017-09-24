@@ -91,6 +91,10 @@ namespace WikiClientLibrary.Infrastructures
             return dict.Values.Single();
         }
 
+        private static readonly Version v117 = new Version("1.17"),
+            v120 = new Version("1.20"),
+            v124 = new Version("1.24");
+
         /// <summary>
         /// Request tokens for operations.
         /// </summary>
@@ -113,7 +117,7 @@ namespace WikiClientLibrary.Infrastructures
             HashSet<string> impendingCsrfTokens = null;
             var result = new Dictionary<string, string>();
             Dictionary<string, Task<string>> impendingTokens = null;
-            var csrfTokenSupported = site.SiteInfo.Version >= new Version("1.24");
+            var csrfTokenSupported = site.SiteInfo.Version >= v124;
 
             async Task<string> SelectToken(Task<IList<string>> tokenListAsync, int index)
             {
@@ -269,7 +273,7 @@ namespace WikiClientLibrary.Infrastructures
                 try
                 {
                     cancellationToken = cts.Token;
-                    if (site.SiteInfo.Version < new Version("1.24"))
+                    if (site.SiteInfo.Version < v124)
                     {
                         /*
                          Patrol was added in v1.14.
@@ -278,13 +282,13 @@ namespace WikiClientLibrary.Infrastructures
                          list recentchanges.
                          */
                         // Check whether we need a patrol token.
-                        if (site.SiteInfo.Version < new Version("1.20"))
+                        if (site.SiteInfo.Version < v120)
                         {
                             var patrolIndex = localTokenTypes.IndexOf("patrol");
                             if (patrolIndex >= 0)
                             {
                                 string patrolToken;
-                                if (site.SiteInfo.Version < new Version("1.17"))
+                                if (site.SiteInfo.Version < v117)
                                 {
                                     patrolToken = await GetTokenAsync("edit", false, cancellationToken);
                                 }
@@ -348,8 +352,10 @@ namespace WikiClientLibrary.Infrastructures
         {
             lock (tokensCache)
             {
-                if (tokenType == "patrol" && site.SiteInfo.Version < new Version("1.17"))
+                if (tokenType == "patrol" && site.SiteInfo.Version < v117)
                     tokensCache.Remove("edit");
+                else if (site.SiteInfo.Version >= v124 && CsrfTokens.Contains(tokenType))
+                    tokensCache.Remove("csrf");
                 tokensCache.Remove(tokenType);
             }
         }
