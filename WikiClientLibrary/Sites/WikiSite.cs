@@ -369,7 +369,8 @@ namespace WikiClientLibrary.Sites
             }
             catch (BadTokenException)
             {
-                if (form == null || badTokenRetries >= 2) throw;
+                // Allows retrying once.
+                if (form == null || badTokenRetries >= 1) throw;
                 string invalidatedToken = null;
                 foreach (var tokenField in form.Fields.Where(p => p.Value is WikiSiteToken))
                 {
@@ -379,6 +380,7 @@ namespace WikiClientLibrary.Sites
                 if (invalidatedToken == null) throw;
                 Logger.LogWarning("BadTokenException: {Request}. Will retry after invalidating the token: {Token}.",
                     message, invalidatedToken);
+                badTokenRetries++;
                 goto RETRY;
             }
         }
