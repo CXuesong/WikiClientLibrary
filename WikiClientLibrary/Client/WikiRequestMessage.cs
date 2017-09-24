@@ -102,6 +102,18 @@ namespace WikiClientLibrary.Client
 
         private readonly IDictionary<string, object> fieldDict;
         private IDictionary<string, object> readonlyFieldDict;
+        // Memorizes the stream position upon first request.
+        private IDictionary<Stream, long> streamPositions;
+
+        private volatile int status;
+        // Created
+        private const int STATUS_CREATED = 0;
+        // GetHttpContent invoked, recoverable
+        private const int STATUS_RECOVERABLE = 1;
+        // GetHttpContent invoked, un-recoverable
+        private const int STATUS_UNRECOVERABLE = 2;
+
+        private bool hasUnrecoverableFields = false;
 
         public WikiFormRequestMessage(object fieldCollection) : this(null, null, fieldCollection, false)
         {
@@ -152,6 +164,42 @@ namespace WikiClientLibrary.Client
         /// <inheritdoc />
         public override HttpContent GetHttpContent()
         {
+            // Save & restore the stream position on each GetHttpContent call.
+            switch (status)
+            {
+                case STATUS_CREATED:
+                    IDictionary<Stream, long> sps = null;
+                    foreach (var p in fieldDict)
+                    {
+                        if (p.Value is Stream s)
+                        {
+                            if (s.CanSeek)
+                            {
+                                if (sps == null) sps = new Dictionary<Stream, long>();
+                                sps[s] = s.Position;
+                            } else {
+                                status = STATUS_UNRECOVERABLE;
+                                goto MAIN;
+                            }
+                        }
+                    }
+                    streamPositions = sps;
+                    status = STATUS_RECOVERABLE;
+                    break;
+                case STATUS_RECOVERABLE:
+                    sps = streamPositions;
+                    if (sps != null)
+                    {
+                        foreach (var p in fieldDict)
+                        {
+                            if (p.Value is Stream s) s.Position = sps[s];
+                        }
+                    }
+                    break;
+                case STATUS_UNRECOVERABLE:
+                    throw new InvalidOperationException("Cannot recover the field state (e.g. Stream position).");
+            }
+            MAIN:
             if (AsMultipartFormData)
             {
                 var content = new MultipartFormDataContent();

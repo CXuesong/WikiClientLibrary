@@ -25,22 +25,34 @@ namespace WikiClientLibrary.Client
             HttpResponseMessage response;
             var retries = 0;
 
-            async Task<bool> WaitForRetry(TimeSpan delay)
+            Logger.LogTrace("Initiate request: {Request}, EndPoint: {EndPointUrl}.", message, endPointUrl);
+            var httpRequest = new HttpRequestMessage(HttpMethod.Post, endPointUrl)
+                {Content = message.GetHttpContent()};
+
+            async Task<bool> PrepareForRetry(TimeSpan delay)
             {
                 if (retries >= MaxRetries) return false;
                 retries++;
+                try
+                {
+                    httpRequest = new HttpRequestMessage(HttpMethod.Post, endPointUrl)
+                        {Content = message.GetHttpContent()};
+                }
+                catch (Exception ex) when (ex is ObjectDisposedException || ex is InvalidOperationException)
+                {
+                    // Some content (e.g. StreamContent with un-seekable Stream) may throw this exception
+                    // on the second try.
+                    Logger.LogWarning("Cannot retry: {Request}. {Exception}.", message, ex.Message);
+                    return false;
+                }
                 Logger.LogDebug("Retry: {Request} after {Delay}, attempt #{Retries}.", message, RetryDelay, retries);
                 await Task.Delay(delay, cancellationToken);
                 return true;
             }
 
             RETRY:
-            if (retries == 0)
-                Logger.LogTrace("Initiate request: {Request}, EndPoint: {EndPointUrl}.", message, endPointUrl);
-            else
+            if (retries > 0)
                 Logger.LogTrace("Initiate request: {Request}.", message, endPointUrl);
-            var httpRequest = new HttpRequestMessage(HttpMethod.Post, endPointUrl)
-                {Content = message.GetHttpContent()};
             cancellationToken.ThrowIfCancellationRequested();
             var requestSw = Stopwatch.StartNew();
             try
@@ -61,7 +73,7 @@ namespace WikiClientLibrary.Client
                     throw new OperationCanceledException();
                 }
                 Logger.LogWarning("Timeout: {Request}", message);
-                if (!await WaitForRetry(RetryDelay)) throw new TimeoutException();
+                if (!await PrepareForRetry(RetryDelay)) throw new TimeoutException();
                 goto RETRY;
             }
             // Validate response.
@@ -86,7 +98,7 @@ namespace WikiClientLibrary.Client
                     // Or use the default delay
                     if (delay == null) delay = RetryDelay;
                     else if (delay > RetryDelay) delay = RetryDelay;
-                    if (await WaitForRetry(delay.Value)) goto RETRY;
+                    if (await PrepareForRetry(delay.Value)) goto RETRY;
                 }
             }
             // For HTTP 500~599, EnsureSuccessStatusCode will throw an Exception.
