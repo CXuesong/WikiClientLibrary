@@ -77,15 +77,14 @@ namespace WikiClientLibrary.Client
             new KeyValuePair<string, object>("format", "json")
         };
 
-
         /// <inheritdoc />
-        public override async Task<JToken> GetJsonAsync(string endPointUrl, WikiRequestMessage queryParams, CancellationToken cancellationToken)
+        public override async Task<JToken> GetJsonAsync(string endPointUrl, WikiRequestMessage message, CancellationToken cancellationToken)
         {
             if (endPointUrl == null) throw new ArgumentNullException(nameof(endPointUrl));
-            if (queryParams == null) throw new ArgumentNullException(nameof(queryParams));
-            if (queryParams is WikiFormRequestMessage form)
-                queryParams = new WikiFormRequestMessage(form.Id, form, formatJsonKeyValue, false);
-            var result = await SendAsync(endPointUrl, queryParams, cancellationToken);
+            if (message == null) throw new ArgumentNullException(nameof(message));
+            if (message is WikiFormRequestMessage form)
+                message = new WikiFormRequestMessage(form.Id, form, formatJsonKeyValue, false);
+            var result = await SendAsync(endPointUrl, message, cancellationToken);
             return result;
         }
 

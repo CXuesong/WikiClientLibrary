@@ -46,16 +46,15 @@ namespace WikiClientLibrary.Client
         }
 
         /// <summary>
-        /// Invokes API and gets JSON result.
+        /// Invokes MediaWiki API and gets JSON result.
         /// </summary>
         /// <param name="endPointUrl">The API endpoint URL.</param>
-        /// <param name="queryParams">The parameters of the query.</param>
+        /// <param name="message">The request message.</param>
         /// <param name="cancellationToken">The cancellation token that will be checked prior to completing the returned task.</param>
         /// <exception cref="InvalidActionException">Specified action is not supported.</exception>
         /// <exception cref="UnauthorizedOperationException">Permission denied.</exception>
-        /// <exception cref="OperationFailedException">There's "error" node in returned JSON.</exception>
-        public abstract Task<JToken> GetJsonAsync(string endPointUrl,
-            WikiRequestMessage queryParams,
+        /// <exception cref="OperationFailedException">There is "error" node in returned JSON.</exception>
+        public abstract Task<JToken> GetJsonAsync(string endPointUrl, WikiRequestMessage message,
             CancellationToken cancellationToken);
 
         /// <inheritdoc />

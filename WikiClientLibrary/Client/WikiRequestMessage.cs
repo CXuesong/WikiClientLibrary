@@ -7,6 +7,8 @@ using System.Net.Http;
 using System.Runtime.InteropServices;
 using System.Threading;
 using WikiClientLibrary.Infrastructures;
+using WikiClientLibrary.Pages;
+using WikiClientLibrary.Sites;
 
 namespace WikiClientLibrary.Client
 {
@@ -37,6 +39,9 @@ namespace WikiClientLibrary.Client
         /// </summary>
         public string Id { get; }
 
+        /// <summary>
+        /// Gets the <see cref="HttpContent"/> corresponding to this message.
+        /// </summary>
         public abstract HttpContent GetHttpContent();
 
         /// <inheritdoc />
@@ -46,6 +51,52 @@ namespace WikiClientLibrary.Client
         }
     }
 
+    /// <summary>
+    /// The MediaWiki API request message consisting of parameter key-value pairs (fields).
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// This is the primary message type used in the WikiClientLibrary.
+    /// This type provides some useful functionalities such as constructing fields from anonymous objects,
+    /// simple type marshalling, or inherit some of the fields of other <see cref="WikiFormRequestMessage"/> instance,
+    /// while overriding the rest.
+    /// </para>
+    /// <para>
+    /// This message can be later converted into
+    /// <c>application/x-www-form-urlencoded</c> or <c>multipart/form-data</c> http content.
+    /// </para>
+    /// <para>
+    /// When converting the form into <see cref="HttpContent"/>, the values are marshaled in the following way
+    /// <list type="bullet">
+    /// <item><description>
+    /// <c>null</c> values are ignored. 
+    /// </description></item>
+    /// <item><description>
+    /// <c>string</c> values are kept intact. 
+    /// </description></item>
+    /// <item><description>
+    /// <c>bool</c> values are marshaled as <c>""</c>(<see cref="string.Empty"/>) for <c>true</c>,
+    /// and are ignored for <c>false</c>.
+    /// </description></item>
+    /// <item><description>
+    /// <see cref="DateTime"/> values are marshaled as UTC in ISO 8601 format.
+    /// </description></item>
+    /// <item><description>
+    /// <see cref="Stream"/> values are sent as <see cref="StreamContent"/> with a dummy file name,
+    /// and this will force the whole form to be marshaled as <see cref="MultipartFormDataContent"/>.
+    /// </description></item>
+    /// <item><description>
+    /// <see cref="AutoWatchBehavior"/> values are marshaled as one of "preferences", "nochange", "watch", "unwatch".
+    /// </description></item>
+    /// <item><description>
+    /// Other types of values are marshaled by calling <see cref="object.ToString"/> on them.
+    /// </description></item>
+    /// </list>
+    /// Note that the message sending methods (e.g. <see cref="WikiSite.GetJsonAsync(WikiRequestMessage,CancellationToken)"/>)
+    /// may also change the way the message is marshaled. For the detailed information, please see the message sender's
+    /// documentations respectively.
+    /// </para>
+    /// </remarks>
     public sealed class WikiFormRequestMessage : WikiRequestMessage
     {
 
@@ -79,8 +130,14 @@ namespace WikiClientLibrary.Client
             else AsMultipartFormData = this.fieldDict.Any(p => p.Value is Stream);
         }
 
+        /// <summary>
+        /// Determines whether this message should be marshaled in <c>multipart/form-data</c> MIME type.
+        /// </summary>
         public bool AsMultipartFormData { get; }
 
+        /// <summary>
+        /// Gets a readonly dictionary of all the fields in the form.
+        /// </summary>
         public IDictionary<string, object> Fields
         {
             get
@@ -92,12 +149,7 @@ namespace WikiClientLibrary.Client
             }
         }
 
-        public object GetValue(string key)
-        {
-            if (fieldDict.TryGetValue(key, out var v)) return v;
-            return null;
-        }
-
+        /// <inheritdoc />
         public override HttpContent GetHttpContent()
         {
             if (AsMultipartFormData)
@@ -134,6 +186,13 @@ namespace WikiClientLibrary.Client
         }
     }
 
+    /// <summary>
+    /// Directly encapsulates a <see cref="HttpContent"/> into <see cref="WikiRequestMessage"/>.
+    /// </summary>
+    /// <remarks>
+    /// Use <see cref="WikiFormRequestMessage"/> wherever possible,
+    /// Because various enhancements are not available on this type.
+    /// </remarks>
     public sealed class WikiRawRequestMessage : WikiRequestMessage
     {
 

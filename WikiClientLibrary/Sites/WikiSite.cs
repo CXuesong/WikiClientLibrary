@@ -286,47 +286,34 @@ namespace WikiClientLibrary.Sites
 
         #region Basic API
 
-        private static readonly IList<KeyValuePair<string, string>> accountAssertionUser = new[]
-            {new KeyValuePair<string, string>("assert", "user")};
-
-        private static readonly IList<KeyValuePair<string, string>> accountAssertionBot = new[]
-            {new KeyValuePair<string, string>("assert", "bot")};
-
-
-        /// <summary>
-        /// Invokes API and get JSON result.
-        /// </summary>
-        /// <exception cref="InvalidActionException">Specified action is not supported.</exception>
-        /// <exception cref="OperationCanceledException">The operation has been cancelled via <paramref name="cancellationToken"/>.</exception>
-        /// <exception cref="UnauthorizedOperationException">Permission denied.</exception>
-        /// <exception cref="OperationFailedException">There's "error" node in returned JSON.</exception>
-        /// <remarks>The request is sent via HTTP POST.</remarks>
-        [Obsolete("Please use WikiSite.GetJsonAsync method.")]
-        public Task<JToken> PostValuesAsync(IEnumerable<KeyValuePair<string, string>> queryParams,
-            CancellationToken cancellationToken)
-            => GetJsonAsync(new WikiFormRequestMessage(queryParams), false, cancellationToken);
-
-        /// <summary>
-        /// Invokes API and get JSON result.
-        /// </summary>
-        /// <exception cref="InvalidActionException">Specified action is not supported.</exception>
-        /// <exception cref="OperationCanceledException">The operation has been cancelled via <paramref name="cancellationToken"/>.</exception>
-        /// <exception cref="UnauthorizedOperationException">Permission denied.</exception>
-        /// <exception cref="OperationFailedException">There's "error" node in returned JSON.</exception>
-        /// <remarks>The request is sent via HTTP POST.</remarks>
-        [Obsolete("Please use WikiSite.GetJsonAsync method.")]
-        public Task<JToken> PostValuesAsync(IEnumerable<KeyValuePair<string, string>> queryParams,
-            bool supressAccountAssertion, CancellationToken cancellationToken)
-        {
-            return GetJsonAsync(new WikiFormRequestMessage(new WikiFormRequestMessage(queryParams)),
-                supressAccountAssertion, cancellationToken);
-        }
-
+        /// <inheritdoc cref="GetJsonAsync(WikiRequestMessage,bool,CancellationToken)"/>
         public Task<JToken> GetJsonAsync(WikiRequestMessage message, CancellationToken cancellationToken)
         {
             return GetJsonAsync(message, false, cancellationToken);
         }
 
+        /// <summary>
+        /// Invokes MediaWiki API and gets JSON result.
+        /// </summary>
+        /// <param name="message">The request message.</param>
+        /// <param name="supressAccountAssertion">Whether to temporarily disable account assertion as set in <see cref="SiteOptions.AccountAssertion"/>.</param>
+        /// <param name="cancellationToken">The cancellation token that will be checked prior to completing the returned task.</param>
+        /// <exception cref="InvalidActionException">Specified action is not supported.</exception>
+        /// <exception cref="UnauthorizedOperationException">Permission denied.</exception>
+        /// <exception cref="OperationFailedException">There is "error" node in returned JSON.</exception>
+        /// <remarks>
+        /// Some enhancements are available only if <paramref name="message"/> is <see cref="WikiFormRequestMessage"/>, including
+        /// <list type="bullet">
+        /// <item><description>
+        /// Account assertion, as specified in <see cref="SiteOptions.AccountAssertion"/>.
+        /// </description></item>
+        /// <item><description>
+        /// Automatic token-refreshing on <c>badtoken</c> error. This requires you to set all your <c>token</c>
+        /// fields in the <paramref name="message"/> to a placeholder of type <see cref="WikiSiteToken"/>,
+        /// instead of the actual token string.
+        /// </description></item>
+        /// </list>
+        /// </remarks>
         public async Task<JToken> GetJsonAsync(WikiRequestMessage message, bool supressAccountAssertion,
             CancellationToken cancellationToken)
         {
@@ -394,6 +381,35 @@ namespace WikiClientLibrary.Sites
                     message, invalidatedToken);
                 goto RETRY;
             }
+        }
+
+        /// <summary>
+        /// Invokes API and get JSON result.
+        /// </summary>
+        /// <exception cref="InvalidActionException">Specified action is not supported.</exception>
+        /// <exception cref="OperationCanceledException">The operation has been cancelled via <paramref name="cancellationToken"/>.</exception>
+        /// <exception cref="UnauthorizedOperationException">Permission denied.</exception>
+        /// <exception cref="OperationFailedException">There's "error" node in returned JSON.</exception>
+        /// <remarks>The request is sent via HTTP POST.</remarks>
+        [Obsolete("Please use WikiSite.GetJsonAsync method.")]
+        public Task<JToken> PostValuesAsync(IEnumerable<KeyValuePair<string, string>> queryParams,
+            CancellationToken cancellationToken)
+            => GetJsonAsync(new WikiFormRequestMessage(queryParams), false, cancellationToken);
+
+        /// <summary>
+        /// Invokes API and get JSON result.
+        /// </summary>
+        /// <exception cref="InvalidActionException">Specified action is not supported.</exception>
+        /// <exception cref="OperationCanceledException">The operation has been cancelled via <paramref name="cancellationToken"/>.</exception>
+        /// <exception cref="UnauthorizedOperationException">Permission denied.</exception>
+        /// <exception cref="OperationFailedException">There's "error" node in returned JSON.</exception>
+        /// <remarks>The request is sent via HTTP POST.</remarks>
+        [Obsolete("Please use WikiSite.GetJsonAsync method.")]
+        public Task<JToken> PostValuesAsync(IEnumerable<KeyValuePair<string, string>> queryParams,
+            bool supressAccountAssertion, CancellationToken cancellationToken)
+        {
+            return GetJsonAsync(new WikiFormRequestMessage(new WikiFormRequestMessage(queryParams)),
+                supressAccountAssertion, cancellationToken);
         }
 
         /// <summary>
