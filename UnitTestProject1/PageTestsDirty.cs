@@ -79,17 +79,17 @@ The original title of the page is '''{title}'''.
         }
 
         [Theory]
-        [InlineData("File:Test image.jpg")]
-        [InlineData("Test image.jpg")]
-        public async Task LocalFileUploadTest1(string fileName)
+        [InlineData("File:Test image.jpg", "1")]
+        [InlineData("File:Test image.jpg", "2")]
+        [InlineData("Test image.jpg" ,"1")]
+        public async Task LocalFileUploadTest1(string fileName, string imageName)
         {
-            const string FileSHA1 = "81ED69FA2C2BDEEBBA277C326D1AAC9E0E57B346";
             const string ReuploadSuffix = "\n\nReuploaded.";
-            var file = GetDemoImage();
+            var file = GetDemoImage(imageName);
             UploadResult result;
             try
             {
-                result = await FilePage.UploadAsync(await SiteAsync, file.Item1, fileName, file.Item2, false);
+                result = await FilePage.UploadAsync(await SiteAsync, file.ContentStream, fileName, file.Description, false);
             }
             catch (UploadException ex)
             {
@@ -98,7 +98,7 @@ The original title of the page is '''{title}'''.
                 if (ex.UploadResult.Warnings[0].Key == "exists")
                     // Just re-upload
                     result = await FilePage.UploadAsync(await SiteAsync, ex.UploadResult, fileName,
-                        file.Item2 + ReuploadSuffix, true);
+                        file.Description + ReuploadSuffix, true);
                 else
                     throw;
             }
@@ -107,7 +107,7 @@ The original title of the page is '''{title}'''.
             await fp.RefreshAsync();
             ShallowTrace(fp);
             Assert.True(fp.Exists);
-            Assert.Equal(FileSHA1, fp.LastFileRevision.Sha1.ToUpperInvariant());
+            Assert.Equal(file.Sha1, fp.LastFileRevision.Sha1.ToUpperInvariant());
         }
 
         [Fact]
@@ -182,6 +182,11 @@ JasonHise grants anyone the right to use this work for any purpose, without any 
                     await FilePage.UploadAsync(site, ex.UploadResult, FileName, Description + ReuploadSuffix, true);
                 else
                     throw;
+            }
+            catch (OperationFailedException ex)
+            {
+                Skip.If(ex.ErrorCode == "copyuploadbaddomain", ex.ErrorMessage);
+                throw;
             }
         }
 

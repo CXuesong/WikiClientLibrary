@@ -9,6 +9,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Reflection;
 using System.Runtime.ExceptionServices;
+using System.Text.RegularExpressions;
 using WikiClientLibrary.Client;
 using WikiClientLibrary.Sites;
 using Xunit;
@@ -99,16 +100,39 @@ namespace UnitTestProject1
             if (!site.AccountInfo.IsUser) throw new SkipException($"User {site.AccountInfo} has not logged into {site}.");
         }
 
-        public static Tuple<Stream, string> GetDemoImage()
+        public static DemoFileInfo GetDemoImage(string imageName)
         {
             // Load DemoImage.jpg
             var assembly = typeof(Utility).GetTypeInfo().Assembly;
-            var content = assembly.GetManifestResourceStream("UnitTestProject1.DemoImage.jpg");
-            using (var r = new StreamReader(assembly.GetManifestResourceStream("UnitTestProject1.DemoImage.txt")))
+            var content = assembly.GetManifestResourceStream($"UnitTestProject1.DemoImages.{imageName}.jpg");
+            if (content == null) throw new ArgumentException("Invalid imageName.");
+            using (var r = new StreamReader(assembly.GetManifestResourceStream($"UnitTestProject1.DemoImages.{imageName}.txt")))
             {
                 var desc = r.ReadToEnd();
-                return Tuple.Create(content, desc);
+                return new DemoFileInfo(content, desc);
             }
         }
+    }
+
+    internal struct DemoFileInfo
+    {
+        public DemoFileInfo(Stream contentStream, string description)
+        {
+            ContentStream = contentStream;
+            Description = description;
+            Sha1 = null;
+            if (description != null)
+            {
+                var match = Regex.Match(description, @"^\s*SHA1:\s*([\d\w]+)", RegexOptions.Multiline);
+                Sha1 = match.Groups[1].Value;
+            }
+        }
+
+        public Stream ContentStream { get; }
+
+        public string Description { get; }
+
+        public string Sha1 { get; }
+
     }
 }

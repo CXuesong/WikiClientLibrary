@@ -1,0 +1,15 @@
+﻿----------------------------------------
+DemoImages/2.jpg
+
+Size: 12056 Bytes
+
+SHA1: 6D86095C7EE7714AD90E32FE5D251C6F1B14EF40
+----------------------------------------
+
+This is a resized version of image
+
+https://commons.wikimedia.org/wiki/File:Campo_flicker_(Colaptes_campestris)_female.JPG
+
+Author is Charlesjsharp.
+
+This file is licensed under the Creative Commons Attribution-Share Alike 4.0 International license.
