@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json.Linq;
+using WikiClientLibrary.Client;
 using WikiClientLibrary.Sites;
 
 namespace WikiClientLibrary.Infrastructures
@@ -46,7 +47,7 @@ namespace WikiClientLibrary.Infrastructures
                 BEGIN:
                 if (eofReached) return null;
                 cancellation.ThrowIfCancellationRequested();
-                var jresult = await _Site.PostValuesAsync(pa, cancellation);
+                var jresult = await _Site.GetJsonAsync(new WikiFormRequestMessage(pa), cancellation);
                 // continue.xxx
                 // or query-continue.allpages.xxx
                 var continuation = (JObject) (jresult["continue"]

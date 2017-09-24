@@ -538,7 +538,6 @@ namespace WikiClientLibrary.Pages
         {
             using (await Site.ModificationThrottler.QueueWorkAsync("Edit: " + this, cancellationToken))
             {
-                var token = await Site.GetTokenAsync("edit", cancellationToken);
                 // When passing this to the Edit API, always pass the token parameter last
                 // (or at least after the text parameter). That way, if the edit gets interrupted,
                 // the token won't be passed and the edit will fail.
@@ -546,9 +545,10 @@ namespace WikiClientLibrary.Pages
                 JToken jresult;
                 try
                 {
-                    jresult = await Site.PostValuesAsync(new
+                    jresult = await Site.GetJsonAsync(new WikiFormRequestMessage(new
                     {
                         action = "edit",
+                        token = WikiSiteToken.Edit,
                         title = Title,
                         minor = minor,
                         bot = bot,
@@ -558,8 +558,7 @@ namespace WikiClientLibrary.Pages
                         watchlist = watch,
                         summary = summary,
                         text = Content,
-                        token = token,
-                    }, cancellationToken);
+                    }), cancellationToken);
                 }
                 catch (OperationFailedException ex)
                 {
@@ -634,7 +633,6 @@ namespace WikiClientLibrary.Pages
             if (newTitle == Title) return;
             using (await Site.ModificationThrottler.QueueWorkAsync("Move: " + this, cancellationToken))
             {
-                var token = await Site.GetTokenAsync("move", cancellationToken);
                 // When passing this to the Edit API, always pass the token parameter last
                 // (or at least after the text parameter). That way, if the edit gets interrupted,
                 // the token won't be passed and the edit will fail.
@@ -642,9 +640,10 @@ namespace WikiClientLibrary.Pages
                 JToken jresult;
                 try
                 {
-                    jresult = await Site.PostValuesAsync(new
+                    jresult = await Site.GetJsonAsync(new WikiFormRequestMessage(new
                     {
                         action = "move",
+                        token = WikiSiteToken.Move,
                         from = Title,
                         to = newTitle,
                         maxlag = 5,
@@ -655,8 +654,7 @@ namespace WikiClientLibrary.Pages
                                          PageMovingOptions.IgnoreWarnings,
                         watchlist = watch,
                         reason = reason,
-                        token = token,
-                    }, cancellationToken);
+                    }), cancellationToken);
                 }
                 catch (OperationFailedException ex)
                 {
@@ -702,19 +700,18 @@ namespace WikiClientLibrary.Pages
         {
             using (await Site.ModificationThrottler.QueueWorkAsync("Delete: " + this, cancellationToken))
             {
-                var token = await Site.GetTokenAsync("delete", cancellationToken);
                 JToken jresult;
                 try
                 {
-                    jresult = await Site.PostValuesAsync(new
+                    jresult = await Site.GetJsonAsync(new WikiFormRequestMessage(new
                     {
                         action = "delete",
+                        token = WikiSiteToken.Delete,
                         title = Title,
                         maxlag = 5,
                         watchlist = watch,
                         reason = reason,
-                        token = token,
-                    }, cancellationToken);
+                    }), cancellationToken);
                 }
                 catch (OperationFailedException ex)
                 {

@@ -140,12 +140,12 @@ namespace WikiClientLibrary.Sites
         /// <exception cref="UnauthorizedOperationException">Cannot access query API module due to target site permission settings. You may need to login first.</exception>
         public async Task RefreshSiteInfoAsync()
         {
-            var jobj = await PostValuesAsync(new
+            var jobj = await GetJsonAsync(new WikiFormRequestMessage(new
             {
                 action = "query",
                 meta = "siteinfo",
                 siprop = "general|namespaces|namespacealiases|interwikimap|extensions"
-            }, true, CancellationToken.None);
+            }), true, CancellationToken.None);
             var qg = (JObject) jobj["query"]["general"];
             var ns = (JObject) jobj["query"]["namespaces"];
             var aliases = (JArray) jobj["query"]["namespacealiases"];
@@ -188,12 +188,12 @@ namespace WikiClientLibrary.Sites
         /// <exception cref="UnauthorizedOperationException">Cannot access query API module due to target site permission settings. You may need to login first.</exception>
         public async Task RefreshAccountInfoAsync()
         {
-            var jobj = await PostValuesAsync(new
+            var jobj = await GetJsonAsync(new WikiFormRequestMessage(new
             {
                 action = "query",
                 meta = "userinfo",
                 uiprop = "blockinfo|groups|hasmsg|rights"
-            }, true, CancellationToken.None);
+            }), true, CancellationToken.None);
             _AccountInfo = ((JObject) jobj["query"]["userinfo"]).ToObject<AccountInfo>(Utility.WikiJsonSerializer);
             ListingPagingSize = _AccountInfo.HasRight(UserRights.ApiHighLimits) ? 5000 : 500;
         }
@@ -301,9 +301,10 @@ namespace WikiClientLibrary.Sites
         /// <exception cref="UnauthorizedOperationException">Permission denied.</exception>
         /// <exception cref="OperationFailedException">There's "error" node in returned JSON.</exception>
         /// <remarks>The request is sent via HTTP POST.</remarks>
+        [Obsolete("Please use WikiSite.GetJsonAsync method.")]
         public Task<JToken> PostValuesAsync(IEnumerable<KeyValuePair<string, string>> queryParams,
             CancellationToken cancellationToken)
-            => PostValuesAsync(queryParams, false, cancellationToken);
+            => GetJsonAsync(new WikiFormRequestMessage(queryParams), false, cancellationToken);
 
         /// <summary>
         /// Invokes API and get JSON result.
@@ -313,34 +314,65 @@ namespace WikiClientLibrary.Sites
         /// <exception cref="UnauthorizedOperationException">Permission denied.</exception>
         /// <exception cref="OperationFailedException">There's "error" node in returned JSON.</exception>
         /// <remarks>The request is sent via HTTP POST.</remarks>
-        public async Task<JToken> PostValuesAsync(IEnumerable<KeyValuePair<string, string>> queryParams,
+        [Obsolete("Please use WikiSite.GetJsonAsync method.")]
+        public Task<JToken> PostValuesAsync(IEnumerable<KeyValuePair<string, string>> queryParams,
             bool supressAccountAssertion, CancellationToken cancellationToken)
         {
-            var queryParams1 = queryParams as ICollection<KeyValuePair<string, string>> ?? queryParams.ToArray();
+            return GetJsonAsync(new WikiFormRequestMessage(new WikiFormRequestMessage(queryParams)),
+                supressAccountAssertion, cancellationToken);
+        }
+
+        public Task<JToken> GetJsonAsync(WikiRequestMessage message, CancellationToken cancellationToken)
+        {
+            return GetJsonAsync(message, false, cancellationToken);
+        }
+
+        public async Task<JToken> GetJsonAsync(WikiRequestMessage message, bool supressAccountAssertion,
+            CancellationToken cancellationToken)
+        {
+            var form = message as WikiFormRequestMessage;
+            var localRequest = message;
             RETRY:
-            IEnumerable<KeyValuePair<string, string>> pa = queryParams1;
-            if (!supressAccountAssertion && _AccountInfo != null)
+            if (form != null)
             {
-                if ((options.AccountAssertion & AccountAssertionBehavior.AssertBot) ==
-                    AccountAssertionBehavior.AssertBot && _AccountInfo.IsBot)
-                    pa = pa.Concat(accountAssertionBot);
-                else if ((options.AccountAssertion & AccountAssertionBehavior.AssertUser) ==
-                         AccountAssertionBehavior.AssertUser && _AccountInfo.IsUser)
-                    pa = pa.Concat(accountAssertionUser);
+                // Apply tokens
+                var overridenFields = new List<KeyValuePair<string, object>>();
+                foreach (var tokenField in form.Fields.Where(p => p.Value is WikiSiteToken))
+                {
+                    overridenFields.Add(new KeyValuePair<string, object>(tokenField.Key,
+                        await tokensManager.GetTokenAsync(((WikiSiteToken) tokenField.Value).Type,
+                            false, cancellationToken)));
+                }
+                // Apply account assertions
+                if (!supressAccountAssertion && _AccountInfo != null)
+                {
+                    if ((options.AccountAssertion & AccountAssertionBehavior.AssertBot) ==
+                        AccountAssertionBehavior.AssertBot && _AccountInfo.IsBot)
+                        overridenFields.Add(new KeyValuePair<string, object>("assert", "bot"));
+                    else if ((options.AccountAssertion & AccountAssertionBehavior.AssertUser) ==
+                             AccountAssertionBehavior.AssertUser && _AccountInfo.IsUser)
+                        overridenFields.Add(new KeyValuePair<string, object>("assert", "user"));
+                }
+                if (overridenFields.Count > 0)
+                    localRequest = new WikiFormRequestMessage(form.Id, form, overridenFields, false);
             }
             try
             {
-                return await WikiClient.GetJsonAsync(options.ApiEndpoint, pa, cancellationToken);
+                return await WikiClient.GetJsonAsync(options.ApiEndpoint, localRequest, cancellationToken);
             }
             catch (AccountAssertionFailureException)
             {
                 if (AccountAssertionFailureHandler != null)
                 {
-                    // TODO Relogin might be called nultiple times.
+                    // ISSUE Relogin might be called nultiple times.
                     if (reLoginTask == null)
                     {
-                        reLoginTask = Relogin();
-                        Logger.LogWarning("{Site} account assertion failed. Try to relogin.", ToString());
+                        Logger.LogWarning("Account assertion failed. Try to relogin: {Request}.", message);
+                        Volatile.Write(ref reLoginTask, Relogin());
+                    }
+                    else
+                    {
+                        Logger.LogWarning("Account assertion failed. Waiting for relongin: {Request}.", message);
                     }
                     var result = await reLoginTask;
                     if (result) goto RETRY;
@@ -357,8 +389,9 @@ namespace WikiClientLibrary.Sites
         /// <exception cref="InvalidActionException">Specified action is not supported.</exception>
         /// <exception cref="OperationCanceledException">The operation has been cancelled via <paramref name="cancellationToken"/>.</exception>
         /// <exception cref="OperationFailedException">There's "error" node in returned JSON.</exception>
+        [Obsolete("Please use WikiSite.GetJsonAsync method.")]
         public Task<JToken> PostValuesAsync(object queryParams, CancellationToken cancellationToken)
-            => PostValuesAsync(queryParams, false, cancellationToken);
+            => GetJsonAsync(new WikiFormRequestMessage(queryParams), false, cancellationToken);
 
         /// <summary>
         /// Invoke API and get JSON result.
@@ -369,34 +402,14 @@ namespace WikiClientLibrary.Sites
         /// <exception cref="InvalidActionException">Specified action is not supported.</exception>
         /// <exception cref="OperationCanceledException">The operation has been cancelled via <paramref name="cancellationToken"/>.</exception>
         /// <exception cref="OperationFailedException">There's "error" node in returned JSON.</exception>
+        [Obsolete("Please use WikiSite.GetJsonAsync method.")]
         public Task<JToken> PostValuesAsync(object queryParams, bool supressAccountAssertion,
             CancellationToken cancellationToken)
         {
             if (queryParams == null) throw new ArgumentNullException(nameof(queryParams));
-            return PostValuesAsync(Utility.ToWikiStringValuePairs(queryParams), supressAccountAssertion,
+            return GetJsonAsync(new WikiFormRequestMessage(Utility.ToWikiStringValuePairs(queryParams)),
+                supressAccountAssertion,
                 cancellationToken);
-        }
-
-        /// <summary>
-        /// Invokes API and gets JSON result.
-        /// </summary>
-        /// <param name="postContentFactory">The factory function that returns a new <see cref="HttpContent"/> per invocation.</param>
-        /// <param name="cancellationToken">The cancellation token that will be checked prior to completing the returned task.</param>
-        /// <exception cref="ArgumentException"><paramref name="postContentFactory" /> returns <c>null</c> for the first invocation.</exception>
-        /// <exception cref="InvalidActionException">Specified action is not supported.</exception>
-        /// <exception cref="UnauthorizedOperationException">Permission denied.</exception>
-        /// <exception cref="OperationFailedException">There's "error" node in returned JSON.</exception>
-        /// <remarks>
-        /// <para>If <paramref name="postContentFactory" /> returns <c>null</c> for the first invocation, an
-        /// <see cref="ArgumentException"/> will be thrown. If it returns <c>null</c> for subsequent invocations
-        /// (often when retrying the request), no further retry will be performed.</para>
-        /// <para>You need to specify format=json manually in the request content.</para>
-        /// </remarks>
-        internal Task<JToken> PostContentAsync(Func<HttpContent> postContentFactory,
-            CancellationToken cancellationToken)
-        {
-            if (postContentFactory == null) throw new ArgumentNullException(nameof(postContentFactory));
-            return WikiClient.GetJsonAsync(options.ApiEndpoint, postContentFactory, cancellationToken);
         }
 
         #endregion
@@ -529,14 +542,14 @@ namespace WikiClientLibrary.Sites
                 // If options.ExplicitInfoRefresh is true, we just treat it the same as MedaiWiki < 1.27,
                 //  because any "query" operation might raise readapidenied error.
                 RETRY:
-                var jobj = await PostValuesAsync(new
+                var jobj = await GetJsonAsync(new WikiFormRequestMessage(new
                 {
                     action = "login",
                     lgname = userName,
                     lgpassword = password,
                     lgtoken = token,
                     lgdomain = domain,
-                }, true, cancellationToken);
+                }), true, cancellationToken);
                 var result = (string) jobj["login"]["result"];
                 string message = null;
                 switch (result)
@@ -586,10 +599,10 @@ namespace WikiClientLibrary.Sites
                 throw new InvalidOperationException("Cannot login/logout concurrently.");
             try
             {
-                var jobj = await PostValuesAsync(new
+                var jobj = await GetJsonAsync(new WikiFormRequestMessage(new
                 {
                     action = "logout",
-                }, true, CancellationToken.None);
+                }), true, CancellationToken.None);
                 tokensManager.ClearCache();
                 if (options.ExplicitInfoRefresh)
                     _AccountInfo = null;
@@ -602,7 +615,7 @@ namespace WikiClientLibrary.Sites
             }
         }
 
-        private volatile Task<bool> reLoginTask;
+        private Task<bool> reLoginTask;
         private ILoggerFactory _LoggerFactory;
 
         private async Task<bool> Relogin()
@@ -637,3 +650,4 @@ namespace WikiClientLibrary.Sites
     }
 
 }
+

@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using WikiClientLibrary.Client;
 using WikiClientLibrary.Generators;
 using WikiClientLibrary.Infrastructures;
 using WikiClientLibrary.Pages;
@@ -81,7 +82,7 @@ namespace WikiClientLibrary
                     site.Logger.LogDebug("Fetching {Count} pages from {Site}.", partition.Count, site);
                     // We use titles to query pages.
                     queryParams["titles"] = string.Join("|", partition.Select(p => p.Title));
-                    var jobj = await site.PostValuesAsync(queryParams, cancellationToken);
+                    var jobj = await site.GetJsonAsync(new WikiFormRequestMessage(queryParams), cancellationToken);
                     // Process title normalization.
                     var normalized = jobj["query"]["normalized"]?.ToDictionary(n => (string) n["from"],
                         n => (string) n["to"]);
@@ -137,7 +138,7 @@ namespace WikiClientLibrary
                 {
                     site.Logger.LogDebug("Fetching {Count} revisions from {Site}.", partition.Count, site);
                     queryParams["revids"] = string.Join("|", partition);
-                    var jobj = await site.PostValuesAsync(queryParams, cancellationToken);
+                    var jobj = await site.GetJsonAsync(new WikiFormRequestMessage(queryParams), cancellationToken);
                     var jpages = (JObject) jobj["query"]["pages"];
                     // Generate converters first
                     // Use DelegateCreationConverter to create Revision with constructor
@@ -231,7 +232,7 @@ namespace WikiClientLibrary
                     // We purge pages by titles.
                     try
                     {
-                        var jresult = await site.PostValuesAsync(new
+                        var jresult = await site.GetJsonAsync(new WikiFormRequestMessage(new
                         {
                             action = "purge",
                             titles = string.Join("|", partition.Select(p => p.Title)),
@@ -240,7 +241,7 @@ namespace WikiClientLibrary
                             forcerecursivelinkupdate =
                                 (options & PagePurgeOptions.ForceRecursiveLinkUpdate) ==
                                 PagePurgeOptions.ForceRecursiveLinkUpdate,
-                        }, cancellationToken);
+                        }), cancellationToken);
                         // Now check whether the pages have been purged successfully.
                         // Process title normalization.
                         var normalized = jresult["normalized"]?.ToDictionary(n => (string) n["from"],
@@ -285,13 +286,13 @@ namespace WikiClientLibrary
             var token = await site.GetTokenAsync("patrol");
             try
             {
-                var jresult = await site.PostValuesAsync(new
+                var jresult = await site.GetJsonAsync(new WikiFormRequestMessage(new
                 {
                     action = "patrol",
                     rcid = recentChangeId,
                     revid = revisionId,
                     token = token,
-                }, cancellationToken);
+                }), cancellationToken);
                 if (recentChangeId != null) Debug.Assert((int) jresult["patrol"]["rcid"] == recentChangeId.Value);
             }
             catch (OperationFailedException ex)
@@ -347,7 +348,7 @@ namespace WikiClientLibrary
             {
                 pa["modules"] = moduleName;
             }
-            var jresult = await site.PostValuesAsync(pa, CancellationToken.None);
+            var jresult = await site.GetJsonAsync(new WikiFormRequestMessage(pa), CancellationToken.None);
             var jmodules =
                 ((JObject) jresult["paraminfo"]).Properties().FirstOrDefault(p => p.Name.EndsWith("modules"))?.Value;
             // For now we use the method internally.

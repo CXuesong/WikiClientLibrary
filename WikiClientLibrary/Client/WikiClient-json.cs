@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Net;
@@ -17,23 +18,31 @@ namespace WikiClientLibrary.Client
         #region the json client
 
         /// <inheritdoc />
-        private async Task<JToken> SendAsync(Func<HttpRequestMessage> requestFactory,
+        private async Task<JToken> SendAsync(string endPointUrl, WikiRequestMessage message,
             CancellationToken cancellationToken)
         {
+            Debug.Assert(message != null);
             HttpResponseMessage response;
-            var retries = -1; // Current retries count.
-            var request = requestFactory();
-            if (request == null)
+            var retries = 0;
+
+            async Task<bool> WaitForRetry(TimeSpan delay)
             {
-                throw new ArgumentException(
-                    "requestFactory should return an HttpRequestMessage instance for the 1st invocation.",
-                    nameof(requestFactory));
+                if (retries >= MaxRetries) return false;
+                retries++;
+                Logger.LogDebug("Retry: {Request} after {Delay}, attempt #{Retries}.", message, RetryDelay, retries);
+                await Task.Delay(delay, cancellationToken);
+                return true;
             }
+
             RETRY:
+            if (retries == 0)
+                Logger.LogTrace("Initiate request: {Request}, EndPoint: {EndPointUrl}.", message, endPointUrl);
+            else
+                Logger.LogTrace("Initiate request: {Request}.", message, endPointUrl);
+            var httpRequest = new HttpRequestMessage(HttpMethod.Post, endPointUrl)
+                {Content = message.GetHttpContent()};
             cancellationToken.ThrowIfCancellationRequested();
-            retries++;
-            if (retries > 0)
-                Logger.LogDebug("Retry x{Retries}: {Uri}", retries, request.RequestUri);
+            var requestSw = Stopwatch.StartNew();
             try
             {
                 // Use await instead of responseTask.Result to unwrap Exceptions.
@@ -41,48 +50,47 @@ namespace WikiClientLibrary.Client
                 using (var responseCancellation = new CancellationTokenSource(Timeout))
                 using (var linkedCts = CancellationTokenSource.CreateLinkedTokenSource(
                     cancellationToken, responseCancellation.Token))
-                    response = await HttpClient.SendAsync(request, linkedCts.Token);
+                    response = await HttpClient.SendAsync(httpRequest, linkedCts.Token);
                 // The request has been finished.
             }
             catch (OperationCanceledException)
             {
                 if (cancellationToken.IsCancellationRequested)
                 {
-                    Logger.LogWarning("Cancelled: {Uri}", request.RequestUri);
+                    Logger.LogWarning("Cancelled via cancellationToken: {Request}", message);
                     throw new OperationCanceledException();
                 }
-                else
-                {
-                    Logger.LogWarning("Timeout: {Uri}", request.RequestUri);
-                }
-                request = requestFactory();
-                if (request == null || retries >= MaxRetries) throw new TimeoutException();
-                await Task.Delay(RetryDelay, cancellationToken);
+                Logger.LogWarning("Timeout: {Request}", message);
+                if (!await WaitForRetry(RetryDelay)) throw new TimeoutException();
                 goto RETRY;
             }
             // Validate response.
-            Logger.LogDebug("{Status}: {Uri}", response.StatusCode, request.RequestUri);
-            var statusCode = (int)response.StatusCode;
+            var statusCode = (int) response.StatusCode;
+            Logger.LogTrace("HTTP {StatusCode}: {Request}, elapsed: {Time}",
+                statusCode, message, requestSw.Elapsed);
+            if (!response.IsSuccessStatusCode)
+            {
+                Logger.LogWarning("HTTP {StatusCode} {Reason}: {Request}.",
+                    statusCode, response.ReasonPhrase, message, requestSw.Elapsed);
+            }
             if (statusCode >= 500 && statusCode <= 599)
             {
                 // Service Error. We can retry.
                 // HTTP 503 : https://www.mediawiki.org/wiki/Manual:Maxlag_parameter
-                request = requestFactory();
-                if (request != null && retries < MaxRetries)
+                if (retries < MaxRetries)
                 {
+                    // Delay per Retry-After Header
                     var date = response.Headers.RetryAfter?.Date;
-                    var offset = response.Headers.RetryAfter?.Delta;
-                    if (offset == null && date != null) offset = date - DateTimeOffset.Now;
-                    if (offset != null)
-                    {
-                        if (offset > RetryDelay) offset = RetryDelay;
-                        await Task.Delay(offset.Value, cancellationToken);
-                        goto RETRY;
-                    }
+                    var delay = response.Headers.RetryAfter?.Delta;
+                    if (delay == null && date != null) delay = date - DateTimeOffset.Now;
+                    // Or use the default delay
+                    if (delay == null) delay = RetryDelay;
+                    else if (delay > RetryDelay) delay = RetryDelay;
+                    if (await WaitForRetry(delay.Value)) goto RETRY;
                 }
             }
+            // For HTTP 500~599, EnsureSuccessStatusCode will throw an Exception.
             response.EnsureSuccessStatusCode();
-            Debug.Assert(request != null); // For HTTP 500~599, EnsureSuccessStatusCode will throw an Exception.
             try
             {
                 cancellationToken.ThrowIfCancellationRequested();
@@ -93,9 +101,8 @@ namespace WikiClientLibrary.Client
             catch (JsonReaderException)
             {
                 // Input is not a valid json.
-                Logger.LogWarning("Received non-json content: {Uri}", request.RequestUri);
-                request = requestFactory();
-                if (request == null || retries >= MaxRetries) throw;
+                Logger.LogWarning("Received non-json content: {Uri}", httpRequest.RequestUri);
+                if (httpRequest == null || retries >= MaxRetries) throw;
                 goto RETRY;
             }
         }
@@ -134,7 +141,7 @@ namespace WikiClientLibrary.Client
              */
             if (jresponse["warnings"] != null && Logger.IsEnabled(LogLevel.Debug))
             {
-                foreach (var module in ((JObject)jresponse["warnings"]).Properties())
+                foreach (var module in ((JObject) jresponse["warnings"]).Properties())
                 {
                     Logger.LogWarning("{Module}: {Warning}", module.Name, module.Value);
                 }
@@ -142,15 +149,17 @@ namespace WikiClientLibrary.Client
             if (jresponse["error"] != null)
             {
                 var err = jresponse["error"];
-                var errcode = (string)err["code"];
+                var errcode = (string) err["code"];
                 // err["*"]: API usage.
-                var errmessage = ((string)err["info"]).Trim();
+                var errmessage = ((string) err["info"]).Trim();
                 switch (errcode)
                 {
                     case "permissiondenied":
                     case "readapidenied": // You need read permission to use this module
                     case "mustbeloggedin": // You must be logged in to upload this file.
                         throw new UnauthorizedOperationException(errcode, errmessage);
+                    case "badtoken":
+                        throw new BadTokenException(errcode, errmessage);
                     case "unknown_action":
                         throw new InvalidActionException(errcode, errmessage);
                     case "assertuserfailed":

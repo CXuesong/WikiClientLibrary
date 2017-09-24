@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
+using WikiClientLibrary.Client;
 using WikiClientLibrary.Pages;
 
 namespace WikiClientLibrary.Sites
@@ -14,13 +15,13 @@ namespace WikiClientLibrary.Sites
 
         private async Task<JArray> FetchMessagesAsync(string messagesExpr, CancellationToken cancellationToken)
         {
-            var jresult = await PostValuesAsync(new
+            var jresult = await GetJsonAsync(new WikiFormRequestMessage(new
             {
                 action = "query",
                 meta = "allmessages",
                 ammessages = messagesExpr,
-            }, cancellationToken);
-            return (JArray)jresult["query"]["allmessages"];
+            }), cancellationToken);
+            return (JArray) jresult["query"]["allmessages"];
             //return jresult.ToDictionary(m => , m => (string) m["*"]);
         }
 
@@ -79,10 +80,10 @@ namespace WikiClientLibrary.Sites
                 var jr = await FetchMessagesAsync(exprBuilder.ToString(), cancellationToken);
                 foreach (var entry in jr)
                 {
-                    var name = (string)entry["name"];
+                    var name = (string) entry["name"];
                     //var nname = (string)entry["normalizedname"];
                     // for Wikia, there's no normalizedname
-                    var message = (string)entry["*"];
+                    var message = (string) entry["*"];
                     //var missing = entry["missing"] != null;       message will be null
                     if (message != null) result[name] = message;
                 }
@@ -125,7 +126,7 @@ namespace WikiClientLibrary.Sites
         public async Task<string> GetMessageAsync(string message, CancellationToken cancellationToken)
         {
             if (message == null) throw new ArgumentNullException(nameof(message));
-            var result = await GetMessagesAsync(new[] { message }, cancellationToken);
+            var result = await GetMessagesAsync(new[] {message}, cancellationToken);
             return result.Values.FirstOrDefault();
         }
 
@@ -142,13 +143,13 @@ namespace WikiClientLibrary.Sites
         /// </summary>
         public async Task<SiteStatistics> GetStatisticsAsync(CancellationToken cancellationToken)
         {
-            var jobj = await PostValuesAsync(new
+            var jobj = await GetJsonAsync(new WikiFormRequestMessage(new
             {
                 action = "query",
                 meta = "siteinfo",
                 siprop = "statistics",
-            }, cancellationToken);
-            var jstat = (JObject)jobj["query"]?["statistics"];
+            }), cancellationToken);
+            var jstat = (JObject) jobj["query"]?["statistics"];
             if (jstat == null) throw new UnexpectedDataException();
             var parsed = jstat.ToObject<SiteStatistics>();
             return parsed;
@@ -202,7 +203,8 @@ namespace WikiClientLibrary.Sites
         /// <param name="maxCount">Maximum number of results to return. No more than 500 (5000 for bots) allowed.</param>
         /// <param name="options">Other options.</param>
         /// <returns>Search result.</returns>
-        public Task<IList<OpenSearchResultEntry>> OpenSearchAsync(string searchExpression, int maxCount, OpenSearchOptions options)
+        public Task<IList<OpenSearchResultEntry>> OpenSearchAsync(string searchExpression, int maxCount,
+            OpenSearchOptions options)
         {
             return OpenSearchAsync(searchExpression, maxCount, 0, options, CancellationToken.None);
         }
@@ -217,7 +219,8 @@ namespace WikiClientLibrary.Sites
         /// <param name="options">Other options.</param>
         /// <param name="cancellationToken">The cancellation token that will be checked prior to completing the returned task.</param>
         /// <returns>Search result.</returns>
-        public Task<IList<OpenSearchResultEntry>> OpenSearchAsync(string searchExpression, int maxCount, OpenSearchOptions options, CancellationToken cancellationToken)
+        public Task<IList<OpenSearchResultEntry>> OpenSearchAsync(string searchExpression, int maxCount,
+            OpenSearchOptions options, CancellationToken cancellationToken)
         {
             return OpenSearchAsync(searchExpression, maxCount, 0, options, cancellationToken);
         }
@@ -269,26 +272,26 @@ namespace WikiClientLibrary.Sites
              */
             if (string.IsNullOrEmpty(searchExpression)) throw new ArgumentNullException(nameof(searchExpression));
             if (maxCount <= 0) throw new ArgumentOutOfRangeException(nameof(maxCount));
-            var jresult = await PostValuesAsync(new
+            var jresult = await GetJsonAsync(new WikiFormRequestMessage(new
             {
                 action = "opensearch",
                 @namespace = defaultNamespaceId,
                 search = searchExpression,
                 limit = maxCount,
                 redirects = (options & OpenSearchOptions.ResolveRedirects) == OpenSearchOptions.ResolveRedirects,
-            }, cancellationToken);
+            }), cancellationToken);
             var result = new List<OpenSearchResultEntry>();
-            var jarray = (JArray)jresult;
-            var titles = jarray.Count > 1 ? (JArray)jarray[1] : null;
-            var descs = jarray.Count > 2 ? (JArray)jarray[2] : null;
-            var urls = jarray.Count > 3 ? (JArray)jarray[3] : null;
+            var jarray = (JArray) jresult;
+            var titles = jarray.Count > 1 ? (JArray) jarray[1] : null;
+            var descs = jarray.Count > 2 ? (JArray) jarray[2] : null;
+            var urls = jarray.Count > 3 ? (JArray) jarray[3] : null;
             if (titles != null)
             {
                 for (int i = 0; i < titles.Count; i++)
                 {
-                    var entry = new OpenSearchResultEntry { Title = (string)titles[i] };
-                    if (descs != null) entry.Description = (string)descs[i];
-                    if (urls != null) entry.Url = (string)urls[i];
+                    var entry = new OpenSearchResultEntry {Title = (string) titles[i]};
+                    if (descs != null) entry.Description = (string) descs[i];
+                    if (urls != null) entry.Url = (string) urls[i];
                     result.Add(entry);
                 }
             }
@@ -296,7 +299,7 @@ namespace WikiClientLibrary.Sites
         }
 
     }
-    
+
     /// <summary>
     /// Options for opensearch.
     /// </summary>

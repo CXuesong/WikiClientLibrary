@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using WikiClientLibrary.Client;
 using WikiClientLibrary.Sites;
 
 namespace WikiClientLibrary.Flow
@@ -46,13 +47,13 @@ namespace WikiClientLibrary.Flow
         {
             // Known Issue: view-header doesn't support multiple page names.
             // Known Issue: the response contains an awful lot of information that cannot be suppressed by setting certain request parameters.
-            var jresult = await Site.PostValuesAsync(new
+            var jresult = await Site.GetJsonAsync(new WikiFormRequestMessage(new
             {
                 action = "flow",
                 submodule = "view-header",
                 page = BoardTitle,
                 vhformat = "wikitext"
-            }, cancellationToken);
+            }), cancellationToken);
             var jheader = jresult["flow"]["view-header"]["result"]["header"];
             var jcontent = jheader["revision"]["content"];
             if (jcontent == null)

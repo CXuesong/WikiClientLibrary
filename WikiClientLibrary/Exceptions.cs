@@ -131,6 +131,17 @@ namespace WikiClientLibrary
     }
 
     /// <summary>
+    /// Raises when the token passed-in is invalid.
+    /// </summary>
+    public class BadTokenException : OperationFailedException
+    {
+        public BadTokenException(string errorCode, string message)
+            : base(errorCode, message)
+        {
+        }
+    }
+
+    /// <summary>
     /// An exception indicating the upload operation has at least one warning.
     /// </summary>
     public class UploadException : WikiClientException

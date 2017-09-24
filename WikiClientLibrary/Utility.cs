@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Dynamic;
@@ -67,60 +68,67 @@ namespace WikiClientLibrary
         /// </remarks>
         public static IEnumerable<KeyValuePair<string, string>> ToWikiStringValuePairs(object values)
         {
-            var pc = values as IEnumerable<KeyValuePair<string, string>>;
-            if (pc != null) return pc;
-            return IterateWikiStringValuePairs(values);
+            if (values is IEnumerable<KeyValuePair<string, string>> pc) return pc;
+            return EnumValues(values)
+                .Select(p => new KeyValuePair<string, string>(p.Key, ToWikiQueryValue(p.Value)));
         }
 
         public static string ToWikiQueryValue(object value)
         {
-            if (value == null)
-                return null;
-            if (value is bool)
+            switch (value)
             {
-                if ((bool) value) value = "";
-                else return null;
+                case null:
+                case string _:
+                    return (string) value;
+                case bool b:
+                    return b ? "" : null;
+                case AutoWatchBehavior awb:
+                    switch (awb)
+                    {
+                        case AutoWatchBehavior.Default:
+                            return "preferences";
+                        case AutoWatchBehavior.None:
+                            return "nochange";
+                        case AutoWatchBehavior.Watch:
+                            return "watch";
+                        case AutoWatchBehavior.Unwatch:
+                            return "unwatch";
+                        default:
+                            throw new ArgumentOutOfRangeException(nameof(value), value, null);
+                    }
+                case DateTime dt:
+                    // ISO 8601
+                    return dt.ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ssK");
+                default:
+                    return value.ToString();
             }
-            else if (value is AutoWatchBehavior)
-            {
-                switch ((AutoWatchBehavior)value)
-                {
-                    case AutoWatchBehavior.Default:
-                        value = "preferences";
-                        break;
-                    case AutoWatchBehavior.None:
-                        value = "nochange";
-                        break;
-                    case AutoWatchBehavior.Watch:
-                        value = "watch";
-                        break;
-                    case AutoWatchBehavior.Unwatch:
-                        value = "unwatch";
-                        break;
-                    default:
-                        throw new ArgumentOutOfRangeException(nameof(value), value, null);
-                }
-            }
-            else if (value is DateTime)
-            {
-                // ISO 8601
-                value = ((DateTime) value).ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ssK");
-            }
-            return Convert.ToString(value);
         }
 
-        private static IEnumerable<KeyValuePair<string, string>> IterateWikiStringValuePairs(object values)
+        public static IEnumerable<KeyValuePair<string, object>> EnumValues(object dict)
         {
-            Debug.Assert(!(values is IEnumerable<KeyValuePair<string, string>>));
-            var dict = values as IDictionary<string, object>;
-            if (dict != null)
-                return from p in dict
-                    let value = ToWikiQueryValue(p.Value)
-                    where value != null
-                    select new KeyValuePair<string, string>(p.Key, value);
-            return from p in values.GetType().GetRuntimeProperties()
-                   let value = ToWikiQueryValue(p.GetValue(values))
-                   where value != null select new KeyValuePair<string, string>(p.Name, value);
+            if (dict == null) throw new ArgumentNullException(nameof(dict));
+            if (dict is IEnumerable<KeyValuePair<string, object>> objEnu)
+                return objEnu;
+            if (dict is IEnumerable<KeyValuePair<string, string>> stringEnu)
+                return stringEnu.Select(p => new KeyValuePair<string, object>(p.Key, p.Value));
+            if (dict is IDictionary idict0)
+            {
+                IEnumerable<KeyValuePair<string, object>> Enumerator(IDictionary idict)
+                {
+                    var de = idict.GetEnumerator();
+                    while (de.MoveNext()) yield return new KeyValuePair<string, object>((string) de.Key, de.Value);
+                }
+
+                return Enumerator(idict0);
+            }
+            // Sanity check: We only want to marshal anonymous types.
+            // If you are in RELEASE mode… I wish you good luck.
+            Debug.Assert(dict.GetType().GetTypeInfo().CustomAttributes
+                    .Any(a => a.AttributeType != typeof(CompilerGeneratedAttribute)),
+                "We only want to marshal anonymous types. Did you accidentally pass in a wrong object?");
+            return from p in dict.GetType().GetRuntimeProperties()
+                let value = p.GetValue(dict)
+                select new KeyValuePair<string, object>(p.Name, value);
         }
 
         /// <summary>

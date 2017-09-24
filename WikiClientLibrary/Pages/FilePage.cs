@@ -171,58 +171,37 @@ namespace WikiClientLibrary.Pages
             var link = WikiLink.Parse(site, title, BuiltInNamespaces.File);
             if (link.Namespace.Id != BuiltInNamespaces.File)
                 throw new ArgumentException($"Invalid namespace for file title: {title} .", nameof(title));
-            var token = await site.GetTokenAsync("edit", cancellationToken);
-            long? streamPosition = null;
-            HttpContent RequestFactory()
+            var requestFields = new Dictionary<string, object>
             {
-                var requestContent = new MultipartFormDataContent
-                {
-                    {new StringContent("json"), "format"},
-                    {new StringContent("upload"), "action"},
-                    {new StringContent(Utility.ToWikiQueryValue(watch)), "watchlist"},
-                    {new StringContent(token), "token"},
-                    {new StringContent(link.Title), "filename"},
-                    {new StringContent(comment), "comment"},
-                };
-                if (content is Stream streamContent)
-                {
-                    if (streamPosition < 0) return null;
-                    // Memorize/reset the stream position.
-                    if (streamContent.CanSeek)
-                    {
-                        if (streamPosition == null) streamPosition = streamContent.Position;
-                        else streamContent.Position = streamPosition.Value;
-                        Debug.Assert(streamPosition >= 0);
-                    }
-                    else
-                    {
-                        // Mark for do-not-retry.
-                        streamPosition = -1;
-                    }
-                    requestContent.Add(new KeepAlivingStreamContent(streamContent), "file", title);
-                }
-                else if (content is string stringContent)
-                {
-                    requestContent.Add(new StringContent(stringContent), "url");
-                }
-                else if (content is UploadResult resultContent)
-                {
+                {"action", "upload"},
+                {"watchlist", watch},
+                {"token", WikiSiteToken.Edit},
+                {"filename", link.Title},
+                {"comment", comment},
+                {"ignorewarnings", ignoreWarnings}
+            };
+            switch (content)
+            {
+                case Stream streamContent:
+                    requestFields["file"] = streamContent;
+                    break;
+                case string stringContent:
+                    requestFields["url"] = stringContent;
+                    break;
+                case UploadResult resultContent:
                     var key = resultContent.FileKey;
                     if (string.IsNullOrEmpty(key))
                         throw new InvalidOperationException("The specified UploadResult has no valid FileKey.");
                     // sessionkey: Same as filekey, maintained for backward compatibility (deprecated in 1.18)
-                    requestContent.Add(new StringContent(key),
-                        site.SiteInfo.Version >= new Version(1, 18) ? "filekey" : "sessionkey");
-                }
-                else
-                {
+                    requestFields[site.SiteInfo.Version >= new Version(1, 18) ? "filekey" : "sessionkey"] = key;
+                    break;
+                default:
                     Debug.Assert(false, "Unrecognized content argument type.");
-                }
-                if (ignoreWarnings) requestContent.Add(new StringContent(""), "ignorewarnings");
-                return requestContent;
+                    break;
             }
-            site.Logger.LogDebug( "Uploading [[{Title}]] on {Site}.", link, site);
-            var jresult = await site.PostContentAsync(RequestFactory, cancellationToken);
+            var request = new WikiFormRequestMessage(requestFields, true);
+            site.Logger.LogDebug("Uploading [[{Title}]] on {Site}.", link, site);
+            var jresult = await site.GetJsonAsync(request, cancellationToken);
             var result = jresult["upload"].ToObject<UploadResult>(Utility.WikiJsonSerializer);
             site.Logger.LogInformation("Uploaded [[{Title}]] on {Site}. Result={Result}.",
                 link, site, result.ResultCode);

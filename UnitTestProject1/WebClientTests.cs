@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using WikiClientLibrary;
+using WikiClientLibrary.Client;
 using Xunit;
 using Xunit.Abstractions;
 using static UnitTestProject1.Utility;
@@ -23,10 +24,14 @@ namespace UnitTestProject1
         public async Task TestMethod1()
         {
             var client = WikiClient;
-            var json = await client.GetJsonAsync(EntryPointWikipediaTest2,
-                new {action = "query", meta = "siteinfo"},
+            var query = new {action = "query", meta = "siteinfo"};
+            var json1 = await client.GetJsonAsync(EntryPointWikipediaTest2,
+                new WikiFormRequestMessage(query),
                 CancellationToken.None);
-            Output.WriteLine(json.ToString());
+            var json2 = await client.GetJsonAsync(EntryPointWikipediaTest2,
+                new WikiFormRequestMessage(query, true),
+                CancellationToken.None);
+            Output.WriteLine(json1.ToString());
         }
 
         [Fact]
@@ -35,11 +40,11 @@ namespace UnitTestProject1
             var client = WikiClient;
             await Assert.ThrowsAsync<InvalidActionException>(() =>
                 client.GetJsonAsync(EntryPointWikipediaTest2,
-                    new
+                    new WikiFormRequestMessage(new
                     {
                         action = "invalid_action_test",
                         description = "This is a test case for invalid action parameter."
-                    },
+                    }),
                     CancellationToken.None));
         }
     }

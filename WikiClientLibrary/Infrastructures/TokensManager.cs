@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
+using WikiClientLibrary.Client;
 using WikiClientLibrary.Sites;
 
 namespace WikiClientLibrary.Infrastructures
@@ -40,12 +41,12 @@ namespace WikiClientLibrary.Infrastructures
         /// <param name="cancellationToken">The cancellation token that will be checked prior to completing the returned task.</param>
         private async Task<JObject> FetchTokensAsync2(string tokenTypeExpr, CancellationToken cancellationToken)
         {
-            var jobj = await site.PostValuesAsync(new
+            var jobj = await site.GetJsonAsync(new WikiFormRequestMessage(new
             {
                 action = "query",
                 meta = "tokens",
                 type = tokenTypeExpr,
-            }, true, cancellationToken);
+            }), true, cancellationToken);
             var warnings = jobj["warnings"]?["tokens"];
             if (warnings != null)
             {
@@ -66,13 +67,13 @@ namespace WikiClientLibrary.Infrastructures
         private async Task<JObject> FetchTokensAsync(string tokenTypeExpr, CancellationToken cancellationToken)
         {
             Debug.Assert(!tokenTypeExpr.Contains("patrol"));
-            var jobj = await site.PostValuesAsync(new
+            var jobj = await site.GetJsonAsync(new WikiFormRequestMessage(new
             {
                 action = "query",
                 prop = "info",
                 titles = "Dummy Title",
                 intoken = tokenTypeExpr,
-            }, true, cancellationToken);
+            }), true, cancellationToken);
             var page = (JObject) ((JProperty) jobj["query"]["pages"].First).Value;
             return new JObject(page.Properties().Where(p => p.Name.EndsWith("token")));
         }
@@ -287,13 +288,13 @@ namespace WikiClientLibrary.Infrastructures
                                 }
                                 else
                                 {
-                                    var jobj = await site.PostValuesAsync(new
+                                    var jobj = await site.GetJsonAsync(new WikiFormRequestMessage(new
                                     {
                                         action = "query",
                                         meta = "recentchanges",
                                         rctoken = "patrol",
                                         rclimit = 1
-                                    }, cancellationToken);
+                                    }), cancellationToken);
                                     patrolToken = (string) jobj["query"]["recentchanges"]["patroltoken"];
                                 }
                                 tokens[patrolIndex] = patrolToken; // <-- (A)
@@ -333,6 +334,11 @@ namespace WikiClientLibrary.Infrastructures
         public void ClearCache()
         {
             lock (tokensCache) tokensCache.Clear();
+        }
+
+        public void ClearCache(string tokenType)
+        {
+            lock (tokensCache) tokensCache.Remove(tokenType);
         }
 
     }

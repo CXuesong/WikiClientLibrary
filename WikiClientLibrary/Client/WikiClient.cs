@@ -72,41 +72,21 @@ namespace WikiClientLibrary.Client
 
         #endregion
 
+        private static readonly KeyValuePair<string, object>[] formatJsonKeyValue =
+        {
+            new KeyValuePair<string, object>("format", "json")
+        };
+
+
         /// <inheritdoc />
-        public override async Task<JToken> GetJsonAsync(string endPointUrl, IEnumerable<KeyValuePair<string, string>> queryParams,
-            CancellationToken cancellationToken)
+        public override async Task<JToken> GetJsonAsync(string endPointUrl, WikiRequestMessage queryParams, CancellationToken cancellationToken)
         {
             if (endPointUrl == null) throw new ArgumentNullException(nameof(endPointUrl));
             if (queryParams == null) throw new ArgumentNullException(nameof(queryParams));
-            var result = await SendAsync(() => new HttpRequestMessage(HttpMethod.Post, endPointUrl)
-            {
-                Content = new FormLongUrlEncodedContent(new[] {new KeyValuePair<string, string>("format", "json")}
-                    .Concat(queryParams)),
-            }, cancellationToken);
+            if (queryParams is WikiFormRequestMessage form)
+                queryParams = new WikiFormRequestMessage(form.Id, form, formatJsonKeyValue, false);
+            var result = await SendAsync(endPointUrl, queryParams, cancellationToken);
             return result;
-        }
-
-        /// <inheritdoc />
-        public override async Task<JToken> GetJsonAsync(string endPointUrl, Func<HttpContent> postContentFactory, CancellationToken cancellationToken)
-        {
-            if (endPointUrl == null) throw new ArgumentNullException(nameof(endPointUrl));
-            if (postContentFactory == null) throw new ArgumentNullException(nameof(postContentFactory));
-            // Implies we want JSON result.
-            var result = await SendAsync(() => new HttpRequestMessage(HttpMethod.Post, endPointUrl)
-            {
-                Content = postContentFactory(),
-            }, cancellationToken);
-            return result;
-        }
-
-        /// <summary>
-        /// Invoke API and get JSON result.
-        /// </summary>
-        /// <exception cref="InvalidActionException">Specified action is not supported.</exception>
-        /// <exception cref="OperationFailedException">There's "error" node in returned JSON.</exception>
-        public override Task<JToken> GetJsonAsync(string endPointUrl, object queryParams, CancellationToken cancellationToken)
-        {
-            return GetJsonAsync(endPointUrl, Utility.ToWikiStringValuePairs(queryParams), cancellationToken);
         }
 
         public WikiClient() : this(new HttpClientHandler(), true)

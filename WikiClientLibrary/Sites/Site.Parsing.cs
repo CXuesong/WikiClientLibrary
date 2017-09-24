@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
+using WikiClientLibrary.Client;
 
 namespace WikiClientLibrary.Sites
 {
@@ -85,7 +86,7 @@ namespace WikiClientLibrary.Sites
             var p = BuildParsingParams(options);
             p["page"] = title;
             p["uselang"] = lang;
-            var jobj = await PostValuesAsync(p, cancellationToken);
+            var jobj = await GetJsonAsync(new WikiFormRequestMessage(p), cancellationToken);
             var parsed = ((JObject)jobj["parse"]).ToObject<ParsedContentInfo>(Utility.WikiJsonSerializer);
             return parsed;
         }
@@ -138,7 +139,7 @@ namespace WikiClientLibrary.Sites
             var p = BuildParsingParams(options);
             p["pageid"] = id;
             p["uselang"] = lang;
-            var jobj = await PostValuesAsync(p, cancellationToken);
+            var jobj = await GetJsonAsync(new WikiFormRequestMessage(p), cancellationToken);
             var parsed = ((JObject)jobj["parse"]).ToObject<ParsedContentInfo>(Utility.WikiJsonSerializer);
             return parsed;
         }
@@ -189,7 +190,7 @@ namespace WikiClientLibrary.Sites
             if (revId <= 0) throw new ArgumentOutOfRangeException(nameof(revId));
             var p = BuildParsingParams(options);
             p["oldid"] = revId;
-            var jobj = await PostValuesAsync(p, cancellationToken);
+            var jobj = await GetJsonAsync(new WikiFormRequestMessage(p), cancellationToken);
             var parsed = ((JObject)jobj["parse"]).ToObject<ParsedContentInfo>(Utility.WikiJsonSerializer);
             return parsed;
         }
@@ -275,7 +276,7 @@ namespace WikiClientLibrary.Sites
             p["summary"] = summary;
             p["title"] = title;
             p["uselang"] = lang;
-            var jobj = await PostValuesAsync(p, cancellationToken);
+            var jobj = await GetJsonAsync(new WikiFormRequestMessage(p), cancellationToken);
             var parsed = ((JObject)jobj["parse"]).ToObject<ParsedContentInfo>(Utility.WikiJsonSerializer);
             return parsed;
         }

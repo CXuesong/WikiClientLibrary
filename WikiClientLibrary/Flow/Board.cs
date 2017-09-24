@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
+using WikiClientLibrary.Client;
 using WikiClientLibrary.Infrastructures;
 using WikiClientLibrary.Pages;
 using WikiClientLibrary.Sites;
@@ -66,7 +67,7 @@ namespace WikiClientLibrary.Flow
             var ienu = new DelegateAsyncEnumerable<IEnumerable<Topic>>(async ct =>
             {
                 if (eof) return null;
-                var jresult = await Site.PostValuesAsync(queryParams, ct);
+                var jresult = await Site.GetJsonAsync(new WikiFormRequestMessage(queryParams), ct);
                 var jtopiclist = (JObject) jresult["flow"]["view-topiclist"]["result"]["topiclist"];
                 var topics = Topic.FromJsonTopicListResult(Site, jtopiclist);
                 // TODO Implement Pagination
