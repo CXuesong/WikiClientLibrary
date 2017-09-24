@@ -110,10 +110,10 @@ namespace WikiClientLibrary.Infrastructures
             // Tokens that does not exist in local cache.
             // For Csrf tokens, only "csrf" will be included in the set.
             HashSet<string> missingTokens = null;
-            HashSet<string> missingCsrfTokens = null;
+            HashSet<string> impendingCsrfTokens = null;
             var result = new Dictionary<string, string>();
             Dictionary<string, Task<string>> impendingTokens = null;
-            var csrfTokenAvailable = site.SiteInfo.Version >= new Version("1.24");
+            var csrfTokenSupported = site.SiteInfo.Version >= new Version("1.24");
 
             async Task<string> SelectToken(Task<IList<string>> tokenListAsync, int index)
             {
@@ -127,7 +127,7 @@ namespace WikiClientLibrary.Infrastructures
                 if (forceRefetch)
                 {
                     missingTokens = new HashSet<string>(tokenTypes);
-                    if (csrfTokenAvailable)
+                    if (csrfTokenSupported)
                     {
                         // Use csrf token if possible.
                         foreach (var tokenType in CsrfTokensAndCsrf)
@@ -135,8 +135,8 @@ namespace WikiClientLibrary.Infrastructures
                             if (missingTokens.Remove(tokenType))
                             {
                                 missingTokens.Add("csrf");
-                                if (missingCsrfTokens == null) missingCsrfTokens = new HashSet<string>();
-                                missingCsrfTokens.Add(tokenType);
+                                if (impendingCsrfTokens == null) impendingCsrfTokens = new HashSet<string>();
+                                impendingCsrfTokens.Add(tokenType);
                             }
                         }
                     }
@@ -151,7 +151,7 @@ namespace WikiClientLibrary.Infrastructures
                             throw new ArgumentException("Pipe character detected in token type name.", nameof(tokenTypes));
                         // Use csrf token if possible.
                         var actualTokenKey = tokenType;
-                        if (csrfTokenAvailable && CsrfTokens.Contains(tokenType))
+                        if (csrfTokenSupported && CsrfTokens.Contains(tokenType))
                         {
                             actualTokenKey = "csrf";
                         }
@@ -178,6 +178,7 @@ namespace WikiClientLibrary.Infrastructures
                                     if (impendingTokens == null)
                                         impendingTokens = new Dictionary<string, Task<string>>();
                                     impendingTokens[actualTokenKey] = (Task<string>) value;
+                                    goto ADD_CSRF;
                                 }
                             }
                             continue;
@@ -185,11 +186,12 @@ namespace WikiClientLibrary.Infrastructures
                         SET_AS_MISSING:
                         if (missingTokens == null) missingTokens = new HashSet<string>();
                         missingTokens.Add(actualTokenKey);
-                        // Edge case: tokenTypes contains "csrf", then missingCsrfTokens will contain "csrf"
-                        if (csrfTokenAvailable && actualTokenKey == "csrf")
+                        ADD_CSRF:
+                        // Edge case: tokenTypes contains "csrf", then impendingCsrfTokens will contain "csrf"
+                        if (csrfTokenSupported && actualTokenKey == "csrf")
                         {
-                            if (missingCsrfTokens == null) missingCsrfTokens = new HashSet<string>();
-                            missingCsrfTokens.Add(tokenType);
+                            if (impendingCsrfTokens == null) impendingCsrfTokens = new HashSet<string>();
+                            impendingCsrfTokens.Add(tokenType);
                         }
                     }
                 }
@@ -235,10 +237,10 @@ namespace WikiClientLibrary.Infrastructures
                 foreach (var p in impendingTokens)
                 {
                     var value = p.Value.Result;
-                    if (csrfTokenAvailable && p.Key == "csrf")
+                    if (csrfTokenSupported && p.Key == "csrf")
                     {
-                        Debug.Assert(missingCsrfTokens != null);
-                        foreach (var csrfToken in missingCsrfTokens)
+                        Debug.Assert(impendingCsrfTokens != null);
+                        foreach (var csrfToken in impendingCsrfTokens)
                         {
                             result.Add(csrfToken, value);
                         }
