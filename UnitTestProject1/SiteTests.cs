@@ -122,7 +122,7 @@ namespace UnitTestProject1
                 new SiteOptions(EntryPointWikipediaTest2) {ExplicitInfoRefresh = true});
             Assert.Throws<InvalidOperationException>(() => site.SiteInfo.Version);
         }
-
+        
 
         /// <summary>
         /// Tests legacy way for logging in. That is, to call "login" API action

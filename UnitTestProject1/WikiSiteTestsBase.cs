@@ -5,6 +5,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Reflection;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -66,6 +67,9 @@ namespace UnitTestProject1
             sitesNeedsLogin.Add(endpointUrl);
         }
 
+        /// <summary>
+        /// Create or get a wiki site from local cache.
+        /// </summary>
         protected Task<WikiSite> GetWikiSiteAsync(string endpointUrl)
         {
             lock (siteCache)
@@ -85,6 +89,9 @@ namespace UnitTestProject1
             return CreateWikiSiteAsync(isolatedClient, apiEndpoint);
         }
 
+        /// <summary>
+        /// Create a wiki site, login if necessary.
+        /// </summary>
         private async Task<WikiSite> CreateWikiSiteAsync(WikiClientBase wikiClient, string url)
         {
             var options = new SiteOptions(url)
@@ -118,6 +125,13 @@ namespace UnitTestProject1
         protected Task<WikiSite> WpBetaSiteAsync => GetWikiSiteAsync(Utility.EntryPointWikipediaBetaEn);
 
         protected Task<WikiSite> WikimediaCommonsBetaSiteAsync => GetWikiSiteAsync(Utility.EntryPointWikimediaCommonsBeta);
+
+        protected Task<WikiSite> WikiSiteFromNameAsync(string sitePropertyName)
+        {
+            return (Task<WikiSite>) GetType()
+                .GetProperty(sitePropertyName, BindingFlags.NonPublic | BindingFlags.Instance)
+                .GetValue(this);
+        }
 
         protected WikiClient CreateWikiClient()
         {

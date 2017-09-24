@@ -332,6 +332,7 @@ namespace WikiClientLibrary.Sites
         {
             var form = message as WikiFormRequestMessage;
             var localRequest = message;
+            var badTokenRetries = 0;
             RETRY:
             if (form != null)
             {
@@ -378,6 +379,20 @@ namespace WikiClientLibrary.Sites
                     if (result) goto RETRY;
                 }
                 throw;
+            }
+            catch (BadTokenException)
+            {
+                if (form == null || badTokenRetries >= 2) throw;
+                string invalidatedToken = null;
+                foreach (var tokenField in form.Fields.Where(p => p.Value is WikiSiteToken))
+                {
+                    invalidatedToken = ((WikiSiteToken) tokenField.Value).Type;
+                    tokensManager.ClearCache(invalidatedToken);
+                }
+                if (invalidatedToken == null) throw;
+                Logger.LogWarning("BadTokenException: {Request}. Will retry after invalidating the token: {Token}.",
+                    message, invalidatedToken);
+                goto RETRY;
             }
         }
 
