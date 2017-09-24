@@ -31,6 +31,8 @@ namespace UnitTestProject1
         /// </summary>
         public const string EntryWikipediaLzh = "https://zh-classical.wikipedia.org/w/api.php";
 
+        public const string EntryPointWikimediaCommonsBeta = "https://commons.wikimedia.beta.wmflabs.org/w/api.php";
+
         // TODO This is a rather unofficial test site. Replace it in the future.
         public const string EntryPointWikiaTest = "http://mediawiki119.wikia.com/api.php";
 

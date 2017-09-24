@@ -117,6 +117,8 @@ namespace UnitTestProject1
 
         protected Task<WikiSite> WpBetaSiteAsync => GetWikiSiteAsync(Utility.EntryPointWikipediaBetaEn);
 
+        protected Task<WikiSite> WikimediaCommonsBetaSiteAsync => GetWikiSiteAsync(Utility.EntryPointWikimediaCommonsBeta);
+
         protected WikiClient CreateWikiClient()
         {
             var lf = new LoggerFactory();
