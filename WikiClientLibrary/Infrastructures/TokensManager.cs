@@ -291,11 +291,18 @@ namespace WikiClientLibrary.Infrastructures
                                     var jobj = await site.GetJsonAsync(new WikiFormRequestMessage(new
                                     {
                                         action = "query",
-                                        meta = "recentchanges",
+                                        list = "recentchanges",
                                         rctoken = "patrol",
                                         rclimit = 1
                                     }), cancellationToken);
-                                    patrolToken = (string) jobj["query"]["recentchanges"]["patroltoken"];
+                                    patrolToken = (string) jobj["query"]["recentchanges"].First?["patroltoken"];
+                                    if (patrolToken == null)
+                                    {
+                                        var warning = (string) jobj["warnings"]?["recentchanges"]?["*"];
+                                        // Action 'patrol' is not allowed for the current user
+                                        if (warning != null)
+                                            throw new UnauthorizedOperationException(null, warning);
+                                    }
                                 }
                                 tokens[patrolIndex] = patrolToken; // <-- (A)
                                 localTokenTypes = localTokenTypes.ToList();
@@ -319,7 +326,6 @@ namespace WikiClientLibrary.Infrastructures
                 {
                     if (cts.IsCancellationRequested) throw new TimeoutException();
                 }
-            // Put tokens into cache first.
             if (fetchedTokens == null) return tokens;
             for (var i = 0; i < tokenTypes.Count; i++)
             {
@@ -338,7 +344,12 @@ namespace WikiClientLibrary.Infrastructures
 
         public void ClearCache(string tokenType)
         {
-            lock (tokensCache) tokensCache.Remove(tokenType);
+            lock (tokensCache)
+            {
+                if (tokenType == "patrol" && site.SiteInfo.Version < new Version("1.17"))
+                    tokensCache.Remove("edit");
+                tokensCache.Remove(tokenType);
+            }
         }
 
     }
