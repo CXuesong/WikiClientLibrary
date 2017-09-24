@@ -81,8 +81,12 @@ namespace WikiClientLibrary.Infrastructures
                         }
                         var originalPageCount = pages.Count;
                         foreach (var k in duplicateKeys) pages.Remove(k);
-                        _Site.Logger.LogWarning("Received {Count} results on {Site}, {DistinctCount} distinct results.",
-                            originalPageCount, _Site, pages.Count);
+                        if (originalPageCount != pages.Count)
+                        {
+                            _Site.Logger.LogWarning(
+                                "Received {Count} results on {Site}, {DistinctCount} distinct results.",
+                                originalPageCount, _Site, pages.Count);
+                        }
                     }
                     return Tuple.Create(queryNode, true);
                 }
