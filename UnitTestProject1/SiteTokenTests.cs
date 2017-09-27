@@ -51,6 +51,8 @@ namespace UnitTestProject1
                 // The token should have been cached.
                 Assert.Equal(tokenValue, await site.GetTokenAsync(tokenType));
             }
+            // Invalid tokens
+            await Assert.ThrowsAsync<ArgumentException>(() => site.GetTokenAsync("invalid_token_type"));
         }
 
         [SkippableTheory]

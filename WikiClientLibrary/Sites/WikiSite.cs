@@ -460,18 +460,25 @@ namespace WikiClientLibrary.Sites
         /// <para>This method is thread-safe.</para>
         /// <para>See https://www.mediawiki.org/wiki/API:Tokens .</para>
         /// </remarks>
-        public Task<IDictionary<string, string>> GetTokensAsync(IEnumerable<string> tokenTypes, bool forceRefetch,
+        [Obsolete("This method will be removed in the future. If you want to retrieve multiple tokens, please call WikiSite.GetTokenAsync multiple times.")]
+        public async Task<IDictionary<string, string>> GetTokensAsync(IEnumerable<string> tokenTypes, bool forceRefetch,
             CancellationToken cancellationToken)
         {
-            return tokensManager.GetTokensAsync(tokenTypes, forceRefetch, cancellationToken);
+            var dict = new Dictionary<string, string>();
+            foreach (var tt in tokenTypes)
+            {
+                var tokenValue = await tokensManager.GetTokenAsync(tt, forceRefetch, cancellationToken);
+                dict.Add(tt, tokenValue);
+            }
+            return dict;
         }
 
         /// <summary>
         /// Request a token for operation.
         /// </summary>
         /// <param name="tokenType">The name of token.</param>
-        /// <exception cref="InvalidOperationException">Specified token type cannot be recognized.</exception>
         /// <remarks>See https://www.mediawiki.org/wiki/API:Tokens .</remarks>
+        /// <exception cref="ArgumentException">Specified token type cannot be recognized.</exception>
         public Task<string> GetTokenAsync(string tokenType)
         {
             return GetTokenAsync(tokenType, false, CancellationToken.None);
@@ -483,6 +490,7 @@ namespace WikiClientLibrary.Sites
         /// <param name="tokenType">The name of token.</param>
         /// <param name="forceRefetch">Whether to fetch token from server, regardless of the cache.</param>
         /// <remarks>See https://www.mediawiki.org/wiki/API:Tokens .</remarks>
+        /// <exception cref="ArgumentException">Specified token type cannot be recognized.</exception>
         public Task<string> GetTokenAsync(string tokenType, bool forceRefetch)
         {
             return GetTokenAsync(tokenType, forceRefetch, CancellationToken.None);
@@ -493,6 +501,7 @@ namespace WikiClientLibrary.Sites
         /// </summary>
         /// <param name="tokenType">The name of token.</param>
         /// <remarks>See https://www.mediawiki.org/wiki/API:Tokens .</remarks>
+        /// <exception cref="ArgumentException">Specified token type cannot be recognized.</exception>
         public Task<string> GetTokenAsync(string tokenType, CancellationToken cancellationToken)
         {
             return GetTokenAsync(tokenType, false, cancellationToken);
@@ -504,6 +513,7 @@ namespace WikiClientLibrary.Sites
         /// <param name="tokenType">The name of token.</param>
         /// <param name="forceRefetch">Whether to fetch token from server, regardless of the cache.</param>
         /// <remarks>See https://www.mediawiki.org/wiki/API:Tokens .</remarks>
+        /// <exception cref="ArgumentException">Specified token type cannot be recognized.</exception>
         public Task<string> GetTokenAsync(string tokenType, bool forceRefetch, CancellationToken cancellationToken)
         {
             return tokensManager.GetTokenAsync(tokenType, forceRefetch, cancellationToken);

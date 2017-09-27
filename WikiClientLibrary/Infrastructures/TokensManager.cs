@@ -11,6 +11,9 @@ using WikiClientLibrary.Sites;
 
 namespace WikiClientLibrary.Infrastructures
 {
+    /// <summary>
+    /// Manages tokens for <see cref="WikiSite" />,
+    /// </summary>
     internal sealed class TokensManager
     {
 
@@ -26,7 +29,9 @@ namespace WikiClientLibrary.Infrastructures
             "import"
         };
 
-        private static readonly string[] CsrfTokensAndCsrf = CsrfTokens.Concat(new[] {"csrf"}).ToArray();
+        private static readonly Version v117 = new Version("1.17"),
+            v120 = new Version("1.20"),
+            v124 = new Version("1.24");
 
         public TokensManager(WikiSite site)
         {
@@ -81,24 +86,7 @@ namespace WikiClientLibrary.Infrastructures
         /// <summary>
         /// Request a token for operation.
         /// </summary>
-        /// <param name="tokenType">The name of token.</param>
-        /// <param name="forceRefetch">Whether to fetch token from server, regardless of the cache.</param>
-        /// <remarks>See https://www.mediawiki.org/wiki/API:Tokens .</remarks>
-        public async Task<string> GetTokenAsync(string tokenType, bool forceRefetch,
-            CancellationToken cancellationToken)
-        {
-            var dict = await GetTokensAsync(new[] {tokenType}, forceRefetch, cancellationToken);
-            return dict.Values.Single();
-        }
-
-        private static readonly Version v117 = new Version("1.17"),
-            v120 = new Version("1.20"),
-            v124 = new Version("1.24");
-
-        /// <summary>
-        /// Request tokens for operations.
-        /// </summary>
-        /// <param name="tokenTypes">The names of token. Names should be as accurate as possible (E.g. use "edit" instead of "csrf").</param>
+        /// <param name="tokenType">The name of token. Name should be as accurate as possible (E.g. use "edit" instead of "csrf").</param>
         /// <param name="forceRefetch">Whether to fetch token from server, regardless of the cache.</param>
         /// <param name="cancellationToken">The cancellation token that will be checked prior to completing the returned task.</param>
         /// <exception cref="InvalidOperationException">One or more specified token types cannot be recognized.</exception>
@@ -106,173 +94,90 @@ namespace WikiClientLibrary.Infrastructures
         /// <para>This method is thread-safe.</para>
         /// <para>See https://www.mediawiki.org/wiki/API:Tokens .</para>
         /// </remarks>
-        public async Task<IDictionary<string, string>> GetTokensAsync(IEnumerable<string> tokenTypes, bool forceRefetch,
-            CancellationToken cancellationToken)
+        public async Task<string> GetTokenAsync(string tokenType, bool forceRefetch, CancellationToken cancellationToken)
         {
-            if (tokenTypes == null) throw new ArgumentNullException(nameof(tokenTypes));
+            if (string.IsNullOrEmpty(tokenType))
+                throw new ArgumentException("Value cannot be null or empty.", nameof(tokenType));
+            if (tokenType.Contains("|"))
+                throw new ArgumentException("Pipe character detected in token type name.", nameof(tokenType));
             cancellationToken.ThrowIfCancellationRequested();
+            tokenType = tokenType.Trim();
             // Tokens that does not exist in local cache.
             // For Csrf tokens, only "csrf" will be included in the set.
-            HashSet<string> missingTokens = null;
-            HashSet<string> impendingCsrfTokens = null;
-            var result = new Dictionary<string, string>();
-            Dictionary<string, Task<string>> impendingTokens = null;
-            var csrfTokenSupported = site.SiteInfo.Version >= v124;
-
-            async Task<string> SelectToken(Task<IList<string>> tokenListAsync, int index)
-            {
-                var token = (await tokenListAsync)[index];
-                return token;
-            }
-
+            var realTokenType = tokenType;
+            Task<string> tokenTask = null;
+            // Patrol was added in v1.14.
+            // Until v1.16, the patrol token is same as the edit token.
+            if (site.SiteInfo.Version < v117 && tokenType == "patrol")
+                realTokenType = "edit";
+            // Use csrf token if possible.
+            if (site.SiteInfo.Version >= v124 && CsrfTokens.Contains(tokenType))
+                realTokenType = "csrf";
             // Collect tokens from cache
             lock (tokensCache)
             {
-                if (forceRefetch)
+                if (!forceRefetch && tokensCache.TryGetValue(realTokenType, out var value))
                 {
-                    missingTokens = new HashSet<string>(tokenTypes);
-                    if (csrfTokenSupported)
+                    if (value is string s) return s;
+                    var task = (Task<string>) value;
+                    if (task.Status == TaskStatus.RanToCompletion)
                     {
-                        // Use csrf token if possible.
-                        foreach (var tokenType in CsrfTokensAndCsrf)
-                        {
-                            if (missingTokens.Remove(tokenType))
-                            {
-                                missingTokens.Add("csrf");
-                                if (impendingCsrfTokens == null) impendingCsrfTokens = new HashSet<string>();
-                                impendingCsrfTokens.Add(tokenType);
-                            }
-                        }
+                        tokensCache[realTokenType] = task.Result;
+                        return task.Result;
+                    }
+                    // If the task failed, we will retry here.
+                    if (!task.IsCompleted)
+                    {
+                        tokenTask = task;
                     }
                 }
-                else
+                if (tokenTask == null)
                 {
-                    foreach (var tokenType in tokenTypes)
-                    {
-                        if (string.IsNullOrEmpty(tokenType))
-                            throw new ArgumentException("tokenTypes contains null or empty item.", nameof(tokenTypes));
-                        if (tokenType.Contains("|"))
-                            throw new ArgumentException("Pipe character detected in token type name.", nameof(tokenTypes));
-                        // Use csrf token if possible.
-                        var actualTokenKey = tokenType;
-                        if (csrfTokenSupported && CsrfTokens.Contains(tokenType))
-                        {
-                            actualTokenKey = "csrf";
-                        }
-                        if (tokensCache.TryGetValue(actualTokenKey, out var value))
-                        {
-                            if (value is string s)
-                            {
-                                result[tokenType] = s;
-                            }
-                            else
-                            {
-                                var task = (Task<string>) value;
-                                if (task.Status == TaskStatus.RanToCompletion)
-                                {
-                                    tokensCache[actualTokenKey] = result[tokenType] = task.Result;
-                                }
-                                else if (task.IsCanceled || task.IsFaulted)
-                                {
-                                    // Retry failed attempts.
-                                    goto SET_AS_MISSING;
-                                }
-                                else
-                                {
-                                    if (impendingTokens == null)
-                                        impendingTokens = new Dictionary<string, Task<string>>();
-                                    impendingTokens[actualTokenKey] = (Task<string>) value;
-                                    goto ADD_CSRF;
-                                }
-                            }
-                            continue;
-                        }
-                        SET_AS_MISSING:
-                        if (missingTokens == null) missingTokens = new HashSet<string>();
-                        missingTokens.Add(actualTokenKey);
-                        ADD_CSRF:
-                        // Edge case: tokenTypes contains "csrf", then impendingCsrfTokens will contain "csrf"
-                        if (csrfTokenSupported && actualTokenKey == "csrf")
-                        {
-                            if (impendingCsrfTokens == null) impendingCsrfTokens = new HashSet<string>();
-                            impendingCsrfTokens.Add(tokenType);
-                        }
-                    }
-                }
-                cancellationToken.ThrowIfCancellationRequested();
-                if (missingTokens != null)
-                {
-                    var requestTokens = missingTokens.ToList(); // Distinct list
                     // Note that we won't actually cancel this request,
                     // we just give up waiting for it.
                     // This will prevent cancellation from one consumer from affeting other consumers.
-                    var fetchTokensTask = FetchTokensAsyncCore(requestTokens, CancellationToken.None);
-                    for (var i = 0; i < requestTokens.Count; i++)
-                    {
-                        var task = SelectToken(fetchTokensTask, i);
-                        tokensCache[requestTokens[i]] = task;
-                        if (impendingTokens == null) impendingTokens = new Dictionary<string, Task<string>>();
-                        impendingTokens.Add(requestTokens[i], task);
-                    }
+                    tokenTask = FetchTokenAsyncCore(realTokenType);
+                    tokensCache[realTokenType] = tokenTask;
                 }
             }
-            if (impendingTokens != null)
+            cancellationToken.ThrowIfCancellationRequested();
+            // Wait for impending tokens.
+            if (cancellationToken.CanBeCanceled)
             {
-                cancellationToken.ThrowIfCancellationRequested();
-                // Wait for impending tokens.
-                if (cancellationToken.CanBeCanceled)
+                var cancellationTcs = new TaskCompletionSource<string>();
+                using (cancellationToken.Register(o => ((TaskCompletionSource<string>) o).TrySetCanceled(),
+                    cancellationTcs))
                 {
-                    var cancellationTcs = new TaskCompletionSource<string>();
-                    using (cancellationToken.Register(o => ((TaskCompletionSource<string>) o).TrySetCanceled(),
-                        cancellationTcs))
-                    {
-                        foreach (var p in impendingTokens)
-                        {
-                            // p.Value completes/failed, or cancellationTcs cancelled.
-                            await await Task.WhenAny(p.Value, cancellationTcs.Task);
-                        }
-                    }
-                }
-                else
-                {
-                    await Task.WhenAll(impendingTokens.Values);
-                }
-                // Collect tokens
-                foreach (var p in impendingTokens)
-                {
-                    var value = p.Value.Result;
-                    if (csrfTokenSupported && p.Key == "csrf")
-                    {
-                        Debug.Assert(impendingCsrfTokens != null);
-                        foreach (var csrfToken in impendingCsrfTokens)
-                        {
-                            result.Add(csrfToken, value);
-                        }
-                    }
-                    else
-                    {
-                        result.Add(p.Key, value);
-                    }
+                    // p.Value completes/failed, or cancellationTcs cancelled.
+                    return await await Task.WhenAny(tokenTask, cancellationTcs.Task);
                 }
             }
-            return result;
+            else
+            {
+                return await tokenTask;
+            }
         }
 
-        private async Task<IList<string>> FetchTokensAsyncCore(IList<string> tokenTypes,
-            CancellationToken cancellationToken)
+        private async Task<string> FetchTokenAsyncCore(string tokenType)
         {
-            Debug.Assert(tokenTypes.Distinct().Count() == tokenTypes.Count);
-            Debug.Assert(!cancellationToken.CanBeCanceled);
-            JObject fetchedTokens = null;
-            var localTokenTypes = tokenTypes;
-            var tokens = new string[tokenTypes.Count];
+            Debug.Assert(!string.IsNullOrEmpty(tokenType));
+
+            string ExtractToken(JObject jTokens, string tokenType1)
+            {
+                if (jTokens == null) throw new ArgumentNullException(nameof(jTokens));
+                var value = (string) (jTokens[tokenType1] ?? jTokens[tokenType1 + "token"]);
+                if (value == null)
+                    throw new ArgumentException($"Invalid token type: {tokenType1}.", nameof(tokenType));
+                return value;
+            }
+
             // We want to prevent the token fetching request get stuck. Anyway.
             using (var cts = new CancellationTokenSource(
                 Math.Max(1000, (site.WikiClient.Timeout + site.WikiClient.RetryDelay).Milliseconds) *
                 Math.Max(1, site.WikiClient.MaxRetries)))
+            {
                 try
                 {
-                    cancellationToken = cts.Token;
                     if (site.SiteInfo.Version < v124)
                     {
                         /*
@@ -282,65 +187,42 @@ namespace WikiClientLibrary.Infrastructures
                          list recentchanges.
                          */
                         // Check whether we need a patrol token.
-                        if (site.SiteInfo.Version < v120)
+                        if (site.SiteInfo.Version < v120 && tokenType == "patrol")
                         {
-                            var patrolIndex = localTokenTypes.IndexOf("patrol");
-                            if (patrolIndex >= 0)
+                            // Until v1.16, the patrol token is same as the edit token.
+                            Debug.Assert(site.SiteInfo.Version >= v117);
+                            var jobj = await site.GetJsonAsync(new WikiFormRequestMessage(new
                             {
-                                string patrolToken;
-                                if (site.SiteInfo.Version < v117)
-                                {
-                                    patrolToken = await GetTokenAsync("edit", false, cancellationToken);
-                                }
-                                else
-                                {
-                                    var jobj = await site.GetJsonAsync(new WikiFormRequestMessage(new
-                                    {
-                                        action = "query",
-                                        list = "recentchanges",
-                                        rctoken = "patrol",
-                                        rclimit = 1
-                                    }), cancellationToken);
-                                    patrolToken = (string) jobj["query"]["recentchanges"].First?["patroltoken"];
-                                    if (patrolToken == null)
-                                    {
-                                        var warning = (string) jobj["warnings"]?["recentchanges"]?["*"];
-                                        // Action 'patrol' is not allowed for the current user
-                                        if (warning != null)
-                                            throw new UnauthorizedOperationException(null, warning);
-                                    }
-                                }
-                                tokens[patrolIndex] = patrolToken; // <-- (A)
-                                localTokenTypes = localTokenTypes.ToList();
-                                localTokenTypes.Remove("patrol");
+                                action = "query",
+                                list = "recentchanges",
+                                rctoken = "patrol",
+                                rclimit = 1
+                            }), cts.Token);
+                            try
+                            {
+                                return ExtractToken((JObject) jobj["query"]["recentchanges"].First, "patroltoken");
+                            }
+                            catch (ArgumentException)
+                            {
+                                var warning = (string)jobj["warnings"]?["recentchanges"]?["*"];
+                                // Action 'patrol' is not allowed for the current user
+                                if (warning != null)
+                                    throw new UnauthorizedOperationException(null, warning);
+                                throw;
                             }
                         }
-                        if (localTokenTypes.Count > 0)
-                            fetchedTokens =
-                                await FetchTokensAsync(string.Join("|", localTokenTypes), cancellationToken);
+                        return ExtractToken(await FetchTokensAsync(tokenType, cts.Token), tokenType);
                     }
                     else
                     {
-                        if (localTokenTypes.Count > 0)
-                        {
-                            fetchedTokens =
-                                await FetchTokensAsync2(string.Join("|", localTokenTypes), cancellationToken);
-                        }
+                        return ExtractToken(await FetchTokensAsync2(tokenType, cts.Token), tokenType);
                     }
                 }
-                catch (OperationCanceledException)
+                catch (OperationCanceledException) when (cts.IsCancellationRequested)
                 {
-                    if (cts.IsCancellationRequested) throw new TimeoutException();
+                    throw new TimeoutException();
                 }
-            if (fetchedTokens == null) return tokens;
-            for (var i = 0; i < tokenTypes.Count; i++)
-            {
-                var tt = tokenTypes[i];
-                // For sake of (A)
-                var value = (string) (fetchedTokens[tt + "token"] ?? fetchedTokens[tt]);
-                if (value != null) tokens[i] = value;
             }
-            return tokens;
         }
 
         public void ClearCache()
