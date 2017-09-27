@@ -214,14 +214,13 @@ namespace WikiClientLibrary
         /// Uploads a file.
         /// </summary>
         public static async Task<UploadResult> UploadAsync(WikiSite site,
-            string fieldKey, object fieldValue,
+            WikiUploadSource source,
             string title, string comment,
             bool ignoreWarnings, AutoWatchBehavior watch,
             CancellationToken cancellationToken)
         {
             Debug.Assert(site != null);
-            Debug.Assert(!string.IsNullOrEmpty(fieldKey));
-            Debug.Assert(fieldValue != null);
+            Debug.Assert(source != null);
             Debug.Assert(!string.IsNullOrEmpty(title));
             var link = WikiLink.Parse(site, title, BuiltInNamespaces.File);
             if (link.Namespace.Id != BuiltInNamespaces.File)
@@ -234,10 +233,11 @@ namespace WikiClientLibrary
                 {"filename", link.Title},
                 {"comment", comment},
                 {"ignorewarnings", ignoreWarnings},
-                {fieldKey, fieldValue},
             };
+            foreach (var p in source.GetUploadParameters(site.SiteInfo))
+                requestFields[p.Key] = p.Value;
             var request = new WikiFormRequestMessage(requestFields, true);
-            site.Logger.LogDebug("Uploading [[{Title}]] with {FieldKey} field on {Site}.", link, fieldKey, site);
+            site.Logger.LogDebug("Uploading [[{Title}]] on {Site} from {Source}.", link, source, site);
             var jresult = await site.GetJsonAsync(request, cancellationToken);
             var result = jresult["upload"].ToObject<UploadResult>(Utility.WikiJsonSerializer);
             site.Logger.LogInformation("Uploaded [[{Title}]] on {Site}. Result={Result}.",

@@ -56,7 +56,7 @@ namespace WikiClientLibrary.Pages
         public static Task<UploadResult> UploadAsync(WikiSite site, string url, string title,
             string comment, bool ignoreWarnings)
         {
-            return new FilePage(site, title).UploadFromAsync(url, comment, ignoreWarnings,
+            return new FilePage(site, title).UploadAsync(new ExternalFileUploadSource(url), comment, ignoreWarnings,
                 AutoWatchBehavior.Default, CancellationToken.None);
         }
 
@@ -85,10 +85,10 @@ namespace WikiClientLibrary.Pages
         public static Task<UploadResult> UploadAsync(WikiSite site, string url, string title, string comment,
             bool ignoreWarnings, CancellationToken cancellationToken)
         {
-            return new FilePage(site, title).UploadFromAsync(url, comment, ignoreWarnings,
-                AutoWatchBehavior.Default, CancellationToken.None);
+            return new FilePage(site, title).UploadAsync(new ExternalFileUploadSource(url),
+                comment, ignoreWarnings, AutoWatchBehavior.Default, CancellationToken.None);
         }
-        
+
         /// <summary>
         /// Asynchronously uploads a file, again.
         /// </summary>
@@ -112,8 +112,8 @@ namespace WikiClientLibrary.Pages
         public static Task<UploadResult> UploadAsync(WikiSite site, UploadResult previousResult, string title,
             string comment, bool ignoreWarnings)
         {
-            return new FilePage(site, title).UploadAsync(previousResult.FileKey, comment, ignoreWarnings,
-                AutoWatchBehavior.Default, CancellationToken.None);
+            return new FilePage(site, title).UploadAsync(new FileKeyUploadSource(previousResult.FileKey),
+                comment, ignoreWarnings, AutoWatchBehavior.Default, CancellationToken.None);
         }
 
         /// <summary>
@@ -136,8 +136,8 @@ namespace WikiClientLibrary.Pages
         public static Task<UploadResult> UploadAsync(WikiSite site, Stream content, string title,
             string comment, bool ignoreWarnings)
         {
-            return new FilePage(site, title).UploadAsync(content, comment, ignoreWarnings, AutoWatchBehavior.Default,
-                CancellationToken.None);
+            return new FilePage(site, title).UploadAsync(new StreamUploadSource(content), comment,
+                ignoreWarnings, AutoWatchBehavior.Default, CancellationToken.None);
         }
 
         /// <summary>
@@ -162,13 +162,14 @@ namespace WikiClientLibrary.Pages
         public static Task<UploadResult> UploadAsync(WikiSite site, Stream content, string title,
             string comment, bool ignoreWarnings, AutoWatchBehavior watch, CancellationToken cancellationToken)
         {
-            return new FilePage(site, title).UploadAsync(content, comment, ignoreWarnings, watch, cancellationToken);
+            return new FilePage(site, title).UploadAsync(new StreamUploadSource(content), comment, ignoreWarnings,
+                watch, cancellationToken);
         }
 
         /// <summary>
         /// Asynchronously uploads a file in this title.
         /// </summary>
-        /// <param name="content">Content of the file.</param>
+        /// <param name="source">Source of the file.</param>
         /// <param name="comment">Comment of the upload, as well as the page content if it doesn't exist.</param>
         /// <param name="ignoreWarnings">Ignore any warnings. This must be set to upload a new version of an existing image.</param>
         /// <param name="watch">Whether to add the file into your watchlist.</param>
@@ -181,45 +182,11 @@ namespace WikiClientLibrary.Pages
         /// <exception cref="OperationFailedException"> There's an error while uploading the file. </exception>
         /// <exception cref="TimeoutException">Timeout specified in <see cref="WikiClientBase.Timeout"/> has been reached.</exception>
         /// <returns>An <see cref="UploadResult"/>.</returns>
-        public Task<UploadResult> UploadAsync(Stream content, string comment, bool ignoreWarnings,
+        public Task<UploadResult> UploadAsync(WikiUploadSource source, string comment, bool ignoreWarnings,
             AutoWatchBehavior watch, CancellationToken cancellationToken)
         {
-            if (content == null) throw new ArgumentNullException(nameof(content));
-            return RequestHelper.UploadAsync(Site, "file", content, Title, comment, ignoreWarnings, watch,
-                cancellationToken);
-        }
-
-        /// <inheritdoc cref="UploadAsync(Stream,string,bool,AutoWatchBehavior,CancellationToken)"/>
-        public Task<UploadResult> UploadAsync(byte[] content, string comment, bool ignoreWarnings,
-            AutoWatchBehavior watch, CancellationToken cancellationToken)
-        {
-            if (content == null) throw new ArgumentNullException(nameof(content));
-            using (var ms = new MemoryStream(content, false))
-                return RequestHelper.UploadAsync(Site, "file", ms, Title, comment, ignoreWarnings, watch,
-                    cancellationToken);
-        }
-
-        /// <inheritdoc cref="UploadAsync(Stream,string,bool,AutoWatchBehavior,CancellationToken)"/>
-        /// <param name="fileKey">File key (or session key before MW1.17) of the previously stashed result.</param>
-        public Task<UploadResult> UploadAsync(string fileKey, string comment, bool ignoreWarnings,
-            AutoWatchBehavior watch, CancellationToken cancellationToken)
-        {
-            if (string.IsNullOrEmpty(fileKey))
-                throw new ArgumentException("Value cannot be null or empty.", nameof(fileKey));
-            return RequestHelper.UploadAsync(Site,
-                Site.SiteInfo.Version >= new Version(1, 18) ? "filekey" : "sessionkey",
-                fileKey, Title, comment, ignoreWarnings, watch, cancellationToken);
-        }
-
-        /// <inheritdoc cref="UploadAsync(Stream,string,bool,AutoWatchBehavior,CancellationToken)"/>
-        /// <param name="sourceUrl">The URL of the file to be uploaded.</param>
-        public Task<UploadResult> UploadFromAsync(string sourceUrl, string comment, bool ignoreWarnings,
-            AutoWatchBehavior watch, CancellationToken cancellationToken)
-        {
-            if (string.IsNullOrEmpty(sourceUrl))
-                throw new ArgumentException("Value cannot be null or empty.", nameof(sourceUrl));
-            return RequestHelper.UploadAsync(Site, "url", sourceUrl, Title, comment, ignoreWarnings, watch,
-                cancellationToken);
+            if (source == null) throw new ArgumentNullException(nameof(source));
+            return RequestHelper.UploadAsync(Site, source, Title, comment, ignoreWarnings, watch, cancellationToken);
         }
 
         protected override void OnLoadPageInfo(JObject jpage)
