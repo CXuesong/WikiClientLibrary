@@ -57,7 +57,9 @@ namespace UnitTestProject1
                 if (s.Length > 1024) s = s.Substring(0, 1024) + "...";
                 return s;
             }
-            foreach (var p in obj.GetType().GetRuntimeProperties().Where(p1 => p1.GetMethod?.IsPublic ?? false))
+            foreach (var p in obj.GetType().GetRuntimeProperties()
+                .Where(p1 => p1.GetMethod?.IsPublic ?? false)
+                .OrderBy(p1 => p1.Name))
             {
                 if (p.GetIndexParameters().Length > 0) continue;
                 sb.AppendLine();
