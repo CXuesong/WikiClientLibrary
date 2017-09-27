@@ -52,12 +52,13 @@ namespace WikiClientLibrary.Pages
         /// Upload from external source may take a while, so be sure to set a long <see cref="WikiClientBase.Timeout"/>
         /// in case the response from the server is delayed.
         /// </remarks>
+        [Obsolete("Please use FilePage.UploadAsync instance methods instead.")]
         public static Task<UploadResult> UploadAsync(WikiSite site, string url, string title,
             string comment, bool ignoreWarnings)
         {
-            return UploadAsyncInternal(site, url, title, comment, ignoreWarnings, AutoWatchBehavior.Default, CancellationToken.None);
+            return new FilePage(site, title).UploadFromAsync(url, comment, ignoreWarnings,
+                AutoWatchBehavior.Default, CancellationToken.None);
         }
-
 
         /// <summary>
         /// Asynchronously uploads a file from an external URL.
@@ -80,13 +81,14 @@ namespace WikiClientLibrary.Pages
         /// Upload from external source may take a while, so be sure to set a long <see cref="WikiClientBase.Timeout"/>
         /// in case the response from the server is delayed.
         /// </remarks>
+        [Obsolete("Please use FilePage.UploadAsync instance methods instead.")]
         public static Task<UploadResult> UploadAsync(WikiSite site, string url, string title, string comment,
             bool ignoreWarnings, CancellationToken cancellationToken)
         {
-            return UploadAsyncInternal(site, url, title, comment, ignoreWarnings, AutoWatchBehavior.Default, cancellationToken);
+            return new FilePage(site, title).UploadFromAsync(url, comment, ignoreWarnings,
+                AutoWatchBehavior.Default, CancellationToken.None);
         }
-
-
+        
         /// <summary>
         /// Asynchronously uploads a file, again.
         /// </summary>
@@ -106,10 +108,12 @@ namespace WikiClientLibrary.Pages
         /// <remarks>
         /// You should have obtained the previous upload result via <see cref="UploadException.UploadResult"/>.
         /// </remarks>
+        [Obsolete("Please use FilePage.UploadAsync instance methods instead.")]
         public static Task<UploadResult> UploadAsync(WikiSite site, UploadResult previousResult, string title,
             string comment, bool ignoreWarnings)
         {
-            return UploadAsyncInternal(site, previousResult, title, comment, ignoreWarnings, AutoWatchBehavior.Default, CancellationToken.None);
+            return new FilePage(site, title).UploadAsync(previousResult.FileKey, comment, ignoreWarnings,
+                AutoWatchBehavior.Default, CancellationToken.None);
         }
 
         /// <summary>
@@ -128,10 +132,12 @@ namespace WikiClientLibrary.Pages
         /// <exception cref="OperationFailedException"> There's an error while uploading the file. </exception>
         /// <exception cref="TimeoutException">Timeout specified in <see cref="WikiClientBase.Timeout"/> has been reached.</exception>
         /// <returns>An <see cref="UploadResult"/>.</returns>
+        [Obsolete("Please use FilePage.UploadAsync instance methods instead.")]
         public static Task<UploadResult> UploadAsync(WikiSite site, Stream content, string title,
             string comment, bool ignoreWarnings)
         {
-            return UploadAsyncInternal(site, content, title, comment, ignoreWarnings, AutoWatchBehavior.Default, CancellationToken.None);
+            return new FilePage(site, title).UploadAsync(content, comment, ignoreWarnings, AutoWatchBehavior.Default,
+                CancellationToken.None);
         }
 
         /// <summary>
@@ -152,70 +158,68 @@ namespace WikiClientLibrary.Pages
         /// <exception cref="OperationFailedException"> There's an error while uploading the file. </exception>
         /// <exception cref="TimeoutException">Timeout specified in <see cref="WikiClientBase.Timeout"/> has been reached.</exception>
         /// <returns>An <see cref="UploadResult"/>.</returns>
+        [Obsolete("Please use FilePage.UploadAsync instance methods instead.")]
         public static Task<UploadResult> UploadAsync(WikiSite site, Stream content, string title,
             string comment, bool ignoreWarnings, AutoWatchBehavior watch, CancellationToken cancellationToken)
         {
-            return UploadAsyncInternal(site, content, title, comment, ignoreWarnings, watch, cancellationToken);
+            return new FilePage(site, title).UploadAsync(content, comment, ignoreWarnings, watch, cancellationToken);
         }
 
-        //content can be
-        //  Stream          file content
-        //  string          url to fetch
-        //  UploadResult    the previous failed upload
-        private static async Task<UploadResult> UploadAsyncInternal(WikiSite site, object content, string title, string comment,
-            bool ignoreWarnings, AutoWatchBehavior watch, CancellationToken cancellationToken)
+        /// <summary>
+        /// Asynchronously uploads a file in this title.
+        /// </summary>
+        /// <param name="content">Content of the file.</param>
+        /// <param name="comment">Comment of the upload, as well as the page content if it doesn't exist.</param>
+        /// <param name="ignoreWarnings">Ignore any warnings. This must be set to upload a new version of an existing image.</param>
+        /// <param name="watch">Whether to add the file into your watchlist.</param>
+        /// <param name="cancellationToken">The cancellation token that will be checked prior to completing the returned task.</param>
+        /// <exception cref="UploadException">
+        /// There's warning from server, and <paramref name="ignoreWarnings"/> is <c>false</c>.
+        /// Check <see cref="UploadException.UploadResult"/> for the warning message or continuing the upload.
+        /// </exception>
+        /// <exception cref="UnauthorizedAccessException">You do not have the permission to upload the file.</exception>
+        /// <exception cref="OperationFailedException"> There's an error while uploading the file. </exception>
+        /// <exception cref="TimeoutException">Timeout specified in <see cref="WikiClientBase.Timeout"/> has been reached.</exception>
+        /// <returns>An <see cref="UploadResult"/>.</returns>
+        public Task<UploadResult> UploadAsync(Stream content, string comment, bool ignoreWarnings,
+            AutoWatchBehavior watch, CancellationToken cancellationToken)
         {
-            if (site == null) throw new ArgumentNullException(nameof(site));
             if (content == null) throw new ArgumentNullException(nameof(content));
-            if (title == null) throw new ArgumentNullException(nameof(title));
-            var link = WikiLink.Parse(site, title, BuiltInNamespaces.File);
-            if (link.Namespace.Id != BuiltInNamespaces.File)
-                throw new ArgumentException($"Invalid namespace for file title: {title} .", nameof(title));
-            var requestFields = new Dictionary<string, object>
-            {
-                {"action", "upload"},
-                {"watchlist", watch},
-                {"token", WikiSiteToken.Edit},
-                {"filename", link.Title},
-                {"comment", comment},
-                {"ignorewarnings", ignoreWarnings}
-            };
-            switch (content)
-            {
-                case Stream streamContent:
-                    requestFields["file"] = streamContent;
-                    break;
-                case string stringContent:
-                    requestFields["url"] = stringContent;
-                    break;
-                case UploadResult resultContent:
-                    var key = resultContent.FileKey;
-                    if (string.IsNullOrEmpty(key))
-                        throw new InvalidOperationException("The specified UploadResult has no valid FileKey.");
-                    // sessionkey: Same as filekey, maintained for backward compatibility (deprecated in 1.18)
-                    requestFields[site.SiteInfo.Version >= new Version(1, 18) ? "filekey" : "sessionkey"] = key;
-                    break;
-                default:
-                    Debug.Assert(false, "Unrecognized content argument type.");
-                    break;
-            }
-            var request = new WikiFormRequestMessage(requestFields, true);
-            site.Logger.LogDebug("Uploading [[{Title}]] on {Site}.", link, site);
-            var jresult = await site.GetJsonAsync(request, cancellationToken);
-            var result = jresult["upload"].ToObject<UploadResult>(Utility.WikiJsonSerializer);
-            site.Logger.LogInformation("Uploaded [[{Title}]] on {Site}. Result={Result}.",
-                link, site, result.ResultCode);
-            switch (result.ResultCode)
-            {
-                case UploadResultCode.Warning:
-                    throw new UploadException(result);
-                default:
-                    // UploadResult.Result setter should have thrown an exception.
-                    Debug.Assert(result.ResultCode == UploadResultCode.Success ||
-                                 result.ResultCode == UploadResultCode.Continue);
-                    break;
-            }
-            return result;
+            return RequestHelper.UploadAsync(Site, "file", content, Title, comment, ignoreWarnings, watch,
+                cancellationToken);
+        }
+
+        /// <inheritdoc cref="UploadAsync(Stream,string,bool,AutoWatchBehavior,CancellationToken)"/>
+        public Task<UploadResult> UploadAsync(byte[] content, string comment, bool ignoreWarnings,
+            AutoWatchBehavior watch, CancellationToken cancellationToken)
+        {
+            if (content == null) throw new ArgumentNullException(nameof(content));
+            using (var ms = new MemoryStream(content, false))
+                return RequestHelper.UploadAsync(Site, "file", ms, Title, comment, ignoreWarnings, watch,
+                    cancellationToken);
+        }
+
+        /// <inheritdoc cref="UploadAsync(Stream,string,bool,AutoWatchBehavior,CancellationToken)"/>
+        /// <param name="fileKey">File key (or session key before MW1.17) of the previously stashed result.</param>
+        public Task<UploadResult> UploadAsync(string fileKey, string comment, bool ignoreWarnings,
+            AutoWatchBehavior watch, CancellationToken cancellationToken)
+        {
+            if (string.IsNullOrEmpty(fileKey))
+                throw new ArgumentException("Value cannot be null or empty.", nameof(fileKey));
+            return RequestHelper.UploadAsync(Site,
+                Site.SiteInfo.Version >= new Version(1, 18) ? "filekey" : "sessionkey",
+                fileKey, Title, comment, ignoreWarnings, watch, cancellationToken);
+        }
+
+        /// <inheritdoc cref="UploadAsync(Stream,string,bool,AutoWatchBehavior,CancellationToken)"/>
+        /// <param name="sourceUrl">The URL of the file to be uploaded.</param>
+        public Task<UploadResult> UploadFromAsync(string sourceUrl, string comment, bool ignoreWarnings,
+            AutoWatchBehavior watch, CancellationToken cancellationToken)
+        {
+            if (string.IsNullOrEmpty(sourceUrl))
+                throw new ArgumentException("Value cannot be null or empty.", nameof(sourceUrl));
+            return RequestHelper.UploadAsync(Site, "url", sourceUrl, Title, comment, ignoreWarnings, watch,
+                cancellationToken);
         }
 
         protected override void OnLoadPageInfo(JObject jpage)
@@ -308,9 +312,9 @@ namespace WikiClientLibrary.Pages
             {"exists-normalized", "File exists with different extension as \"{0}\"."},
         };
 
-        private static readonly KeyValuePair<string, string>[] EmptyWarnings = {};
+        private static readonly KeyValuePair<string, string>[] EmptyWarnings = { };
 
-        private static readonly DateTime[] EmptyDateTime = {};
+        private static readonly DateTime[] EmptyDateTime = { };
 
         /// <summary>
         /// Try to convert the specified warning code and context into a user-fridendly
@@ -410,7 +414,7 @@ namespace WikiClientLibrary.Pages
                     var m = dv.Children<JProperty>().Where(p => p.Name == "timestamp")
                         .Select(p => (DateTime) p.Value).ToList();
                     DuplicateVersions = new ReadOnlyCollection<DateTime>(m);
-                } 
+                }
             }
         }
 

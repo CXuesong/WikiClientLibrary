@@ -211,6 +211,51 @@ namespace WikiClientLibrary
         #endregion
 
         /// <summary>
+        /// Uploads a file.
+        /// </summary>
+        public static async Task<UploadResult> UploadAsync(WikiSite site,
+            string fieldKey, object fieldValue,
+            string title, string comment,
+            bool ignoreWarnings, AutoWatchBehavior watch,
+            CancellationToken cancellationToken)
+        {
+            Debug.Assert(site != null);
+            Debug.Assert(!string.IsNullOrEmpty(fieldKey));
+            Debug.Assert(fieldValue != null);
+            Debug.Assert(!string.IsNullOrEmpty(title));
+            var link = WikiLink.Parse(site, title, BuiltInNamespaces.File);
+            if (link.Namespace.Id != BuiltInNamespaces.File)
+                throw new ArgumentException($"Invalid namespace for file title: {title} .", nameof(title));
+            var requestFields = new Dictionary<string, object>
+            {
+                {"action", "upload"},
+                {"watchlist", watch},
+                {"token", WikiSiteToken.Edit},
+                {"filename", link.Title},
+                {"comment", comment},
+                {"ignorewarnings", ignoreWarnings},
+                {fieldKey, fieldValue},
+            };
+            var request = new WikiFormRequestMessage(requestFields, true);
+            site.Logger.LogDebug("Uploading [[{Title}]] with {FieldKey} field on {Site}.", link, fieldKey, site);
+            var jresult = await site.GetJsonAsync(request, cancellationToken);
+            var result = jresult["upload"].ToObject<UploadResult>(Utility.WikiJsonSerializer);
+            site.Logger.LogInformation("Uploaded [[{Title}]] on {Site}. Result={Result}.",
+                link, site, result.ResultCode);
+            switch (result.ResultCode)
+            {
+                case UploadResultCode.Warning:
+                    throw new UploadException(result);
+                default:
+                    // UploadResult.Result setter should have thrown an exception.
+                    Debug.Assert(result.ResultCode == UploadResultCode.Success ||
+                                 result.ResultCode == UploadResultCode.Continue);
+                    break;
+            }
+            return result;
+        }
+
+        /// <summary>
         /// Asynchronously purges the pages.
         /// </summary>
         /// <returns>A collection of pages that haven't been successfully purged, because of either missing or invalid titles.</returns>
