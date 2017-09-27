@@ -268,7 +268,7 @@ namespace WikiClientLibrary
                 if (!enu.MoveNext()) return null;
                 var result = await selector(enu.Current);
                 return Tuple.Create(result, true);
-            });
+            }, () => enu.Dispose());
         }
 
         public static ILogger SetLoggerFactory<TOwner>(ref ILoggerFactory loggerFactoryField, ILoggerFactory value)

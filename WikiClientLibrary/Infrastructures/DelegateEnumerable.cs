@@ -11,6 +11,7 @@ namespace WikiClientLibrary.Infrastructures
     /// <typeparam name="T">The type of items.</typeparam>
     internal class DelegateAsyncEnumerable<T> : IAsyncEnumerable<T>
     {
+
         /// <summary>
         /// A delegate used to generate next item of the sequence.
         /// </summary>
@@ -24,16 +25,22 @@ namespace WikiClientLibrary.Infrastructures
         public delegate Task<Tuple<T, bool>> ItemGeneratorDelegate(CancellationToken cancellationToken);
 
         private readonly ItemGeneratorDelegate generator;
-
+        private readonly Action onDispose;
+        
         public DelegateAsyncEnumerable(ItemGeneratorDelegate generator)
         {
             if (generator == null) throw new ArgumentNullException(nameof(generator));
             this.generator = generator;
         }
 
-        public DelegateAsyncEnumerable(Func<Task<Tuple<T, bool>>> generator)
+        public DelegateAsyncEnumerable(Func<Task<Tuple<T, bool>>> generator) : this(generator, null)
+        {
+        }
+
+        public DelegateAsyncEnumerable(Func<Task<Tuple<T, bool>>> generator, Action onDispose)
         {
             if (generator == null) throw new ArgumentNullException(nameof(generator));
+            this.onDispose = onDispose;
             this.generator = ct => generator();
         }
 
@@ -45,19 +52,20 @@ namespace WikiClientLibrary.Infrastructures
         /// </returns>
         public IAsyncEnumerator<T> GetEnumerator()
         {
-            return new MyEnumerator(generator);
+            return new MyEnumerator(generator, onDispose);
         }
 
         public class MyEnumerator : IAsyncEnumerator<T>
         {
             private readonly ItemGeneratorDelegate generator;
+            private readonly Action onDispose;
 
             /// <summary>
             /// 执行与释放或重置非托管资源关联的应用程序定义的任务。
             /// </summary>
             public void Dispose()
             {
-                
+                onDispose?.Invoke();
             }
 
             /// <summary>
@@ -81,10 +89,11 @@ namespace WikiClientLibrary.Infrastructures
             /// </summary>
             public T Current { get; private set; }
 
-            public MyEnumerator(ItemGeneratorDelegate generator)
+            public MyEnumerator(ItemGeneratorDelegate generator, Action onDispose)
             {
                 if (generator == null) throw new ArgumentNullException(nameof(generator));
                 this.generator = generator;
+                this.onDispose = onDispose;
                 this.Current = default(T);
             }
         }
