@@ -8,6 +8,7 @@ using System.Net.Http;
 using System.Runtime.Serialization;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using WikiClientLibrary.Client;
@@ -207,11 +208,28 @@ namespace WikiClientLibrary.Pages
         /// </exception>
         /// <exception cref="TimeoutException">Timeout specified in <see cref="WikiClientBase.Timeout"/> has been reached.</exception>
         /// <returns>An <see cref="UploadResult"/>. You need to check <see cref="UploadResult.ResultCode"/> for further action.</returns>
-        public Task<UploadResult> UploadAsync(WikiUploadSource source, string comment, bool ignoreWarnings,
+        public async Task<UploadResult> UploadAsync(WikiUploadSource source, string comment, bool ignoreWarnings,
             AutoWatchBehavior watch, CancellationToken cancellationToken)
         {
             if (source == null) throw new ArgumentNullException(nameof(source));
-            return RequestHelper.UploadAsync(this, source, comment, ignoreWarnings, watch, cancellationToken);
+            Debug.Assert(source != null);
+            var requestFields = new Dictionary<string, object>
+            {
+                {"action", "upload"},
+                {"watchlist", watch},
+                {"token", WikiSiteToken.Edit},
+                {"filename", Title},
+                {"comment", comment},
+                {"ignorewarnings", ignoreWarnings},
+            };
+            foreach (var p in source.GetUploadParameters(Site.SiteInfo))
+                requestFields[p.Key] = p.Value;
+            var request = new WikiFormRequestMessage(requestFields, true);
+            Logger.LogDebug("Uploading [[{Title}]] from {Source}.", this, source);
+            var jresult = await Site.GetJsonAsync(request, cancellationToken);
+            var result = jresult["upload"].ToObject<UploadResult>(Utility.WikiJsonSerializer);
+            Logger.LogInformation("Uploaded [[{Title}]]. Result={Result}.", this, result.ResultCode);
+            return result;
         }
 
         protected override void OnLoadPageInfo(JObject jpage)

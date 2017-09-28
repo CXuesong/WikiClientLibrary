@@ -211,37 +211,6 @@ namespace WikiClientLibrary
         #endregion
 
         /// <summary>
-        /// Uploads a file.
-        /// </summary>
-        public static async Task<UploadResult> UploadAsync(FilePage page,
-            WikiUploadSource source, string comment,
-            bool ignoreWarnings, AutoWatchBehavior watch,
-            CancellationToken cancellationToken)
-        {
-            Debug.Assert(page != null);
-            Debug.Assert(source != null);
-            if (page.NamespaceId != BuiltInNamespaces.File)
-                throw new ArgumentException($"Invalid namespace for: {page} .", nameof(page));
-            var requestFields = new Dictionary<string, object>
-            {
-                {"action", "upload"},
-                {"watchlist", watch},
-                {"token", WikiSiteToken.Edit},
-                {"filename", page.Title},
-                {"comment", comment},
-                {"ignorewarnings", ignoreWarnings},
-            };
-            foreach (var p in source.GetUploadParameters(page.Site.SiteInfo))
-                requestFields[p.Key] = p.Value;
-            var request = new WikiFormRequestMessage(requestFields, true);
-            page.Site.Logger.LogDebug("Uploading [[{Title}]] from {Source}.", page, source);
-            var jresult = await page.Site.GetJsonAsync(request, cancellationToken);
-            var result = jresult["upload"].ToObject<UploadResult>(Utility.WikiJsonSerializer);
-            page.Site.Logger.LogInformation("Uploaded [[{Title}]]. Result={Result}.", page, result.ResultCode);
-            return result;
-        }
-
-        /// <summary>
         /// Asynchronously purges the pages.
         /// </summary>
         /// <returns>A collection of pages that haven't been successfully purged, because of either missing or invalid titles.</returns>
