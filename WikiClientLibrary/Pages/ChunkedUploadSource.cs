@@ -57,11 +57,15 @@ namespace WikiClientLibrary.Pages
         /// Initialize an instance from a <see cref="Stream"/>.
         /// </summary>
         /// <param name="site">The destination site to upload the file.</param>
-        /// <param name="sourceStream">The stream containing the file to be uploaded.</param>
+        /// <param name="sourceStream">
+        /// The seekable stream containing the file to be uploaded.
+        /// The upload will be performed starting from the current position.
+        /// </param>
         /// <param name="fileName">
         /// Optional file name. This parameter can be <c>null</c>, where a dummy file name will be used;
         /// otherwise, it should be a valid file name.
         /// If the name has file extension, the content will be validated by server.
+        /// However, the name can be different from the actual uploaded file.
         /// </param>
         /// <exception cref="ArgumentNullException"><paramref name="site"/> or <paramref name="sourceStream"/> is <c>null</c>.</exception>
         /// <exception cref="ArgumentException">
@@ -90,9 +94,15 @@ namespace WikiClientLibrary.Pages
 
         public WikiSite Site { get; }
 
+        /// <summary>
+        /// The source stream containing the content to be uploaded.
+        /// </summary>
         public Stream SourceStream { get; }
 
-        public string FileName { get; private set; }
+        /// <summary>
+        /// The file name used in the stashing requests.
+        /// </summary>
+        public string FileName { get; }
 
         /// <summary>
         /// The chunk size to be used when calling the <see cref="StashNextChunkAsync()"/> overloads
@@ -227,7 +237,9 @@ namespace WikiClientLibrary.Pages
                 using (var chunkStream = new MemoryStream((int) Math.Min(chunkSize, SourceStream.Length - startingPos)))
                 {
                     var copiedSize = await SourceStream.CopyRangeToAsync(chunkStream, chunkSize, cancellationToken);
-                    Debug.Assert(copiedSize > 0);
+                    // If someone has messed with the SourceStream, this can happen.
+                    if (copiedSize == 0)
+                        throw new InvalidOperationException("Unexpected stream EOF met.");
                     chunkStream.Position = 0;
                     var jparams = new Dictionary<string, object>
                     {
