@@ -213,45 +213,31 @@ namespace WikiClientLibrary
         /// <summary>
         /// Uploads a file.
         /// </summary>
-        public static async Task<UploadResult> UploadAsync(WikiSite site,
-            WikiUploadSource source,
-            string title, string comment,
+        public static async Task<UploadResult> UploadAsync(FilePage page,
+            WikiUploadSource source, string comment,
             bool ignoreWarnings, AutoWatchBehavior watch,
             CancellationToken cancellationToken)
         {
-            Debug.Assert(site != null);
+            Debug.Assert(page != null);
             Debug.Assert(source != null);
-            Debug.Assert(!string.IsNullOrEmpty(title));
-            var link = WikiLink.Parse(site, title, BuiltInNamespaces.File);
-            if (link.Namespace.Id != BuiltInNamespaces.File)
-                throw new ArgumentException($"Invalid namespace for file title: {title} .", nameof(title));
+            if (page.NamespaceId != BuiltInNamespaces.File)
+                throw new ArgumentException($"Invalid namespace for: {page} .", nameof(page));
             var requestFields = new Dictionary<string, object>
             {
                 {"action", "upload"},
                 {"watchlist", watch},
                 {"token", WikiSiteToken.Edit},
-                {"filename", link.Title},
+                {"filename", page.Title},
                 {"comment", comment},
                 {"ignorewarnings", ignoreWarnings},
             };
-            foreach (var p in source.GetUploadParameters(site.SiteInfo))
+            foreach (var p in source.GetUploadParameters(page.Site.SiteInfo))
                 requestFields[p.Key] = p.Value;
             var request = new WikiFormRequestMessage(requestFields, true);
-            site.Logger.LogDebug("Uploading [[{Title}]] on {Site} from {Source}.", link, source, site);
-            var jresult = await site.GetJsonAsync(request, cancellationToken);
+            page.Site.Logger.LogDebug("Uploading [[{Title}]] from {Source}.", page, source);
+            var jresult = await page.Site.GetJsonAsync(request, cancellationToken);
             var result = jresult["upload"].ToObject<UploadResult>(Utility.WikiJsonSerializer);
-            site.Logger.LogInformation("Uploaded [[{Title}]] on {Site}. Result={Result}.",
-                link, site, result.ResultCode);
-            switch (result.ResultCode)
-            {
-                case UploadResultCode.Warning:
-                    throw new UploadException(result);
-                default:
-                    // UploadResult.Result setter should have thrown an exception.
-                    Debug.Assert(result.ResultCode == UploadResultCode.Success ||
-                                 result.ResultCode == UploadResultCode.Continue);
-                    break;
-            }
+            page.Site.Logger.LogInformation("Uploaded [[{Title}]]. Result={Result}.", page, result.ResultCode);
             return result;
         }
 

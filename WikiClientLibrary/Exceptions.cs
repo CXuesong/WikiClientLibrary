@@ -144,6 +144,7 @@ namespace WikiClientLibrary
     /// <summary>
     /// An exception indicating the upload operation has at least one warning.
     /// </summary>
+    [Obsolete]
     public class UploadException : WikiClientException
     {
         /// <summary>
@@ -156,7 +157,7 @@ namespace WikiClientLibrary
             if (result == null) throw new ArgumentNullException(nameof(result));
             if (result.Warnings.Count == 0)
                 return $"An exception occured when trying to upload. Result code is {result.ResultCode}.";
-            return string.Join(" ", result.Warnings.Select(p => UploadResult.FormatWarning(p.Key, p.Value)));
+            return string.Join(" ", result.Warnings.Select(p => UploadResult.FormatWarning(p.Key, (string) p.Value)));
         }
 
         public UploadException(string message, Exception innerException) : base(message, innerException)

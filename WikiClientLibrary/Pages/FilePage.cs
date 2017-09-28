@@ -5,9 +5,9 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
+using System.Runtime.Serialization;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using WikiClientLibrary.Client;
@@ -28,6 +28,15 @@ namespace WikiClientLibrary.Pages
 
         internal FilePage(WikiSite site) : base(site)
         {
+        }
+
+        [Obsolete]
+        private static async Task<UploadResult> LegacyDispatchResult(Task<UploadResult> result)
+        {
+            var r = await result;
+            Debug.Assert(r != null);
+            if (r.ResultCode == UploadResultCode.Warning) throw new UploadException(r);
+            return r;
         }
 
         /// <summary>
@@ -56,8 +65,8 @@ namespace WikiClientLibrary.Pages
         public static Task<UploadResult> UploadAsync(WikiSite site, string url, string title,
             string comment, bool ignoreWarnings)
         {
-            return new FilePage(site, title).UploadAsync(new ExternalFileUploadSource(url), comment, ignoreWarnings,
-                AutoWatchBehavior.Default, CancellationToken.None);
+            return LegacyDispatchResult(new FilePage(site, title).UploadAsync(new ExternalFileUploadSource(url), comment, ignoreWarnings,
+                AutoWatchBehavior.Default, CancellationToken.None));
         }
 
         /// <summary>
@@ -85,8 +94,8 @@ namespace WikiClientLibrary.Pages
         public static Task<UploadResult> UploadAsync(WikiSite site, string url, string title, string comment,
             bool ignoreWarnings, CancellationToken cancellationToken)
         {
-            return new FilePage(site, title).UploadAsync(new ExternalFileUploadSource(url),
-                comment, ignoreWarnings, AutoWatchBehavior.Default, CancellationToken.None);
+            return LegacyDispatchResult(new FilePage(site, title).UploadAsync(new ExternalFileUploadSource(url),
+                comment, ignoreWarnings, AutoWatchBehavior.Default, CancellationToken.None));
         }
 
         /// <summary>
@@ -112,8 +121,8 @@ namespace WikiClientLibrary.Pages
         public static Task<UploadResult> UploadAsync(WikiSite site, UploadResult previousResult, string title,
             string comment, bool ignoreWarnings)
         {
-            return new FilePage(site, title).UploadAsync(new FileKeyUploadSource(previousResult.FileKey),
-                comment, ignoreWarnings, AutoWatchBehavior.Default, CancellationToken.None);
+            return LegacyDispatchResult(new FilePage(site, title).UploadAsync(new FileKeyUploadSource(previousResult.FileKey),
+                comment, ignoreWarnings, AutoWatchBehavior.Default, CancellationToken.None));
         }
 
         /// <summary>
@@ -136,8 +145,8 @@ namespace WikiClientLibrary.Pages
         public static Task<UploadResult> UploadAsync(WikiSite site, Stream content, string title,
             string comment, bool ignoreWarnings)
         {
-            return new FilePage(site, title).UploadAsync(new StreamUploadSource(content), comment,
-                ignoreWarnings, AutoWatchBehavior.Default, CancellationToken.None);
+            return LegacyDispatchResult(new FilePage(site, title).UploadAsync(new StreamUploadSource(content), comment,
+                ignoreWarnings, AutoWatchBehavior.Default, CancellationToken.None));
         }
 
         /// <summary>
@@ -162,8 +171,8 @@ namespace WikiClientLibrary.Pages
         public static Task<UploadResult> UploadAsync(WikiSite site, Stream content, string title,
             string comment, bool ignoreWarnings, AutoWatchBehavior watch, CancellationToken cancellationToken)
         {
-            return new FilePage(site, title).UploadAsync(new StreamUploadSource(content), comment, ignoreWarnings,
-                watch, cancellationToken);
+            return LegacyDispatchResult(new FilePage(site, title).UploadAsync(new StreamUploadSource(content), comment, ignoreWarnings,
+                watch, cancellationToken));
         }
 
         /// <inheritdoc cref="UploadAsync(WikiUploadSource,string,bool,AutoWatchBehavior,CancellationToken)"/>
@@ -187,10 +196,6 @@ namespace WikiClientLibrary.Pages
         /// <param name="ignoreWarnings">Ignore any warnings. This must be set to upload a new version of an existing image.</param>
         /// <param name="watch">Whether to add the file into your watchlist.</param>
         /// <param name="cancellationToken">The cancellation token that will be checked prior to completing the returned task.</param>
-        /// <exception cref="UploadException">
-        /// There's warning from server, and <paramref name="ignoreWarnings"/> is <c>false</c>.
-        /// Check <see cref="UploadException.UploadResult"/> for the warning message or continuing the upload.
-        /// </exception>
         /// <exception cref="UnauthorizedAccessException">You do not have the permission to upload the file.</exception>
         /// <exception cref="OperationFailedException">
         /// There's an general failure while uploading the file.
@@ -200,12 +205,12 @@ namespace WikiClientLibrary.Pages
         /// it means you are trying to upload an extactly same file to the same title.
         /// </exception>
         /// <exception cref="TimeoutException">Timeout specified in <see cref="WikiClientBase.Timeout"/> has been reached.</exception>
-        /// <returns>An <see cref="UploadResult"/>.</returns>
+        /// <returns>An <see cref="UploadResult"/>. You need to check <see cref="UploadResult.ResultCode"/> for further action.</returns>
         public Task<UploadResult> UploadAsync(WikiUploadSource source, string comment, bool ignoreWarnings,
             AutoWatchBehavior watch, CancellationToken cancellationToken)
         {
             if (source == null) throw new ArgumentNullException(nameof(source));
-            return RequestHelper.UploadAsync(Site, source, Title, comment, ignoreWarnings, watch, cancellationToken);
+            return RequestHelper.UploadAsync(this, source, comment, ignoreWarnings, watch, cancellationToken);
         }
 
         protected override void OnLoadPageInfo(JObject jpage)
@@ -298,10 +303,6 @@ namespace WikiClientLibrary.Pages
             {"exists-normalized", "File exists with different extension as \"{0}\"."},
         };
 
-        private static readonly KeyValuePair<string, string>[] EmptyWarnings = { };
-
-        private static readonly DateTime[] EmptyDateTime = { };
-
         /// <summary>
         /// Try to convert the specified warning code and context into a user-fridendly
         /// warning message.
@@ -384,31 +385,14 @@ namespace WikiClientLibrary.Pages
         /// <para>You can use <see cref="FormatWarning"/> to get user-friendly warning messages.</para>
         /// <para>If you have supressed warnings, the warnings will still be here, but <see cref="ResultCode"/> will be <see cref="UploadResultCode.Success"/>.</para>
         /// </remarks>
-        public IList<KeyValuePair<string, string>> Warnings { get; private set; } = EmptyWarnings;
+        [JsonProperty("warnings", ObjectCreationHandling = ObjectCreationHandling.Replace)]
+        public UploadWarningCollection Warnings { get; private set; } = UploadWarningCollection.Empty;
 
         /// <summary>
         /// Gets a list of timestamps indicating the duplicate file versions, if any.
         /// </summary>
-        public IList<DateTime> DuplicateVersions { get; private set; } = EmptyDateTime;
-
-        [JsonProperty("warnings")]
-        private JObject RawWarnings
-        {
-            set
-            {
-                var l = value.Properties()
-                    .Where(p => p.Value.Type == JTokenType.String)
-                    .Select(p => new KeyValuePair<string, string>(p.Name, (string) p.Value)).ToList();
-                Warnings = new ReadOnlyCollection<KeyValuePair<string, string>>(l);
-                var dv = value["duplicateversions"];
-                if (dv != null)
-                {
-                    var m = dv.Children<JProperty>().Where(p => p.Name == "timestamp")
-                        .Select(p => (DateTime) p.Value).ToList();
-                    DuplicateVersions = new ReadOnlyCollection<DateTime>(m);
-                }
-            }
-        }
+        [Obsolete("Please use Warnings.DuplicateVersions instead.")]
+        public IList<DateTime> DuplicateVersions => Warnings.DuplicateVersions;
 
         /// <summary>
         /// 返回表示当前对象的字符串。
@@ -418,7 +402,7 @@ namespace WikiClientLibrary.Pages
         /// </returns>
         public override string ToString()
         {
-            return $"{ResultCode}; {string.Join(",", Warnings.Select(p => p.Key + "=" + p.Value))}";
+            return $"{ResultCode}; {string.Join(",", Warnings.Select(p => p.Key))}";
         }
     }
 
@@ -431,4 +415,81 @@ namespace WikiClientLibrary.Pages
         Warning,
         Continue
     }
+
+    public class UploadWarningCollection : WikiReadOnlyDictionary
+    {
+
+        internal static readonly UploadWarningCollection Empty = new UploadWarningCollection();
+        private static readonly IList<DateTime> emptyDateTimeList = new DateTime[0];
+        private static readonly IList<string> emptyStringList = new string[0];
+
+        static UploadWarningCollection()
+        {
+            Empty.MakeReadonly();
+        }
+
+        public bool IsEmptyFile => GetValueDirect("emptyfile") != null;
+
+        /// <summary>
+        /// The title exists.
+        /// </summary>
+        public bool TitleExists => GetValueDirect("exists") != null;
+
+        /// <summary>
+        /// File exists with different extension as…
+        /// </summary>
+        public string ExistingAlternativeExtension => (string) GetValueDirect("exists-normalized");
+
+        /// <summary>
+        /// Target filename is invalid.
+        /// </summary>
+        public bool IsBadFileName => GetValueDirect("badfilename") != null;
+
+        /// <summary>
+        /// The file with the specified title was previously deleted.
+        /// </summary>
+        public bool WasTitleDeleted => GetValueDirect("was-deleted") != null;
+
+        /// <summary>
+        /// The file content is a duplicate of a deleted file.
+        /// </summary>
+        public bool WasContentDeleted => GetValueDirect("duplicate-archive") != null;
+
+        [OnDeserialized]
+        private void OnDeserialized(StreamingContext context)
+        {
+            if (GetValueDirect("duplicateversions") is JArray jversions && jversions.Count > 0)
+            {
+                var versions = jversions.Select(v => (DateTime) v["timestamp"]).ToArray();
+                DuplicateVersions = new ReadOnlyCollection<DateTime>(versions);
+            }
+            else
+            {
+                DuplicateVersions = emptyDateTimeList;
+            }
+            if (GetValueDirect("duplicate") is JArray jdumplicates && jdumplicates.Count > 0)
+            {
+                var titles = jdumplicates.Select(t => (string) t).ToArray();
+                DuplicateTitles = new ReadOnlyCollection<string>(titles);
+            }
+            else
+            {
+                DuplicateTitles = emptyStringList;
+            }
+        }
+
+        /// <summary>
+        /// Uploaded file is a duplicate of these titles.
+        /// </summary>
+        /// <remarks>This property may return empty array, but not <c>null</c>.</remarks>
+        public IList<string> DuplicateTitles { get; private set; } = emptyStringList;
+
+        /// <summary>
+        /// Uploaded file is duplicate of these versions .
+        /// </summary>
+        /// <remarks>This property may return empty array, but not <c>null</c>.</remarks>
+        public IList<DateTime> DuplicateVersions { get; private set; } = emptyDateTimeList;
+
+    }
+
 }

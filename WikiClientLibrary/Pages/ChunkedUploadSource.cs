@@ -255,12 +255,9 @@ namespace WikiClientLibrary.Pages
                     }
                     result = jresult["upload"].ToObject<UploadResult>(Utility.WikiJsonSerializer);
                     // Ignore warnings, as long as we have filekey to continue the upload.
-                    // Fix file name.
-                    var badfilename = result.Warnings.FirstOrDefault(p => p.Key == "badfilename");
-                    //if (badfilename.Value != null) FileName = badfilename.Value;
                     if (result.FileKey == null)
                     {
-                        if (result.ResultCode == UploadResultCode.Warning) throw new UploadException(result);
+                        Debug.Assert(result.ResultCode != UploadResultCode.Warning);
                         throw new UnexpectedDataException("Expect [filekey] or [sessionkey] in upload result. Found none.");
                     }
                     // Note the fileKey changes after each upload.
@@ -285,7 +282,7 @@ namespace WikiClientLibrary.Pages
                 }
                 return result;
             }
-            catch (Exception ex) when (!(ex is UploadException))
+            catch (Exception)
             {
                 // Restore stream position upon error.
                 SourceStream.Position = startingPos;

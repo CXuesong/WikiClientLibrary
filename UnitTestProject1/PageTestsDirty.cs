@@ -18,7 +18,7 @@ namespace UnitTestProject1
     /// <summary>
     /// The tests in this class requires a site administrator (i.e. sysop) account.
     /// </summary>
-    public class PageTestsDirty :  WikiSiteTestsBase
+    public class PageTestsDirty : WikiSiteTestsBase
     {
         private const string SummaryPrefix = "WikiClientLibrary test. ";
 
@@ -83,27 +83,18 @@ The original title of the page is '''{title}'''.
         [Theory]
         [InlineData("File:Test image.jpg", "1")]
         [InlineData("File:Test image.jpg", "2")]
-        [InlineData("Test image.jpg" ,"1")]
+        [InlineData("Test image.jpg", "1")]
         public async Task LocalFileUploadTest1(string fileName, string imageName)
         {
             const string ReuploadSuffix = "\n\nReuploaded.";
             var file = GetDemoImage(imageName);
-            UploadResult result;
-            try
-            {
-                result = await FilePage.UploadAsync(await SiteAsync, file.ContentStream, fileName, file.Description, false);
-            }
-            catch (UploadException ex)
-            {
-                // Client should rarely be checking like this
-                // Usually we should notify the user.
-                if (ex.UploadResult.Warnings[0].Key == "exists")
-                    // Just re-upload
-                    result = await FilePage.UploadAsync(await SiteAsync, ex.UploadResult, fileName,
-                        file.Description + ReuploadSuffix, true);
-                else
-                    throw;
-            }
+            var page = new FilePage(await SiteAsync, fileName);
+            var result = await page.UploadAsync(new StreamUploadSource(file.ContentStream), file.Description, false);
+            // Usually we should notify the user, then perform the re-upload ignoring the warning.
+            if (result.Warnings.TitleExists)
+                result = await page.UploadAsync(
+                    new FileKeyUploadSource(result.FileKey), file.Description + ReuploadSuffix, true);
+            Assert.Equal(UploadResultCode.Success, result.ResultCode);
             ShallowTrace(result);
             var fp = new FilePage(await SiteAsync, fileName);
             await fp.RefreshAsync();
@@ -117,6 +108,7 @@ The original title of the page is '''{title}'''.
         {
             const string FileName = "File:Test image.jpg";
             var localSite = await CreateIsolatedWikiSiteAsync(CredentialManager.DirtyTestsEntryPointUrl);
+            var page = new FilePage(localSite, FileName);
             // Cahce the token first so it won't be affected by the short timeout.
             await localSite.GetTokenAsync("edit");
             Output.WriteLine("Try uploading…");
@@ -130,17 +122,10 @@ The original title of the page is '''{title}'''.
             {
                 await Assert.ThrowsAsync<TimeoutException>(async () =>
                 {
-                    try
-                    {
-                        await FilePage.UploadAsync(localSite, ms, FileName,
-                            "This is an upload that is destined to fail. Upload timeout test.", false);
-                    }
-                    catch (UploadException ex)
-                    {
-                        throw new SkipException(
-                            "Your network speed might be too fast for the current timeout.\nException:" +
-                            ex.Message);
-                    }
+                    var result = await page.UploadAsync(new StreamUploadSource(ms),
+                        "This is an upload that is destined to fail. Upload timeout test.", false);
+                    // Usually we should notify the user, then perform the re-upload ignoring the warning.
+                    Assert.Equal(UploadResultCode.Warning, result.ResultCode);
                 });
             }
         }
@@ -148,10 +133,10 @@ The original title of the page is '''{title}'''.
         [Fact]
         public async Task LocalFileUploadTest2()
         {
-            var stream = Stream.Null;
             var site = await SiteAsync;
-            await Assert.ThrowsAsync<OperationFailedException>(() => FilePage.UploadAsync(site, stream,
-                "File:Null.png", "This upload should have failed.", false));
+            var page = new FilePage(site, "File:Null.png");
+            await Assert.ThrowsAsync<OperationFailedException>(() =>
+                page.UploadAsync(new StreamUploadSource(Stream.Null), "This upload should have failed.", false));
         }
 
         [SkippableFact]
@@ -171,19 +156,15 @@ JasonHise grants anyone the right to use this work for any purpose, without any 
             var site = await CreateIsolatedWikiSiteAsync(CredentialManager.DirtyTestsEntryPointUrl);
             // Allow for more time to wait.
             site.WikiClient.Timeout = TimeSpan.FromSeconds(30);
+            var page = new FilePage(site, FileName);
             try
             {
-                await FilePage.UploadAsync(site, SourceUrl, FileName, Description, false);
-            }
-            catch (UploadException ex)
-            {
-                // Client should rarely be checking like this
-                // Usually we should notify the user.
-                if (ex.UploadResult.Warnings[0].Key == "exists")
-                    // Just re-upload
-                    await FilePage.UploadAsync(site, ex.UploadResult, FileName, Description + ReuploadSuffix, true);
-                else
-                    throw;
+                var result = await page.UploadAsync(new ExternalFileUploadSource(SourceUrl), Description, false);
+                // Usually we should notify the user, then perform the re-upload ignoring the warning.
+                if (result.Warnings.TitleExists)
+                    result = await page.UploadAsync(
+                        new FileKeyUploadSource(result.FileKey), Description + ReuploadSuffix, true);
+                Assert.Equal(UploadResultCode.Success, result.ResultCode);
             }
             catch (OperationFailedException ex)
             {
@@ -197,7 +178,7 @@ JasonHise grants anyone the right to use this work for any purpose, without any 
         {
             var site = await SiteAsync;
             var file = GetDemoImage("1");
-            var chunked = new ChunkedUploadSource(site, file.ContentStream) {DefaultChunkSize = 1024 * 4};
+            var chunked = new ChunkedUploadSource(site, file.ContentStream) { DefaultChunkSize = 1024 * 4 };
             do
             {
                 var result = await chunked.StashNextChunkAsync();
