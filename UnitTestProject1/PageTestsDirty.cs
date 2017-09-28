@@ -38,8 +38,10 @@ namespace UnitTestProject1
         public PageTestsDirty(ITestOutputHelper output) : base(output)
         {
             if (CredentialManager.DirtyTestsEntryPointUrl == null)
-                throw new SkipException("You need to specify CredentialManager.DirtyTestsEntryPointUrl before running this group of tests.");
+                throw new SkipException(
+                    "You need to specify CredentialManager.DirtyTestsEntryPointUrl before running this group of tests.");
             SiteNeedsLogin(CredentialManager.DirtyTestsEntryPointUrl);
+            SiteNeedsLogin(Utility.EntryPointWikiaTest);
         }
 
         private async Task<WikiPage> GetOrCreatePage(WikiSite site, string title)
@@ -187,6 +189,29 @@ JasonHise grants anyone the right to use this work for any purpose, without any 
             {
                 Skip.If(ex.ErrorCode == "copyuploadbaddomain", ex.ErrorMessage);
                 throw;
+            }
+        }
+
+        [SkippableFact]
+        public async Task ChunkedFileUploadTask()
+        {
+            var site = await SiteAsync;
+            var file = GetDemoImage("1");
+            var chunked = new ChunkedUploadSource(site, file.ContentStream) {DefaultChunkSize = 1024 * 4};
+            do
+            {
+                var result = await chunked.StashNextChunkAsync();
+                Assert.NotEqual(UploadResultCode.Warning, result.ResultCode);
+            } while (!chunked.IsStashed);
+            var page = new FilePage(site, "Test image.jpg");
+            try
+            {
+                await page.UploadAsync(chunked, file.Description, true);
+            }
+            catch (OperationFailedException ex) when (ex.ErrorCode == "fileexists-no-change")
+            {
+                // We cannot suppress this error by setting ignoreWarnings = true.
+                Output.WriteLine(ex.Message);
             }
         }
 

@@ -281,5 +281,34 @@ namespace WikiClientLibrary
             loggerFactoryField = value;
             return value == null ? (ILogger) NullLogger.Instance : value.CreateLogger(ownerType);
         }
+
+        public static Task<int> CopyRangeToAsync(this Stream source, Stream destination, int byteCount,
+            CancellationToken cancellationToken)
+        {
+            return CopyRangeToAsync(source, destination, byteCount, 1024 * 4, cancellationToken);
+        }
+
+        public static async Task<int> CopyRangeToAsync(this Stream source, Stream destination, int byteCount, int bufferSize,
+            CancellationToken cancellationToken)
+        {
+            if (source == null) throw new ArgumentNullException(nameof(source));
+            if (destination == null) throw new ArgumentNullException(nameof(destination));
+            if (byteCount < 0) throw new ArgumentOutOfRangeException(nameof(byteCount));
+            if (bufferSize <= 0) throw new ArgumentOutOfRangeException(nameof(bufferSize));
+            if (byteCount == 0) return 0;
+            cancellationToken.ThrowIfCancellationRequested();
+            var buffer = new byte[bufferSize];
+            var bytesRead = 0;
+            while (bytesRead < byteCount)
+            {
+                var chunkSize = Math.Min(byteCount, bufferSize);
+                chunkSize = await source.ReadAsync(buffer, 0, chunkSize, cancellationToken);
+                if (chunkSize == 0) return bytesRead;
+                await destination.WriteAsync(buffer, 0, chunkSize, cancellationToken);
+                bytesRead += chunkSize;
+            }
+            return bytesRead;
+        }
+
     }
 }

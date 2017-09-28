@@ -155,7 +155,7 @@ namespace WikiClientLibrary.Pages
         /// Check <see cref="UploadException.UploadResult"/> for the warning message or continuing the upload.
         /// </exception>
         /// <exception cref="UnauthorizedAccessException">You do not have the permission to upload the file.</exception>
-        /// <exception cref="OperationFailedException"> There's an error while uploading the file. </exception>
+        /// <exception cref="OperationFailedException"> There's an general failure while uploading the file. </exception>
         /// <exception cref="TimeoutException">Timeout specified in <see cref="WikiClientBase.Timeout"/> has been reached.</exception>
         /// <returns>An <see cref="UploadResult"/>.</returns>
         [Obsolete("Please use FilePage.UploadAsync instance methods instead.")]
@@ -164,6 +164,19 @@ namespace WikiClientLibrary.Pages
         {
             return new FilePage(site, title).UploadAsync(new StreamUploadSource(content), comment, ignoreWarnings,
                 watch, cancellationToken);
+        }
+
+        /// <inheritdoc cref="UploadAsync(WikiUploadSource,string,bool,AutoWatchBehavior,CancellationToken)"/>
+        public Task<UploadResult> UploadAsync(WikiUploadSource source, string comment, bool ignoreWarnings)
+        {
+            return UploadAsync(source, comment, ignoreWarnings, AutoWatchBehavior.Default, CancellationToken.None);
+        }
+
+        /// <inheritdoc cref="UploadAsync(WikiUploadSource,string,bool,AutoWatchBehavior,CancellationToken)"/>
+        public Task<UploadResult> UploadAsync(WikiUploadSource source, string comment, bool ignoreWarnings,
+            AutoWatchBehavior watch)
+        {
+            return UploadAsync(source, comment, ignoreWarnings, watch, CancellationToken.None);
         }
 
         /// <summary>
@@ -179,7 +192,13 @@ namespace WikiClientLibrary.Pages
         /// Check <see cref="UploadException.UploadResult"/> for the warning message or continuing the upload.
         /// </exception>
         /// <exception cref="UnauthorizedAccessException">You do not have the permission to upload the file.</exception>
-        /// <exception cref="OperationFailedException"> There's an error while uploading the file. </exception>
+        /// <exception cref="OperationFailedException">
+        /// There's an general failure while uploading the file.
+        /// - or -
+        /// If you are uploading the file with <paramref name="ignoreWarnings"/> set to <c>true</c>,
+        /// and <see cref="OperationFailedException.ErrorCode"/> is <c>fileexists-no-change</c>,
+        /// it means you are trying to upload an extactly same file to the same title.
+        /// </exception>
         /// <exception cref="TimeoutException">Timeout specified in <see cref="WikiClientBase.Timeout"/> has been reached.</exception>
         /// <returns>An <see cref="UploadResult"/>.</returns>
         public Task<UploadResult> UploadAsync(WikiUploadSource source, string comment, bool ignoreWarnings,
@@ -346,6 +365,12 @@ namespace WikiClientLibrary.Pages
                 else Debug.Assert(FileKey == value);
             }
         }
+
+        /// <summary>
+        /// When performing chunked uploading, gets the starting offset of the next chunk.
+        /// </summary>
+        [JsonProperty]
+        public long? Offset { get; private set; }
 
         /// <summary>
         /// Gets a list of key-value pairs, indicating the warning code and its context.
