@@ -16,8 +16,7 @@ namespace WikiClientLibrary.Client
     partial class WikiClient
     {
         #region the json client
-
-        /// <inheritdoc />
+        
         private async Task<JToken> SendAsync(string endPointUrl, WikiRequestMessage message,
             CancellationToken cancellationToken)
         {
@@ -107,7 +106,7 @@ namespace WikiClientLibrary.Client
             {
                 cancellationToken.ThrowIfCancellationRequested();
                 var jresp = await ProcessResponseAsync(response, cancellationToken);
-                CheckErrors(jresp);
+                message.ValidateResponse(jresp, Logger);
                 return jresp;
             }
             catch (JsonReaderException)
@@ -133,55 +132,6 @@ namespace WikiClientLibrary.Client
                 //Logger?.Trace(content);
                 var obj = JToken.Parse(content);
                 return obj;
-            }
-        }
-
-        private void CheckErrors(JToken jresponse)
-        {
-            var obj = jresponse as JObject;
-            if (obj == null) return;
-            // See https://www.mediawiki.org/wiki/API:Errors_and_warnings .
-            /*
-    "warnings": {
-        "main": {
-            "*": "xxxx"
-        },
-        "login": {
-            "*": "xxxx"
-        }
-    }
-             */
-            if (jresponse["warnings"] != null && Logger.IsEnabled(LogLevel.Debug))
-            {
-                foreach (var module in ((JObject) jresponse["warnings"]).Properties())
-                {
-                    Logger.LogWarning("{Module}: {Warning}", module.Name, module.Value);
-                }
-            }
-            if (jresponse["error"] != null)
-            {
-                var err = jresponse["error"];
-                var errcode = (string) err["code"];
-                // err["*"]: API usage.
-                var errmessage = ((string) err["info"]).Trim();
-                switch (errcode)
-                {
-                    case "permissiondenied":
-                    case "readapidenied": // You need read permission to use this module
-                    case "mustbeloggedin": // You must be logged in to upload this file.
-                        throw new UnauthorizedOperationException(errcode, errmessage);
-                    case "badtoken":
-                        throw new BadTokenException(errcode, errmessage);
-                    case "unknown_action":
-                        throw new InvalidActionException(errcode, errmessage);
-                    case "assertuserfailed":
-                    case "assertbotfailed":
-                        throw new AccountAssertionFailureException(errcode, errmessage);
-                    default:
-                        if (errcode.EndsWith("conflict"))
-                            throw new OperationConflictException(errcode, errmessage);
-                        throw new OperationFailedException(errcode, errmessage);
-                }
             }
         }
 

@@ -6,12 +6,15 @@ using System.Linq;
 using System.Net.Http;
 using System.Runtime.InteropServices;
 using System.Threading;
+using Microsoft.Extensions.Logging;
+using Newtonsoft.Json.Linq;
 using WikiClientLibrary.Infrastructures;
 using WikiClientLibrary.Pages;
 using WikiClientLibrary.Sites;
 
 namespace WikiClientLibrary.Client
 {
+
     /// <summary>
     /// The traceable MediaWiki API request message.
     /// </summary>
@@ -19,7 +22,7 @@ namespace WikiClientLibrary.Client
     {
 
         private static readonly long baseCounter =
-            (long)(Environment.TickCount ^ RuntimeInformation.OSDescription.GetHashCode()) << 32;
+            (long) (Environment.TickCount ^ RuntimeInformation.OSDescription.GetHashCode()) << 32;
 
         private static int idCounter;
 
@@ -38,6 +41,61 @@ namespace WikiClientLibrary.Client
         /// Id of the request. For tracing.
         /// </summary>
         public string Id { get; }
+
+        /// <summary>
+        /// Throws various exceptions on detecting the "error" nodes in the response.
+        /// </summary>
+        public virtual void ValidateResponse(JToken response, ILogger logger)
+        {
+            if (response == null) throw new ArgumentNullException(nameof(response));
+            if (logger == null) throw new ArgumentNullException(nameof(logger));
+            if (!(response is JObject)) return;
+            // See https://www.mediawiki.org/wiki/API:Errors_and_warnings .
+            /*
+    "warnings": {
+        "main": {
+            "*": "xxxx"
+        },
+        "login": {
+            "*": "xxxx"
+        }
+    }
+             */
+            if (response["warnings"] != null && logger.IsEnabled(LogLevel.Warning))
+            {
+                foreach (var module in ((JObject) response["warnings"]).Properties())
+                {
+                    logger.LogWarning("Ignored warning for {Request}: {Module}: {Warning}", this, module.Name,
+                        module.Value);
+                }
+            }
+            var err = response["error"];
+            if (err != null)
+            {
+                var errcode = (string) err["code"];
+                // err["*"]: API usage.
+                var errmessage = ((string) err["info"]).Trim();
+                logger.LogWarning("Dispatch error for {Request}: {Code} - {Message}", this, errcode, errmessage);
+                switch (errcode)
+                {
+                    case "permissiondenied":
+                    case "readapidenied": // You need read permission to use this module
+                    case "mustbeloggedin": // You must be logged in to upload this file.
+                        throw new UnauthorizedOperationException(errcode, errmessage);
+                    case "badtoken":
+                        throw new BadTokenException(errcode, errmessage);
+                    case "unknown_action":
+                        throw new InvalidActionException(errcode, errmessage);
+                    case "assertuserfailed":
+                    case "assertbotfailed":
+                        throw new AccountAssertionFailureException(errcode, errmessage);
+                    default:
+                        if (errcode.EndsWith("conflict"))
+                            throw new OperationConflictException(errcode, errmessage);
+                        throw new OperationFailedException(errcode, errmessage);
+                }
+            }
+        }
 
         /// <summary>
         /// Gets the <see cref="HttpContent"/> corresponding to this message.
@@ -97,9 +155,10 @@ namespace WikiClientLibrary.Client
     /// documentations respectively.
     /// </para>
     /// </remarks>
-    public sealed class WikiFormRequestMessage : WikiRequestMessage
+    public class WikiFormRequestMessage : WikiRequestMessage
     {
 
+        private readonly WikiFormRequestMessage baseForm;
         private readonly IDictionary<string, object> fieldDict;
         private IDictionary<string, object> readonlyFieldDict;
         // Memorizes the stream position upon first request.
@@ -140,6 +199,7 @@ namespace WikiClientLibrary.Client
                 fieldDict[p.Key] = p.Value;
             if (forceMultipartFormData || (baseForm?.AsMultipartFormData ?? false)) AsMultipartFormData = true;
             else AsMultipartFormData = this.fieldDict.Any(p => p.Value is Stream);
+            this.baseForm = baseForm;
         }
 
         /// <summary>
@@ -162,6 +222,13 @@ namespace WikiClientLibrary.Client
         }
 
         /// <inheritdoc />
+        public override void ValidateResponse(JToken response, ILogger logger)
+        {
+            if (baseForm != null) baseForm.ValidateResponse(response, logger);
+            else base.ValidateResponse(response, logger);
+        }
+
+        /// <inheritdoc />
         public override HttpContent GetHttpContent()
         {
             // Save & restore the stream position on each GetHttpContent call.
@@ -177,7 +244,9 @@ namespace WikiClientLibrary.Client
                             {
                                 if (sps == null) sps = new Dictionary<Stream, long>();
                                 sps[s] = s.Position;
-                            } else {
+                            }
+                            else
+                            {
                                 status = STATUS_UNRECOVERABLE;
                                 goto MAIN;
                             }
