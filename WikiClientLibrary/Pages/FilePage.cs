@@ -200,9 +200,10 @@ namespace WikiClientLibrary.Pages
         /// <exception cref="OperationFailedException">
         /// There's an general failure while uploading the file.
         /// - or -
-        /// If you are uploading the file with <paramref name="ignoreWarnings"/> set to <c>true</c>,
-        /// and <see cref="OperationFailedException.ErrorCode"/> is <c>fileexists-no-change</c>,
-        /// it means you are trying to upload an extactly same file to the same title.
+        /// Since MW 1.31, if you are uploading the exactly same content to the same title
+        /// with <paramref name="ignoreWarnings"/> set to <c>true</c>,
+        /// you will reveive this exception with <see cref="OperationFailedException.ErrorCode"/>
+        /// set to <c>fileexists-no-change</c>. See https://gerrit.wikimedia.org/r/378702 .
         /// </exception>
         /// <exception cref="TimeoutException">Timeout specified in <see cref="WikiClientBase.Timeout"/> has been reached.</exception>
         /// <returns>An <see cref="UploadResult"/>. You need to check <see cref="UploadResult.ResultCode"/> for further action.</returns>

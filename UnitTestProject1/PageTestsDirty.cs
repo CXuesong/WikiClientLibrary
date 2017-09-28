@@ -91,16 +91,24 @@ The original title of the page is '''{title}'''.
             var page = new FilePage(await SiteAsync, fileName);
             var result = await page.UploadAsync(new StreamUploadSource(file.ContentStream), file.Description, false);
             // Usually we should notify the user, then perform the re-upload ignoring the warning.
-            if (result.Warnings.TitleExists)
-                result = await page.UploadAsync(
-                    new FileKeyUploadSource(result.FileKey), file.Description + ReuploadSuffix, true);
-            Assert.Equal(UploadResultCode.Success, result.ResultCode);
+            try
+            {
+                if (result.Warnings.TitleExists)
+                {
+                    result = await page.UploadAsync(
+                        new FileKeyUploadSource(result.FileKey), file.Description + ReuploadSuffix, true);
+                }
+                Assert.Equal(UploadResultCode.Success, result.ResultCode);
+            }
+            catch (OperationFailedException ex) when (ex.ErrorCode == "fileexists-no-change")
+            {
+                Output.WriteLine(ex.Message);
+            }
             ShallowTrace(result);
-            var fp = new FilePage(await SiteAsync, fileName);
-            await fp.RefreshAsync();
-            ShallowTrace(fp);
-            Assert.True(fp.Exists);
-            Assert.Equal(file.Sha1, fp.LastFileRevision.Sha1.ToUpperInvariant());
+            await page.RefreshAsync();
+            ShallowTrace(page);
+            Assert.True(page.Exists);
+            Assert.Equal(file.Sha1, page.LastFileRevision.Sha1.ToUpperInvariant());
         }
 
         [Fact]
