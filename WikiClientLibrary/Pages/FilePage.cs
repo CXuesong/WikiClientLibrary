@@ -326,20 +326,6 @@ namespace WikiClientLibrary.Pages
     [JsonObject(MemberSerialization.OptIn)]
     public class UploadResult
     {
-        private static readonly Dictionary<string, string> UploadWarnings = new Dictionary<string, string>
-        {
-            // Referenced from pywikibot, site.py
-            // map API warning codes to user error messages
-            // {0} will be replaced by message string from API responsse
-            {"duplicate-archive", "The file is a duplicate of a deleted file {0}."},
-            {"was-deleted", "The file {0} was previously deleted."},
-            {"emptyfile", "File {0} is empty."},
-            {"exists", "File {0} already exists."},
-            {"duplicate", "Uploaded file is a duplicate of {0}."},
-            {"badfilename", "Target filename {0} is invalid."},
-            {"filetype-unwanted-type", "File {0} type is unwanted type."},
-            {"exists-normalized", "File exists with different extension as \"{0}\"."},
-        };
 
         /// <summary>
         /// Try to convert the specified warning code and context into a user-fridendly
@@ -352,12 +338,10 @@ namespace WikiClientLibrary.Pages
         /// user-fridendly warning message. If there's no match, a string containing
         /// warningCode and context will be returned.
         /// </returns>
-        public static string FormatWarning(string warningCode, string context)
+        [Obsolete("Please use UploadWarningCollection.FormatWarning instead.")]
+        public static string FormatWarning(string warningCode, JToken context)
         {
-            string msg;
-            if (UploadWarnings.TryGetValue(warningCode, out msg))
-                return string.Format(msg, context);
-            return $"{warningCode}: {context}";
+            return UploadWarningCollection.FormatWarning(warningCode, context);
         }
 
         /// <summary>
@@ -412,10 +396,10 @@ namespace WikiClientLibrary.Pages
         public long? Offset { get; private set; }
 
         /// <summary>
-        /// Gets a list of key-value pairs, indicating the warning code and its context.
+        /// Gets a collection of warnings resulted from this upload.
         /// </summary>
         /// <value>
-        /// A readonly list of warning code - context pairs.
+        /// A readonly dictionary of warning code - context pairs.
         /// The list is guaranteed not to be <c>null</c>,
         /// but it can be empty.
         /// </value>
@@ -461,10 +445,29 @@ namespace WikiClientLibrary.Pages
         Continue
     }
 
+    /// <summary>
+    /// A collection containing the warning messages of file upload.
+    /// </summary>
     public class UploadWarningCollection : WikiReadOnlyDictionary
     {
 
         internal static readonly UploadWarningCollection Empty = new UploadWarningCollection();
+
+        private static readonly Dictionary<string, string> warningMessages = new Dictionary<string, string>
+        {
+            // Referenced from pywikibot, site.py
+            // map API warning codes to user error messages
+            // {0} will be replaced by message string from API responsse
+            {"duplicate-archive", "The file is a duplicate of a deleted file {0}."},
+            {"was-deleted", "The file {0} was previously deleted."},
+            {"emptyfile", "File {0} is empty."},
+            {"exists", "File {0} already exists."},
+            {"duplicate", "Uploaded file is a duplicate of {0}."},
+            {"duplicateversions", "Uploaded file is a duplicate of previous version(s): {0}."},
+            {"badfilename", "Target filename is invalid. Suggested filename is {0}."},
+            {"filetype-unwanted-type", "File {0} type is unwanted type."},
+            {"exists-normalized", "File exists with different extension as \"{0}\"."},
+        };
         private static readonly IList<DateTime> emptyDateTimeList = new DateTime[0];
         private static readonly IList<string> emptyStringList = new string[0];
 
@@ -489,6 +492,11 @@ namespace WikiClientLibrary.Pages
         /// Target filename is invalid.
         /// </summary>
         public bool IsBadFileName => GetValueDirect("badfilename") != null;
+
+        /// <summary>
+        /// The file type is of an unwanted type.
+        /// </summary>
+        public bool IsUnwantedType => GetValueDirect("filetype-unwanted-type") != null;
 
         /// <summary>
         /// The file with the specified title was previously deleted.
@@ -535,6 +543,51 @@ namespace WikiClientLibrary.Pages
         /// <remarks>This property may return empty array, but not <c>null</c>.</remarks>
         public IList<DateTime> DuplicateVersions { get; private set; } = emptyDateTimeList;
 
+        /// <summary>
+        /// Try to convert the specified warning code and context into a user-fridendly
+        /// warning message.
+        /// </summary>
+        /// <param name="warningCode">Case-sensitive warning code.</param>
+        /// <param name="context">The extra content of the warning.</param>
+        /// <returns>
+        /// It tries to match the warningCode with well-known ones, and returns a
+        /// user-fridendly warning message. If there's no match, a string containing
+        /// warningCode and context will be returned.
+        /// </returns>
+        public static string FormatWarning(string warningCode, JToken context)
+        {
+            string contextString = null;
+            if (context != null)
+            {
+                switch (warningCode)
+                {
+                    case "duplicateversions":
+                        var timeStamps = context.Select(v => (DateTime) v["timestamp"]).Take(4).ToArray();
+                        contextString = string.Join(",", timeStamps.Take(3));
+                        if (timeStamps.Length == 4) contextString += ", ...";
+                        break;
+                    case "duplicate":
+                        var titles = context.Select(v => (string) v).Take(4).ToArray();
+                        contextString = string.Join(",", titles.Take(3));
+                        if (titles.Length == 4) contextString += ", ...";
+                        break;
+                    default:
+                        contextString = context.ToString();
+                        break;
+                }
+            }
+            if (warningMessages.TryGetValue(warningCode, out var template))
+                return string.Format(template, contextString);
+            return $"{warningCode}: {contextString}";
+        }
+
+        /// <summary>
+        /// Gets the formatted warning messages, one warning per line.
+        /// </summary>
+        public override string ToString()
+        {
+            return string.Join("\n", this.Select(p => FormatWarning(p.Key, p.Value)));
+        }
     }
 
 }
