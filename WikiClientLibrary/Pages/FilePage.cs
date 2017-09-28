@@ -433,6 +433,13 @@ namespace WikiClientLibrary.Pages
         public IList<DateTime> DuplicateVersions => Warnings.DuplicateVersions;
 
         /// <summary>
+        /// For a successful upload or stashing, gets the revision information
+        /// for the uploaded file.
+        /// </summary>
+        [JsonProperty("imageinfo")]
+        public FileRevision FileRevision { get; private set; }
+
+        /// <summary>
         /// 返回表示当前对象的字符串。
         /// </summary>
         /// <returns>

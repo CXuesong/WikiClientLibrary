@@ -191,6 +191,11 @@ JasonHise grants anyone the right to use this work for any purpose, without any 
             {
                 var result = await chunked.StashNextChunkAsync();
                 Assert.NotEqual(UploadResultCode.Warning, result.ResultCode);
+                if (result.ResultCode == UploadResultCode.Success)
+                {
+                    Assert.True(result.FileRevision.IsAnonymous);
+                    Assert.Equal(file.Sha1, result.FileRevision.Sha1, StringComparer.OrdinalIgnoreCase);
+                }
             } while (!chunked.IsStashed);
             var page = new FilePage(site, "Test image.jpg");
             try
