@@ -928,7 +928,7 @@ namespace WikiClientLibrary.Pages
     /// A read-only collection Containing additional page properties.
     /// </summary>
     [JsonDictionary]
-    public class PagePropertyCollection : IDictionary<string, string>
+    public class PagePropertyCollection : WikiReadOnlyDictionary
     {
         /// <summary>
         /// An empty instance.
@@ -937,11 +937,8 @@ namespace WikiClientLibrary.Pages
 
         static PagePropertyCollection()
         {
-            Empty._IsReadOnly = true;
+            Empty.MakeReadonly();
         }
-
-        private readonly IDictionary<string, string> myDict = new ConcurrentDictionary<string, string>();
-        private bool _IsReadOnly = false;
 
         /// <summary>
         /// Determines whether the page is a disambiguation page.
@@ -950,127 +947,10 @@ namespace WikiClientLibrary.Pages
         /// </summary>
         public bool Disambiguation => this["disambiguation"] != null;
 
-        public string DisplayTitle => this["displaytitle"];
+        public string DisplayTitle => (string)this["displaytitle"];
 
-        public string PageImage => this["page_image"];
+        public string PageImage => (string)this["page_image"];
 
         public bool IsHiddenCategory => this["hiddencat"] != null;
-
-        /// <summary>
-        /// Gets the count of all properties.
-        /// </summary>
-        public int Count => myDict.Count;
-
-        /// <summary>
-        /// Gets the value of the specified property.
-        /// </summary>
-        /// <param name="key">The property name.</param>
-        /// <returns>The <see cref="string"/> representation of the property value, OR <c>null</c> if such property cannot be found.</returns>
-        public string this[string key]
-        {
-            get
-            {
-                string value;
-                if (myDict.TryGetValue(key, out value)) return value;
-                return null;
-            }
-        }
-
-        /// <inheritdoc />
-        public ICollection<string> Keys => myDict.Keys;
-
-        [OnDeserialized]
-        private void OnDeserialized(StreamingContext context)
-        {
-            _IsReadOnly = true;
-        }
-
-        #region Explict Interface Implementations
-
-        /// <inheritdoc />
-        IEnumerator<KeyValuePair<string, string>> IEnumerable<KeyValuePair<string, string>>.GetEnumerator()
-        {
-            return myDict.GetEnumerator();
-        }
-
-        /// <inheritdoc />
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return ((IEnumerable) myDict).GetEnumerator();
-        }
-
-        /// <inheritdoc />
-        void ICollection<KeyValuePair<string, string>>.Add(KeyValuePair<string, string> item)
-        {
-            throw new NotSupportedException();
-        }
-
-        /// <inheritdoc />
-        void ICollection<KeyValuePair<string, string>>.Clear()
-        {
-            throw new NotSupportedException();
-        }
-
-        /// <inheritdoc />
-        bool ICollection<KeyValuePair<string, string>>.Contains(KeyValuePair<string, string> item)
-        {
-            return myDict.Contains(item);
-        }
-
-        /// <inheritdoc />
-        void ICollection<KeyValuePair<string, string>>.CopyTo(KeyValuePair<string, string>[] array, int arrayIndex)
-        {
-            myDict.CopyTo(array, arrayIndex);
-        }
-
-        /// <inheritdoc />
-        bool ICollection<KeyValuePair<string, string>>.Remove(KeyValuePair<string, string> item)
-        {
-            throw new NotSupportedException();
-        }
-
-        /// <inheritdoc />
-        bool ICollection<KeyValuePair<string, string>>.IsReadOnly => _IsReadOnly;
-
-        /// <inheritdoc />
-        void IDictionary<string, string>.Add(string key, string value)
-        {
-            if (_IsReadOnly) throw new NotSupportedException();
-            myDict.Add(key, value);
-        }
-
-        /// <inheritdoc />
-        bool IDictionary<string, string>.Remove(string key)
-        {
-            throw new NotSupportedException();
-        }
-
-        /// <inheritdoc />
-        bool IDictionary<string, string>.ContainsKey(string key)
-        {
-            return myDict.ContainsKey(key);
-        }
-
-        /// <inheritdoc />
-        bool IDictionary<string, string>.TryGetValue(string key, out string value)
-        {
-            return myDict.TryGetValue(key, out value);
-        }
-
-        /// <inheritdoc />
-        string IDictionary<string, string>.this[string key]
-        {
-            get { return this[key]; }
-            set
-            {
-                if (_IsReadOnly) throw new NotSupportedException();
-                myDict[key] = value;
-            }
-        }
-
-        /// <inheritdoc />
-        ICollection<string> IDictionary<string, string>.Values => myDict.Values;
-
-        #endregion
     }
 }
