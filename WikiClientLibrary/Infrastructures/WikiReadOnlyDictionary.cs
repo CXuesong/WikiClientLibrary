@@ -17,7 +17,7 @@ namespace WikiClientLibrary.Infrastructures
     public class WikiReadOnlyDictionary : IDictionary<string, JToken>
     {
 
-        private readonly IDictionary<string, JToken> myDict = new ConcurrentDictionary<string, JToken>();
+        private readonly IDictionary<string, JToken> myDict = new Dictionary<string, JToken>();
         private bool _IsReadOnly = false;
 
         protected void MakeReadonly()
