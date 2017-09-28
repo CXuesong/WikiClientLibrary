@@ -257,6 +257,22 @@ namespace WikiClientLibrary.Pages
     [JsonObject(MemberSerialization.OptIn)]
     public class FileRevision
     {
+
+        /// <summary>
+        /// Whether the file is anonymous.
+        /// </summary>
+        /// <remarks>
+        /// If this revision indicates a stashed file, this property will be <c>true</c>.
+        /// </remarks>
+        [JsonProperty("anon")]
+        public bool IsAnonymous { get; private set; }
+
+        [JsonProperty]
+        public int BitDepth { get; private set; }
+
+        [JsonProperty]
+        public string Mime { get; private set; }
+
         /// <summary>
         /// The time and date of the revision.
         /// </summary>
@@ -266,6 +282,9 @@ namespace WikiClientLibrary.Pages
         [JsonProperty("user")]
         public string UserName { get; private set; }
 
+        /// <summary>
+        /// The comment associated with the upload of this revision.
+        /// </summary>
         [JsonProperty]
         public string Comment { get; private set; }
 
