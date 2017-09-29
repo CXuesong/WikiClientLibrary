@@ -1,19 +1,15 @@
 ﻿// To prevent test cases from making any edits, See WikiSiteTestsBase.cs.
 
 using System;
-using System.Diagnostics;
 using System.IO;
-using System.Threading;
 using System.Threading.Tasks;
-using static UnitTestProject1.Utility;
 using WikiClientLibrary;
-using WikiClientLibrary.Client;
 using WikiClientLibrary.Pages;
 using WikiClientLibrary.Sites;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace UnitTestProject1
+namespace UnitTestProject1.Tests
 {
     /// <summary>
     /// The tests in this class requires a site administrator (i.e. sysop) account.
@@ -41,7 +37,7 @@ namespace UnitTestProject1
                 throw new SkipException(
                     "You need to specify CredentialManager.DirtyTestsEntryPointUrl before running this group of tests.");
             SiteNeedsLogin(CredentialManager.DirtyTestsEntryPointUrl);
-            SiteNeedsLogin(Utility.EntryPointWikiaTest);
+            SiteNeedsLogin(Endpoints.WikiaTest);
         }
 
         private async Task<WikiPage> GetOrCreatePage(WikiSite site, string title)
@@ -87,7 +83,7 @@ The original title of the page is '''{title}'''.
         public async Task LocalFileUploadTest1(string fileName, string imageName)
         {
             const string ReuploadSuffix = "\n\nReuploaded.";
-            var file = GetDemoImage(imageName);
+            var file = Utility.GetDemoImage(imageName);
             var page = new FilePage(await SiteAsync, fileName);
             var result = await page.UploadAsync(new StreamUploadSource(file.ContentStream), file.Description, false);
             // Usually we should notify the user, then perform the re-upload ignoring the warning.
@@ -185,7 +181,7 @@ JasonHise grants anyone the right to use this work for any purpose, without any 
         public async Task ChunkedFileUploadTask()
         {
             var site = await SiteAsync;
-            var file = GetDemoImage("1");
+            var file = Utility.GetDemoImage("1");
             var chunked = new ChunkedUploadSource(site, file.ContentStream) { DefaultChunkSize = 1024 * 4 };
             do
             {

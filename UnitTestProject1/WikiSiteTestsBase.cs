@@ -116,15 +116,15 @@ namespace UnitTestProject1
 #endif
         }
 
-        protected Task<WikiSite> WpTest2SiteAsync => GetWikiSiteAsync(Utility.EntryPointWikipediaTest2);
+        protected Task<WikiSite> WpTest2SiteAsync => GetWikiSiteAsync(Endpoints.WikipediaTest2);
 
-        protected Task<WikiSite> WikiaTestSiteAsync => GetWikiSiteAsync(Utility.EntryPointWikiaTest);
+        protected Task<WikiSite> WikiaTestSiteAsync => GetWikiSiteAsync(Endpoints.WikiaTest);
 
-        protected Task<WikiSite> WpLzhSiteAsync => GetWikiSiteAsync(Utility.EntryWikipediaLzh);
+        protected Task<WikiSite> WpLzhSiteAsync => GetWikiSiteAsync(Endpoints.WikipediaLzh);
 
-        protected Task<WikiSite> WpBetaSiteAsync => GetWikiSiteAsync(Utility.EntryPointWikipediaBetaEn);
+        protected Task<WikiSite> WpBetaSiteAsync => GetWikiSiteAsync(Endpoints.WikipediaBetaEn);
 
-        protected Task<WikiSite> WikimediaCommonsBetaSiteAsync => GetWikiSiteAsync(Utility.EntryPointWikimediaCommonsBeta);
+        protected Task<WikiSite> WikimediaCommonsBetaSiteAsync => GetWikiSiteAsync(Endpoints.WikimediaCommonsBeta);
 
         protected Task<WikiSite> WikiSiteFromNameAsync(string sitePropertyName)
         {

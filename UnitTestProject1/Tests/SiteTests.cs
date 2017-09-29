@@ -1,22 +1,13 @@
 ﻿using System;
 using System.Diagnostics;
-using System.Globalization;
-using System.Linq;
 using System.Reflection;
-using System.Threading;
 using System.Threading.Tasks;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-using Newtonsoft.Json.Serialization;
 using WikiClientLibrary;
-using WikiClientLibrary.Pages;
 using WikiClientLibrary.Sites;
 using Xunit;
 using Xunit.Abstractions;
-using Xunit.Sdk;
-using static UnitTestProject1.Utility;
 
-namespace UnitTestProject1
+namespace UnitTestProject1.Tests
 {
 
     public class SiteTests : WikiSiteTestsBase
@@ -101,7 +92,7 @@ namespace UnitTestProject1
         [Fact]
         public async Task LoginWpTest2_2()
         {
-            var site = await CreateIsolatedWikiSiteAsync(Utility.EntryPointWikipediaTest2);
+            var site = await CreateIsolatedWikiSiteAsync(Endpoints.WikipediaTest2);
             await CredentialManager.LoginAsync(site);
             Assert.True(site.AccountInfo.IsUser);
             Assert.False(site.AccountInfo.IsAnonymous);
@@ -119,7 +110,7 @@ namespace UnitTestProject1
         public async Task LoginWpTest2_3()
         {
             var site = await WikiSite.CreateAsync(CreateWikiClient(),
-                new SiteOptions(EntryPointWikipediaTest2) {ExplicitInfoRefresh = true});
+                new SiteOptions(Endpoints.WikipediaTest2) {ExplicitInfoRefresh = true});
             Assert.Throws<InvalidOperationException>(() => site.SiteInfo.Version);
         }
         
@@ -132,7 +123,7 @@ namespace UnitTestProject1
         public async Task LoginWpTest2_4()
         {
             var site = await WikiSite.CreateAsync(CreateWikiClient(),
-                new SiteOptions(EntryPointWikipediaTest2) {ExplicitInfoRefresh = true});
+                new SiteOptions(Endpoints.WikipediaTest2) {ExplicitInfoRefresh = true});
             await CredentialManager.LoginAsync(site);
             await site.RefreshSiteInfoAsync();
             ShallowTrace(site);
@@ -188,7 +179,7 @@ namespace UnitTestProject1
         [Fact]
         public async Task LoginWikiaTest_1()
         {
-            var site = await CreateIsolatedWikiSiteAsync(Utility.EntryPointWikiaTest);
+            var site = await CreateIsolatedWikiSiteAsync(Endpoints.WikiaTest);
             await CredentialManager.LoginAsync(site);
             Assert.True(site.AccountInfo.IsUser);
             Assert.False(site.AccountInfo.IsAnonymous);
@@ -237,7 +228,7 @@ namespace UnitTestProject1
         }
 
         [Theory]
-        [InlineData(Utility.EntryPointWikipediaTest2)]
+        [InlineData(Endpoints.WikipediaTest2)]
         public async Task InterlacingLoginLogoutTest(string endpointUrl)
         {
             // The two sites belong to different WikiClient instances.
@@ -257,7 +248,7 @@ namespace UnitTestProject1
         public async Task AccountAssertionTest1()
         {
             // This method will militate the Site instance…
-            var site = await CreateIsolatedWikiSiteAsync(EntryPointWikipediaTest2);
+            var site = await CreateIsolatedWikiSiteAsync(Endpoints.WikipediaTest2);
             Assert.False(site.AccountInfo.IsUser, "You should have not logged in… Wierd.");
             // Make believe that we're bots…
             typeof(AccountInfo).GetRuntimeProperty("Groups").SetValue(site.AccountInfo, new[] {"*", "user", "bot"});
@@ -270,7 +261,7 @@ namespace UnitTestProject1
         public async Task AccountAssertionTest2()
         {
             // This method will militate the Site instance…
-            var site = await CreateIsolatedWikiSiteAsync(EntryPointWikipediaTest2);
+            var site = await CreateIsolatedWikiSiteAsync(Endpoints.WikipediaTest2);
             site.AccountAssertionFailureHandler = new MyAccountAssertionFailureHandler(async s =>
             {
                 await CredentialManager.LoginAsync(site);

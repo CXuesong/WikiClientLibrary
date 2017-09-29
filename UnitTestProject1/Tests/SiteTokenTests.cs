@@ -1,22 +1,21 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Reflection;
-using System.Text;
 using System.Threading.Tasks;
 using WikiClientLibrary.Pages;
 using WikiClientLibrary.Sites;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace UnitTestProject1
+namespace UnitTestProject1.Tests
 {
     public class SiteTokenTests : WikiSiteTestsBase
     {
         /// <inheritdoc />
         public SiteTokenTests(ITestOutputHelper output) : base(output)
         {
-            SiteNeedsLogin(Utility.EntryPointWikipediaTest2);
-            SiteNeedsLogin(Utility.EntryPointWikiaTest);
+            SiteNeedsLogin(Endpoints.WikipediaTest2);
+            SiteNeedsLogin(Endpoints.WikiaTest);
         }
 
         [SkippableTheory]
@@ -56,8 +55,8 @@ namespace UnitTestProject1
         }
 
         [SkippableTheory]
-        [InlineData(Utility.EntryPointWikipediaTest2, "Project:Sandbox")]
-        [InlineData(Utility.EntryPointWikiaTest, "Project:Sandbox")]
+        [InlineData(Endpoints.WikipediaTest2, "Project:Sandbox")]
+        [InlineData(Endpoints.WikiaTest, "Project:Sandbox")]
         public async Task BadTokenTest(string endpointUrl, string sandboxPageTitle)
         {
             const string invalidToken = @"INVALID_TOKEN+\";

@@ -19,23 +19,6 @@ namespace UnitTestProject1
 {
     internal static class Utility
     {
-        public const string EntryPointWikipediaTest2 = "https://test2.wikipedia.org/w/api.php";
-
-        /// <summary>
-        /// WMF beta test site. We only apply the tests that cannot be performed in test2.wikipedia.org (e.g. Flow boards).
-        /// </summary>
-        public const string EntryPointWikipediaBetaEn = "https://en.wikipedia.beta.wmflabs.org/w/api.php";
-
-        /// <summary>
-        /// This is NOT a test site so do not make modifications to the site.
-        /// </summary>
-        public const string EntryWikipediaLzh = "https://zh-classical.wikipedia.org/w/api.php";
-
-        public const string EntryPointWikimediaCommonsBeta = "https://commons.wikimedia.beta.wmflabs.org/w/api.php";
-
-        // TODO This is a rather unofficial test site. Replace it in the future.
-        public const string EntryPointWikiaTest = "http://mediawiki119.wikia.com/api.php";
-
         private static string DumpObject(object obj, int indention, int maxDepth)
         {
             if (obj == null) return "null";

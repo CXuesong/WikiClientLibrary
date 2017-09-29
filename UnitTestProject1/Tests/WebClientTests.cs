@@ -1,16 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Threading;
+﻿using System.Threading;
 using System.Threading.Tasks;
 using WikiClientLibrary;
 using WikiClientLibrary.Client;
 using Xunit;
 using Xunit.Abstractions;
-using static UnitTestProject1.Utility;
 
-namespace UnitTestProject1
+namespace UnitTestProject1.Tests
 {
 
     public class WebClientTests : WikiSiteTestsBase
@@ -25,10 +20,10 @@ namespace UnitTestProject1
         {
             var client = WikiClient;
             var query = new {action = "query", meta = "siteinfo"};
-            var json1 = await client.GetJsonAsync(EntryPointWikipediaTest2,
+            var json1 = await client.GetJsonAsync(Endpoints.WikipediaTest2,
                 new WikiFormRequestMessage(query),
                 CancellationToken.None);
-            var json2 = await client.GetJsonAsync(EntryPointWikipediaTest2,
+            var json2 = await client.GetJsonAsync(Endpoints.WikipediaTest2,
                 new WikiFormRequestMessage(query, true),
                 CancellationToken.None);
             Output.WriteLine(json1.ToString());
@@ -39,7 +34,7 @@ namespace UnitTestProject1
         {
             var client = WikiClient;
             await Assert.ThrowsAsync<InvalidActionException>(() =>
-                client.GetJsonAsync(EntryPointWikipediaTest2,
+                client.GetJsonAsync(Endpoints.WikipediaTest2,
                     new WikiFormRequestMessage(new
                     {
                         action = "invalid_action_test",

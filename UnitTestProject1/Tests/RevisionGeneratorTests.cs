@@ -1,15 +1,12 @@
 ﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
-using WikiClientLibrary;
 using WikiClientLibrary.Generators;
 using WikiClientLibrary.Pages;
-using WikiClientLibrary.Sites;
 using Xunit;
 using Xunit.Abstractions;
-using static UnitTestProject1.Utility;
 
-namespace UnitTestProject1
+namespace UnitTestProject1.Tests
 {
 
     public class RevisionGeneratorTests : WikiSiteTestsBase

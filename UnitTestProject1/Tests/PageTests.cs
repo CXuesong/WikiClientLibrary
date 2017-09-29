@@ -3,17 +3,15 @@
 //          DRY_RUN
 
 using System;
-using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using WikiClientLibrary;
 using WikiClientLibrary.Generators;
 using WikiClientLibrary.Pages;
-using WikiClientLibrary.Sites;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace UnitTestProject1
+namespace UnitTestProject1.Tests
 {
 
     public class PageTests : WikiSiteTestsBase
@@ -24,9 +22,9 @@ namespace UnitTestProject1
         /// <inheritdoc />
         public PageTests(ITestOutputHelper output) : base(output)
         {
-            SiteNeedsLogin(Utility.EntryPointWikipediaTest2);
-            SiteNeedsLogin(Utility.EntryPointWikiaTest);
-            SiteNeedsLogin(Utility.EntryWikipediaLzh);
+            SiteNeedsLogin(Endpoints.WikipediaTest2);
+            SiteNeedsLogin(Endpoints.WikiaTest);
+            SiteNeedsLogin(Endpoints.WikipediaLzh);
         }
 
         [Fact]

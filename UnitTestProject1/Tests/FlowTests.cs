@@ -1,17 +1,11 @@
-﻿using System;
-using System.Text;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
 using System.Threading.Tasks;
 using WikiClientLibrary;
 using WikiClientLibrary.Flow;
-using WikiClientLibrary.Pages;
-using WikiClientLibrary.Sites;
 using Xunit;
 using Xunit.Abstractions;
-using static UnitTestProject1.Utility;
 
-namespace UnitTestProject1
+namespace UnitTestProject1.Tests
 {
     /// <summary>
     /// FlowTests 的摘要说明

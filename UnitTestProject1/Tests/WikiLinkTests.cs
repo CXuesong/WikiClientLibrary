@@ -1,13 +1,10 @@
 ﻿using System;
 using System.Threading.Tasks;
 using WikiClientLibrary;
-using WikiClientLibrary.Pages;
-using WikiClientLibrary.Sites;
 using Xunit;
 using Xunit.Abstractions;
-using static UnitTestProject1.Utility;
 
-namespace UnitTestProject1
+namespace UnitTestProject1.Tests
 {
 
     public class WikiLinkTests : WikiSiteTestsBase
