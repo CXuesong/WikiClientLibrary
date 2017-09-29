@@ -1,0 +1,11 @@
+# Only include files for hosting a static website
+
+.vs/
+_private/
+
+*.ch[mw]
+*.asp
+*.aspx
+*.php
+*.log
+Web.config
