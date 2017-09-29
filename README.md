@@ -1,12 +1,18 @@
 # Wiki Client Library
 
-A .NET Standard asynchronous MediaWiki API client library for wiki sites. This library aims for human users, as well as bots.
+A hand-crafted asynchronous [MediaWiki](https://www.mediawiki.org/) API client library for wiki sites (including [Wikipedia](https://www.wikipedia.org/) and its sister projects, as well as [Wikia](https://cxuesong.github.io/WikiClientLibrary/html/community.wikia.com)). This library aims for human users, as well as bots.
 
-This package is now available on NuGet. You may install the package using the following command in the Package Management Console
+The package is now available on NuGet. You may install the package using the following command in the Package Management Console
 
 ```powershell
 Install-Package CXuesong.MW.WikiClientLibrary
 ```
+
+If you bump into bugs, have any suggestions or need a feature, feel free to open an issue or leave me a message on [This blog page](http://cxuesong.com/archives/747).
+
+The change logs are on the [releases page](https://github.com/CXuesong/WikiClientLibrary/releases).
+
+For the API references of the latest pre-release, see <https://cxuesong.github.io/WikiClientLibrary>.
 
 Before running the test cases, please take a look at the [last section](#setting-up-test-cases).
 
@@ -23,11 +29,12 @@ This portable & asynchronous MediaWiki API client provides an easy and asynchron
 *   Queries and edits for pages, including standard pages, category pages, and file pages.
 
     *   Queries for category statistical info and its members.
-    *   Queries for basic file info, and file uploading.
+    *   Queries for basic file info.
+    *   file uploading with chunked uploading support.
 
 *   Login/logout via simple asynchronous functions, as shown in the demo below.
 
-    *   Client code has access to `CookieContainer`, and have chance to persist it.
+    *   Client code has access to `CookieContainer`, and therefore has chance to persist it.
 
 *   Tokens are hidden in the library functions, so that client won't bother to retrieve them over and over again.
 
@@ -39,7 +46,6 @@ This portable & asynchronous MediaWiki API client provides an easy and asynchron
     *   Page parsing
     *   Patrol
 
-    ​
 
 ## A Brief Demo
 
@@ -339,12 +345,13 @@ Before you can run most of the test cases, please create a new file named `crede
 ```c#
 using System;
 using WikiClientLibrary;
+using WikiClientLibrary.Sites;
 
 namespace UnitTestProject1
 {
     partial class CredentialManager
     {
-        static partial void LoginCore(Site site)
+        static partial void LoginCore(WikiSite site)
         {
             var url = site.ApiEndpoint;
           // We'll make changes to test2.wikipedia.org
