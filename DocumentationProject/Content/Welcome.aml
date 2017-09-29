@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<topic id="52302a23-6744-44bb-9808-770fac48aaba" revisionNumber="1">
+  <developerConceptualDocument xmlns="http://ddue.schemas.microsoft.com/authoring/2003/5" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <introduction>
+      <para>Welcome to Wiki Client Library!</para>
+      <para>
+        Wiki Client Library is a hand-crafted asynchronous <externalLink>
+          <linkText>MediaWiki</linkText>
+          <linkUri>https://www.mediawiki.org/</linkUri>
+        </externalLink> API client library for wiki sites (including <externalLink>
+          <linkText>Wikipedia</linkText>
+          <linkUri>https://www.wikipedia.org/</linkUri>
+        </externalLink> and its sister projects, as well as <externalLink>
+          <linkText>Wikia</linkText>
+          <linkUri>community.wikia.com</linkUri>
+        </externalLink>). This library aims for human users, as well as bots.
+
+        This package is now available on NuGet. You may install the package using the following command in the Package Management Console
+      </para>
+      <code language="powershell">
+        Install-Package CXuesong.MW.WikiClientLibrary -Pre
+      </code>
+    </introduction>
+
+    <section>
+      <title>About the help</title>
+      <content>
+        <para>This documentation contains the auto-generated API reference for WCL. For more conceptual topics, see <externalLink>
+          <linkText>"Wiki" tab on GitHub</linkText>
+          <linkUri>https://github.com/CXuesong/WikiClientLibrary/wiki</linkUri>
+        </externalLink>. To help improving this API reference, you may add XML documentation to the respective members in the source code,
+        and open a <externalLink>
+            <linkText>pull request</linkText>
+            <linkUri>https://github.com/CXuesong/WikiClientLibrary/pulls</linkUri>
+          </externalLink>.
+      </para>
+      </content>
+    </section>
+
+    <relatedTopics>
+      <externalLink>
+        <linkText>Wiki Client Library on GitHub</linkText>
+        <linkUri>https://github.com/CXuesong/WikiClientLibrary</linkUri>
+      </externalLink>
+    </relatedTopics>
+  </developerConceptualDocument>
+</topic>
