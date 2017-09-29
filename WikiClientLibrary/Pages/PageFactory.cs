@@ -4,6 +4,7 @@ using System.Linq;
 using Newtonsoft.Json.Linq;
 using WikiClientLibrary.Flow;
 using WikiClientLibrary.Sites;
+using WikiClientLibrary.Wikibase;
 
 namespace WikiClientLibrary.Pages
 {
@@ -86,15 +87,24 @@ namespace WikiClientLibrary.Pages
                     WikiPage newInst;
                     if (page.Value["categoryinfo"] != null)
                         newInst = new CategoryPage(site);
-                    else if ((string) page.Value["contentmodel"] == ContentModels.FlowBoard)
-                    {
-                        if ((int) page.Value["ns"] == FlowNamespaces.Topic)
-                            newInst = new Topic(site);
-                        else
-                            newInst = new Board(site);
-                    }
                     else
-                        newInst = new WikiPage(site);
+                    {
+                        switch ((string) page.Value["contentmodel"])
+                        {
+                            case ContentModels.FlowBoard:
+                                if ((int) page.Value["ns"] == FlowNamespaces.Topic)
+                                    newInst = new Topic(site);
+                                else
+                                    newInst = new Board(site);
+                                break;
+                            case ContentModels.WikibaseItem:
+                                newInst = new WikibaseItem(site);
+                                break;
+                            default:
+                                newInst = new WikiPage(site);
+                                break;
+                        }
+                    }
                     newInst.LoadFromJson(page, options);
                     return newInst;
                 }).ToList();

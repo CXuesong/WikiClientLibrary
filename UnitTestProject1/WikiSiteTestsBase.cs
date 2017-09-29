@@ -126,6 +126,10 @@ namespace UnitTestProject1
 
         protected Task<WikiSite> WikimediaCommonsBetaSiteAsync => GetWikiSiteAsync(Endpoints.WikimediaCommonsBeta);
 
+        protected Task<WikiSite> WikidataSiteAsync => GetWikiSiteAsync(Endpoints.Wikidata);
+
+        protected Task<WikiSite> WikidataBetaSiteAsync => GetWikiSiteAsync(Endpoints.WikidataBeta);
+
         protected Task<WikiSite> WikiSiteFromNameAsync(string sitePropertyName)
         {
             return (Task<WikiSite>) GetType()

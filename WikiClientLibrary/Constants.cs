@@ -73,7 +73,13 @@ namespace WikiClientLibrary
         /// Normal wikitext.
         /// </summary>
         public const string Wikitext = "wikitext";
+        /// <summary>
+        /// Javascript, as used in [[MediaWiki:Common.js]].
+        /// </summary>
         public const string JavaScript = "javascript";
+        /// <summary>
+        /// CSS, as used in [[MediaWiki:Common.js]].
+        /// </summary>
         public const string Css = "css";
         /// <summary>
         /// Scribunto LUA module.
@@ -84,6 +90,10 @@ namespace WikiClientLibrary
         /// </summary>
         /// <remarks>See https://www.mediawiki.org/wiki/Extension:Flow/API .</remarks>
         public const string FlowBoard = "flow-board";
+        /// <summary>
+        /// JSON that describes an entity in Wikibase.
+        /// </summary>
+        public const string WikibaseItem = "wikibase-item";
     }
 
 }

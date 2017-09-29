@@ -20,6 +20,10 @@ namespace UnitTestProject1
 
         public const string WikimediaCommonsBeta = "https://commons.wikimedia.beta.wmflabs.org/w/api.php";
 
+        public const string Wikidata = "https://www.wikidata.org/w/api.php";
+
+        public const string WikidataBeta = "https://www.wikidata.org/w/api.php";
+
         // TODO This is a rather unofficial test site. Replace it in the future.
 
         public const string WikiaTest = "http://mediawiki119.wikia.com/api.php";

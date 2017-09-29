@@ -26,6 +26,7 @@ namespace WikiClientLibrary.Client
 
         private static int idCounter;
 
+        /// <param name="id">Id of the request, for tracing. If left <c>null</c>, an automatically-generated id will be used.</param>
         public WikiRequestMessage(string id)
         {
             Id = id ?? NextId();
@@ -38,7 +39,7 @@ namespace WikiClientLibrary.Client
         }
 
         /// <summary>
-        /// Id of the request. For tracing.
+        /// Id of the request, for tracing.
         /// </summary>
         public string Id { get; }
 
@@ -174,19 +175,26 @@ namespace WikiClientLibrary.Client
 
         private bool hasUnrecoverableFields = false;
 
+        /// <inheritdoc cref="WikiFormRequestMessage(string,WikiFormRequestMessage,object,bool)"/>
         public WikiFormRequestMessage(object fieldCollection) : this(null, null, fieldCollection, false)
         {
         }
 
+        /// <inheritdoc cref="WikiFormRequestMessage(string,WikiFormRequestMessage,object,bool)"/>
         public WikiFormRequestMessage(object fieldCollection, bool forceMultipartFormData) : this(null, null,
             fieldCollection, forceMultipartFormData)
         {
         }
 
+        /// <inheritdoc cref="WikiFormRequestMessage(string,WikiFormRequestMessage,object,bool)"/>
         public WikiFormRequestMessage(string id, object fieldCollection) : this(id, null, fieldCollection, false)
         {
         }
 
+        /// <inheritdoc />
+        /// <param name="baseForm">The form from which this new instance copies the fields. Can be <c>null</c>.</param>
+        /// <param name="fieldCollection">A dictionary or anonymous object containing the key-value pairs.</param>
+        /// <param name="forceMultipartFormData">Forces the message to be marshaled as multipart/form-data, regardless of the fields.</param>
         public WikiFormRequestMessage(string id, WikiFormRequestMessage baseForm,
             object fieldCollection, bool forceMultipartFormData) : base(id)
         {

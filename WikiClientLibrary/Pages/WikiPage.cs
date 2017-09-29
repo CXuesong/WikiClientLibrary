@@ -105,6 +105,10 @@ namespace WikiClientLibrary.Pages
         /// Gets whether the page exists.
         /// For category, gets whether the categories description page exists.
         /// </summary>
+        /// <remarks>
+        /// For images existing on Wikimedia Commons, this property will return <c>false</c>,
+        /// because they doesn't exist on this site.
+        /// </remarks>
         public bool Exists { get; private set; }
 
         /// <summary>
