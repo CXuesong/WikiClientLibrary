@@ -22,7 +22,9 @@ namespace UnitTestProject1
 
         public const string Wikidata = "https://www.wikidata.org/w/api.php";
 
-        public const string WikidataBeta = "https://www.wikidata.org/w/api.php";
+        public const string WikidataTest = "https://test.wikidata.org/w/api.php";
+
+        public const string WikidataBeta = "https://wikidata.beta.wmflabs.org/w/api.php";
 
         // TODO This is a rather unofficial test site. Replace it in the future.
 
