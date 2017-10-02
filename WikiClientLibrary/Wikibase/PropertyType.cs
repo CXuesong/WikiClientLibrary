@@ -87,5 +87,31 @@ namespace WikiClientLibrary.Wikibase
                 return obj;
             });
 
+        public static PropertyType Amount { get; } = new DelegatePropertyType<WikibaseAmount>("amount",
+            e =>
+            {
+                var amount = Convert.ToDouble((string) e["amount"]);
+                var unit = (string) e["unit"];
+                var lb = (string) e["lowerBound"];
+                var ub = (string) e["upperBound"];
+                return new WikibaseAmount(amount,
+                    lb == null ? amount : Convert.ToDouble(lb),
+                    ub == null ? amount : Convert.ToDouble(ub),
+                    WikibaseUri.Get(unit));
+            }, v =>
+            {
+                var obj = new JObject
+                {
+                    {"amount", v.Amount.ToString()}, // TODO positive sign
+                    {"unit", v.Unit.Uri},
+                };
+                if (v.HasError)
+                {
+                    obj.Add("lowerBound", v.LowerBound.ToString());
+                    obj.Add("upperBound", v.UpperBound.ToString());
+                }
+                return obj;
+            });
+
     }
 }
