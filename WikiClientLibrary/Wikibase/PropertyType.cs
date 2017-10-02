@@ -72,7 +72,7 @@ namespace WikiClientLibrary.Wikibase
                 var after = (int) e["after"];
                 var precision = (WikibaseTimePrecision) (int) e["precision"];
                 var calendar = (string) e["calendarmodel"];
-                return new WikibaseTime(time, before, after, timeZone, precision, calendar);
+                return new WikibaseTime(time, before, after, timeZone, precision, WikibaseUri.Get(calendar));
             }, v =>
             {
                 var obj = new JObject
@@ -82,7 +82,7 @@ namespace WikiClientLibrary.Wikibase
                     {"before", v.Before},
                     {"after", v.After},
                     {"precision", (int) v.Precision},
-                    {"calendarmodel", v.CalendarModel}
+                    {"calendarmodel", v.CalendarModel.Uri}
                 };
                 return obj;
             });

@@ -14,7 +14,7 @@ namespace WikiClientLibrary.Wikibase
 
         public WikibaseTime(int year, int month, int day, int hour, int minute, int second,
             int before, int after, int timeZone,
-            WikibaseTimePrecision precision, string calendarModel)
+            WikibaseTimePrecision precision, WikibaseUri calendarModel)
         {
             Year = year;
             Month = month;
@@ -33,7 +33,8 @@ namespace WikiClientLibrary.Wikibase
         private static readonly Regex ISO8601Matcher =
             new Regex(@"^\s*(?<Y>[\+-]?\d{1,9})-(?<M>\d\d?)-(?<D>\d\d?)T(?<H>\d\d?)-(?<m>\d\d?)-(?<S>\d\d?)(?<K>Z|[\+-]\d\d?:\d\d?)?\s*$");
 
-        public WikibaseTime(string dateTime, int before, int after, int timeZone, WikibaseTimePrecision precision, string calendarModel)
+        public WikibaseTime(string dateTime, int before, int after, int timeZone,
+            WikibaseTimePrecision precision, WikibaseUri calendarModel)
         {
             if (dateTime == null) throw new ArgumentNullException(nameof(dateTime));
             var dateTimeMatch = ISO8601Matcher.Match(dateTime);
@@ -102,7 +103,7 @@ namespace WikiClientLibrary.Wikibase
         /// <summary>
         /// URI identifying the calendar model.
         /// </summary>
-        public string CalendarModel { get; }
+        public WikibaseUri CalendarModel { get; }
 
         public string ToIso8601UtcString()
         {
