@@ -55,6 +55,9 @@ namespace WikiClientLibrary.Wikibase
         public static PropertyType WikibaseItem { get; } = new DelegatePropertyType<string>("wikibase-item",
             e => (string) e, v => v);
 
+        public static PropertyType WikibaseProperty { get; } = new DelegatePropertyType<string>("wikibase-property",
+            e => (string)e, v => v);
+
         public static PropertyType String { get; } = new DelegatePropertyType<string>("string",
             e => (string) e, v => v);
 
