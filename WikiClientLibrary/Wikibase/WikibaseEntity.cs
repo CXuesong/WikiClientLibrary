@@ -26,6 +26,9 @@ namespace WikiClientLibrary.Wikibase
         private static readonly IDictionary<string, EntitySiteLink> emptySiteLinks =
             new ReadOnlyDictionary<string, EntitySiteLink>(new Dictionary<string, EntitySiteLink>());
 
+        private static readonly IDictionary<string, ICollection<WikibaseClaim>> emptyClaims =
+            new ReadOnlyDictionary<string, ICollection<WikibaseClaim>>(new Dictionary<string, ICollection<WikibaseClaim>>());
+
         private ILogger logger;
 
         public WikibaseEntity(WikiSite site, string id)
@@ -58,6 +61,8 @@ namespace WikiClientLibrary.Wikibase
 
         public IDictionary<string, EntitySiteLink> SiteLinks { get; private set; }
 
+        public IDictionary<string, ICollection<WikibaseClaim>> Claims { get; private set; }
+
         public EntityQueryOptions QueryOptions { get; private set; }
 
         public Task RefreshAsync()
@@ -77,27 +82,27 @@ namespace WikiClientLibrary.Wikibase
 
         public Task RefreshAsync(EntityQueryOptions options, ICollection<string> languages, CancellationToken cancellationToken)
         {
-            return WikibaseRequestHelper.RefreshEntitiesAsync(new[] {this}, options, languages, cancellationToken);
+            return WikibaseRequestHelper.RefreshEntitiesAsync(new[] { this }, options, languages, cancellationToken);
         }
 
         private static IDictionary<string, string> ParseMultiLanguageValues(JObject jdict)
         {
             if (jdict == null || !jdict.HasValues) return emptyStringDict;
             return new ReadOnlyDictionary<string, string>(jdict.PropertyValues()
-                .ToDictionary(t => (string) t["language"], t => (string) t["value"], StringComparer.OrdinalIgnoreCase));
+                .ToDictionary(t => (string)t["language"], t => (string)t["value"], StringComparer.OrdinalIgnoreCase));
         }
 
         private static IDictionary<string, ICollection<string>> ParseMultiLanguageMultiValues(JObject jdict)
         {
             if (jdict == null || !jdict.HasValues) return emptyStringsDict;
             return new ReadOnlyDictionary<string, ICollection<string>>(jdict.Properties()
-                .ToDictionary(p => p.Name, p => (ICollection<string>) new ReadOnlyCollection<string>(
-                    p.Value.Select(t => (string) t["value"]).ToList()), StringComparer.OrdinalIgnoreCase));
+                .ToDictionary(p => p.Name, p => (ICollection<string>)new ReadOnlyCollection<string>(
+                    p.Value.Select(t => (string)t["value"]).ToList()), StringComparer.OrdinalIgnoreCase));
         }
 
         internal void LoadFromJson(JToken entity, EntityQueryOptions options)
         {
-            var id = (string) entity["id"];
+            var id = (string)entity["id"];
             Debug.Assert(id != null);
             if ((options & EntityQueryOptions.SupressRedirects) != EntityQueryOptions.SupressRedirects
                 && Id != null && Id != id)
@@ -118,23 +123,23 @@ namespace WikiClientLibrary.Wikibase
             SiteLinks = null;
             if (Exists)
             {
-                Type = (string) entity["type"];
+                Type = (string)entity["type"];
                 if ((options & EntityQueryOptions.FetchInfo) == EntityQueryOptions.FetchInfo)
                 {
-                    PageId = (int) entity["pageid"];
-                    NamespaceId = (int) entity["ns"];
-                    Title = (string) entity["title"];
-                    LastModified = (DateTime) entity["modified"];
+                    PageId = (int)entity["pageid"];
+                    NamespaceId = (int)entity["ns"];
+                    Title = (string)entity["title"];
+                    LastModified = (DateTime)entity["modified"];
                 }
                 if ((options & EntityQueryOptions.FetchLabels) == EntityQueryOptions.FetchLabels)
-                    Labels = ParseMultiLanguageValues((JObject) entity["labels"]);
+                    Labels = ParseMultiLanguageValues((JObject)entity["labels"]);
                 if ((options & EntityQueryOptions.FetchAliases) == EntityQueryOptions.FetchAliases)
-                    Aliases = ParseMultiLanguageMultiValues((JObject) entity["aliases"]);
+                    Aliases = ParseMultiLanguageMultiValues((JObject)entity["aliases"]);
                 if ((options & EntityQueryOptions.FetchDescriptions) == EntityQueryOptions.FetchDescriptions)
-                    Descriptions = ParseMultiLanguageValues((JObject) entity["descriptions"]);
+                    Descriptions = ParseMultiLanguageValues((JObject)entity["descriptions"]);
                 if ((options & EntityQueryOptions.FetchSiteLinks) == EntityQueryOptions.FetchSiteLinks)
                 {
-                    var jlinks = (JObject) entity["sitelinks"];
+                    var jlinks = (JObject)entity["sitelinks"];
                     if (jlinks == null || !jlinks.HasValues)
                     {
                         SiteLinks = emptySiteLinks;
@@ -143,6 +148,22 @@ namespace WikiClientLibrary.Wikibase
                     {
                         SiteLinks = new ReadOnlyDictionary<string, EntitySiteLink>(
                             jlinks.ToObject<IDictionary<string, EntitySiteLink>>(Utility.WikiJsonSerializer));
+                    }
+                }
+                if ((options & EntityQueryOptions.FetchClaims) == EntityQueryOptions.FetchClaims)
+                {
+                    var jclaims = (JObject)entity["claims"];
+                    if (jclaims == null || !jclaims.HasValues)
+                    {
+                        Claims = emptyClaims;
+                    }
+                    else
+                    {
+                        // { claims : { P47 : [ {}, {}, ... ], P105 : ... } }
+                        Claims = new ReadOnlyDictionary<string, ICollection<WikibaseClaim>>(
+                            jclaims.Properties().ToDictionary(p => p.Name,
+                                p => (ICollection<WikibaseClaim>) new ReadOnlyCollection<WikibaseClaim>(
+                                    p.Value.Select(WikibaseClaim.FromJson).ToList())));
                     }
                 }
             }
@@ -159,10 +180,12 @@ namespace WikiClientLibrary.Wikibase
         FetchLabels = 2,
         FetchAliases = 4,
         FetchDescriptions = 8,
+
         /// <summary>
         /// Fetch associated wiki site links.
         /// </summary> 
         FetchSiteLinks = 0x10,
+
         /// <summary>
         /// Fetch associated wiki site links, along with link URLs.
         /// This option implies <see cref="FetchSiteLinks"/>.
@@ -170,9 +193,14 @@ namespace WikiClientLibrary.Wikibase
         FetchSiteLinksUrl = 0x20 | FetchSiteLinks,
 
         /// <summary>
+        /// Fetch claims on this entity.
+        /// </summary>
+        FetchClaims = 0x40,
+
+        /// <summary>
         /// Fetch all the properties that is supported by WCL.
         /// </summary>
-        FetchAllProperties = FetchInfo | FetchLabels | FetchAliases | FetchDescriptions | FetchSiteLinks,
+        FetchAllProperties = FetchInfo | FetchLabels | FetchAliases | FetchDescriptions | FetchSiteLinksUrl | FetchClaims,
 
         /// <summary>
         /// Do not resolve redirect. Treat them like deleted entities.

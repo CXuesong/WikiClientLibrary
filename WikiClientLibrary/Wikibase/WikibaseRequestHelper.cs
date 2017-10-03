@@ -39,6 +39,7 @@ namespace WikiClientLibrary.Wikibase
                         if ((propValue & EntityQueryOptions.FetchDescriptions) == EntityQueryOptions.FetchDescriptions) props += "|descriptions";
                         if ((propValue & EntityQueryOptions.FetchSiteLinks) == EntityQueryOptions.FetchSiteLinks) props += "|sitelinks";
                         if ((propValue & EntityQueryOptions.FetchSiteLinksUrl) == EntityQueryOptions.FetchSiteLinksUrl) props += "|sitelinks/urls";
+                        if ((propValue & EntityQueryOptions.FetchClaims) == EntityQueryOptions.FetchClaims) props += "|claims";
                         Debug.Assert(props != null);
                         props = props.Substring(1);
                         propdict.Add(propValue, props);

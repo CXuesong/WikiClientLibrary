@@ -3,18 +3,16 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Linq;
 
 namespace WikiClientLibrary.Wikibase
 {
-    
+
     public sealed class WikibaseClaim
     {
-       
+
         public WikibaseSnak MainSnak { get; set; }
-        
+
         /// <summary>Claim ID.</summary>
         public string Id { get; set; }
 
@@ -26,12 +24,15 @@ namespace WikiClientLibrary.Wikibase
 
         public IList<WikibaseClaimReference> References { get; set; }
 
-        internal static List<T> ToOrderedList<T>(JObject dict, JArray order, Func<JToken, T> valueSelector)
+        internal static List<T> ToOrderedList<T>(JObject dict, JArray order, Func<JToken, IEnumerable<T>> valueSelector)
         {
+            // Before #84516 Wikibase did not implement snaks-order.
+            // https://gerrit.wikimedia.org/r/#/c/84516/
+            Debug.Assert(dict != null);
             if (order == null)
-                return dict.Values().Select(valueSelector).ToList();
+                return dict.Values().SelectMany(valueSelector).ToList();
             Debug.Assert(order.Count == dict.Count);
-            return order.Select(key => dict[(string) key]).Select(valueSelector).ToList();
+            return order.Select(key => dict[(string) key]).SelectMany(valueSelector).ToList();
         }
 
         internal static WikibaseClaim FromJson(JToken claim)
@@ -48,7 +49,10 @@ namespace WikiClientLibrary.Wikibase
             MainSnak = claim["mainsnak"] == null ? null : WikibaseSnak.FromJson(claim["mainsnak"]);
             Id = (string) claim["id"];
             Rank = (string) claim["rank"];
-            Qualifiers = ToOrderedList((JObject) claim["qualifiers"], (JArray) claim["qualifiers-order"], WikibaseSnak.FromJson);
+            Qualifiers = claim["qualifiers"] == null
+                ? null
+                : ToOrderedList((JObject) claim["qualifiers"], (JArray) claim["qualifiers-order"],
+                    jsnaks => jsnaks.Select(WikibaseSnak.FromJson));
             References = claim["references"]?.Select(WikibaseClaimReference.FromJson).ToList();
         }
 
@@ -58,7 +62,7 @@ namespace WikiClientLibrary.Wikibase
     {
 
         public IList<WikibaseSnak> Snaks { get; set; }
-        
+
         public string Hash { get; set; }
 
         internal static WikibaseClaimReference FromJson(JToken claim)
@@ -72,7 +76,10 @@ namespace WikiClientLibrary.Wikibase
         internal void LoadFromJson(JToken reference)
         {
             Debug.Assert(reference != null);
-            Snaks = WikibaseClaim.ToOrderedList((JObject) reference["snaks"], (JArray) reference["snaks-order"], WikibaseSnak.FromJson);
+            Snaks = reference["snaks"] == null
+                ? null
+                : WikibaseClaim.ToOrderedList((JObject) reference["snaks"], (JArray) reference["snaks-order"],
+                    jsnaks => jsnaks.Select(WikibaseSnak.FromJson));
             Hash = (string) reference["hash"];
         }
 
@@ -85,7 +92,7 @@ namespace WikiClientLibrary.Wikibase
 
         private object _DataValue;
         private JToken _RawDataValue;
-        
+
         /// <summary>Snak type.</summary>
         public SnakType SnakType { get; set; }
 
@@ -177,12 +184,12 @@ namespace WikiClientLibrary.Wikibase
         internal void LoadFromJson(JToken snak)
         {
             Debug.Assert(snak != null);
-            SnakType = ParseSnakType((string)snak["snaktype"]);
-            PropertyId = (string)snak["property"];
-            Hash = (string)snak["hash"];
+            SnakType = ParseSnakType((string) snak["snaktype"]);
+            PropertyId = (string) snak["property"];
+            Hash = (string) snak["hash"];
             RawDataValue = snak["datavalue"];
-            DataType = PropertyTypes.Get((string)snak["datatype"])
-                       ?? MissingPropertyType.Get((string)snak["datatype"]);
+            DataType = PropertyTypes.Get((string) snak["datatype"])
+                       ?? MissingPropertyType.Get((string) snak["datatype"], (string) snak["value"]?["type"]);
         }
     }
 
@@ -190,8 +197,10 @@ namespace WikiClientLibrary.Wikibase
     {
         /// <summary>Custom value.</summary>
         Value = 0,
+
         /// <summary>Unknown value.</summary>
         SomeValue,
+
         /// <summary>No value.</summary>
         NoValue,
     }
