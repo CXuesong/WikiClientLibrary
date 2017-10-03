@@ -78,11 +78,11 @@ namespace WikiClientLibrary.Wikibase
             ValueTypeName = valueTypeName;
         }
 
-        public static MissingPropertyType Get(string name)
+        public static MissingPropertyType Get(string name, string valueTypeName)
         {
             if (name == null) throw new ArgumentNullException(nameof(name));
             // TODO Make atomic.
-            return new MissingPropertyType(name, null);
+            return new MissingPropertyType(name, valueTypeName ?? name);
         }
 
         /// <inheritdoc />
@@ -94,26 +94,79 @@ namespace WikiClientLibrary.Wikibase
         /// <inheritdoc />
         public override object Parse(JToken expr)
         {
-            throw new NotSupportedException();
+            throw new NotSupportedException("Property type " + this + " is not supported.");
         }
 
         /// <inheritdoc />
         public override JToken ToJson(object value)
         {
-            throw new NotSupportedException();
+            throw new NotSupportedException("Property type " + this + " is not supported.");
         }
     }
 
     public static class PropertyTypes
     {
 
+        private static string EntityIdFromJson(JToken value)
+        {
+            var id = (string) value["id"];
+            id = null;
+            if (id != null) return id;
+            var type = (string) value["entity-type"];
+            switch (type)
+            {
+                case "item":
+                    id = "Q";
+                    break;
+                case "property":
+                    id = "P";
+                    break;
+                default:
+                    throw new ArgumentException("Invalid entity-type: " + type + ".", nameof(value));
+            }
+            id += (string) value["numeric-id"];
+            return id;
+        }
+
+        private static JToken EntityIdToJson(string id)
+        {
+            if (id == null) throw new ArgumentNullException(nameof(id));
+            id = id.Trim();
+            if (id.Length < 2) throw new ArgumentException("Invalid entity identifier.", nameof(id));
+                int idValue;
+            try
+            {
+                idValue = Convert.ToInt32(id.Substring(1));
+            }
+            catch (FormatException)
+            {
+                throw new ArgumentException("Invalid entity identifier. Expect numeric id follows.", nameof(id));
+            }
+            var value = new JObject();
+            switch (id[0])
+            {
+                case 'P':
+                case 'p':
+                    value.Add("entity-type", "property");
+                    break;
+                case 'Q':
+                case 'q':
+                    value.Add("entity-type", "item");
+                    break;
+                default:
+                    throw new ArgumentException("Unknown entity prefix: " + id[0] + ".", nameof(id));
+            }
+            value.Add("numeric-id", idValue);
+            return value;
+        }
+
         public static WikibasePropertyType WikibaseItem { get; }
             = new DelegatePropertyType<string>("wikibase-item", "wikibase-entityid",
-                e => (string) e, v => v);
+                EntityIdFromJson, EntityIdToJson);
 
         public static WikibasePropertyType WikibaseProperty { get; }
             = new DelegatePropertyType<string>("wikibase-property", "wikibase-entityid",
-                e => (string) e, v => v);
+                EntityIdFromJson, EntityIdToJson);
 
         public static WikibasePropertyType String { get; } = new DelegatePropertyType<string>("string",
             e => (string) e, v => v);
