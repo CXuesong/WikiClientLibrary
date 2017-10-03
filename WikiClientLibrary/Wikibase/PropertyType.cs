@@ -1,8 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
 using System.Text;
 using Newtonsoft.Json.Linq;
-using WikiClientLibrary.Pages;
 
 namespace WikiClientLibrary.Wikibase
 {
@@ -154,6 +155,31 @@ namespace WikiClientLibrary.Wikibase
         /// </summary>
         public static PropertyType TabularData { get; } = new DelegatePropertyType<string>("tabular-data",
             e => (string) e, v => v);
+
+        private static readonly Dictionary<string, PropertyType> typeDict = new Dictionary<string, PropertyType>();
+
+        static PropertyTypes()
+        {
+            foreach (var p in typeof(PropertyTypes).GetRuntimeProperties()
+                .Where(p => p.PropertyType == typeof(PropertyType)))
+            {
+                var value = (PropertyType) p.GetValue(null);
+                typeDict.Add(value.Name, value);
+            }
+        }
+
+        /// <summary>
+        /// Tries to get a property type by its name.
+        /// </summary>
+        /// <param name="typeName">Internal name of the desired property type.</param>
+        /// <exception cref="ArgumentNullException"><paramref name="typeName"/> is <c>null</c>.</exception>
+        /// <returns>The matching type, or <c>null</c> if cannot find one.</returns>
+        public static PropertyType Get(string typeName)
+        {
+            if (typeName == null) throw new ArgumentNullException(nameof(typeName));
+            if (typeDict.TryGetValue(typeName, out var t)) return t;
+            return null;
+        }
 
     }
 }
