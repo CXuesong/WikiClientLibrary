@@ -87,6 +87,9 @@ namespace WikiClientLibrary.Wikibase
                 return obj;
             });
 
+        // No scientific notation. It's desirable.
+        private const string SignedFloatFormat = "+0.#################;-0.#################;0";
+
         public static PropertyType Amount { get; } = new DelegatePropertyType<WikibaseAmount>("amount",
             e =>
             {
@@ -102,13 +105,13 @@ namespace WikiClientLibrary.Wikibase
             {
                 var obj = new JObject
                 {
-                    {"amount", v.Amount.ToString()}, // TODO positive sign
+                    {"amount", v.Amount.ToString(SignedFloatFormat)},
                     {"unit", v.Unit.Uri},
                 };
                 if (v.HasError)
                 {
-                    obj.Add("lowerBound", v.LowerBound.ToString());
-                    obj.Add("upperBound", v.UpperBound.ToString());
+                    obj.Add("lowerBound", v.LowerBound.ToString(SignedFloatFormat));
+                    obj.Add("upperBound", v.UpperBound.ToString(SignedFloatFormat));
                 }
                 return obj;
             });
