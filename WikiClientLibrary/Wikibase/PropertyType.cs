@@ -116,5 +116,9 @@ namespace WikiClientLibrary.Wikibase
                 return obj;
             });
 
+        public static PropertyType MonolingualText { get; } = new DelegatePropertyType<WikibaseMonolingualText>("monolingualtext",
+            e => new WikibaseMonolingualText((string) e["text"], (string) e["language"]),
+            v => new JObject {{"text", v.Text}, {"language", v.Language}});
+
     }
 }
