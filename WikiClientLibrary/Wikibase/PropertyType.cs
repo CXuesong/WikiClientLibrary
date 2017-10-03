@@ -19,9 +19,18 @@ namespace WikiClientLibrary.Wikibase
         public abstract object Parse(JToken expr);
 
         public abstract JToken ToJson(object value);
+
+        /// <inheritdoc />
+        public override string ToString()
+        {
+            var name = Name;
+            var vtName = ValueTypeName;
+            if (name == vtName) return name;
+            return name + "(" + vtName + ")";
+        }
     }
 
-    internal class DelegatePropertyType<T> : PropertyType
+    internal sealed class DelegatePropertyType<T> : PropertyType
     {
 
         private readonly Func<JToken, T> parseHandler;
@@ -59,6 +68,40 @@ namespace WikiClientLibrary.Wikibase
             throw new ArgumentException("Value type is incompatible.", nameof(value));
         }
 
+    }
+
+    internal sealed class MissingPropertyType : PropertyType
+    {
+        private MissingPropertyType(string name, string valueTypeName)
+        {
+            Name = name;
+            ValueTypeName = valueTypeName;
+        }
+
+        public static MissingPropertyType Get(string name)
+        {
+            if (name == null) throw new ArgumentNullException(nameof(name));
+            // TODO Make atomic.
+            return new MissingPropertyType(name, null);
+        }
+
+        /// <inheritdoc />
+        public override string Name { get; }
+
+        /// <inheritdoc />
+        public override string ValueTypeName { get; }
+
+        /// <inheritdoc />
+        public override object Parse(JToken expr)
+        {
+            throw new NotSupportedException();
+        }
+
+        /// <inheritdoc />
+        public override JToken ToJson(object value)
+        {
+            throw new NotSupportedException();
+        }
     }
 
     public static class PropertyTypes
