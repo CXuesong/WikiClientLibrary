@@ -116,9 +116,30 @@ namespace WikiClientLibrary.Wikibase
                 return obj;
             });
 
-        public static PropertyType MonolingualText { get; } = new DelegatePropertyType<WikibaseMonolingualText>("monolingualtext",
+        public static PropertyType MonolingualText { get; } = new DelegatePropertyType<WikibaseMonolingualText>(
+            "monolingualtext",
             e => new WikibaseMonolingualText((string) e["text"], (string) e["language"]),
             v => new JObject {{"text", v.Text}, {"language", v.Language}});
+
+        public static PropertyType Math { get; } = new DelegatePropertyType<string>("math",
+            e => (string)e, v => v);
+
+        /// <summary>
+        /// Literal data field for an external identifier.
+        /// External identifiers may automatically be linked to an authoritative resource for display.
+        /// </summary>
+        public static PropertyType ExternalId { get; } = new DelegatePropertyType<string>("external-id",
+            e => (string)e, v => v);
+
+        public static PropertyType GlobeCoordinate { get; } = new DelegatePropertyType<WikibaseGlobeCoordinate>(
+            "globe-coordinate",
+            e => new WikibaseGlobeCoordinate((double) e["latitude"], (double) e["longitude"],
+                (double) e["precision"], WikibaseUri.Get((string) e["globe"])),
+            v => new JObject
+            {
+                {"latitude", v.Latitude}, {"longitude", v.Longitude},
+                {"precision", v.Precision}, {"globe", v.Globe.Uri},
+            });
 
     }
 }
