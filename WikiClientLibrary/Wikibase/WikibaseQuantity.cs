@@ -38,5 +38,21 @@ namespace WikiClientLibrary.Wikibase
 
         public bool HasError => Amount != LowerBound || Amount != UpperBound;
 
+        /// <inheritdoc />
+        public override string ToString()
+        {
+            var s = Amount.ToString();
+            if (HasError)
+            {
+                var upper = UpperBound - Amount;
+                var lower = Amount - LowerBound;
+                if (upper - lower < 1e-14 || (upper - lower) / Amount < 1e-14)
+                    s += "±" + upper;
+                else
+                    s += "+" + upper + "/-" + lower;
+            }
+            if (Unit != null) s += "(" + Unit + ")";
+            return s;
+        }
     }
 }

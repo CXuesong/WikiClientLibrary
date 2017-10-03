@@ -105,6 +105,26 @@ namespace WikiClientLibrary.Wikibase
         /// </summary>
         public WikibaseUri CalendarModel { get; }
 
+        /// <inheritdoc />
+        public override string ToString()
+        {
+            switch (Precision)
+            {
+                case WikibaseTimePrecision.Month:
+                    return $"{Year:0000}-{Month:00}";
+                case WikibaseTimePrecision.Day:
+                    return $"{Year:0000}-{Month:00}-{Day:00}";
+                case WikibaseTimePrecision.Hour:
+                    return $"{Year:0000}-{Month:00}-{Day:00} {Hour:00}h";
+                case WikibaseTimePrecision.Minute:
+                    return $"{Year:0000}-{Month:00}-{Day:00} {Hour:00}:{Minute:00}";
+                case WikibaseTimePrecision.Second:
+                    return $"{Year:0000}-{Month:00}-{Day:00} {Hour:00}:{Minute:00}:{Second:00}";
+                default:
+                    return "Y" + Year;
+            }
+        }
+
         public string ToIso8601UtcString()
         {
             return $"{Year:+0000;-0000;0000}-{Month:00}-{Day:00}T{Hour:00}:{Minute:00}:{Second:00}Z";

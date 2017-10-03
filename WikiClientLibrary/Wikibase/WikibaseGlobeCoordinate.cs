@@ -15,13 +15,29 @@ namespace WikiClientLibrary.Wikibase
             Globe = globe ?? throw new ArgumentNullException(nameof(globe));
         }
 
+        /// <summary>Latitude, in degrees.</summary>
         public double Latitude { get; }
 
+        /// <summary>Longitude, in degrees.</summary>
         public double Longitude { get; }
 
+        /// <summary>Precision, in degrees.</summary>
         public double Precision { get; }
 
+        /// <summary>Item URI of the globe.</summary>
         public WikibaseUri Globe { get; }
+
+        /// <inheritdoc />
+        public override string ToString()
+        {
+            var s = Latitude + "°";
+            if (Latitude >= 0) s += "°N ";
+            else s += "°S ";
+            s += Longitude;
+            if (Longitude >= 0) s += "°E";
+            else s += "°W";
+            return s;
+        }
 
         /// <inheritdoc />
         public bool Equals(WikibaseGlobeCoordinate other)

@@ -22,6 +22,12 @@ namespace WikiClientLibrary.Wikibase
         public string Language { get; }
 
         /// <inheritdoc />
+        public override string ToString()
+        {
+            return "[" + Language + "]" + Text;
+        }
+
+        /// <inheritdoc />
         public bool Equals(WikibaseMonolingualText other)
         {
             return string.Equals(Text, other.Text) && string.Equals(Language, other.Language);
@@ -53,3 +59,4 @@ namespace WikiClientLibrary.Wikibase
         }
     }
 }
+
