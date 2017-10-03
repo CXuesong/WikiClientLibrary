@@ -5,20 +5,20 @@ using System.Text;
 
 namespace WikiClientLibrary.Wikibase
 {
-    public struct WikibaseAmount
+    public struct WikibaseQuantity
     {
 
-        public WikibaseAmount(double amount, WikibaseUri unit) : this(amount, amount, amount, unit)
+        public WikibaseQuantity(double amount, WikibaseUri unit) : this(amount, amount, amount, unit)
         {
             
         }
 
-        public WikibaseAmount(double amount, double error, WikibaseUri unit) : this(amount, amount - error, amount + error, unit)
+        public WikibaseQuantity(double amount, double error, WikibaseUri unit) : this(amount, amount - error, amount + error, unit)
         {
 
         }
 
-        public WikibaseAmount(double amount, double lowerBound, double upperBound, WikibaseUri unit)
+        public WikibaseQuantity(double amount, double lowerBound, double upperBound, WikibaseUri unit)
         {
             if (amount < lowerBound || amount > upperBound) throw new ArgumentException("amount should be between lowerBound and upperBound.");
             Amount = amount;

@@ -205,14 +205,14 @@ namespace WikiClientLibrary.Wikibase
         // No scientific notation. It's desirable.
         private const string SignedFloatFormat = "+0.#################;-0.#################;0";
 
-        public static WikibasePropertyType Amount { get; } = new DelegatePropertyType<WikibaseAmount>("amount",
+        public static WikibasePropertyType Quantity { get; } = new DelegatePropertyType<WikibaseQuantity>("quantity",
             e =>
             {
                 var amount = Convert.ToDouble((string) e["amount"]);
                 var unit = (string) e["unit"];
                 var lb = (string) e["lowerBound"];
                 var ub = (string) e["upperBound"];
-                return new WikibaseAmount(amount,
+                return new WikibaseQuantity(amount,
                     lb == null ? amount : Convert.ToDouble(lb),
                     ub == null ? amount : Convert.ToDouble(ub),
                     unit);
