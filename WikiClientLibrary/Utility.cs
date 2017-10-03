@@ -42,7 +42,8 @@ namespace WikiClientLibrary
                     ContractResolver = new DefaultContractResolver {NamingStrategy = new WikiJsonNamingStrategy()},
                     Converters =
                     {
-                        new WikiBooleanJsonConverter()
+                        new WikiBooleanJsonConverter(),
+                        new WikiStringEnumJsonConverter(),
                     },
                 };
             return JsonSerializer.CreateDefault(settings);

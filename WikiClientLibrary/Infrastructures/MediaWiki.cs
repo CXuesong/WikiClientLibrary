@@ -51,6 +51,29 @@ namespace WikiClientLibrary.Infrastructures
         }
     }
 
+    internal class WikiStringEnumJsonConverter : JsonConverter
+    {
+        /// <inheritdoc />
+        public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
+        {
+            var ev = (Enum) value;
+            writer.WriteValue(ev.ToString("G").ToLowerInvariant());
+        }
+
+        /// <inheritdoc />
+        public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
+        {
+            if (reader.TokenType != JsonToken.String) throw new JsonException("Expect enum string.");
+            return Enum.Parse(objectType, (string) reader.Value, true);
+        }
+
+        /// <inheritdoc />
+        public override bool CanConvert(Type objectType)
+        {
+            return objectType.GetTypeInfo().IsEnum;
+        }
+    }
+
     internal class WikiJsonNamingStrategy : NamingStrategy
     {
         /// <summary>
