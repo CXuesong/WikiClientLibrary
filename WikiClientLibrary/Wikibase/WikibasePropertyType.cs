@@ -10,7 +10,7 @@ namespace WikiClientLibrary.Wikibase
     /// <summary>
     /// Atomic instances indicating a Wikibase Property type.
     /// </summary>
-    public abstract class PropertyType
+    public abstract class WikibasePropertyType
     {
         public abstract string Name { get; }
 
@@ -30,7 +30,7 @@ namespace WikiClientLibrary.Wikibase
         }
     }
 
-    internal sealed class DelegatePropertyType<T> : PropertyType
+    internal sealed class DelegatePropertyType<T> : WikibasePropertyType
     {
 
         private readonly Func<JToken, T> parseHandler;
@@ -70,7 +70,7 @@ namespace WikiClientLibrary.Wikibase
 
     }
 
-    internal sealed class MissingPropertyType : PropertyType
+    internal sealed class MissingPropertyType : WikibasePropertyType
     {
         private MissingPropertyType(string name, string valueTypeName)
         {
@@ -107,25 +107,25 @@ namespace WikiClientLibrary.Wikibase
     public static class PropertyTypes
     {
 
-        public static PropertyType WikibaseItem { get; }
+        public static WikibasePropertyType WikibaseItem { get; }
             = new DelegatePropertyType<string>("wikibase-item", "wikibase-entityid",
                 e => (string) e, v => v);
 
-        public static PropertyType WikibaseProperty { get; }
+        public static WikibasePropertyType WikibaseProperty { get; }
             = new DelegatePropertyType<string>("wikibase-property", "wikibase-entityid",
                 e => (string) e, v => v);
 
-        public static PropertyType String { get; } = new DelegatePropertyType<string>("string",
+        public static WikibasePropertyType String { get; } = new DelegatePropertyType<string>("string",
             e => (string) e, v => v);
 
-        public static PropertyType CommonsMedia { get; }
+        public static WikibasePropertyType CommonsMedia { get; }
             = new DelegatePropertyType<string>("commonsMedia", "string",
                 e => (string) e, v => v);
 
-        public static PropertyType Url { get; } = new DelegatePropertyType<string>("url", "string",
+        public static WikibasePropertyType Url { get; } = new DelegatePropertyType<string>("url", "string",
             e => (string) e, v => v);
 
-        public static PropertyType Time { get; } = new DelegatePropertyType<WikibaseTime>("time",
+        public static WikibasePropertyType Time { get; } = new DelegatePropertyType<WikibaseTime>("time",
             e =>
             {
                 var time = (string) e["time"];
@@ -152,7 +152,7 @@ namespace WikiClientLibrary.Wikibase
         // No scientific notation. It's desirable.
         private const string SignedFloatFormat = "+0.#################;-0.#################;0";
 
-        public static PropertyType Amount { get; } = new DelegatePropertyType<WikibaseAmount>("amount",
+        public static WikibasePropertyType Amount { get; } = new DelegatePropertyType<WikibaseAmount>("amount",
             e =>
             {
                 var amount = Convert.ToDouble((string) e["amount"]);
@@ -178,12 +178,12 @@ namespace WikiClientLibrary.Wikibase
                 return obj;
             });
 
-        public static PropertyType MonolingualText { get; }
+        public static WikibasePropertyType MonolingualText { get; }
             = new DelegatePropertyType<WikibaseMonolingualText>("monolingualtext",
                 e => new WikibaseMonolingualText((string) e["text"], (string) e["language"]),
                 v => new JObject {{"text", v.Text}, {"language", v.Language}});
 
-        public static PropertyType Math { get; } 
+        public static WikibasePropertyType Math { get; } 
             = new DelegatePropertyType<string>("math", "string",
             e => (string) e, v => v);
 
@@ -191,11 +191,11 @@ namespace WikiClientLibrary.Wikibase
         /// Literal data field for an external identifier.
         /// External identifiers may automatically be linked to an authoritative resource for display.
         /// </summary>
-        public static PropertyType ExternalId { get; }
+        public static WikibasePropertyType ExternalId { get; }
             = new DelegatePropertyType<string>("external-id", "string",
                 e => (string) e, v => v);
 
-        public static PropertyType GlobeCoordinate { get; }
+        public static WikibasePropertyType GlobeCoordinate { get; }
             = new DelegatePropertyType<WikibaseGlobeCoordinate>("globe-coordinate", "globecoordinate",
                 e => new WikibaseGlobeCoordinate((double) e["latitude"], (double) e["longitude"],
                     (double) e["precision"], (string) e["globe"]),
@@ -209,24 +209,24 @@ namespace WikiClientLibrary.Wikibase
         /// Link to geographic map data stored on Wikimedia Commons (or other configured wiki).
         /// See "https://www.mediawiki.org/wiki/Help:Map_Data" for more documentation about map data.
         /// </summary>
-        public static PropertyType GeoShape { get; } = new DelegatePropertyType<string>("geo-shape", "string",
+        public static WikibasePropertyType GeoShape { get; } = new DelegatePropertyType<string>("geo-shape", "string",
             e => (string) e, v => v);
 
         /// <summary>
         /// Link to tabular data stored on Wikimedia Commons (or other configured wiki).
         /// See "https://www.mediawiki.org/wiki/Help:Tabular_Data" for more documentation about tabular data.
         /// </summary>
-        public static PropertyType TabularData { get; } = new DelegatePropertyType<string>("tabular-data", "string",
+        public static WikibasePropertyType TabularData { get; } = new DelegatePropertyType<string>("tabular-data", "string",
             e => (string) e, v => v);
 
-        private static readonly Dictionary<string, PropertyType> typeDict = new Dictionary<string, PropertyType>();
+        private static readonly Dictionary<string, WikibasePropertyType> typeDict = new Dictionary<string, WikibasePropertyType>();
 
         static PropertyTypes()
         {
             foreach (var p in typeof(PropertyTypes).GetRuntimeProperties()
-                .Where(p => p.PropertyType == typeof(PropertyType)))
+                .Where(p => p.PropertyType == typeof(WikibasePropertyType)))
             {
-                var value = (PropertyType) p.GetValue(null);
+                var value = (WikibasePropertyType) p.GetValue(null);
                 typeDict.Add(value.Name, value);
             }
         }
@@ -237,7 +237,7 @@ namespace WikiClientLibrary.Wikibase
         /// <param name="typeName">Internal name of the desired property type.</param>
         /// <exception cref="ArgumentNullException"><paramref name="typeName"/> is <c>null</c>.</exception>
         /// <returns>The matching type, or <c>null</c> if cannot find one.</returns>
-        public static PropertyType Get(string typeName)
+        public static WikibasePropertyType Get(string typeName)
         {
             if (typeName == null) throw new ArgumentNullException(nameof(typeName));
             if (typeDict.TryGetValue(typeName, out var t)) return t;

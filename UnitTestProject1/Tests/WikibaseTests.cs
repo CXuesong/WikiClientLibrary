@@ -17,7 +17,7 @@ namespace UnitTestProject1.Tests
         public async Task FetchEntityTest()
         {
             var site = await WikidataSiteAsync;
-            var entity = new Entity(site, "Q513");
+            var entity = new WikibaseEntity(site, "Q513");
             await entity.RefreshAsync(EntityQueryOptions.FetchAllProperties);
             ShallowTrace(entity);
             Assert.Equal("Q513", entity.Title);

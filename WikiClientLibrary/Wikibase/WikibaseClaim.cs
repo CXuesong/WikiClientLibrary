@@ -152,7 +152,7 @@ namespace WikiClientLibrary.Wikibase
         }
 
         /// <summary>Data value type.</summary>
-        public PropertyType DataType { get; set; }
+        public WikibasePropertyType DataType { get; set; }
 
         private static SnakType ParseSnakType(string expr)
         {

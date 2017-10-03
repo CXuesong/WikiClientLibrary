@@ -14,8 +14,8 @@ using System.Threading;
 
 namespace WikiClientLibrary.Wikibase
 {
-    [JsonObject(MemberSerialization.OptIn)]
-    public sealed partial class Entity
+
+    public sealed class WikibaseEntity
     {
         private static readonly IDictionary<string, string> emptyStringDict =
             new ReadOnlyDictionary<string, string>(new Dictionary<string, string>());
@@ -28,7 +28,7 @@ namespace WikiClientLibrary.Wikibase
 
         private ILogger logger;
 
-        public Entity(WikiSite site, string id)
+        public WikibaseEntity(WikiSite site, string id)
         {
             Site = site ?? throw new ArgumentNullException(nameof(site));
             Id = id ?? throw new ArgumentNullException(nameof(id));
