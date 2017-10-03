@@ -20,6 +20,7 @@ namespace UnitTestProject1.Tests
             var entity = new WikibaseEntity(site, "Q513");
             await entity.RefreshAsync(EntityQueryOptions.FetchAllProperties);
             ShallowTrace(entity);
+            ShallowTrace(entity.Claims, 4);
             Assert.Equal("Q513", entity.Title);
             Assert.Equal("item", entity.Type);
             Assert.Equal("Mount Everest", entity.Labels["en"]);

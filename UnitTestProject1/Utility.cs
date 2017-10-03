@@ -40,20 +40,14 @@ namespace UnitTestProject1
                 if (s.Length > 1024) s = s.Substring(0, 1024) + "...";
                 return s;
             }
-            foreach (var p in obj.GetType().GetRuntimeProperties()
-                .Where(p1 => p1.GetMethod?.IsPublic ?? false)
-                .OrderBy(p1 => p1.Name))
-            {
-                if (p.GetIndexParameters().Length > 0) continue;
-                sb.AppendLine();
-                sb.Append(' ', indention * 2);
-                sb.Append(p.Name);
-                sb.Append(" = ");
-                var value = p.GetValue(obj);
-                sb.Append(DumpObject(value, indention + 1, maxDepth - 1));
-            }
             var dict = obj as IDictionary;
             var enu = obj as IEnumerable;
+            if (obj is ICollection collection)
+            {
+                sb.AppendLine();
+                sb.Append(' ', indention * 2);
+                sb.AppendFormat("Count = {0}", collection.Count);
+            }
             if (dict != null)
             {
                 foreach (DictionaryEntry p in dict)
@@ -68,9 +62,24 @@ namespace UnitTestProject1
             {
                 foreach (var i in enu)
                 {
-                    sb.Append(' ', indention * 2);
                     sb.AppendLine();
+                    sb.Append(' ', indention * 2);
                     sb.Append(DumpObject(i, indention + 1, maxDepth - 1));
+                }
+            }
+            else
+            {
+                foreach (var p in obj.GetType().GetRuntimeProperties()
+                    .Where(p1 => p1.GetMethod?.IsPublic ?? false)
+                    .OrderBy(p1 => p1.Name))
+                {
+                    if (p.GetIndexParameters().Length > 0) continue;
+                    sb.AppendLine();
+                    sb.Append(' ', indention * 2);
+                    sb.Append(p.Name);
+                    sb.Append(" = ");
+                    var value = p.GetValue(obj);
+                    sb.Append(DumpObject(value, indention + 1, maxDepth - 1));
                 }
             }
             return sb.ToString();
