@@ -141,5 +141,19 @@ namespace WikiClientLibrary.Wikibase
                 {"precision", v.Precision}, {"globe", v.Globe.Uri},
             });
 
+        /// <summary>
+        /// Link to geographic map data stored on Wikimedia Commons (or other configured wiki).
+        /// See "https://www.mediawiki.org/wiki/Help:Map_Data" for more documentation about map data.
+        /// </summary>
+        public static PropertyType GeoShape { get; } = new DelegatePropertyType<string>("geo-shape",
+            e => (string)e, v => v);
+
+        /// <summary>
+        /// Link to tabular data stored on Wikimedia Commons (or other configured wiki).
+        /// See "https://www.mediawiki.org/wiki/Help:Tabular_Data" for more documentation about tabular data.
+        /// </summary>
+        public static PropertyType TabularData { get; } = new DelegatePropertyType<string>("tabular-data",
+            e => (string) e, v => v);
+
     }
 }
