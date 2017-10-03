@@ -14,6 +14,8 @@ namespace WikiClientLibrary.Wikibase
     {
         public abstract string Name { get; }
 
+        public abstract string ValueTypeName { get; }
+
         public abstract object Parse(JToken expr);
 
         public abstract JToken ToJson(object value);
@@ -25,14 +27,24 @@ namespace WikiClientLibrary.Wikibase
         private readonly Func<JToken, T> parseHandler;
         private readonly Func<T, JToken> toJsonHandler;
 
-        public DelegatePropertyType(string name, Func<JToken, T> parseHandler, Func<T, JToken> toJsonHandler)
+        public DelegatePropertyType(string name, Func<JToken, T> parseHandler, Func<T, JToken> toJsonHandler) 
+            : this(name, name, parseHandler, toJsonHandler)
+        {
+        }
+
+        public DelegatePropertyType(string name, string valueTypeName, Func<JToken, T> parseHandler, Func<T, JToken> toJsonHandler)
         {
             Name = name ?? throw new ArgumentNullException(nameof(name));
+            ValueTypeName = valueTypeName ?? throw new ArgumentNullException(nameof(valueTypeName));
             this.parseHandler = parseHandler ?? throw new ArgumentNullException(nameof(parseHandler));
             this.toJsonHandler = toJsonHandler ?? throw new ArgumentNullException(nameof(toJsonHandler));
         }
 
+        /// <inheritdoc />
         public override string Name { get; }
+
+        /// <inheritdoc />
+        public override string ValueTypeName { get; }
 
         public override object Parse(JToken expr)
         {
@@ -52,19 +64,22 @@ namespace WikiClientLibrary.Wikibase
     public static class PropertyTypes
     {
 
-        public static PropertyType WikibaseItem { get; } = new DelegatePropertyType<string>("wikibase-item",
-            e => (string) e, v => v);
+        public static PropertyType WikibaseItem { get; }
+            = new DelegatePropertyType<string>("wikibase-item", "wikibase-entityid",
+                e => (string) e, v => v);
 
-        public static PropertyType WikibaseProperty { get; } = new DelegatePropertyType<string>("wikibase-property",
-            e => (string)e, v => v);
+        public static PropertyType WikibaseProperty { get; }
+            = new DelegatePropertyType<string>("wikibase-property", "wikibase-entityid",
+                e => (string) e, v => v);
 
         public static PropertyType String { get; } = new DelegatePropertyType<string>("string",
             e => (string) e, v => v);
 
-        public static PropertyType CommonsMedia { get; } = new DelegatePropertyType<string>("commonsMedia",
-            e => (string) e, v => v);
+        public static PropertyType CommonsMedia { get; }
+            = new DelegatePropertyType<string>("commonsMedia", "string",
+                e => (string) e, v => v);
 
-        public static PropertyType Url { get; } = new DelegatePropertyType<string>("url",
+        public static PropertyType Url { get; } = new DelegatePropertyType<string>("url", "string",
             e => (string) e, v => v);
 
         public static PropertyType Time { get; } = new DelegatePropertyType<WikibaseTime>("time",
@@ -120,43 +135,45 @@ namespace WikiClientLibrary.Wikibase
                 return obj;
             });
 
-        public static PropertyType MonolingualText { get; } = new DelegatePropertyType<WikibaseMonolingualText>(
-            "monolingualtext",
-            e => new WikibaseMonolingualText((string) e["text"], (string) e["language"]),
-            v => new JObject {{"text", v.Text}, {"language", v.Language}});
+        public static PropertyType MonolingualText { get; }
+            = new DelegatePropertyType<WikibaseMonolingualText>("monolingualtext",
+                e => new WikibaseMonolingualText((string) e["text"], (string) e["language"]),
+                v => new JObject {{"text", v.Text}, {"language", v.Language}});
 
-        public static PropertyType Math { get; } = new DelegatePropertyType<string>("math",
-            e => (string)e, v => v);
+        public static PropertyType Math { get; } 
+            = new DelegatePropertyType<string>("math", "string",
+            e => (string) e, v => v);
 
         /// <summary>
         /// Literal data field for an external identifier.
         /// External identifiers may automatically be linked to an authoritative resource for display.
         /// </summary>
-        public static PropertyType ExternalId { get; } = new DelegatePropertyType<string>("external-id",
-            e => (string)e, v => v);
+        public static PropertyType ExternalId { get; }
+            = new DelegatePropertyType<string>("external-id", "string",
+                e => (string) e, v => v);
 
-        public static PropertyType GlobeCoordinate { get; } = new DelegatePropertyType<WikibaseGlobeCoordinate>(
-            "globe-coordinate",
-            e => new WikibaseGlobeCoordinate((double) e["latitude"], (double) e["longitude"],
-                (double) e["precision"], (string) e["globe"]),
-            v => new JObject
-            {
-                {"latitude", v.Latitude}, {"longitude", v.Longitude},
-                {"precision", v.Precision}, {"globe", v.Globe.Uri},
-            });
+        public static PropertyType GlobeCoordinate { get; }
+            = new DelegatePropertyType<WikibaseGlobeCoordinate>("globe-coordinate", "globecoordinate",
+                e => new WikibaseGlobeCoordinate((double) e["latitude"], (double) e["longitude"],
+                    (double) e["precision"], (string) e["globe"]),
+                v => new JObject
+                {
+                    {"latitude", v.Latitude}, {"longitude", v.Longitude},
+                    {"precision", v.Precision}, {"globe", v.Globe.Uri},
+                });
 
         /// <summary>
         /// Link to geographic map data stored on Wikimedia Commons (or other configured wiki).
         /// See "https://www.mediawiki.org/wiki/Help:Map_Data" for more documentation about map data.
         /// </summary>
-        public static PropertyType GeoShape { get; } = new DelegatePropertyType<string>("geo-shape",
-            e => (string)e, v => v);
+        public static PropertyType GeoShape { get; } = new DelegatePropertyType<string>("geo-shape", "string",
+            e => (string) e, v => v);
 
         /// <summary>
         /// Link to tabular data stored on Wikimedia Commons (or other configured wiki).
         /// See "https://www.mediawiki.org/wiki/Help:Tabular_Data" for more documentation about tabular data.
         /// </summary>
-        public static PropertyType TabularData { get; } = new DelegatePropertyType<string>("tabular-data",
+        public static PropertyType TabularData { get; } = new DelegatePropertyType<string>("tabular-data", "string",
             e => (string) e, v => v);
 
         private static readonly Dictionary<string, PropertyType> typeDict = new Dictionary<string, PropertyType>();
