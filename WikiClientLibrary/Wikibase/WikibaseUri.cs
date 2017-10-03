@@ -45,9 +45,10 @@ namespace WikiClientLibrary.Wikibase
             Uri = uri ?? throw new ArgumentNullException(nameof(uri));
         }
 
+        /// <summary>Gets the string of referenced URI.</summary>
         public string Uri { get; }
 
-        /// <inheritdoc />
+        /// <summary>Gets the referenced URI.</summary>
         public override string ToString() => Uri;
 
         /// <inheritdoc />
@@ -82,6 +83,13 @@ namespace WikiClientLibrary.Wikibase
         {
             return !Equals(left, right);
         }
+
+        public static implicit operator WikibaseUri(string s)
+        {
+            if (s == null) return null;
+            return Get(s);
+        }
+
     }
 
     internal class WikibaseUriJsonConverter : JsonConverter

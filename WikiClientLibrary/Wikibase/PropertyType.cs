@@ -72,7 +72,7 @@ namespace WikiClientLibrary.Wikibase
                 var after = (int) e["after"];
                 var precision = (WikibaseTimePrecision) (int) e["precision"];
                 var calendar = (string) e["calendarmodel"];
-                return new WikibaseTime(time, before, after, timeZone, precision, WikibaseUri.Get(calendar));
+                return new WikibaseTime(time, before, after, timeZone, precision, calendar);
             }, v =>
             {
                 var obj = new JObject
@@ -100,7 +100,7 @@ namespace WikiClientLibrary.Wikibase
                 return new WikibaseAmount(amount,
                     lb == null ? amount : Convert.ToDouble(lb),
                     ub == null ? amount : Convert.ToDouble(ub),
-                    WikibaseUri.Get(unit));
+                    unit);
             }, v =>
             {
                 var obj = new JObject
@@ -134,7 +134,7 @@ namespace WikiClientLibrary.Wikibase
         public static PropertyType GlobeCoordinate { get; } = new DelegatePropertyType<WikibaseGlobeCoordinate>(
             "globe-coordinate",
             e => new WikibaseGlobeCoordinate((double) e["latitude"], (double) e["longitude"],
-                (double) e["precision"], WikibaseUri.Get((string) e["globe"])),
+                (double) e["precision"], (string) e["globe"]),
             v => new JObject
             {
                 {"latitude", v.Latitude}, {"longitude", v.Longitude},
