@@ -31,7 +31,7 @@ namespace WikiClientLibrary.Wikibase
 
         // +2007-06-07T00:00:00Z
         private static readonly Regex ISO8601Matcher =
-            new Regex(@"^\s*(?<Y>[\+-]?\d{1,9})-(?<M>\d\d?)-(?<D>\d\d?)T(?<H>\d\d?)-(?<m>\d\d?)-(?<S>\d\d?)(?<K>Z|[\+-]\d\d?:\d\d?)?\s*$");
+            new Regex(@"^\s*(?<Y>[\+-]?\d{1,9})-(?<M>\d\d?)-(?<D>\d\d?)T(?<H>\d\d?):(?<m>\d\d?):(?<S>\d\d?)(?<K>Z|[\+-]\d\d?:\d\d?)?\s*$");
 
         public WbTime(string dateTime, int before, int after, int timeZone,
             WikibaseTimePrecision precision, WbUri calendarModel)
