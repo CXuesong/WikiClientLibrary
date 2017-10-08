@@ -9,17 +9,18 @@ namespace WikiClientLibrary.Wikibase
 
         public static readonly WbMonolingualText Empty = new WbMonolingualText();
 
-        public WbMonolingualText(string text, string language)
+        public WbMonolingualText(string language, string text)
         {
-            Text = text ?? throw new ArgumentNullException(nameof(text));
             if (language == null) throw new ArgumentNullException(nameof(language));
+            if (text == null) throw new ArgumentNullException(nameof(text));
             // Simple normalization.
             Language = language.Trim().ToLowerInvariant();
+            Text = text;
         }
 
-        public string Text { get; }
-
         public string Language { get; }
+
+        public string Text { get; }
 
         /// <inheritdoc />
         public override string ToString()

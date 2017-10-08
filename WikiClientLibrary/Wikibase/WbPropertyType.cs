@@ -233,7 +233,7 @@ namespace WikiClientLibrary.Wikibase
 
         public static WbPropertyType MonolingualText { get; }
             = new DelegatePropertyType<WbMonolingualText>("monolingualtext",
-                e => new WbMonolingualText((string) e["text"], (string) e["language"]),
+                e => new WbMonolingualText((string) e["language"], (string) e["text"]),
                 v => new JObject {{"text", v.Text}, {"language", v.Language}});
 
         public static WbPropertyType Math { get; } 
