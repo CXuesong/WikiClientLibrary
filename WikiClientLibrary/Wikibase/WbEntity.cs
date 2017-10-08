@@ -11,6 +11,7 @@ using Newtonsoft.Json.Linq;
 using WikiClientLibrary.Pages;
 using WikiClientLibrary.Sites;
 using System.Threading;
+using WikiClientLibrary.Wikibase.Infrastructures;
 
 namespace WikiClientLibrary.Wikibase
 {
@@ -23,11 +24,11 @@ namespace WikiClientLibrary.Wikibase
         private static readonly WbMonolingualTextsCollection emptyStringsDict
             = new WbMonolingualTextsCollection {IsReadOnly = true};
 
-        private static readonly IDictionary<string, WbEntitySiteLink> emptySiteLinks
-            = new ReadOnlyDictionary<string, WbEntitySiteLink>(new Dictionary<string, WbEntitySiteLink>());
+        private static readonly WbEntitySiteLinkCollection emptySiteLinks
+            = new WbEntitySiteLinkCollection {IsReadOnly = true};
 
-        private static readonly IDictionary<string, ICollection<WbClaim>> emptyClaims
-            = new ReadOnlyDictionary<string, ICollection<WbClaim>>(new Dictionary<string, ICollection<WbClaim>>());
+        private static readonly WbClaimCollection emptyClaims
+            = new WbClaimCollection {IsReadOnly = true};
 
         private ILogger logger;
 
@@ -67,9 +68,9 @@ namespace WikiClientLibrary.Wikibase
 
         public WbMonolingualTextsCollection Aliases { get; private set; }
 
-        public IDictionary<string, WbEntitySiteLink> SiteLinks { get; private set; }
+        public WbEntitySiteLinkCollection SiteLinks { get; private set; }
 
-        public IDictionary<string, ICollection<WbClaim>> Claims { get; private set; }
+        public WbClaimCollection Claims { get; private set; }
 
         public EntityQueryOptions QueryOptions { get; private set; }
 
@@ -163,8 +164,9 @@ namespace WikiClientLibrary.Wikibase
                     }
                     else
                     {
-                        SiteLinks = new ReadOnlyDictionary<string, WbEntitySiteLink>(
-                            jlinks.ToObject<IDictionary<string, WbEntitySiteLink>>(Utility.WikiJsonSerializer));
+                        SiteLinks = WbEntitySiteLinkCollection.Create(
+                            jlinks.Values().Select(t => t.ToObject<WbEntitySiteLink>(Utility.WikiJsonSerializer)));
+                        SiteLinks.IsReadOnly = true;
                     }
                 }
                 if ((options & EntityQueryOptions.FetchClaims) == EntityQueryOptions.FetchClaims)
@@ -177,10 +179,8 @@ namespace WikiClientLibrary.Wikibase
                     else
                     {
                         // { claims : { P47 : [ {}, {}, ... ], P105 : ... } }
-                        Claims = new ReadOnlyDictionary<string, ICollection<WbClaim>>(
-                            jclaims.Properties().ToDictionary(p => p.Name,
-                                p => (ICollection<WbClaim>)new ReadOnlyCollection<WbClaim>(
-                                    p.Value.Select(WbClaim.FromJson).ToList())));
+                        Claims = WbClaimCollection.Create(jclaims.Values()
+                            .SelectMany(jarray => jarray.Select(WbClaim.FromJson)));
                     }
                 }
             }
@@ -224,23 +224,103 @@ namespace WikiClientLibrary.Wikibase
         /// </summary>
         SupressRedirects = 0x100,
     }
-
-    [JsonObject(MemberSerialization.OptIn)]
+    
     public sealed class WbEntitySiteLink
     {
+        
+        public WbEntitySiteLink(string site, string title) : this(site, title, null, null)
+        {
+        }
+        
+        public WbEntitySiteLink(string site, string title, IList<string> badges) : this(site, title, badges, null)
+        {
+        }
 
-        [JsonProperty]
-        public string Site { get; private set; }
+        [JsonConstructor]
+        public WbEntitySiteLink(string site, string title, IList<string> badges, string url)
+        {
+            Site = site;
+            Title = title;
+            Badges = badges;
+            if (!badges.IsReadOnly) Badges = new ReadOnlyCollection<string>(badges);
+            Url = url;
+        }
 
-        [JsonProperty]
-        public string Title { get; private set; }
+        public string Site { get; }
+        
+        public string Title { get; }
+        
+        public IList<string> Badges { get; }
+        
+        public string Url { get; }
 
-        [JsonProperty]
-        public IList<string> Badges { get; private set; }
+    }
 
-        [JsonProperty]
-        public string Url { get; private set; }
+    public class WbEntitySiteLinkCollection : UnorderedKeyedCollection<string, WbEntitySiteLink>
+    {
+        internal static WbEntitySiteLinkCollection Create(IEnumerable<WbEntitySiteLink> items)
+        {
+            Debug.Assert(items != null);
+            var inst = new WbEntitySiteLinkCollection();
+            foreach (var i in items) inst.Add(i);
+            return inst;
+        }
 
+        /// <inheritdoc />
+        protected override string GetKeyForItem(WbEntitySiteLink item)
+        {
+            return item.Site;
+        }
+    }
+
+    public class WbClaimCollection : UnorderedKeyedMultiCollection<string, WbClaim>
+    {
+
+        internal static WbClaimCollection Create(IEnumerable<WbClaim> items)
+        {
+            Debug.Assert(items != null);
+            var inst = new WbClaimCollection();
+            foreach (var i in items) inst.Add(i);
+            return inst;
+        }
+
+        /// <inheritdoc />
+        protected override string GetKeyForItem(WbClaim item)
+        {
+            return item.MainSnak?.PropertyId;
+        }
+
+        /// <inheritdoc />
+        public override void Add(WbClaim item)
+        {
+            base.Add(item);
+            item.KeyChanging += Item_KeyChanging;
+        }
+
+        /// <inheritdoc />
+        public override bool Remove(string key)
+        {
+            AssertMutable();
+            foreach (var item in this[key])
+                item.KeyChanging -= Item_KeyChanging;
+            return base.Remove(key);
+        }
+
+        /// <inheritdoc />
+        public override bool Remove(WbClaim item)
+        {
+            if (base.Remove(item))
+            {
+                item.KeyChanging -= Item_KeyChanging;
+                return true;
+            }
+            return false;
+        }
+
+        private void Item_KeyChanging(object sender, KeyChangingEventArgs e)
+        {
+            ChangeItemKey((WbClaim)sender, (string)e.NewKey);
+        }
     }
 
 }

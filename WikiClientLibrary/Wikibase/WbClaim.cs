@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using Newtonsoft.Json.Linq;
+using WikiClientLibrary.Wikibase.Infrastructures;
 
 namespace WikiClientLibrary.Wikibase
 {
@@ -11,7 +12,30 @@ namespace WikiClientLibrary.Wikibase
     public sealed class WbClaim
     {
 
-        public WbSnak MainSnak { get; set; }
+        internal event EventHandler<KeyChangingEventArgs> KeyChanging;
+        private WbSnak _MainSnak;
+
+        public WbSnak MainSnak
+        {
+            get { return _MainSnak; }
+            set
+            {
+                if (_MainSnak != value)
+                {
+                    var oldKey = _MainSnak?.PropertyId;
+                    if (KeyChanging != null && oldKey != value?.PropertyId)
+                        KeyChanging(this, new KeyChangingEventArgs(value?.PropertyId));
+                    if (_MainSnak != null) _MainSnak.KeyChanging -= MainSnak_KeyChanging;
+                    _MainSnak = value;
+                    if (value != null) value.KeyChanging += MainSnak_KeyChanging;
+                }
+            }
+        }
+
+        private void MainSnak_KeyChanging(object sender, KeyChangingEventArgs keyChangingEventArgs)
+        {
+            KeyChanging?.Invoke(this, keyChangingEventArgs);
+        }
 
         /// <summary>Claim ID.</summary>
         public string Id { get; set; }
@@ -137,11 +161,25 @@ namespace WikiClientLibrary.Wikibase
         private object _DataValue;
         private JToken _RawDataValue;
 
+        internal event EventHandler<KeyChangingEventArgs> KeyChanging;
+        private string _PropertyId;
+
         /// <summary>Snak type.</summary>
         public SnakType SnakType { get; set; }
 
         /// <summary>Property ID, with "P" prefix.</summary>
-        public string PropertyId { get; set; }
+        public string PropertyId
+        {
+            get { return _PropertyId; }
+            set
+            {
+                if (_PropertyId != value)
+                {
+                    KeyChanging?.Invoke(this, new KeyChangingEventArgs(value));
+                    _PropertyId = value;
+                }
+            }
+        }
 
         /// <summary>Snak hash.</summary>
         public string Hash { get; set; }
