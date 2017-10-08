@@ -4,12 +4,12 @@ using System.Text;
 
 namespace WikiClientLibrary.Wikibase
 {
-    public struct WikibaseMonolingualText : IEquatable<WikibaseMonolingualText>
+    public struct WbMonolingualText : IEquatable<WbMonolingualText>
     {
 
-        public static readonly WikibaseMonolingualText Empty = new WikibaseMonolingualText();
+        public static readonly WbMonolingualText Empty = new WbMonolingualText();
 
-        public WikibaseMonolingualText(string text, string language)
+        public WbMonolingualText(string text, string language)
         {
             Text = text ?? throw new ArgumentNullException(nameof(text));
             if (language == null) throw new ArgumentNullException(nameof(language));
@@ -28,7 +28,7 @@ namespace WikiClientLibrary.Wikibase
         }
 
         /// <inheritdoc />
-        public bool Equals(WikibaseMonolingualText other)
+        public bool Equals(WbMonolingualText other)
         {
             return string.Equals(Text, other.Text) && string.Equals(Language, other.Language);
         }
@@ -36,7 +36,7 @@ namespace WikiClientLibrary.Wikibase
         /// <inheritdoc />
         public override bool Equals(object obj)
         {
-            return obj is WikibaseMonolingualText text && Equals(text);
+            return obj is WbMonolingualText text && Equals(text);
         }
 
         /// <inheritdoc />
@@ -48,12 +48,12 @@ namespace WikiClientLibrary.Wikibase
             }
         }
 
-        public static bool operator ==(WikibaseMonolingualText left, WikibaseMonolingualText right)
+        public static bool operator ==(WbMonolingualText left, WbMonolingualText right)
         {
             return left.Equals(right);
         }
 
-        public static bool operator !=(WikibaseMonolingualText left, WikibaseMonolingualText right)
+        public static bool operator !=(WbMonolingualText left, WbMonolingualText right)
         {
             return !left.Equals(right);
         }

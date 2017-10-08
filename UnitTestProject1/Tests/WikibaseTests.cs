@@ -17,7 +17,7 @@ namespace UnitTestProject1.Tests
         {
         }
 
-        private void CheckEntity(WikibaseEntity entity, string id, string labelEn)
+        private void CheckEntity(WbEntity entity, string id, string labelEn)
         {
             Assert.Equal(id, entity.Id);
             var title = id;
@@ -30,7 +30,7 @@ namespace UnitTestProject1.Tests
         public async Task FetchEntityTest1()
         {
             var site = await WikidataSiteAsync;
-            var entity = new WikibaseEntity(site, WikidataItems.Chumulangma);
+            var entity = new WbEntity(site, WikidataItems.Chumulangma);
             await entity.RefreshAsync(EntityQueryOptions.FetchAllProperties);
             ShallowTrace(entity);
             ShallowTrace(entity.Claims, 4);
@@ -44,7 +44,7 @@ namespace UnitTestProject1.Tests
             Assert.Equal("エベレスト", entity.Labels["ja"]);
 
             var claim = entity.Claims[WikidataProperties.CommonsCategory].First();
-            Assert.Equal(PropertyTypes.String, claim.MainSnak.DataType);
+            Assert.Equal(WbPropertyTypes.String, claim.MainSnak.DataType);
             Assert.Equal(SnakType.Value, claim.MainSnak.SnakType);
             Assert.Equal("Mount Everest", claim.MainSnak.DataValue);
 
@@ -53,25 +53,25 @@ namespace UnitTestProject1.Tests
             Assert.Contains(WikidataItems.Asia, parts);
 
             claim = entity.Claims[WikidataProperties.CoordinateLocation].First();
-            var location = (WikibaseGlobeCoordinate) claim.MainSnak.DataValue;
+            var location = (WbGlobeCoordinate) claim.MainSnak.DataValue;
             Assert.Equal(27.988055555556, location.Latitude, 12);
             Assert.Equal(86.925277777778, location.Longitude, 12);
             Assert.Equal(WikidataProperties.ImportedFrom, claim.References[0].Snaks[0].PropertyId);
             Assert.Equal(WikidataItems.DeWiki, claim.References[0].Snaks[0].DataValue);
 
-            var topiso = (WikibaseQuantity) entity.Claims[WikidataProperties.TopographicIsolation]
+            var topiso = (WbQuantity) entity.Claims[WikidataProperties.TopographicIsolation]
                 .First().MainSnak.DataValue;
             Assert.Equal(40008, topiso.Amount, 12);
-            Assert.Equal(WikibaseUri.Get(WikidataEntityUriPrefix + WikidataItems.Meter), topiso.Unit);
+            Assert.Equal(WbUri.Get(WikidataEntityUriPrefix + WikidataItems.Meter), topiso.Unit);
         }
 
         [Fact]
         public async Task FetchEntityTest2()
         {
             var site = await WikidataSiteAsync;
-            var entity1 = new WikibaseEntity(site, WikidataItems.Chumulangma);
-            var entity2 = new WikibaseEntity(site, WikidataItems.Chumulangma);
-            var entity3 = new WikibaseEntity(site, WikidataItems.Earth);
+            var entity1 = new WbEntity(site, WikidataItems.Chumulangma);
+            var entity2 = new WbEntity(site, WikidataItems.Chumulangma);
+            var entity3 = new WbEntity(site, WikidataItems.Earth);
             await new[] {entity1, entity2, entity3}.RefreshAsync(EntityQueryOptions.FetchAllProperties);
             CheckEntity(entity1, WikidataItems.Chumulangma, "Mount Everest");
             CheckEntity(entity2, WikidataItems.Chumulangma, "Mount Everest");

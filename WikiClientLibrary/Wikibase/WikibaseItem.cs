@@ -9,7 +9,7 @@ namespace WikiClientLibrary.Wikibase
     /// <summary>
     /// An item usually indicating an entity in the Wikibase.
     /// </summary>
-    public class WikibaseItem : WikiPage
+    internal class WikibaseItem : WikiPage      // Reserved for future use.
     {
         /// <inheritdoc />
         public WikibaseItem(WikiSite site, string title) : base(site, title)

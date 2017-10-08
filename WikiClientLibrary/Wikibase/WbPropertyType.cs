@@ -10,7 +10,7 @@ namespace WikiClientLibrary.Wikibase
     /// <summary>
     /// Atomic instances indicating a Wikibase Property type.
     /// </summary>
-    public abstract class WikibasePropertyType
+    public abstract class WbPropertyType
     {
         public abstract string Name { get; }
 
@@ -30,7 +30,7 @@ namespace WikiClientLibrary.Wikibase
         }
     }
 
-    internal sealed class DelegatePropertyType<T> : WikibasePropertyType
+    internal sealed class DelegatePropertyType<T> : WbPropertyType
     {
 
         private readonly Func<JToken, T> parseHandler;
@@ -70,7 +70,7 @@ namespace WikiClientLibrary.Wikibase
 
     }
 
-    internal sealed class MissingPropertyType : WikibasePropertyType
+    internal sealed class MissingPropertyType : WbPropertyType
     {
         private MissingPropertyType(string name, string valueTypeName)
         {
@@ -104,7 +104,7 @@ namespace WikiClientLibrary.Wikibase
         }
     }
 
-    public static class PropertyTypes
+    public static class WbPropertyTypes
     {
 
         private static string EntityIdFromJson(JToken value)
@@ -160,25 +160,25 @@ namespace WikiClientLibrary.Wikibase
             return value;
         }
 
-        public static WikibasePropertyType WikibaseItem { get; }
+        public static WbPropertyType WikibaseItem { get; }
             = new DelegatePropertyType<string>("wikibase-item", "wikibase-entityid",
                 EntityIdFromJson, EntityIdToJson);
 
-        public static WikibasePropertyType WikibaseProperty { get; }
+        public static WbPropertyType WikibaseProperty { get; }
             = new DelegatePropertyType<string>("wikibase-property", "wikibase-entityid",
                 EntityIdFromJson, EntityIdToJson);
 
-        public static WikibasePropertyType String { get; } = new DelegatePropertyType<string>("string",
+        public static WbPropertyType String { get; } = new DelegatePropertyType<string>("string",
             e => (string) e, v => v);
 
-        public static WikibasePropertyType CommonsMedia { get; }
+        public static WbPropertyType CommonsMedia { get; }
             = new DelegatePropertyType<string>("commonsMedia", "string",
                 e => (string) e, v => v);
 
-        public static WikibasePropertyType Url { get; } = new DelegatePropertyType<string>("url", "string",
+        public static WbPropertyType Url { get; } = new DelegatePropertyType<string>("url", "string",
             e => (string) e, v => v);
 
-        public static WikibasePropertyType Time { get; } = new DelegatePropertyType<WikibaseTime>("time",
+        public static WbPropertyType Time { get; } = new DelegatePropertyType<WbTime>("time",
             e =>
             {
                 var time = (string) e["time"];
@@ -187,7 +187,7 @@ namespace WikiClientLibrary.Wikibase
                 var after = (int) e["after"];
                 var precision = (WikibaseTimePrecision) (int) e["precision"];
                 var calendar = (string) e["calendarmodel"];
-                return new WikibaseTime(time, before, after, timeZone, precision, calendar);
+                return new WbTime(time, before, after, timeZone, precision, calendar);
             }, v =>
             {
                 var obj = new JObject
@@ -205,14 +205,14 @@ namespace WikiClientLibrary.Wikibase
         // No scientific notation. It's desirable.
         private const string SignedFloatFormat = "+0.#################;-0.#################;0";
 
-        public static WikibasePropertyType Quantity { get; } = new DelegatePropertyType<WikibaseQuantity>("quantity",
+        public static WbPropertyType Quantity { get; } = new DelegatePropertyType<WbQuantity>("quantity",
             e =>
             {
                 var amount = Convert.ToDouble((string) e["amount"]);
                 var unit = (string) e["unit"];
                 var lb = (string) e["lowerBound"];
                 var ub = (string) e["upperBound"];
-                return new WikibaseQuantity(amount,
+                return new WbQuantity(amount,
                     lb == null ? amount : Convert.ToDouble(lb),
                     ub == null ? amount : Convert.ToDouble(ub),
                     unit);
@@ -231,12 +231,12 @@ namespace WikiClientLibrary.Wikibase
                 return obj;
             });
 
-        public static WikibasePropertyType MonolingualText { get; }
-            = new DelegatePropertyType<WikibaseMonolingualText>("monolingualtext",
-                e => new WikibaseMonolingualText((string) e["text"], (string) e["language"]),
+        public static WbPropertyType MonolingualText { get; }
+            = new DelegatePropertyType<WbMonolingualText>("monolingualtext",
+                e => new WbMonolingualText((string) e["text"], (string) e["language"]),
                 v => new JObject {{"text", v.Text}, {"language", v.Language}});
 
-        public static WikibasePropertyType Math { get; } 
+        public static WbPropertyType Math { get; } 
             = new DelegatePropertyType<string>("math", "string",
             e => (string) e, v => v);
 
@@ -244,13 +244,13 @@ namespace WikiClientLibrary.Wikibase
         /// Literal data field for an external identifier.
         /// External identifiers may automatically be linked to an authoritative resource for display.
         /// </summary>
-        public static WikibasePropertyType ExternalId { get; }
+        public static WbPropertyType ExternalId { get; }
             = new DelegatePropertyType<string>("external-id", "string",
                 e => (string) e, v => v);
 
-        public static WikibasePropertyType GlobeCoordinate { get; }
-            = new DelegatePropertyType<WikibaseGlobeCoordinate>("globe-coordinate", "globecoordinate",
-                e => new WikibaseGlobeCoordinate((double) e["latitude"], (double) e["longitude"],
+        public static WbPropertyType GlobeCoordinate { get; }
+            = new DelegatePropertyType<WbGlobeCoordinate>("globe-coordinate", "globecoordinate",
+                e => new WbGlobeCoordinate((double) e["latitude"], (double) e["longitude"],
                     (double) e["precision"], (string) e["globe"]),
                 v => new JObject
                 {
@@ -262,24 +262,24 @@ namespace WikiClientLibrary.Wikibase
         /// Link to geographic map data stored on Wikimedia Commons (or other configured wiki).
         /// See "https://www.mediawiki.org/wiki/Help:Map_Data" for more documentation about map data.
         /// </summary>
-        public static WikibasePropertyType GeoShape { get; } = new DelegatePropertyType<string>("geo-shape", "string",
+        public static WbPropertyType GeoShape { get; } = new DelegatePropertyType<string>("geo-shape", "string",
             e => (string) e, v => v);
 
         /// <summary>
         /// Link to tabular data stored on Wikimedia Commons (or other configured wiki).
         /// See "https://www.mediawiki.org/wiki/Help:Tabular_Data" for more documentation about tabular data.
         /// </summary>
-        public static WikibasePropertyType TabularData { get; } = new DelegatePropertyType<string>("tabular-data", "string",
+        public static WbPropertyType TabularData { get; } = new DelegatePropertyType<string>("tabular-data", "string",
             e => (string) e, v => v);
 
-        private static readonly Dictionary<string, WikibasePropertyType> typeDict = new Dictionary<string, WikibasePropertyType>();
+        private static readonly Dictionary<string, WbPropertyType> typeDict = new Dictionary<string, WbPropertyType>();
 
-        static PropertyTypes()
+        static WbPropertyTypes()
         {
-            foreach (var p in typeof(PropertyTypes).GetRuntimeProperties()
-                .Where(p => p.PropertyType == typeof(WikibasePropertyType)))
+            foreach (var p in typeof(WbPropertyTypes).GetRuntimeProperties()
+                .Where(p => p.PropertyType == typeof(WbPropertyType)))
             {
-                var value = (WikibasePropertyType) p.GetValue(null);
+                var value = (WbPropertyType) p.GetValue(null);
                 typeDict.Add(value.Name, value);
             }
         }
@@ -290,7 +290,7 @@ namespace WikiClientLibrary.Wikibase
         /// <param name="typeName">Internal name of the desired property type.</param>
         /// <exception cref="ArgumentNullException"><paramref name="typeName"/> is <c>null</c>.</exception>
         /// <returns>The matching type, or <c>null</c> if cannot find one.</returns>
-        public static WikibasePropertyType Get(string typeName)
+        public static WbPropertyType Get(string typeName)
         {
             if (typeName == null) throw new ArgumentNullException(nameof(typeName));
             if (typeDict.TryGetValue(typeName, out var t)) return t;

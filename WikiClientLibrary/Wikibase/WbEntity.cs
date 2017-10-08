@@ -15,7 +15,7 @@ using System.Threading;
 namespace WikiClientLibrary.Wikibase
 {
 
-    public sealed class WikibaseEntity
+    public sealed class WbEntity
     {
         private static readonly IDictionary<string, string> emptyStringDict =
             new ReadOnlyDictionary<string, string>(new Dictionary<string, string>());
@@ -26,12 +26,12 @@ namespace WikiClientLibrary.Wikibase
         private static readonly IDictionary<string, EntitySiteLink> emptySiteLinks =
             new ReadOnlyDictionary<string, EntitySiteLink>(new Dictionary<string, EntitySiteLink>());
 
-        private static readonly IDictionary<string, ICollection<WikibaseClaim>> emptyClaims =
-            new ReadOnlyDictionary<string, ICollection<WikibaseClaim>>(new Dictionary<string, ICollection<WikibaseClaim>>());
+        private static readonly IDictionary<string, ICollection<WbClaim>> emptyClaims =
+            new ReadOnlyDictionary<string, ICollection<WbClaim>>(new Dictionary<string, ICollection<WbClaim>>());
 
         private ILogger logger;
 
-        public WikibaseEntity(WikiSite site, string id)
+        public WbEntity(WikiSite site, string id)
         {
             Site = site ?? throw new ArgumentNullException(nameof(site));
             Id = id ?? throw new ArgumentNullException(nameof(id));
@@ -61,7 +61,7 @@ namespace WikiClientLibrary.Wikibase
 
         public IDictionary<string, EntitySiteLink> SiteLinks { get; private set; }
 
-        public IDictionary<string, ICollection<WikibaseClaim>> Claims { get; private set; }
+        public IDictionary<string, ICollection<WbClaim>> Claims { get; private set; }
 
         public EntityQueryOptions QueryOptions { get; private set; }
 
@@ -160,10 +160,10 @@ namespace WikiClientLibrary.Wikibase
                     else
                     {
                         // { claims : { P47 : [ {}, {}, ... ], P105 : ... } }
-                        Claims = new ReadOnlyDictionary<string, ICollection<WikibaseClaim>>(
+                        Claims = new ReadOnlyDictionary<string, ICollection<WbClaim>>(
                             jclaims.Properties().ToDictionary(p => p.Name,
-                                p => (ICollection<WikibaseClaim>) new ReadOnlyCollection<WikibaseClaim>(
-                                    p.Value.Select(WikibaseClaim.FromJson).ToList())));
+                                p => (ICollection<WbClaim>) new ReadOnlyCollection<WbClaim>(
+                                    p.Value.Select(WbClaim.FromJson).ToList())));
                     }
                 }
             }

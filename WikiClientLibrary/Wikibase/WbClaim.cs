@@ -8,10 +8,10 @@ using Newtonsoft.Json.Linq;
 namespace WikiClientLibrary.Wikibase
 {
 
-    public sealed class WikibaseClaim
+    public sealed class WbClaim
     {
 
-        public WikibaseSnak MainSnak { get; set; }
+        public WbSnak MainSnak { get; set; }
 
         /// <summary>Claim ID.</summary>
         public string Id { get; set; }
@@ -20,9 +20,9 @@ namespace WikiClientLibrary.Wikibase
         /// <remarks>The value often is <c>normal</c>.</remarks>
         public string Rank { get; set; }
 
-        public IList<WikibaseSnak> Qualifiers { get; set; }
+        public IList<WbSnak> Qualifiers { get; set; }
 
-        public IList<WikibaseClaimReference> References { get; set; }
+        public IList<WbClaimReference> References { get; set; }
 
         internal static List<T> ToOrderedList<T>(JObject dict, JArray order, Func<JToken, IEnumerable<T>> valueSelector)
         {
@@ -35,10 +35,10 @@ namespace WikiClientLibrary.Wikibase
             return order.Select(key => dict[(string) key]).SelectMany(valueSelector).ToList();
         }
 
-        internal static WikibaseClaim FromJson(JToken claim)
+        internal static WbClaim FromJson(JToken claim)
         {
             Debug.Assert(claim != null);
-            var inst = new WikibaseClaim();
+            var inst = new WbClaim();
             inst.LoadFromJson(claim);
             return inst;
         }
@@ -46,29 +46,29 @@ namespace WikiClientLibrary.Wikibase
         internal void LoadFromJson(JToken claim)
         {
             Debug.Assert(claim != null);
-            MainSnak = claim["mainsnak"] == null ? null : WikibaseSnak.FromJson(claim["mainsnak"]);
+            MainSnak = claim["mainsnak"] == null ? null : WbSnak.FromJson(claim["mainsnak"]);
             Id = (string) claim["id"];
             Rank = (string) claim["rank"];
             Qualifiers = claim["qualifiers"] == null
                 ? null
                 : ToOrderedList((JObject) claim["qualifiers"], (JArray) claim["qualifiers-order"],
-                    jsnaks => jsnaks.Select(WikibaseSnak.FromJson));
-            References = claim["references"]?.Select(WikibaseClaimReference.FromJson).ToList();
+                    jsnaks => jsnaks.Select(WbSnak.FromJson));
+            References = claim["references"]?.Select(WbClaimReference.FromJson).ToList();
         }
 
     }
 
-    public sealed class WikibaseClaimReference
+    public sealed class WbClaimReference
     {
 
-        public IList<WikibaseSnak> Snaks { get; set; }
+        public IList<WbSnak> Snaks { get; set; }
 
         public string Hash { get; set; }
 
-        internal static WikibaseClaimReference FromJson(JToken claim)
+        internal static WbClaimReference FromJson(JToken claim)
         {
             Debug.Assert(claim != null);
-            var inst = new WikibaseClaimReference();
+            var inst = new WbClaimReference();
             inst.LoadFromJson(claim);
             return inst;
         }
@@ -78,14 +78,14 @@ namespace WikiClientLibrary.Wikibase
             Debug.Assert(reference != null);
             Snaks = reference["snaks"] == null
                 ? null
-                : WikibaseClaim.ToOrderedList((JObject) reference["snaks"], (JArray) reference["snaks-order"],
-                    jsnaks => jsnaks.Select(WikibaseSnak.FromJson));
+                : WbClaim.ToOrderedList((JObject) reference["snaks"], (JArray) reference["snaks-order"],
+                    jsnaks => jsnaks.Select(WbSnak.FromJson));
             Hash = (string) reference["hash"];
         }
 
     }
 
-    public sealed class WikibaseSnak
+    public sealed class WbSnak
     {
 
         private static readonly JToken DirtyDataValuePlaceholder = JValue.CreateNull();
@@ -159,7 +159,7 @@ namespace WikiClientLibrary.Wikibase
         }
 
         /// <summary>Data value type.</summary>
-        public WikibasePropertyType DataType { get; set; }
+        public WbPropertyType DataType { get; set; }
 
         private static SnakType ParseSnakType(string expr)
         {
@@ -173,10 +173,10 @@ namespace WikiClientLibrary.Wikibase
             }
         }
 
-        internal static WikibaseSnak FromJson(JToken claim)
+        internal static WbSnak FromJson(JToken claim)
         {
             Debug.Assert(claim != null);
-            var inst = new WikibaseSnak();
+            var inst = new WbSnak();
             inst.LoadFromJson(claim);
             return inst;
         }
@@ -188,7 +188,7 @@ namespace WikiClientLibrary.Wikibase
             PropertyId = (string) snak["property"];
             Hash = (string) snak["hash"];
             RawDataValue = snak["datavalue"];
-            DataType = PropertyTypes.Get((string) snak["datatype"])
+            DataType = WbPropertyTypes.Get((string) snak["datatype"])
                        ?? MissingPropertyType.Get((string) snak["datatype"], (string) snak["value"]?["type"]);
         }
     }

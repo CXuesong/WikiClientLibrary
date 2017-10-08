@@ -4,10 +4,10 @@ using System.Text;
 
 namespace WikiClientLibrary.Wikibase
 {
-    public struct WikibaseGlobeCoordinate : IEquatable<WikibaseGlobeCoordinate>
+    public struct WbGlobeCoordinate : IEquatable<WbGlobeCoordinate>
     {
 
-        public WikibaseGlobeCoordinate(double latitude, double longitude, double precision, WikibaseUri globe)
+        public WbGlobeCoordinate(double latitude, double longitude, double precision, WbUri globe)
         {
             Latitude = latitude;
             Longitude = longitude;
@@ -25,7 +25,7 @@ namespace WikiClientLibrary.Wikibase
         public double Precision { get; }
 
         /// <summary>Item URI of the globe.</summary>
-        public WikibaseUri Globe { get; }
+        public WbUri Globe { get; }
 
         /// <inheritdoc />
         public override string ToString()
@@ -40,7 +40,7 @@ namespace WikiClientLibrary.Wikibase
         }
 
         /// <inheritdoc />
-        public bool Equals(WikibaseGlobeCoordinate other)
+        public bool Equals(WbGlobeCoordinate other)
         {
             return Latitude.Equals(other.Latitude) && Longitude.Equals(other.Longitude)
                    && Precision.Equals(other.Precision) && Globe == other.Globe;
@@ -49,7 +49,7 @@ namespace WikiClientLibrary.Wikibase
         /// <inheritdoc />
         public override bool Equals(object obj)
         {
-            return obj is WikibaseGlobeCoordinate coordinate && Equals(coordinate);
+            return obj is WbGlobeCoordinate coordinate && Equals(coordinate);
         }
 
         /// <inheritdoc />
@@ -65,12 +65,12 @@ namespace WikiClientLibrary.Wikibase
             }
         }
 
-        public static bool operator ==(WikibaseGlobeCoordinate left, WikibaseGlobeCoordinate right)
+        public static bool operator ==(WbGlobeCoordinate left, WbGlobeCoordinate right)
         {
             return left.Equals(right);
         }
 
-        public static bool operator !=(WikibaseGlobeCoordinate left, WikibaseGlobeCoordinate right)
+        public static bool operator !=(WbGlobeCoordinate left, WbGlobeCoordinate right)
         {
             return !left.Equals(right);
         }

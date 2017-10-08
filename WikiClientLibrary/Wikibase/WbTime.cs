@@ -9,12 +9,12 @@ namespace WikiClientLibrary.Wikibase
     /// <summary>
     /// The date-time point value used in Wikibase.
     /// </summary>
-    public struct WikibaseTime : IEquatable<WikibaseTime>
+    public struct WbTime : IEquatable<WbTime>
     {
 
-        public WikibaseTime(int year, int month, int day, int hour, int minute, int second,
+        public WbTime(int year, int month, int day, int hour, int minute, int second,
             int before, int after, int timeZone,
-            WikibaseTimePrecision precision, WikibaseUri calendarModel)
+            WikibaseTimePrecision precision, WbUri calendarModel)
         {
             Year = year;
             Month = month;
@@ -33,8 +33,8 @@ namespace WikiClientLibrary.Wikibase
         private static readonly Regex ISO8601Matcher =
             new Regex(@"^\s*(?<Y>[\+-]?\d{1,9})-(?<M>\d\d?)-(?<D>\d\d?)T(?<H>\d\d?)-(?<m>\d\d?)-(?<S>\d\d?)(?<K>Z|[\+-]\d\d?:\d\d?)?\s*$");
 
-        public WikibaseTime(string dateTime, int before, int after, int timeZone,
-            WikibaseTimePrecision precision, WikibaseUri calendarModel)
+        public WbTime(string dateTime, int before, int after, int timeZone,
+            WikibaseTimePrecision precision, WbUri calendarModel)
         {
             if (dateTime == null) throw new ArgumentNullException(nameof(dateTime));
             var dateTimeMatch = ISO8601Matcher.Match(dateTime);
@@ -103,7 +103,7 @@ namespace WikiClientLibrary.Wikibase
         /// <summary>
         /// URI identifying the calendar model.
         /// </summary>
-        public WikibaseUri CalendarModel { get; }
+        public WbUri CalendarModel { get; }
 
         /// <inheritdoc />
         public override string ToString()
@@ -131,7 +131,7 @@ namespace WikiClientLibrary.Wikibase
         }
 
         /// <inheritdoc />
-        public bool Equals(WikibaseTime other)
+        public bool Equals(WbTime other)
         {
             return Year == other.Year && Month == other.Month && Day == other.Day && Hour == other.Hour && Minute == other.Minute && Second == other.Second &&
                    Before == other.Before && After == other.After && TimeZone == other.TimeZone && Precision == other.Precision &&
@@ -141,7 +141,7 @@ namespace WikiClientLibrary.Wikibase
         /// <inheritdoc />
         public override bool Equals(object obj)
         {
-            return obj is WikibaseTime time && Equals(time);
+            return obj is WbTime time && Equals(time);
         }
 
         /// <inheritdoc />
@@ -164,12 +164,12 @@ namespace WikiClientLibrary.Wikibase
             }
         }
 
-        public static bool operator ==(WikibaseTime left, WikibaseTime right)
+        public static bool operator ==(WbTime left, WbTime right)
         {
             return left.Equals(right);
         }
 
-        public static bool operator !=(WikibaseTime left, WikibaseTime right)
+        public static bool operator !=(WbTime left, WbTime right)
         {
             return !left.Equals(right);
         }

@@ -59,7 +59,7 @@ namespace WikiClientLibrary.Wikibase
             };
         }
 
-        public static async Task RefreshEntitiesAsync(IEnumerable<WikibaseEntity> entities, EntityQueryOptions options, 
+        public static async Task RefreshEntitiesAsync(IEnumerable<WbEntity> entities, EntityQueryOptions options, 
             IEnumerable<string> languages, CancellationToken cancellationToken)
         {
             if (entities == null) throw new ArgumentNullException(nameof(entities));
