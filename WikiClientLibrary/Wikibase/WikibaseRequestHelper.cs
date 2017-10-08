@@ -88,7 +88,7 @@ namespace WikiClientLibrary.Wikibase
                                 string.Equals(p.Name, entity.Id, StringComparison.OrdinalIgnoreCase));
                         if (jentity == null)
                             throw new UnexpectedDataException($"Cannot find the entity with id {entity.Id} in the response.");
-                        entity.LoadFromJson(jentity, options);
+                        entity.LoadFromJson(jentity, options, false);
                     }
                 }
             }

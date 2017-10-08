@@ -16,9 +16,13 @@ namespace WikiClientLibrary.Wikibase
         /// <summary>Claim ID.</summary>
         public string Id { get; set; }
 
+        /// <summary>The type of the claim.</summary>
+        /// <remarks>The value often is <c>statement</c>.</remarks>
+        public string Type { get; set; } = "statement";
+
         /// <summary>Rank of the claim.</summary>
         /// <remarks>The value often is <c>normal</c>.</remarks>
-        public string Rank { get; set; }
+        public string Rank { get; set; } = "normal";
 
         public IList<WbSnak> Qualifiers { get; set; }
 
@@ -32,7 +36,7 @@ namespace WikiClientLibrary.Wikibase
             if (order == null)
                 return dict.Values().SelectMany(valueSelector).ToList();
             Debug.Assert(order.Count == dict.Count);
-            return order.Select(key => dict[(string) key]).SelectMany(valueSelector).ToList();
+            return order.Select(key => dict[(string)key]).SelectMany(valueSelector).ToList();
         }
 
         internal static WbClaim FromJson(JToken claim)
@@ -47,13 +51,39 @@ namespace WikiClientLibrary.Wikibase
         {
             Debug.Assert(claim != null);
             MainSnak = claim["mainsnak"] == null ? null : WbSnak.FromJson(claim["mainsnak"]);
-            Id = (string) claim["id"];
-            Rank = (string) claim["rank"];
+            Id = (string)claim["id"];
+            Type = (string)claim["type"];
+            Rank = (string)claim["rank"];
             Qualifiers = claim["qualifiers"] == null
                 ? null
-                : ToOrderedList((JObject) claim["qualifiers"], (JArray) claim["qualifiers-order"],
+                : ToOrderedList((JObject)claim["qualifiers"], (JArray)claim["qualifiers-order"],
                     jsnaks => jsnaks.Select(WbSnak.FromJson));
             References = claim["references"]?.Select(WbClaimReference.FromJson).ToList();
+        }
+
+        internal JObject ToJson(bool identifierOnly)
+        {
+            var obj = new JObject
+            {
+                {"id", Id},
+                {"type", Type},
+                {"rank", Rank}
+            };
+            if (identifierOnly) return obj;
+            if (MainSnak == null) throw new InvalidOperationException("MainSnak should not be null.");
+            obj.Add("mainsnak", MainSnak.ToJson());
+            if (Qualifiers != null)
+            {
+                obj.Add("qualifiers",
+                    Qualifiers.GroupBy(s => s.PropertyId).ToJObject(g => g.Key, g => g.Select(s => s.ToJson()).ToJArray())
+                );
+                obj.Add("qualifiers-order", Qualifiers.Select(s => s.PropertyId).Distinct().ToJArray());
+            }
+            if (References != null)
+            {
+                obj.Add("references", References.Select(r => r.ToJson()).ToJArray());
+            }
+            return obj;
         }
 
     }
@@ -78,9 +108,23 @@ namespace WikiClientLibrary.Wikibase
             Debug.Assert(reference != null);
             Snaks = reference["snaks"] == null
                 ? null
-                : WbClaim.ToOrderedList((JObject) reference["snaks"], (JArray) reference["snaks-order"],
+                : WbClaim.ToOrderedList((JObject)reference["snaks"], (JArray)reference["snaks-order"],
                     jsnaks => jsnaks.Select(WbSnak.FromJson));
-            Hash = (string) reference["hash"];
+            Hash = (string)reference["hash"];
+        }
+
+        internal JObject ToJson()
+        {
+            var obj = new JObject();
+            if (Hash != null) obj.Add("hash", Hash);
+            if (Snaks != null)
+            {
+                obj.Add("snaks",
+                    Snaks.GroupBy(s => s.PropertyId).ToJObject(g => g.Key, g => g.Select(s => s.ToJson()).ToJArray())
+                );
+                obj.Add("snaks-order", Snaks.Select(s => s.PropertyId).Distinct().ToJArray());
+            }
+            return obj;
         }
 
     }
@@ -144,7 +188,7 @@ namespace WikiClientLibrary.Wikibase
                 }
                 Debug.Assert(_RawDataValue != DirtyDataValuePlaceholder);
                 if (DataType == null) throw new InvalidOperationException("DataType is null.");
-                var valueType = (string) RawDataValue["type"];
+                var valueType = (string)RawDataValue["type"];
                 if (valueType != null && valueType != DataType.ValueTypeName)
                     throw new NotSupportedException($"Parsing value type \"{valueType}\" is not supported by {DataType}.");
                 var value = DataType.Parse(_RawDataValue["value"]);
@@ -173,6 +217,17 @@ namespace WikiClientLibrary.Wikibase
             }
         }
 
+        private static string ParseSnakType(SnakType value)
+        {
+            switch (value)
+            {
+                case SnakType.Value: return "value";
+                case SnakType.SomeValue: return "somevalue";
+                case SnakType.NoValue: return "novalue";
+                default: throw new ArgumentException("Invalid SnackType value.", nameof(value));
+            }
+        }
+
         internal static WbSnak FromJson(JToken claim)
         {
             Debug.Assert(claim != null);
@@ -184,13 +239,27 @@ namespace WikiClientLibrary.Wikibase
         internal void LoadFromJson(JToken snak)
         {
             Debug.Assert(snak != null);
-            SnakType = ParseSnakType((string) snak["snaktype"]);
-            PropertyId = (string) snak["property"];
-            Hash = (string) snak["hash"];
+            SnakType = ParseSnakType((string)snak["snaktype"]);
+            PropertyId = (string)snak["property"];
+            Hash = (string)snak["hash"];
             RawDataValue = snak["datavalue"];
-            DataType = WbPropertyTypes.Get((string) snak["datatype"])
-                       ?? MissingPropertyType.Get((string) snak["datatype"], (string) snak["value"]?["type"]);
+            DataType = WbPropertyTypes.Get((string)snak["datatype"])
+                       ?? MissingPropertyType.Get((string)snak["datatype"], (string)snak["value"]?["type"]);
         }
+
+        internal JObject ToJson()
+        {
+            var obj = new JObject
+            {
+                {"snaktype", ParseSnakType(SnakType)},
+                {"property", PropertyId},
+                {"hash", Hash},
+                {"datatype", DataType.Name},
+                {"datavalue", RawDataValue}
+            };
+            return obj;
+        }
+
     }
 
     public enum SnakType
@@ -206,3 +275,4 @@ namespace WikiClientLibrary.Wikibase
     }
 
 }
+

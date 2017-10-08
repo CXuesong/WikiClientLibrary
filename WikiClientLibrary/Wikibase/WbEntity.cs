@@ -15,7 +15,7 @@ using System.Threading;
 namespace WikiClientLibrary.Wikibase
 {
 
-    public sealed class WbEntity
+    public sealed partial class WbEntity
     {
         private static readonly IDictionary<string, string> emptyStringDict =
             new ReadOnlyDictionary<string, string>(new Dictionary<string, string>());
@@ -23,14 +23,20 @@ namespace WikiClientLibrary.Wikibase
         private static readonly IDictionary<string, ICollection<string>> emptyStringsDict =
             new ReadOnlyDictionary<string, ICollection<string>>(new Dictionary<string, ICollection<string>>());
 
-        private static readonly IDictionary<string, EntitySiteLink> emptySiteLinks =
-            new ReadOnlyDictionary<string, EntitySiteLink>(new Dictionary<string, EntitySiteLink>());
+        private static readonly IDictionary<string, WbEntitySiteLink> emptySiteLinks =
+            new ReadOnlyDictionary<string, WbEntitySiteLink>(new Dictionary<string, WbEntitySiteLink>());
 
         private static readonly IDictionary<string, ICollection<WbClaim>> emptyClaims =
             new ReadOnlyDictionary<string, ICollection<WbClaim>>(new Dictionary<string, ICollection<WbClaim>>());
 
         private ILogger logger;
 
+        /// <summary>
+        /// Initializes a new <see cref="WbEntity"/> entity from Wikibase site
+        /// and entity ID.
+        /// </summary>
+        /// <param name="site">Wikibase site.</param>
+        /// <param name="id">Entity or property ID.</param>
         public WbEntity(WikiSite site, string id)
         {
             Site = site ?? throw new ArgumentNullException(nameof(site));
@@ -53,13 +59,15 @@ namespace WikiClientLibrary.Wikibase
 
         public DateTime LastModified { get; private set; }
 
+        public int LastRevisionId { get; private set; }
+
         public IDictionary<string, string> Labels { get; private set; }
 
         public IDictionary<string, string> Descriptions { get; private set; }
 
         public IDictionary<string, ICollection<string>> Aliases { get; private set; }
 
-        public IDictionary<string, EntitySiteLink> SiteLinks { get; private set; }
+        public IDictionary<string, WbEntitySiteLink> SiteLinks { get; private set; }
 
         public IDictionary<string, ICollection<WbClaim>> Claims { get; private set; }
 
@@ -82,7 +90,7 @@ namespace WikiClientLibrary.Wikibase
 
         public Task RefreshAsync(EntityQueryOptions options, ICollection<string> languages, CancellationToken cancellationToken)
         {
-            return WikibaseRequestHelper.RefreshEntitiesAsync(new[] { this }, options, languages, cancellationToken);
+            return WikibaseRequestHelper.RefreshEntitiesAsync(new[] {this}, options, languages, cancellationToken);
         }
 
         private static IDictionary<string, string> ParseMultiLanguageValues(JObject jdict)
@@ -100,7 +108,8 @@ namespace WikiClientLibrary.Wikibase
                     p.Value.Select(t => (string)t["value"]).ToList()), StringComparer.OrdinalIgnoreCase));
         }
 
-        internal void LoadFromJson(JToken entity, EntityQueryOptions options)
+        // postEditing: Is the entity param from the response of wbeditentity API call.
+        internal void LoadFromJson(JToken entity, EntityQueryOptions options, bool isPostEditing)
         {
             var id = (string)entity["id"];
             Debug.Assert(id != null);
@@ -117,6 +126,7 @@ namespace WikiClientLibrary.Wikibase
             NamespaceId = -1;
             Title = null;
             LastModified = DateTime.MinValue;
+            LastRevisionId = 0;
             Labels = null;
             Aliases = null;
             Descriptions = null;
@@ -126,10 +136,15 @@ namespace WikiClientLibrary.Wikibase
                 Type = (string)entity["type"];
                 if ((options & EntityQueryOptions.FetchInfo) == EntityQueryOptions.FetchInfo)
                 {
-                    PageId = (int)entity["pageid"];
-                    NamespaceId = (int)entity["ns"];
-                    Title = (string)entity["title"];
-                    LastModified = (DateTime)entity["modified"];
+                    if (!isPostEditing)
+                    {
+                        // wbeditentity response does not have these properties.
+                        PageId = (int)entity["pageid"];
+                        NamespaceId = (int)entity["ns"];
+                        Title = (string)entity["title"];
+                        LastModified = (DateTime)entity["modified"];
+                    }
+                    LastRevisionId = (int)entity["lastrevid"];
                 }
                 if ((options & EntityQueryOptions.FetchLabels) == EntityQueryOptions.FetchLabels)
                     Labels = ParseMultiLanguageValues((JObject)entity["labels"]);
@@ -146,8 +161,8 @@ namespace WikiClientLibrary.Wikibase
                     }
                     else
                     {
-                        SiteLinks = new ReadOnlyDictionary<string, EntitySiteLink>(
-                            jlinks.ToObject<IDictionary<string, EntitySiteLink>>(Utility.WikiJsonSerializer));
+                        SiteLinks = new ReadOnlyDictionary<string, WbEntitySiteLink>(
+                            jlinks.ToObject<IDictionary<string, WbEntitySiteLink>>(Utility.WikiJsonSerializer));
                     }
                 }
                 if ((options & EntityQueryOptions.FetchClaims) == EntityQueryOptions.FetchClaims)
@@ -162,7 +177,7 @@ namespace WikiClientLibrary.Wikibase
                         // { claims : { P47 : [ {}, {}, ... ], P105 : ... } }
                         Claims = new ReadOnlyDictionary<string, ICollection<WbClaim>>(
                             jclaims.Properties().ToDictionary(p => p.Name,
-                                p => (ICollection<WbClaim>) new ReadOnlyCollection<WbClaim>(
+                                p => (ICollection<WbClaim>)new ReadOnlyCollection<WbClaim>(
                                     p.Value.Select(WbClaim.FromJson).ToList())));
                     }
                 }
@@ -209,7 +224,7 @@ namespace WikiClientLibrary.Wikibase
     }
 
     [JsonObject(MemberSerialization.OptIn)]
-    public sealed class EntitySiteLink
+    public sealed class WbEntitySiteLink
     {
 
         [JsonProperty]

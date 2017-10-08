@@ -17,6 +17,7 @@ using WikiClientLibrary.Generators;
 using System.Runtime.CompilerServices;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
+using Newtonsoft.Json.Linq;
 using WikiClientLibrary.Infrastructures;
 using WikiClientLibrary.Pages;
 
@@ -309,6 +310,23 @@ namespace WikiClientLibrary
                 bytesRead += chunkSize;
             }
             return bytesRead;
+        }
+
+        public static JObject ToJObject<TSource>(this IEnumerable<TSource> source,
+            Func<TSource, string> propertyNameSelector, Func<TSource, JToken> valueSelector)
+        {
+            if (source == null) throw new ArgumentNullException(nameof(source));
+            if (propertyNameSelector == null) throw new ArgumentNullException(nameof(propertyNameSelector));
+            if (valueSelector == null) throw new ArgumentNullException(nameof(valueSelector));
+            var obj = new JObject();
+            foreach (var item in source) obj.Add(propertyNameSelector(item), valueSelector(item));
+            return obj;
+        }
+
+        public static JArray ToJArray<TSource>(this IEnumerable<TSource> source)
+        {
+            var arr = new JArray(source);
+            return arr;
         }
 
     }

@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using WikiClientLibrary.Wikibase;
 using Xunit;
@@ -15,6 +17,7 @@ namespace UnitTestProject1.Tests
         /// <inheritdoc />
         public WikibaseTests(ITestOutputHelper output) : base(output)
         {
+            SiteNeedsLogin(Endpoints.WikidataTest);
         }
 
         private void CheckEntity(WbEntity entity, string id, string labelEn)
@@ -76,6 +79,18 @@ namespace UnitTestProject1.Tests
             CheckEntity(entity1, WikidataItems.Chumulangma, "Mount Everest");
             CheckEntity(entity2, WikidataItems.Chumulangma, "Mount Everest");
             CheckEntity(entity3, WikidataItems.Earth, "Earth");
+        }
+
+        [Fact]
+        public async Task EditEntityTest1()
+        {
+            var site = await WikidataTestSiteAsync;
+            var entity = new WbEntity(site, "Q487");
+            var changelist = new List<WbEntityEditEntry>
+            {
+                new WbEntityEditEntry(nameof(WbEntity.Descriptions), new WbMonolingualText("zh-cn", "珠穆朗玛峰")),
+            };
+            await entity.Edit(changelist, "Test edit.", true, false, CancellationToken.None);
         }
 
         public static class WikidataItems

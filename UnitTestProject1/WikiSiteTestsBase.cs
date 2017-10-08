@@ -128,7 +128,7 @@ namespace UnitTestProject1
 
         protected Task<WikiSite> WikidataSiteAsync => GetWikiSiteAsync(Endpoints.Wikidata);
 
-        protected Task<WikiSite> WikidataBetaSiteAsync => GetWikiSiteAsync(Endpoints.WikidataBeta);
+        protected Task<WikiSite> WikidataTestSiteAsync => GetWikiSiteAsync(Endpoints.WikidataTest);
 
         protected Task<WikiSite> WikiSiteFromNameAsync(string sitePropertyName)
         {
