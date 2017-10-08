@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Text;
 
 namespace WikiClientLibrary.Wikibase
@@ -7,7 +8,7 @@ namespace WikiClientLibrary.Wikibase
     public struct WbMonolingualText : IEquatable<WbMonolingualText>
     {
 
-        public static readonly WbMonolingualText Empty = new WbMonolingualText();
+        public static readonly WbMonolingualText Null = new WbMonolingualText();
 
         public WbMonolingualText(string language, string text)
         {
@@ -15,6 +16,15 @@ namespace WikiClientLibrary.Wikibase
             if (text == null) throw new ArgumentNullException(nameof(text));
             // Simple normalization.
             Language = language.Trim().ToLowerInvariant();
+            Text = text;
+        }
+
+        internal WbMonolingualText(string language, string text, bool bypassPreprocess)
+        {
+            Debug.Assert(bypassPreprocess);
+            Debug.Assert(language != null);
+            Debug.Assert(text != null);
+            Language = language;
             Text = text;
         }
 

@@ -17,17 +17,17 @@ namespace WikiClientLibrary.Wikibase
 
     public sealed partial class WbEntity
     {
-        private static readonly IDictionary<string, string> emptyStringDict =
-            new ReadOnlyDictionary<string, string>(new Dictionary<string, string>());
+        private static readonly WbMonolingualTextCollection emptyStringDict
+            = new WbMonolingualTextCollection {IsReadOnly = true};
 
-        private static readonly IDictionary<string, ICollection<string>> emptyStringsDict =
-            new ReadOnlyDictionary<string, ICollection<string>>(new Dictionary<string, ICollection<string>>());
+        private static readonly WbMonolingualTextsCollection emptyStringsDict
+            = new WbMonolingualTextsCollection {IsReadOnly = true};
 
-        private static readonly IDictionary<string, WbEntitySiteLink> emptySiteLinks =
-            new ReadOnlyDictionary<string, WbEntitySiteLink>(new Dictionary<string, WbEntitySiteLink>());
+        private static readonly IDictionary<string, WbEntitySiteLink> emptySiteLinks
+            = new ReadOnlyDictionary<string, WbEntitySiteLink>(new Dictionary<string, WbEntitySiteLink>());
 
-        private static readonly IDictionary<string, ICollection<WbClaim>> emptyClaims =
-            new ReadOnlyDictionary<string, ICollection<WbClaim>>(new Dictionary<string, ICollection<WbClaim>>());
+        private static readonly IDictionary<string, ICollection<WbClaim>> emptyClaims
+            = new ReadOnlyDictionary<string, ICollection<WbClaim>>(new Dictionary<string, ICollection<WbClaim>>());
 
         private ILogger logger;
 
@@ -61,11 +61,11 @@ namespace WikiClientLibrary.Wikibase
 
         public int LastRevisionId { get; private set; }
 
-        public IDictionary<string, string> Labels { get; private set; }
+        public WbMonolingualTextCollection Labels { get; private set; }
 
-        public IDictionary<string, string> Descriptions { get; private set; }
+        public WbMonolingualTextCollection Descriptions { get; private set; }
 
-        public IDictionary<string, ICollection<string>> Aliases { get; private set; }
+        public WbMonolingualTextsCollection Aliases { get; private set; }
 
         public IDictionary<string, WbEntitySiteLink> SiteLinks { get; private set; }
 
@@ -93,19 +93,21 @@ namespace WikiClientLibrary.Wikibase
             return WikibaseRequestHelper.RefreshEntitiesAsync(new[] {this}, options, languages, cancellationToken);
         }
 
-        private static IDictionary<string, string> ParseMultiLanguageValues(JObject jdict)
+        private static WbMonolingualTextCollection ParseMultiLanguageValues(JObject jdict)
         {
             if (jdict == null || !jdict.HasValues) return emptyStringDict;
-            return new ReadOnlyDictionary<string, string>(jdict.PropertyValues()
-                .ToDictionary(t => (string)t["language"], t => (string)t["value"], StringComparer.OrdinalIgnoreCase));
+            return new WbMonolingualTextCollection(jdict.PropertyValues()
+                    .Select(t => new WbMonolingualText((string)t["language"], (string)t["value"])))
+                {IsReadOnly = true};
         }
 
-        private static IDictionary<string, ICollection<string>> ParseMultiLanguageMultiValues(JObject jdict)
+        private static WbMonolingualTextsCollection ParseMultiLanguageMultiValues(JObject jdict)
         {
             if (jdict == null || !jdict.HasValues) return emptyStringsDict;
-            return new ReadOnlyDictionary<string, ICollection<string>>(jdict.Properties()
-                .ToDictionary(p => p.Name, p => (ICollection<string>)new ReadOnlyCollection<string>(
-                    p.Value.Select(t => (string)t["value"]).ToList()), StringComparer.OrdinalIgnoreCase));
+            return new WbMonolingualTextsCollection(jdict.Properties()
+                    .Select(p => new KeyValuePair<string, IEnumerable<string>>(
+                        p.Name, p.Value.Select(t => (string)t["value"]))))
+                {IsReadOnly = true};
         }
 
         // postEditing: Is the entity param from the response of wbeditentity API call.
