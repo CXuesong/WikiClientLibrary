@@ -190,7 +190,7 @@ namespace WikiClientLibrary.Wikibase
     /// Provides convenient access to 1:n language-text pairs of multilingual text.
     /// </summary>
     /// <remarks>All the language codes are normalized to lower-case and are case-insensitive.</remarks>
-    [DebuggerDisplay("LanguagesCount = {LanguagesCount}")]
+    [DebuggerDisplay("Count = {Count}")]
     public class WbMonolingualTextsCollection : ICollection<WbMonolingualText>
     {
 
@@ -283,7 +283,12 @@ namespace WikiClientLibrary.Wikibase
         {
             if (language == null || text == null) return false;
             AssertMutable();
-            return dict.TryGetValue(language, out var slot) && slot.Remove(text);
+            if (dict.TryGetValue(language, out var slot) && slot.Remove(text))
+            {
+                if (slot.Count == 0) dict.Remove(language);
+                return true;
+            }
+            return false;
         }
 
         /// <inheritdoc />
@@ -300,6 +305,11 @@ namespace WikiClientLibrary.Wikibase
             AssertMutable();
             dict.Clear();
         }
+
+        /// <summary>
+        /// Gets a view of all the languages.
+        /// </summary>
+        public ICollection<string> Languages => dict.Keys;
 
         /// <summary>
         /// Gets/sets the associated text to the specified language.
@@ -353,27 +363,8 @@ namespace WikiClientLibrary.Wikibase
                 : Enumerable.Empty<WbMonolingualText>();
         }
 
-        /// <summary>Gets the count of languages that has associated text.</summary>
-        public int LanguagesCount => dict.Count;
-
-        /// <summary>
-        /// Gets the count of text entries associated with the specified language.
-        /// </summary>
-        /// <param name="language">The language code that text entries will be counted in.</param>
-        /// <exception cref="ArgumentNullException"><paramref name="language"/> is <c>null</c>.</exception>
-        /// <returns>A non-negative integer.</returns>
-        public int TextCount(string language)
-        {
-            if (dict.TryGetValue(language, out var slot))
-            {
-                Debug.Assert(slot.Count > 0);
-                return slot.Count;
-            }
-            return 0;
-        }
-
         /// <inheritdoc />
-        int ICollection<WbMonolingualText>.Count => dict.Values.Sum(slot => slot.Count);
+        public int Count => dict.Values.Sum(slot => slot.Count);
 
         public bool ContainsLanguage(string language)
         {
@@ -434,6 +425,7 @@ namespace WikiClientLibrary.Wikibase
         {
             if (_IsReadOnly) throw new NotSupportedException("The dictionary is read-only.");
         }
+
     }
 
 }
