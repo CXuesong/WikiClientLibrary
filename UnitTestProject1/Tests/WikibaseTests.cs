@@ -87,6 +87,9 @@ namespace UnitTestProject1.Tests
         [Fact]
         public async Task EditEntityTest1()
         {
+
+            const string ArbitaryItemEntityId = "Q487"; // An item ID that exists on test wiki site.
+
             var site = await WikidataTestSiteAsync;
             var rand = Convert.ToBase64String(Guid.NewGuid().ToByteArray());
             // Create
@@ -96,7 +99,9 @@ namespace UnitTestProject1.Tests
                 new WbEntityEditEntry(nameof(WbEntity.Labels), new WbMonolingualText("en", "test entity " + rand)),
                 new WbEntityEditEntry(nameof(WbEntity.Aliases), new WbMonolingualText("en", "entity for test")),
                 new WbEntityEditEntry(nameof(WbEntity.Aliases), new WbMonolingualText("en", "test")),
-                new WbEntityEditEntry(nameof(WbEntity.Descriptions), new WbMonolingualText("en", "This is a test entity for unit test. If you see this entity outside the test site, please check the revision history and notify the editor.")),
+                new WbEntityEditEntry(nameof(WbEntity.Descriptions),
+                    new WbMonolingualText("en",
+                        "This is a test entity for unit test. If you see this entity outside the test site, please check the revision history and notify the editor.")),
                 new WbEntityEditEntry(nameof(WbEntity.Descriptions), new WbMonolingualText("zh", "此实体仅用于测试之用。如果你在非测试维基见到此实体，请检查修订历史并告知编辑者。")),
             };
             await entity.Edit(changelist, "Create test entity.", true);
@@ -123,12 +128,43 @@ namespace UnitTestProject1.Tests
             Assert.DoesNotContain("Test", entity.Aliases["en"]);
 
             // Add claim
+            //  Create a property first.
+            var prop = new WbEntity(site, WbEntityType.Property);
             changelist = new[]
             {
-                new WbEntityEditEntry(nameof(WbEntity.Claims), new WbClaim{}),
-                
+                new WbEntityEditEntry(nameof(WbEntity.Labels), new WbMonolingualText("en", "test property " + rand)),
+                new WbEntityEditEntry(nameof(WbEntity.DataType), WbPropertyTypes.WikibaseItem),
             };
-            await entity.Edit(changelist, "Edit test entity.", true);
+            await prop.Edit(changelist, "Create a property for test.", true);
+            // Refill basic information, esp. WbEntity.DataType
+            await prop.RefreshAsync(EntityQueryOptions.FetchInfo);
+
+            //  Add the claims.
+            changelist = new[]
+            {
+                new WbEntityEditEntry(nameof(WbEntity.Claims), new WbClaim(new WbSnak(prop, entity.Id))),
+                new WbEntityEditEntry(nameof(WbEntity.Claims), new WbClaim(new WbSnak(prop, ArbitaryItemEntityId))
+                {
+                    References = {new WbClaimReference(new WbSnak(prop, entity.Id))}
+                }),
+            };
+            await entity.Edit(changelist, "Edit test entity. Add claims.", true);
+            Assert.Equal(2, entity.Claims.Count);
+            Assert.Equal(2, entity.Claims[prop.Id].Count);
+            Assert.Contains(entity.Claims[prop.Id], c => entity.Id.Equals(c.MainSnak.DataValue));
+            var claim2 = entity.Claims[prop.Id].FirstOrDefault(c => ArbitaryItemEntityId.Equals(c.MainSnak.DataValue));
+            Assert.NotNull(claim2);
+            Assert.Equal(entity.Id, claim2.References[0].Snaks[0].DataValue);
+            ShallowTrace(entity);
+            
+            // Remove a claim
+            changelist = new[]
+            {
+                new WbEntityEditEntry(nameof(WbEntity.Claims), claim2, WbEntityEditEntryState.Removed),
+            };
+            await entity.Edit(changelist, "Edit test entity. Remove a claim.", true);
+            Assert.Single(entity.Claims);
+            Assert.Contains(entity.Claims[prop.Id], c => entity.Id.Equals(c.MainSnak.DataValue));
         }
 
         public static class WikidataItems
