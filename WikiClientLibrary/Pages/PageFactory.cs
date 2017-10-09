@@ -4,7 +4,6 @@ using System.Linq;
 using Newtonsoft.Json.Linq;
 using WikiClientLibrary.Flow;
 using WikiClientLibrary.Sites;
-using WikiClientLibrary.Wikibase;
 
 namespace WikiClientLibrary.Pages
 {
@@ -96,9 +95,6 @@ namespace WikiClientLibrary.Pages
                                     newInst = new Topic(site);
                                 else
                                     newInst = new Board(site);
-                                break;
-                            case ContentModels.WikibaseItem:
-                                newInst = new WikibaseItem(site);
                                 break;
                             default:
                                 newInst = new WikiPage(site);
