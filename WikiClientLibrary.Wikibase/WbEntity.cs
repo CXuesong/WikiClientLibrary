@@ -352,6 +352,9 @@ namespace WikiClientLibrary.Wikibase
         SupressRedirects = 0x100,
     }
 
+    /// <summary>
+    /// Represents a corresponding link for an entity to an external wiki site.
+    /// </summary>
     public sealed class WbEntitySiteLink
     {
 
@@ -373,12 +376,26 @@ namespace WikiClientLibrary.Wikibase
             Url = url;
         }
 
+        /// <summary>
+        /// The site name.
+        /// </summary>
+        /// <remarks>For a complete list of site names available for Wikidata,
+        /// see https://www.wikidata.org/w/api.php?action=help&amp;modules=wbgetentities .</remarks>
         public string Site { get; }
 
+        /// <summary>
+        /// The local title on the specified wiki site.
+        /// </summary>
         public string Title { get; }
 
+        /// <summary>
+        /// The badges for the title on the specified wiki site.
+        /// </summary>
         public IList<string> Badges { get; }
 
+        /// <summary>
+        /// The URL to the title on the specified wiki site.
+        /// </summary>
         public string Url { get; }
 
     }
