@@ -12,46 +12,47 @@ namespace WikiClientLibrary.Wikibase
     /// An atomic instance of URI used in Wikibase.
     /// </summary>
     [JsonObject(ItemConverterType = typeof(WikibaseUriJsonConverter))]
-    public sealed class WikibaseUri : IEquatable<WikibaseUri>
+    public sealed class WbUri : IEquatable<WbUri>
     {
 
-        private static readonly ConcurrentDictionary<string, WeakReference<WikibaseUri>> cacheDict =
-            new ConcurrentDictionary<string, WeakReference<WikibaseUri>>();
+        private static readonly ConcurrentDictionary<string, WeakReference<WbUri>> cacheDict =
+            new ConcurrentDictionary<string, WeakReference<WbUri>>();
 
-        public static WikibaseUri Get(string uri)
+        public static WbUri Get(string uri)
         {
             if (uri == null) throw new ArgumentNullException(nameof(uri));
-            WikibaseUri inst = null;
+            WbUri inst = null;
             // Fast route
             if (cacheDict.TryGetValue(uri, out var r) && r.TryGetTarget(out inst))
                 return inst;
             // Slow route
             cacheDict.AddOrUpdate(uri,
-                u => new WeakReference<WikibaseUri>(inst = new WikibaseUri(u)),
+                u => new WeakReference<WbUri>(inst = new WbUri(u)),
                 (u, r0) =>
                 {
                     if (!r0.TryGetTarget(out inst))
                     {
-                        inst = new WikibaseUri(u);
-                        return new WeakReference<WikibaseUri>(inst);
+                        inst = new WbUri(u);
+                        return new WeakReference<WbUri>(inst);
                     }
                     return r0;
                 });
             return inst;
         }
 
-        private WikibaseUri(string uri)
+        private WbUri(string uri)
         {
             Uri = uri ?? throw new ArgumentNullException(nameof(uri));
         }
 
+        /// <summary>Gets the string of referenced URI.</summary>
         public string Uri { get; }
 
-        /// <inheritdoc />
+        /// <summary>Gets the referenced URI.</summary>
         public override string ToString() => Uri;
 
         /// <inheritdoc />
-        public bool Equals(WikibaseUri other)
+        public bool Equals(WbUri other)
         {
             Debug.Assert(ReferenceEquals(this, other) == (this.Uri == other.Uri));
             return ReferenceEquals(this, other);
@@ -61,7 +62,7 @@ namespace WikiClientLibrary.Wikibase
         public override bool Equals(object obj)
         {
 #if DEBUG
-            if (obj is WikibaseUri other)
+            if (obj is WbUri other)
                 Debug.Assert(ReferenceEquals(this, other) == (this.Uri == other.Uri));
 #endif
             return ReferenceEquals(this, obj);
@@ -73,15 +74,22 @@ namespace WikiClientLibrary.Wikibase
             return Uri.GetHashCode();
         }
 
-        public static bool operator ==(WikibaseUri left, WikibaseUri right)
+        public static bool operator ==(WbUri left, WbUri right)
         {
             return Equals(left, right);
         }
 
-        public static bool operator !=(WikibaseUri left, WikibaseUri right)
+        public static bool operator !=(WbUri left, WbUri right)
         {
             return !Equals(left, right);
         }
+
+        public static implicit operator WbUri(string s)
+        {
+            if (s == null) return null;
+            return Get(s);
+        }
+
     }
 
     internal class WikibaseUriJsonConverter : JsonConverter
@@ -89,7 +97,7 @@ namespace WikiClientLibrary.Wikibase
         /// <inheritdoc />
         public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
         {
-            var obj = (WikibaseUri) value;
+            var obj = (WbUri) value;
             writer.WriteValue(obj.Uri);
         }
 
@@ -98,13 +106,13 @@ namespace WikiClientLibrary.Wikibase
         {
             if (reader.TokenType != JsonToken.String) throw new JsonException("Expect string value.");
             var uri = (string) reader.Value;
-            return WikibaseUri.Get(uri);
+            return WbUri.Get(uri);
         }
 
         /// <inheritdoc />
         public override bool CanConvert(Type objectType)
         {
-            return objectType == typeof(WikibaseUri);
+            return objectType == typeof(WbUri);
         }
     }
 
