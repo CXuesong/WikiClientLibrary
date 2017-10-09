@@ -82,7 +82,7 @@ namespace WikiClientLibrary.Wikibase
         /// </summary>
         /// <remarks>
         /// The property value is invalidated after you have performed edits on this instance.
-        /// To fetch the latest value, use <see cref="RefreshAsync(EntityQueryOptions)"/>.
+        /// To fetch the latest value, use <see cref="RefreshAsync(WbEntityQueryOptions)"/>.
         /// </remarks>
         public int PageId { get; private set; }
 
@@ -97,7 +97,7 @@ namespace WikiClientLibrary.Wikibase
         /// <remarks><para>For items, they are usually in the form of <c>Q1234</c>;
         /// for properties, they are usually in the form of <c>Property:P1234</c>.</para>
         /// <para>The property value is invalidated after you have performed edits on this instance.
-        /// To fetch the latest value, use <see cref="RefreshAsync(EntityQueryOptions)"/>.</para>
+        /// To fetch the latest value, use <see cref="RefreshAsync(WbEntityQueryOptions)"/>.</para>
         /// </remarks>
         public string Title { get; private set; }
 
@@ -119,7 +119,7 @@ namespace WikiClientLibrary.Wikibase
         /// <summary>Time of the last revision.</summary>
         /// <remarks>
         /// The property value is invalidated after you have performed edits on this instance.
-        /// To fetch the latest value, use <see cref="RefreshAsync(EntityQueryOptions)"/>.
+        /// To fetch the latest value, use <see cref="RefreshAsync(WbEntityQueryOptions)"/>.
         /// </remarks>
         public DateTime LastModified { get; private set; }
 
@@ -141,24 +141,24 @@ namespace WikiClientLibrary.Wikibase
         /// <summary>
         /// The last query options used with <see cref="RefreshAsync()"/> or effectively equivalent methods.
         /// </summary>
-        public EntityQueryOptions QueryOptions { get; private set; }
+        public WbEntityQueryOptions QueryOptions { get; private set; }
 
         public Task RefreshAsync()
         {
-            return RefreshAsync(EntityQueryOptions.None, null, CancellationToken.None);
+            return RefreshAsync(WbEntityQueryOptions.None, null, CancellationToken.None);
         }
 
-        public Task RefreshAsync(EntityQueryOptions options)
+        public Task RefreshAsync(WbEntityQueryOptions options)
         {
             return RefreshAsync(options, null, CancellationToken.None);
         }
 
-        public Task RefreshAsync(EntityQueryOptions options, ICollection<string> languages)
+        public Task RefreshAsync(WbEntityQueryOptions options, ICollection<string> languages)
         {
             return RefreshAsync(options, languages, CancellationToken.None);
         }
 
-        public Task RefreshAsync(EntityQueryOptions options, ICollection<string> languages, CancellationToken cancellationToken)
+        public Task RefreshAsync(WbEntityQueryOptions options, ICollection<string> languages, CancellationToken cancellationToken)
         {
             return WikibaseRequestHelper.RefreshEntitiesAsync(new[] {this}, options, languages, cancellationToken);
         }
@@ -181,11 +181,11 @@ namespace WikiClientLibrary.Wikibase
         }
 
         // postEditing: Is the entity param from the response of wbeditentity API call?
-        internal void LoadFromJson(JToken entity, EntityQueryOptions options, bool isPostEditing)
+        internal void LoadFromJson(JToken entity, WbEntityQueryOptions options, bool isPostEditing)
         {
             var id = (string)entity["id"];
             Debug.Assert(id != null);
-            if ((options & EntityQueryOptions.SupressRedirects) != EntityQueryOptions.SupressRedirects
+            if ((options & WbEntityQueryOptions.SupressRedirects) != WbEntityQueryOptions.SupressRedirects
                 && Id != null && Id != id)
             {
                 // The page has been overwritten, or deleted.
@@ -221,7 +221,7 @@ namespace WikiClientLibrary.Wikibase
                 var dataType = (string)entity["datatype"];
                 if (dataType != null)
                     DataType = WbPropertyTypes.Get(dataType) ?? MissingPropertyType.Get(dataType, dataType);
-                if ((options & EntityQueryOptions.FetchInfo) == EntityQueryOptions.FetchInfo)
+                if ((options & WbEntityQueryOptions.FetchInfo) == WbEntityQueryOptions.FetchInfo)
                 {
                     if (!isPostEditing)
                     {
@@ -233,13 +233,13 @@ namespace WikiClientLibrary.Wikibase
                     }
                     LastRevisionId = (int)entity["lastrevid"];
                 }
-                if ((options & EntityQueryOptions.FetchLabels) == EntityQueryOptions.FetchLabels)
+                if ((options & WbEntityQueryOptions.FetchLabels) == WbEntityQueryOptions.FetchLabels)
                     Labels = ParseMultiLanguageValues((JObject)entity["labels"]);
-                if ((options & EntityQueryOptions.FetchAliases) == EntityQueryOptions.FetchAliases)
+                if ((options & WbEntityQueryOptions.FetchAliases) == WbEntityQueryOptions.FetchAliases)
                     Aliases = ParseMultiLanguageMultiValues((JObject)entity["aliases"]);
-                if ((options & EntityQueryOptions.FetchDescriptions) == EntityQueryOptions.FetchDescriptions)
+                if ((options & WbEntityQueryOptions.FetchDescriptions) == WbEntityQueryOptions.FetchDescriptions)
                     Descriptions = ParseMultiLanguageValues((JObject)entity["descriptions"]);
-                if ((options & EntityQueryOptions.FetchSiteLinks) == EntityQueryOptions.FetchSiteLinks)
+                if ((options & WbEntityQueryOptions.FetchSiteLinks) == WbEntityQueryOptions.FetchSiteLinks)
                 {
                     var jlinks = (JObject)entity["sitelinks"];
                     if (jlinks == null || !jlinks.HasValues)
@@ -253,7 +253,7 @@ namespace WikiClientLibrary.Wikibase
                         SiteLinks.IsReadOnly = true;
                     }
                 }
-                if ((options & EntityQueryOptions.FetchClaims) == EntityQueryOptions.FetchClaims)
+                if ((options & WbEntityQueryOptions.FetchClaims) == WbEntityQueryOptions.FetchClaims)
                 {
                     var jclaims = (JObject)entity["claims"];
                     if (jclaims == null || !jclaims.HasValues)
@@ -309,7 +309,7 @@ namespace WikiClientLibrary.Wikibase
     }
 
     [Flags]
-    public enum EntityQueryOptions
+    public enum WbEntityQueryOptions
     {
 
         /// <summary>No options.</summary>

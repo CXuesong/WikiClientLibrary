@@ -131,8 +131,8 @@ namespace WikiClientLibrary.Wikibase
         /// <remarks>After the operation, the entity will be automatically refereshed,
         /// which means all the <see cref="WbClaim"/> instances that used to belong to this claim will be detached,
         /// and perhaps replicates will take the place.
-        /// This is effectively a refresh operation with <see cref="EntityQueryOptions.FetchAllProperties"/> flag,
-        /// except that some properties in the <see cref="EntityQueryOptions.FetchInfo"/> category are just invalidated
+        /// This is effectively a refresh operation with <see cref="WbEntityQueryOptions.FetchAllProperties"/> flag,
+        /// except that some properties in the <see cref="WbEntityQueryOptions.FetchInfo"/> category are just invalidated
         /// due to insufficient data contained in the MW API. (e.g. <see cref="PageId"/>) As for the properties that are
         /// affected by the edit operation, see the "remarks" section of the properties, respectively.
         /// </remarks>
@@ -168,7 +168,7 @@ namespace WikiClientLibrary.Wikibase
             var jentity = jresult["entity"];
             if (jentity == null)
                 throw new UnexpectedDataException("Missing \"entity\" node in the JSON response.");
-            LoadFromJson(jresult["entity"], EntityQueryOptions.FetchAllProperties, true);
+            LoadFromJson(jresult["entity"], WbEntityQueryOptions.FetchAllProperties, true);
             Logger.LogInformation("Edited {Entity} on {Site}. New revid={RevisionId}", this, Site, LastRevisionId);
         }
 

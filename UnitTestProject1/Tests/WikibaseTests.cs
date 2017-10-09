@@ -34,7 +34,7 @@ namespace UnitTestProject1.Tests
         {
             var site = await WikidataSiteAsync;
             var entity = new WbEntity(site, WikidataItems.Chumulangma);
-            await entity.RefreshAsync(EntityQueryOptions.FetchAllProperties);
+            await entity.RefreshAsync(WbEntityQueryOptions.FetchAllProperties);
             ShallowTrace(entity);
             ShallowTrace(entity.Claims, 4);
             Assert.Equal(WikidataItems.Chumulangma, entity.Title);
@@ -76,7 +76,7 @@ namespace UnitTestProject1.Tests
             var entity2 = new WbEntity(site, WikidataItems.Chumulangma);
             var entity3 = new WbEntity(site, WikidataItems.Earth);
             var entity4 = new WbEntity(site, WikidataProperties.PartOf);
-            await new[] {entity1, entity2, entity3, entity4}.RefreshAsync(EntityQueryOptions.FetchAllProperties);
+            await new[] {entity1, entity2, entity3, entity4}.RefreshAsync(WbEntityQueryOptions.FetchAllProperties);
             CheckEntity(entity1, WikidataItems.Chumulangma, "Mount Everest");
             CheckEntity(entity2, WikidataItems.Chumulangma, "Mount Everest");
             CheckEntity(entity3, WikidataItems.Earth, "Earth");
@@ -137,7 +137,7 @@ namespace UnitTestProject1.Tests
             };
             await prop.Edit(changelist, "Create a property for test.", true);
             // Refill basic information, esp. WbEntity.DataType
-            await prop.RefreshAsync(EntityQueryOptions.FetchInfo);
+            await prop.RefreshAsync(WbEntityQueryOptions.FetchInfo);
 
             //  Add the claims.
             changelist = new[]
