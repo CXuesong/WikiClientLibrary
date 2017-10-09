@@ -16,7 +16,7 @@ using WikiClientLibrary.Wikibase.Infrastructures;
 namespace WikiClientLibrary.Wikibase
 {
 
-    public sealed partial class WbEntity
+    public sealed partial class WbEntity : IWikiClientLoggable
     {
         private static readonly WbMonolingualTextCollection emptyStringDict
             = new WbMonolingualTextCollection {IsReadOnly = true};
@@ -30,7 +30,7 @@ namespace WikiClientLibrary.Wikibase
         private static readonly WbClaimCollection emptyClaims
             = new WbClaimCollection {IsReadOnly = true};
 
-        private ILogger logger;
+        private ILoggerFactory _LoggerFactory;
 
         /// <summary>
         /// Initializes a new <see cref="WbEntity"/> entity from Wikibase site
@@ -45,6 +45,8 @@ namespace WikiClientLibrary.Wikibase
         }
 
         public WikiSite Site { get; }
+
+        protected ILogger Logger { get; private set; }
 
         public string Id { get; private set; }
 
@@ -187,6 +189,12 @@ namespace WikiClientLibrary.Wikibase
             QueryOptions = options;
         }
 
+        /// <inheritdoc />
+        public ILoggerFactory LoggerFactory
+        {
+            get => _LoggerFactory;
+            set => Logger = Utility.SetLoggerFactory(ref _LoggerFactory, value, GetType());
+        }
     }
 
     [Flags]
