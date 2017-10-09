@@ -9,33 +9,40 @@ using WikiClientLibrary.Wikibase.Infrastructures;
 namespace WikiClientLibrary.Wikibase
 {
 
+    /// <summary>
+    /// Represents a claim applied to a Wikibase entity.
+    /// </summary>
     public sealed class WbClaim
     {
+        private readonly List<WbSnak> _Qualifiers = new List<WbSnak>();
+        private readonly List<WbClaimReference> _References = new List<WbClaimReference>();
 
-        internal event EventHandler<KeyChangingEventArgs> KeyChanging;
-        private WbSnak _MainSnak;
-
-        public WbSnak MainSnak
+        /// <summary>
+        /// Initializes a new <see cref="WbClaim"/> instance with the specified main snak.
+        /// </summary>
+        /// <param name="mainSnak">The main snak containing the property and value of the claim.</param>
+        /// <exception cref="ArgumentNullException"><paramref name="mainSnak"/> is <c>null</c>.</exception>
+        public WbClaim(WbSnak mainSnak)
         {
-            get { return _MainSnak; }
-            set
-            {
-                if (_MainSnak != value)
-                {
-                    var oldKey = _MainSnak?.PropertyId;
-                    if (KeyChanging != null && oldKey != value?.PropertyId)
-                        KeyChanging(this, new KeyChangingEventArgs(value?.PropertyId));
-                    if (_MainSnak != null) _MainSnak.KeyChanging -= MainSnak_KeyChanging;
-                    _MainSnak = value;
-                    if (value != null) value.KeyChanging += MainSnak_KeyChanging;
-                }
-            }
+            MainSnak = mainSnak ?? throw new ArgumentNullException(nameof(mainSnak));
         }
-
-        private void MainSnak_KeyChanging(object sender, KeyChangingEventArgs keyChangingEventArgs)
+        
+        /// <summary>
+        /// Initializes a new <see cref="WbClaim"/> instance with the specified main snak.
+        /// </summary>
+        /// <param name="mainSnakPropertyId">The property ID of the auto-constructed main snak.</param>
+        /// <exception cref="ArgumentNullException"><paramref name="mainSnakPropertyId"/> is <c>null</c>.</exception>
+        public WbClaim(string mainSnakPropertyId)
         {
-            KeyChanging?.Invoke(this, keyChangingEventArgs);
+            if (mainSnakPropertyId == null) throw new ArgumentNullException(nameof(mainSnakPropertyId));
+            MainSnak = new WbSnak(mainSnakPropertyId);
         }
+        
+        /// <summary>
+        /// Gets the main snak of the claim.
+        /// </summary>
+        /// <remarks>This property is read-only; however you can change its content exception <see cref="WbSnak.PropertyId"/> value.</remarks>
+        public WbSnak MainSnak { get; }
 
         /// <summary>Claim ID.</summary>
         public string Id { get; set; }
@@ -48,11 +55,17 @@ namespace WikiClientLibrary.Wikibase
         /// <remarks>The value often is <c>normal</c>.</remarks>
         public string Rank { get; set; } = "normal";
 
-        public IList<WbSnak> Qualifiers { get; set; }
+        /// <summary>
+        /// Gets/sets the collection of qualifiers.
+        /// </summary>
+        public IList<WbSnak> Qualifiers => _Qualifiers;
 
-        public IList<WbClaimReference> References { get; set; }
+        /// <summary>
+        /// Gets/sets the collection of citations for the claim.
+        /// </summary>
+        public IList<WbClaimReference> References => _References;
 
-        internal static List<T> ToOrderedList<T>(JObject dict, JArray order, Func<JToken, IEnumerable<T>> valueSelector)
+        internal static IEnumerable<T> ToOrderedList<T>(JObject dict, JArray order, Func<JToken, IEnumerable<T>> valueSelector)
         {
             // Before #84516 Wikibase did not implement snaks-order.
             // https://gerrit.wikimedia.org/r/#/c/84516/
@@ -60,39 +73,44 @@ namespace WikiClientLibrary.Wikibase
             if (order == null)
                 return dict.Values().SelectMany(valueSelector).ToList();
             Debug.Assert(order.Count == dict.Count);
-            return order.Select(key => dict[(string)key]).SelectMany(valueSelector).ToList();
+            return order.Select(key => dict[(string)key]).SelectMany(valueSelector);
         }
 
         internal static WbClaim FromJson(JToken claim)
         {
             Debug.Assert(claim != null);
-            var inst = new WbClaim();
+            var inst = new WbClaim(WbSnak.FromJson(claim["mainsnak"]));
             inst.LoadFromJson(claim);
             return inst;
         }
 
-        internal void LoadFromJson(JToken claim)
+        private void LoadFromJson(JToken claim)
         {
             Debug.Assert(claim != null);
-            MainSnak = claim["mainsnak"] == null ? null : WbSnak.FromJson(claim["mainsnak"]);
             Id = (string)claim["id"];
             Type = (string)claim["type"];
             Rank = (string)claim["rank"];
-            Qualifiers = claim["qualifiers"] == null
-                ? null
-                : ToOrderedList((JObject)claim["qualifiers"], (JArray)claim["qualifiers-order"],
-                    jsnaks => jsnaks.Select(WbSnak.FromJson));
-            References = claim["references"]?.Select(WbClaimReference.FromJson).ToList();
+            _Qualifiers.Clear();
+            _References.Clear();
+            if (claim["qualifiers"] != null)
+            {
+                _Qualifiers.AddRange(ToOrderedList((JObject)claim["qualifiers"], (JArray)claim["qualifiers-order"],
+                    jsnaks => jsnaks.Select(WbSnak.FromJson)));
+            }
+            if (claim["references"] != null)
+            {
+                _References.AddRange(claim["references"]?.Select(WbClaimReference.FromJson));
+            }
         }
 
         internal JObject ToJson(bool identifierOnly)
         {
             var obj = new JObject
             {
-                {"id", Id},
                 {"type", Type},
                 {"rank", Rank}
             };
+            if (Id != null) obj.Add("id", Id);
             if (identifierOnly) return obj;
             if (MainSnak == null) throw new InvalidOperationException("MainSnak should not be null.");
             obj.Add("mainsnak", MainSnak.ToJson());
@@ -114,8 +132,24 @@ namespace WikiClientLibrary.Wikibase
 
     public sealed class WbClaimReference
     {
+        private readonly List<WbSnak> _Snaks = new List<WbSnak>();
 
-        public IList<WbSnak> Snaks { get; set; }
+        public WbClaimReference()
+        {
+        }
+
+        public WbClaimReference(IEnumerable<WbSnak> snaks)
+        {
+            if (snaks == null) throw new ArgumentNullException(nameof(snaks));
+            _Snaks.AddRange(snaks);
+        }
+
+        public WbClaimReference(params WbSnak[] snaks)
+        {
+            _Snaks.AddRange(snaks);
+        }
+
+        public IList<WbSnak> Snaks => _Snaks;
 
         public string Hash { get; set; }
 
@@ -130,10 +164,12 @@ namespace WikiClientLibrary.Wikibase
         internal void LoadFromJson(JToken reference)
         {
             Debug.Assert(reference != null);
-            Snaks = reference["snaks"] == null
-                ? null
-                : WbClaim.ToOrderedList((JObject)reference["snaks"], (JArray)reference["snaks-order"],
-                    jsnaks => jsnaks.Select(WbSnak.FromJson));
+            _Snaks.Clear();
+            if (reference["snaks"] != null)
+            {
+                _Snaks.AddRange(WbClaim.ToOrderedList((JObject)reference["snaks"], (JArray)reference["snaks-order"],
+                    jsnaks => jsnaks.Select(WbSnak.FromJson)));
+            }
             Hash = (string)reference["hash"];
         }
 
@@ -153,6 +189,9 @@ namespace WikiClientLibrary.Wikibase
 
     }
 
+    /// <summary>
+    /// Represents a "snak", i.e. a pair of property and value.
+    /// </summary>
     public sealed class WbSnak
     {
 
@@ -161,25 +200,56 @@ namespace WikiClientLibrary.Wikibase
         private object _DataValue;
         private JToken _RawDataValue;
 
-        internal event EventHandler<KeyChangingEventArgs> KeyChanging;
-        private string _PropertyId;
+        /// <summary>
+        /// Initializes a snak with specified property ID and empty value.
+        /// </summary>
+        /// <param name="propertyId">The property id.</param>
+        /// <exception cref="ArgumentNullException"><paramref name="propertyId"/> is <c>null</c>.</exception>
+        public WbSnak(string propertyId)
+        {
+            PropertyId = propertyId ?? throw new ArgumentNullException(nameof(propertyId));
+        }
+
+        /// <summary>
+        /// Initializes a snak with specified property ID and data value.
+        /// </summary>
+        /// <param name="propertyId">The property id.</param>
+        /// <param name="dataValue">The data value of the property.</param>
+        /// <param name="dataType">The data value type.</param>
+        /// <exception cref="ArgumentNullException"><paramref name="propertyId"/> or <paramref name="dataType"/> is <c>null</c>.</exception>
+        public WbSnak(string propertyId, object dataValue, WbPropertyType dataType)
+        {
+            PropertyId = propertyId ?? throw new ArgumentNullException(nameof(propertyId));
+            DataType = dataType ?? throw new ArgumentNullException(nameof(dataType));
+            DataValue = dataValue;
+        }
+
+        /// <summary>
+        /// Initializes a snak with specified property and data value.
+        /// </summary>
+        /// <param name="property">The property. It should have valid <see cref="WbEntity.Id"/> and <see cref="WbEntity.DataType"/>.</param>
+        /// <param name="dataValue">The data value of the property.</param>
+        /// <exception cref="ArgumentNullException"><paramref name="property"/> is <c>null</c>.</exception>
+        /// <exception cref="ArgumentException"><paramref name="property"/> is not Wikibase property, or does not contain required information.</exception>
+        public WbSnak(WbEntity property, object dataValue)
+        {
+            if (property == null) throw new ArgumentNullException(nameof(property));
+            if (property.Type != WbEntityType.Property)
+                throw new ArgumentException("The entity is not Wikibase property.", nameof(property));
+            if (property.Id == null)
+                throw new ArgumentException("The entity does not contain ID information.", nameof(property));
+            if (property.DataType == null)
+                throw new ArgumentException("The entity does not contain data type information.", nameof(property));
+            PropertyId = property.Id;
+            DataType = property.DataType;
+            DataValue = dataValue;
+        }
 
         /// <summary>Snak type.</summary>
         public SnakType SnakType { get; set; }
 
         /// <summary>Property ID, with "P" prefix.</summary>
-        public string PropertyId
-        {
-            get { return _PropertyId; }
-            set
-            {
-                if (_PropertyId != value)
-                {
-                    KeyChanging?.Invoke(this, new KeyChangingEventArgs(value));
-                    _PropertyId = value;
-                }
-            }
-        }
+        public string PropertyId { get; }
 
         /// <summary>Snak hash.</summary>
         public string Hash { get; set; }
@@ -266,19 +336,18 @@ namespace WikiClientLibrary.Wikibase
             }
         }
 
-        internal static WbSnak FromJson(JToken claim)
+        internal static WbSnak FromJson(JToken snak)
         {
-            Debug.Assert(claim != null);
-            var inst = new WbSnak();
-            inst.LoadFromJson(claim);
+            Debug.Assert(snak != null);
+            var inst = new WbSnak((string)snak["property"]);
+            inst.LoadFromJson(snak);
             return inst;
         }
 
-        internal void LoadFromJson(JToken snak)
+        private void LoadFromJson(JToken snak)
         {
             Debug.Assert(snak != null);
             SnakType = ParseSnakType((string)snak["snaktype"]);
-            PropertyId = (string)snak["property"];
             Hash = (string)snak["hash"];
             RawDataValue = snak["datavalue"];
             DataType = WbPropertyTypes.Get((string)snak["datatype"])
@@ -292,7 +361,7 @@ namespace WikiClientLibrary.Wikibase
                 {"snaktype", ParseSnakType(SnakType)},
                 {"property", PropertyId},
                 {"hash", Hash},
-                {"datatype", DataType.Name},
+                {"datatype", DataType?.Name},
                 {"datavalue", RawDataValue}
             };
             return obj;

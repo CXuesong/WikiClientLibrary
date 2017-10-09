@@ -52,6 +52,7 @@ namespace WikiClientLibrary.Wikibase
             Site = site ?? throw new ArgumentNullException(nameof(site));
             Id = null;
             Type = type;
+            LoggerFactory = site.LoggerFactory;
         }
 
         /// <summary>
@@ -247,7 +248,7 @@ namespace WikiClientLibrary.Wikibase
                     }
                     else
                     {
-                        SiteLinks = WbEntitySiteLinkCollection.Create(
+                        SiteLinks = new WbEntitySiteLinkCollection(
                             jlinks.Values().Select(t => t.ToObject<WbEntitySiteLink>(Utility.WikiJsonSerializer)));
                         SiteLinks.IsReadOnly = true;
                     }
@@ -262,7 +263,7 @@ namespace WikiClientLibrary.Wikibase
                     else
                     {
                         // { claims : { P47 : [ {}, {}, ... ], P105 : ... } }
-                        Claims = WbClaimCollection.Create(jclaims.Values()
+                        Claims = new WbClaimCollection(jclaims.Values()
                             .SelectMany(jarray => jarray.Select(WbClaim.FromJson)));
                     }
                 }
@@ -382,14 +383,17 @@ namespace WikiClientLibrary.Wikibase
 
     }
 
-    public class WbEntitySiteLinkCollection : UnorderedKeyedCollection<string, WbEntitySiteLink>
+    public sealed class WbEntitySiteLinkCollection : UnorderedKeyedCollection<string, WbEntitySiteLink>
     {
-        internal static WbEntitySiteLinkCollection Create(IEnumerable<WbEntitySiteLink> items)
+        public WbEntitySiteLinkCollection()
+        {
+
+        }
+
+        public WbEntitySiteLinkCollection(IEnumerable<WbEntitySiteLink> items)
         {
             Debug.Assert(items != null);
-            var inst = new WbEntitySiteLinkCollection();
-            foreach (var i in items) inst.Add(i);
-            return inst;
+            foreach (var i in items) Add(i);
         }
 
         /// <inheritdoc />
@@ -399,53 +403,24 @@ namespace WikiClientLibrary.Wikibase
         }
     }
 
-    public class WbClaimCollection : UnorderedKeyedMultiCollection<string, WbClaim>
+    public sealed class WbClaimCollection : UnorderedKeyedMultiCollection<string, WbClaim>
     {
 
-        internal static WbClaimCollection Create(IEnumerable<WbClaim> items)
+        public WbClaimCollection()
+        {
+            
+        }
+
+        public WbClaimCollection(IEnumerable<WbClaim> items)
         {
             Debug.Assert(items != null);
-            var inst = new WbClaimCollection();
-            foreach (var i in items) inst.Add(i);
-            return inst;
+            foreach (var i in items) Add(i);
         }
 
         /// <inheritdoc />
         protected override string GetKeyForItem(WbClaim item)
         {
-            return item.MainSnak?.PropertyId;
-        }
-
-        /// <inheritdoc />
-        public override void Add(WbClaim item)
-        {
-            base.Add(item);
-            item.KeyChanging += Item_KeyChanging;
-        }
-
-        /// <inheritdoc />
-        public override bool Remove(string key)
-        {
-            AssertMutable();
-            foreach (var item in this[key])
-                item.KeyChanging -= Item_KeyChanging;
-            return base.Remove(key);
-        }
-
-        /// <inheritdoc />
-        public override bool Remove(WbClaim item)
-        {
-            if (base.Remove(item))
-            {
-                item.KeyChanging -= Item_KeyChanging;
-                return true;
-            }
-            return false;
-        }
-
-        private void Item_KeyChanging(object sender, KeyChangingEventArgs e)
-        {
-            ChangeItemKey((WbClaim)sender, (string)e.NewKey);
+            return item.MainSnak.PropertyId;
         }
     }
 

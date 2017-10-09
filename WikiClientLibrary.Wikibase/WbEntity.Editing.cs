@@ -25,6 +25,9 @@ namespace WikiClientLibrary.Wikibase
                     throw new ArgumentException($"Detected null value in {prop} entries.", nameof(edits));
                 switch (prop.Key)
                 {
+                    case nameof(DataType):
+                        jdata.Add("datatype", ((WbPropertyType)prop.Last().Value).Name);
+                        break;
                     case nameof(Labels):
                     case nameof(Descriptions):
                         jdata.Add(prop.Key.ToLowerInvariant(),
@@ -125,6 +128,14 @@ namespace WikiClientLibrary.Wikibase
         /// <param name="cancellationToken">A token used to cancel the operation.</param>
         /// <exception cref="OperationConflictException">Edit conflict detected.</exception>
         /// <exception cref="UnauthorizedOperationException">You have no rights to edit the page.</exception>
+        /// <remarks>After the operation, the entity will be automatically refereshed,
+        /// which means all the <see cref="WbClaim"/> instances that used to belong to this claim will be detached,
+        /// and perhaps replicates will take the place.
+        /// This is effectively a refresh operation with <see cref="EntityQueryOptions.FetchAllProperties"/> flag,
+        /// except that some properties in the <see cref="EntityQueryOptions.FetchInfo"/> category are just invalidated
+        /// due to insufficient data contained in the MW API. (e.g. <see cref="PageId"/>) As for the properties that are
+        /// affected by the edit operation, see the "remarks" section of the properties, respectively.
+        /// </remarks>
         public async Task Edit(IEnumerable<WbEntityEditEntry> edits,
             string summary, bool isBot, bool clearData, CancellationToken cancellationToken)
         {
