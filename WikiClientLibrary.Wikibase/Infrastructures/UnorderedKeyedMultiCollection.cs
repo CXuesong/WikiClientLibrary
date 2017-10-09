@@ -80,18 +80,6 @@ namespace WikiClientLibrary.Wikibase.Infrastructures
 
         public bool ContainsKey(TKey key) => dict.ContainsKey(key);
 
-        /// <summary>
-        /// Gets the count of item with specified key.
-        /// </summary>
-        /// <exception cref="ArgumentNullException"><paramref name="key"/> is <c>null</c>.</exception>
-        /// <returns>A non-negative number.</returns>
-        public int ItemsCount(TKey key)
-        {
-            if (key == null) throw new ArgumentNullException(nameof(key));
-            if (dict.TryGetValue(key, out var slot)) return slot.Items.Count;
-            return 0;
-        }
-
         protected IEnumerable<TItem> EnumItems()
         {
             foreach (var p in dict)
