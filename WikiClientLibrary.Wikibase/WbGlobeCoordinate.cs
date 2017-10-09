@@ -4,9 +4,17 @@ using System.Text;
 
 namespace WikiClientLibrary.Wikibase
 {
+    /// <summary>Represents a point on the globe.</summary>
     public struct WbGlobeCoordinate : IEquatable<WbGlobeCoordinate>
     {
 
+        /// <summary>
+        /// Initialize a new <see cref="WbGlobeCoordinate"/> instance with coordinate, precision, and globe entity URI.
+        /// </summary>
+        /// <param name="latitude">Latitude, in degrees.</param>
+        /// <param name="longitude">Longitude, in degrees.</param>
+        /// <param name="precision">Precision, in degrees.</param>
+        /// <param name="globe">Entity URI of the globe.</param>
         public WbGlobeCoordinate(double latitude, double longitude, double precision, WbUri globe)
         {
             Latitude = latitude;
@@ -24,7 +32,7 @@ namespace WikiClientLibrary.Wikibase
         /// <summary>Precision, in degrees.</summary>
         public double Precision { get; }
 
-        /// <summary>Item URI of the globe.</summary>
+        /// <summary>Entity URI of the globe.</summary>
         public WbUri Globe { get; }
 
         /// <inheritdoc />

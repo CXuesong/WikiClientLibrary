@@ -5,11 +5,21 @@ using System.Text;
 
 namespace WikiClientLibrary.Wikibase
 {
+    /// <summary>
+    /// Represents a text in certain language.
+    /// </summary>
+    /// <remarks>The language code is normalized into lower-case in this structure.</remarks>
     public struct WbMonolingualText : IEquatable<WbMonolingualText>
     {
 
         public static readonly WbMonolingualText Null = new WbMonolingualText();
 
+        /// <summary>
+        /// Initializes a new <see cref="WbMonolingualText"/> from language code and text.
+        /// </summary>
+        /// <param name="language">The language code. It will be converted to lower-case.</param>
+        /// <param name="text">The text.</param>
+        /// <exception cref="ArgumentNullException">Either <paramref name="language"/> or <paramref name="text"/> is <c>null</c>.</exception>
         public WbMonolingualText(string language, string text)
         {
             if (language == null) throw new ArgumentNullException(nameof(language));
@@ -28,8 +38,10 @@ namespace WikiClientLibrary.Wikibase
             Text = text;
         }
 
+        /// <summary>The language code.</summary>
         public string Language { get; }
 
+        /// <summary>The text.</summary>
         public string Text { get; }
 
         /// <inheritdoc />

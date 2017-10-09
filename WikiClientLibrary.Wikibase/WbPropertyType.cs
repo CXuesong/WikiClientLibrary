@@ -187,7 +187,7 @@ namespace WikiClientLibrary.Wikibase
                 var after = (int) e["after"];
                 var precision = (WikibaseTimePrecision) (int) e["precision"];
                 var calendar = (string) e["calendarmodel"];
-                return new WbTime(time, before, after, timeZone, precision, calendar);
+                return WbTime.Parse(time, before, after, timeZone, precision, calendar);
             }, v =>
             {
                 var obj = new JObject

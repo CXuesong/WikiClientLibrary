@@ -13,6 +13,8 @@ namespace WikiClientLibrary.Wikibase
     /// Provides convenient access to 1:1 language-text pairs of multilingual text.
     /// </summary>
     /// <remarks>All the language codes are normalized to lower-case and are case-insensitive.</remarks>
+    /// <seealso cref="WbMonolingualTextsCollection"/>
+    /// <seealso cref="WbMonolingualText"/>
     [DebuggerDisplay("Count = {Count}")]
     public class WbMonolingualTextCollection : ICollection<WbMonolingualText>
     {
@@ -190,6 +192,7 @@ namespace WikiClientLibrary.Wikibase
     /// Provides convenient access to 1:n language-text pairs of multilingual text.
     /// </summary>
     /// <remarks>All the language codes are normalized to lower-case and are case-insensitive.</remarks>
+    /// <seealso cref="WbMonolingualText"/>
     [DebuggerDisplay("Count = {Count}")]
     public class WbMonolingualTextsCollection : ICollection<WbMonolingualText>
     {
