@@ -84,13 +84,21 @@ namespace UnitTestProject1.Tests
         [Fact]
         public async Task EditEntityTest1()
         {
+            // TODO Make test more stable, such as create, edit, and then remove.
             var site = await WikidataTestSiteAsync;
             var entity = new WbEntity(site, "Q487");
             var changelist = new List<WbEntityEditEntry>
             {
                 new WbEntityEditEntry(nameof(WbEntity.Descriptions), new WbMonolingualText("zh-cn", "珠穆朗玛峰")),
             };
-            await entity.Edit(changelist, "Test edit.", true, false, CancellationToken.None);
+            await entity.Edit(changelist, "Test edit. Add description.", true, false, CancellationToken.None);
+            Assert.Equal("珠穆朗玛峰", entity.Descriptions["zh-cn"]);
+            changelist = new List<WbEntityEditEntry>
+            {
+                new WbEntityEditEntry(nameof(WbEntity.Descriptions), new WbMonolingualText("zh-cn", "dummy"), WbEntityEditEntryState.Removed),
+            };
+            await entity.Edit(changelist, "Test edit. Remove description.", true, false, CancellationToken.None);
+            Assert.Null(entity.Descriptions["zh-cn"]);
         }
 
         public static class WikidataItems

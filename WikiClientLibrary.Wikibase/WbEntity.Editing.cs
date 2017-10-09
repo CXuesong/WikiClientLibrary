@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using WikiClientLibrary.Client;
 using WikiClientLibrary.Sites;
@@ -34,7 +35,7 @@ namespace WikiClientLibrary.Wikibase
                                     if (item.State == WbEntityEditEntryState.Updated)
                                         obj.Add("value", ((WbMonolingualText)item.Value).Text);
                                     else
-                                        obj.Add("removed", "");
+                                        obj.Add("remove", "");
                                     return obj;
                                 }));
                         break;
@@ -49,7 +50,7 @@ namespace WikiClientLibrary.Wikibase
                                         {"value", ((WbMonolingualText)item.Value).Text}
                                     };
                                     if (item.State == WbEntityEditEntryState.Removed)
-                                        obj.Add("removed", "");
+                                        obj.Add("remove", "");
                                     return obj;
                                 }).ToJArray()));
                         break;
@@ -66,7 +67,7 @@ namespace WikiClientLibrary.Wikibase
                                     }
                                     else
                                     {
-                                        obj.Add("removed", "");
+                                        obj.Add("remove", "");
                                     }
                                     return obj;
                                 }).ToJArray()));
@@ -84,7 +85,7 @@ namespace WikiClientLibrary.Wikibase
                                 if (item.State == WbEntityEditEntryState.Updated)
                                     return ((WbClaim)item.Value).ToJson(false);
                                 var obj = ((WbClaim)item.Value).ToJson(true);
-                                obj.Add("removed", "");
+                                obj.Add("remove", "");
                                 return obj;
                             }).ToJArray()));
                         break;
@@ -111,7 +112,7 @@ namespace WikiClientLibrary.Wikibase
                 bot = isBot,
                 summary = summary,
                 clear = clearData,
-                data = jdata
+                data = jdata.ToString(Formatting.None)
             }), cancellationToken);
             var jentity = jresult["entity"];
             if (jentity == null)
