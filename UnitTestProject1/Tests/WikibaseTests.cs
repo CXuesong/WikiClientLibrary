@@ -39,7 +39,7 @@ namespace UnitTestProject1.Tests
             ShallowTrace(entity.Claims, 4);
             Assert.Equal(WikidataItems.Chumulangma, entity.Title);
             Assert.Equal(WikidataItems.Chumulangma, entity.Id);
-            Assert.Equal("item", entity.Type);
+            Assert.Equal(WbEntityType.Item, entity.Type);
             Assert.Equal("Mount Everest", entity.Labels["en"]);
             Assert.Contains("Chumulangma", entity.Aliases["en"]);
             Assert.Equal("珠穆朗玛峰", entity.Labels["zh-Hans"]);
@@ -75,30 +75,60 @@ namespace UnitTestProject1.Tests
             var entity1 = new WbEntity(site, WikidataItems.Chumulangma);
             var entity2 = new WbEntity(site, WikidataItems.Chumulangma);
             var entity3 = new WbEntity(site, WikidataItems.Earth);
-            await new[] {entity1, entity2, entity3}.RefreshAsync(EntityQueryOptions.FetchAllProperties);
+            var entity4 = new WbEntity(site, WikidataProperties.PartOf);
+            await new[] {entity1, entity2, entity3, entity4}.RefreshAsync(EntityQueryOptions.FetchAllProperties);
             CheckEntity(entity1, WikidataItems.Chumulangma, "Mount Everest");
             CheckEntity(entity2, WikidataItems.Chumulangma, "Mount Everest");
             CheckEntity(entity3, WikidataItems.Earth, "Earth");
+            CheckEntity(entity4, WikidataProperties.PartOf, "part of");
+            Assert.Equal(WbEntityType.Property, entity4.Type);
         }
 
         [Fact]
         public async Task EditEntityTest1()
         {
-            // TODO Make test more stable, such as create, edit, and then remove.
             var site = await WikidataTestSiteAsync;
-            var entity = new WbEntity(site, "Q487");
-            var changelist = new List<WbEntityEditEntry>
+            var rand = Convert.ToBase64String(Guid.NewGuid().ToByteArray());
+            // Create
+            var entity = new WbEntity(site, WbEntityType.Item);
+            var changelist = new[]
             {
-                new WbEntityEditEntry(nameof(WbEntity.Descriptions), new WbMonolingualText("zh-cn", "珠穆朗玛峰")),
+                new WbEntityEditEntry(nameof(WbEntity.Labels), new WbMonolingualText("en", "test entity " + rand)),
+                new WbEntityEditEntry(nameof(WbEntity.Aliases), new WbMonolingualText("en", "entity for test")),
+                new WbEntityEditEntry(nameof(WbEntity.Aliases), new WbMonolingualText("en", "test")),
+                new WbEntityEditEntry(nameof(WbEntity.Descriptions), new WbMonolingualText("en", "This is a test entity for unit test. If you see this entity outside the test site, please check the revision history and notify the editor.")),
+                new WbEntityEditEntry(nameof(WbEntity.Descriptions), new WbMonolingualText("zh", "此实体仅用于测试之用。如果你在非测试维基见到此实体，请检查修订历史并告知编辑者。")),
             };
-            await entity.Edit(changelist, "Test edit. Add description.", true, false, CancellationToken.None);
-            Assert.Equal("珠穆朗玛峰", entity.Descriptions["zh-cn"]);
-            changelist = new List<WbEntityEditEntry>
+            await entity.Edit(changelist, "Create test entity.", true);
+            ShallowTrace(entity);
+            Assert.Equal("test entity " + rand, entity.Labels["en"]);
+            Assert.Contains("test", entity.Aliases["en"]);
+            Assert.Contains("This is a test entity", entity.Descriptions["en"]);
+            Assert.Contains("此实体仅用于测试之用。", entity.Descriptions["zh"]);
+
+            // General edit
+            changelist = new[]
             {
-                new WbEntityEditEntry(nameof(WbEntity.Descriptions), new WbMonolingualText("zh-cn", "dummy"), WbEntityEditEntryState.Removed),
+                new WbEntityEditEntry(nameof(WbEntity.Labels), new WbMonolingualText("zh-hans", "测试实体" + rand)),
+                new WbEntityEditEntry(nameof(WbEntity.Labels), new WbMonolingualText("zh-hant", "測試實體" + rand)),
+                // One language can have multiple aliases, so we cannot use "dummy" here.
+                new WbEntityEditEntry(nameof(WbEntity.Aliases), new WbMonolingualText("en", "Test"), WbEntityEditEntryState.Removed),
+                new WbEntityEditEntry(nameof(WbEntity.Descriptions), new WbMonolingualText("zh", "dummy"), WbEntityEditEntryState.Removed),
             };
-            await entity.Edit(changelist, "Test edit. Remove description.", true, false, CancellationToken.None);
-            Assert.Null(entity.Descriptions["zh-cn"]);
+            await entity.Edit(changelist, "Edit test entity.", true);
+            ShallowTrace(entity);
+            Assert.Null(entity.Descriptions["zh"]);
+            Assert.Equal("测试实体" + rand, entity.Labels["zh-hans"]);
+            Assert.Equal("測試實體" + rand, entity.Labels["zh-hant"]);
+            Assert.DoesNotContain("Test", entity.Aliases["en"]);
+
+            // Add claim
+            changelist = new[]
+            {
+                new WbEntityEditEntry(nameof(WbEntity.Claims), new WbClaim{}),
+                
+            };
+            await entity.Edit(changelist, "Edit test entity.", true);
         }
 
         public static class WikidataItems

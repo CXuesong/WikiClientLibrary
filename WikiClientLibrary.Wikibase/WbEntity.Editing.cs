@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using WikiClientLibrary.Client;
@@ -96,9 +97,48 @@ namespace WikiClientLibrary.Wikibase
             return jdata;
         }
 
+        /// <inheritdoc cref="Edit(IEnumerable{WbEntityEditEntry},string,bool,bool,CancellationToken)"/>
+        public Task Edit(IEnumerable<WbEntityEditEntry> edits, string summary)
+        {
+            return Edit(edits, summary, false);
+        }
+
+        /// <inheritdoc cref="Edit(IEnumerable{WbEntityEditEntry},string,bool,bool,CancellationToken)"/>
+        public Task Edit(IEnumerable<WbEntityEditEntry> edits, string summary, bool isBot)
+        {
+            return Edit(edits, summary, isBot, false);
+        }
+
+        /// <inheritdoc cref="Edit(IEnumerable{WbEntityEditEntry},string,bool,bool,CancellationToken)"/>
+        public Task Edit(IEnumerable<WbEntityEditEntry> edits, string summary, bool isBot, bool clearData)
+        {
+            return Edit(edits, summary, isBot, clearData, CancellationToken.None);
+        }
+
+        /// <summary>
+        /// Makes the specified changes to the current entity on the Wikibase site.
+        /// </summary>
+        /// <param name="edits">The changes to be made.</param>
+        /// <param name="summary">The edit summary.</param>
+        /// <param name="isBot">Whether to mark the edit as bot edit.</param>
+        /// <param name="clearData">Whether to clear all the existing data of the entity before making the changes.</param>
+        /// <param name="cancellationToken">A token used to cancel the operation.</param>
+        /// <exception cref="OperationConflictException">Edit conflict detected.</exception>
+        /// <exception cref="UnauthorizedOperationException">You have no rights to edit the page.</exception>
         public async Task Edit(IEnumerable<WbEntityEditEntry> edits,
             string summary, bool isBot, bool clearData, CancellationToken cancellationToken)
         {
+
+            string FormatEntityType(WbEntityType type)
+            {
+                switch (type)
+                {
+                    case WbEntityType.Item: return "item";
+                    case WbEntityType.Property: return "property";
+                    default: return "unknown";
+                }
+            }
+
             if (edits == null) throw new ArgumentNullException(nameof(edits));
             cancellationToken.ThrowIfCancellationRequested();
             var jdata = EditEntriesToJObject(edits);
@@ -107,7 +147,7 @@ namespace WikiClientLibrary.Wikibase
                 action = "wbeditentity",
                 token = WikiSiteToken.Edit,
                 id = Id,
-                @new = Id == null ? Type : null,
+                @new = Id == null ? FormatEntityType(Type) : null,
                 baserevid = LastRevisionId > 0 ? (int?)LastRevisionId : null,
                 bot = isBot,
                 summary = summary,
@@ -118,6 +158,7 @@ namespace WikiClientLibrary.Wikibase
             if (jentity == null)
                 throw new UnexpectedDataException("Missing \"entity\" node in the JSON response.");
             LoadFromJson(jresult["entity"], EntityQueryOptions.FetchAllProperties, true);
+            Logger.LogInformation("Edited {Entity} on {Site}. New revid={RevisionId}", this, Site, LastRevisionId);
         }
 
     }
