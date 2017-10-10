@@ -299,8 +299,9 @@ namespace WikiClientLibrary.Sites
         /// <param name="supressAccountAssertion">Whether to temporarily disable account assertion as set in <see cref="SiteOptions.AccountAssertion"/>.</param>
         /// <param name="cancellationToken">The cancellation token that will be checked prior to completing the returned task.</param>
         /// <exception cref="InvalidActionException">Specified action is not supported.</exception>
-        /// <exception cref="UnauthorizedOperationException">Permission denied.</exception>
-        /// <exception cref="OperationFailedException">There is "error" node in returned JSON.</exception>
+        /// <exception cref="OperationFailedException">There is "error" node in returned JSON. Instances of dervied types may be thrown.</exception>
+        /// <exception cref="AccountAssertionFailureException">You enabled account assertion, the assertion failed, and it also failed to retry logging in.</exception>
+        /// <returns>A task that returns the JSON response when completed.</returns>
         /// <remarks>
         /// Some enhancements are available only if <paramref name="message"/> is <see cref="WikiFormRequestMessage"/>, including
         /// <list type="bullet">

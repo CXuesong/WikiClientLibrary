@@ -26,8 +26,8 @@ namespace WikiClientLibrary.Pages
         /// Fetch a revision by revid. This overload will also fetch the content of revision.
         /// </summary>
         /// <remarks>
-        /// <para>The <see cref="Page"/> of returned <see cref="Revision"/> will be a valid object.
-        /// However, its <see cref="Page.LastRevision"/> and <see cref="Page.Text"/> will corresponds
+        /// <para>The <see cref="WikiPage"/> of returned <see cref="Revision"/> will be a valid object.
+        /// However, its <see cref="WikiPage.LastRevision"/> and <see cref="WikiPage.Content"/> will corresponds
         /// to the lastest revision fetched in this invocation, and pages with the same title
         /// share the same reference.</para>
         /// </remarks>
@@ -37,52 +37,19 @@ namespace WikiClientLibrary.Pages
             return FetchRevisionsAsync(site, new[] {revisionId}, PageQueryOptions.FetchContent).First();
         }
 
-        /// <summary>
-        /// Fetch revisions by revid sequence. This overload will also fetch the content of revisions.
-        /// </summary>
-        /// <remarks>
-        /// <para>The returned sequence will have the SAME order as specified in <paramref name="revisionIds"/>.</para>
-        /// <para>The <see cref="Page"/> of returned <see cref="Revision"/> will be a valid object.
-        /// However, its <see cref="Page.LastRevision"/> and <see cref="Page.Content"/> will corresponds
-        /// to the lastest revision fetched in this invocation, and pages with the same title
-        /// share the same reference.</para>
-        /// <para>If there's invalid revision id in <paramref name="revIds"/>, an <see cref="ArgumentException"/>
-        /// will be thrown while enumerating.</para>
-        /// </remarks>
+        /// <inheritdoc cref="FetchRevisionsAsync(WikiSite,IEnumerable{int},PageQueryOptions,CancellationToken)"/>
         public static IAsyncEnumerable<Revision> FetchRevisionsAsync(WikiSite site, params int[] revisionIds)
         {
             return FetchRevisionsAsync(site, revisionIds, PageQueryOptions.FetchContent, CancellationToken.None);
         }
 
-        /// <summary>
-        /// Fetch revisions by revid sequence. This overload will also fetch the content of revisions.
-        /// </summary>
-        /// <remarks>
-        /// <para>The returned sequence will have the SAME order as specified in <paramref name="revisionIds"/>.</para>
-        /// <para>The <see cref="Page"/> of returned <see cref="Revision"/> will be a valid object.
-        /// However, its <see cref="Page.LastRevision"/> and <see cref="Page.Content"/> will corresponds
-        /// to the lastest revision fetched in this invocation, and pages with the same title
-        /// share the same reference.</para>
-        /// <para>If there's invalid revision id in <paramref name="revIds"/>, an <see cref="ArgumentException"/>
-        /// will be thrown while enumerating.</para>
-        /// </remarks>
+        /// <inheritdoc cref="FetchRevisionsAsync(WikiSite,IEnumerable{int},PageQueryOptions,CancellationToken)"/>
         public static IAsyncEnumerable<Revision> FetchRevisionsAsync(WikiSite site, IEnumerable<int> revisionIds)
         {
             return FetchRevisionsAsync(site, revisionIds, PageQueryOptions.FetchContent, CancellationToken.None);
         }
 
-        /// <summary>
-        /// Fetch revisions by revid sequence.
-        /// </summary>
-        /// <remarks>
-        /// <para>The returned sequence will have the SAME order as specified in <paramref name="revisionIds"/>.</para>
-        /// <para>The <see cref="Page"/> of returned <see cref="Revision"/> will be a valid object.
-        /// However, its <see cref="Page.LastRevision"/> and <see cref="Page.Content"/> will corresponds
-        /// to the lastest revision fetched in this invocation, and pages with the same title
-        /// share the same reference.</para>
-        /// <para>If there's invalid revision id in <paramref name="revisionIds"/>, an <see cref="ArgumentException"/>
-        /// will be thrown while enumerating.</para>
-        /// </remarks>
+        /// <inheritdoc cref="FetchRevisionsAsync(WikiSite,IEnumerable{int},PageQueryOptions,CancellationToken)"/>
         public static IAsyncEnumerable<Revision> FetchRevisionsAsync(WikiSite site, IEnumerable<int> revisionIds, PageQueryOptions options)
         {
             return FetchRevisionsAsync(site, revisionIds, options, new CancellationToken());
@@ -91,10 +58,16 @@ namespace WikiClientLibrary.Pages
         /// <summary>
         /// Fetch revisions by revid sequence.
         /// </summary>
+        /// <param name="site">The site to fetch revisions from.</param>
+        /// <param name="revisionIds">The desired revision Ids.</param>
+        /// <param name="options">The options for fetching the revisions.</param>
+        /// <param name="cancellationToken">A token used to cancel the operation.</param>
+        /// <exception cref="ArgumentNullException">Either <paramref name="site"/> or <paramref name="revisionIds"/> is <c>null</c>.</exception>
+        /// <exception cref="ArgumentException"><paramref name="revisionIds"/> contains an existing revision id.</exception>
         /// <remarks>
         /// <para>The returned sequence will have the SAME order as specified in <paramref name="revisionIds"/>.</para>
-        /// <para>The <see cref="Page"/> of returned <see cref="Revision"/> will be a valid object.
-        /// However, its <see cref="Page.LastRevision"/> and <see cref="Page.Content"/> will corresponds
+        /// <para>The <see cref="WikiPage"/> of returned <see cref="Revision"/> will be a valid object.
+        /// However, its <see cref="WikiPage.LastRevision"/> and <see cref="WikiPage.Content"/> will corresponds
         /// to the lastest revision fetched in this invocation, and pages with the same title
         /// share the same reference.</para>
         /// <para>If there's invalid revision id in <paramref name="revisionIds"/>, an <see cref="ArgumentException"/>
@@ -102,6 +75,8 @@ namespace WikiClientLibrary.Pages
         /// </remarks>
         public static IAsyncEnumerable<Revision> FetchRevisionsAsync(WikiSite site, IEnumerable<int> revisionIds, PageQueryOptions options, CancellationToken cancellationToken)
         {
+            if (site == null) throw new ArgumentNullException(nameof(site));
+            if (revisionIds == null) throw new ArgumentNullException(nameof(revisionIds));
             return RequestHelper.FetchRevisionsAsync(site, revisionIds, options, cancellationToken);
         }
 

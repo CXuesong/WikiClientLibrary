@@ -447,76 +447,25 @@ namespace WikiClientLibrary.Pages
 
         #region Modification
 
-        /// <summary>
-        /// Submits content contained in <see cref="Content"/>, making edit to the page.
-        /// (MediaWiki 1.16)
-        /// </summary>
-        /// <remarks>
-        /// This action will refill <see cref="Id" />, <see cref="Title"/>,
-        /// <see cref="ContentModel"/>, <see cref="LastRevisionId"/>, and invalidates
-        /// <see cref="ContentLength"/>, <see cref="LastRevision"/>, and <see cref="LastTouched"/>.
-        /// You should call <see cref="RefreshAsync()"/> again
-        /// if you're interested in them.
-        /// </remarks>
-        /// <exception cref="InvalidOperationException">Cannot create actual page in the specified namespace.</exception>
-        /// <exception cref="OperationConflictException">Edit conflict detected.</exception>
-        /// <exception cref="UnauthorizedOperationException">You have no rights to edit the page.</exception>
+        /// <inheritdoc cref="UpdateContentAsync(string,bool,bool,AutoWatchBehavior,CancellationToken)"/>
         public Task UpdateContentAsync(string summary)
         {
             return UpdateContentAsync(summary, false, true, AutoWatchBehavior.Default, CancellationToken.None);
         }
 
-        /// <summary>
-        /// Submits content contained in <see cref="Content"/>, making edit to the page.
-        /// (MediaWiki 1.16)
-        /// </summary>
-        /// <remarks>
-        /// This action will refill <see cref="Id" />, <see cref="Title"/>,
-        /// <see cref="ContentModel"/>, <see cref="LastRevisionId"/>, and invalidates
-        /// <see cref="ContentLength"/>, <see cref="LastRevision"/>, and <see cref="LastTouched"/>.
-        /// You should call <see cref="RefreshAsync(WikiClientLibrary.Pages.PageQueryOptions,System.Threading.CancellationToken)" /> again if you're interested in them.
-        /// </remarks>
-        /// <exception cref="InvalidOperationException">Cannot create actual page in the specified namespace.</exception>
-        /// <exception cref="OperationConflictException">Edit conflict detected.</exception>
-        /// <exception cref="UnauthorizedOperationException">You have no rights to edit the page.</exception>
+        /// <inheritdoc cref="UpdateContentAsync(string,bool,bool,AutoWatchBehavior,CancellationToken)"/>
         public Task UpdateContentAsync(string summary, bool minor)
         {
             return UpdateContentAsync(summary, minor, true, AutoWatchBehavior.Default, CancellationToken.None);
         }
 
-        /// <summary>
-        /// Submits content contained in <see cref="Content"/>, making edit to the page.
-        /// (MediaWiki 1.16)
-        /// </summary>
-        /// <remarks>
-        /// This action will refill <see cref="Id" />, <see cref="Title"/>,
-        /// <see cref="ContentModel"/>, <see cref="LastRevisionId"/>, and invalidates
-        /// <see cref="ContentLength"/>, <see cref="LastRevision"/>, and <see cref="LastTouched"/>.
-        /// You should call <see cref="RefreshAsync(WikiClientLibrary.Pages.PageQueryOptions,System.Threading.CancellationToken)" /> again if you're interested in them.
-        /// </remarks>
-        /// <exception cref="InvalidOperationException">Cannot create actual page in the specified namespace.</exception>
-        /// <exception cref="OperationConflictException">Edit conflict detected.</exception>
-        /// <exception cref="UnauthorizedOperationException">You have no rights to edit the page.</exception>
+        /// <inheritdoc cref="UpdateContentAsync(string,bool,bool,AutoWatchBehavior,CancellationToken)"/>
         public Task UpdateContentAsync(string summary, bool minor, bool bot)
         {
             return UpdateContentAsync(summary, minor, bot, AutoWatchBehavior.Default, CancellationToken.None);
         }
 
-        /// <summary>
-        /// Submits content contained in <see cref="Content"/>, making edit to the page.
-        /// (MediaWiki 1.16)
-        /// </summary>
-        /// <returns><c>true</c> if page content has been changed; <c>false</c> otherwise.</returns>
-        /// <remarks>
-        /// This action will refill <see cref="Id" />, <see cref="Title"/>,
-        /// <see cref="ContentModel"/>, <see cref="LastRevisionId"/>, and invalidate
-        /// <see cref="ContentLength"/>, <see cref="LastRevision"/>, and <see cref="LastTouched"/>.
-        /// You should call <see cref="RefreshAsync()"/> again
-        /// if you're interested in them.
-        /// </remarks>
-        /// <exception cref="InvalidOperationException">Cannot create actual page in the specified namespace.</exception>
-        /// <exception cref="OperationConflictException">Edit conflict detected.</exception>
-        /// <exception cref="UnauthorizedOperationException">You have no rights to edit the page.</exception>
+        /// <inheritdoc cref="UpdateContentAsync(string,bool,bool,AutoWatchBehavior,CancellationToken)"/>
         public Task<bool> UpdateContentAsync(string summary, bool minor, bool bot, AutoWatchBehavior watch)
         {
             return UpdateContentAsync(summary, minor, bot, watch, new CancellationToken());
@@ -531,8 +480,7 @@ namespace WikiClientLibrary.Pages
         /// This action will refill <see cref="Id" />, <see cref="Title"/>,
         /// <see cref="ContentModel"/>, <see cref="LastRevisionId"/>, and invalidate
         /// <see cref="ContentLength"/>, <see cref="LastRevision"/>, and <see cref="LastTouched"/>.
-        /// You should call <see cref="RefreshAsync()"/> again
-        /// if you're interested in them.
+        /// You should call <see cref="RefreshAsync()"/> again if you're interested in them.
         /// </remarks>
         /// <exception cref="InvalidOperationException">Cannot create actual page in the specified namespace.</exception>
         /// <exception cref="OperationConflictException">Edit conflict detected.</exception>
@@ -879,17 +827,6 @@ namespace WikiClientLibrary.Pages
         /// be a slight delay when doing this for pages used a large number of times.
         /// </summary>
         ForceRecursiveLinkUpdate = 2,
-    }
-
-    [Flags]
-    public enum RevisionQueryOptions
-    {
-        None = 0,
-
-        /// <summary>
-        /// Fetch content of the revision.
-        /// </summary>
-        FetchContent = 1,
     }
 
     /// <summary>

@@ -138,7 +138,7 @@ namespace WikiClientLibrary.Generators
         /// </summary>
         /// <param name="options">Options when querying for the revisions. Note <see cref="PageQueryOptions.ResolveRedirects"/> will raise exception.</param>
         /// <exception cref="ArgumentException"><see cref="PageQueryOptions.ResolveRedirects"/> is set.</exception>
-        /// <exception cref="InvalidOperationException"><see cref="Page"/> is <c>null</c>.</exception>
+        /// <exception cref="InvalidOperationException"><see cref="WikiPage"/> is <c>null</c>.</exception>
         public IAsyncEnumerable<Revision> EnumRevisionsAsync(PageQueryOptions options)
         {
             // We do not resolve redirects.

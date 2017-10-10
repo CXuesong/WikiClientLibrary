@@ -4,7 +4,7 @@ using System.Collections.Generic;
 namespace WikiClientLibrary
 {
     /// <summary>
-    /// Contains MediaWiki built-in namespace ids for most MediaWiki site. (MediaWiki 1.14+)
+    /// Contains MediaWiki built-in namespace IDs for most MediaWiki sites. (MediaWiki 1.14+)
     /// </summary>
     public static class BuiltInNamespaces
     {
@@ -52,6 +52,7 @@ namespace WikiClientLibrary
         /// <summary>
         /// Gets the canonical name for a specific built-in namespace.
         /// </summary>
+        /// <param name="namespaceId">A built-in namespace id.</param>
         /// <returns>
         /// canonical name for the specified built-in namespace.
         /// OR <c>null</c> if no such namespace is found.

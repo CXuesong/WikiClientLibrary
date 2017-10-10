@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.Serialization;
 using System.Text;
 using System.Threading.Tasks;
 using WikiClientLibrary.Pages;
@@ -32,6 +31,7 @@ namespace WikiClientLibrary
     /// <summary>
     /// An exception indicating the requested operation has failed.
     /// </summary>
+    /// <remarks>This often corresponds to MediaWiki API error, i.e. API responses with "error" node.</remarks>
     public class OperationFailedException : WikiClientException
     {
         /// <summary>
@@ -76,6 +76,7 @@ namespace WikiClientLibrary
     /// <summary>
     /// An exception indicating the requested action is invalid.
     /// </summary>
+    /// <remarks>This corresponds to <c>unknown_action</c> MW API error.</remarks>
     public class InvalidActionException : OperationFailedException
     {
         public InvalidActionException(string errorCode, string message)
@@ -84,12 +85,14 @@ namespace WikiClientLibrary
         }
     }
 
-
     /// <summary>
     /// Raises when the account assertion fails when performing MediaWiki
     /// API requests.
     /// </summary>
-    /// <remarks>See https://www.mediawiki.org/wiki/API:Assert .</remarks>
+    /// <remarks>
+    /// This corresponds to <c>assertuserfailed</c> or <c>assertbotfailed</c> MW API error.
+    /// <para>See <a href="https://www.mediawiki.org/wiki/API:Assert">mw:API:Assert</a>.</para>
+    /// </remarks>
     public class AccountAssertionFailureException : OperationFailedException
     {
         public AccountAssertionFailureException(string errorCode, string message)
@@ -100,6 +103,7 @@ namespace WikiClientLibrary
     /// <summary>
     /// Raises when user has no rights for certain operations.
     /// </summary>
+    /// <remarks>This corresponds to <c>*conflict</c> MW API error.</remarks>
     public class UnauthorizedOperationException : OperationFailedException
     {
         public UnauthorizedOperationException(string errorCode, string message)
@@ -122,6 +126,7 @@ namespace WikiClientLibrary
     /// <summary>
     /// Raises when conflict detected performing the operation.
     /// </summary>
+    /// <remarks>This corresponds to <c>*conflict</c> MW API error.</remarks>
     public class OperationConflictException : OperationFailedException
     {
         public OperationConflictException(string errorCode, string message)
@@ -131,8 +136,9 @@ namespace WikiClientLibrary
     }
 
     /// <summary>
-    /// Raises when the token passed-in is invalid.
+    /// Raises when the token used to invoke MediaWiki API is invalid.
     /// </summary>
+    /// <remarks>This corresponds to <c>badtoken</c> MW API error.</remarks>
     public class BadTokenException : OperationFailedException
     {
         public BadTokenException(string errorCode, string message)

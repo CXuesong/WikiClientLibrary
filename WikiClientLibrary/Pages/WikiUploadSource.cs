@@ -7,16 +7,20 @@ using WikiClientLibrary.Sites;
 namespace WikiClientLibrary.Pages
 {
     /// <summary>
-    /// Base class for content that can be used with <see cref="FilePage.UploadAsync"/>.
+    /// Base class for content that can be used for file-uploading.
     /// </summary>
+    /// <seealso cref="FilePage.UploadAsync(WikiUploadSource,string,bool)"/>
     public abstract class WikiUploadSource
     {
         /// <summary>
-        /// Gets the additional fields that will override the default action=upload parameters.
+        /// Gets the additional fields that will override the default <c>action=upload</c> parameters.
         /// </summary>
         public abstract IEnumerable<KeyValuePair<string, object>> GetUploadParameters(SiteInfo siteInfo);
     }
 
+    /// <summary>
+    /// Represents uploadable content contained in a <see cref="Stream"/>.
+    /// </summary>
     public class StreamUploadSource : WikiUploadSource
     {
 
@@ -37,6 +41,9 @@ namespace WikiClientLibrary.Pages
 
     }
 
+    /// <summary>
+    /// Uploadable content identified by <c>filekey</c> in MW upload API.
+    /// </summary>
     public class FileKeyUploadSource : WikiUploadSource
     {
 
@@ -65,6 +72,13 @@ namespace WikiClientLibrary.Pages
 
     }
 
+    /// <summary>
+    /// Uploadable content identified by external file URL.
+    /// </summary>
+    /// <remarks>
+    /// Note that not all the Mediawiki sites allow uploading by external file URL.
+    /// Especially, Wikimedia and Wikia sites does not allow this.
+    /// </remarks>
     public class ExternalFileUploadSource : WikiUploadSource
     {
         /// <param name="sourceUrl">The URL of the file to be uploaded.</param>
