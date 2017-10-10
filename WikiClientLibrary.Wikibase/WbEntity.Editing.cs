@@ -100,22 +100,22 @@ namespace WikiClientLibrary.Wikibase
             return jdata;
         }
 
-        /// <inheritdoc cref="Edit(IEnumerable{WbEntityEditEntry},string,bool,bool,CancellationToken)"/>
-        public Task Edit(IEnumerable<WbEntityEditEntry> edits, string summary)
+        /// <inheritdoc cref="EditAsync"/>
+        public Task EditAsync(IEnumerable<WbEntityEditEntry> edits, string summary)
         {
-            return Edit(edits, summary, false);
+            return EditAsync(edits, summary, false);
         }
 
-        /// <inheritdoc cref="Edit(IEnumerable{WbEntityEditEntry},string,bool,bool,CancellationToken)"/>
-        public Task Edit(IEnumerable<WbEntityEditEntry> edits, string summary, bool isBot)
+        /// <inheritdoc cref="EditAsync"/>
+        public Task EditAsync(IEnumerable<WbEntityEditEntry> edits, string summary, bool isBot)
         {
-            return Edit(edits, summary, isBot, false);
+            return EditAsync(edits, summary, isBot, false);
         }
 
-        /// <inheritdoc cref="Edit(IEnumerable{WbEntityEditEntry},string,bool,bool,CancellationToken)"/>
-        public Task Edit(IEnumerable<WbEntityEditEntry> edits, string summary, bool isBot, bool clearData)
+        /// <inheritdoc cref="EditAsync"/>
+        public Task EditAsync(IEnumerable<WbEntityEditEntry> edits, string summary, bool isBot, bool clearData)
         {
-            return Edit(edits, summary, isBot, clearData, CancellationToken.None);
+            return EditAsync(edits, summary, isBot, clearData, CancellationToken.None);
         }
 
         /// <summary>
@@ -136,7 +136,7 @@ namespace WikiClientLibrary.Wikibase
         /// due to insufficient data contained in the MW API. (e.g. <see cref="PageId"/>) As for the properties that are
         /// affected by the edit operation, see the "remarks" section of the properties, respectively.
         /// </remarks>
-        public async Task Edit(IEnumerable<WbEntityEditEntry> edits,
+        public async Task EditAsync(IEnumerable<WbEntityEditEntry> edits,
             string summary, bool isBot, bool clearData, CancellationToken cancellationToken)
         {
 

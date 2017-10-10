@@ -104,7 +104,7 @@ namespace UnitTestProject1.Tests
                         "This is a test entity for unit test. If you see this entity outside the test site, please check the revision history and notify the editor.")),
                 new WbEntityEditEntry(nameof(WbEntity.Descriptions), new WbMonolingualText("zh", "此实体仅用于测试之用。如果你在非测试维基见到此实体，请检查修订历史并告知编辑者。")),
             };
-            await entity.Edit(changelist, "Create test entity.", true);
+            await entity.EditAsync(changelist, "Create test entity.", true);
             ShallowTrace(entity);
             Assert.Equal("test entity " + rand, entity.Labels["en"]);
             Assert.Contains("test", entity.Aliases["en"]);
@@ -120,7 +120,7 @@ namespace UnitTestProject1.Tests
                 new WbEntityEditEntry(nameof(WbEntity.Aliases), new WbMonolingualText("en", "Test"), WbEntityEditEntryState.Removed),
                 new WbEntityEditEntry(nameof(WbEntity.Descriptions), new WbMonolingualText("zh", "dummy"), WbEntityEditEntryState.Removed),
             };
-            await entity.Edit(changelist, "Edit test entity.", true);
+            await entity.EditAsync(changelist, "Edit test entity.", true);
             ShallowTrace(entity);
             Assert.Null(entity.Descriptions["zh"]);
             Assert.Equal("测试实体" + rand, entity.Labels["zh-hans"]);
@@ -135,7 +135,7 @@ namespace UnitTestProject1.Tests
                 new WbEntityEditEntry(nameof(WbEntity.Labels), new WbMonolingualText("en", "test property " + rand)),
                 new WbEntityEditEntry(nameof(WbEntity.DataType), WbPropertyTypes.WikibaseItem),
             };
-            await prop.Edit(changelist, "Create a property for test.", true);
+            await prop.EditAsync(changelist, "Create a property for test.", true);
             // Refill basic information, esp. WbEntity.DataType
             await prop.RefreshAsync(WbEntityQueryOptions.FetchInfo);
 
@@ -148,7 +148,7 @@ namespace UnitTestProject1.Tests
                     References = {new WbClaimReference(new WbSnak(prop, entity.Id))}
                 }),
             };
-            await entity.Edit(changelist, "Edit test entity. Add claims.", true);
+            await entity.EditAsync(changelist, "Edit test entity. Add claims.", true);
             Assert.Equal(2, entity.Claims.Count);
             Assert.Equal(2, entity.Claims[prop.Id].Count);
             Assert.Contains(entity.Claims[prop.Id], c => entity.Id.Equals(c.MainSnak.DataValue));
@@ -162,7 +162,7 @@ namespace UnitTestProject1.Tests
             {
                 new WbEntityEditEntry(nameof(WbEntity.Claims), claim2, WbEntityEditEntryState.Removed),
             };
-            await entity.Edit(changelist, "Edit test entity. Remove a claim.", true);
+            await entity.EditAsync(changelist, "Edit test entity. Remove a claim.", true);
             Assert.Single(entity.Claims);
             Assert.Contains(entity.Claims[prop.Id], c => entity.Id.Equals(c.MainSnak.DataValue));
         }
