@@ -22,7 +22,7 @@ namespace UnitTestProject1.Tests
         public async Task BoardTest()
         {
             var board = new Board(await WpBetaSiteAsync, "Talk:Flow QA");
-            await board.Header.RefreshAsync();
+            await board.RefreshAsync();
             ShallowTrace(board);
             var topics = await board.EnumTopicsAsync(10).Take(10).ToArray();
             ShallowTrace(topics);
