@@ -57,7 +57,7 @@ namespace WikiClientLibrary.Pages
                 case BuiltInNamespaces.Category:
                     return new CategoryPage(site, title);
                 case BuiltInNamespaces.File:
-                    return new CategoryPage(site, title);
+                    return new FilePage(site, title);
                 default:
                     return new WikiPage(site, title, defaultNamespaceId);
             }
@@ -74,13 +74,13 @@ namespace WikiClientLibrary.Pages
         {
             if (site == null) throw new ArgumentNullException(nameof(site));
             if (queryNode == null) throw new ArgumentNullException(nameof(queryNode));
-            var pages = (JObject) queryNode["pages"];
+            var pages = (JObject)queryNode["pages"];
             if (pages == null) return EmptyPages;
             // If query.xxx.index exists, sort the pages by the given index.
             // This is specifically used with SearchGenerator, to keep the search result in order.
             // For other generators, this property simply does not exist.
             // See https://www.mediawiki.org/wiki/API_talk:Query#On_the_order_of_titles_taken_out_of_generator .
-            return pages.Properties().OrderBy(page => (int?) page.Value["index"])
+            return pages.Properties().OrderBy(page => (int?)page.Value["index"])
                 .Select(page =>
                 {
                     WikiPage newInst;
@@ -88,10 +88,10 @@ namespace WikiClientLibrary.Pages
                         newInst = new CategoryPage(site);
                     else
                     {
-                        switch ((string) page.Value["contentmodel"])
+                        switch ((string)page.Value["contentmodel"])
                         {
                             case ContentModels.FlowBoard:
-                                if ((int) page.Value["ns"] == FlowNamespaces.Topic)
+                                if ((int)page.Value["ns"] == FlowNamespaces.Topic)
                                     newInst = new Topic(site);
                                 else
                                     newInst = new Board(site);
