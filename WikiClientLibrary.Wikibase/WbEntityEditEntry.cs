@@ -8,7 +8,7 @@ namespace WikiClientLibrary.Wikibase
     /// <summary>
     /// Represents an item of coarse-grained modification information on <see cref="WbEntity"/>.
     /// </summary>
-    public class WbEntityEditEntry
+    public sealed class WbEntityEditEntry
     {
         private WbEntityEditEntryState _State;
 
@@ -60,10 +60,13 @@ namespace WikiClientLibrary.Wikibase
     public enum WbEntityEditEntryState
     {
         /// <summary>
-        /// Either the entry is a new item, or the inside value of the item has been changed.
+        /// Either the entry is a new item, or the value inside the item has been changed.
         /// </summary>
         Updated = 0,
 
+        /// <summary>
+        /// The entry represents an item to be removed.
+        /// </summary>
         Removed = 1,
     }
 }
