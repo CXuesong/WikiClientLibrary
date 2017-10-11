@@ -41,9 +41,25 @@ namespace WikiClientLibrary.Flow
         [JsonProperty]
         public string RevisionId { get; private set; }
 
+        /// <summary>
+        /// The time stamp of the revision.
+        /// </summary>
+        public DateTime TimeStamp { get; private set; }
+
         [JsonProperty("timestamp")]
-        public string TimeStamp { get; private set; }
-        
+        private string RawTimeStamp
+        {
+            set => TimeStamp = DateTime.ParseExact(value, "yyyyMMddHHmmss", null);
+        }
+
+        public DateTime? LastUpdated { get; private set; }
+
+        [JsonProperty("last_updated")]
+        private long RawLastUpdated
+        {
+            set => LastUpdated = FlowUtility.DateFromJavaScriptTicks(value);
+        }
+
         public FlowRevisionAction ChangeType { get; private set; }
 
         [JsonProperty("changeType")]
@@ -80,6 +96,15 @@ namespace WikiClientLibrary.Flow
         [JsonProperty]
         public bool IsModeratedNotLocked { get; private set; }
 
+        [JsonProperty]
+        public bool IsMaxThreadingDepth { get; private set; }
+
+        /// <summary>
+        /// Workflow ID of the replies.
+        /// </summary>
+        [JsonProperty]
+        public IList<string> Replies { get; private set; }
+
         /// <summary>
         /// HTML links to show different views.
         /// </summary>
@@ -111,7 +136,7 @@ namespace WikiClientLibrary.Flow
                 ContentLength = (int)value["new"];
             }
         }
-       
+
         /// <summary>
         /// Author of the post or header.
         /// </summary>

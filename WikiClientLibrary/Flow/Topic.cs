@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
@@ -20,6 +21,7 @@ namespace WikiClientLibrary.Flow
     {
         private ILoggerFactory _LoggerFactory;
         private ILogger logger = NullLogger.Instance;
+        private readonly List<Revision> _Posts = new List<Revision>();
 
         /// <summary>
         /// Initializes a new <see cref="Board"/> instance from MW site and board page title.
@@ -28,15 +30,18 @@ namespace WikiClientLibrary.Flow
         /// <param name="title">Full page title of the Flow discussion board, including namespace prefix.</param>
         public Topic(WikiSite site, string title)
         {
-            Site = site;
-            Title = title;
+            Site = site ?? throw new ArgumentNullException(nameof(site));
+            Title = title ?? throw new ArgumentNullException(nameof(title));
             LoggerFactory = site.LoggerFactory;
+            Posts = new ReadOnlyCollection<Revision>(_Posts);
         }
 
-        private Topic(WikiSite site)
+        internal Topic(WikiSite site)
         {
+            Debug.Assert(site != null);
             Site = site;
             LoggerFactory = site.LoggerFactory;
+            Posts = new ReadOnlyCollection<Revision>(_Posts);
         }
 
         /// <summary>
@@ -48,49 +53,50 @@ namespace WikiClientLibrary.Flow
         /// Full title of the topic page.
         /// </summary>
         /// <remarks>The page title is usually <see cref="WorkflowId"/> with <c>Topic:</c> namespace prefix.</remarks>
-        /// <seealso cref="TopicTitle"/>
+        /// <seealso cref="TopicTitleRevision"/>
         public string Title { get; private set; }
 
-        /// <param name="topicList">The topiclist node of a view-topiclist query result.</param>
-        internal static IList<Topic> FromJsonTopicListResult(WikiSite site, JObject topicList)
+        /// <summary>
+        /// Gets the latest revision of the topic display title.
+        /// </summary>
+        public Revision TopicTitleRevision { get; private set; }
+
+        internal static IEnumerable<Topic> FromJsonTopicList(WikiSite site, JObject topicList)
         {
-            Debug.Assert(site != null);
-            return topicList["roots"].Select(jroot =>
+            return topicList["roots"].Select(rootId =>
             {
-                var rootId = (string)jroot;
-                var revisionId = (string)topicList["posts"][rootId].First;
-                var revision = (JObject)topicList["revisions"][revisionId];
                 var topic = new Topic(site);
-                topic.FillFromRevision(revision);
+                topic.LoadFromJsonTopicList(topicList, (string)rootId);
                 return topic;
-            }).ToList();
+            });
         }
 
-        protected void FillFromRevision(JObject jrevision)
+        // topicList: The topiclist node of a view-topiclist query result.
+        internal void LoadFromJsonTopicList(JObject topicList, string workflowId)
         {
-            WorkflowId = (string)jrevision["workflowId"];
-            // Yes, they are not lower-case. They are camel-case.
-            Title = (string)jrevision["articleTitle"];
-            TopicTitle = (string)jrevision["content"]["content"];
-            IsLocked = (bool)jrevision["isLocked"];
-            IsModerated = (bool)jrevision["isModerated"];
-            var expr = (string)jrevision["timestamp"];
-            TimeStamp = DateTime.ParseExact(expr, "yyyyMMddHHmmss", null, DateTimeStyles.AssumeUniversal);
+            _Posts.Clear();
+            TopicTitleRevision = null;
+            WorkflowId = null;
+            if (_Posts.Capacity < topicList.Count) _Posts.Capacity = topicList.Count;
+            var revisionId = (string)topicList["posts"][workflowId]?.First;
+            if (revisionId == null)
+                throw new ArgumentException("Cannot find workflow ID " + workflowId + " in [posts] array.", nameof(workflowId));
+            var jrevision = (JObject)topicList["revisions"][revisionId];
+            if (jrevision == null)
+                throw new UnexpectedDataException("Cannot find revision " + revisionId + " in [revisions] array.");
+            var rev = jrevision.ToObject<Revision>(FlowUtility.FlowJsonSerializer);
+            // Assume the first post as title.
+            TopicTitleRevision = rev;
+            Title = TopicTitleRevision.ArticleTitle;
+            WorkflowId = TopicTitleRevision.WorkflowId;
+            // TODO Parse the replies.
+            foreach (var replyIds in rev.Replies)
+            {
+                
+            }
         }
 
-        /// <summary>
-        /// Title of the topic, in wikitext format.
-        /// </summary>
-        public string TopicTitle { get; set; }
-
-        /// <summary>
-        /// Whether the topic has been locked a.k.a. "marked as resolved".
-        /// </summary>
-        public bool IsLocked { get; private set; }
-
-        public bool IsModerated { get; private set; }
-
-        public DateTime TimeStamp { get; private set; }
+        public IList<Revision> Posts { get; }
 
         /// <summary>
         /// Workflow ID of the topic.
@@ -105,5 +111,14 @@ namespace WikiClientLibrary.Flow
             set => logger = Utility.SetLoggerFactory(ref _LoggerFactory, value, GetType());
         }
 
+        /// <summary>
+        /// Returns the user-friendly title of the topic.
+        /// </summary>
+        public override string ToString()
+        {
+            var result = "[" + Title + "]";
+            if (TopicTitleRevision != null) result += TopicTitleRevision.Content;
+            return result;
+        }
     }
 }

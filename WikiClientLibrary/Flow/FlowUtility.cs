@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Text;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Serialization;
 using WikiClientLibrary.Infrastructures;
@@ -49,6 +50,12 @@ namespace WikiClientLibrary.Flow
             return new UserStub((string)user["name"], (int?)user["id"], gender, (string)user["wiki"]);
         }
 
+        public static DateTime DateFromJavaScriptTicks(long ticks)
+        {
+            // 621355968000000000: 1970-01-01
+            return new DateTime(621355968000000000L + ticks * 10000L, DateTimeKind.Utc);
+        }
+
     }
 
     internal class FlowUserStubConverter : JsonConverter
@@ -66,7 +73,7 @@ namespace WikiClientLibrary.Flow
         public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
         {
             if (reader.TokenType == JsonToken.Null) return boxedEmptyUserStub;
-            if (reader.TokenType != JsonToken.StartObject) throw new JsonException("Expect JSON object.");
+            if (reader.TokenType != JsonToken.StartObject) throw new JsonSerializationException("Expect JSON object.");
             var jUser = JToken.ReadFrom(reader);
             if (FlowUtility.IsNullOrJsonNull(jUser["name"]))
             {

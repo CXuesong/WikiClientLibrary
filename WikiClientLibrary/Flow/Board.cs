@@ -105,10 +105,10 @@ namespace WikiClientLibrary.Flow
                 if (eof) return null;
                 var jresult = await Site.GetJsonAsync(new WikiFormRequestMessage(queryParams), ct);
                 var jtopiclist = (JObject) jresult["flow"]["view-topiclist"]["result"]["topiclist"];
-                var topics = Topic.FromJsonTopicListResult(Site, jtopiclist);
+                var topics = Topic.FromJsonTopicList(Site, jtopiclist);
                 // TODO Implement Pagination
                 eof = true;
-                return Tuple.Create((IEnumerable<Topic>) topics, true);
+                return Tuple.Create(topics, eof);
             });
             return ienu.SelectMany(t => t.ToAsyncEnumerable());
         }
@@ -120,5 +120,7 @@ namespace WikiClientLibrary.Flow
             set => logger = Utility.SetLoggerFactory(ref _LoggerFactory, value, GetType());
         }
 
+        /// <inheritdoc />
+        public override string ToString() => Title;
     }
 }
