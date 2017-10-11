@@ -21,27 +21,24 @@ namespace WikiClientLibrary.Flow
     {
         private ILoggerFactory _LoggerFactory;
         private ILogger logger = NullLogger.Instance;
-        private readonly List<Revision> _Posts = new List<Revision>();
 
         /// <summary>
-        /// Initializes a new <see cref="Board"/> instance from MW site and board page title.
+        /// Initializes a new <see cref="Topic"/> instance from MW site and topic page title.
         /// </summary>
         /// <param name="site">MediaWiki site.</param>
-        /// <param name="title">Full page title of the Flow discussion board, including namespace prefix.</param>
+        /// <param name="title">Full page title of the Flow discussion board, including <c>Topic:</c> namespace prefix.</param>
         public Topic(WikiSite site, string title)
         {
             Site = site ?? throw new ArgumentNullException(nameof(site));
             Title = title ?? throw new ArgumentNullException(nameof(title));
             LoggerFactory = site.LoggerFactory;
-            Posts = new ReadOnlyCollection<Revision>(_Posts);
         }
 
-        internal Topic(WikiSite site)
+        private Topic(WikiSite site)
         {
             Debug.Assert(site != null);
             Site = site;
             LoggerFactory = site.LoggerFactory;
-            Posts = new ReadOnlyCollection<Revision>(_Posts);
         }
 
         /// <summary>
@@ -74,10 +71,8 @@ namespace WikiClientLibrary.Flow
         // topicList: The topiclist node of a view-topiclist query result.
         internal void LoadFromJsonTopicList(JObject topicList, string workflowId)
         {
-            _Posts.Clear();
             TopicTitleRevision = null;
             WorkflowId = null;
-            if (_Posts.Capacity < topicList.Count) _Posts.Capacity = topicList.Count;
             var revisionId = (string)topicList["posts"][workflowId]?.First;
             if (revisionId == null)
                 throw new ArgumentException("Cannot find workflow ID " + workflowId + " in [posts] array.", nameof(workflowId));
@@ -89,14 +84,20 @@ namespace WikiClientLibrary.Flow
             TopicTitleRevision = rev;
             Title = TopicTitleRevision.ArticleTitle;
             WorkflowId = TopicTitleRevision.WorkflowId;
-            // TODO Parse the replies.
-            foreach (var replyIds in rev.Replies)
+            if (rev.ReplyIds == null || rev.ReplyIds.Count == 0)
             {
-                
+                Posts = Post.EmptyPosts;
             }
+            else
+            {
+                var posts = new List<Post>(rev.ReplyIds.Count);
+                posts.AddRange(rev.ReplyIds.Select(pid => Post.FromJson(Site, topicList, pid)));
+                Posts = new ReadOnlyCollection<Post>(posts);
+            }
+            WorkflowId = workflowId;
         }
 
-        public IList<Revision> Posts { get; }
+        public IList<Post> Posts { get; private set; }
 
         /// <summary>
         /// Workflow ID of the topic.

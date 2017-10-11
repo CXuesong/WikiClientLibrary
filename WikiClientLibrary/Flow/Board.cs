@@ -51,7 +51,7 @@ namespace WikiClientLibrary.Flow
 
         /// <summary>Latest header content revision.</summary>
         public Revision HeaderRevision { get; private set; }
-        
+
         /// <inheritdoc cref="RefreshAsync(CancellationToken)"/>
         public Task RefreshAsync()
         {
@@ -104,11 +104,14 @@ namespace WikiClientLibrary.Flow
             {
                 if (eof) return null;
                 var jresult = await Site.GetJsonAsync(new WikiFormRequestMessage(queryParams), ct);
-                var jtopiclist = (JObject) jresult["flow"]["view-topiclist"]["result"]["topiclist"];
-                var topics = Topic.FromJsonTopicList(Site, jtopiclist);
+                var jtopiclist = (JObject)jresult["flow"]["view-topiclist"]["result"]["topiclist"];
+                // ISSUE directly return SelectArrayIterator<TSource, TResult> via Enumerable.Select
+                // can cause strange behavior when chained with other async LINQ methods. See
+                // https://github.com/CXuesong/WikiClientLibrary/issues/27
+                var topics = Topic.FromJsonTopicList(Site, jtopiclist).ToList();
                 // TODO Implement Pagination
                 eof = true;
-                return Tuple.Create(topics, eof);
+                return Tuple.Create((IEnumerable<Topic>)topics, true);
             });
             return ienu.SelectMany(t => t.ToAsyncEnumerable());
         }

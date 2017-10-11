@@ -72,8 +72,9 @@ namespace WikiClientLibrary.Flow
         //[JsonProperty]
         //public DateFormats DateFormats { get; private set; }
 
+        // Can be JObject, or empty JArray
         [JsonProperty]
-        public JObject Properties { get; private set; }
+        public JToken Properties { get; private set; }
 
         [JsonProperty]
         public bool IsOriginalContent { get; private set; }
@@ -102,8 +103,8 @@ namespace WikiClientLibrary.Flow
         /// <summary>
         /// Workflow ID of the replies.
         /// </summary>
-        [JsonProperty]
-        public IList<string> Replies { get; private set; }
+        [JsonProperty("replies")]
+        public IList<string> ReplyIds { get; private set; }
 
         /// <summary>
         /// HTML links to show different views.
