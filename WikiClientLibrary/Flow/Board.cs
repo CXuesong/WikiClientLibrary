@@ -4,6 +4,8 @@ using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
 using Newtonsoft.Json.Linq;
 using WikiClientLibrary.Client;
 using WikiClientLibrary.Infrastructures;
@@ -20,24 +22,35 @@ namespace WikiClientLibrary.Flow
     /// <para>See https://www.mediawiki.org/wiki/Extension:Flow for more information about Flow extension.</para>
     /// <para>Note that the development of Flow extension seems now paused. See https://en.wikipedia.org/wiki/Wikipedia:Flow for more information.</para>
     /// </remarks>
-    public class Board : WikiPage
+    public class Board : IWikiClientLoggable
     {
-        /// <inheritdoc />
-        public Board(WikiSite site, string title) : this(site, title, BuiltInNamespaces.Main)
-        {
-        }
 
-        /// <inheritdoc />
-        public Board(WikiSite site, string title, int defaultNamespaceId) : base(site, title, defaultNamespaceId)
+        private ILoggerFactory _LoggerFactory;
+        private ILogger logger = NullLogger.Instance;
+
+        /// <summary>
+        /// Initializes a new <see cref="Board"/> instance from MW site and board page title.
+        /// </summary>
+        /// <param name="site">MediaWiki site.</param>
+        /// <param name="title">Full page title of the Flow discussion board, including namespace prefix.</param>
+        /// <exception cref="ArgumentNullException">Either <paramref name="site"/> or <paramref name="title"/> is <c>null</c>.</exception>
+        public Board(WikiSite site, string title)
         {
+            Site = site ?? throw new ArgumentNullException(nameof(site));
+            Title = title ?? throw new ArgumentNullException(nameof(title));
             Header = new BoardHeader(site, title);
+            LoggerFactory = site.LoggerFactory;
         }
 
-        /// <inheritdoc />
-        internal Board(WikiSite site) : base(site)
-        {
+        /// <summary>
+        /// The MediaWiki site hosting this board.
+        /// </summary>
+        public WikiSite Site { get; }
 
-        }
+        /// <summary>
+        /// Full title of the board.
+        /// </summary>
+        public string Title { get; }
 
         public BoardHeader Header { get; private set; }
 
@@ -78,20 +91,11 @@ namespace WikiClientLibrary.Flow
         }
 
         /// <inheritdoc />
-        protected override void OnLoadPageInfo(JObject jpage)
+        public ILoggerFactory LoggerFactory
         {
-            base.OnLoadPageInfo(jpage);
-            if (Header == null) Header = new BoardHeader(Site, Title);
+            get => _LoggerFactory;
+            set => logger = Utility.SetLoggerFactory(ref _LoggerFactory, value, GetType());
         }
 
-        /// <summary>
-        /// Infrastructure.
-        /// </summary>
-        [EditorBrowsable(EditorBrowsableState.Never)]
-        public new string Content
-        {
-            get { return base.Content; }
-            set { base.Content = value; }
-        }
     }
 }

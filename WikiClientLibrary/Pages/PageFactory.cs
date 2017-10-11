@@ -84,23 +84,12 @@ namespace WikiClientLibrary.Pages
                 .Select(page =>
                 {
                     WikiPage newInst;
-                    if (page.Value["categoryinfo"] != null)
+                    if (page.Value["imageinfo"] != null)
+                        newInst = new FilePage(site);
+                    else if (page.Value["categoryinfo"] != null)
                         newInst = new CategoryPage(site);
                     else
-                    {
-                        switch ((string)page.Value["contentmodel"])
-                        {
-                            case ContentModels.FlowBoard:
-                                if ((int)page.Value["ns"] == FlowNamespaces.Topic)
-                                    newInst = new Topic(site);
-                                else
-                                    newInst = new Board(site);
-                                break;
-                            default:
-                                newInst = new WikiPage(site);
-                                break;
-                        }
-                    }
+                        newInst = new WikiPage(site);
                     newInst.LoadFromJson(page, options);
                     return newInst;
                 }).ToList();

@@ -22,9 +22,8 @@ namespace UnitTestProject1.Tests
         public async Task BoardTest()
         {
             var board = new Board(await WpBetaSiteAsync, "Talk:Flow QA");
-            await Task.WhenAll(board.RefreshAsync(), board.Header.RefreshAsync());
+            await board.Header.RefreshAsync();
             ShallowTrace(board);
-            Assert.Equal(ContentModels.FlowBoard, board.ContentModel);
             var topics = await board.EnumTopicsAsync(10).Take(10).ToArray();
             ShallowTrace(topics);
         }
