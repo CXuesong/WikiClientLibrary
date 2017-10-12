@@ -19,6 +19,8 @@ namespace WikiClientLibrary.Flow
     public class Revision
     {
 
+        private static readonly IList<string> emptyStrings = new string[] { };
+
         private static readonly IDictionary<string, FlowLink> emptyLinks = new ReadOnlyDictionary<string, FlowLink>(
             new Dictionary<string, FlowLink>());
 
@@ -104,7 +106,7 @@ namespace WikiClientLibrary.Flow
         /// Workflow ID of the replies.
         /// </summary>
         [JsonProperty("replies")]
-        public IList<string> ReplyIds { get; private set; }
+        public IList<string> ReplyIds { get; private set; } = emptyStrings;
 
         /// <summary>
         /// HTML links to show different views.
@@ -164,6 +166,12 @@ namespace WikiClientLibrary.Flow
         /// </summary>
         [JsonProperty]
         public string PreviousRevisionId { get; private set; }
+
+        /// <summary>
+        /// Workflow ID of the post this revision replies to.
+        /// </summary>
+        [JsonProperty]
+        public string ReplyToId { get; private set; }
 
         /// <summary>
         /// Revision content, in wikitext format.

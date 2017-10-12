@@ -128,7 +128,11 @@ namespace WikiClientLibrary.Flow
         /// <param name="topicTitle">Title of the new topic, in wikitext format.</param>
         /// <param name="topicContent">First post content of the new topic, in wikitext format.</param>
         /// <param name="cancellationToken">The token used to cancel the operation.</param>
-        /// <returns>A task that returns the newly-created topic when succeeds.</returns>
+        /// <returns>
+        /// A task that returns the newly-created topic when succeeds.
+        /// The instance only contains the workflow ID, so you may need to call
+        /// <see cref="Topic.RefreshAsync()"/> if you want to query more information about it. 
+        /// </returns>
         public Task<Topic> NewTopicAsync(string topicTitle, string topicContent, CancellationToken cancellationToken)
         {
             if (topicTitle == null) throw new ArgumentNullException(nameof(topicTitle));

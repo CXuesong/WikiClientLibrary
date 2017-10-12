@@ -66,6 +66,35 @@ namespace WikiClientLibrary.Flow
             return post;
         }
 
+        /// <inheritdoc cref="RefreshAsync(CancellationToken)"/>
+        public Task RefreshAsync()
+        {
+            return RefreshAsync(CancellationToken.None);
+        }
+
+        /// <summary>
+        /// Refreshes the topic revision and replies from the server.
+        /// </summary>
+        /// <param name="cancellationToken">The token used to cancel the operation.</param>
+        /// <remarks>
+        /// Due to inherent limitation of MW API, this method will not fetch replies nor their workflow IDs.
+        /// <see cref="Revision.ReplyIds"/> in <see cref="LastRevision"/>, as well as <see cref="Replies"/>, will be empty,
+        /// </remarks>
+        public async Task RefreshAsync(CancellationToken cancellationToken)
+        {
+            var jresult = await Site.GetJsonAsync(new WikiFormRequestMessage(new
+            {
+                action = "flow",
+                submodule = "view-post",
+                page = TopicTitle,
+                vppostId = WorkflowId,
+                vpformat = "wikitext",
+            }), cancellationToken);
+            var jtopiclist = (JObject)jresult["flow"]["view-post"]["result"]["topic"];
+            var workflowId = (string)jtopiclist["roots"].First;
+            LoadFromJsonTopicList(jtopiclist, workflowId);
+        }
+
         // topicList: The topiclist node of a view-topiclist query result.
         internal void LoadFromJsonTopicList(JObject topicList, string workflowId)
         {
@@ -76,6 +105,7 @@ namespace WikiClientLibrary.Flow
             if (jrevision == null)
                 throw new UnexpectedDataException("Cannot find revision " + revisionId + " in [revisions] array.");
             var rev = jrevision.ToObject<Revision>(FlowUtility.FlowJsonSerializer);
+            LastRevision = rev;
             if (rev.ReplyIds == null || rev.ReplyIds.Count == 0)
             {
                 Replies = EmptyPosts;
@@ -93,7 +123,7 @@ namespace WikiClientLibrary.Flow
         /// <inheritdoc cref="ReplyAsync(string,CancellationToken)"/>
         public Task<Post> ReplyAsync(string content)
         {
-            return ReplyAsync(content, new CancellationToken());
+            return ReplyAsync(content, CancellationToken.None);
         }
 
         /// <summary>

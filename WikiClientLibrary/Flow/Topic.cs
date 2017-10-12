@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using Newtonsoft.Json.Linq;
+using WikiClientLibrary.Client;
 using WikiClientLibrary.Pages;
 using WikiClientLibrary.Sites;
 
@@ -27,11 +28,15 @@ namespace WikiClientLibrary.Flow
         /// Initializes a new <see cref="Topic"/> instance from MW site and topic page title.
         /// </summary>
         /// <param name="site">MediaWiki site.</param>
-        /// <param name="title">Full page title of the Flow discussion board, including <c>Topic:</c> namespace prefix.</param>
+        /// <param name="title">Either full page title of the Flow discussion board including <c>Topic:</c> namespace prefix, or the workflow ID of the board.</param>
+        /// <exception cref="ArgumentNullException"><paramref name="site"/> or <paramref name="title"/> is <c>null</c>.</exception>
+        /// <exception cref="ArgumentException"><paramref name="title"/> is not a valid title.</exception>
         public Topic(WikiSite site, string title)
         {
             Site = site ?? throw new ArgumentNullException(nameof(site));
-            Title = title ?? throw new ArgumentNullException(nameof(title));
+            var link = WikiLink.Parse(site, title, FlowNamespaces.Topic);
+            Title = link.ToString();
+            WorkflowId = link.Title.ToLowerInvariant();
             LoggerFactory = site.LoggerFactory;
         }
 
@@ -57,7 +62,33 @@ namespace WikiClientLibrary.Flow
         /// <summary>
         /// Gets the latest revision of the topic display title.
         /// </summary>
+        /// <remarks>Usually this revision shares the same <see cref="Revision.WorkflowId"/> as the topic itself.</remarks>
         public Revision TopicTitleRevision { get; private set; }
+
+
+        /// <inheritdoc cref="RefreshAsync(CancellationToken)"/>
+        public Task RefreshAsync()
+        {
+            return RefreshAsync(CancellationToken.None);
+        }
+
+        /// <summary>
+        /// Refreshes the topic revision and replies from the server.
+        /// </summary>
+        /// <param name="cancellationToken">The token used to cancel the operation.</param>
+        public async Task RefreshAsync(CancellationToken cancellationToken)
+        {
+            var jresult = await Site.GetJsonAsync(new WikiFormRequestMessage(new
+            {
+                action = "flow",
+                submodule = "view-topic",
+                page = Title,
+                vtformat = "wikitext",
+            }), cancellationToken);
+            var jtopiclist = (JObject)jresult["flow"]["view-topic"]["result"]["topic"];
+            var workflowId = (string)jtopiclist["roots"].First;
+            LoadFromJsonTopicList(jtopiclist, workflowId);
+        }
 
         internal static IEnumerable<Topic> FromJsonTopicList(WikiSite site, JObject topicList)
         {
@@ -72,6 +103,8 @@ namespace WikiClientLibrary.Flow
         // topicList: The topiclist node of a view-topiclist query result.
         internal void LoadFromJsonTopicList(JObject topicList, string workflowId)
         {
+            if (topicList == null) throw new ArgumentNullException(nameof(topicList));
+            if (workflowId == null) throw new ArgumentNullException(nameof(workflowId));
             TopicTitleRevision = null;
             WorkflowId = null;
             var revisionId = (string)topicList["posts"][workflowId]?.First;
@@ -98,13 +131,22 @@ namespace WikiClientLibrary.Flow
             WorkflowId = workflowId;
         }
 
-        public IList<Post> Posts { get; private set; }
+        /// <summary>
+        /// Gets the list of posts, starting from the OP's first post.
+        /// </summary>
+        public IList<Post> Posts { get; private set; } = Post.EmptyPosts;
 
         /// <summary>
         /// Workflow ID of the topic.
         /// </summary>
         /// <remarks>Workflow ID is usually <see cref="Title"/> stripped of <c>Topic:</c> namespace prefix.</remarks>
         public string WorkflowId { get; private set; }
+
+        /// <inheritdoc cref="ReplyAsync(string,CancellationToken)"/>
+        public Task<Post> ReplyAsync(string content)
+        {
+            return ReplyAsync(content, CancellationToken.None);
+        }
 
         /// <summary>
         /// Add a new reply to the topic.
