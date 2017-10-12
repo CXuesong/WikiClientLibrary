@@ -5,6 +5,7 @@ using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
@@ -104,6 +105,17 @@ namespace WikiClientLibrary.Flow
         /// </summary>
         /// <remarks>Workflow ID is usually <see cref="Title"/> stripped of <c>Topic:</c> namespace prefix.</remarks>
         public string WorkflowId { get; private set; }
+
+        /// <summary>
+        /// Add a new reply to the topic.
+        /// </summary>
+        /// <param name="content">The content in reply.</param>
+        /// <param name="cancellationToken">A token used to cancel the operation.</param>
+        /// <returns>A new post containing the workflow ID of the new post.</returns>
+        public Task<Post> ReplyAsync(string content, CancellationToken cancellationToken)
+        {
+            return FlowRequestHelper.ReplyAsync(Site, Title, WorkflowId, content, cancellationToken);
+        }
 
         /// <inheritdoc />
         public ILoggerFactory LoggerFactory

@@ -116,6 +116,26 @@ namespace WikiClientLibrary.Flow
             return ienu.SelectMany(t => t.ToAsyncEnumerable());
         }
 
+        /// <inheritdoc cref="NewTopicAsync(string,string,CancellationToken)"/>
+        public Task<Topic> NewTopicAsync(string topicTitle, string topicContent)
+        {
+            return NewTopicAsync(topicTitle, topicContent, CancellationToken.None);
+        }
+
+        /// <summary>
+        /// Creates a new topic on the current board.
+        /// </summary>
+        /// <param name="topicTitle">Title of the new topic, in wikitext format.</param>
+        /// <param name="topicContent">First post content of the new topic, in wikitext format.</param>
+        /// <param name="cancellationToken">The token used to cancel the operation.</param>
+        /// <returns>A task that returns the newly-created topic when succeeds.</returns>
+        public Task<Topic> NewTopicAsync(string topicTitle, string topicContent, CancellationToken cancellationToken)
+        {
+            if (topicTitle == null) throw new ArgumentNullException(nameof(topicTitle));
+            if (topicContent == null) throw new ArgumentNullException(nameof(topicContent));
+            return FlowRequestHelper.NewTopicAsync(Site, Title, topicTitle, topicContent, cancellationToken);
+        }
+
         /// <inheritdoc />
         public ILoggerFactory LoggerFactory
         {
