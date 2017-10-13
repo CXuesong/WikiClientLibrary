@@ -127,14 +127,42 @@ namespace WikiClientLibrary.Flow
         /// <summary>
         /// HTML links to show different views.
         /// </summary>
-        [JsonProperty]
         public IDictionary<string, FlowLink> Links { get; private set; } = emptyLinks;
+
+        [JsonProperty("links")]
+        private JToken RawLinks
+        {
+            set
+            {
+                if (value is JObject obj)
+                    Links = new ReadOnlyDictionary<string, FlowLink>(
+                        obj.ToObject<Dictionary<string, FlowLink>>(FlowUtility.FlowJsonSerializer));
+                else if (value is JArray array && array.Count == 0)
+                    Links = emptyLinks;
+                else
+                    throw new ArgumentException("Cannot parse JSON value.", nameof(value));
+            }
+        }
 
         /// <summary>
         /// HTML links to show operations.
         /// </summary>
-        [JsonProperty]
         public IDictionary<string, FlowLink> Actions { get; private set; } = emptyLinks;
+
+        [JsonProperty("actions")]
+        private JToken RawActions
+        {
+            set
+            {
+                if (value is JObject obj)
+                    Actions = new ReadOnlyDictionary<string, FlowLink>(
+                        obj.ToObject<Dictionary<string, FlowLink>>(FlowUtility.FlowJsonSerializer));
+                else if (value is JArray array && array.Count == 0)
+                    Actions = emptyLinks;
+                else
+                    throw new ArgumentException("Cannot parse JSON value.", nameof(value));
+            }
+        }
 
         /// <summary>
         /// Content length before this revision, in bytes.
@@ -195,7 +223,7 @@ namespace WikiClientLibrary.Flow
         public string Content { get; private set; }
 
         [JsonProperty("content")]
-        public JToken RawContent
+        private JToken RawContent
         {
             set
             {
@@ -212,7 +240,7 @@ namespace WikiClientLibrary.Flow
         public Revision Summary { get; private set; }
 
         [JsonProperty("summary")]
-        public JToken RawSummary
+        private JToken RawSummary
         {
             set => Summary = value["revision"]?.ToObject<Revision>();
         }
