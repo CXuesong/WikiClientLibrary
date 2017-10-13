@@ -59,6 +59,12 @@ namespace WikiClientLibrary.Flow
         /// </summary>
         public IList<Post> Replies { get; private set; } = EmptyPosts;
 
+        /// <summary>
+        /// Post content.
+        /// </summary>
+        /// <remarks>This property is set to <see cref="LastRevision"/>.<see cref="Revision.Content"/> after the refresh.</remarks>
+        public string Content { get; set; }
+
         internal static Post FromJson(WikiSite site, JObject topicList, string workflowId)
         {
             var post = new Post(site, "Thread:dummy", workflowId);
@@ -151,6 +157,7 @@ namespace WikiClientLibrary.Flow
             }
             WorkflowId = workflowId;
             TopicTitle = rev.ArticleTitle;
+            Content = LastRevision.Content;
         }
 
         /// <inheritdoc cref="ReplyAsync(string,CancellationToken)"/>

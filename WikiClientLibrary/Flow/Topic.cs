@@ -64,6 +64,29 @@ namespace WikiClientLibrary.Flow
         /// </summary>
         /// <remarks>Usually this revision shares the same <see cref="Revision.WorkflowId"/> as the topic itself.</remarks>
         public Revision TopicTitleRevision { get; private set; }
+
+        /// <summary>
+        /// Gets the list of posts, starting from the OP's first post.
+        /// </summary>
+        public IList<Post> Posts { get; private set; } = Post.EmptyPosts;
+        
+        /// <summary>
+        /// Topic display title.
+        /// </summary>
+        /// <remarks>This property is set to <see cref="TopicTitleRevision"/>.<see cref="Revision.Content"/> after the refresh.</remarks>
+        public string TopicTitle { get; set; }
+
+        /// <summary>
+        /// Topic summary.
+        /// </summary>
+        /// <remarks>This property is set to <see cref="TopicTitleRevision"/>.<see cref="Revision.Summary"/>.<see cref="Revision.Content"/> after the refresh.</remarks>
+        public string Summary { get; set; }
+
+        /// <summary>
+        /// Workflow ID of the topic.
+        /// </summary>
+        /// <remarks>Workflow ID is usually <see cref="Title"/> stripped of <c>Topic:</c> namespace prefix.</remarks>
+        public string WorkflowId { get; private set; }
         
         /// <inheritdoc cref="RefreshAsync(CancellationToken)"/>
         public Task RefreshAsync()
@@ -134,6 +157,63 @@ namespace WikiClientLibrary.Flow
             }
         }
 
+        /// <inheritdoc cref="UpdateSummaryAsync(CancellationToken)"/>
+        public Task UpdateSummaryAsync()
+        {
+            return UpdateSummaryAsync(new CancellationToken());
+        }
+
+        /// <summary>
+        /// Updates the topic summary to the value of <see cref="Summary"/>.
+        /// </summary>
+        /// <param name="cancellationToken">A token used to cancel the operation.</param>
+        /// <remarks>This method will not update <see cref="TopicTitleRevision"/> content, you need to call <see cref="RefreshAsync()"/> if you need the latest revision information.</remarks>
+        public async Task UpdateSummaryAsync(CancellationToken cancellationToken)
+        {
+            JToken jresult;
+            using (await Site.ModificationThrottler.QueueWorkAsync("UpdateSummary", cancellationToken))
+            {
+                jresult = await Site.GetJsonAsync(new WikiFormRequestMessage(new
+                {
+                    action = "flow",
+                    submodule = "edit-topic-summary",
+                    token = WikiSiteToken.Edit,
+                    page = Title,
+                    etsprev_revision = TopicTitleRevision?.Summary?.RevisionId,
+                    etsformat = "wikitext",
+                    etssummary = Summary ?? "",
+                }), cancellationToken);
+            }
+        }
+
+        /// <inheritdoc cref="UpdateTopicTitleAsync(CancellationToken)"/>
+        public Task UpdateTopicTitleAsync()
+        {
+            return UpdateTopicTitleAsync(CancellationToken.None);
+        }
+
+        /// <summary>
+        /// Updates the topic display title to the value of <see cref="TopicTitle"/>.
+        /// </summary>
+        /// <param name="cancellationToken">A token used to cancel the operation.</param>
+        /// <remarks>This method will not update <see cref="TopicTitleRevision"/> content, you need to call <see cref="RefreshAsync()"/> if you need the latest revision information.</remarks>
+        public async Task UpdateTopicTitleAsync(CancellationToken cancellationToken)
+        {
+            JToken jresult;
+            using (await Site.ModificationThrottler.QueueWorkAsync("UpdateTitle", cancellationToken))
+            {
+                jresult = await Site.GetJsonAsync(new WikiFormRequestMessage(new
+                {
+                    action = "flow",
+                    submodule = "edit-title",
+                    token = WikiSiteToken.Edit,
+                    page = Title,
+                    etprev_revision = TopicTitleRevision?.RevisionId,
+                    etcontent = TopicTitle ?? "",
+                }), cancellationToken);
+            }
+        }
+
         /// <summary>
         /// Moderates the topic with the specified action.
         /// </summary>
@@ -186,8 +266,6 @@ namespace WikiClientLibrary.Flow
             var rev = jrevision.ToObject<Revision>(FlowUtility.FlowJsonSerializer);
             // Assume the first post as title.
             TopicTitleRevision = rev;
-            Title = TopicTitleRevision.ArticleTitle;
-            WorkflowId = TopicTitleRevision.WorkflowId;
             if (rev.ReplyIds == null || rev.ReplyIds.Count == 0)
             {
                 Posts = Post.EmptyPosts;
@@ -198,19 +276,11 @@ namespace WikiClientLibrary.Flow
                 posts.AddRange(rev.ReplyIds.Select(pid => Post.FromJson(Site, topicList, pid)));
                 Posts = new ReadOnlyCollection<Post>(posts);
             }
-            WorkflowId = workflowId;
+            Title = rev.ArticleTitle;
+            WorkflowId = rev.WorkflowId;
+            TopicTitle = rev.Content;
+            Summary = rev.Summary?.Content;
         }
-
-        /// <summary>
-        /// Gets the list of posts, starting from the OP's first post.
-        /// </summary>
-        public IList<Post> Posts { get; private set; } = Post.EmptyPosts;
-
-        /// <summary>
-        /// Workflow ID of the topic.
-        /// </summary>
-        /// <remarks>Workflow ID is usually <see cref="Title"/> stripped of <c>Topic:</c> namespace prefix.</remarks>
-        public string WorkflowId { get; private set; }
 
         /// <inheritdoc cref="ReplyAsync(string,CancellationToken)"/>
         public Task<Post> ReplyAsync(string content)

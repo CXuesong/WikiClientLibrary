@@ -35,7 +35,7 @@ namespace UnitTestProject1.Tests
         public async Task BoardReplyTest()
         {
             var board = new Board(await WpBetaSiteAsync, "Talk:Flow QA");
-            var topicTitle = "Test ''topic'' - " + DateTime.UtcNow.ToString("yyyyMMddHHmmss");
+            var topicTitle = "Test ''topic'' - placeholder";
             var topic1 = await board.NewTopicAsync(topicTitle, $"This is the content of '''test topic'''.\n\n{DateTime.UtcNow:R}");
             var post1 = await topic1.ReplyAsync("How's the weather today?");
             var post2 = await topic1.ReplyAsync("Reply to the topic.");
@@ -44,20 +44,31 @@ namespace UnitTestProject1.Tests
             // Refetch the topic and check.
             var topic = await board.EnumTopicsAsync(1).First();
             ShallowTrace(topic);
+            Assert.False(post1.LastRevision.IsModerated);
+            Assert.Equal(ModerationState.None, post1.LastRevision.ModerationState);
             Assert.Equal(topic1.Title, topic.Title);
-            Assert.Equal(topicTitle, topic.TopicTitleRevision.Content);
-            Assert.Equal(3, topic.Posts.Count);     // Including the "This is the content of..." post.
-            Assert.Contains("This is the content", topic.Posts[0].LastRevision.Content);
+            Assert.Equal(topicTitle, topic.TopicTitle);
+            Assert.Equal(3, topic.Posts.Count); // Including the "This is the content of..." post.
+            Assert.Contains("This is the content", topic.Posts[0].Content);
             Assert.Equal(1, topic.Posts[1].Replies.Count);
             Assert.Equal(1, topic.Posts[2].Replies.Count);
+
             // Refresh the post and check.
             await post11.RefreshAsync();
-            Assert.Equal("It's sunny.", post11.LastRevision.Content);
+            Assert.Equal("It's sunny.", post11.Content);
+
+            // Edit topic title
+            topicTitle = topic.TopicTitle = "Test ''topic'' - " + DateTime.UtcNow.ToString("yyyyMMddHHmmss");
+            await topic.UpdateTopicTitleAsync();
+            await topic.RefreshAsync();
+            Assert.Equal(topicTitle, topic.TopicTitle);
 
             // Moderate a post
             await post1.ModerateAsync(ModerationAction.Hide, "Test to hide the post.");
+            await post1.RefreshAsync();
+            Assert.True(post1.LastRevision.IsModerated);
+            Assert.Equal(ModerationState.Hidden, post1.LastRevision.ModerationState);
             await Assert.ThrowsAsync<UnauthorizedOperationException>(() => post1.ReplyAsync("This attempt will fail."));
-            await post1.ModerateAsync(ModerationAction.Restore, "Test to restore the post.");
 
             // Moderate a topic
             await topic1.ModerateAsync(ModerationAction.Hide, "Test to hide the topic.");
@@ -65,6 +76,12 @@ namespace UnitTestProject1.Tests
             await topic1.ModerateAsync(ModerationAction.Restore, "Test to restore the topic.");
 
             await topic1.LockAsync("Test discussion closed.");
+
+            var summary = "Case closed - " + DateTime.UtcNow.ToString("yyyyMMddHHmmss");
+            topic1.Summary = summary;
+            await topic1.UpdateSummaryAsync();
+            await topic1.RefreshAsync();
+            Assert.Equal(summary, topic1.Summary);
         }
 
     }

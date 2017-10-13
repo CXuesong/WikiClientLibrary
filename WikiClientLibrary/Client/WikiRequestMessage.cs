@@ -95,6 +95,8 @@ namespace WikiClientLibrary.Client
                     case "assertuserfailed":
                     case "assertbotfailed":
                         throw new AccountAssertionFailureException(errcode, errmessage);
+                    case "prev_revision":
+                        throw new OperationConflictException(errcode, errmessage);
                     default:
                         if (errcode.EndsWith("conflict"))
                             throw new OperationConflictException(errcode, errmessage);
