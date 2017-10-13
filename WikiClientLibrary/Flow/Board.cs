@@ -50,7 +50,11 @@ namespace WikiClientLibrary.Flow
         public string Title { get; }
 
         /// <summary>Latest header content revision.</summary>
+        /// <value>The latest header revision, or <c>null</c> if the board header does not exist.</value>
         public Revision HeaderRevision { get; private set; }
+
+        /// <summary>Header content.</summary>
+        public string HeaderContent { get; set; }
 
         /// <inheritdoc cref="RefreshAsync(CancellationToken)"/>
         public Task RefreshAsync()
@@ -73,8 +77,10 @@ namespace WikiClientLibrary.Flow
             }), cancellationToken);
             var jheader = jresult["flow"]["view-header"]["result"]["header"];
             editToken = (string)jheader["editToken"];
-            HeaderRevision = jheader["revision"]?.ToObject<Revision>(FlowUtility.FlowJsonSerializer);
+            var rev = jheader["revision"]?.ToObject<Revision>(FlowUtility.FlowJsonSerializer);
+            HeaderRevision = rev;
             // (string)jheader["copyrightMessage"]
+            HeaderContent = HeaderRevision?.Content;
         }
 
         /// <summary>
