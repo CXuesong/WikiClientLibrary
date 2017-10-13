@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Newtonsoft.Json.Linq;
-using WikiClientLibrary.Flow;
 using WikiClientLibrary.Sites;
 
 namespace WikiClientLibrary.Pages
