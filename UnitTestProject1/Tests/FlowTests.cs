@@ -52,6 +52,16 @@ namespace UnitTestProject1.Tests
             // Refresh the post and check.
             await post11.RefreshAsync();
             Assert.Equal("It's sunny.", post11.LastRevision.Content);
+
+            // Moderate a post
+            await post1.ModerateAsync(ModerationAction.Hide, "Test to hide the post.");
+            await Assert.ThrowsAsync<UnauthorizedOperationException>(() => post1.ReplyAsync("This attempt will fail."));
+            await post1.ModerateAsync(ModerationAction.Restore, "Test to restore the post.");
+
+            // Moderate a topic
+            await topic1.ModerateAsync(ModerationAction.Hide, "Test to hide the topic.");
+            await Assert.ThrowsAsync<UnauthorizedOperationException>(() => topic1.ReplyAsync("This attempt will fail."));
+            await topic1.ModerateAsync(ModerationAction.Restore, "Test to restore the topic.");
         }
 
     }

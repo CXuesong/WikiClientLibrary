@@ -90,6 +90,34 @@ namespace WikiClientLibrary.Flow
             LoadFromJsonTopicList(jtopiclist, workflowId);
         }
 
+        /// <inheritdoc cref="ModerateAsync(ModerationAction,string,CancellationToken)"/>
+        public Task ModerateAsync(ModerationAction action, string reason)
+        {
+            return ModerateAsync(action, reason, CancellationToken.None);
+        }
+
+        /// <summary>
+        /// Moderates the topic with the specified action.
+        /// </summary>
+        /// <param name="action">The action to perform. You need to have sufficient permission for it.</param>
+        /// <param name="reason">The reason for moderation.</param>
+        /// <param name="cancellationToken">A token used to cancel the operation.</param>
+        /// <remarks>This method will not update <see cref="TopicTitleRevision"/> content, you need to call <see cref="RefreshAsync()"/> if you need the latest revision information.</remarks>
+        public async Task ModerateAsync(ModerationAction action, string reason, CancellationToken cancellationToken)
+        {
+            if (reason == null) throw new ArgumentNullException(nameof(reason));
+            if (reason.Length == 0) throw new ArgumentException("Reason cannot be empty.", nameof(reason));
+            var jresult = await Site.GetJsonAsync(new WikiFormRequestMessage(new
+            {
+                action = "flow",
+                submodule = "moderate-topic",
+                token = WikiSiteToken.Edit,
+                page = Title,
+                mtmoderationState = action.ToString().ToLowerInvariant(),
+                mtreason = reason,
+            }), cancellationToken);
+        }
+
         internal static IEnumerable<Topic> FromJsonTopicList(WikiSite site, JObject topicList)
         {
             return topicList["roots"].Select(rootId =>

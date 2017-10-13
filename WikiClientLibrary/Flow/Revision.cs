@@ -99,6 +99,22 @@ namespace WikiClientLibrary.Flow
         [JsonProperty]
         public bool IsModeratedNotLocked { get; private set; }
 
+        public ModerationState ModerationState { get; private set; }
+
+        [JsonProperty("moderateState")]
+        public string RawModerationState
+        {
+            set => ModerationState = EnumParser.ParseModerationState(value);
+        }
+
+        public string ModerationReason { get; private set; }
+
+        [JsonProperty("moderateReason")]
+        public JToken RawModerationReason
+        {
+            set => ModerationReason = (string)value["content"];
+        }
+
         [JsonProperty]
         public bool IsMaxThreadingDepth { get; private set; }
 
