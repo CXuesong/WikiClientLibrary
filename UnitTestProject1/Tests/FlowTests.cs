@@ -41,11 +41,10 @@ namespace UnitTestProject1.Tests
             var post2 = await topic1.ReplyAsync("Reply to the topic.");
             var post11 = await post1.ReplyAsync("It's sunny.");
             var post21 = await post2.ReplyAsync("Reply to the topic, again.");
+
             // Refetch the topic and check.
             var topic = await board.EnumTopicsAsync(1).First();
             ShallowTrace(topic);
-            Assert.False(post1.LastRevision.IsModerated);
-            Assert.Equal(ModerationState.None, post1.LastRevision.ModerationState);
             Assert.Equal(topic1.Title, topic.Title);
             Assert.Equal(topicTitle, topic.TopicTitle);
             Assert.Equal(3, topic.Posts.Count); // Including the "This is the content of..." post.
@@ -56,6 +55,8 @@ namespace UnitTestProject1.Tests
             // Refresh the post and check.
             await post11.RefreshAsync();
             Assert.Equal("It's sunny.", post11.Content);
+            Assert.False(post11.LastRevision.IsModerated);
+            Assert.Equal(ModerationState.None, post11.LastRevision.ModerationState);
 
             // Edit topic title
             topicTitle = topic.TopicTitle = "Test ''topic'' - " + DateTime.UtcNow.ToString("yyyyMMddHHmmss");
