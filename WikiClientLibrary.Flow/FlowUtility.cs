@@ -25,7 +25,7 @@ namespace WikiClientLibrary.Flow
                     new FlowUserStubConverter(),
                 },
             });
-        
+
         public static bool IsNullOrJsonNull(JToken token)
         {
             return token == null || token.Type == JTokenType.Null;
@@ -47,7 +47,7 @@ namespace WikiClientLibrary.Flow
                     gender = Gender.Unknown;
                     break;
             }
-            return new UserStub((string)user["name"], (int?)user["id"], gender, (string)user["wiki"]);
+            return new UserStub((string)user["name"], (int?)user["id"] ?? 0, gender, (string)user["wiki"]);
         }
 
         public static DateTime DateFromJavaScriptTicks(long ticks)
@@ -92,5 +92,5 @@ namespace WikiClientLibrary.Flow
         }
 
     }
-    
+
 }

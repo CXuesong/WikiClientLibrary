@@ -13,45 +13,52 @@ namespace WikiClientLibrary
 
         public static readonly UserStub Empty = new UserStub();
 
-        public UserStub(string name, int? id) : this(name, id, Gender.Unknown, null)
+        public UserStub(string name, int id) : this(name, id, Gender.Unknown, null)
         {
         }
 
-        public UserStub(string name, int? id, Gender gender) : this(name, id, gender, null)
+        public UserStub(string name, int id, Gender gender) : this(name, id, gender, null)
         {
         }
 
-        public UserStub(string name, int? id, Gender gender, string siteName)
+        public UserStub(string name, int id, Gender gender, string siteName)
         {
-            Id = id;
             Name = name ?? throw new ArgumentNullException(nameof(name));
+            Id = id;
             Gender = gender;
             SiteName = siteName;
         }
 
-        /// <summary>User name.</summary>
+        /// <summary>Gets user name.</summary>
         public string Name { get; }
 
-        /// <summary>User ID on the MediaWiki site.</summary>
-        public int? Id { get; }
+        /// <summary>Gets user ID on the MediaWiki site.</summary>
+        /// <value>User ID on the MediaWiki site, or <c>0</c> for anonymous users.</value>
+        public int Id { get; }
 
-        /// <summary>User gender.</summary>
+        /// <summary>Gets user's gender.</summary>
         public Gender Gender { get; }
 
-        /// <summary>Site name the user comes from.</summary>
+        /// <summary>Gets the site name the user comes from.</summary>
+        /// <value>The site designation. For example, Wikimedia sites has designations such as <c>enwiki</c>, <c>zhwiki</c>, <c>enwikisource</c>, etc.</value>
         public string SiteName { get; }
+
+        /// <summary>Determines whether the user has ID.</summary>
+        /// <remarks>An anonymous user does not have an ID, and <see cref="Id"/> will be <c>0</c> in this case.</remarks>
+        public bool HasId => Id != 0;
 
         /// <inheritdoc />
         public override string ToString()
         {
-            if (Id == null) return Name;
+            if (Name == null) return "<Empty>";
+            if (Id == 0) return Name;
             return Name + "[" + Id + "]";
         }
 
         /// <inheritdoc />
         public bool Equals(UserStub other)
         {
-            return Id == other.Id && Name == other.Name && Gender == other.Gender && string.Equals(SiteName, other.SiteName);
+            return Id == other.Id && Name == other.Name && Gender == other.Gender && SiteName == other.SiteName;
         }
 
         /// <inheritdoc />
@@ -66,7 +73,7 @@ namespace WikiClientLibrary
         {
             unchecked
             {
-                var hashCode = Id ?? 0;
+                var hashCode = Id;
                 hashCode = (hashCode * 397) ^ (Name != null ? Name.GetHashCode() : 0);
                 hashCode = (hashCode * 397) ^ (int)Gender;
                 hashCode = (hashCode * 397) ^ (SiteName != null ? SiteName.GetHashCode() : 0);
