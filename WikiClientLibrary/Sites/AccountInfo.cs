@@ -63,7 +63,7 @@ namespace WikiClientLibrary.Sites
         [JsonProperty("blockexpiry")]
         private string BlockExpiryProxy
         {
-            set { BlockExpiry = MediaWikiUtility.ParseDateTimeOffset(value); }
+            set => BlockExpiry = MediaWikiUtility.ParseDateTimeOffset(value);
         }
 
         [JsonProperty]
@@ -106,9 +106,8 @@ namespace WikiClientLibrary.Sites
             return Rights.Contains(rightName);
         }
 
-
         /// <summary>
-        /// Asserts the user has certian right.
+        /// Asserts the user has certain right.
         /// </summary>
         /// <param name="rightName">The name of the right.</param>
         /// <exception cref="UnauthorizedOperationException">The user doesn't have specific right.</exception>
@@ -117,6 +116,14 @@ namespace WikiClientLibrary.Sites
             if (rightName == null) throw new ArgumentNullException(nameof(rightName));
             if (!HasRight(rightName))
                 throw new UnauthorizedOperationException(null, $"Current user doesn't have the right: {rightName}.");
+        }
+
+        /// <summary>
+        /// Creates a <see cref="UserStub"/> from the current account information.
+        /// </summary>
+        public UserStub ToUserStub()
+        {
+            return new UserStub(Name, Id);
         }
 
         /// <inheritdoc />
