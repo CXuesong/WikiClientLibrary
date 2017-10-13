@@ -25,6 +25,8 @@ Project("{7CF6DF6D-3B04-46F8-A40B-537D21BCA0B4}") = "DocumentationProject", "Doc
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WikiClientLibrary.Wikibase", "WikiClientLibrary.Wikibase\WikiClientLibrary.Wikibase.csproj", "{D8BAC074-4A89-4A84-B46C-51E6541BA582}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WikiClientLibrary.Flow", "WikiClientLibrary.Flow\WikiClientLibrary.Flow.csproj", "{C7EDDB8C-6880-4211-9608-23EA730F638D}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -55,6 +57,10 @@ Global
 		{D8BAC074-4A89-4A84-B46C-51E6541BA582}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D8BAC074-4A89-4A84-B46C-51E6541BA582}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D8BAC074-4A89-4A84-B46C-51E6541BA582}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C7EDDB8C-6880-4211-9608-23EA730F638D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C7EDDB8C-6880-4211-9608-23EA730F638D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C7EDDB8C-6880-4211-9608-23EA730F638D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C7EDDB8C-6880-4211-9608-23EA730F638D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -7,6 +7,7 @@ using System.Net.Http;
 using System.Runtime.InteropServices;
 using System.Threading;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using WikiClientLibrary.Infrastructures;
 using WikiClientLibrary.Pages;
@@ -83,6 +84,10 @@ namespace WikiClientLibrary.Client
                     case "readapidenied": // You need read permission to use this module
                     case "mustbeloggedin": // You must be logged in to upload this file.
                         throw new UnauthorizedOperationException(errcode, errmessage);
+                    case "permissions":
+                        if (err["permissions"] != null && err["permissions"].Type != JTokenType.Null)
+                            errmessage += " Desired permissions:" + err["permissions"]?.ToString(Formatting.None);
+                        throw new UnauthorizedOperationException(errcode, errmessage);
                     case "badtoken":
                         throw new BadTokenException(errcode, errmessage);
                     case "unknown_action":
@@ -90,6 +95,8 @@ namespace WikiClientLibrary.Client
                     case "assertuserfailed":
                     case "assertbotfailed":
                         throw new AccountAssertionFailureException(errcode, errmessage);
+                    case "prev_revision":
+                        throw new OperationConflictException(errcode, errmessage);
                     default:
                         if (errcode.EndsWith("conflict"))
                             throw new OperationConflictException(errcode, errmessage);
