@@ -206,6 +206,17 @@ namespace WikiClientLibrary.Flow
             }
         }
 
+        /// <summary>
+        /// The latest revision of topic summary, if available.
+        /// </summary>
+        public Revision Summary { get; private set; }
+
+        [JsonProperty("summary")]
+        public JToken RawSummary
+        {
+            set => Summary = value["revision"]?.ToObject<Revision>();
+        }
+
         private static readonly Dictionary<string, FlowRevisionAction> flowActionsDict = new Dictionary<string, FlowRevisionAction>
         {
             {"create-header", FlowRevisionAction.CreateHeader},

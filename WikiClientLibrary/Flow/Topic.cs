@@ -64,8 +64,7 @@ namespace WikiClientLibrary.Flow
         /// </summary>
         /// <remarks>Usually this revision shares the same <see cref="Revision.WorkflowId"/> as the topic itself.</remarks>
         public Revision TopicTitleRevision { get; private set; }
-
-
+        
         /// <inheritdoc cref="RefreshAsync(CancellationToken)"/>
         public Task RefreshAsync()
         {
@@ -96,6 +95,45 @@ namespace WikiClientLibrary.Flow
             return ModerateAsync(action, reason, CancellationToken.None);
         }
 
+        /// <inheritdoc cref="LockAsync(LockAction,string,CancellationToken)"/>
+        /// <summary>Locks (aka. close) the topic with the specified action.</summary>
+        public Task LockAsync(string reason)
+        {
+            return LockAsync(LockAction.Lock, reason, CancellationToken.None);
+        }
+
+        /// <inheritdoc cref="LockAsync(LockAction,string,CancellationToken)"/>
+        public Task LockAsync(LockAction action, string reason)
+        {
+            return LockAsync(action, reason, CancellationToken.None);
+        }
+
+        /// <summary>
+        /// Locks or unlocks (aka. close or reopen) the topic with the specified action.
+        /// </summary>
+        /// <param name="action">The action to perform.</param>
+        /// <param name="reason">The reason for operation.</param>
+        /// <param name="cancellationToken">A token used to cancel the operation.</param>
+        /// <remarks>This method will not update <see cref="TopicTitleRevision"/> content, you need to call <see cref="RefreshAsync()"/> if you need the latest revision information.</remarks>
+        public async Task LockAsync(LockAction action, string reason, CancellationToken cancellationToken)
+        {
+            if (reason == null) throw new ArgumentNullException(nameof(reason));
+            if (reason.Length == 0) throw new ArgumentException("Reason cannot be empty.", nameof(reason));
+            JToken jresult;
+            using (await Site.ModificationThrottler.QueueWorkAsync("Moderation", cancellationToken))
+            {
+                jresult = await Site.GetJsonAsync(new WikiFormRequestMessage(new
+                {
+                    action = "flow",
+                    submodule = "lock-topic",
+                    token = WikiSiteToken.Edit,
+                    page = Title,
+                    cotmoderationState = EnumParser.ToString(action),
+                    cotreason = reason,
+                }), cancellationToken);
+            }
+        }
+
         /// <summary>
         /// Moderates the topic with the specified action.
         /// </summary>
@@ -107,15 +145,19 @@ namespace WikiClientLibrary.Flow
         {
             if (reason == null) throw new ArgumentNullException(nameof(reason));
             if (reason.Length == 0) throw new ArgumentException("Reason cannot be empty.", nameof(reason));
-            var jresult = await Site.GetJsonAsync(new WikiFormRequestMessage(new
+            JToken jresult;
+            using (await Site.ModificationThrottler.QueueWorkAsync("Moderation", cancellationToken))
             {
-                action = "flow",
-                submodule = "moderate-topic",
-                token = WikiSiteToken.Edit,
-                page = Title,
-                mtmoderationState = action.ToString().ToLowerInvariant(),
-                mtreason = reason,
-            }), cancellationToken);
+                jresult = await Site.GetJsonAsync(new WikiFormRequestMessage(new
+                {
+                    action = "flow",
+                    submodule = "moderate-topic",
+                    token = WikiSiteToken.Edit,
+                    page = Title,
+                    mtmoderationState = EnumParser.ToString(action),
+                    mtreason = reason,
+                }), cancellationToken);
+            }
         }
 
         internal static IEnumerable<Topic> FromJsonTopicList(WikiSite site, JObject topicList)

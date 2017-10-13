@@ -35,7 +35,8 @@ namespace UnitTestProject1.Tests
         public async Task BoardReplyTest()
         {
             var board = new Board(await WpBetaSiteAsync, "Talk:Flow QA");
-            var topic1 = await board.NewTopicAsync("Test ''topic''", $"This is the content of '''test topic'''.\n\n{DateTime.UtcNow:R}");
+            var topicTitle = "Test ''topic'' - " + DateTime.UtcNow.ToString("yyyyMMddHHmmss");
+            var topic1 = await board.NewTopicAsync(topicTitle, $"This is the content of '''test topic'''.\n\n{DateTime.UtcNow:R}");
             var post1 = await topic1.ReplyAsync("How's the weather today?");
             var post2 = await topic1.ReplyAsync("Reply to the topic.");
             var post11 = await post1.ReplyAsync("It's sunny.");
@@ -44,7 +45,7 @@ namespace UnitTestProject1.Tests
             var topic = await board.EnumTopicsAsync(1).First();
             ShallowTrace(topic);
             Assert.Equal(topic1.Title, topic.Title);
-            Assert.Equal("Test ''topic''", topic.TopicTitleRevision.Content);
+            Assert.Equal(topicTitle, topic.TopicTitleRevision.Content);
             Assert.Equal(3, topic.Posts.Count);     // Including the "This is the content of..." post.
             Assert.Contains("This is the content", topic.Posts[0].LastRevision.Content);
             Assert.Equal(1, topic.Posts[1].Replies.Count);
@@ -62,6 +63,8 @@ namespace UnitTestProject1.Tests
             await topic1.ModerateAsync(ModerationAction.Hide, "Test to hide the topic.");
             await Assert.ThrowsAsync<UnauthorizedOperationException>(() => topic1.ReplyAsync("This attempt will fail."));
             await topic1.ModerateAsync(ModerationAction.Restore, "Test to restore the topic.");
+
+            await topic1.LockAsync("Test discussion closed.");
         }
 
     }

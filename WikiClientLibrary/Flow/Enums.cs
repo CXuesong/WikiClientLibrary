@@ -37,6 +37,15 @@ namespace WikiClientLibrary.Flow
         Suppressed,
     }
 
+    /// <summary>
+    /// The locking operations to perform on a Flow topic.
+    /// </summary>
+    public enum LockAction
+    {
+        Lock = 0,
+        Unlock = 1,
+    }
+
     internal static partial class EnumParser
     {
 
@@ -51,6 +60,17 @@ namespace WikiClientLibrary.Flow
                 case ModerationAction.Unhide: return "unhide";
                 case ModerationAction.Undelete: return "undelete";
                 case ModerationAction.Unsuppress: return "unsuppress";
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(value), value, null);
+            }
+        }
+
+        public static string ToString(LockAction value)
+        {
+            switch (value)
+            {
+                case LockAction.Lock: return "lock";
+                case LockAction.Unlock: return "unlock";
                 default:
                     throw new ArgumentOutOfRangeException(nameof(value), value, null);
             }

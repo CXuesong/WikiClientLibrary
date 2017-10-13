@@ -112,16 +112,20 @@ namespace WikiClientLibrary.Flow
         {
             if (reason == null) throw new ArgumentNullException(nameof(reason));
             if (reason.Length == 0) throw new ArgumentException("Reason cannot be empty.", nameof(reason));
-            var jresult = await Site.GetJsonAsync(new WikiFormRequestMessage(new
+            JToken jresult;
+            using (await Site.ModificationThrottler.QueueWorkAsync("Moderation", cancellationToken))
             {
-                action = "flow",
-                submodule = "moderate-post",
-                token = WikiSiteToken.Edit,
-                page = TopicTitle,
-                mppostId = WorkflowId,
-                mpmoderationState = action.ToString().ToLowerInvariant(),
-                mpreason = reason,
-            }), cancellationToken);
+                jresult = await Site.GetJsonAsync(new WikiFormRequestMessage(new
+                {
+                    action = "flow",
+                    submodule = "moderate-post",
+                    token = WikiSiteToken.Edit,
+                    page = TopicTitle,
+                    mppostId = WorkflowId,
+                    mpmoderationState = EnumParser.ToString(action),
+                    mpreason = reason,
+                }), cancellationToken);
+            }
         }
 
         // topicList: The topiclist node of a view-topiclist query result.
