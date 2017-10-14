@@ -303,7 +303,7 @@ namespace WikiClientLibrary.Flow
         public ILoggerFactory LoggerFactory
         {
             get => _LoggerFactory;
-            set => logger = Utility.SetLoggerFactory(ref _LoggerFactory, value, GetType());
+            set { /*logger = Utility.SetLoggerFactory(ref _LoggerFactory, value, GetType());*/ }
         }
 
         /// <summary>

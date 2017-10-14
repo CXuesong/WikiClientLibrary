@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using AsyncEnumerableExtensions;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using Newtonsoft.Json.Linq;
@@ -97,29 +98,28 @@ namespace WikiClientLibrary.Flow
         public IAsyncEnumerable<Topic> EnumTopicsAsync(int pageSize)
         {
             if (pageSize <= 0) throw new ArgumentOutOfRangeException(nameof(pageSize));
-            var queryParams = new Dictionary<string, object>
+            return AsyncEnumerableFactory.FromAsyncGenerator<Topic>(async (sink, ct) =>
             {
-                {"action", "flow"},
-                {"submodule", "view-topiclist"},
-                {"page", Title},
-                {"vtllimit", pageSize},
-                {"vtlformat", "wikitext"},
-            };
-            var eof = false;
-            var ienu = new DelegateAsyncEnumerable<IEnumerable<Topic>>(async ct =>
-            {
-                if (eof) return null;
+                var queryParams = new Dictionary<string, object>
+                {
+                    {"action", "flow"},
+                    {"submodule", "view-topiclist"},
+                    {"page", Title},
+                    {"vtllimit", pageSize},
+                    {"vtlformat", "wikitext"},
+                };
+                NEXT_PAGE:
                 var jresult = await Site.GetJsonAsync(new WikiFormRequestMessage(queryParams), ct);
                 var jtopiclist = (JObject)jresult["flow"]["view-topiclist"]["result"]["topiclist"];
-                // ISSUE directly return SelectArrayIterator<TSource, TResult> via Enumerable.Select
-                // can cause strange behavior when chained with other async LINQ methods. See
-                // https://github.com/CXuesong/WikiClientLibrary/issues/27
-                var topics = Topic.FromJsonTopicList(Site, jtopiclist).ToList();
+                await sink.YieldAndWait(Topic.FromJsonTopicList(Site, jtopiclist));
                 // TODO Implement Pagination
-                eof = true;
-                return Tuple.Create((IEnumerable<Topic>)topics, true);
+                var nextPageUrl = (string)jtopiclist["links"]?["pagination"]?["fwd"]?["url"];
+                if (nextPageUrl != null)
+                {
+
+                    goto NEXT_PAGE;
+                }
             });
-            return ienu.SelectMany(t => t.ToAsyncEnumerable());
         }
 
         /// <inheritdoc cref="NewTopicAsync(string,string,CancellationToken)"/>
@@ -150,7 +150,7 @@ namespace WikiClientLibrary.Flow
         public ILoggerFactory LoggerFactory
         {
             get => _LoggerFactory;
-            set => logger = Utility.SetLoggerFactory(ref _LoggerFactory, value, GetType());
+            set { /*logger = Utility.SetLoggerFactory(ref _LoggerFactory, value, GetType());*/ }
         }
 
         /// <inheritdoc />

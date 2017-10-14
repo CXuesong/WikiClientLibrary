@@ -13,7 +13,7 @@ namespace WikiClientLibrary.Infrastructures
     /// Aside from this convention, the converter can also recognize string values such as "false" or "False".
     /// Note this convention is used in Flow extension.
     /// </remarks>
-    internal class WikiBooleanJsonConverter : JsonConverter
+    public class WikiBooleanJsonConverter : JsonConverter
     {
         /// <summary>
         /// Writes the JSON representation of the object.
@@ -51,7 +51,10 @@ namespace WikiClientLibrary.Infrastructures
         }
     }
 
-    internal class WikiStringEnumJsonConverter : JsonConverter
+    /// <summary>
+    /// Converts all-lower-case enum name in MediaWiki API response to the enum value.
+    /// </summary>
+    public class WikiStringEnumJsonConverter : JsonConverter
     {
         /// <inheritdoc />
         public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
@@ -74,7 +77,10 @@ namespace WikiClientLibrary.Infrastructures
         }
     }
 
-    internal class WikiJsonNamingStrategy : NamingStrategy
+    /// <summary>
+    /// All-lower-case property naming strategy as used in MediaWiki API response.
+    /// </summary>
+    public class WikiJsonNamingStrategy : NamingStrategy
     {
         /// <summary>
         /// Resolves the specified property name.
@@ -89,6 +95,7 @@ namespace WikiClientLibrary.Infrastructures
         }
     }
 
+    [Obsolete]
     internal class WikiJsonContractResolver : DefaultContractResolver
     {
         /// <summary>
