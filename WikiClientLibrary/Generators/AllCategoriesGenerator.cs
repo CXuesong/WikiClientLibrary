@@ -42,12 +42,8 @@ namespace WikiClientLibrary.Generators
         /// </summary>
         public int? MaxChildrenCount { get; set; }
 
-        /// <summary>
-        /// When overridden, fills generator parameters for action=query request.
-        /// </summary>
-        /// <param name="actualPagingSize"></param>
-        /// <returns>The dictioanry containing request value pairs.</returns>
-        protected override IEnumerable<KeyValuePair<string, object>> GetGeneratorParams(int actualPagingSize)
+        /// <inheritdoc/>
+        public override IEnumerable<KeyValuePair<string, object>> GetGeneratorParams(int actualPagingSize)
         {
             return new Dictionary<string, object>
             {

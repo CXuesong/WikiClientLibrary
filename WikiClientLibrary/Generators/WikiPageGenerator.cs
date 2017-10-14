@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using AsyncEnumerableExtensions;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using Newtonsoft.Json.Linq;
@@ -100,41 +101,15 @@ namespace WikiClientLibrary.Generators
         /// <summary>
         /// When overridden, fills generator parameters for action=query request.
         /// </summary>
-        /// <param name="actualPagingSize"></param>
         /// <returns>The dictioanry containing request value pairs, which will be overrided by the basic query parameters.</returns>
-        protected abstract IEnumerable<KeyValuePair<string, object>> GetGeneratorParams(int actualPagingSize);
+        public abstract IEnumerable<KeyValuePair<string, object>> GetGeneratorParams(int actualPagingSize);
 
         /// <summary>
         /// Determins whether to remove duplicate page results generated from generator results.
         /// </summary>
         protected virtual bool DistinctGeneratedPages => false;
 
-        /// <summary>
-        /// Gets JSON result of the query operation with the specific generator.
-        /// </summary>
-        /// <returns>The root of JSON result. You may need to access query result by ["query"].</returns>
-        internal IAsyncEnumerable<JObject> EnumJsonAsync(IEnumerable<KeyValuePair<string, object>> overridingParams,
-            int actualPagingSize)
-        {
-            var valuesDict = new Dictionary<string, object>
-            {
-                {"action", "query"},
-                {"maxlag", 5}
-            };
-            foreach (var v in GetGeneratorParams(actualPagingSize))
-                valuesDict[v.Key] = v.Value;
-            foreach (var v in overridingParams)
-                valuesDict[v.Key] = v.Value;
-            Debug.Assert((string) valuesDict["action"] == "query");
-            return new PagedQueryAsyncEnumerable(Site, valuesDict, DistinctGeneratedPages);
-        }
-
-        /// <summary>
-        /// 返回表示当前对象的字符串。
-        /// </summary>
-        /// <returns>
-        /// 表示当前对象的字符串。
-        /// </returns>
+        /// <inheritdoc/>
         public override string ToString()
         {
             return GetType().Name;
@@ -193,8 +168,7 @@ namespace WikiClientLibrary.Generators
         /// <param name="options">Options when querying for the pages.</param>
         public IAsyncEnumerable<T> EnumPagesAsync(PageQueryOptions options)
         {
-            var actualPagingSize = GetActualPagingSize(options);
-            return RequestHelper.EnumPagesAsync(this, options, actualPagingSize).Cast<T>();
+            return RequestHelper.EnumPagesAsync(this, options, DistinctGeneratedPages).Cast<T>();
         }
     }
 }

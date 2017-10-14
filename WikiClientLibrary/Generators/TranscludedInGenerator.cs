@@ -39,7 +39,7 @@ namespace WikiClientLibrary.Generators
         public PropertyFilterOption RedirectsFilter { get; set; }
 
         /// <inheritdoc />
-        protected override IEnumerable<KeyValuePair<string, object>> GetGeneratorParams(int actualPagingSize)
+        public override IEnumerable<KeyValuePair<string, object>> GetGeneratorParams(int actualPagingSize)
         {
             return new Dictionary<string, object>
             {

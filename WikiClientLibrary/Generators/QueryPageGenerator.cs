@@ -33,8 +33,8 @@ namespace WikiClientLibrary.Generators
         public static async Task<IList<string>> GetQueryPageNamesAsync(WikiSite site)
         {
             var module = await RequestHelper.QueryParameterInformationAsync(site, "query+querypage");
-            var pa = module["parameters"].First(p => (string) p["name"] == "page");
-            return ((JArray) pa["type"]).ToObject<IList<string>>();
+            var pa = module["parameters"].First(p => (string)p["name"] == "page");
+            return ((JArray)pa["type"]).ToObject<IList<string>>();
         }
 
         /// <summary>
@@ -52,11 +52,8 @@ namespace WikiClientLibrary.Generators
         /// </summary>
         public string QueryPageName { get; set; }
 
-        /// <summary>
-        /// When overridden, fills generator parameters for action=query request.
-        /// </summary>
-        /// <returns>The dictioanry containing request value pairs.</returns>
-        protected override IEnumerable<KeyValuePair<string, object>> GetGeneratorParams(int actualPagingSize)
+        /// <inheritdoc/>
+        public override IEnumerable<KeyValuePair<string, object>> GetGeneratorParams(int actualPagingSize)
         {
             if (string.IsNullOrWhiteSpace(QueryPageName))
                 throw new InvalidOperationException("Invalid QueryPageName.");
@@ -68,12 +65,7 @@ namespace WikiClientLibrary.Generators
             };
         }
 
-        /// <summary>
-        /// 返回表示当前对象的字符串。
-        /// </summary>
-        /// <returns>
-        /// 表示当前对象的字符串。
-        /// </returns>
+        /// <inheritdoc/>
         public override string ToString()
         {
             return "QueryPage:" + QueryPageName;

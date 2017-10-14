@@ -16,7 +16,7 @@ namespace WikiClientLibrary.Generators
         public BacklinksGenerator(WikiSite site) : base(site)
         {
         }
-        
+
         public BacklinksGenerator(WikiSite site, string targetTitle) : base(site)
         {
             TargetTitle = targetTitle;
@@ -49,7 +49,7 @@ namespace WikiClientLibrary.Generators
         public bool AllowRedirectedLinks { get; set; }
 
         /// <inheritdoc />
-        protected override IEnumerable<KeyValuePair<string, object>> GetGeneratorParams(int actualPagingSize)
+        public override IEnumerable<KeyValuePair<string, object>> GetGeneratorParams(int actualPagingSize)
         {
             if ((TargetTitle != null) == (TargetPageId != null))
                 throw new ArgumentException("Either TargetTitle and TargetPageId should be null, not both, nor none.");

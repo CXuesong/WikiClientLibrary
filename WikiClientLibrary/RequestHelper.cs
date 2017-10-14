@@ -13,6 +13,7 @@ using WikiClientLibrary.Generators;
 using WikiClientLibrary.Infrastructures;
 using WikiClientLibrary.Pages;
 using WikiClientLibrary.Sites;
+using AsyncEnumerableExtensions;
 
 namespace WikiClientLibrary
 {
@@ -49,17 +50,65 @@ namespace WikiClientLibrary
         /// <summary>
         /// Enumerate pages from the generator.
         /// </summary>
-        public static IAsyncEnumerable<WikiPage> EnumPagesAsync(WikiPageGeneratorBase generator, PageQueryOptions options, int actualPagingSize)
+        public static IAsyncEnumerable<WikiPage> EnumPagesAsync(WikiPageGeneratorBase generator, PageQueryOptions options, bool distinctGeneratedPages)
         {
             if (generator == null) throw new ArgumentNullException(nameof(generator));
             if ((options & PageQueryOptions.ResolveRedirects) == PageQueryOptions.ResolveRedirects)
                 throw new ArgumentException("Cannot resolve redirects when using generators.", nameof(options));
-            var queryParams = GetPageFetchingParams(options);
-            return generator.EnumJsonAsync(queryParams, actualPagingSize).SelectMany(jresult =>
+            return AsyncEnumerableFactory.FromAsyncGenerator<WikiPage>(async (sink, ct) =>
             {
-                var pages = WikiPage.FromJsonQueryResult(generator.Site, jresult, options);
-                generator.logger.LogDebug("Loaded {Count} pages.", generator);
-                return pages.ToAsyncEnumerable();
+                var queryParams = GetPageFetchingParams(options);
+                foreach (var v in generator.GetGeneratorParams(generator.GetActualPagingSize(options)))
+                    queryParams[v.Key] = v.Value;
+                Debug.Assert("query".Equals(queryParams["action"]));
+                ct.ThrowIfCancellationRequested();
+                var retrivedPageIds = distinctGeneratedPages ? new HashSet<int>() : null;
+                NEXT_PAGE:
+                var jresult = await generator.Site.GetJsonAsync(new WikiFormRequestMessage(queryParams), ct);
+                // If there's no result, "query" node will not exist.
+                var queryNode = (JObject)jresult["query"];
+                if (queryNode != null)
+                {
+                    var jpages = (JObject)queryNode["pages"];
+                    if (retrivedPageIds != null && jpages != null)
+                    {
+                        // Remove duplicate results
+                        var duplicateKeys = new List<string>(jpages.Count);
+                        foreach (var jpage in jpages)
+                        {
+                            if (!retrivedPageIds.Add(Convert.ToInt32(jpage.Key)))
+                            {
+                                // The page has been retrieved before.
+                                duplicateKeys.Add(jpage.Key);
+                            }
+                        }
+                        var originalPageCount = jpages.Count;
+                        foreach (var k in duplicateKeys) jpages.Remove(k);
+                        if (originalPageCount != jpages.Count)
+                        {
+                            generator.Site.Logger.LogWarning(
+                                "Received {Count} results on {Site}, {DistinctCount} distinct results.",
+                                originalPageCount, generator.Site, jpages.Count);
+                        }
+                    }
+                    var pages = WikiPage.FromJsonQueryResult(generator.Site, queryNode, options);
+                    generator.logger.LogDebug("Loaded {Count} pages.", generator);
+                    await sink.YieldAndWait(pages);
+                }
+                // continue.xxx
+                // or query-continue.allpages.xxx
+                var continuation = (JObject)(jresult["continue"]
+                                             ?? ((JProperty)jresult["query-continue"]?.First)?.Value);
+                if (continuation != null)
+                {
+                    // Prepare for the next page of list.
+                    foreach (var p in continuation.Properties())
+                        queryParams[p.Name] = p.Value.ToObject<object>();
+                    if (queryNode == null)
+                        generator.Site.Logger.LogWarning("Empty query page with continuation received on {Site}.",
+                            generator.Site);
+                    goto NEXT_PAGE;
+                }
             });
         }
 

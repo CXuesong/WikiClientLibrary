@@ -66,7 +66,7 @@ namespace WikiClientLibrary.Generators
         public string BackendName { get; set; }
 
         /// <inheritdoc />
-        protected override IEnumerable<KeyValuePair<string, object>> GetGeneratorParams(int actualPagingSize)
+        public override IEnumerable<KeyValuePair<string, object>> GetGeneratorParams(int actualPagingSize)
         {
             var dict = new Dictionary<string, object>
             {
