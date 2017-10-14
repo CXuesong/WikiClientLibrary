@@ -9,13 +9,14 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using WikiClientLibrary.Client;
 using WikiClientLibrary.Sites;
+using WikiClientLibrary.Wikibase.DataTypes;
 
 namespace WikiClientLibrary.Wikibase
 {
-    partial class WbEntity
+    partial class Entity
     {
 
-        private JObject EditEntriesToJObject(IEnumerable<WbEntityEditEntry> edits)
+        private JObject EditEntriesToJObject(IEnumerable<EntityEditEntry> edits)
         {
             if (edits == null) throw new ArgumentNullException(nameof(edits));
             var jdata = new JObject();
@@ -26,7 +27,7 @@ namespace WikiClientLibrary.Wikibase
                 switch (prop.Key)
                 {
                     case nameof(DataType):
-                        jdata.Add("datatype", ((WbPropertyType)prop.Last().Value).Name);
+                        jdata.Add("datatype", ((WikibaseDataType)prop.Last().Value).Name);
                         break;
                     case nameof(Labels):
                     case nameof(Descriptions):
@@ -80,15 +81,15 @@ namespace WikiClientLibrary.Wikibase
                         jdata.Add("claims",
                             prop.GroupBy(e =>
                             {
-                                var pid = ((WbClaim)e.Value).MainSnak?.PropertyId;
+                                var pid = ((Claim)e.Value).MainSnak?.PropertyId;
                                 if (pid == null)
                                     throw new ArgumentException("Detected null PropertyId in WbClaim values.", nameof(edits));
                                 return pid;
                             }).ToJObject(g => g.Key, g => g.Select(item =>
                             {
                                 if (item.State == WbEntityEditEntryState.Updated)
-                                    return ((WbClaim)item.Value).ToJson(false);
-                                var obj = ((WbClaim)item.Value).ToJson(true);
+                                    return ((Claim)item.Value).ToJson(false);
+                                var obj = ((Claim)item.Value).ToJson(true);
                                 obj.Add("remove", "");
                                 return obj;
                             }).ToJArray()));
@@ -100,20 +101,20 @@ namespace WikiClientLibrary.Wikibase
             return jdata;
         }
 
-        /// <inheritdoc cref="EditAsync"/>
-        public Task EditAsync(IEnumerable<WbEntityEditEntry> edits, string summary)
+        /// <inheritdoc cref="EditAsync(IEnumerable{EntityEditEntry},string,bool,bool,CancellationToken)"/>
+        public Task EditAsync(IEnumerable<EntityEditEntry> edits, string summary)
         {
             return EditAsync(edits, summary, false);
         }
-
-        /// <inheritdoc cref="EditAsync"/>
-        public Task EditAsync(IEnumerable<WbEntityEditEntry> edits, string summary, bool isBot)
+        
+        /// <inheritdoc cref="EditAsync(IEnumerable{EntityEditEntry},string,bool,bool,CancellationToken)"/>
+        public Task EditAsync(IEnumerable<EntityEditEntry> edits, string summary, bool isBot)
         {
             return EditAsync(edits, summary, isBot, false);
         }
 
-        /// <inheritdoc cref="EditAsync"/>
-        public Task EditAsync(IEnumerable<WbEntityEditEntry> edits, string summary, bool isBot, bool clearData)
+        /// <inheritdoc cref="EditAsync(IEnumerable{EntityEditEntry},string,bool,bool,CancellationToken)"/>
+        public Task EditAsync(IEnumerable<EntityEditEntry> edits, string summary, bool isBot, bool clearData)
         {
             return EditAsync(edits, summary, isBot, clearData, CancellationToken.None);
         }
@@ -126,31 +127,33 @@ namespace WikiClientLibrary.Wikibase
         /// <param name="isBot">Whether to mark the edit as bot edit.</param>
         /// <param name="clearData">Whether to clear all the existing data of the entity before making the changes.</param>
         /// <param name="cancellationToken">A token used to cancel the operation.</param>
+        /// <exception cref="ArgumentNullException">Either <paramref name="edits"/> or <paramref name="summary"/> is <c>null</c>.</exception>
         /// <exception cref="OperationConflictException">Edit conflict detected.</exception>
         /// <exception cref="UnauthorizedOperationException">You have no rights to edit the page.</exception>
         /// <remarks>After the operation, the entity will be automatically refereshed,
-        /// which means all the <see cref="WbClaim"/> instances that used to belong to this claim will be detached,
+        /// which means all the <see cref="Claim"/> instances that used to belong to this claim will be detached,
         /// and perhaps replicates will take the place.
-        /// This is effectively a refresh operation with <see cref="WbEntityQueryOptions.FetchAllProperties"/> flag,
-        /// except that some properties in the <see cref="WbEntityQueryOptions.FetchInfo"/> category are just invalidated
+        /// This is effectively a refresh operation with <see cref="EntityQueryOptions.FetchAllProperties"/> flag,
+        /// except that some properties in the <see cref="EntityQueryOptions.FetchInfo"/> category are just invalidated
         /// due to insufficient data contained in the MW API. (e.g. <see cref="PageId"/>) As for the properties that are
         /// affected by the edit operation, see the "remarks" section of the properties, respectively.
         /// </remarks>
-        public async Task EditAsync(IEnumerable<WbEntityEditEntry> edits,
+        public async Task EditAsync(IEnumerable<EntityEditEntry> edits,
             string summary, bool isBot, bool clearData, CancellationToken cancellationToken)
         {
 
-            string FormatEntityType(WbEntityType type)
+            string FormatEntityType(EntityType type)
             {
                 switch (type)
                 {
-                    case WbEntityType.Item: return "item";
-                    case WbEntityType.Property: return "property";
+                    case EntityType.Item: return "item";
+                    case EntityType.Property: return "property";
                     default: return "unknown";
                 }
             }
 
             if (edits == null) throw new ArgumentNullException(nameof(edits));
+            if (summary == null) throw new ArgumentNullException(nameof(summary));
             cancellationToken.ThrowIfCancellationRequested();
             var jdata = EditEntriesToJObject(edits);
             var jresult = await Site.GetJsonAsync(new WikiFormRequestMessage(new
@@ -168,7 +171,7 @@ namespace WikiClientLibrary.Wikibase
             var jentity = jresult["entity"];
             if (jentity == null)
                 throw new UnexpectedDataException("Missing \"entity\" node in the JSON response.");
-            LoadFromJson(jresult["entity"], WbEntityQueryOptions.FetchAllProperties, true);
+            LoadFromJson(jresult["entity"], EntityQueryOptions.FetchAllProperties, true);
             Logger.LogInformation("Edited {Entity} on {Site}. New revid={RevisionId}", this, Site, LastRevisionId);
         }
 

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using WikiClientLibrary.Wikibase;
+using WikiClientLibrary.Wikibase.DataTypes;
 using Xunit;
 using Xunit.Abstractions;
 

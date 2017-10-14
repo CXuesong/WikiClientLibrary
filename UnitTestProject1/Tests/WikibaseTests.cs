@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using WikiClientLibrary.Wikibase;
+using WikiClientLibrary.Wikibase.DataTypes;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -20,7 +21,7 @@ namespace UnitTestProject1.Tests
             SiteNeedsLogin(Endpoints.WikidataTest);
         }
 
-        private void CheckEntity(WbEntity entity, string id, string labelEn)
+        private void CheckEntity(Entity entity, string id, string labelEn)
         {
             Assert.Equal(id, entity.Id);
             var title = id;
@@ -33,13 +34,13 @@ namespace UnitTestProject1.Tests
         public async Task FetchEntityTest1()
         {
             var site = await WikidataSiteAsync;
-            var entity = new WbEntity(site, WikidataItems.Chumulangma);
-            await entity.RefreshAsync(WbEntityQueryOptions.FetchAllProperties);
+            var entity = new Entity(site, WikidataItems.Chumulangma);
+            await entity.RefreshAsync(EntityQueryOptions.FetchAllProperties);
             ShallowTrace(entity);
             ShallowTrace(entity.Claims, 4);
             Assert.Equal(WikidataItems.Chumulangma, entity.Title);
             Assert.Equal(WikidataItems.Chumulangma, entity.Id);
-            Assert.Equal(WbEntityType.Item, entity.Type);
+            Assert.Equal(EntityType.Item, entity.Type);
             Assert.Equal("Mount Everest", entity.Labels["en"]);
             Assert.Contains("Chumulangma", entity.Aliases["en"]);
             Assert.Equal("珠穆朗玛峰", entity.Labels["zh-Hans"]);
@@ -47,7 +48,7 @@ namespace UnitTestProject1.Tests
             Assert.Equal("エベレスト", entity.Labels["ja"]);
 
             var claim = entity.Claims[WikidataProperties.CommonsCategory].First();
-            Assert.Equal(WbPropertyTypes.String, claim.MainSnak.DataType);
+            Assert.Equal(BuiltInDataTypes.String, claim.MainSnak.DataType);
             Assert.Equal(SnakType.Value, claim.MainSnak.SnakType);
             Assert.Equal("Mount Everest", claim.MainSnak.DataValue);
 
@@ -72,16 +73,16 @@ namespace UnitTestProject1.Tests
         public async Task FetchEntityTest2()
         {
             var site = await WikidataSiteAsync;
-            var entity1 = new WbEntity(site, WikidataItems.Chumulangma);
-            var entity2 = new WbEntity(site, WikidataItems.Chumulangma);
-            var entity3 = new WbEntity(site, WikidataItems.Earth);
-            var entity4 = new WbEntity(site, WikidataProperties.PartOf);
-            await new[] {entity1, entity2, entity3, entity4}.RefreshAsync(WbEntityQueryOptions.FetchAllProperties);
+            var entity1 = new Entity(site, WikidataItems.Chumulangma);
+            var entity2 = new Entity(site, WikidataItems.Chumulangma);
+            var entity3 = new Entity(site, WikidataItems.Earth);
+            var entity4 = new Entity(site, WikidataProperties.PartOf);
+            await new[] {entity1, entity2, entity3, entity4}.RefreshAsync(EntityQueryOptions.FetchAllProperties);
             CheckEntity(entity1, WikidataItems.Chumulangma, "Mount Everest");
             CheckEntity(entity2, WikidataItems.Chumulangma, "Mount Everest");
             CheckEntity(entity3, WikidataItems.Earth, "Earth");
             CheckEntity(entity4, WikidataProperties.PartOf, "part of");
-            Assert.Equal(WbEntityType.Property, entity4.Type);
+            Assert.Equal(EntityType.Property, entity4.Type);
         }
 
         [Fact]
@@ -93,16 +94,16 @@ namespace UnitTestProject1.Tests
             var site = await WikidataTestSiteAsync;
             var rand = Convert.ToBase64String(Guid.NewGuid().ToByteArray());
             // Create
-            var entity = new WbEntity(site, WbEntityType.Item);
+            var entity = new Entity(site, EntityType.Item);
             var changelist = new[]
             {
-                new WbEntityEditEntry(nameof(WbEntity.Labels), new WbMonolingualText("en", "test entity " + rand)),
-                new WbEntityEditEntry(nameof(WbEntity.Aliases), new WbMonolingualText("en", "entity for test")),
-                new WbEntityEditEntry(nameof(WbEntity.Aliases), new WbMonolingualText("en", "test")),
-                new WbEntityEditEntry(nameof(WbEntity.Descriptions),
+                new EntityEditEntry(nameof(Entity.Labels), new WbMonolingualText("en", "test entity " + rand)),
+                new EntityEditEntry(nameof(Entity.Aliases), new WbMonolingualText("en", "entity for test")),
+                new EntityEditEntry(nameof(Entity.Aliases), new WbMonolingualText("en", "test")),
+                new EntityEditEntry(nameof(Entity.Descriptions),
                     new WbMonolingualText("en",
                         "This is a test entity for unit test. If you see this entity outside the test site, please check the revision history and notify the editor.")),
-                new WbEntityEditEntry(nameof(WbEntity.Descriptions), new WbMonolingualText("zh", "此实体仅用于测试之用。如果你在非测试维基见到此实体，请检查修订历史并告知编辑者。")),
+                new EntityEditEntry(nameof(Entity.Descriptions), new WbMonolingualText("zh", "此实体仅用于测试之用。如果你在非测试维基见到此实体，请检查修订历史并告知编辑者。")),
             };
             await entity.EditAsync(changelist, "Create test entity.", true);
             ShallowTrace(entity);
@@ -114,11 +115,11 @@ namespace UnitTestProject1.Tests
             // General edit
             changelist = new[]
             {
-                new WbEntityEditEntry(nameof(WbEntity.Labels), new WbMonolingualText("zh-hans", "测试实体" + rand)),
-                new WbEntityEditEntry(nameof(WbEntity.Labels), new WbMonolingualText("zh-hant", "測試實體" + rand)),
+                new EntityEditEntry(nameof(Entity.Labels), new WbMonolingualText("zh-hans", "测试实体" + rand)),
+                new EntityEditEntry(nameof(Entity.Labels), new WbMonolingualText("zh-hant", "測試實體" + rand)),
                 // One language can have multiple aliases, so we cannot use "dummy" here.
-                new WbEntityEditEntry(nameof(WbEntity.Aliases), new WbMonolingualText("en", "Test"), WbEntityEditEntryState.Removed),
-                new WbEntityEditEntry(nameof(WbEntity.Descriptions), new WbMonolingualText("zh", "dummy"), WbEntityEditEntryState.Removed),
+                new EntityEditEntry(nameof(Entity.Aliases), new WbMonolingualText("en", "Test"), WbEntityEditEntryState.Removed),
+                new EntityEditEntry(nameof(Entity.Descriptions), new WbMonolingualText("zh", "dummy"), WbEntityEditEntryState.Removed),
             };
             await entity.EditAsync(changelist, "Edit test entity.", true);
             ShallowTrace(entity);
@@ -129,21 +130,21 @@ namespace UnitTestProject1.Tests
 
             // Add claim
             //  Create a property first.
-            var prop = new WbEntity(site, WbEntityType.Property);
+            var prop = new Entity(site, EntityType.Property);
             changelist = new[]
             {
-                new WbEntityEditEntry(nameof(WbEntity.Labels), new WbMonolingualText("en", "test property " + rand)),
-                new WbEntityEditEntry(nameof(WbEntity.DataType), WbPropertyTypes.WikibaseItem),
+                new EntityEditEntry(nameof(Entity.Labels), new WbMonolingualText("en", "test property " + rand)),
+                new EntityEditEntry(nameof(Entity.DataType), BuiltInDataTypes.WikibaseItem),
             };
             await prop.EditAsync(changelist, "Create a property for test.", true);
             // Refill basic information, esp. WbEntity.DataType
-            await prop.RefreshAsync(WbEntityQueryOptions.FetchInfo);
+            await prop.RefreshAsync(EntityQueryOptions.FetchInfo);
 
             //  Add the claims.
             changelist = new[]
             {
-                new WbEntityEditEntry(nameof(WbEntity.Claims), new WbClaim(new WbSnak(prop, entity.Id))),
-                new WbEntityEditEntry(nameof(WbEntity.Claims), new WbClaim(new WbSnak(prop, ArbitaryItemEntityId))
+                new EntityEditEntry(nameof(Entity.Claims), new Claim(new WbSnak(prop, entity.Id))),
+                new EntityEditEntry(nameof(Entity.Claims), new Claim(new WbSnak(prop, ArbitaryItemEntityId))
                 {
                     References = {new WbClaimReference(new WbSnak(prop, entity.Id))}
                 }),
@@ -160,7 +161,7 @@ namespace UnitTestProject1.Tests
             // Remove a claim
             changelist = new[]
             {
-                new WbEntityEditEntry(nameof(WbEntity.Claims), claim2, WbEntityEditEntryState.Removed),
+                new EntityEditEntry(nameof(Entity.Claims), claim2, WbEntityEditEntryState.Removed),
             };
             await entity.EditAsync(changelist, "Edit test entity. Remove a claim.", true);
             Assert.Single(entity.Claims);

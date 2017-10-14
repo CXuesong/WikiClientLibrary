@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 
-namespace WikiClientLibrary.Wikibase
+namespace WikiClientLibrary.Wikibase.DataTypes
 {
     /// <summary>Represents a point on the globe.</summary>
     public struct WbGlobeCoordinate : IEquatable<WbGlobeCoordinate>

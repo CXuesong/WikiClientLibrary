@@ -1,10 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Text;
 using System.Text.RegularExpressions;
 
-namespace WikiClientLibrary.Wikibase
+namespace WikiClientLibrary.Wikibase.DataTypes
 {
 
     /// <summary>

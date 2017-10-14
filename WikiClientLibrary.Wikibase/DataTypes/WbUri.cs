@@ -1,12 +1,9 @@
 ﻿using System;
 using System.Collections.Concurrent;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Runtime.CompilerServices;
-using System.Text;
 using Newtonsoft.Json;
 
-namespace WikiClientLibrary.Wikibase
+namespace WikiClientLibrary.Wikibase.DataTypes
 {
     /// <summary>
     /// An atomic instance of URI used in Wikibase.

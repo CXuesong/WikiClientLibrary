@@ -1,9 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Numerics;
-using System.Text;
 
-namespace WikiClientLibrary.Wikibase
+namespace WikiClientLibrary.Wikibase.DataTypes
 {
 
     /// <summary>

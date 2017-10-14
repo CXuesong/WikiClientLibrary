@@ -6,24 +6,24 @@ namespace WikiClientLibrary.Wikibase
 {
 
     /// <summary>
-    /// Represents an item of coarse-grained modification information on <see cref="WbEntity"/>.
+    /// Represents an item of coarse-grained modification information on <see cref="Entity"/>.
     /// </summary>
-    public sealed class WbEntityEditEntry
+    public sealed class EntityEditEntry
     {
         private WbEntityEditEntryState _State;
 
-        public WbEntityEditEntry(string propertyName, object value) : this(propertyName, value, WbEntityEditEntryState.Updated)
+        public EntityEditEntry(string propertyName, object value) : this(propertyName, value, WbEntityEditEntryState.Updated)
         {
         }
 
-        public WbEntityEditEntry(string propertyName, object value, WbEntityEditEntryState state)
+        public EntityEditEntry(string propertyName, object value, WbEntityEditEntryState state)
         {
             PropertyName = propertyName;
             Value = value;
             State = state;
         }
 
-        public WbEntityEditEntry()
+        public EntityEditEntry()
         {
             
         }
@@ -32,7 +32,7 @@ namespace WikiClientLibrary.Wikibase
         /// The CLR property name of the changed value.
         /// </summary>
         /// <remarks>
-        /// This is usually a property name in <see cref="WbEntity"/>.
+        /// This is usually a property name in <see cref="Entity"/>.
         /// </remarks>
         public string PropertyName { get; set; }
 

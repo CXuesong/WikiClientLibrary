@@ -16,13 +16,13 @@ namespace WikiClientLibrary.Wikibase
     internal static class WikibaseRequestHelper
     {
 
-        private static readonly Dictionary<WbEntityQueryOptions, string> propdict = new Dictionary<WbEntityQueryOptions, string>();
+        private static readonly Dictionary<EntityQueryOptions, string> propdict = new Dictionary<EntityQueryOptions, string>();
 
-        private static IDictionary<string, object> BuildQueryOptions(string languages, WbEntityQueryOptions options)
+        private static IDictionary<string, object> BuildQueryOptions(string languages, EntityQueryOptions options)
         {
-            var propValue = options & WbEntityQueryOptions.FetchAllProperties;
+            var propValue = options & EntityQueryOptions.FetchAllProperties;
             string props;
-            if (propValue == WbEntityQueryOptions.None)
+            if (propValue == EntityQueryOptions.None)
             {
                 props = "";
             }
@@ -33,13 +33,13 @@ namespace WikiClientLibrary.Wikibase
                     if (!propdict.TryGetValue(propValue, out props))
                     {
                         props = null;
-                        if ((propValue & WbEntityQueryOptions.FetchInfo) == WbEntityQueryOptions.FetchInfo) props += "|info";
-                        if ((propValue & WbEntityQueryOptions.FetchLabels) == WbEntityQueryOptions.FetchLabels) props += "|labels";
-                        if ((propValue & WbEntityQueryOptions.FetchAliases) == WbEntityQueryOptions.FetchAliases) props += "|aliases";
-                        if ((propValue & WbEntityQueryOptions.FetchDescriptions) == WbEntityQueryOptions.FetchDescriptions) props += "|descriptions";
-                        if ((propValue & WbEntityQueryOptions.FetchSiteLinks) == WbEntityQueryOptions.FetchSiteLinks) props += "|sitelinks";
-                        if ((propValue & WbEntityQueryOptions.FetchSiteLinksUrl) == WbEntityQueryOptions.FetchSiteLinksUrl) props += "|sitelinks/urls";
-                        if ((propValue & WbEntityQueryOptions.FetchClaims) == WbEntityQueryOptions.FetchClaims) props += "|claims";
+                        if ((propValue & EntityQueryOptions.FetchInfo) == EntityQueryOptions.FetchInfo) props += "|info";
+                        if ((propValue & EntityQueryOptions.FetchLabels) == EntityQueryOptions.FetchLabels) props += "|labels";
+                        if ((propValue & EntityQueryOptions.FetchAliases) == EntityQueryOptions.FetchAliases) props += "|aliases";
+                        if ((propValue & EntityQueryOptions.FetchDescriptions) == EntityQueryOptions.FetchDescriptions) props += "|descriptions";
+                        if ((propValue & EntityQueryOptions.FetchSiteLinks) == EntityQueryOptions.FetchSiteLinks) props += "|sitelinks";
+                        if ((propValue & EntityQueryOptions.FetchSiteLinksUrl) == EntityQueryOptions.FetchSiteLinksUrl) props += "|sitelinks/urls";
+                        if ((propValue & EntityQueryOptions.FetchClaims) == EntityQueryOptions.FetchClaims) props += "|claims";
                         Debug.Assert(props != null);
                         props = props.Substring(1);
                         propdict.Add(propValue, props);
@@ -50,7 +50,7 @@ namespace WikiClientLibrary.Wikibase
             {
                 {
                     "redirects",
-                    (options & WbEntityQueryOptions.SupressRedirects) == WbEntityQueryOptions.SupressRedirects
+                    (options & EntityQueryOptions.SupressRedirects) == EntityQueryOptions.SupressRedirects
                         ? "no"
                         : "yes"
                 },
@@ -59,7 +59,7 @@ namespace WikiClientLibrary.Wikibase
             };
         }
 
-        public static async Task RefreshEntitiesAsync(IEnumerable<WbEntity> entities, WbEntityQueryOptions options, 
+        public static async Task RefreshEntitiesAsync(IEnumerable<Entity> entities, EntityQueryOptions options, 
             IEnumerable<string> languages, CancellationToken cancellationToken)
         {
             if (entities == null) throw new ArgumentNullException(nameof(entities));

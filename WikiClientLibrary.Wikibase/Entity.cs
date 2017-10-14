@@ -12,15 +12,20 @@ using WikiClientLibrary.Pages;
 using WikiClientLibrary.Sites;
 using System.Threading;
 using Microsoft.Extensions.Logging.Abstractions;
+using WikiClientLibrary.Wikibase.DataTypes;
 using WikiClientLibrary.Wikibase.Infrastructures;
 
 namespace WikiClientLibrary.Wikibase
 {
 
     /// <summary>
-    /// Provides basic information on a Wikibase item or property.
+    /// Provides information on a Wikibase item or property.
     /// </summary>
-    public sealed partial class WbEntity : IWikiClientLoggable
+    /// <remarks>
+    /// The object represents a readonly snapshot of the Wikibase entity.
+    /// To edit the entity, use <see cref="EditAsync(IEnumerable{EntityEditEntry},string)"/> method.
+    /// </remarks>
+    public sealed partial class Entity : IWikiClientLoggable
     {
         private static readonly WbMonolingualTextCollection emptyStringDict
             = new WbMonolingualTextCollection {IsReadOnly = true};
@@ -37,17 +42,17 @@ namespace WikiClientLibrary.Wikibase
         private ILoggerFactory _LoggerFactory;
 
         /// <summary>
-        /// Initializes a new <see cref="WbEntity"/> entity from Wikibase site,
+        /// Initializes a new <see cref="Entity"/> entity from Wikibase site,
         /// marked for creation.
         /// </summary>
         /// <param name="site">Wikibase site.</param>
         /// <param name="type">Type of the new entity.</param>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="type"/> is neither
-        /// <see cref="WbEntityType.Item"/> nor <see cref="WbEntityType.Property"/>.</exception>
+        /// <see cref="EntityType.Item"/> nor <see cref="EntityType.Property"/>.</exception>
         /// <exception cref="ArgumentNullException">Either <paramref name="site"/> is <c>null</c>.</exception>
-        public WbEntity(WikiSite site, WbEntityType type)
+        public Entity(WikiSite site, EntityType type)
         {
-            if (type != WbEntityType.Item && type != WbEntityType.Property)
+            if (type != EntityType.Item && type != EntityType.Property)
                 throw new ArgumentOutOfRangeException(nameof(type));
             Site = site ?? throw new ArgumentNullException(nameof(site));
             Id = null;
@@ -56,13 +61,13 @@ namespace WikiClientLibrary.Wikibase
         }
 
         /// <summary>
-        /// Initializes a new <see cref="WbEntity"/> entity from Wikibase site
+        /// Initializes a new <see cref="Entity"/> entity from Wikibase site
         /// and existing entity ID.
         /// </summary>
         /// <param name="site">Wikibase site.</param>
         /// <param name="id">Entity or property ID, without <c>Property:</c> prefix.</param>
         /// <exception cref="ArgumentNullException">Either <paramref name="site"/> or <paramref name="id"/> is <c>null</c>.</exception>
-        public WbEntity(WikiSite site, string id)
+        public Entity(WikiSite site, string id)
         {
             Site = site ?? throw new ArgumentNullException(nameof(site));
             Id = id ?? throw new ArgumentNullException(nameof(id));
@@ -82,7 +87,7 @@ namespace WikiClientLibrary.Wikibase
         /// </summary>
         /// <remarks>
         /// The property value is invalidated after you have performed edits on this instance.
-        /// To fetch the latest value, use <see cref="RefreshAsync(WbEntityQueryOptions)"/>.
+        /// To fetch the latest value, use <see cref="RefreshAsync(EntityQueryOptions)"/>.
         /// </remarks>
         public int PageId { get; private set; }
 
@@ -97,19 +102,19 @@ namespace WikiClientLibrary.Wikibase
         /// <remarks><para>For items, they are usually in the form of <c>Q1234</c>;
         /// for properties, they are usually in the form of <c>Property:P1234</c>.</para>
         /// <para>The property value is invalidated after you have performed edits on this instance.
-        /// To fetch the latest value, use <see cref="RefreshAsync(WbEntityQueryOptions)"/>.</para>
+        /// To fetch the latest value, use <see cref="RefreshAsync(EntityQueryOptions)"/>.</para>
         /// </remarks>
         public string Title { get; private set; }
 
         /// <summary>
         /// Wikibase entity type.
         /// </summary>
-        public WbEntityType Type { get; private set; }
+        public EntityType Type { get; private set; }
 
         /// <summary>
         /// For property entity, gets the data type of the property.
         /// </summary>
-        public WbPropertyType DataType { get; private set; }
+        public WikibaseDataType DataType { get; private set; }
 
         /// <summary>
         /// Whether the entity exists.
@@ -119,7 +124,7 @@ namespace WikiClientLibrary.Wikibase
         /// <summary>Time of the last revision.</summary>
         /// <remarks>
         /// The property value is invalidated after you have performed edits on this instance.
-        /// To fetch the latest value, use <see cref="RefreshAsync(WbEntityQueryOptions)"/>.
+        /// To fetch the latest value, use <see cref="RefreshAsync(EntityQueryOptions)"/>.
         /// </remarks>
         public DateTime LastModified { get; private set; }
 
@@ -141,24 +146,44 @@ namespace WikiClientLibrary.Wikibase
         /// <summary>
         /// The last query options used with <see cref="RefreshAsync()"/> or effectively equivalent methods.
         /// </summary>
-        public WbEntityQueryOptions QueryOptions { get; private set; }
+        public EntityQueryOptions QueryOptions { get; private set; }
 
+        /// <inheritdoc cref="RefreshAsync(EntityQueryOptions,ICollection{string},CancellationToken)"/>
+        /// <summary>
+        /// Refreshes the basic entity information from Wikibase site.
+        /// </summary>
+        /// <remarks>This overload uses <see cref="EntityQueryOptions.FetchInfo"/> option to fetch basic information.</remarks>
+        /// <seealso cref="EntityExtensions.RefreshAsync(IEnumerable{Entity})"/>
         public Task RefreshAsync()
         {
-            return RefreshAsync(WbEntityQueryOptions.None, null, CancellationToken.None);
+            return RefreshAsync(EntityQueryOptions.FetchInfo, null, CancellationToken.None);
         }
 
-        public Task RefreshAsync(WbEntityQueryOptions options)
+        /// <inheritdoc cref="RefreshAsync(EntityQueryOptions,ICollection{string},CancellationToken)"/>
+        /// <seealso cref="EntityExtensions.RefreshAsync(IEnumerable{Entity},EntityQueryOptions)"/>
+        public Task RefreshAsync(EntityQueryOptions options)
         {
             return RefreshAsync(options, null, CancellationToken.None);
         }
 
-        public Task RefreshAsync(WbEntityQueryOptions options, ICollection<string> languages)
+        /// <inheritdoc cref="RefreshAsync(EntityQueryOptions,ICollection{string},CancellationToken)"/>
+        /// <seealso cref="EntityExtensions.RefreshAsync(IEnumerable{Entity},EntityQueryOptions,ICollection{string})"/>
+        public Task RefreshAsync(EntityQueryOptions options, ICollection<string> languages)
         {
             return RefreshAsync(options, languages, CancellationToken.None);
         }
 
-        public Task RefreshAsync(WbEntityQueryOptions options, ICollection<string> languages, CancellationToken cancellationToken)
+        /// <summary>
+        /// Refreshes the entity information from Wikibase site.
+        /// </summary>
+        /// <param name="options">The options, including choosing the fields to fetch</param>
+        /// <param name="languages">
+        /// Filter down the internationalized values to the specified one or more language codes.
+        /// Set to <c>null</c> for all available languages.
+        /// </param>
+        /// <param name="cancellationToken">The token used to cancel the operation.</param>
+        /// <seealso cref="EntityExtensions.RefreshAsync(IEnumerable{Entity},EntityQueryOptions,ICollection{string},CancellationToken)"/>
+        public Task RefreshAsync(EntityQueryOptions options, ICollection<string> languages, CancellationToken cancellationToken)
         {
             return WikibaseRequestHelper.RefreshEntitiesAsync(new[] {this}, options, languages, cancellationToken);
         }
@@ -181,11 +206,11 @@ namespace WikiClientLibrary.Wikibase
         }
 
         // postEditing: Is the entity param from the response of wbeditentity API call?
-        internal void LoadFromJson(JToken entity, WbEntityQueryOptions options, bool isPostEditing)
+        internal void LoadFromJson(JToken entity, EntityQueryOptions options, bool isPostEditing)
         {
             var id = (string)entity["id"];
             Debug.Assert(id != null);
-            if ((options & WbEntityQueryOptions.SupressRedirects) != WbEntityQueryOptions.SupressRedirects
+            if ((options & EntityQueryOptions.SupressRedirects) != EntityQueryOptions.SupressRedirects
                 && Id != null && Id != id)
             {
                 // The page has been overwritten, or deleted.
@@ -193,7 +218,7 @@ namespace WikiClientLibrary.Wikibase
             }
             Id = id;
             Exists = entity["missing"] == null;
-            Type = WbEntityType.Unknown;
+            Type = EntityType.Unknown;
             PageId = -1;
             NamespaceId = -1;
             Title = null;
@@ -208,10 +233,10 @@ namespace WikiClientLibrary.Wikibase
                 switch ((string)entity["type"])
                 {
                     case "item":
-                        Type = WbEntityType.Item;
+                        Type = EntityType.Item;
                         break;
                     case "property":
-                        Type = WbEntityType.Property;
+                        Type = EntityType.Property;
                         break;
                     default:
                         Logger.LogWarning("Unrecognized entity type: {Type} for {Entity} on {Site}.",
@@ -220,8 +245,8 @@ namespace WikiClientLibrary.Wikibase
                 }
                 var dataType = (string)entity["datatype"];
                 if (dataType != null)
-                    DataType = WbPropertyTypes.Get(dataType) ?? MissingPropertyType.Get(dataType, dataType);
-                if ((options & WbEntityQueryOptions.FetchInfo) == WbEntityQueryOptions.FetchInfo)
+                    DataType = BuiltInDataTypes.Get(dataType) ?? MissingPropertyType.Get(dataType, dataType);
+                if ((options & EntityQueryOptions.FetchInfo) == EntityQueryOptions.FetchInfo)
                 {
                     if (!isPostEditing)
                     {
@@ -233,13 +258,13 @@ namespace WikiClientLibrary.Wikibase
                     }
                     LastRevisionId = (int)entity["lastrevid"];
                 }
-                if ((options & WbEntityQueryOptions.FetchLabels) == WbEntityQueryOptions.FetchLabels)
+                if ((options & EntityQueryOptions.FetchLabels) == EntityQueryOptions.FetchLabels)
                     Labels = ParseMultiLanguageValues((JObject)entity["labels"]);
-                if ((options & WbEntityQueryOptions.FetchAliases) == WbEntityQueryOptions.FetchAliases)
+                if ((options & EntityQueryOptions.FetchAliases) == EntityQueryOptions.FetchAliases)
                     Aliases = ParseMultiLanguageMultiValues((JObject)entity["aliases"]);
-                if ((options & WbEntityQueryOptions.FetchDescriptions) == WbEntityQueryOptions.FetchDescriptions)
+                if ((options & EntityQueryOptions.FetchDescriptions) == EntityQueryOptions.FetchDescriptions)
                     Descriptions = ParseMultiLanguageValues((JObject)entity["descriptions"]);
-                if ((options & WbEntityQueryOptions.FetchSiteLinks) == WbEntityQueryOptions.FetchSiteLinks)
+                if ((options & EntityQueryOptions.FetchSiteLinks) == EntityQueryOptions.FetchSiteLinks)
                 {
                     var jlinks = (JObject)entity["sitelinks"];
                     if (jlinks == null || !jlinks.HasValues)
@@ -253,7 +278,7 @@ namespace WikiClientLibrary.Wikibase
                         SiteLinks.IsReadOnly = true;
                     }
                 }
-                if ((options & WbEntityQueryOptions.FetchClaims) == WbEntityQueryOptions.FetchClaims)
+                if ((options & EntityQueryOptions.FetchClaims) == EntityQueryOptions.FetchClaims)
                 {
                     var jclaims = (JObject)entity["claims"];
                     if (jclaims == null || !jclaims.HasValues)
@@ -264,7 +289,7 @@ namespace WikiClientLibrary.Wikibase
                     {
                         // { claims : { P47 : [ {}, {}, ... ], P105 : ... } }
                         Claims = new WbClaimCollection(jclaims.Values()
-                            .SelectMany(jarray => jarray.Select(WbClaim.FromJson)));
+                            .SelectMany(jarray => jarray.Select(Claim.FromJson)));
                     }
                 }
             }
@@ -290,7 +315,7 @@ namespace WikiClientLibrary.Wikibase
     /// <summary>
     /// Wikibase entity types.
     /// </summary>
-    public enum WbEntityType
+    public enum EntityType
     {
         /// <summary>
         /// Unknown entity type.
@@ -303,13 +328,13 @@ namespace WikiClientLibrary.Wikibase
         Item = 0,
 
         /// <summary>
-        /// A Wikibase property, usually having the prefix P.
+        /// A Wikibase property, usually having the prefix P and in <c>Property</c> namespace.
         /// </summary>
         Property = 1,
     }
 
     [Flags]
-    public enum WbEntityQueryOptions
+    public enum EntityQueryOptions
     {
 
         /// <summary>No options.</summary>
@@ -420,7 +445,7 @@ namespace WikiClientLibrary.Wikibase
         }
     }
 
-    public sealed class WbClaimCollection : UnorderedKeyedMultiCollection<string, WbClaim>
+    public sealed class WbClaimCollection : UnorderedKeyedMultiCollection<string, Claim>
     {
 
         public WbClaimCollection()
@@ -428,14 +453,14 @@ namespace WikiClientLibrary.Wikibase
             
         }
 
-        public WbClaimCollection(IEnumerable<WbClaim> items)
+        public WbClaimCollection(IEnumerable<Claim> items)
         {
             Debug.Assert(items != null);
             foreach (var i in items) Add(i);
         }
 
         /// <inheritdoc />
-        protected override string GetKeyForItem(WbClaim item)
+        protected override string GetKeyForItem(Claim item)
         {
             return item.MainSnak.PropertyId;
         }
