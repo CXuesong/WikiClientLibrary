@@ -169,7 +169,7 @@ namespace WikiClientLibrary.Generators
             foreach (var v in GetParams(true, GetActualPagingSize(PageQueryOptions.None)))
                 valuesDict[v.Key] = v.Value;
             Debug.Assert((string) valuesDict["action"] == "query");
-            var paging = new PagedQueryAsyncEnumerable(Site, valuesDict);
+            var paging = RequestHelper.QueryWithContinuation(Site, valuesDict);
             var serializer = Utility.CreateWikiJsonSerializer();
             serializer.Converters.Insert(0, new RcEntryCreator(Site));
             return paging.SelectMany(jquery => jquery["recentchanges"]

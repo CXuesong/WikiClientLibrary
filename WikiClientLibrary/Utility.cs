@@ -15,6 +15,7 @@ using Newtonsoft.Json.Serialization;
 using WikiClientLibrary.Client;
 using WikiClientLibrary.Generators;
 using System.Runtime.CompilerServices;
+using AsyncEnumerableExtensions;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using Newtonsoft.Json.Linq;
@@ -264,13 +265,13 @@ namespace WikiClientLibrary
         public static IAsyncEnumerable<TResult> SelectAsync<TSource, TResult>(this IEnumerable<TSource> source,
             Func<TSource, Task<TResult>> selector)
         {
-            var enu = source.GetEnumerator();
-            return new DelegateAsyncEnumerable<TResult>(async () =>
+            return AsyncEnumerableFactory.FromAsyncGenerator<TResult>(async sink =>
             {
-                if (!enu.MoveNext()) return null;
-                var result = await selector(enu.Current);
-                return Tuple.Create(result, true);
-            }, () => enu.Dispose());
+                foreach (var item in source)
+                {
+                    await sink.YieldAndWait(await selector(item));
+                }
+            });
         }
 
         public static ILogger SetLoggerFactory<TOwner>(ref ILoggerFactory loggerFactoryField, ILoggerFactory value)

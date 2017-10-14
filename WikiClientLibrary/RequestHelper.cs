@@ -47,24 +47,16 @@ namespace WikiClientLibrary
             return queryParams;
         }
 
-        /// <summary>
-        /// Enumerate pages from the generator.
-        /// </summary>
-        public static IAsyncEnumerable<WikiPage> EnumPagesAsync(WikiPageGeneratorBase generator, PageQueryOptions options, bool distinctGeneratedPages)
+        public static IAsyncEnumerable<JObject> QueryWithContinuation(WikiSite site, IEnumerable<KeyValuePair<string, object>> parameters, bool distinctPages = false)
         {
-            if (generator == null) throw new ArgumentNullException(nameof(generator));
-            if ((options & PageQueryOptions.ResolveRedirects) == PageQueryOptions.ResolveRedirects)
-                throw new ArgumentException("Cannot resolve redirects when using generators.", nameof(options));
-            return AsyncEnumerableFactory.FromAsyncGenerator<WikiPage>(async (sink, ct) =>
+            return AsyncEnumerableFactory.FromAsyncGenerator<JObject>(async (sink, ct) =>
             {
-                var queryParams = GetPageFetchingParams(options);
-                foreach (var v in generator.GetGeneratorParams(generator.GetActualPagingSize(options)))
-                    queryParams[v.Key] = v.Value;
+                var queryParams = parameters.ToDictionary(p => p.Key, p => p.Value);
                 Debug.Assert("query".Equals(queryParams["action"]));
                 ct.ThrowIfCancellationRequested();
-                var retrivedPageIds = distinctGeneratedPages ? new HashSet<int>() : null;
+                var retrivedPageIds = distinctPages ? new HashSet<int>() : null;
                 NEXT_PAGE:
-                var jresult = await generator.Site.GetJsonAsync(new WikiFormRequestMessage(queryParams), ct);
+                var jresult = await site.GetJsonAsync(new WikiFormRequestMessage(queryParams), ct);
                 // If there's no result, "query" node will not exist.
                 var queryNode = (JObject)jresult["query"];
                 if (queryNode != null)
@@ -86,30 +78,43 @@ namespace WikiClientLibrary
                         foreach (var k in duplicateKeys) jpages.Remove(k);
                         if (originalPageCount != jpages.Count)
                         {
-                            generator.Site.Logger.LogWarning(
+                            site.Logger.LogWarning(
                                 "Received {Count} results on {Site}, {DistinctCount} distinct results.",
-                                originalPageCount, generator.Site, jpages.Count);
+                                originalPageCount, site, jpages.Count);
                         }
                     }
-                    var pages = WikiPage.FromJsonQueryResult(generator.Site, queryNode, options);
-                    generator.logger.LogDebug("Loaded {Count} pages.", generator);
-                    await sink.YieldAndWait(pages);
+                    await sink.YieldAndWait(queryNode);
                 }
-                // continue.xxx
-                // or query-continue.allpages.xxx
                 var continuation = (JObject)(jresult["continue"]
                                              ?? ((JProperty)jresult["query-continue"]?.First)?.Value);
-                if (continuation != null)
+                // No more results.
+                if (continuation == null || continuation.Count == 0) return;
+                foreach (var p in continuation.Properties())
                 {
-                    // Prepare for the next page of list.
-                    foreach (var p in continuation.Properties())
-                        queryParams[p.Name] = p.Value.ToObject<object>();
-                    if (queryNode == null)
-                        generator.Site.Logger.LogWarning("Empty query page with continuation received on {Site}.",
-                            generator.Site);
-                    goto NEXT_PAGE;
+                    object parsed;
+                    if (p.Value is JValue value) parsed = value.Value;
+                    else parsed = p.Value.ToString(Formatting.None);
+                    queryParams[p.Name] = parsed;
                 }
+                if (queryNode == null)
+                    site.Logger.LogWarning("Empty query page with continuation received on {Site}.", site);
+                goto NEXT_PAGE;
             });
+        }
+
+        /// <summary>
+        /// Enumerate pages from the generator.
+        /// </summary>
+        public static IAsyncEnumerable<WikiPage> EnumPagesAsync(WikiPageGeneratorBase generator, PageQueryOptions options, bool distinctGeneratedPages)
+        {
+            if (generator == null) throw new ArgumentNullException(nameof(generator));
+            if ((options & PageQueryOptions.ResolveRedirects) == PageQueryOptions.ResolveRedirects)
+                throw new ArgumentException("Cannot resolve redirects when using generators.", nameof(options));
+            var queryParams = GetPageFetchingParams(options);
+            foreach (var v in generator.GetGeneratorParams(generator.GetActualPagingSize(options)))
+                queryParams[v.Key] = v.Value;
+            return QueryWithContinuation(generator.Site, queryParams, distinctGeneratedPages)
+                .SelectMany(jquery => WikiPage.FromJsonQueryResult(generator.Site, jquery, options).ToAsyncEnumerable());
         }
 
         /// <summary>
@@ -242,7 +247,7 @@ namespace WikiClientLibrary
             var serializer = Utility.CreateWikiJsonSerializer();
             serializer.Converters.Add(new DelegateCreationConverter<Revision>(t => new Revision(generator.Page)));
             var resultCounter = 0;
-            return new PagedQueryAsyncEnumerable(site, pa)
+            return QueryWithContinuation(site, pa)
                 .SelectMany(jresult =>
                 {
                     var jpage = jresult["pages"].Values().First();
@@ -420,7 +425,7 @@ namespace WikiClientLibrary
             };
             pa["titles"] = titlesExpr;
             var resultCounter = 0;
-            return new PagedQueryAsyncEnumerable(site, pa)
+            return QueryWithContinuation(site, pa)
                 .SelectMany(jquery =>
                 {
                     var page = jquery["pages"].Values().First();
@@ -453,7 +458,7 @@ namespace WikiClientLibrary
             };
             pa["titles"] = titlesExpr;
             var resultCounter = 0;
-            return new PagedQueryAsyncEnumerable(site, pa)
+            return QueryWithContinuation(site, pa)
                 .SelectMany(jquery =>
                 {
                     var page = jquery["pages"].Values().First();
