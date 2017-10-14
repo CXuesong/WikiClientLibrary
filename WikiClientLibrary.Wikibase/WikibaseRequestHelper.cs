@@ -74,7 +74,7 @@ namespace WikiClientLibrary.Wikibase
                 var titleLimit = site.AccountInfo.HasRight(UserRights.ApiHighLimits) ? 500 : 50;
                 foreach (var partition in siteEntities.Partition(titleLimit).Select(partition => partition.ToList()))
                 {
-                    site.Logger.LogDebug("Fetching {Count} pages from {Site}.", partition.Count, site);
+                    //site.Logger.LogDebug("Fetching {Count} pages from {Site}.", partition.Count, site);
                     // We use ids to query pages.
                     req["ids"] = string.Join("|", partition.Select(p => p.Id));
                     var jresult = await site.GetJsonAsync(new WikiFormRequestMessage(req), cancellationToken);
