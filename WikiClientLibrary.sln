@@ -20,12 +20,13 @@ EndProject
 Project("{7CF6DF6D-3B04-46F8-A40B-537D21BCA0B4}") = "DocumentationProject", "DocumentationProject\DocumentationProject.shfbproj", "{9EE6A01D-862F-48F1-A090-81AA67D9E9FC}"
 	ProjectSection(ProjectDependencies) = postProject
 		{D8BAC074-4A89-4A84-B46C-51E6541BA582} = {D8BAC074-4A89-4A84-B46C-51E6541BA582}
+		{C7EDDB8C-6880-4211-9608-23EA730F638D} = {C7EDDB8C-6880-4211-9608-23EA730F638D}
 		{15E595DB-4FF0-4722-AC16-1881C6B811CC} = {15E595DB-4FF0-4722-AC16-1881C6B811CC}
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WikiClientLibrary.Wikibase", "WikiClientLibrary.Wikibase\WikiClientLibrary.Wikibase.csproj", "{D8BAC074-4A89-4A84-B46C-51E6541BA582}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WikiClientLibrary.Flow", "WikiClientLibrary.Flow\WikiClientLibrary.Flow.csproj", "{C7EDDB8C-6880-4211-9608-23EA730F638D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WikiClientLibrary.Flow", "WikiClientLibrary.Flow\WikiClientLibrary.Flow.csproj", "{C7EDDB8C-6880-4211-9608-23EA730F638D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
