@@ -66,9 +66,11 @@ The original title of the page is '''{title}'''.
             return page;
         }
 
-        [Fact]
+        [SkippableFact]
         public async Task PageMoveAndDeleteTest1()
         {
+            Skip.IfNot((await SiteAsync).AccountInfo.IsInGroup(UserGroups.SysOp),
+                "The user is not in sysop group and cannot delete the pages.");
             var page1 = new WikiPage(await SiteAsync, TestPage11Title);
             var page2 = new WikiPage(await SiteAsync, TestPage12Title);
             Output.WriteLine("Deleted:" + await page2.DeleteAsync(SummaryPrefix + "Delete the move destination."));
