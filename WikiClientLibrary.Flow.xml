@@ -1,0 +1,774 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<doc>
+  <assembly>
+    <name>WikiClientLibrary.Flow</name>
+  </assembly>
+  <members>
+    <member name="T:WikiClientLibrary.Flow.Board">
+      <summary>
+            Represents a Flow topic page.
+            </summary>
+    </member>
+    <member name="M:WikiClientLibrary.Flow.Board.#ctor(WikiClientLibrary.Sites.WikiSite,System.String)">
+      <summary>
+            Initializes a new <see cref="T:WikiClientLibrary.Flow.Board" /> instance from MW site and board page title.
+            </summary>
+      <param name="site">MediaWiki site.</param>
+      <param name="title">Full page title of the Flow discussion board, including namespace prefix.</param>
+      <exception cref="T:System.ArgumentNullException">Either <paramref name="site" /> or <paramref name="title" /> is <c>null</c>.</exception>
+    </member>
+    <member name="M:WikiClientLibrary.Flow.Board.EnumTopicsAsync">
+      <summary>
+            Asynchronously enumerates the topics in the order of time posted in this board.
+            </summary>
+    </member>
+    <member name="M:WikiClientLibrary.Flow.Board.EnumTopicsAsync(System.Void)">
+      <summary>
+        <markup>
+          <include item="SMCMissingTag">
+            <parameter>summary</parameter>
+            <parameter>M:WikiClientLibrary.Flow.Board.EnumTopicsAsync(System.Void)</parameter>
+          </include>
+        </markup>
+      </summary>
+      <param name="options">
+        <markup>
+          <include item="SMCMissingParamTag">
+            <parameter>param</parameter>
+            <parameter>options</parameter>
+            <parameter>M:WikiClientLibrary.Flow.Board.EnumTopicsAsync(System.Void)</parameter>
+          </include>
+        </markup>
+      </param>
+    </member>
+    <member name="M:WikiClientLibrary.Flow.Board.EnumTopicsAsync(System.Void,WikiClientLibrary.Flow.Topic)">
+      <summary>
+        <markup>
+          <include item="SMCMissingTag">
+            <parameter>summary</parameter>
+            <parameter>M:WikiClientLibrary.Flow.Board.EnumTopicsAsync(System.Void,WikiClientLibrary.Flow.Topic)</parameter>
+          </include>
+        </markup>
+      </summary>
+      <param name="options">
+        <markup>
+          <include item="SMCMissingParamTag">
+            <parameter>param</parameter>
+            <parameter>options</parameter>
+            <parameter>M:WikiClientLibrary.Flow.Board.EnumTopicsAsync(System.Void,WikiClientLibrary.Flow.Topic)</parameter>
+          </include>
+        </markup>
+      </param>
+      <param name="pageSize">
+        <markup>
+          <include item="SMCMissingParamTag">
+            <parameter>param</parameter>
+            <parameter>pageSize</parameter>
+            <parameter>M:WikiClientLibrary.Flow.Board.EnumTopicsAsync(System.Void,WikiClientLibrary.Flow.Topic)</parameter>
+          </include>
+        </markup>
+      </param>
+    </member>
+    <member name="P:WikiClientLibrary.Flow.Board.HeaderContent">
+      <summary>Header content.</summary>
+    </member>
+    <member name="P:WikiClientLibrary.Flow.Board.HeaderRevision">
+      <summary>Latest header content revision.</summary>
+    </member>
+    <member name="P:WikiClientLibrary.Flow.Board.LoggerFactory">
+      <summary>
+            Sets/replaces the logger factory of the specified class.
+            </summary>
+    </member>
+    <member name="M:WikiClientLibrary.Flow.Board.NewTopicAsync(System.String,System.String)">
+      <summary>
+            Creates a new topic on the current board.
+            </summary>
+      <param name="topicTitle">Title of the new topic, in wikitext format.</param>
+      <param name="topicContent">First post content of the new topic, in wikitext format.</param>
+      <param name="cancellationToken">The token used to cancel the operation.</param>
+      <returns>
+            A task that returns the newly-created topic when succeeds.
+            The instance only contains the workflow ID, so you may need to call
+            <see cref="M:WikiClientLibrary.Flow.Topic.RefreshAsync" /> if you want to query more information about it. 
+            </returns>
+    </member>
+    <member name="M:WikiClientLibrary.Flow.Board.NewTopicAsync(System.String,System.String,System.Threading.CancellationToken)">
+      <summary>
+            Creates a new topic on the current board.
+            </summary>
+      <param name="topicTitle">Title of the new topic, in wikitext format.</param>
+      <param name="topicContent">First post content of the new topic, in wikitext format.</param>
+      <param name="cancellationToken">The token used to cancel the operation.</param>
+      <returns>
+            A task that returns the newly-created topic when succeeds.
+            The instance only contains the workflow ID, so you may need to call
+            <see cref="M:WikiClientLibrary.Flow.Topic.RefreshAsync" /> if you want to query more information about it. 
+            </returns>
+    </member>
+    <member name="M:WikiClientLibrary.Flow.Board.RefreshAsync">
+      <summary>
+            Fetches board header information from server.
+            </summary>
+    </member>
+    <member name="M:WikiClientLibrary.Flow.Board.RefreshAsync(System.Threading.CancellationToken)">
+      <summary>
+            Fetches board header information from server.
+            </summary>
+      <param name="cancellationToken">
+        <markup>
+          <include item="SMCMissingParamTag">
+            <parameter>param</parameter>
+            <parameter>cancellationToken</parameter>
+            <parameter>M:WikiClientLibrary.Flow.Board.RefreshAsync(System.Threading.CancellationToken)</parameter>
+          </include>
+        </markup>
+      </param>
+    </member>
+    <member name="P:WikiClientLibrary.Flow.Board.Site">
+      <summary>The MediaWiki site hosting this board.</summary>
+    </member>
+    <member name="P:WikiClientLibrary.Flow.Board.Title">
+      <summary>Full title of the board page.</summary>
+    </member>
+    <member name="M:WikiClientLibrary.Flow.Board.ToString">
+      <summary>
+        <markup>
+          <include item="SMCMissingTag">
+            <parameter>summary</parameter>
+            <parameter>M:WikiClientLibrary.Flow.Board.ToString</parameter>
+          </include>
+        </markup>
+      </summary>
+    </member>
+    <member name="T:WikiClientLibrary.Flow.FlowLink">
+      <summary>
+            Represents an HTML link to perform operations in Flow.
+            </summary>
+    </member>
+    <member name="M:WikiClientLibrary.Flow.FlowLink.#ctor(System.String,System.String)">
+      <summary>
+        <markup>
+          <include item="SMCAutoDocConstructor">
+            <parameter>WikiClientLibrary.Flow.FlowLink</parameter>
+          </include>
+        </markup>
+      </summary>
+      <param name="url">
+        <markup>
+          <include item="SMCMissingParamTag">
+            <parameter>param</parameter>
+            <parameter>url</parameter>
+            <parameter>M:WikiClientLibrary.Flow.FlowLink.#ctor(System.String,System.String)</parameter>
+          </include>
+        </markup>
+      </param>
+      <param name="text">
+        <markup>
+          <include item="SMCMissingParamTag">
+            <parameter>param</parameter>
+            <parameter>text</parameter>
+            <parameter>M:WikiClientLibrary.Flow.FlowLink.#ctor(System.String,System.String)</parameter>
+          </include>
+        </markup>
+      </param>
+    </member>
+    <member name="M:WikiClientLibrary.Flow.FlowLink.#ctor(System.String,System.String,System.String)">
+      <summary>
+        <markup>
+          <include item="SMCAutoDocConstructor">
+            <parameter>WikiClientLibrary.Flow.FlowLink</parameter>
+          </include>
+        </markup>
+      </summary>
+      <param name="url">
+        <markup>
+          <include item="SMCMissingParamTag">
+            <parameter>param</parameter>
+            <parameter>url</parameter>
+            <parameter>M:WikiClientLibrary.Flow.FlowLink.#ctor(System.String,System.String,System.String)</parameter>
+          </include>
+        </markup>
+      </param>
+      <param name="title">
+        <markup>
+          <include item="SMCMissingParamTag">
+            <parameter>param</parameter>
+            <parameter>title</parameter>
+            <parameter>M:WikiClientLibrary.Flow.FlowLink.#ctor(System.String,System.String,System.String)</parameter>
+          </include>
+        </markup>
+      </param>
+      <param name="text">
+        <markup>
+          <include item="SMCMissingParamTag">
+            <parameter>param</parameter>
+            <parameter>text</parameter>
+            <parameter>M:WikiClientLibrary.Flow.FlowLink.#ctor(System.String,System.String,System.String)</parameter>
+          </include>
+        </markup>
+      </param>
+    </member>
+    <member name="P:WikiClientLibrary.Flow.FlowLink.Text">
+      <summary>
+        <markup>
+          <include item="SMCMissingTag">
+            <parameter>summary</parameter>
+            <parameter>P:WikiClientLibrary.Flow.FlowLink.Text</parameter>
+          </include>
+        </markup>
+      </summary>
+    </member>
+    <member name="P:WikiClientLibrary.Flow.FlowLink.Title">
+      <summary>
+        <markup>
+          <include item="SMCMissingTag">
+            <parameter>summary</parameter>
+            <parameter>P:WikiClientLibrary.Flow.FlowLink.Title</parameter>
+          </include>
+        </markup>
+      </summary>
+    </member>
+    <member name="P:WikiClientLibrary.Flow.FlowLink.Url">
+      <summary>
+        <markup>
+          <include item="SMCMissingTag">
+            <parameter>summary</parameter>
+            <parameter>P:WikiClientLibrary.Flow.FlowLink.Url</parameter>
+          </include>
+        </markup>
+      </summary>
+    </member>
+    <member name="T:WikiClientLibrary.Flow.FlowNamespaces">
+      <summary>
+        <markup>
+          <include item="SMCMissingTag">
+            <parameter>summary</parameter>
+            <parameter>T:WikiClientLibrary.Flow.FlowNamespaces</parameter>
+          </include>
+        </markup>
+      </summary>
+    </member>
+    <member name="F:WikiClientLibrary.Flow.FlowNamespaces.Topic">
+      <summary>
+        <markup>
+          <include item="SMCMissingTag">
+            <parameter>summary</parameter>
+            <parameter>F:WikiClientLibrary.Flow.FlowNamespaces.Topic</parameter>
+          </include>
+        </markup>
+      </summary>
+    </member>
+    <member name="T:WikiClientLibrary.Flow.FlowRevisionAction">
+      <summary>
+            The type of action performed on each Flow revision.
+            </summary>
+    </member>
+    <member name="T:WikiClientLibrary.Flow.LockAction">
+      <summary>
+            The locking operations to perform on a Flow topic.
+            </summary>
+    </member>
+    <member name="T:WikiClientLibrary.Flow.ModerationAction">
+      <summary>
+            Actions used for moderating a Flow topic or post.
+            </summary>
+    </member>
+    <member name="T:WikiClientLibrary.Flow.ModerationState">
+      <summary>
+            Moderation state of a Flow topic or post.
+            </summary>
+    </member>
+    <member name="F:WikiClientLibrary.Flow.ModerationState.None">
+      <summary>Not moderated.</summary>
+    </member>
+    <member name="F:WikiClientLibrary.Flow.ModerationState.Unknown">
+      <summary>An unknown moderation state.</summary>
+    </member>
+    <member name="F:WikiClientLibrary.Flow.ModerationState.Deleted">
+      <summary>Deleted.</summary>
+    </member>
+    <member name="F:WikiClientLibrary.Flow.ModerationState.Hidden">
+      <summary>Hidden.</summary>
+    </member>
+    <member name="F:WikiClientLibrary.Flow.ModerationState.Suppressed">
+      <summary>Suppressed.</summary>
+    </member>
+    <member name="T:WikiClientLibrary.Flow.Post">
+      <summary>
+            Represents a normal flow post.
+            </summary>
+    </member>
+    <member name="M:WikiClientLibrary.Flow.Post.#ctor(WikiClientLibrary.Sites.WikiSite,System.String,System.String)">
+      <summary>
+            Initializes a new <see cref="T:WikiClientLibrary.Flow.Post" /> instance from MW site and post workflow ID.
+            </summary>
+      <param name="site">MediaWiki site.</param>
+      <param name="topicTitle">The full page title of the Flow topic.</param>
+      <param name="workflowId">Full page title of the Flow discussion board, including <c>Topic:</c> namespace prefix.</param>
+      <exception cref="T:System.ArgumentNullException">Either <paramref name="site" />, <paramref name="topicTitle" />, or <paramref name="workflowId" /> is <c>null</c>.</exception>
+    </member>
+    <member name="P:WikiClientLibrary.Flow.Post.Content">
+      <summary>
+            Post content.
+            </summary>
+    </member>
+    <member name="P:WikiClientLibrary.Flow.Post.LastRevision">
+      <summary>
+            Gets the last revision of the post.
+            </summary>
+    </member>
+    <member name="M:WikiClientLibrary.Flow.Post.ModerateAsync(WikiClientLibrary.Flow.ModerationAction,System.String)">
+      <summary>
+            Moderates the post with the specified action.
+            </summary>
+      <param name="action">The action to perform. You need to have sufficient permission for it.</param>
+      <param name="reason">The reason for moderation.</param>
+      <param name="cancellationToken">A token used to cancel the operation.</param>
+    </member>
+    <member name="M:WikiClientLibrary.Flow.Post.ModerateAsync(WikiClientLibrary.Flow.ModerationAction,System.String,System.Threading.CancellationToken)">
+      <summary>
+            Moderates the post with the specified action.
+            </summary>
+      <param name="action">The action to perform. You need to have sufficient permission for it.</param>
+      <param name="reason">The reason for moderation.</param>
+      <param name="cancellationToken">A token used to cancel the operation.</param>
+    </member>
+    <member name="M:WikiClientLibrary.Flow.Post.RefreshAsync">
+      <summary>
+            Refreshes the topic revision and replies from the server.
+            </summary>
+      <param name="cancellationToken">The token used to cancel the operation.</param>
+    </member>
+    <member name="M:WikiClientLibrary.Flow.Post.RefreshAsync(System.Threading.CancellationToken)">
+      <summary>
+            Refreshes the topic revision and replies from the server.
+            </summary>
+      <param name="cancellationToken">The token used to cancel the operation.</param>
+    </member>
+    <member name="P:WikiClientLibrary.Flow.Post.Replies">
+      <summary>
+            Gets a read-only view of the replies.
+            </summary>
+    </member>
+    <member name="M:WikiClientLibrary.Flow.Post.ReplyAsync(System.String)">
+      <summary>
+            Add a new reply to the post.
+            </summary>
+      <param name="content">The content in reply.</param>
+      <param name="cancellationToken">A token used to cancel the operation.</param>
+      <returns>A new post containing the workflow ID of the new post.</returns>
+    </member>
+    <member name="M:WikiClientLibrary.Flow.Post.ReplyAsync(System.String,System.Threading.CancellationToken)">
+      <summary>
+            Add a new reply to the post.
+            </summary>
+      <param name="content">The content in reply.</param>
+      <param name="cancellationToken">A token used to cancel the operation.</param>
+      <returns>A new post containing the workflow ID of the new post.</returns>
+    </member>
+    <member name="P:WikiClientLibrary.Flow.Post.Site">
+      <summary>
+            The MediaWiki site hosting this post.
+            </summary>
+    </member>
+    <member name="P:WikiClientLibrary.Flow.Post.TopicTitle">
+      <summary>
+            The full page title of the Flow topic.
+            </summary>
+    </member>
+    <member name="M:WikiClientLibrary.Flow.Post.ToString">
+      <summary>
+        <markup>
+          <include item="SMCMissingTag">
+            <parameter>summary</parameter>
+            <parameter>M:WikiClientLibrary.Flow.Post.ToString</parameter>
+          </include>
+        </markup>
+      </summary>
+    </member>
+    <member name="P:WikiClientLibrary.Flow.Post.WorkflowId">
+      <summary>
+            Workflow ID of the post.
+            </summary>
+    </member>
+    <member name="T:WikiClientLibrary.Flow.Revision">
+      <summary>
+            Contains the revision information with content of Flow board headers or topic posts.
+            </summary>
+    </member>
+    <member name="M:WikiClientLibrary.Flow.Revision.#ctor">
+      <summary>
+        <markup>
+          <include item="SMCAutoDocConstructor">
+            <parameter>WikiClientLibrary.Flow.Revision</parameter>
+          </include>
+        </markup>
+      </summary>
+    </member>
+    <member name="P:WikiClientLibrary.Flow.Revision.Actions">
+      <summary>
+            HTML links to show operations.
+            </summary>
+    </member>
+    <member name="P:WikiClientLibrary.Flow.Revision.ArticleTitle">
+      <summary>
+            Full title of the page containing this revision.
+            </summary>
+    </member>
+    <member name="P:WikiClientLibrary.Flow.Revision.Author">
+      <summary>
+            Author of the post or header.
+            </summary>
+    </member>
+    <member name="P:WikiClientLibrary.Flow.Revision.ChangeType">
+      <summary>
+        <markup>
+          <include item="SMCMissingTag">
+            <parameter>summary</parameter>
+            <parameter>P:WikiClientLibrary.Flow.Revision.ChangeType</parameter>
+          </include>
+        </markup>
+      </summary>
+    </member>
+    <member name="P:WikiClientLibrary.Flow.Revision.Content">
+      <summary>
+            Revision content, in wikitext format.
+            </summary>
+    </member>
+    <member name="P:WikiClientLibrary.Flow.Revision.ContentLength">
+      <summary>
+            Content length, in bytes.
+            </summary>
+    </member>
+    <member name="P:WikiClientLibrary.Flow.Revision.IsLocked">
+      <summary>
+            Determines whether the post has been locked (i.e. discussion closed).
+            </summary>
+    </member>
+    <member name="P:WikiClientLibrary.Flow.Revision.IsMaxThreadingDepth">
+      <summary>
+        <markup>
+          <include item="SMCMissingTag">
+            <parameter>summary</parameter>
+            <parameter>P:WikiClientLibrary.Flow.Revision.IsMaxThreadingDepth</parameter>
+          </include>
+        </markup>
+      </summary>
+    </member>
+    <member name="P:WikiClientLibrary.Flow.Revision.IsModerated">
+      <summary>
+            Determines whether the post has been moderated (hidden).
+            </summary>
+    </member>
+    <member name="P:WikiClientLibrary.Flow.Revision.IsModeratedNotLocked">
+      <summary>
+            Determines whether the post has been moderated but not locked.
+            </summary>
+    </member>
+    <member name="P:WikiClientLibrary.Flow.Revision.IsOriginalContent">
+      <summary>
+        <markup>
+          <include item="SMCMissingTag">
+            <parameter>summary</parameter>
+            <parameter>P:WikiClientLibrary.Flow.Revision.IsOriginalContent</parameter>
+          </include>
+        </markup>
+      </summary>
+    </member>
+    <member name="P:WikiClientLibrary.Flow.Revision.LastEditId">
+      <summary>
+            Revision ID of the last edit.
+            </summary>
+    </member>
+    <member name="P:WikiClientLibrary.Flow.Revision.LastEditUser">
+      <summary>
+            Last editor of the post or header.
+            </summary>
+    </member>
+    <member name="P:WikiClientLibrary.Flow.Revision.LastUpdated">
+      <summary>
+        <markup>
+          <include item="SMCMissingTag">
+            <parameter>summary</parameter>
+            <parameter>P:WikiClientLibrary.Flow.Revision.LastUpdated</parameter>
+          </include>
+        </markup>
+      </summary>
+    </member>
+    <member name="P:WikiClientLibrary.Flow.Revision.Links">
+      <summary>
+            HTML links to show different views.
+            </summary>
+    </member>
+    <member name="P:WikiClientLibrary.Flow.Revision.ModerationReason">
+      <summary>
+        <markup>
+          <include item="SMCMissingTag">
+            <parameter>summary</parameter>
+            <parameter>P:WikiClientLibrary.Flow.Revision.ModerationReason</parameter>
+          </include>
+        </markup>
+      </summary>
+    </member>
+    <member name="P:WikiClientLibrary.Flow.Revision.ModerationState">
+      <summary>
+        <markup>
+          <include item="SMCMissingTag">
+            <parameter>summary</parameter>
+            <parameter>P:WikiClientLibrary.Flow.Revision.ModerationState</parameter>
+          </include>
+        </markup>
+      </summary>
+    </member>
+    <member name="P:WikiClientLibrary.Flow.Revision.Moderator">
+      <summary>
+        <markup>
+          <include item="SMCMissingTag">
+            <parameter>summary</parameter>
+            <parameter>P:WikiClientLibrary.Flow.Revision.Moderator</parameter>
+          </include>
+        </markup>
+      </summary>
+    </member>
+    <member name="P:WikiClientLibrary.Flow.Revision.OldContentLength">
+      <summary>
+            Content length before this revision, in bytes.
+            </summary>
+    </member>
+    <member name="P:WikiClientLibrary.Flow.Revision.PreviousRevisionId">
+      <summary>
+            Revision ID of the previous revision.
+            </summary>
+    </member>
+    <member name="P:WikiClientLibrary.Flow.Revision.Properties">
+      <summary>
+        <markup>
+          <include item="SMCMissingTag">
+            <parameter>summary</parameter>
+            <parameter>P:WikiClientLibrary.Flow.Revision.Properties</parameter>
+          </include>
+        </markup>
+      </summary>
+    </member>
+    <member name="P:WikiClientLibrary.Flow.Revision.RawModerationReason">
+      <summary>
+        <markup>
+          <include item="SMCMissingTag">
+            <parameter>summary</parameter>
+            <parameter>P:WikiClientLibrary.Flow.Revision.RawModerationReason</parameter>
+          </include>
+        </markup>
+      </summary>
+    </member>
+    <member name="P:WikiClientLibrary.Flow.Revision.RawModerationState">
+      <summary>
+        <markup>
+          <include item="SMCMissingTag">
+            <parameter>summary</parameter>
+            <parameter>P:WikiClientLibrary.Flow.Revision.RawModerationState</parameter>
+          </include>
+        </markup>
+      </summary>
+    </member>
+    <member name="P:WikiClientLibrary.Flow.Revision.ReplyIds">
+      <summary>
+            Workflow ID of the replies.
+            </summary>
+    </member>
+    <member name="P:WikiClientLibrary.Flow.Revision.ReplyToId">
+      <summary>
+            Workflow ID of the post this revision replies to.
+            </summary>
+    </member>
+    <member name="P:WikiClientLibrary.Flow.Revision.RevisionId">
+      <summary>
+            Flow revision ID.
+            </summary>
+    </member>
+    <member name="P:WikiClientLibrary.Flow.Revision.Summary">
+      <summary>
+            The latest revision of topic summary, if available.
+            </summary>
+    </member>
+    <member name="P:WikiClientLibrary.Flow.Revision.TimeStamp">
+      <summary>
+            The time stamp of the revision.
+            </summary>
+    </member>
+    <member name="P:WikiClientLibrary.Flow.Revision.WorkflowId">
+      <summary>
+            Workflow ID of the revision. For board header, this is the workflow ID of the board;
+            for topic posts, this is the topic ID.
+            </summary>
+    </member>
+    <member name="T:WikiClientLibrary.Flow.Topic">
+      <summary>
+            Reporesents a topic on a Flow board.
+            </summary>
+    </member>
+    <member name="M:WikiClientLibrary.Flow.Topic.#ctor(WikiClientLibrary.Sites.WikiSite,System.String)">
+      <summary>
+            Initializes a new <see cref="T:WikiClientLibrary.Flow.Topic" /> instance from MW site and topic page title.
+            </summary>
+      <param name="site">MediaWiki site.</param>
+      <param name="title">Either full page title of the Flow discussion board including <c>Topic:</c> namespace prefix, or the workflow ID of the board.</param>
+      <exception cref="T:System.ArgumentNullException">
+        <paramref name="site" /> or <paramref name="title" /> is <c>null</c>.</exception>
+      <exception cref="T:System.ArgumentException">
+        <paramref name="title" /> is not a valid title.</exception>
+    </member>
+    <member name="M:WikiClientLibrary.Flow.Topic.LockAsync(System.String)">
+      <summary>Locks (aka. close) the topic with the specified action.</summary>
+      <param name="action">The action to perform.</param>
+      <param name="reason">The reason for operation.</param>
+      <param name="cancellationToken">A token used to cancel the operation.</param>
+    </member>
+    <member name="M:WikiClientLibrary.Flow.Topic.LockAsync(WikiClientLibrary.Flow.LockAction,System.String)">
+      <summary>
+            Locks or unlocks (aka. close or reopen) the topic with the specified action.
+            </summary>
+      <param name="action">The action to perform.</param>
+      <param name="reason">The reason for operation.</param>
+      <param name="cancellationToken">A token used to cancel the operation.</param>
+    </member>
+    <member name="M:WikiClientLibrary.Flow.Topic.LockAsync(WikiClientLibrary.Flow.LockAction,System.String,System.Threading.CancellationToken)">
+      <summary>
+            Locks or unlocks (aka. close or reopen) the topic with the specified action.
+            </summary>
+      <param name="action">The action to perform.</param>
+      <param name="reason">The reason for operation.</param>
+      <param name="cancellationToken">A token used to cancel the operation.</param>
+    </member>
+    <member name="P:WikiClientLibrary.Flow.Topic.LoggerFactory">
+      <summary>
+            Sets/replaces the logger factory of the specified class.
+            </summary>
+    </member>
+    <member name="M:WikiClientLibrary.Flow.Topic.ModerateAsync(WikiClientLibrary.Flow.ModerationAction,System.String)">
+      <summary>
+            Moderates the topic with the specified action.
+            </summary>
+      <param name="action">The action to perform. You need to have sufficient permission for it.</param>
+      <param name="reason">The reason for moderation.</param>
+      <param name="cancellationToken">A token used to cancel the operation.</param>
+    </member>
+    <member name="M:WikiClientLibrary.Flow.Topic.ModerateAsync(WikiClientLibrary.Flow.ModerationAction,System.String,System.Threading.CancellationToken)">
+      <summary>
+            Moderates the topic with the specified action.
+            </summary>
+      <param name="action">The action to perform. You need to have sufficient permission for it.</param>
+      <param name="reason">The reason for moderation.</param>
+      <param name="cancellationToken">A token used to cancel the operation.</param>
+    </member>
+    <member name="P:WikiClientLibrary.Flow.Topic.Posts">
+      <summary>
+            Gets the list of posts, starting from the OP's first post.
+            </summary>
+    </member>
+    <member name="M:WikiClientLibrary.Flow.Topic.RefreshAsync">
+      <summary>
+            Refreshes the topic revision and replies from the server.
+            </summary>
+      <param name="cancellationToken">The token used to cancel the operation.</param>
+    </member>
+    <member name="M:WikiClientLibrary.Flow.Topic.RefreshAsync(System.Threading.CancellationToken)">
+      <summary>
+            Refreshes the topic revision and replies from the server.
+            </summary>
+      <param name="cancellationToken">The token used to cancel the operation.</param>
+    </member>
+    <member name="M:WikiClientLibrary.Flow.Topic.ReplyAsync(System.String)">
+      <summary>
+            Add a new reply to the topic.
+            </summary>
+      <param name="content">The content in reply.</param>
+      <param name="cancellationToken">A token used to cancel the operation.</param>
+      <returns>A new post containing the workflow ID of the new post.</returns>
+    </member>
+    <member name="M:WikiClientLibrary.Flow.Topic.ReplyAsync(System.String,System.Threading.CancellationToken)">
+      <summary>
+            Add a new reply to the topic.
+            </summary>
+      <param name="content">The content in reply.</param>
+      <param name="cancellationToken">A token used to cancel the operation.</param>
+      <returns>A new post containing the workflow ID of the new post.</returns>
+    </member>
+    <member name="P:WikiClientLibrary.Flow.Topic.Site">
+      <summary>
+            The MediaWiki site hosting this topic.
+            </summary>
+    </member>
+    <member name="P:WikiClientLibrary.Flow.Topic.Summary">
+      <summary>
+            Topic summary.
+            </summary>
+    </member>
+    <member name="P:WikiClientLibrary.Flow.Topic.Title">
+      <summary>
+            Full title of the topic page.
+            </summary>
+    </member>
+    <member name="P:WikiClientLibrary.Flow.Topic.TopicTitle">
+      <summary>
+            Topic display title.
+            </summary>
+    </member>
+    <member name="P:WikiClientLibrary.Flow.Topic.TopicTitleRevision">
+      <summary>
+            Gets the latest revision of the topic display title.
+            </summary>
+    </member>
+    <member name="M:WikiClientLibrary.Flow.Topic.ToString">
+      <summary>
+            Returns the user-friendly title of the topic.
+            </summary>
+    </member>
+    <member name="M:WikiClientLibrary.Flow.Topic.UpdateSummaryAsync">
+      <summary>
+            Updates the topic summary to the value of <see cref="P:WikiClientLibrary.Flow.Topic.Summary" />.
+            </summary>
+      <param name="cancellationToken">A token used to cancel the operation.</param>
+    </member>
+    <member name="M:WikiClientLibrary.Flow.Topic.UpdateSummaryAsync(System.Threading.CancellationToken)">
+      <summary>
+            Updates the topic summary to the value of <see cref="P:WikiClientLibrary.Flow.Topic.Summary" />.
+            </summary>
+      <param name="cancellationToken">A token used to cancel the operation.</param>
+    </member>
+    <member name="M:WikiClientLibrary.Flow.Topic.UpdateTopicTitleAsync">
+      <summary>
+            Updates the topic display title to the value of <see cref="P:WikiClientLibrary.Flow.Topic.TopicTitle" />.
+            </summary>
+      <param name="cancellationToken">A token used to cancel the operation.</param>
+    </member>
+    <member name="M:WikiClientLibrary.Flow.Topic.UpdateTopicTitleAsync(System.Threading.CancellationToken)">
+      <summary>
+            Updates the topic display title to the value of <see cref="P:WikiClientLibrary.Flow.Topic.TopicTitle" />.
+            </summary>
+      <param name="cancellationToken">A token used to cancel the operation.</param>
+    </member>
+    <member name="P:WikiClientLibrary.Flow.Topic.WorkflowId">
+      <summary>
+            Workflow ID of the topic.
+            </summary>
+    </member>
+    <member name="T:WikiClientLibrary.Flow.TopicListingOptions">
+      <summary>
+            Defines how a Flow topic list should be enumerated.
+            </summary>
+    </member>
+    <member name="F:WikiClientLibrary.Flow.TopicListingOptions.Default">
+      <summary>Use user's default sorting preference.</summary>
+    </member>
+    <member name="F:WikiClientLibrary.Flow.TopicListingOptions.OrderByPosted">
+      <summary>Flow topic list should be sorted descending by the time a topic is posed.</summary>
+    </member>
+    <member name="F:WikiClientLibrary.Flow.TopicListingOptions.OrderByUpdated">
+      <summary>Flow topic list should be sorted descending by the time a topic's last activity.</summary>
+    </member>
+    <member name="F:WikiClientLibrary.Flow.TopicListingOptions.SaveSortingPreference">
+      <summary>Save the current sorting option as user's preference.</summary>
+    </member>
+  </members>
+</doc>

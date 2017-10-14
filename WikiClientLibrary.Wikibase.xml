@@ -1,0 +1,3233 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<doc>
+  <assembly>
+    <name>WikiClientLibrary.Wikibase</name>
+  </assembly>
+  <members>
+    <member name="T:WikiClientLibrary.Wikibase.Claim">
+      <summary>
+            Represents a claim applied to a Wikibase entity.
+            </summary>
+    </member>
+    <member name="M:WikiClientLibrary.Wikibase.Claim.#ctor(System.String)">
+      <summary>
+            Initializes a new <see cref="T:WikiClientLibrary.Wikibase.Claim" /> instance with the specified main snak.
+            </summary>
+      <param name="mainSnakPropertyId">The property ID of the auto-constructed main snak.</param>
+      <exception cref="T:System.ArgumentNullException">
+        <paramref name="mainSnakPropertyId" /> is <c>null</c>.</exception>
+    </member>
+    <member name="M:WikiClientLibrary.Wikibase.Claim.#ctor(WikiClientLibrary.Wikibase.WbSnak)">
+      <summary>
+            Initializes a new <see cref="T:WikiClientLibrary.Wikibase.Claim" /> instance with the specified main snak.
+            </summary>
+      <param name="mainSnak">The main snak containing the property and value of the claim.</param>
+      <exception cref="T:System.ArgumentNullException">
+        <paramref name="mainSnak" /> is <c>null</c>.</exception>
+    </member>
+    <member name="P:WikiClientLibrary.Wikibase.Claim.Id">
+      <summary>Claim ID.</summary>
+    </member>
+    <member name="P:WikiClientLibrary.Wikibase.Claim.MainSnak">
+      <summary>
+            Gets the main snak of the claim.
+            </summary>
+    </member>
+    <member name="P:WikiClientLibrary.Wikibase.Claim.Qualifiers">
+      <summary>
+            Gets/sets the collection of qualifiers.
+            </summary>
+    </member>
+    <member name="P:WikiClientLibrary.Wikibase.Claim.Rank">
+      <summary>Rank of the claim.</summary>
+    </member>
+    <member name="P:WikiClientLibrary.Wikibase.Claim.References">
+      <summary>
+            Gets/sets the collection of citations for the claim.
+            </summary>
+    </member>
+    <member name="P:WikiClientLibrary.Wikibase.Claim.Type">
+      <summary>The type of the claim.</summary>
+    </member>
+    <member name="T:WikiClientLibrary.Wikibase.Entity">
+      <summary>
+            Provides information on a Wikibase item or property.
+            </summary>
+    </member>
+    <member name="M:WikiClientLibrary.Wikibase.Entity.#ctor(WikiClientLibrary.Sites.WikiSite,System.String)">
+      <summary>
+            Initializes a new <see cref="T:WikiClientLibrary.Wikibase.Entity" /> entity from Wikibase site
+            and existing entity ID.
+            </summary>
+      <param name="site">Wikibase site.</param>
+      <param name="id">Entity or property ID, without <c>Property:</c> prefix.</param>
+      <exception cref="T:System.ArgumentNullException">Either <paramref name="site" /> or <paramref name="id" /> is <c>null</c>.</exception>
+    </member>
+    <member name="M:WikiClientLibrary.Wikibase.Entity.#ctor(WikiClientLibrary.Sites.WikiSite,WikiClientLibrary.Wikibase.EntityType)">
+      <summary>
+            Initializes a new <see cref="T:WikiClientLibrary.Wikibase.Entity" /> entity from Wikibase site,
+            marked for creation.
+            </summary>
+      <param name="site">Wikibase site.</param>
+      <param name="type">Type of the new entity.</param>
+      <exception cref="T:System.ArgumentOutOfRangeException">
+        <paramref name="type" /> is neither
+            <see cref="F:WikiClientLibrary.Wikibase.EntityType.Item" /> nor <see cref="F:WikiClientLibrary.Wikibase.EntityType.Property" />.</exception>
+      <exception cref="T:System.ArgumentNullException">Either <paramref name="site" /> is <c>null</c>.</exception>
+    </member>
+    <member name="P:WikiClientLibrary.Wikibase.Entity.Aliases">
+      <summary>
+        <markup>
+          <include item="SMCMissingTag">
+            <parameter>summary</parameter>
+            <parameter>P:WikiClientLibrary.Wikibase.Entity.Aliases</parameter>
+          </include>
+        </markup>
+      </summary>
+    </member>
+    <member name="P:WikiClientLibrary.Wikibase.Entity.Claims">
+      <summary>
+        <markup>
+          <include item="SMCMissingTag">
+            <parameter>summary</parameter>
+            <parameter>P:WikiClientLibrary.Wikibase.Entity.Claims</parameter>
+          </include>
+        </markup>
+      </summary>
+    </member>
+    <member name="P:WikiClientLibrary.Wikibase.Entity.DataType">
+      <summary>
+            For property entity, gets the data type of the property.
+            </summary>
+    </member>
+    <member name="P:WikiClientLibrary.Wikibase.Entity.Descriptions">
+      <summary>
+        <markup>
+          <include item="SMCMissingTag">
+            <parameter>summary</parameter>
+            <parameter>P:WikiClientLibrary.Wikibase.Entity.Descriptions</parameter>
+          </include>
+        </markup>
+      </summary>
+    </member>
+    <member name="M:WikiClientLibrary.Wikibase.Entity.EditAsync(System.Collections.Generic.IEnumerable{WikiClientLibrary.Wikibase.EntityEditEntry},System.String)">
+      <summary>
+            Makes the specified changes to the current entity on the Wikibase site.
+            </summary>
+      <param name="edits">The changes to be made.</param>
+      <param name="summary">The edit summary.</param>
+      <param name="isBot">Whether to mark the edit as bot edit.</param>
+      <param name="clearData">Whether to clear all the existing data of the entity before making the changes.</param>
+      <param name="cancellationToken">A token used to cancel the operation.</param>
+      <exception cref="T:System.ArgumentNullException">Either <paramref name="edits" /> or <paramref name="summary" /> is <c>null</c>.</exception>
+      <exception cref="T:WikiClientLibrary.OperationConflictException">Edit conflict detected.</exception>
+      <exception cref="T:WikiClientLibrary.UnauthorizedOperationException">You have no rights to edit the page.</exception>
+    </member>
+    <member name="M:WikiClientLibrary.Wikibase.Entity.EditAsync(System.Collections.Generic.IEnumerable{WikiClientLibrary.Wikibase.EntityEditEntry},System.String,System.Boolean)">
+      <summary>
+            Makes the specified changes to the current entity on the Wikibase site.
+            </summary>
+      <param name="edits">The changes to be made.</param>
+      <param name="summary">The edit summary.</param>
+      <param name="isBot">Whether to mark the edit as bot edit.</param>
+      <param name="clearData">Whether to clear all the existing data of the entity before making the changes.</param>
+      <param name="cancellationToken">A token used to cancel the operation.</param>
+      <exception cref="T:System.ArgumentNullException">Either <paramref name="edits" /> or <paramref name="summary" /> is <c>null</c>.</exception>
+      <exception cref="T:WikiClientLibrary.OperationConflictException">Edit conflict detected.</exception>
+      <exception cref="T:WikiClientLibrary.UnauthorizedOperationException">You have no rights to edit the page.</exception>
+    </member>
+    <member name="M:WikiClientLibrary.Wikibase.Entity.EditAsync(System.Collections.Generic.IEnumerable{WikiClientLibrary.Wikibase.EntityEditEntry},System.String,System.Boolean,System.Boolean)">
+      <summary>
+            Makes the specified changes to the current entity on the Wikibase site.
+            </summary>
+      <param name="edits">The changes to be made.</param>
+      <param name="summary">The edit summary.</param>
+      <param name="isBot">Whether to mark the edit as bot edit.</param>
+      <param name="clearData">Whether to clear all the existing data of the entity before making the changes.</param>
+      <param name="cancellationToken">A token used to cancel the operation.</param>
+      <exception cref="T:System.ArgumentNullException">Either <paramref name="edits" /> or <paramref name="summary" /> is <c>null</c>.</exception>
+      <exception cref="T:WikiClientLibrary.OperationConflictException">Edit conflict detected.</exception>
+      <exception cref="T:WikiClientLibrary.UnauthorizedOperationException">You have no rights to edit the page.</exception>
+    </member>
+    <member name="M:WikiClientLibrary.Wikibase.Entity.EditAsync(System.Collections.Generic.IEnumerable{WikiClientLibrary.Wikibase.EntityEditEntry},System.String,System.Boolean,System.Boolean,System.Threading.CancellationToken)">
+      <summary>
+            Makes the specified changes to the current entity on the Wikibase site.
+            </summary>
+      <param name="edits">The changes to be made.</param>
+      <param name="summary">The edit summary.</param>
+      <param name="isBot">Whether to mark the edit as bot edit.</param>
+      <param name="clearData">Whether to clear all the existing data of the entity before making the changes.</param>
+      <param name="cancellationToken">A token used to cancel the operation.</param>
+      <exception cref="T:System.ArgumentNullException">Either <paramref name="edits" /> or <paramref name="summary" /> is <c>null</c>.</exception>
+      <exception cref="T:WikiClientLibrary.OperationConflictException">Edit conflict detected.</exception>
+      <exception cref="T:WikiClientLibrary.UnauthorizedOperationException">You have no rights to edit the page.</exception>
+    </member>
+    <member name="P:WikiClientLibrary.Wikibase.Entity.Exists">
+      <summary>
+            Whether the entity exists.
+            </summary>
+    </member>
+    <member name="P:WikiClientLibrary.Wikibase.Entity.Id">
+      <summary>
+            Id of the entity.
+            </summary>
+    </member>
+    <member name="P:WikiClientLibrary.Wikibase.Entity.Labels">
+      <summary>
+        <markup>
+          <include item="SMCMissingTag">
+            <parameter>summary</parameter>
+            <parameter>P:WikiClientLibrary.Wikibase.Entity.Labels</parameter>
+          </include>
+        </markup>
+      </summary>
+    </member>
+    <member name="P:WikiClientLibrary.Wikibase.Entity.LastModified">
+      <summary>Time of the last revision.</summary>
+    </member>
+    <member name="P:WikiClientLibrary.Wikibase.Entity.LastRevisionId">
+      <summary>
+            The revid of the last revision.
+            </summary>
+    </member>
+    <member name="P:WikiClientLibrary.Wikibase.Entity.LoggerFactory">
+      <summary>
+            Sets/replaces the logger factory of the specified class.
+            </summary>
+    </member>
+    <member name="P:WikiClientLibrary.Wikibase.Entity.NamespaceId">
+      <summary>
+            Namespace ID of the entity page.
+            </summary>
+    </member>
+    <member name="P:WikiClientLibrary.Wikibase.Entity.PageId">
+      <summary>
+            ID of the entity page.
+            </summary>
+    </member>
+    <member name="P:WikiClientLibrary.Wikibase.Entity.QueryOptions">
+      <summary>
+            The last query options used with <see cref="M:WikiClientLibrary.Wikibase.Entity.RefreshAsync" /> or effectively equivalent methods.
+            </summary>
+    </member>
+    <member name="M:WikiClientLibrary.Wikibase.Entity.RefreshAsync">
+      <summary>
+            Refreshes the basic entity information from Wikibase site.
+            </summary>
+      <param name="options">The options, including choosing the fields to fetch</param>
+      <param name="languages">
+            Filter down the internationalized values to the specified one or more language codes.
+            Set to <c>null</c> for all available languages.
+            </param>
+      <param name="cancellationToken">The token used to cancel the operation.</param>
+    </member>
+    <member name="M:WikiClientLibrary.Wikibase.Entity.RefreshAsync(WikiClientLibrary.Wikibase.EntityQueryOptions)">
+      <summary>
+            Refreshes the entity information from Wikibase site.
+            </summary>
+      <param name="options">The options, including choosing the fields to fetch</param>
+      <param name="languages">
+            Filter down the internationalized values to the specified one or more language codes.
+            Set to <c>null</c> for all available languages.
+            </param>
+      <param name="cancellationToken">The token used to cancel the operation.</param>
+    </member>
+    <member name="M:WikiClientLibrary.Wikibase.Entity.RefreshAsync(WikiClientLibrary.Wikibase.EntityQueryOptions,System.Collections.Generic.ICollection{System.String})">
+      <summary>
+            Refreshes the entity information from Wikibase site.
+            </summary>
+      <param name="options">The options, including choosing the fields to fetch</param>
+      <param name="languages">
+            Filter down the internationalized values to the specified one or more language codes.
+            Set to <c>null</c> for all available languages.
+            </param>
+      <param name="cancellationToken">The token used to cancel the operation.</param>
+    </member>
+    <member name="M:WikiClientLibrary.Wikibase.Entity.RefreshAsync(WikiClientLibrary.Wikibase.EntityQueryOptions,System.Collections.Generic.ICollection{System.String},System.Threading.CancellationToken)">
+      <summary>
+            Refreshes the entity information from Wikibase site.
+            </summary>
+      <param name="options">The options, including choosing the fields to fetch</param>
+      <param name="languages">
+            Filter down the internationalized values to the specified one or more language codes.
+            Set to <c>null</c> for all available languages.
+            </param>
+      <param name="cancellationToken">The token used to cancel the operation.</param>
+    </member>
+    <member name="P:WikiClientLibrary.Wikibase.Entity.Site">
+      <summary>
+        <markup>
+          <include item="SMCMissingTag">
+            <parameter>summary</parameter>
+            <parameter>P:WikiClientLibrary.Wikibase.Entity.Site</parameter>
+          </include>
+        </markup>
+      </summary>
+    </member>
+    <member name="P:WikiClientLibrary.Wikibase.Entity.SiteLinks">
+      <summary>
+        <markup>
+          <include item="SMCMissingTag">
+            <parameter>summary</parameter>
+            <parameter>P:WikiClientLibrary.Wikibase.Entity.SiteLinks</parameter>
+          </include>
+        </markup>
+      </summary>
+    </member>
+    <member name="P:WikiClientLibrary.Wikibase.Entity.Title">
+      <summary>
+            Full title of the entity page.
+            </summary>
+    </member>
+    <member name="M:WikiClientLibrary.Wikibase.Entity.ToString">
+      <summary>
+        <markup>
+          <include item="SMCMissingTag">
+            <parameter>summary</parameter>
+            <parameter>M:WikiClientLibrary.Wikibase.Entity.ToString</parameter>
+          </include>
+        </markup>
+      </summary>
+    </member>
+    <member name="P:WikiClientLibrary.Wikibase.Entity.Type">
+      <summary>
+            Wikibase entity type.
+            </summary>
+    </member>
+    <member name="T:WikiClientLibrary.Wikibase.EntityEditEntry">
+      <summary>
+            Represents an item of coarse-grained modification information on <see cref="T:WikiClientLibrary.Wikibase.Entity" />.
+            </summary>
+    </member>
+    <member name="M:WikiClientLibrary.Wikibase.EntityEditEntry.#ctor">
+      <summary>
+        <markup>
+          <include item="SMCAutoDocConstructor">
+            <parameter>WikiClientLibrary.Wikibase.EntityEditEntry</parameter>
+          </include>
+        </markup>
+      </summary>
+    </member>
+    <member name="M:WikiClientLibrary.Wikibase.EntityEditEntry.#ctor(System.String,System.Object)">
+      <summary>
+        <markup>
+          <include item="SMCAutoDocConstructor">
+            <parameter>WikiClientLibrary.Wikibase.EntityEditEntry</parameter>
+          </include>
+        </markup>
+      </summary>
+      <param name="propertyName">
+        <markup>
+          <include item="SMCMissingParamTag">
+            <parameter>param</parameter>
+            <parameter>propertyName</parameter>
+            <parameter>M:WikiClientLibrary.Wikibase.EntityEditEntry.#ctor(System.String,System.Object)</parameter>
+          </include>
+        </markup>
+      </param>
+      <param name="value">
+        <markup>
+          <include item="SMCMissingParamTag">
+            <parameter>param</parameter>
+            <parameter>value</parameter>
+            <parameter>M:WikiClientLibrary.Wikibase.EntityEditEntry.#ctor(System.String,System.Object)</parameter>
+          </include>
+        </markup>
+      </param>
+    </member>
+    <member name="M:WikiClientLibrary.Wikibase.EntityEditEntry.#ctor(System.String,System.Object,WikiClientLibrary.Wikibase.WbEntityEditEntryState)">
+      <summary>
+        <markup>
+          <include item="SMCAutoDocConstructor">
+            <parameter>WikiClientLibrary.Wikibase.EntityEditEntry</parameter>
+          </include>
+        </markup>
+      </summary>
+      <param name="propertyName">
+        <markup>
+          <include item="SMCMissingParamTag">
+            <parameter>param</parameter>
+            <parameter>propertyName</parameter>
+            <parameter>M:WikiClientLibrary.Wikibase.EntityEditEntry.#ctor(System.String,System.Object,WikiClientLibrary.Wikibase.WbEntityEditEntryState)</parameter>
+          </include>
+        </markup>
+      </param>
+      <param name="value">
+        <markup>
+          <include item="SMCMissingParamTag">
+            <parameter>param</parameter>
+            <parameter>value</parameter>
+            <parameter>M:WikiClientLibrary.Wikibase.EntityEditEntry.#ctor(System.String,System.Object,WikiClientLibrary.Wikibase.WbEntityEditEntryState)</parameter>
+          </include>
+        </markup>
+      </param>
+      <param name="state">
+        <markup>
+          <include item="SMCMissingParamTag">
+            <parameter>param</parameter>
+            <parameter>state</parameter>
+            <parameter>M:WikiClientLibrary.Wikibase.EntityEditEntry.#ctor(System.String,System.Object,WikiClientLibrary.Wikibase.WbEntityEditEntryState)</parameter>
+          </include>
+        </markup>
+      </param>
+    </member>
+    <member name="P:WikiClientLibrary.Wikibase.EntityEditEntry.PropertyName">
+      <summary>
+            The CLR property name of the changed value.
+            </summary>
+    </member>
+    <member name="P:WikiClientLibrary.Wikibase.EntityEditEntry.State">
+      <summary>
+            The operation performed on this entry.
+            </summary>
+    </member>
+    <member name="P:WikiClientLibrary.Wikibase.EntityEditEntry.Value">
+      <summary>
+            The new item, updated existing item, or for the deletion,
+            the item that has enough information to determine the item to remove.
+            </summary>
+    </member>
+    <member name="T:WikiClientLibrary.Wikibase.EntityExtensions">
+      <summary>
+        <markup>
+          <include item="SMCMissingTag">
+            <parameter>summary</parameter>
+            <parameter>T:WikiClientLibrary.Wikibase.EntityExtensions</parameter>
+          </include>
+        </markup>
+      </summary>
+    </member>
+    <member name="M:WikiClientLibrary.Wikibase.EntityExtensions.RefreshAsync(System.Collections.Generic.IEnumerable{WikiClientLibrary.Wikibase.Entity})">
+      <summary>
+        <markup>
+          <include item="SMCMissingTag">
+            <parameter>summary</parameter>
+            <parameter>M:WikiClientLibrary.Wikibase.EntityExtensions.RefreshAsync(System.Collections.Generic.IEnumerable{WikiClientLibrary.Wikibase.Entity})</parameter>
+          </include>
+        </markup>
+      </summary>
+      <param name="entities">
+        <markup>
+          <include item="SMCMissingParamTag">
+            <parameter>param</parameter>
+            <parameter>entities</parameter>
+            <parameter>M:WikiClientLibrary.Wikibase.EntityExtensions.RefreshAsync(System.Collections.Generic.IEnumerable{WikiClientLibrary.Wikibase.Entity})</parameter>
+          </include>
+        </markup>
+      </param>
+    </member>
+    <member name="M:WikiClientLibrary.Wikibase.EntityExtensions.RefreshAsync(System.Collections.Generic.IEnumerable{WikiClientLibrary.Wikibase.Entity},WikiClientLibrary.Wikibase.EntityQueryOptions)">
+      <summary>
+        <markup>
+          <include item="SMCMissingTag">
+            <parameter>summary</parameter>
+            <parameter>M:WikiClientLibrary.Wikibase.EntityExtensions.RefreshAsync(System.Collections.Generic.IEnumerable{WikiClientLibrary.Wikibase.Entity},WikiClientLibrary.Wikibase.EntityQueryOptions)</parameter>
+          </include>
+        </markup>
+      </summary>
+      <param name="entities">
+        <markup>
+          <include item="SMCMissingParamTag">
+            <parameter>param</parameter>
+            <parameter>entities</parameter>
+            <parameter>M:WikiClientLibrary.Wikibase.EntityExtensions.RefreshAsync(System.Collections.Generic.IEnumerable{WikiClientLibrary.Wikibase.Entity},WikiClientLibrary.Wikibase.EntityQueryOptions)</parameter>
+          </include>
+        </markup>
+      </param>
+      <param name="options">
+        <markup>
+          <include item="SMCMissingParamTag">
+            <parameter>param</parameter>
+            <parameter>options</parameter>
+            <parameter>M:WikiClientLibrary.Wikibase.EntityExtensions.RefreshAsync(System.Collections.Generic.IEnumerable{WikiClientLibrary.Wikibase.Entity},WikiClientLibrary.Wikibase.EntityQueryOptions)</parameter>
+          </include>
+        </markup>
+      </param>
+    </member>
+    <member name="M:WikiClientLibrary.Wikibase.EntityExtensions.RefreshAsync(System.Collections.Generic.IEnumerable{WikiClientLibrary.Wikibase.Entity},WikiClientLibrary.Wikibase.EntityQueryOptions,System.Collections.Generic.ICollection{System.String})">
+      <summary>
+        <markup>
+          <include item="SMCMissingTag">
+            <parameter>summary</parameter>
+            <parameter>M:WikiClientLibrary.Wikibase.EntityExtensions.RefreshAsync(System.Collections.Generic.IEnumerable{WikiClientLibrary.Wikibase.Entity},WikiClientLibrary.Wikibase.EntityQueryOptions,System.Collections.Generic.ICollection{System.String})</parameter>
+          </include>
+        </markup>
+      </summary>
+      <param name="entities">
+        <markup>
+          <include item="SMCMissingParamTag">
+            <parameter>param</parameter>
+            <parameter>entities</parameter>
+            <parameter>M:WikiClientLibrary.Wikibase.EntityExtensions.RefreshAsync(System.Collections.Generic.IEnumerable{WikiClientLibrary.Wikibase.Entity},WikiClientLibrary.Wikibase.EntityQueryOptions,System.Collections.Generic.ICollection{System.String})</parameter>
+          </include>
+        </markup>
+      </param>
+      <param name="options">
+        <markup>
+          <include item="SMCMissingParamTag">
+            <parameter>param</parameter>
+            <parameter>options</parameter>
+            <parameter>M:WikiClientLibrary.Wikibase.EntityExtensions.RefreshAsync(System.Collections.Generic.IEnumerable{WikiClientLibrary.Wikibase.Entity},WikiClientLibrary.Wikibase.EntityQueryOptions,System.Collections.Generic.ICollection{System.String})</parameter>
+          </include>
+        </markup>
+      </param>
+      <param name="languages">
+        <markup>
+          <include item="SMCMissingParamTag">
+            <parameter>param</parameter>
+            <parameter>languages</parameter>
+            <parameter>M:WikiClientLibrary.Wikibase.EntityExtensions.RefreshAsync(System.Collections.Generic.IEnumerable{WikiClientLibrary.Wikibase.Entity},WikiClientLibrary.Wikibase.EntityQueryOptions,System.Collections.Generic.ICollection{System.String})</parameter>
+          </include>
+        </markup>
+      </param>
+    </member>
+    <member name="M:WikiClientLibrary.Wikibase.EntityExtensions.RefreshAsync(System.Collections.Generic.IEnumerable{WikiClientLibrary.Wikibase.Entity},WikiClientLibrary.Wikibase.EntityQueryOptions,System.Collections.Generic.ICollection{System.String},System.Threading.CancellationToken)">
+      <summary>
+        <markup>
+          <include item="SMCMissingTag">
+            <parameter>summary</parameter>
+            <parameter>M:WikiClientLibrary.Wikibase.EntityExtensions.RefreshAsync(System.Collections.Generic.IEnumerable{WikiClientLibrary.Wikibase.Entity},WikiClientLibrary.Wikibase.EntityQueryOptions,System.Collections.Generic.ICollection{System.String},System.Threading.CancellationToken)</parameter>
+          </include>
+        </markup>
+      </summary>
+      <param name="entities">
+        <markup>
+          <include item="SMCMissingParamTag">
+            <parameter>param</parameter>
+            <parameter>entities</parameter>
+            <parameter>M:WikiClientLibrary.Wikibase.EntityExtensions.RefreshAsync(System.Collections.Generic.IEnumerable{WikiClientLibrary.Wikibase.Entity},WikiClientLibrary.Wikibase.EntityQueryOptions,System.Collections.Generic.ICollection{System.String},System.Threading.CancellationToken)</parameter>
+          </include>
+        </markup>
+      </param>
+      <param name="options">
+        <markup>
+          <include item="SMCMissingParamTag">
+            <parameter>param</parameter>
+            <parameter>options</parameter>
+            <parameter>M:WikiClientLibrary.Wikibase.EntityExtensions.RefreshAsync(System.Collections.Generic.IEnumerable{WikiClientLibrary.Wikibase.Entity},WikiClientLibrary.Wikibase.EntityQueryOptions,System.Collections.Generic.ICollection{System.String},System.Threading.CancellationToken)</parameter>
+          </include>
+        </markup>
+      </param>
+      <param name="languages">
+        <markup>
+          <include item="SMCMissingParamTag">
+            <parameter>param</parameter>
+            <parameter>languages</parameter>
+            <parameter>M:WikiClientLibrary.Wikibase.EntityExtensions.RefreshAsync(System.Collections.Generic.IEnumerable{WikiClientLibrary.Wikibase.Entity},WikiClientLibrary.Wikibase.EntityQueryOptions,System.Collections.Generic.ICollection{System.String},System.Threading.CancellationToken)</parameter>
+          </include>
+        </markup>
+      </param>
+      <param name="cancellationToken">
+        <markup>
+          <include item="SMCMissingParamTag">
+            <parameter>param</parameter>
+            <parameter>cancellationToken</parameter>
+            <parameter>M:WikiClientLibrary.Wikibase.EntityExtensions.RefreshAsync(System.Collections.Generic.IEnumerable{WikiClientLibrary.Wikibase.Entity},WikiClientLibrary.Wikibase.EntityQueryOptions,System.Collections.Generic.ICollection{System.String},System.Threading.CancellationToken)</parameter>
+          </include>
+        </markup>
+      </param>
+    </member>
+    <member name="T:WikiClientLibrary.Wikibase.EntityQueryOptions">
+      <summary>
+        <markup>
+          <include item="SMCMissingTag">
+            <parameter>summary</parameter>
+            <parameter>T:WikiClientLibrary.Wikibase.EntityQueryOptions</parameter>
+          </include>
+        </markup>
+      </summary>
+    </member>
+    <member name="F:WikiClientLibrary.Wikibase.EntityQueryOptions.None">
+      <summary>No options.</summary>
+    </member>
+    <member name="F:WikiClientLibrary.Wikibase.EntityQueryOptions.FetchInfo">
+      <summary>Fetch page and last revision information.</summary>
+    </member>
+    <member name="F:WikiClientLibrary.Wikibase.EntityQueryOptions.FetchLabels">
+      <summary>Fetch multilingual labels of the entity.</summary>
+    </member>
+    <member name="F:WikiClientLibrary.Wikibase.EntityQueryOptions.FetchAliases">
+      <summary>Fetch multilingual aliases of the entity.</summary>
+    </member>
+    <member name="F:WikiClientLibrary.Wikibase.EntityQueryOptions.FetchDescriptions">
+      <summary>Fetch multilingual descriptions of the entity.</summary>
+    </member>
+    <member name="F:WikiClientLibrary.Wikibase.EntityQueryOptions.FetchSiteLinks">
+      <summary>Fetch associated wiki site links.</summary>
+    </member>
+    <member name="F:WikiClientLibrary.Wikibase.EntityQueryOptions.FetchSiteLinksUrl">
+      <summary>
+            Fetch associated wiki site links, along with link URLs.
+            This option implies <see cref="F:WikiClientLibrary.Wikibase.EntityQueryOptions.FetchSiteLinks" />.
+            </summary>
+    </member>
+    <member name="F:WikiClientLibrary.Wikibase.EntityQueryOptions.FetchClaims">
+      <summary>
+            Fetch claims on this entity.
+            </summary>
+    </member>
+    <member name="F:WikiClientLibrary.Wikibase.EntityQueryOptions.FetchAllProperties">
+      <summary>
+            Fetch all the properties that is supported by WCL.
+            </summary>
+    </member>
+    <member name="F:WikiClientLibrary.Wikibase.EntityQueryOptions.SupressRedirects">
+      <summary>
+            Do not resolve redirect. Treat them like deleted entities.
+            </summary>
+    </member>
+    <member name="T:WikiClientLibrary.Wikibase.EntityType">
+      <summary>
+            Wikibase entity types.
+            </summary>
+    </member>
+    <member name="F:WikiClientLibrary.Wikibase.EntityType.Unknown">
+      <summary>
+            Unknown entity type.
+            </summary>
+    </member>
+    <member name="F:WikiClientLibrary.Wikibase.EntityType.Item">
+      <summary>
+            A Wikibase item, usually having the prefix Q.
+            </summary>
+    </member>
+    <member name="F:WikiClientLibrary.Wikibase.EntityType.Property">
+      <summary>
+            A Wikibase property, usually having the prefix P and in <c>Property</c> namespace.
+            </summary>
+    </member>
+    <member name="T:WikiClientLibrary.Wikibase.SnakType">
+      <summary>
+        <markup>
+          <include item="SMCMissingTag">
+            <parameter>summary</parameter>
+            <parameter>T:WikiClientLibrary.Wikibase.SnakType</parameter>
+          </include>
+        </markup>
+      </summary>
+    </member>
+    <member name="F:WikiClientLibrary.Wikibase.SnakType.Value">
+      <summary>Custom value.</summary>
+    </member>
+    <member name="F:WikiClientLibrary.Wikibase.SnakType.SomeValue">
+      <summary>Unknown value.</summary>
+    </member>
+    <member name="F:WikiClientLibrary.Wikibase.SnakType.NoValue">
+      <summary>No value.</summary>
+    </member>
+    <member name="T:WikiClientLibrary.Wikibase.WbClaimCollection">
+      <summary>
+        <markup>
+          <include item="SMCMissingTag">
+            <parameter>summary</parameter>
+            <parameter>T:WikiClientLibrary.Wikibase.WbClaimCollection</parameter>
+          </include>
+        </markup>
+      </summary>
+    </member>
+    <member name="M:WikiClientLibrary.Wikibase.WbClaimCollection.#ctor">
+      <summary>
+        <markup>
+          <include item="SMCAutoDocConstructor">
+            <parameter>WikiClientLibrary.Wikibase.WbClaimCollection</parameter>
+          </include>
+        </markup>
+      </summary>
+    </member>
+    <member name="M:WikiClientLibrary.Wikibase.WbClaimCollection.#ctor(System.Collections.Generic.IEnumerable{WikiClientLibrary.Wikibase.Claim})">
+      <summary>
+        <markup>
+          <include item="SMCAutoDocConstructor">
+            <parameter>WikiClientLibrary.Wikibase.WbClaimCollection</parameter>
+          </include>
+        </markup>
+      </summary>
+      <param name="items">
+        <markup>
+          <include item="SMCMissingParamTag">
+            <parameter>param</parameter>
+            <parameter>items</parameter>
+            <parameter>M:WikiClientLibrary.Wikibase.WbClaimCollection.#ctor(System.Collections.Generic.IEnumerable{WikiClientLibrary.Wikibase.Claim})</parameter>
+          </include>
+        </markup>
+      </param>
+    </member>
+    <member name="T:WikiClientLibrary.Wikibase.WbClaimReference">
+      <summary>
+        <markup>
+          <include item="SMCMissingTag">
+            <parameter>summary</parameter>
+            <parameter>T:WikiClientLibrary.Wikibase.WbClaimReference</parameter>
+          </include>
+        </markup>
+      </summary>
+    </member>
+    <member name="M:WikiClientLibrary.Wikibase.WbClaimReference.#ctor">
+      <summary>
+        <markup>
+          <include item="SMCAutoDocConstructor">
+            <parameter>WikiClientLibrary.Wikibase.WbClaimReference</parameter>
+          </include>
+        </markup>
+      </summary>
+    </member>
+    <member name="M:WikiClientLibrary.Wikibase.WbClaimReference.#ctor(System.Collections.Generic.IEnumerable{WikiClientLibrary.Wikibase.WbSnak})">
+      <summary>
+        <markup>
+          <include item="SMCAutoDocConstructor">
+            <parameter>WikiClientLibrary.Wikibase.WbClaimReference</parameter>
+          </include>
+        </markup>
+      </summary>
+      <param name="snaks">
+        <markup>
+          <include item="SMCMissingParamTag">
+            <parameter>param</parameter>
+            <parameter>snaks</parameter>
+            <parameter>M:WikiClientLibrary.Wikibase.WbClaimReference.#ctor(System.Collections.Generic.IEnumerable{WikiClientLibrary.Wikibase.WbSnak})</parameter>
+          </include>
+        </markup>
+      </param>
+    </member>
+    <member name="M:WikiClientLibrary.Wikibase.WbClaimReference.#ctor(WikiClientLibrary.Wikibase.WbSnak[])">
+      <summary>
+        <markup>
+          <include item="SMCAutoDocConstructor">
+            <parameter>WikiClientLibrary.Wikibase.WbClaimReference</parameter>
+          </include>
+        </markup>
+      </summary>
+      <param name="snaks">
+        <markup>
+          <include item="SMCMissingParamTag">
+            <parameter>param</parameter>
+            <parameter>snaks</parameter>
+            <parameter>M:WikiClientLibrary.Wikibase.WbClaimReference.#ctor(WikiClientLibrary.Wikibase.WbSnak[])</parameter>
+          </include>
+        </markup>
+      </param>
+    </member>
+    <member name="P:WikiClientLibrary.Wikibase.WbClaimReference.Hash">
+      <summary>
+        <markup>
+          <include item="SMCMissingTag">
+            <parameter>summary</parameter>
+            <parameter>P:WikiClientLibrary.Wikibase.WbClaimReference.Hash</parameter>
+          </include>
+        </markup>
+      </summary>
+    </member>
+    <member name="P:WikiClientLibrary.Wikibase.WbClaimReference.Snaks">
+      <summary>
+        <markup>
+          <include item="SMCMissingTag">
+            <parameter>summary</parameter>
+            <parameter>P:WikiClientLibrary.Wikibase.WbClaimReference.Snaks</parameter>
+          </include>
+        </markup>
+      </summary>
+    </member>
+    <member name="T:WikiClientLibrary.Wikibase.WbEntityEditEntryState">
+      <summary>
+        <markup>
+          <include item="SMCMissingTag">
+            <parameter>summary</parameter>
+            <parameter>T:WikiClientLibrary.Wikibase.WbEntityEditEntryState</parameter>
+          </include>
+        </markup>
+      </summary>
+    </member>
+    <member name="F:WikiClientLibrary.Wikibase.WbEntityEditEntryState.Updated">
+      <summary>
+            Either the entry is a new item, or the value inside the item has been changed.
+            </summary>
+    </member>
+    <member name="F:WikiClientLibrary.Wikibase.WbEntityEditEntryState.Removed">
+      <summary>
+            The entry represents an item to be removed.
+            </summary>
+    </member>
+    <member name="T:WikiClientLibrary.Wikibase.WbEntitySiteLink">
+      <summary>
+            Represents a corresponding link for an entity to an external wiki site.
+            </summary>
+    </member>
+    <member name="M:WikiClientLibrary.Wikibase.WbEntitySiteLink.#ctor(System.String,System.String)">
+      <summary>
+        <markup>
+          <include item="SMCAutoDocConstructor">
+            <parameter>WikiClientLibrary.Wikibase.WbEntitySiteLink</parameter>
+          </include>
+        </markup>
+      </summary>
+      <param name="site">
+        <markup>
+          <include item="SMCMissingParamTag">
+            <parameter>param</parameter>
+            <parameter>site</parameter>
+            <parameter>M:WikiClientLibrary.Wikibase.WbEntitySiteLink.#ctor(System.String,System.String)</parameter>
+          </include>
+        </markup>
+      </param>
+      <param name="title">
+        <markup>
+          <include item="SMCMissingParamTag">
+            <parameter>param</parameter>
+            <parameter>title</parameter>
+            <parameter>M:WikiClientLibrary.Wikibase.WbEntitySiteLink.#ctor(System.String,System.String)</parameter>
+          </include>
+        </markup>
+      </param>
+    </member>
+    <member name="M:WikiClientLibrary.Wikibase.WbEntitySiteLink.#ctor(System.String,System.String,System.Collections.Generic.IList{System.String})">
+      <summary>
+        <markup>
+          <include item="SMCAutoDocConstructor">
+            <parameter>WikiClientLibrary.Wikibase.WbEntitySiteLink</parameter>
+          </include>
+        </markup>
+      </summary>
+      <param name="site">
+        <markup>
+          <include item="SMCMissingParamTag">
+            <parameter>param</parameter>
+            <parameter>site</parameter>
+            <parameter>M:WikiClientLibrary.Wikibase.WbEntitySiteLink.#ctor(System.String,System.String,System.Collections.Generic.IList{System.String})</parameter>
+          </include>
+        </markup>
+      </param>
+      <param name="title">
+        <markup>
+          <include item="SMCMissingParamTag">
+            <parameter>param</parameter>
+            <parameter>title</parameter>
+            <parameter>M:WikiClientLibrary.Wikibase.WbEntitySiteLink.#ctor(System.String,System.String,System.Collections.Generic.IList{System.String})</parameter>
+          </include>
+        </markup>
+      </param>
+      <param name="badges">
+        <markup>
+          <include item="SMCMissingParamTag">
+            <parameter>param</parameter>
+            <parameter>badges</parameter>
+            <parameter>M:WikiClientLibrary.Wikibase.WbEntitySiteLink.#ctor(System.String,System.String,System.Collections.Generic.IList{System.String})</parameter>
+          </include>
+        </markup>
+      </param>
+    </member>
+    <member name="M:WikiClientLibrary.Wikibase.WbEntitySiteLink.#ctor(System.String,System.String,System.Collections.Generic.IList{System.String},System.String)">
+      <summary>
+        <markup>
+          <include item="SMCAutoDocConstructor">
+            <parameter>WikiClientLibrary.Wikibase.WbEntitySiteLink</parameter>
+          </include>
+        </markup>
+      </summary>
+      <param name="site">
+        <markup>
+          <include item="SMCMissingParamTag">
+            <parameter>param</parameter>
+            <parameter>site</parameter>
+            <parameter>M:WikiClientLibrary.Wikibase.WbEntitySiteLink.#ctor(System.String,System.String,System.Collections.Generic.IList{System.String},System.String)</parameter>
+          </include>
+        </markup>
+      </param>
+      <param name="title">
+        <markup>
+          <include item="SMCMissingParamTag">
+            <parameter>param</parameter>
+            <parameter>title</parameter>
+            <parameter>M:WikiClientLibrary.Wikibase.WbEntitySiteLink.#ctor(System.String,System.String,System.Collections.Generic.IList{System.String},System.String)</parameter>
+          </include>
+        </markup>
+      </param>
+      <param name="badges">
+        <markup>
+          <include item="SMCMissingParamTag">
+            <parameter>param</parameter>
+            <parameter>badges</parameter>
+            <parameter>M:WikiClientLibrary.Wikibase.WbEntitySiteLink.#ctor(System.String,System.String,System.Collections.Generic.IList{System.String},System.String)</parameter>
+          </include>
+        </markup>
+      </param>
+      <param name="url">
+        <markup>
+          <include item="SMCMissingParamTag">
+            <parameter>param</parameter>
+            <parameter>url</parameter>
+            <parameter>M:WikiClientLibrary.Wikibase.WbEntitySiteLink.#ctor(System.String,System.String,System.Collections.Generic.IList{System.String},System.String)</parameter>
+          </include>
+        </markup>
+      </param>
+    </member>
+    <member name="P:WikiClientLibrary.Wikibase.WbEntitySiteLink.Badges">
+      <summary>
+            The badges for the title on the specified wiki site.
+            </summary>
+    </member>
+    <member name="P:WikiClientLibrary.Wikibase.WbEntitySiteLink.Site">
+      <summary>
+            The site name.
+            </summary>
+    </member>
+    <member name="P:WikiClientLibrary.Wikibase.WbEntitySiteLink.Title">
+      <summary>
+            The local title on the specified wiki site.
+            </summary>
+    </member>
+    <member name="P:WikiClientLibrary.Wikibase.WbEntitySiteLink.Url">
+      <summary>
+            The URL to the title on the specified wiki site.
+            </summary>
+    </member>
+    <member name="T:WikiClientLibrary.Wikibase.WbEntitySiteLinkCollection">
+      <summary>
+        <markup>
+          <include item="SMCMissingTag">
+            <parameter>summary</parameter>
+            <parameter>T:WikiClientLibrary.Wikibase.WbEntitySiteLinkCollection</parameter>
+          </include>
+        </markup>
+      </summary>
+    </member>
+    <member name="M:WikiClientLibrary.Wikibase.WbEntitySiteLinkCollection.#ctor">
+      <summary>
+        <markup>
+          <include item="SMCAutoDocConstructor">
+            <parameter>WikiClientLibrary.Wikibase.WbEntitySiteLinkCollection</parameter>
+          </include>
+        </markup>
+      </summary>
+    </member>
+    <member name="M:WikiClientLibrary.Wikibase.WbEntitySiteLinkCollection.#ctor(System.Collections.Generic.IEnumerable{WikiClientLibrary.Wikibase.WbEntitySiteLink})">
+      <summary>
+        <markup>
+          <include item="SMCAutoDocConstructor">
+            <parameter>WikiClientLibrary.Wikibase.WbEntitySiteLinkCollection</parameter>
+          </include>
+        </markup>
+      </summary>
+      <param name="items">
+        <markup>
+          <include item="SMCMissingParamTag">
+            <parameter>param</parameter>
+            <parameter>items</parameter>
+            <parameter>M:WikiClientLibrary.Wikibase.WbEntitySiteLinkCollection.#ctor(System.Collections.Generic.IEnumerable{WikiClientLibrary.Wikibase.WbEntitySiteLink})</parameter>
+          </include>
+        </markup>
+      </param>
+    </member>
+    <member name="T:WikiClientLibrary.Wikibase.WbSnak">
+      <summary>
+            Represents a "snak", i.e. a pair of property and value.
+            </summary>
+    </member>
+    <member name="M:WikiClientLibrary.Wikibase.WbSnak.#ctor(System.String)">
+      <summary>
+            Initializes a snak with specified property ID and empty value.
+            </summary>
+      <param name="propertyId">The property id.</param>
+      <exception cref="T:System.ArgumentNullException">
+        <paramref name="propertyId" /> is <c>null</c>.</exception>
+    </member>
+    <member name="M:WikiClientLibrary.Wikibase.WbSnak.#ctor(System.String,System.Object,WikiClientLibrary.Wikibase.DataTypes.WikibaseDataType)">
+      <summary>
+            Initializes a snak with specified property ID and data value.
+            </summary>
+      <param name="propertyId">The property id.</param>
+      <param name="dataValue">The data value of the property.</param>
+      <param name="dataType">The data value type.</param>
+      <exception cref="T:System.ArgumentNullException">
+        <paramref name="propertyId" /> or <paramref name="dataType" /> is <c>null</c>.</exception>
+    </member>
+    <member name="M:WikiClientLibrary.Wikibase.WbSnak.#ctor(WikiClientLibrary.Wikibase.Entity,System.Object)">
+      <summary>
+            Initializes a snak with specified property and data value.
+            </summary>
+      <param name="property">The property. It should have valid <see cref="P:WikiClientLibrary.Wikibase.Entity.Id" /> and <see cref="P:WikiClientLibrary.Wikibase.Entity.DataType" />.</param>
+      <param name="dataValue">The data value of the property.</param>
+      <exception cref="T:System.ArgumentNullException">
+        <paramref name="property" /> is <c>null</c>.</exception>
+      <exception cref="T:System.ArgumentException">
+        <paramref name="property" /> is not Wikibase property, or does not contain required information.</exception>
+    </member>
+    <member name="P:WikiClientLibrary.Wikibase.WbSnak.DataType">
+      <summary>Data value type.</summary>
+    </member>
+    <member name="P:WikiClientLibrary.Wikibase.WbSnak.DataValue">
+      <summary>Parsed value of <c>datavalue</c> node.</summary>
+    </member>
+    <member name="P:WikiClientLibrary.Wikibase.WbSnak.Hash">
+      <summary>Snak hash.</summary>
+    </member>
+    <member name="P:WikiClientLibrary.Wikibase.WbSnak.PropertyId">
+      <summary>Property ID, with "P" prefix.</summary>
+    </member>
+    <member name="P:WikiClientLibrary.Wikibase.WbSnak.RawDataValue">
+      <summary>Raw JSON value of <c>datavalue</c> node.</summary>
+    </member>
+    <member name="P:WikiClientLibrary.Wikibase.WbSnak.SnakType">
+      <summary>Snak type.</summary>
+    </member>
+    <member name="T:WikiClientLibrary.Wikibase.DataTypes.BuiltInDataTypes">
+      <summary>
+        <markup>
+          <include item="SMCMissingTag">
+            <parameter>summary</parameter>
+            <parameter>T:WikiClientLibrary.Wikibase.DataTypes.BuiltInDataTypes</parameter>
+          </include>
+        </markup>
+      </summary>
+    </member>
+    <member name="P:WikiClientLibrary.Wikibase.DataTypes.BuiltInDataTypes.CommonsMedia">
+      <summary>
+        <markup>
+          <include item="SMCMissingTag">
+            <parameter>summary</parameter>
+            <parameter>P:WikiClientLibrary.Wikibase.DataTypes.BuiltInDataTypes.CommonsMedia</parameter>
+          </include>
+        </markup>
+      </summary>
+    </member>
+    <member name="P:WikiClientLibrary.Wikibase.DataTypes.BuiltInDataTypes.ExternalId">
+      <summary>
+            Literal data field for an external identifier.
+            External identifiers may automatically be linked to an authoritative resource for display.
+            </summary>
+    </member>
+    <member name="P:WikiClientLibrary.Wikibase.DataTypes.BuiltInDataTypes.GeoShape">
+      <summary>
+            Link to geographic map data stored on Wikimedia Commons (or other configured wiki).
+            See "https://www.mediawiki.org/wiki/Help:Map_Data" for more documentation about map data.
+            </summary>
+    </member>
+    <member name="M:WikiClientLibrary.Wikibase.DataTypes.BuiltInDataTypes.Get(System.String)">
+      <summary>
+            Tries to get a property type by its name.
+            </summary>
+      <param name="typeName">Internal name of the desired property type.</param>
+      <returns>The matching type, or <c>null</c> if cannot find one.</returns>
+      <exception cref="T:System.ArgumentNullException">
+        <paramref name="typeName" /> is <c>null</c>.</exception>
+    </member>
+    <member name="P:WikiClientLibrary.Wikibase.DataTypes.BuiltInDataTypes.GlobeCoordinate">
+      <summary>
+        <markup>
+          <include item="SMCMissingTag">
+            <parameter>summary</parameter>
+            <parameter>P:WikiClientLibrary.Wikibase.DataTypes.BuiltInDataTypes.GlobeCoordinate</parameter>
+          </include>
+        </markup>
+      </summary>
+    </member>
+    <member name="P:WikiClientLibrary.Wikibase.DataTypes.BuiltInDataTypes.Math">
+      <summary>
+        <markup>
+          <include item="SMCMissingTag">
+            <parameter>summary</parameter>
+            <parameter>P:WikiClientLibrary.Wikibase.DataTypes.BuiltInDataTypes.Math</parameter>
+          </include>
+        </markup>
+      </summary>
+    </member>
+    <member name="P:WikiClientLibrary.Wikibase.DataTypes.BuiltInDataTypes.MonolingualText">
+      <summary>
+        <markup>
+          <include item="SMCMissingTag">
+            <parameter>summary</parameter>
+            <parameter>P:WikiClientLibrary.Wikibase.DataTypes.BuiltInDataTypes.MonolingualText</parameter>
+          </include>
+        </markup>
+      </summary>
+    </member>
+    <member name="P:WikiClientLibrary.Wikibase.DataTypes.BuiltInDataTypes.Quantity">
+      <summary>
+        <markup>
+          <include item="SMCMissingTag">
+            <parameter>summary</parameter>
+            <parameter>P:WikiClientLibrary.Wikibase.DataTypes.BuiltInDataTypes.Quantity</parameter>
+          </include>
+        </markup>
+      </summary>
+    </member>
+    <member name="P:WikiClientLibrary.Wikibase.DataTypes.BuiltInDataTypes.String">
+      <summary>
+        <markup>
+          <include item="SMCMissingTag">
+            <parameter>summary</parameter>
+            <parameter>P:WikiClientLibrary.Wikibase.DataTypes.BuiltInDataTypes.String</parameter>
+          </include>
+        </markup>
+      </summary>
+    </member>
+    <member name="P:WikiClientLibrary.Wikibase.DataTypes.BuiltInDataTypes.TabularData">
+      <summary>
+            Link to tabular data stored on Wikimedia Commons (or other configured wiki).
+            See "https://www.mediawiki.org/wiki/Help:Tabular_Data" for more documentation about tabular data.
+            </summary>
+    </member>
+    <member name="P:WikiClientLibrary.Wikibase.DataTypes.BuiltInDataTypes.Time">
+      <summary>
+        <markup>
+          <include item="SMCMissingTag">
+            <parameter>summary</parameter>
+            <parameter>P:WikiClientLibrary.Wikibase.DataTypes.BuiltInDataTypes.Time</parameter>
+          </include>
+        </markup>
+      </summary>
+    </member>
+    <member name="P:WikiClientLibrary.Wikibase.DataTypes.BuiltInDataTypes.Url">
+      <summary>
+        <markup>
+          <include item="SMCMissingTag">
+            <parameter>summary</parameter>
+            <parameter>P:WikiClientLibrary.Wikibase.DataTypes.BuiltInDataTypes.Url</parameter>
+          </include>
+        </markup>
+      </summary>
+    </member>
+    <member name="P:WikiClientLibrary.Wikibase.DataTypes.BuiltInDataTypes.WikibaseItem">
+      <summary>
+        <markup>
+          <include item="SMCMissingTag">
+            <parameter>summary</parameter>
+            <parameter>P:WikiClientLibrary.Wikibase.DataTypes.BuiltInDataTypes.WikibaseItem</parameter>
+          </include>
+        </markup>
+      </summary>
+    </member>
+    <member name="P:WikiClientLibrary.Wikibase.DataTypes.BuiltInDataTypes.WikibaseProperty">
+      <summary>
+        <markup>
+          <include item="SMCMissingTag">
+            <parameter>summary</parameter>
+            <parameter>P:WikiClientLibrary.Wikibase.DataTypes.BuiltInDataTypes.WikibaseProperty</parameter>
+          </include>
+        </markup>
+      </summary>
+    </member>
+    <member name="T:WikiClientLibrary.Wikibase.DataTypes.WbGlobeCoordinate">
+      <summary>Represents a point on the globe.</summary>
+    </member>
+    <member name="M:WikiClientLibrary.Wikibase.DataTypes.WbGlobeCoordinate.#ctor(System.Double,System.Double,System.Double,WikiClientLibrary.Wikibase.DataTypes.WbUri)">
+      <summary>
+            Initialize a new <see cref="T:WikiClientLibrary.Wikibase.DataTypes.WbGlobeCoordinate" /> instance with coordinate, precision, and globe entity URI.
+            </summary>
+      <param name="latitude">Latitude, in degrees.</param>
+      <param name="longitude">Longitude, in degrees.</param>
+      <param name="precision">Precision, in degrees.</param>
+      <param name="globe">Entity URI of the globe.</param>
+    </member>
+    <member name="M:WikiClientLibrary.Wikibase.DataTypes.WbGlobeCoordinate.Equals(System.Object)">
+      <summary>
+        <markup>
+          <include item="SMCMissingTag">
+            <parameter>summary</parameter>
+            <parameter>M:WikiClientLibrary.Wikibase.DataTypes.WbGlobeCoordinate.Equals(System.Object)</parameter>
+          </include>
+        </markup>
+      </summary>
+      <param name="obj">
+        <markup>
+          <include item="SMCMissingParamTag">
+            <parameter>param</parameter>
+            <parameter>obj</parameter>
+            <parameter>M:WikiClientLibrary.Wikibase.DataTypes.WbGlobeCoordinate.Equals(System.Object)</parameter>
+          </include>
+        </markup>
+      </param>
+    </member>
+    <member name="M:WikiClientLibrary.Wikibase.DataTypes.WbGlobeCoordinate.Equals(WikiClientLibrary.Wikibase.DataTypes.WbGlobeCoordinate)">
+      <summary>
+        <markup>
+          <include item="SMCMissingTag">
+            <parameter>summary</parameter>
+            <parameter>M:WikiClientLibrary.Wikibase.DataTypes.WbGlobeCoordinate.Equals(WikiClientLibrary.Wikibase.DataTypes.WbGlobeCoordinate)</parameter>
+          </include>
+        </markup>
+      </summary>
+      <param name="other">
+        <markup>
+          <include item="SMCMissingParamTag">
+            <parameter>param</parameter>
+            <parameter>other</parameter>
+            <parameter>M:WikiClientLibrary.Wikibase.DataTypes.WbGlobeCoordinate.Equals(WikiClientLibrary.Wikibase.DataTypes.WbGlobeCoordinate)</parameter>
+          </include>
+        </markup>
+      </param>
+    </member>
+    <member name="M:WikiClientLibrary.Wikibase.DataTypes.WbGlobeCoordinate.GetHashCode">
+      <summary>
+        <markup>
+          <include item="SMCMissingTag">
+            <parameter>summary</parameter>
+            <parameter>M:WikiClientLibrary.Wikibase.DataTypes.WbGlobeCoordinate.GetHashCode</parameter>
+          </include>
+        </markup>
+      </summary>
+    </member>
+    <member name="P:WikiClientLibrary.Wikibase.DataTypes.WbGlobeCoordinate.Globe">
+      <summary>Entity URI of the globe.</summary>
+    </member>
+    <member name="P:WikiClientLibrary.Wikibase.DataTypes.WbGlobeCoordinate.Latitude">
+      <summary>Latitude, in degrees.</summary>
+    </member>
+    <member name="P:WikiClientLibrary.Wikibase.DataTypes.WbGlobeCoordinate.Longitude">
+      <summary>Longitude, in degrees.</summary>
+    </member>
+    <member name="M:WikiClientLibrary.Wikibase.DataTypes.WbGlobeCoordinate.op_Equality(WikiClientLibrary.Wikibase.DataTypes.WbGlobeCoordinate,WikiClientLibrary.Wikibase.DataTypes.WbGlobeCoordinate)">
+      <summary>
+        <markup>
+          <include item="SMCMissingTag">
+            <parameter>summary</parameter>
+            <parameter>M:WikiClientLibrary.Wikibase.DataTypes.WbGlobeCoordinate.op_Equality(WikiClientLibrary.Wikibase.DataTypes.WbGlobeCoordinate,WikiClientLibrary.Wikibase.DataTypes.WbGlobeCoordinate)</parameter>
+          </include>
+        </markup>
+      </summary>
+      <param name="left">
+        <markup>
+          <include item="SMCMissingParamTag">
+            <parameter>param</parameter>
+            <parameter>left</parameter>
+            <parameter>M:WikiClientLibrary.Wikibase.DataTypes.WbGlobeCoordinate.op_Equality(WikiClientLibrary.Wikibase.DataTypes.WbGlobeCoordinate,WikiClientLibrary.Wikibase.DataTypes.WbGlobeCoordinate)</parameter>
+          </include>
+        </markup>
+      </param>
+      <param name="right">
+        <markup>
+          <include item="SMCMissingParamTag">
+            <parameter>param</parameter>
+            <parameter>right</parameter>
+            <parameter>M:WikiClientLibrary.Wikibase.DataTypes.WbGlobeCoordinate.op_Equality(WikiClientLibrary.Wikibase.DataTypes.WbGlobeCoordinate,WikiClientLibrary.Wikibase.DataTypes.WbGlobeCoordinate)</parameter>
+          </include>
+        </markup>
+      </param>
+    </member>
+    <member name="M:WikiClientLibrary.Wikibase.DataTypes.WbGlobeCoordinate.op_Inequality(WikiClientLibrary.Wikibase.DataTypes.WbGlobeCoordinate,WikiClientLibrary.Wikibase.DataTypes.WbGlobeCoordinate)">
+      <summary>
+        <markup>
+          <include item="SMCMissingTag">
+            <parameter>summary</parameter>
+            <parameter>M:WikiClientLibrary.Wikibase.DataTypes.WbGlobeCoordinate.op_Inequality(WikiClientLibrary.Wikibase.DataTypes.WbGlobeCoordinate,WikiClientLibrary.Wikibase.DataTypes.WbGlobeCoordinate)</parameter>
+          </include>
+        </markup>
+      </summary>
+      <param name="left">
+        <markup>
+          <include item="SMCMissingParamTag">
+            <parameter>param</parameter>
+            <parameter>left</parameter>
+            <parameter>M:WikiClientLibrary.Wikibase.DataTypes.WbGlobeCoordinate.op_Inequality(WikiClientLibrary.Wikibase.DataTypes.WbGlobeCoordinate,WikiClientLibrary.Wikibase.DataTypes.WbGlobeCoordinate)</parameter>
+          </include>
+        </markup>
+      </param>
+      <param name="right">
+        <markup>
+          <include item="SMCMissingParamTag">
+            <parameter>param</parameter>
+            <parameter>right</parameter>
+            <parameter>M:WikiClientLibrary.Wikibase.DataTypes.WbGlobeCoordinate.op_Inequality(WikiClientLibrary.Wikibase.DataTypes.WbGlobeCoordinate,WikiClientLibrary.Wikibase.DataTypes.WbGlobeCoordinate)</parameter>
+          </include>
+        </markup>
+      </param>
+    </member>
+    <member name="P:WikiClientLibrary.Wikibase.DataTypes.WbGlobeCoordinate.Precision">
+      <summary>Precision, in degrees.</summary>
+    </member>
+    <member name="M:WikiClientLibrary.Wikibase.DataTypes.WbGlobeCoordinate.ToString">
+      <summary>
+        <markup>
+          <include item="SMCMissingTag">
+            <parameter>summary</parameter>
+            <parameter>M:WikiClientLibrary.Wikibase.DataTypes.WbGlobeCoordinate.ToString</parameter>
+          </include>
+        </markup>
+      </summary>
+    </member>
+    <member name="T:WikiClientLibrary.Wikibase.DataTypes.WbMonolingualText">
+      <summary>
+            Represents a text in certain language.
+            </summary>
+    </member>
+    <member name="M:WikiClientLibrary.Wikibase.DataTypes.WbMonolingualText.#ctor(System.String,System.String)">
+      <summary>
+            Initializes a new <see cref="T:WikiClientLibrary.Wikibase.DataTypes.WbMonolingualText" /> from language code and text.
+            </summary>
+      <param name="language">The language code. It will be converted to lower-case.</param>
+      <param name="text">The text.</param>
+      <exception cref="T:System.ArgumentNullException">Either <paramref name="language" /> or <paramref name="text" /> is <c>null</c>.</exception>
+    </member>
+    <member name="M:WikiClientLibrary.Wikibase.DataTypes.WbMonolingualText.Equals(System.Object)">
+      <summary>
+        <markup>
+          <include item="SMCMissingTag">
+            <parameter>summary</parameter>
+            <parameter>M:WikiClientLibrary.Wikibase.DataTypes.WbMonolingualText.Equals(System.Object)</parameter>
+          </include>
+        </markup>
+      </summary>
+      <param name="obj">
+        <markup>
+          <include item="SMCMissingParamTag">
+            <parameter>param</parameter>
+            <parameter>obj</parameter>
+            <parameter>M:WikiClientLibrary.Wikibase.DataTypes.WbMonolingualText.Equals(System.Object)</parameter>
+          </include>
+        </markup>
+      </param>
+    </member>
+    <member name="M:WikiClientLibrary.Wikibase.DataTypes.WbMonolingualText.Equals(WikiClientLibrary.Wikibase.DataTypes.WbMonolingualText)">
+      <summary>
+        <markup>
+          <include item="SMCMissingTag">
+            <parameter>summary</parameter>
+            <parameter>M:WikiClientLibrary.Wikibase.DataTypes.WbMonolingualText.Equals(WikiClientLibrary.Wikibase.DataTypes.WbMonolingualText)</parameter>
+          </include>
+        </markup>
+      </summary>
+      <param name="other">
+        <markup>
+          <include item="SMCMissingParamTag">
+            <parameter>param</parameter>
+            <parameter>other</parameter>
+            <parameter>M:WikiClientLibrary.Wikibase.DataTypes.WbMonolingualText.Equals(WikiClientLibrary.Wikibase.DataTypes.WbMonolingualText)</parameter>
+          </include>
+        </markup>
+      </param>
+    </member>
+    <member name="M:WikiClientLibrary.Wikibase.DataTypes.WbMonolingualText.GetHashCode">
+      <summary>
+        <markup>
+          <include item="SMCMissingTag">
+            <parameter>summary</parameter>
+            <parameter>M:WikiClientLibrary.Wikibase.DataTypes.WbMonolingualText.GetHashCode</parameter>
+          </include>
+        </markup>
+      </summary>
+    </member>
+    <member name="P:WikiClientLibrary.Wikibase.DataTypes.WbMonolingualText.Language">
+      <summary>The language code.</summary>
+    </member>
+    <member name="F:WikiClientLibrary.Wikibase.DataTypes.WbMonolingualText.Null">
+      <summary>
+        <markup>
+          <include item="SMCMissingTag">
+            <parameter>summary</parameter>
+            <parameter>F:WikiClientLibrary.Wikibase.DataTypes.WbMonolingualText.Null</parameter>
+          </include>
+        </markup>
+      </summary>
+    </member>
+    <member name="M:WikiClientLibrary.Wikibase.DataTypes.WbMonolingualText.op_Equality(WikiClientLibrary.Wikibase.DataTypes.WbMonolingualText,WikiClientLibrary.Wikibase.DataTypes.WbMonolingualText)">
+      <summary>
+        <markup>
+          <include item="SMCMissingTag">
+            <parameter>summary</parameter>
+            <parameter>M:WikiClientLibrary.Wikibase.DataTypes.WbMonolingualText.op_Equality(WikiClientLibrary.Wikibase.DataTypes.WbMonolingualText,WikiClientLibrary.Wikibase.DataTypes.WbMonolingualText)</parameter>
+          </include>
+        </markup>
+      </summary>
+      <param name="left">
+        <markup>
+          <include item="SMCMissingParamTag">
+            <parameter>param</parameter>
+            <parameter>left</parameter>
+            <parameter>M:WikiClientLibrary.Wikibase.DataTypes.WbMonolingualText.op_Equality(WikiClientLibrary.Wikibase.DataTypes.WbMonolingualText,WikiClientLibrary.Wikibase.DataTypes.WbMonolingualText)</parameter>
+          </include>
+        </markup>
+      </param>
+      <param name="right">
+        <markup>
+          <include item="SMCMissingParamTag">
+            <parameter>param</parameter>
+            <parameter>right</parameter>
+            <parameter>M:WikiClientLibrary.Wikibase.DataTypes.WbMonolingualText.op_Equality(WikiClientLibrary.Wikibase.DataTypes.WbMonolingualText,WikiClientLibrary.Wikibase.DataTypes.WbMonolingualText)</parameter>
+          </include>
+        </markup>
+      </param>
+    </member>
+    <member name="M:WikiClientLibrary.Wikibase.DataTypes.WbMonolingualText.op_Inequality(WikiClientLibrary.Wikibase.DataTypes.WbMonolingualText,WikiClientLibrary.Wikibase.DataTypes.WbMonolingualText)">
+      <summary>
+        <markup>
+          <include item="SMCMissingTag">
+            <parameter>summary</parameter>
+            <parameter>M:WikiClientLibrary.Wikibase.DataTypes.WbMonolingualText.op_Inequality(WikiClientLibrary.Wikibase.DataTypes.WbMonolingualText,WikiClientLibrary.Wikibase.DataTypes.WbMonolingualText)</parameter>
+          </include>
+        </markup>
+      </summary>
+      <param name="left">
+        <markup>
+          <include item="SMCMissingParamTag">
+            <parameter>param</parameter>
+            <parameter>left</parameter>
+            <parameter>M:WikiClientLibrary.Wikibase.DataTypes.WbMonolingualText.op_Inequality(WikiClientLibrary.Wikibase.DataTypes.WbMonolingualText,WikiClientLibrary.Wikibase.DataTypes.WbMonolingualText)</parameter>
+          </include>
+        </markup>
+      </param>
+      <param name="right">
+        <markup>
+          <include item="SMCMissingParamTag">
+            <parameter>param</parameter>
+            <parameter>right</parameter>
+            <parameter>M:WikiClientLibrary.Wikibase.DataTypes.WbMonolingualText.op_Inequality(WikiClientLibrary.Wikibase.DataTypes.WbMonolingualText,WikiClientLibrary.Wikibase.DataTypes.WbMonolingualText)</parameter>
+          </include>
+        </markup>
+      </param>
+    </member>
+    <member name="P:WikiClientLibrary.Wikibase.DataTypes.WbMonolingualText.Text">
+      <summary>The text.</summary>
+    </member>
+    <member name="M:WikiClientLibrary.Wikibase.DataTypes.WbMonolingualText.ToString">
+      <summary>
+        <markup>
+          <include item="SMCMissingTag">
+            <parameter>summary</parameter>
+            <parameter>M:WikiClientLibrary.Wikibase.DataTypes.WbMonolingualText.ToString</parameter>
+          </include>
+        </markup>
+      </summary>
+    </member>
+    <member name="T:WikiClientLibrary.Wikibase.DataTypes.WbMonolingualTextCollection">
+      <summary>
+            Provides convenient access to 1:1 language-text pairs of multilingual text.
+            </summary>
+    </member>
+    <member name="M:WikiClientLibrary.Wikibase.DataTypes.WbMonolingualTextCollection.#ctor">
+      <summary>
+        <markup>
+          <include item="SMCAutoDocConstructor">
+            <parameter>WikiClientLibrary.Wikibase.DataTypes.WbMonolingualTextCollection</parameter>
+          </include>
+        </markup>
+      </summary>
+    </member>
+    <member name="M:WikiClientLibrary.Wikibase.DataTypes.WbMonolingualTextCollection.#ctor(System.Collections.Generic.IEnumerable{WikiClientLibrary.Wikibase.DataTypes.WbMonolingualText})">
+      <summary>
+        <markup>
+          <include item="SMCAutoDocConstructor">
+            <parameter>WikiClientLibrary.Wikibase.DataTypes.WbMonolingualTextCollection</parameter>
+          </include>
+        </markup>
+      </summary>
+      <param name="items">
+        <markup>
+          <include item="SMCMissingParamTag">
+            <parameter>param</parameter>
+            <parameter>items</parameter>
+            <parameter>M:WikiClientLibrary.Wikibase.DataTypes.WbMonolingualTextCollection.#ctor(System.Collections.Generic.IEnumerable{WikiClientLibrary.Wikibase.DataTypes.WbMonolingualText})</parameter>
+          </include>
+        </markup>
+      </param>
+    </member>
+    <member name="M:WikiClientLibrary.Wikibase.DataTypes.WbMonolingualTextCollection.Add(System.String,System.String)">
+      <summary>
+        <markup>
+          <include item="SMCMissingTag">
+            <parameter>summary</parameter>
+            <parameter>M:WikiClientLibrary.Wikibase.DataTypes.WbMonolingualTextCollection.Add(System.String,System.String)</parameter>
+          </include>
+        </markup>
+      </summary>
+      <param name="language">
+        <markup>
+          <include item="SMCMissingParamTag">
+            <parameter>param</parameter>
+            <parameter>language</parameter>
+            <parameter>M:WikiClientLibrary.Wikibase.DataTypes.WbMonolingualTextCollection.Add(System.String,System.String)</parameter>
+          </include>
+        </markup>
+      </param>
+      <param name="text">
+        <markup>
+          <include item="SMCMissingParamTag">
+            <parameter>param</parameter>
+            <parameter>text</parameter>
+            <parameter>M:WikiClientLibrary.Wikibase.DataTypes.WbMonolingualTextCollection.Add(System.String,System.String)</parameter>
+          </include>
+        </markup>
+      </param>
+    </member>
+    <member name="M:WikiClientLibrary.Wikibase.DataTypes.WbMonolingualTextCollection.Add(WikiClientLibrary.Wikibase.DataTypes.WbMonolingualText)">
+      <summary>
+        <markup>
+          <include item="SMCMissingTag">
+            <parameter>summary</parameter>
+            <parameter>M:WikiClientLibrary.Wikibase.DataTypes.WbMonolingualTextCollection.Add(WikiClientLibrary.Wikibase.DataTypes.WbMonolingualText)</parameter>
+          </include>
+        </markup>
+      </summary>
+      <param name="item">
+        <markup>
+          <include item="SMCMissingParamTag">
+            <parameter>param</parameter>
+            <parameter>item</parameter>
+            <parameter>M:WikiClientLibrary.Wikibase.DataTypes.WbMonolingualTextCollection.Add(WikiClientLibrary.Wikibase.DataTypes.WbMonolingualText)</parameter>
+          </include>
+        </markup>
+      </param>
+      <exception cref="T:System.ArgumentException">
+        <paramref name="item" /> is <see cref="F:WikiClientLibrary.Wikibase.DataTypes.WbMonolingualText.Null" />.</exception>
+    </member>
+    <member name="M:WikiClientLibrary.Wikibase.DataTypes.WbMonolingualTextCollection.Clear">
+      <summary>
+        <markup>
+          <include item="SMCMissingTag">
+            <parameter>summary</parameter>
+            <parameter>M:WikiClientLibrary.Wikibase.DataTypes.WbMonolingualTextCollection.Clear</parameter>
+          </include>
+        </markup>
+      </summary>
+    </member>
+    <member name="M:WikiClientLibrary.Wikibase.DataTypes.WbMonolingualTextCollection.ContainsLanguage(System.String)">
+      <summary>
+        <markup>
+          <include item="SMCMissingTag">
+            <parameter>summary</parameter>
+            <parameter>M:WikiClientLibrary.Wikibase.DataTypes.WbMonolingualTextCollection.ContainsLanguage(System.String)</parameter>
+          </include>
+        </markup>
+      </summary>
+      <param name="language">
+        <markup>
+          <include item="SMCMissingParamTag">
+            <parameter>param</parameter>
+            <parameter>language</parameter>
+            <parameter>M:WikiClientLibrary.Wikibase.DataTypes.WbMonolingualTextCollection.ContainsLanguage(System.String)</parameter>
+          </include>
+        </markup>
+      </param>
+    </member>
+    <member name="P:WikiClientLibrary.Wikibase.DataTypes.WbMonolingualTextCollection.Count">
+      <summary>
+        <markup>
+          <include item="SMCMissingTag">
+            <parameter>summary</parameter>
+            <parameter>P:WikiClientLibrary.Wikibase.DataTypes.WbMonolingualTextCollection.Count</parameter>
+          </include>
+        </markup>
+      </summary>
+    </member>
+    <member name="M:WikiClientLibrary.Wikibase.DataTypes.WbMonolingualTextCollection.GetEnumerator">
+      <summary>
+        <markup>
+          <include item="SMCMissingTag">
+            <parameter>summary</parameter>
+            <parameter>M:WikiClientLibrary.Wikibase.DataTypes.WbMonolingualTextCollection.GetEnumerator</parameter>
+          </include>
+        </markup>
+      </summary>
+    </member>
+    <member name="P:WikiClientLibrary.Wikibase.DataTypes.WbMonolingualTextCollection.IsReadOnly">
+      <summary>
+        <markup>
+          <include item="SMCMissingTag">
+            <parameter>summary</parameter>
+            <parameter>P:WikiClientLibrary.Wikibase.DataTypes.WbMonolingualTextCollection.IsReadOnly</parameter>
+          </include>
+        </markup>
+      </summary>
+    </member>
+    <member name="P:WikiClientLibrary.Wikibase.DataTypes.WbMonolingualTextCollection.Item(System.String)">
+      <summary>
+            Gets/sets the associated text to the specified language.
+            </summary>
+      <param name="language">The desired language code.</param>
+      <returns>The text associated to the language,
+            or <c>null</c> if the language does not have any associated text.</returns>
+      <exception cref="T:System.ArgumentNullException">
+        <paramref name="language" /> is <c>null</c>.</exception>
+    </member>
+    <member name="M:WikiClientLibrary.Wikibase.DataTypes.WbMonolingualTextCollection.Remove(System.String)">
+      <summary>
+        <markup>
+          <include item="SMCMissingTag">
+            <parameter>summary</parameter>
+            <parameter>M:WikiClientLibrary.Wikibase.DataTypes.WbMonolingualTextCollection.Remove(System.String)</parameter>
+          </include>
+        </markup>
+      </summary>
+      <param name="language">
+        <markup>
+          <include item="SMCMissingParamTag">
+            <parameter>param</parameter>
+            <parameter>language</parameter>
+            <parameter>M:WikiClientLibrary.Wikibase.DataTypes.WbMonolingualTextCollection.Remove(System.String)</parameter>
+          </include>
+        </markup>
+      </param>
+    </member>
+    <member name="M:WikiClientLibrary.Wikibase.DataTypes.WbMonolingualTextCollection.Set(WikiClientLibrary.Wikibase.DataTypes.WbMonolingualText)">
+      <summary>
+            Adds or updates a <see cref="T:WikiClientLibrary.Wikibase.DataTypes.WbMonolingualText" /> item by language code.
+            </summary>
+      <param name="item">The new item to add or update to.</param>
+      <exception cref="T:System.ArgumentException">
+        <paramref name="item" /> is <see cref="F:WikiClientLibrary.Wikibase.DataTypes.WbMonolingualText.Null" />.</exception>
+    </member>
+    <member name="M:WikiClientLibrary.Wikibase.DataTypes.WbMonolingualTextCollection.System#Collections#Generic#ICollection{WikiClientLibrary#Wikibase#DataTypes#WbMonolingualText}#Contains(WikiClientLibrary.Wikibase.DataTypes.WbMonolingualText)">
+      <summary>
+        <markup>
+          <include item="SMCMissingTag">
+            <parameter>summary</parameter>
+            <parameter>M:WikiClientLibrary.Wikibase.DataTypes.WbMonolingualTextCollection.System#Collections#Generic#ICollection{WikiClientLibrary#Wikibase#DataTypes#WbMonolingualText}#Contains(WikiClientLibrary.Wikibase.DataTypes.WbMonolingualText)</parameter>
+          </include>
+        </markup>
+      </summary>
+      <param name="item">
+        <markup>
+          <include item="SMCMissingParamTag">
+            <parameter>param</parameter>
+            <parameter>item</parameter>
+            <parameter>M:WikiClientLibrary.Wikibase.DataTypes.WbMonolingualTextCollection.System#Collections#Generic#ICollection{WikiClientLibrary#Wikibase#DataTypes#WbMonolingualText}#Contains(WikiClientLibrary.Wikibase.DataTypes.WbMonolingualText)</parameter>
+          </include>
+        </markup>
+      </param>
+    </member>
+    <member name="M:WikiClientLibrary.Wikibase.DataTypes.WbMonolingualTextCollection.System#Collections#Generic#ICollection{WikiClientLibrary#Wikibase#DataTypes#WbMonolingualText}#CopyTo(WikiClientLibrary.Wikibase.DataTypes.WbMonolingualText[],System.Int32)">
+      <summary>
+        <markup>
+          <include item="SMCMissingTag">
+            <parameter>summary</parameter>
+            <parameter>M:WikiClientLibrary.Wikibase.DataTypes.WbMonolingualTextCollection.System#Collections#Generic#ICollection{WikiClientLibrary#Wikibase#DataTypes#WbMonolingualText}#CopyTo(WikiClientLibrary.Wikibase.DataTypes.WbMonolingualText[],System.Int32)</parameter>
+          </include>
+        </markup>
+      </summary>
+      <param name="array">
+        <markup>
+          <include item="SMCMissingParamTag">
+            <parameter>param</parameter>
+            <parameter>array</parameter>
+            <parameter>M:WikiClientLibrary.Wikibase.DataTypes.WbMonolingualTextCollection.System#Collections#Generic#ICollection{WikiClientLibrary#Wikibase#DataTypes#WbMonolingualText}#CopyTo(WikiClientLibrary.Wikibase.DataTypes.WbMonolingualText[],System.Int32)</parameter>
+          </include>
+        </markup>
+      </param>
+      <param name="arrayIndex">
+        <markup>
+          <include item="SMCMissingParamTag">
+            <parameter>param</parameter>
+            <parameter>arrayIndex</parameter>
+            <parameter>M:WikiClientLibrary.Wikibase.DataTypes.WbMonolingualTextCollection.System#Collections#Generic#ICollection{WikiClientLibrary#Wikibase#DataTypes#WbMonolingualText}#CopyTo(WikiClientLibrary.Wikibase.DataTypes.WbMonolingualText[],System.Int32)</parameter>
+          </include>
+        </markup>
+      </param>
+    </member>
+    <member name="M:WikiClientLibrary.Wikibase.DataTypes.WbMonolingualTextCollection.System#Collections#Generic#ICollection{WikiClientLibrary#Wikibase#DataTypes#WbMonolingualText}#Remove(WikiClientLibrary.Wikibase.DataTypes.WbMonolingualText)">
+      <summary>
+        <markup>
+          <include item="SMCMissingTag">
+            <parameter>summary</parameter>
+            <parameter>M:WikiClientLibrary.Wikibase.DataTypes.WbMonolingualTextCollection.System#Collections#Generic#ICollection{WikiClientLibrary#Wikibase#DataTypes#WbMonolingualText}#Remove(WikiClientLibrary.Wikibase.DataTypes.WbMonolingualText)</parameter>
+          </include>
+        </markup>
+      </summary>
+      <param name="item">
+        <markup>
+          <include item="SMCMissingParamTag">
+            <parameter>param</parameter>
+            <parameter>item</parameter>
+            <parameter>M:WikiClientLibrary.Wikibase.DataTypes.WbMonolingualTextCollection.System#Collections#Generic#ICollection{WikiClientLibrary#Wikibase#DataTypes#WbMonolingualText}#Remove(WikiClientLibrary.Wikibase.DataTypes.WbMonolingualText)</parameter>
+          </include>
+        </markup>
+      </param>
+    </member>
+    <member name="M:WikiClientLibrary.Wikibase.DataTypes.WbMonolingualTextCollection.System#Collections#IEnumerable#GetEnumerator">
+      <summary>
+        <markup>
+          <include item="SMCMissingTag">
+            <parameter>summary</parameter>
+            <parameter>M:WikiClientLibrary.Wikibase.DataTypes.WbMonolingualTextCollection.System#Collections#IEnumerable#GetEnumerator</parameter>
+          </include>
+        </markup>
+      </summary>
+    </member>
+    <member name="M:WikiClientLibrary.Wikibase.DataTypes.WbMonolingualTextCollection.TryGetMonolingualText(System.String)">
+      <summary>
+            Tries to get the <see cref="T:WikiClientLibrary.Wikibase.DataTypes.WbMonolingualText" /> associated with the specified language.
+            </summary>
+      <param name="language">The desired language code.</param>
+      <returns>The desired <see cref="T:WikiClientLibrary.Wikibase.DataTypes.WbMonolingualText" />,
+            or <see cref="F:WikiClientLibrary.Wikibase.DataTypes.WbMonolingualText.Null" /> if the language does not have any associated text.</returns>
+      <exception cref="T:System.ArgumentNullException">
+        <paramref name="language" /> is <c>null</c>.</exception>
+    </member>
+    <member name="T:WikiClientLibrary.Wikibase.DataTypes.WbMonolingualTextsCollection">
+      <summary>
+            Provides convenient access to 1:n language-text pairs of multilingual text.
+            </summary>
+    </member>
+    <member name="M:WikiClientLibrary.Wikibase.DataTypes.WbMonolingualTextsCollection.#ctor">
+      <summary>
+        <markup>
+          <include item="SMCAutoDocConstructor">
+            <parameter>WikiClientLibrary.Wikibase.DataTypes.WbMonolingualTextsCollection</parameter>
+          </include>
+        </markup>
+      </summary>
+    </member>
+    <member name="M:WikiClientLibrary.Wikibase.DataTypes.WbMonolingualTextsCollection.#ctor(System.Collections.Generic.IEnumerable{System.Collections.Generic.KeyValuePair{System.String,System.Collections.Generic.IEnumerable{System.String}}})">
+      <summary>
+        <markup>
+          <include item="SMCAutoDocConstructor">
+            <parameter>WikiClientLibrary.Wikibase.DataTypes.WbMonolingualTextsCollection</parameter>
+          </include>
+        </markup>
+      </summary>
+      <param name="items">
+        <markup>
+          <include item="SMCMissingParamTag">
+            <parameter>param</parameter>
+            <parameter>items</parameter>
+            <parameter>M:WikiClientLibrary.Wikibase.DataTypes.WbMonolingualTextsCollection.#ctor(System.Collections.Generic.IEnumerable{System.Collections.Generic.KeyValuePair{System.String,System.Collections.Generic.IEnumerable{System.String}}})</parameter>
+          </include>
+        </markup>
+      </param>
+    </member>
+    <member name="M:WikiClientLibrary.Wikibase.DataTypes.WbMonolingualTextsCollection.#ctor(System.Collections.Generic.IEnumerable{WikiClientLibrary.Wikibase.DataTypes.WbMonolingualText})">
+      <summary>
+        <markup>
+          <include item="SMCAutoDocConstructor">
+            <parameter>WikiClientLibrary.Wikibase.DataTypes.WbMonolingualTextsCollection</parameter>
+          </include>
+        </markup>
+      </summary>
+      <param name="items">
+        <markup>
+          <include item="SMCMissingParamTag">
+            <parameter>param</parameter>
+            <parameter>items</parameter>
+            <parameter>M:WikiClientLibrary.Wikibase.DataTypes.WbMonolingualTextsCollection.#ctor(System.Collections.Generic.IEnumerable{WikiClientLibrary.Wikibase.DataTypes.WbMonolingualText})</parameter>
+          </include>
+        </markup>
+      </param>
+    </member>
+    <member name="M:WikiClientLibrary.Wikibase.DataTypes.WbMonolingualTextsCollection.Add(System.String,System.String)">
+      <summary>
+        <markup>
+          <include item="SMCMissingTag">
+            <parameter>summary</parameter>
+            <parameter>M:WikiClientLibrary.Wikibase.DataTypes.WbMonolingualTextsCollection.Add(System.String,System.String)</parameter>
+          </include>
+        </markup>
+      </summary>
+      <param name="language">
+        <markup>
+          <include item="SMCMissingParamTag">
+            <parameter>param</parameter>
+            <parameter>language</parameter>
+            <parameter>M:WikiClientLibrary.Wikibase.DataTypes.WbMonolingualTextsCollection.Add(System.String,System.String)</parameter>
+          </include>
+        </markup>
+      </param>
+      <param name="text">
+        <markup>
+          <include item="SMCMissingParamTag">
+            <parameter>param</parameter>
+            <parameter>text</parameter>
+            <parameter>M:WikiClientLibrary.Wikibase.DataTypes.WbMonolingualTextsCollection.Add(System.String,System.String)</parameter>
+          </include>
+        </markup>
+      </param>
+    </member>
+    <member name="M:WikiClientLibrary.Wikibase.DataTypes.WbMonolingualTextsCollection.Add(WikiClientLibrary.Wikibase.DataTypes.WbMonolingualText)">
+      <summary>
+        <markup>
+          <include item="SMCMissingTag">
+            <parameter>summary</parameter>
+            <parameter>M:WikiClientLibrary.Wikibase.DataTypes.WbMonolingualTextsCollection.Add(WikiClientLibrary.Wikibase.DataTypes.WbMonolingualText)</parameter>
+          </include>
+        </markup>
+      </summary>
+      <param name="item">
+        <markup>
+          <include item="SMCMissingParamTag">
+            <parameter>param</parameter>
+            <parameter>item</parameter>
+            <parameter>M:WikiClientLibrary.Wikibase.DataTypes.WbMonolingualTextsCollection.Add(WikiClientLibrary.Wikibase.DataTypes.WbMonolingualText)</parameter>
+          </include>
+        </markup>
+      </param>
+      <exception cref="T:System.ArgumentException">
+        <paramref name="item" /> is <see cref="F:WikiClientLibrary.Wikibase.DataTypes.WbMonolingualText.Null" />.</exception>
+    </member>
+    <member name="M:WikiClientLibrary.Wikibase.DataTypes.WbMonolingualTextsCollection.Clear">
+      <summary>
+        <markup>
+          <include item="SMCMissingTag">
+            <parameter>summary</parameter>
+            <parameter>M:WikiClientLibrary.Wikibase.DataTypes.WbMonolingualTextsCollection.Clear</parameter>
+          </include>
+        </markup>
+      </summary>
+    </member>
+    <member name="M:WikiClientLibrary.Wikibase.DataTypes.WbMonolingualTextsCollection.ContainsLanguage(System.String)">
+      <summary>
+        <markup>
+          <include item="SMCMissingTag">
+            <parameter>summary</parameter>
+            <parameter>M:WikiClientLibrary.Wikibase.DataTypes.WbMonolingualTextsCollection.ContainsLanguage(System.String)</parameter>
+          </include>
+        </markup>
+      </summary>
+      <param name="language">
+        <markup>
+          <include item="SMCMissingParamTag">
+            <parameter>param</parameter>
+            <parameter>language</parameter>
+            <parameter>M:WikiClientLibrary.Wikibase.DataTypes.WbMonolingualTextsCollection.ContainsLanguage(System.String)</parameter>
+          </include>
+        </markup>
+      </param>
+    </member>
+    <member name="P:WikiClientLibrary.Wikibase.DataTypes.WbMonolingualTextsCollection.Count">
+      <summary>
+        <markup>
+          <include item="SMCMissingTag">
+            <parameter>summary</parameter>
+            <parameter>P:WikiClientLibrary.Wikibase.DataTypes.WbMonolingualTextsCollection.Count</parameter>
+          </include>
+        </markup>
+      </summary>
+    </member>
+    <member name="M:WikiClientLibrary.Wikibase.DataTypes.WbMonolingualTextsCollection.GetEnumerator">
+      <summary>
+        <markup>
+          <include item="SMCMissingTag">
+            <parameter>summary</parameter>
+            <parameter>M:WikiClientLibrary.Wikibase.DataTypes.WbMonolingualTextsCollection.GetEnumerator</parameter>
+          </include>
+        </markup>
+      </summary>
+    </member>
+    <member name="P:WikiClientLibrary.Wikibase.DataTypes.WbMonolingualTextsCollection.IsReadOnly">
+      <summary>
+        <markup>
+          <include item="SMCMissingTag">
+            <parameter>summary</parameter>
+            <parameter>P:WikiClientLibrary.Wikibase.DataTypes.WbMonolingualTextsCollection.IsReadOnly</parameter>
+          </include>
+        </markup>
+      </summary>
+    </member>
+    <member name="P:WikiClientLibrary.Wikibase.DataTypes.WbMonolingualTextsCollection.Item(System.String)">
+      <summary>
+            Gets/sets the associated text to the specified language.
+            </summary>
+      <param name="language">The desired language code.</param>
+      <returns>The text associated to the language,
+            or <c>null</c> if the language does not have any associated text.</returns>
+      <exception cref="T:System.ArgumentNullException">
+        <paramref name="language" /> is <c>null</c>.</exception>
+    </member>
+    <member name="P:WikiClientLibrary.Wikibase.DataTypes.WbMonolingualTextsCollection.Languages">
+      <summary>
+            Gets a view of all the languages.
+            </summary>
+    </member>
+    <member name="M:WikiClientLibrary.Wikibase.DataTypes.WbMonolingualTextsCollection.Remove(System.String)">
+      <summary>
+            Removes all the text entries associated with the specified language from the collection.
+            </summary>
+      <param name="language">The language code to be removed.</param>
+      <returns>Whether one or more text entries has been removed.</returns>
+      <exception cref="T:System.ArgumentNullException">
+        <paramref name="language" /> is <c>null</c>.</exception>
+    </member>
+    <member name="M:WikiClientLibrary.Wikibase.DataTypes.WbMonolingualTextsCollection.Remove(System.String,System.String)">
+      <summary>
+            Removes a text entry from the collection.
+            </summary>
+      <param name="language">The language code to be removed.</param>
+      <param name="text">The text content of the entry to be removed.</param>
+      <returns>Whether one or more text entries has been removed.</returns>
+    </member>
+    <member name="M:WikiClientLibrary.Wikibase.DataTypes.WbMonolingualTextsCollection.Remove(WikiClientLibrary.Wikibase.DataTypes.WbMonolingualText)">
+      <summary>
+        <markup>
+          <include item="SMCMissingTag">
+            <parameter>summary</parameter>
+            <parameter>M:WikiClientLibrary.Wikibase.DataTypes.WbMonolingualTextsCollection.Remove(WikiClientLibrary.Wikibase.DataTypes.WbMonolingualText)</parameter>
+          </include>
+        </markup>
+      </summary>
+      <param name="item">
+        <markup>
+          <include item="SMCMissingParamTag">
+            <parameter>param</parameter>
+            <parameter>item</parameter>
+            <parameter>M:WikiClientLibrary.Wikibase.DataTypes.WbMonolingualTextsCollection.Remove(WikiClientLibrary.Wikibase.DataTypes.WbMonolingualText)</parameter>
+          </include>
+        </markup>
+      </param>
+      <exception cref="T:System.ArgumentException">
+        <paramref name="item" /> is <see cref="F:WikiClientLibrary.Wikibase.DataTypes.WbMonolingualText.Null" />.</exception>
+    </member>
+    <member name="M:WikiClientLibrary.Wikibase.DataTypes.WbMonolingualTextsCollection.System#Collections#Generic#ICollection{WikiClientLibrary#Wikibase#DataTypes#WbMonolingualText}#Add(WikiClientLibrary.Wikibase.DataTypes.WbMonolingualText)">
+      <summary>
+        <markup>
+          <include item="SMCMissingTag">
+            <parameter>summary</parameter>
+            <parameter>M:WikiClientLibrary.Wikibase.DataTypes.WbMonolingualTextsCollection.System#Collections#Generic#ICollection{WikiClientLibrary#Wikibase#DataTypes#WbMonolingualText}#Add(WikiClientLibrary.Wikibase.DataTypes.WbMonolingualText)</parameter>
+          </include>
+        </markup>
+      </summary>
+      <param name="item">
+        <markup>
+          <include item="SMCMissingParamTag">
+            <parameter>param</parameter>
+            <parameter>item</parameter>
+            <parameter>M:WikiClientLibrary.Wikibase.DataTypes.WbMonolingualTextsCollection.System#Collections#Generic#ICollection{WikiClientLibrary#Wikibase#DataTypes#WbMonolingualText}#Add(WikiClientLibrary.Wikibase.DataTypes.WbMonolingualText)</parameter>
+          </include>
+        </markup>
+      </param>
+    </member>
+    <member name="M:WikiClientLibrary.Wikibase.DataTypes.WbMonolingualTextsCollection.System#Collections#Generic#ICollection{WikiClientLibrary#Wikibase#DataTypes#WbMonolingualText}#Contains(WikiClientLibrary.Wikibase.DataTypes.WbMonolingualText)">
+      <summary>
+        <markup>
+          <include item="SMCMissingTag">
+            <parameter>summary</parameter>
+            <parameter>M:WikiClientLibrary.Wikibase.DataTypes.WbMonolingualTextsCollection.System#Collections#Generic#ICollection{WikiClientLibrary#Wikibase#DataTypes#WbMonolingualText}#Contains(WikiClientLibrary.Wikibase.DataTypes.WbMonolingualText)</parameter>
+          </include>
+        </markup>
+      </summary>
+      <param name="item">
+        <markup>
+          <include item="SMCMissingParamTag">
+            <parameter>param</parameter>
+            <parameter>item</parameter>
+            <parameter>M:WikiClientLibrary.Wikibase.DataTypes.WbMonolingualTextsCollection.System#Collections#Generic#ICollection{WikiClientLibrary#Wikibase#DataTypes#WbMonolingualText}#Contains(WikiClientLibrary.Wikibase.DataTypes.WbMonolingualText)</parameter>
+          </include>
+        </markup>
+      </param>
+    </member>
+    <member name="M:WikiClientLibrary.Wikibase.DataTypes.WbMonolingualTextsCollection.System#Collections#Generic#ICollection{WikiClientLibrary#Wikibase#DataTypes#WbMonolingualText}#CopyTo(WikiClientLibrary.Wikibase.DataTypes.WbMonolingualText[],System.Int32)">
+      <summary>
+        <markup>
+          <include item="SMCMissingTag">
+            <parameter>summary</parameter>
+            <parameter>M:WikiClientLibrary.Wikibase.DataTypes.WbMonolingualTextsCollection.System#Collections#Generic#ICollection{WikiClientLibrary#Wikibase#DataTypes#WbMonolingualText}#CopyTo(WikiClientLibrary.Wikibase.DataTypes.WbMonolingualText[],System.Int32)</parameter>
+          </include>
+        </markup>
+      </summary>
+      <param name="array">
+        <markup>
+          <include item="SMCMissingParamTag">
+            <parameter>param</parameter>
+            <parameter>array</parameter>
+            <parameter>M:WikiClientLibrary.Wikibase.DataTypes.WbMonolingualTextsCollection.System#Collections#Generic#ICollection{WikiClientLibrary#Wikibase#DataTypes#WbMonolingualText}#CopyTo(WikiClientLibrary.Wikibase.DataTypes.WbMonolingualText[],System.Int32)</parameter>
+          </include>
+        </markup>
+      </param>
+      <param name="arrayIndex">
+        <markup>
+          <include item="SMCMissingParamTag">
+            <parameter>param</parameter>
+            <parameter>arrayIndex</parameter>
+            <parameter>M:WikiClientLibrary.Wikibase.DataTypes.WbMonolingualTextsCollection.System#Collections#Generic#ICollection{WikiClientLibrary#Wikibase#DataTypes#WbMonolingualText}#CopyTo(WikiClientLibrary.Wikibase.DataTypes.WbMonolingualText[],System.Int32)</parameter>
+          </include>
+        </markup>
+      </param>
+    </member>
+    <member name="M:WikiClientLibrary.Wikibase.DataTypes.WbMonolingualTextsCollection.System#Collections#IEnumerable#GetEnumerator">
+      <summary>
+        <markup>
+          <include item="SMCMissingTag">
+            <parameter>summary</parameter>
+            <parameter>M:WikiClientLibrary.Wikibase.DataTypes.WbMonolingualTextsCollection.System#Collections#IEnumerable#GetEnumerator</parameter>
+          </include>
+        </markup>
+      </summary>
+    </member>
+    <member name="M:WikiClientLibrary.Wikibase.DataTypes.WbMonolingualTextsCollection.TryGetMonolingualTexts(System.String)">
+      <summary>
+            Tries to get the <see cref="T:WikiClientLibrary.Wikibase.DataTypes.WbMonolingualText" /> associated with the specified language.
+            </summary>
+      <param name="language">The desired language code.</param>
+      <returns>The desired <see cref="T:WikiClientLibrary.Wikibase.DataTypes.WbMonolingualText" />,
+            or <see cref="F:WikiClientLibrary.Wikibase.DataTypes.WbMonolingualText.Null" /> if the language does not have any associated text.</returns>
+      <exception cref="T:System.ArgumentNullException">
+        <paramref name="language" /> is <c>null</c>.</exception>
+    </member>
+    <member name="T:WikiClientLibrary.Wikibase.DataTypes.WbQuantity">
+      <summary>
+            Represents an amount with arbitary precision, combined with a unit.
+            </summary>
+    </member>
+    <member name="M:WikiClientLibrary.Wikibase.DataTypes.WbQuantity.#ctor(System.Double,System.Double,System.Double,WikiClientLibrary.Wikibase.DataTypes.WbUri)">
+      <summary>
+            Initializes a new <see cref="T:WikiClientLibrary.Wikibase.DataTypes.WbQuantity" /> with the amount, error, and entity URI of the unit.
+            </summary>
+      <param name="amount">The numeric value of the amount.</param>
+      <param name="lowerBound">The lower-bound of the <paramref name="amount" /> caused by error.</param>
+      <param name="upperBound">The upper-bound of the <paramref name="amount" /> caused by error.</param>
+      <param name="unit">Entity URI of the unit.</param>
+      <exception cref="T:System.ArgumentException">
+        <paramref name="amount" /> is not in the range of <paramref name="lowerBound" /> and <paramref name="upperBound" />.</exception>
+      <exception cref="T:System.ArgumentNullException">
+        <paramref name="unit" /> is <c>null</c>.</exception>
+    </member>
+    <member name="M:WikiClientLibrary.Wikibase.DataTypes.WbQuantity.#ctor(System.Double,System.Double,WikiClientLibrary.Wikibase.DataTypes.WbUri)">
+      <summary>
+            Initializes a new <see cref="T:WikiClientLibrary.Wikibase.DataTypes.WbQuantity" /> with the amount, error, and entity URI of the unit.
+            </summary>
+      <param name="error">The numberic error of the <paramref name="amount" />.</param>
+      <param name="amount">The numeric value of the amount.</param>
+      <param name="lowerBound">The lower-bound of the <paramref name="amount" /> caused by error.</param>
+      <param name="upperBound">The upper-bound of the <paramref name="amount" /> caused by error.</param>
+      <param name="unit">Entity URI of the unit.</param>
+      <exception cref="T:System.ArgumentException">
+        <paramref name="amount" /> is not in the range of <paramref name="lowerBound" /> and <paramref name="upperBound" />.</exception>
+      <exception cref="T:System.ArgumentNullException">
+        <paramref name="unit" /> is <c>null</c>.</exception>
+    </member>
+    <member name="M:WikiClientLibrary.Wikibase.DataTypes.WbQuantity.#ctor(System.Double,WikiClientLibrary.Wikibase.DataTypes.WbUri)">
+      <summary>
+            Initializes a new <see cref="T:WikiClientLibrary.Wikibase.DataTypes.WbQuantity" /> with the accurate amount, and entity URI of the unit.
+            </summary>
+      <param name="amount">The numeric value of the amount.</param>
+      <param name="lowerBound">The lower-bound of the <paramref name="amount" /> caused by error.</param>
+      <param name="upperBound">The upper-bound of the <paramref name="amount" /> caused by error.</param>
+      <param name="unit">Entity URI of the unit.</param>
+      <exception cref="T:System.ArgumentException">
+        <paramref name="amount" /> is not in the range of <paramref name="lowerBound" /> and <paramref name="upperBound" />.</exception>
+      <exception cref="T:System.ArgumentNullException">
+        <paramref name="unit" /> is <c>null</c>.</exception>
+    </member>
+    <member name="P:WikiClientLibrary.Wikibase.DataTypes.WbQuantity.Amount">
+      <summary>
+            The numeric value of the amount.
+            </summary>
+    </member>
+    <member name="P:WikiClientLibrary.Wikibase.DataTypes.WbQuantity.HasError">
+      <summary>
+            Determines whether the <see cref="P:WikiClientLibrary.Wikibase.DataTypes.WbQuantity.Amount" /> has error.
+            </summary>
+    </member>
+    <member name="P:WikiClientLibrary.Wikibase.DataTypes.WbQuantity.LowerBound">
+      <summary>
+            The lower-bound of the <see cref="P:WikiClientLibrary.Wikibase.DataTypes.WbQuantity.Amount" /> caused by error.
+            </summary>
+    </member>
+    <member name="M:WikiClientLibrary.Wikibase.DataTypes.WbQuantity.ToString">
+      <summary>
+        <markup>
+          <include item="SMCMissingTag">
+            <parameter>summary</parameter>
+            <parameter>M:WikiClientLibrary.Wikibase.DataTypes.WbQuantity.ToString</parameter>
+          </include>
+        </markup>
+      </summary>
+    </member>
+    <member name="P:WikiClientLibrary.Wikibase.DataTypes.WbQuantity.Unit">
+      <summary>
+            Entity URI of the unit.
+            </summary>
+    </member>
+    <member name="P:WikiClientLibrary.Wikibase.DataTypes.WbQuantity.UpperBound">
+      <summary>
+            The upper-bound of the <see cref="P:WikiClientLibrary.Wikibase.DataTypes.WbQuantity.Amount" /> caused by error.
+            </summary>
+    </member>
+    <member name="T:WikiClientLibrary.Wikibase.DataTypes.WbTime">
+      <summary>
+            The date-time point value used in Wikibase.
+            </summary>
+    </member>
+    <member name="M:WikiClientLibrary.Wikibase.DataTypes.WbTime.#ctor(System.Int32,System.Int32,System.Int32,System.Int32,System.Int32,System.Int32,System.Int32,System.Int32,System.Int32,WikiClientLibrary.Wikibase.DataTypes.WikibaseTimePrecision,WikiClientLibrary.Wikibase.DataTypes.WbUri)">
+      <summary>Initialize a new instance of <see cref="T:WikiClientLibrary.Wikibase.DataTypes.WbTime" /> with the specified time point, time zone,
+            precision and calendar model.</summary>
+      <param name="year">The year (-999999999 through 999999999).</param>
+      <param name="month">The month (positive integer).</param>
+      <param name="day">The day (positive integer).</param>
+      <param name="hour">The hour (0 through 23).</param>
+      <param name="minute">The hour (0 through 59).</param>
+      <param name="second">The hour (0 through 59).</param>
+      <param name="before">Number of units before the given time it could be, if uncertain. The unit is given by <paramref name="precision" />.</param>
+      <param name="after">Number of units after the given time it could be, if uncertain. The unit is given by <paramref name="precision" />.</param>
+      <param name="timeZone">Time zone offset in minutes. See <see cref="P:WikiClientLibrary.Wikibase.DataTypes.WbTime.TimeZone" /> for more information.</param>
+      <param name="precision">The unit of the precision of the time.</param>
+      <param name="calendarModel">The entity URI of the calendar model.</param>
+      <exception cref="T:System.ArgumentNullException">
+        <paramref name="calendarModel" /> is <c>null</c>.</exception>
+      <exception cref="T:System.ArgumentOutOfRangeException">One or more numeric parameters are out of range.</exception>
+    </member>
+    <member name="P:WikiClientLibrary.Wikibase.DataTypes.WbTime.After">
+      <summary>
+            Number of units before the given time it could be, if uncertain. The unit is given by the precision.
+            </summary>
+    </member>
+    <member name="P:WikiClientLibrary.Wikibase.DataTypes.WbTime.Before">
+      <summary>
+            Number of units after the given time it could be, if uncertain. The unit is given by the precision.
+            </summary>
+    </member>
+    <member name="P:WikiClientLibrary.Wikibase.DataTypes.WbTime.CalendarModel">
+      <summary>
+            The entity URI of the calendar model.
+            </summary>
+    </member>
+    <member name="P:WikiClientLibrary.Wikibase.DataTypes.WbTime.Day">
+      <summary>
+        <markup>
+          <include item="SMCMissingTag">
+            <parameter>summary</parameter>
+            <parameter>P:WikiClientLibrary.Wikibase.DataTypes.WbTime.Day</parameter>
+          </include>
+        </markup>
+      </summary>
+    </member>
+    <member name="M:WikiClientLibrary.Wikibase.DataTypes.WbTime.Equals(System.Object)">
+      <summary>
+        <markup>
+          <include item="SMCMissingTag">
+            <parameter>summary</parameter>
+            <parameter>M:WikiClientLibrary.Wikibase.DataTypes.WbTime.Equals(System.Object)</parameter>
+          </include>
+        </markup>
+      </summary>
+      <param name="obj">
+        <markup>
+          <include item="SMCMissingParamTag">
+            <parameter>param</parameter>
+            <parameter>obj</parameter>
+            <parameter>M:WikiClientLibrary.Wikibase.DataTypes.WbTime.Equals(System.Object)</parameter>
+          </include>
+        </markup>
+      </param>
+    </member>
+    <member name="M:WikiClientLibrary.Wikibase.DataTypes.WbTime.Equals(WikiClientLibrary.Wikibase.DataTypes.WbTime)">
+      <summary>
+        <markup>
+          <include item="SMCMissingTag">
+            <parameter>summary</parameter>
+            <parameter>M:WikiClientLibrary.Wikibase.DataTypes.WbTime.Equals(WikiClientLibrary.Wikibase.DataTypes.WbTime)</parameter>
+          </include>
+        </markup>
+      </summary>
+      <param name="other">
+        <markup>
+          <include item="SMCMissingParamTag">
+            <parameter>param</parameter>
+            <parameter>other</parameter>
+            <parameter>M:WikiClientLibrary.Wikibase.DataTypes.WbTime.Equals(WikiClientLibrary.Wikibase.DataTypes.WbTime)</parameter>
+          </include>
+        </markup>
+      </param>
+    </member>
+    <member name="M:WikiClientLibrary.Wikibase.DataTypes.WbTime.FromDateTime(System.DateTime,System.Int32,System.Int32,System.Int32,WikiClientLibrary.Wikibase.DataTypes.WikibaseTimePrecision,WikiClientLibrary.Wikibase.DataTypes.WbUri)">
+      <summary>Constructs a <see cref="T:WikiClientLibrary.Wikibase.DataTypes.WbTime" /> instance from <see cref="T:System.DateTime" />.</summary>
+      <param name="dateTime">The date and time.</param>
+      <param name="timeZone">The time zone to use.</param>
+      <param name="year">The year (-999999999 through 999999999).</param>
+      <param name="month">The month (positive integer).</param>
+      <param name="day">The day (positive integer).</param>
+      <param name="hour">The hour (0 through 23).</param>
+      <param name="minute">The hour (0 through 59).</param>
+      <param name="second">The hour (0 through 59).</param>
+      <param name="before">Number of units before the given time it could be, if uncertain. The unit is given by <paramref name="precision" />.</param>
+      <param name="after">Number of units after the given time it could be, if uncertain. The unit is given by <paramref name="precision" />.</param>
+      <param name="precision">The unit of the precision of the time.</param>
+      <param name="calendarModel">The entity URI of the calendar model.</param>
+      <exception cref="T:System.ArgumentNullException">
+        <paramref name="calendarModel" /> is <c>null</c>.</exception>
+      <exception cref="T:System.ArgumentOutOfRangeException">One or more numeric parameters are out of range.</exception>
+    </member>
+    <member name="M:WikiClientLibrary.Wikibase.DataTypes.WbTime.FromDateTime(System.DateTime,System.Int32,System.Int32,WikiClientLibrary.Wikibase.DataTypes.WikibaseTimePrecision,WikiClientLibrary.Wikibase.DataTypes.WbUri)">
+      <summary>Constructs a <see cref="T:WikiClientLibrary.Wikibase.DataTypes.WbTime" /> instance from <see cref="T:System.DateTime" />.</summary>
+      <param name="dateTime">The date and time.</param>
+      <param name="timeZone">The time zone to use.</param>
+      <param name="year">The year (-999999999 through 999999999).</param>
+      <param name="month">The month (positive integer).</param>
+      <param name="day">The day (positive integer).</param>
+      <param name="hour">The hour (0 through 23).</param>
+      <param name="minute">The hour (0 through 59).</param>
+      <param name="second">The hour (0 through 59).</param>
+      <param name="before">Number of units before the given time it could be, if uncertain. The unit is given by <paramref name="precision" />.</param>
+      <param name="after">Number of units after the given time it could be, if uncertain. The unit is given by <paramref name="precision" />.</param>
+      <param name="precision">The unit of the precision of the time.</param>
+      <param name="calendarModel">The entity URI of the calendar model.</param>
+      <exception cref="T:System.ArgumentNullException">
+        <paramref name="calendarModel" /> is <c>null</c>.</exception>
+      <exception cref="T:System.ArgumentOutOfRangeException">One or more numeric parameters are out of range.</exception>
+    </member>
+    <member name="M:WikiClientLibrary.Wikibase.DataTypes.WbTime.FromDateTimeOffset(System.DateTimeOffset,System.Int32,System.Int32,System.Int32,WikiClientLibrary.Wikibase.DataTypes.WikibaseTimePrecision,WikiClientLibrary.Wikibase.DataTypes.WbUri)">
+      <summary>Constructs a <see cref="T:WikiClientLibrary.Wikibase.DataTypes.WbTime" /> instance from <see cref="T:System.DateTimeOffset" />.</summary>
+      <param name="dateTime">The date, time, and time zone.</param>
+      <param name="timeZone">The time zone to use.</param>
+      <param name="year">The year (-999999999 through 999999999).</param>
+      <param name="month">The month (positive integer).</param>
+      <param name="day">The day (positive integer).</param>
+      <param name="hour">The hour (0 through 23).</param>
+      <param name="minute">The hour (0 through 59).</param>
+      <param name="second">The hour (0 through 59).</param>
+      <param name="before">Number of units before the given time it could be, if uncertain. The unit is given by <paramref name="precision" />.</param>
+      <param name="after">Number of units after the given time it could be, if uncertain. The unit is given by <paramref name="precision" />.</param>
+      <param name="precision">The unit of the precision of the time.</param>
+      <param name="calendarModel">The entity URI of the calendar model.</param>
+      <exception cref="T:System.ArgumentNullException">
+        <paramref name="calendarModel" /> is <c>null</c>.</exception>
+      <exception cref="T:System.ArgumentOutOfRangeException">One or more numeric parameters are out of range.</exception>
+    </member>
+    <member name="M:WikiClientLibrary.Wikibase.DataTypes.WbTime.GetHashCode">
+      <summary>
+        <markup>
+          <include item="SMCMissingTag">
+            <parameter>summary</parameter>
+            <parameter>M:WikiClientLibrary.Wikibase.DataTypes.WbTime.GetHashCode</parameter>
+          </include>
+        </markup>
+      </summary>
+    </member>
+    <member name="P:WikiClientLibrary.Wikibase.DataTypes.WbTime.Hour">
+      <summary>
+        <markup>
+          <include item="SMCMissingTag">
+            <parameter>summary</parameter>
+            <parameter>P:WikiClientLibrary.Wikibase.DataTypes.WbTime.Hour</parameter>
+          </include>
+        </markup>
+      </summary>
+    </member>
+    <member name="P:WikiClientLibrary.Wikibase.DataTypes.WbTime.Minute">
+      <summary>
+        <markup>
+          <include item="SMCMissingTag">
+            <parameter>summary</parameter>
+            <parameter>P:WikiClientLibrary.Wikibase.DataTypes.WbTime.Minute</parameter>
+          </include>
+        </markup>
+      </summary>
+    </member>
+    <member name="P:WikiClientLibrary.Wikibase.DataTypes.WbTime.Month">
+      <summary>
+        <markup>
+          <include item="SMCMissingTag">
+            <parameter>summary</parameter>
+            <parameter>P:WikiClientLibrary.Wikibase.DataTypes.WbTime.Month</parameter>
+          </include>
+        </markup>
+      </summary>
+    </member>
+    <member name="M:WikiClientLibrary.Wikibase.DataTypes.WbTime.op_Equality(WikiClientLibrary.Wikibase.DataTypes.WbTime,WikiClientLibrary.Wikibase.DataTypes.WbTime)">
+      <summary>
+        <markup>
+          <include item="SMCMissingTag">
+            <parameter>summary</parameter>
+            <parameter>M:WikiClientLibrary.Wikibase.DataTypes.WbTime.op_Equality(WikiClientLibrary.Wikibase.DataTypes.WbTime,WikiClientLibrary.Wikibase.DataTypes.WbTime)</parameter>
+          </include>
+        </markup>
+      </summary>
+      <param name="left">
+        <markup>
+          <include item="SMCMissingParamTag">
+            <parameter>param</parameter>
+            <parameter>left</parameter>
+            <parameter>M:WikiClientLibrary.Wikibase.DataTypes.WbTime.op_Equality(WikiClientLibrary.Wikibase.DataTypes.WbTime,WikiClientLibrary.Wikibase.DataTypes.WbTime)</parameter>
+          </include>
+        </markup>
+      </param>
+      <param name="right">
+        <markup>
+          <include item="SMCMissingParamTag">
+            <parameter>param</parameter>
+            <parameter>right</parameter>
+            <parameter>M:WikiClientLibrary.Wikibase.DataTypes.WbTime.op_Equality(WikiClientLibrary.Wikibase.DataTypes.WbTime,WikiClientLibrary.Wikibase.DataTypes.WbTime)</parameter>
+          </include>
+        </markup>
+      </param>
+    </member>
+    <member name="M:WikiClientLibrary.Wikibase.DataTypes.WbTime.op_Inequality(WikiClientLibrary.Wikibase.DataTypes.WbTime,WikiClientLibrary.Wikibase.DataTypes.WbTime)">
+      <summary>
+        <markup>
+          <include item="SMCMissingTag">
+            <parameter>summary</parameter>
+            <parameter>M:WikiClientLibrary.Wikibase.DataTypes.WbTime.op_Inequality(WikiClientLibrary.Wikibase.DataTypes.WbTime,WikiClientLibrary.Wikibase.DataTypes.WbTime)</parameter>
+          </include>
+        </markup>
+      </summary>
+      <param name="left">
+        <markup>
+          <include item="SMCMissingParamTag">
+            <parameter>param</parameter>
+            <parameter>left</parameter>
+            <parameter>M:WikiClientLibrary.Wikibase.DataTypes.WbTime.op_Inequality(WikiClientLibrary.Wikibase.DataTypes.WbTime,WikiClientLibrary.Wikibase.DataTypes.WbTime)</parameter>
+          </include>
+        </markup>
+      </param>
+      <param name="right">
+        <markup>
+          <include item="SMCMissingParamTag">
+            <parameter>param</parameter>
+            <parameter>right</parameter>
+            <parameter>M:WikiClientLibrary.Wikibase.DataTypes.WbTime.op_Inequality(WikiClientLibrary.Wikibase.DataTypes.WbTime,WikiClientLibrary.Wikibase.DataTypes.WbTime)</parameter>
+          </include>
+        </markup>
+      </param>
+    </member>
+    <member name="M:WikiClientLibrary.Wikibase.DataTypes.WbTime.Parse(System.String,System.Int32,System.Int32,System.Int32,WikiClientLibrary.Wikibase.DataTypes.WikibaseTimePrecision,WikiClientLibrary.Wikibase.DataTypes.WbUri)">
+      <summary>Parses <see cref="T:WikiClientLibrary.Wikibase.DataTypes.WbTime" /> from its string representation.</summary>
+      <param name="dateTime">The string representation of the date and time. Currently only ISO-8601 format is supported.</param>
+      <param name="year">The year (-999999999 through 999999999).</param>
+      <param name="month">The month (positive integer).</param>
+      <param name="day">The day (positive integer).</param>
+      <param name="hour">The hour (0 through 23).</param>
+      <param name="minute">The hour (0 through 59).</param>
+      <param name="second">The hour (0 through 59).</param>
+      <param name="before">Number of units before the given time it could be, if uncertain. The unit is given by <paramref name="precision" />.</param>
+      <param name="after">Number of units after the given time it could be, if uncertain. The unit is given by <paramref name="precision" />.</param>
+      <param name="timeZone">Time zone offset in minutes. See <see cref="P:WikiClientLibrary.Wikibase.DataTypes.WbTime.TimeZone" /> for more information.</param>
+      <param name="precision">The unit of the precision of the time.</param>
+      <param name="calendarModel">The entity URI of the calendar model.</param>
+      <exception cref="T:System.ArgumentNullException">
+        <paramref name="calendarModel" /> is <c>null</c>.</exception>
+      <exception cref="T:System.ArgumentOutOfRangeException">One or more numeric parameters are out of range.</exception>
+    </member>
+    <member name="P:WikiClientLibrary.Wikibase.DataTypes.WbTime.Precision">
+      <summary>
+            The unit of the precision of the time.
+            </summary>
+    </member>
+    <member name="P:WikiClientLibrary.Wikibase.DataTypes.WbTime.Second">
+      <summary>
+        <markup>
+          <include item="SMCMissingTag">
+            <parameter>summary</parameter>
+            <parameter>P:WikiClientLibrary.Wikibase.DataTypes.WbTime.Second</parameter>
+          </include>
+        </markup>
+      </summary>
+    </member>
+    <member name="P:WikiClientLibrary.Wikibase.DataTypes.WbTime.TimeZone">
+      <summary>
+            Time zone offset in minutes.
+            </summary>
+    </member>
+    <member name="M:WikiClientLibrary.Wikibase.DataTypes.WbTime.ToDateTimeOffset">
+      <summary>
+            Converts to <see cref="T:System.DateTimeOffset" />, using appropriate rouding specified by <see cref="P:WikiClientLibrary.Wikibase.DataTypes.WbTime.Precision" />.
+            </summary>
+    </member>
+    <member name="M:WikiClientLibrary.Wikibase.DataTypes.WbTime.ToIso8601UtcString">
+      <summary>
+            Formats the date and time part into ISO-8601 UTC date time format.
+            </summary>
+    </member>
+    <member name="M:WikiClientLibrary.Wikibase.DataTypes.WbTime.ToString">
+      <summary>
+        <markup>
+          <include item="SMCMissingTag">
+            <parameter>summary</parameter>
+            <parameter>M:WikiClientLibrary.Wikibase.DataTypes.WbTime.ToString</parameter>
+          </include>
+        </markup>
+      </summary>
+    </member>
+    <member name="P:WikiClientLibrary.Wikibase.DataTypes.WbTime.Year">
+      <summary>
+        <markup>
+          <include item="SMCMissingTag">
+            <parameter>summary</parameter>
+            <parameter>P:WikiClientLibrary.Wikibase.DataTypes.WbTime.Year</parameter>
+          </include>
+        </markup>
+      </summary>
+    </member>
+    <member name="T:WikiClientLibrary.Wikibase.DataTypes.WbUri">
+      <summary>
+            An atomic instance of URI used in Wikibase.
+            </summary>
+    </member>
+    <member name="M:WikiClientLibrary.Wikibase.DataTypes.WbUri.Equals(System.Object)">
+      <summary>
+        <markup>
+          <include item="SMCMissingTag">
+            <parameter>summary</parameter>
+            <parameter>M:WikiClientLibrary.Wikibase.DataTypes.WbUri.Equals(System.Object)</parameter>
+          </include>
+        </markup>
+      </summary>
+      <param name="obj">
+        <markup>
+          <include item="SMCMissingParamTag">
+            <parameter>param</parameter>
+            <parameter>obj</parameter>
+            <parameter>M:WikiClientLibrary.Wikibase.DataTypes.WbUri.Equals(System.Object)</parameter>
+          </include>
+        </markup>
+      </param>
+    </member>
+    <member name="M:WikiClientLibrary.Wikibase.DataTypes.WbUri.Equals(WikiClientLibrary.Wikibase.DataTypes.WbUri)">
+      <summary>
+        <markup>
+          <include item="SMCMissingTag">
+            <parameter>summary</parameter>
+            <parameter>M:WikiClientLibrary.Wikibase.DataTypes.WbUri.Equals(WikiClientLibrary.Wikibase.DataTypes.WbUri)</parameter>
+          </include>
+        </markup>
+      </summary>
+      <param name="other">
+        <markup>
+          <include item="SMCMissingParamTag">
+            <parameter>param</parameter>
+            <parameter>other</parameter>
+            <parameter>M:WikiClientLibrary.Wikibase.DataTypes.WbUri.Equals(WikiClientLibrary.Wikibase.DataTypes.WbUri)</parameter>
+          </include>
+        </markup>
+      </param>
+    </member>
+    <member name="M:WikiClientLibrary.Wikibase.DataTypes.WbUri.Get(System.String)">
+      <summary>
+        <markup>
+          <include item="SMCMissingTag">
+            <parameter>summary</parameter>
+            <parameter>M:WikiClientLibrary.Wikibase.DataTypes.WbUri.Get(System.String)</parameter>
+          </include>
+        </markup>
+      </summary>
+      <param name="uri">
+        <markup>
+          <include item="SMCMissingParamTag">
+            <parameter>param</parameter>
+            <parameter>uri</parameter>
+            <parameter>M:WikiClientLibrary.Wikibase.DataTypes.WbUri.Get(System.String)</parameter>
+          </include>
+        </markup>
+      </param>
+    </member>
+    <member name="M:WikiClientLibrary.Wikibase.DataTypes.WbUri.GetHashCode">
+      <summary>
+        <markup>
+          <include item="SMCMissingTag">
+            <parameter>summary</parameter>
+            <parameter>M:WikiClientLibrary.Wikibase.DataTypes.WbUri.GetHashCode</parameter>
+          </include>
+        </markup>
+      </summary>
+    </member>
+    <member name="M:WikiClientLibrary.Wikibase.DataTypes.WbUri.op_Equality(WikiClientLibrary.Wikibase.DataTypes.WbUri,WikiClientLibrary.Wikibase.DataTypes.WbUri)">
+      <summary>
+        <markup>
+          <include item="SMCMissingTag">
+            <parameter>summary</parameter>
+            <parameter>M:WikiClientLibrary.Wikibase.DataTypes.WbUri.op_Equality(WikiClientLibrary.Wikibase.DataTypes.WbUri,WikiClientLibrary.Wikibase.DataTypes.WbUri)</parameter>
+          </include>
+        </markup>
+      </summary>
+      <param name="left">
+        <markup>
+          <include item="SMCMissingParamTag">
+            <parameter>param</parameter>
+            <parameter>left</parameter>
+            <parameter>M:WikiClientLibrary.Wikibase.DataTypes.WbUri.op_Equality(WikiClientLibrary.Wikibase.DataTypes.WbUri,WikiClientLibrary.Wikibase.DataTypes.WbUri)</parameter>
+          </include>
+        </markup>
+      </param>
+      <param name="right">
+        <markup>
+          <include item="SMCMissingParamTag">
+            <parameter>param</parameter>
+            <parameter>right</parameter>
+            <parameter>M:WikiClientLibrary.Wikibase.DataTypes.WbUri.op_Equality(WikiClientLibrary.Wikibase.DataTypes.WbUri,WikiClientLibrary.Wikibase.DataTypes.WbUri)</parameter>
+          </include>
+        </markup>
+      </param>
+    </member>
+    <member name="M:WikiClientLibrary.Wikibase.DataTypes.WbUri.op_Implicit(System.String)~WikiClientLibrary.Wikibase.DataTypes.WbUri">
+      <summary>
+        <markup>
+          <include item="SMCMissingTag">
+            <parameter>summary</parameter>
+            <parameter>M:WikiClientLibrary.Wikibase.DataTypes.WbUri.op_Implicit(System.String)~WikiClientLibrary.Wikibase.DataTypes.WbUri</parameter>
+          </include>
+        </markup>
+      </summary>
+      <param name="s">
+        <markup>
+          <include item="SMCMissingParamTag">
+            <parameter>param</parameter>
+            <parameter>s</parameter>
+            <parameter>M:WikiClientLibrary.Wikibase.DataTypes.WbUri.op_Implicit(System.String)~WikiClientLibrary.Wikibase.DataTypes.WbUri</parameter>
+          </include>
+        </markup>
+      </param>
+    </member>
+    <member name="M:WikiClientLibrary.Wikibase.DataTypes.WbUri.op_Inequality(WikiClientLibrary.Wikibase.DataTypes.WbUri,WikiClientLibrary.Wikibase.DataTypes.WbUri)">
+      <summary>
+        <markup>
+          <include item="SMCMissingTag">
+            <parameter>summary</parameter>
+            <parameter>M:WikiClientLibrary.Wikibase.DataTypes.WbUri.op_Inequality(WikiClientLibrary.Wikibase.DataTypes.WbUri,WikiClientLibrary.Wikibase.DataTypes.WbUri)</parameter>
+          </include>
+        </markup>
+      </summary>
+      <param name="left">
+        <markup>
+          <include item="SMCMissingParamTag">
+            <parameter>param</parameter>
+            <parameter>left</parameter>
+            <parameter>M:WikiClientLibrary.Wikibase.DataTypes.WbUri.op_Inequality(WikiClientLibrary.Wikibase.DataTypes.WbUri,WikiClientLibrary.Wikibase.DataTypes.WbUri)</parameter>
+          </include>
+        </markup>
+      </param>
+      <param name="right">
+        <markup>
+          <include item="SMCMissingParamTag">
+            <parameter>param</parameter>
+            <parameter>right</parameter>
+            <parameter>M:WikiClientLibrary.Wikibase.DataTypes.WbUri.op_Inequality(WikiClientLibrary.Wikibase.DataTypes.WbUri,WikiClientLibrary.Wikibase.DataTypes.WbUri)</parameter>
+          </include>
+        </markup>
+      </param>
+    </member>
+    <member name="M:WikiClientLibrary.Wikibase.DataTypes.WbUri.ToString">
+      <summary>Gets the referenced URI.</summary>
+    </member>
+    <member name="P:WikiClientLibrary.Wikibase.DataTypes.WbUri.Uri">
+      <summary>Gets the string of referenced URI.</summary>
+    </member>
+    <member name="T:WikiClientLibrary.Wikibase.DataTypes.WikibaseDataType">
+      <summary>
+            Atomic instances indicating a Wikibase Property type.
+            </summary>
+    </member>
+    <member name="M:WikiClientLibrary.Wikibase.DataTypes.WikibaseDataType.#ctor">
+      <summary>
+        <markup>
+          <include item="SMCAutoDocConstructor">
+            <parameter>WikiClientLibrary.Wikibase.DataTypes.WikibaseDataType</parameter>
+          </include>
+        </markup>
+      </summary>
+    </member>
+    <member name="P:WikiClientLibrary.Wikibase.DataTypes.WikibaseDataType.Name">
+      <summary>
+            The property type name.
+            </summary>
+    </member>
+    <member name="M:WikiClientLibrary.Wikibase.DataTypes.WikibaseDataType.Parse(Newtonsoft.Json.Linq.JToken)">
+      <summary>
+            Converts the JSON to the CLR value.
+            </summary>
+      <param name="expr">
+        <markup>
+          <include item="SMCMissingParamTag">
+            <parameter>param</parameter>
+            <parameter>expr</parameter>
+            <parameter>M:WikiClientLibrary.Wikibase.DataTypes.WikibaseDataType.Parse(Newtonsoft.Json.Linq.JToken)</parameter>
+          </include>
+        </markup>
+      </param>
+    </member>
+    <member name="M:WikiClientLibrary.Wikibase.DataTypes.WikibaseDataType.ToJson(System.Object)">
+      <summary>
+            Converts the CLR value to JSON.
+            </summary>
+      <param name="value">
+        <markup>
+          <include item="SMCMissingParamTag">
+            <parameter>param</parameter>
+            <parameter>value</parameter>
+            <parameter>M:WikiClientLibrary.Wikibase.DataTypes.WikibaseDataType.ToJson(System.Object)</parameter>
+          </include>
+        </markup>
+      </param>
+    </member>
+    <member name="M:WikiClientLibrary.Wikibase.DataTypes.WikibaseDataType.ToString">
+      <summary>
+        <markup>
+          <include item="SMCMissingTag">
+            <parameter>summary</parameter>
+            <parameter>M:WikiClientLibrary.Wikibase.DataTypes.WikibaseDataType.ToString</parameter>
+          </include>
+        </markup>
+      </summary>
+    </member>
+    <member name="P:WikiClientLibrary.Wikibase.DataTypes.WikibaseDataType.ValueTypeName">
+      <summary>
+            The value type name.
+            </summary>
+    </member>
+    <member name="T:WikiClientLibrary.Wikibase.DataTypes.WikibaseTimePrecision">
+      <summary>
+            The unit of precision of the time.
+            </summary>
+    </member>
+    <member name="F:WikiClientLibrary.Wikibase.DataTypes.WikibaseTimePrecision.YearE9">
+      <summary>1,000,000,000 years.</summary>
+    </member>
+    <member name="F:WikiClientLibrary.Wikibase.DataTypes.WikibaseTimePrecision.YearE8">
+      <summary>100,000,000 years.</summary>
+    </member>
+    <member name="F:WikiClientLibrary.Wikibase.DataTypes.WikibaseTimePrecision.YearE7">
+      <summary>10,000,000 years.</summary>
+    </member>
+    <member name="F:WikiClientLibrary.Wikibase.DataTypes.WikibaseTimePrecision.YearE6">
+      <summary>1,000,000 years.</summary>
+    </member>
+    <member name="F:WikiClientLibrary.Wikibase.DataTypes.WikibaseTimePrecision.YearE5">
+      <summary>100,000 years.</summary>
+    </member>
+    <member name="F:WikiClientLibrary.Wikibase.DataTypes.WikibaseTimePrecision.YearE4">
+      <summary>10,000 years.</summary>
+    </member>
+    <member name="F:WikiClientLibrary.Wikibase.DataTypes.WikibaseTimePrecision.Millenia">
+      <summary>1,000 years.</summary>
+    </member>
+    <member name="F:WikiClientLibrary.Wikibase.DataTypes.WikibaseTimePrecision.Century">
+      <summary>100 years.</summary>
+    </member>
+    <member name="F:WikiClientLibrary.Wikibase.DataTypes.WikibaseTimePrecision.Decade">
+      <summary>10 years.</summary>
+    </member>
+    <member name="F:WikiClientLibrary.Wikibase.DataTypes.WikibaseTimePrecision.Year">
+      <summary>Years.</summary>
+    </member>
+    <member name="F:WikiClientLibrary.Wikibase.DataTypes.WikibaseTimePrecision.Month">
+      <summary>Months.</summary>
+    </member>
+    <member name="F:WikiClientLibrary.Wikibase.DataTypes.WikibaseTimePrecision.Day">
+      <summary>Days.</summary>
+    </member>
+    <member name="F:WikiClientLibrary.Wikibase.DataTypes.WikibaseTimePrecision.Hour">
+      <summary>Hours.</summary>
+    </member>
+    <member name="F:WikiClientLibrary.Wikibase.DataTypes.WikibaseTimePrecision.Minute">
+      <summary>Minutes.</summary>
+    </member>
+    <member name="F:WikiClientLibrary.Wikibase.DataTypes.WikibaseTimePrecision.Second">
+      <summary>Seconds.</summary>
+    </member>
+    <member name="T:WikiClientLibrary.Wikibase.Infrastructures.UnorderedKeyedCollection`2">
+      <summary>
+            An unordered dictionary whose keys lies in the items.
+            </summary>
+      <typeparam name="TKey">Type of the key.</typeparam>
+      <typeparam name="TItem">Type of the item.</typeparam>
+    </member>
+    <member name="M:WikiClientLibrary.Wikibase.Infrastructures.UnorderedKeyedCollection`2.#ctor">
+      <summary>
+        <markup>
+          <include item="SMCAutoDocConstructor">
+            <parameter>WikiClientLibrary.Wikibase.Infrastructures.UnorderedKeyedCollection`2</parameter>
+          </include>
+        </markup>
+      </summary>
+    </member>
+    <member name="M:WikiClientLibrary.Wikibase.Infrastructures.UnorderedKeyedCollection`2.#ctor(System.Collections.Generic.IEqualityComparer{`0})">
+      <summary>
+        <markup>
+          <include item="SMCAutoDocConstructor">
+            <parameter>WikiClientLibrary.Wikibase.Infrastructures.UnorderedKeyedCollection`2</parameter>
+          </include>
+        </markup>
+      </summary>
+      <param name="keyComparer">
+        <markup>
+          <include item="SMCMissingParamTag">
+            <parameter>param</parameter>
+            <parameter>keyComparer</parameter>
+            <parameter>M:WikiClientLibrary.Wikibase.Infrastructures.UnorderedKeyedCollection`2.#ctor(System.Collections.Generic.IEqualityComparer{`0})</parameter>
+          </include>
+        </markup>
+      </param>
+    </member>
+    <member name="M:WikiClientLibrary.Wikibase.Infrastructures.UnorderedKeyedCollection`2.Add(`1)">
+      <summary>
+        <markup>
+          <include item="SMCMissingTag">
+            <parameter>summary</parameter>
+            <parameter>M:WikiClientLibrary.Wikibase.Infrastructures.UnorderedKeyedCollection`2.Add(`1)</parameter>
+          </include>
+        </markup>
+      </summary>
+      <param name="item">
+        <markup>
+          <include item="SMCMissingParamTag">
+            <parameter>param</parameter>
+            <parameter>item</parameter>
+            <parameter>M:WikiClientLibrary.Wikibase.Infrastructures.UnorderedKeyedCollection`2.Add(`1)</parameter>
+          </include>
+        </markup>
+      </param>
+    </member>
+    <member name="M:WikiClientLibrary.Wikibase.Infrastructures.UnorderedKeyedCollection`2.AssertMutable">
+      <summary>
+        <markup>
+          <include item="SMCMissingTag">
+            <parameter>summary</parameter>
+            <parameter>M:WikiClientLibrary.Wikibase.Infrastructures.UnorderedKeyedCollection`2.AssertMutable</parameter>
+          </include>
+        </markup>
+      </summary>
+    </member>
+    <member name="M:WikiClientLibrary.Wikibase.Infrastructures.UnorderedKeyedCollection`2.ChangeItemKey(`1,`0)">
+      <summary>
+        <markup>
+          <include item="SMCMissingTag">
+            <parameter>summary</parameter>
+            <parameter>M:WikiClientLibrary.Wikibase.Infrastructures.UnorderedKeyedCollection`2.ChangeItemKey(`1,`0)</parameter>
+          </include>
+        </markup>
+      </summary>
+      <param name="item">
+        <markup>
+          <include item="SMCMissingParamTag">
+            <parameter>param</parameter>
+            <parameter>item</parameter>
+            <parameter>M:WikiClientLibrary.Wikibase.Infrastructures.UnorderedKeyedCollection`2.ChangeItemKey(`1,`0)</parameter>
+          </include>
+        </markup>
+      </param>
+      <param name="newKey">
+        <markup>
+          <include item="SMCMissingParamTag">
+            <parameter>param</parameter>
+            <parameter>newKey</parameter>
+            <parameter>M:WikiClientLibrary.Wikibase.Infrastructures.UnorderedKeyedCollection`2.ChangeItemKey(`1,`0)</parameter>
+          </include>
+        </markup>
+      </param>
+    </member>
+    <member name="M:WikiClientLibrary.Wikibase.Infrastructures.UnorderedKeyedCollection`2.Clear">
+      <summary>
+        <markup>
+          <include item="SMCMissingTag">
+            <parameter>summary</parameter>
+            <parameter>M:WikiClientLibrary.Wikibase.Infrastructures.UnorderedKeyedCollection`2.Clear</parameter>
+          </include>
+        </markup>
+      </summary>
+    </member>
+    <member name="M:WikiClientLibrary.Wikibase.Infrastructures.UnorderedKeyedCollection`2.Contains(`1)">
+      <summary>
+        <markup>
+          <include item="SMCMissingTag">
+            <parameter>summary</parameter>
+            <parameter>M:WikiClientLibrary.Wikibase.Infrastructures.UnorderedKeyedCollection`2.Contains(`1)</parameter>
+          </include>
+        </markup>
+      </summary>
+      <param name="item">
+        <markup>
+          <include item="SMCMissingParamTag">
+            <parameter>param</parameter>
+            <parameter>item</parameter>
+            <parameter>M:WikiClientLibrary.Wikibase.Infrastructures.UnorderedKeyedCollection`2.Contains(`1)</parameter>
+          </include>
+        </markup>
+      </param>
+    </member>
+    <member name="M:WikiClientLibrary.Wikibase.Infrastructures.UnorderedKeyedCollection`2.ContainsKey(`0)">
+      <summary>
+        <markup>
+          <include item="SMCMissingTag">
+            <parameter>summary</parameter>
+            <parameter>M:WikiClientLibrary.Wikibase.Infrastructures.UnorderedKeyedCollection`2.ContainsKey(`0)</parameter>
+          </include>
+        </markup>
+      </summary>
+      <param name="key">
+        <markup>
+          <include item="SMCMissingParamTag">
+            <parameter>param</parameter>
+            <parameter>key</parameter>
+            <parameter>M:WikiClientLibrary.Wikibase.Infrastructures.UnorderedKeyedCollection`2.ContainsKey(`0)</parameter>
+          </include>
+        </markup>
+      </param>
+    </member>
+    <member name="M:WikiClientLibrary.Wikibase.Infrastructures.UnorderedKeyedCollection`2.CopyTo(System.Array,System.Int32)">
+      <summary>
+        <markup>
+          <include item="SMCMissingTag">
+            <parameter>summary</parameter>
+            <parameter>M:WikiClientLibrary.Wikibase.Infrastructures.UnorderedKeyedCollection`2.CopyTo(System.Array,System.Int32)</parameter>
+          </include>
+        </markup>
+      </summary>
+      <param name="array">
+        <markup>
+          <include item="SMCMissingParamTag">
+            <parameter>param</parameter>
+            <parameter>array</parameter>
+            <parameter>M:WikiClientLibrary.Wikibase.Infrastructures.UnorderedKeyedCollection`2.CopyTo(System.Array,System.Int32)</parameter>
+          </include>
+        </markup>
+      </param>
+      <param name="index">
+        <markup>
+          <include item="SMCMissingParamTag">
+            <parameter>param</parameter>
+            <parameter>index</parameter>
+            <parameter>M:WikiClientLibrary.Wikibase.Infrastructures.UnorderedKeyedCollection`2.CopyTo(System.Array,System.Int32)</parameter>
+          </include>
+        </markup>
+      </param>
+    </member>
+    <member name="M:WikiClientLibrary.Wikibase.Infrastructures.UnorderedKeyedCollection`2.CopyTo(`1[],System.Int32)">
+      <summary>
+        <markup>
+          <include item="SMCMissingTag">
+            <parameter>summary</parameter>
+            <parameter>M:WikiClientLibrary.Wikibase.Infrastructures.UnorderedKeyedCollection`2.CopyTo(`1[],System.Int32)</parameter>
+          </include>
+        </markup>
+      </summary>
+      <param name="array">
+        <markup>
+          <include item="SMCMissingParamTag">
+            <parameter>param</parameter>
+            <parameter>array</parameter>
+            <parameter>M:WikiClientLibrary.Wikibase.Infrastructures.UnorderedKeyedCollection`2.CopyTo(`1[],System.Int32)</parameter>
+          </include>
+        </markup>
+      </param>
+      <param name="arrayIndex">
+        <markup>
+          <include item="SMCMissingParamTag">
+            <parameter>param</parameter>
+            <parameter>arrayIndex</parameter>
+            <parameter>M:WikiClientLibrary.Wikibase.Infrastructures.UnorderedKeyedCollection`2.CopyTo(`1[],System.Int32)</parameter>
+          </include>
+        </markup>
+      </param>
+    </member>
+    <member name="P:WikiClientLibrary.Wikibase.Infrastructures.UnorderedKeyedCollection`2.Count">
+      <summary>
+        <markup>
+          <include item="SMCMissingTag">
+            <parameter>summary</parameter>
+            <parameter>P:WikiClientLibrary.Wikibase.Infrastructures.UnorderedKeyedCollection`2.Count</parameter>
+          </include>
+        </markup>
+      </summary>
+    </member>
+    <member name="M:WikiClientLibrary.Wikibase.Infrastructures.UnorderedKeyedCollection`2.GetEnumerator">
+      <summary>
+        <markup>
+          <include item="SMCMissingTag">
+            <parameter>summary</parameter>
+            <parameter>M:WikiClientLibrary.Wikibase.Infrastructures.UnorderedKeyedCollection`2.GetEnumerator</parameter>
+          </include>
+        </markup>
+      </summary>
+    </member>
+    <member name="M:WikiClientLibrary.Wikibase.Infrastructures.UnorderedKeyedCollection`2.GetKeyForItem(`1)">
+      <summary>
+        <markup>
+          <include item="SMCMissingTag">
+            <parameter>summary</parameter>
+            <parameter>M:WikiClientLibrary.Wikibase.Infrastructures.UnorderedKeyedCollection`2.GetKeyForItem(`1)</parameter>
+          </include>
+        </markup>
+      </summary>
+      <param name="item">
+        <markup>
+          <include item="SMCMissingParamTag">
+            <parameter>param</parameter>
+            <parameter>item</parameter>
+            <parameter>M:WikiClientLibrary.Wikibase.Infrastructures.UnorderedKeyedCollection`2.GetKeyForItem(`1)</parameter>
+          </include>
+        </markup>
+      </param>
+    </member>
+    <member name="P:WikiClientLibrary.Wikibase.Infrastructures.UnorderedKeyedCollection`2.IsReadOnly">
+      <summary>
+        <markup>
+          <include item="SMCMissingTag">
+            <parameter>summary</parameter>
+            <parameter>P:WikiClientLibrary.Wikibase.Infrastructures.UnorderedKeyedCollection`2.IsReadOnly</parameter>
+          </include>
+        </markup>
+      </summary>
+    </member>
+    <member name="P:WikiClientLibrary.Wikibase.Infrastructures.UnorderedKeyedCollection`2.Item(`0)">
+      <summary>
+        <markup>
+          <include item="SMCMissingTag">
+            <parameter>summary</parameter>
+            <parameter>P:WikiClientLibrary.Wikibase.Infrastructures.UnorderedKeyedCollection`2.Item(`0)</parameter>
+          </include>
+        </markup>
+      </summary>
+    </member>
+    <member name="M:WikiClientLibrary.Wikibase.Infrastructures.UnorderedKeyedCollection`2.Remove(`1)">
+      <summary>
+        <markup>
+          <include item="SMCMissingTag">
+            <parameter>summary</parameter>
+            <parameter>M:WikiClientLibrary.Wikibase.Infrastructures.UnorderedKeyedCollection`2.Remove(`1)</parameter>
+          </include>
+        </markup>
+      </summary>
+      <param name="item">
+        <markup>
+          <include item="SMCMissingParamTag">
+            <parameter>param</parameter>
+            <parameter>item</parameter>
+            <parameter>M:WikiClientLibrary.Wikibase.Infrastructures.UnorderedKeyedCollection`2.Remove(`1)</parameter>
+          </include>
+        </markup>
+      </param>
+    </member>
+    <member name="P:WikiClientLibrary.Wikibase.Infrastructures.UnorderedKeyedCollection`2.System#Collections#ICollection#IsSynchronized">
+      <summary>
+        <markup>
+          <include item="SMCMissingTag">
+            <parameter>summary</parameter>
+            <parameter>P:WikiClientLibrary.Wikibase.Infrastructures.UnorderedKeyedCollection`2.System#Collections#ICollection#IsSynchronized</parameter>
+          </include>
+        </markup>
+      </summary>
+    </member>
+    <member name="P:WikiClientLibrary.Wikibase.Infrastructures.UnorderedKeyedCollection`2.System#Collections#ICollection#SyncRoot">
+      <summary>
+        <markup>
+          <include item="SMCMissingTag">
+            <parameter>summary</parameter>
+            <parameter>P:WikiClientLibrary.Wikibase.Infrastructures.UnorderedKeyedCollection`2.System#Collections#ICollection#SyncRoot</parameter>
+          </include>
+        </markup>
+      </summary>
+    </member>
+    <member name="M:WikiClientLibrary.Wikibase.Infrastructures.UnorderedKeyedCollection`2.System#Collections#IEnumerable#GetEnumerator">
+      <summary>
+        <markup>
+          <include item="SMCMissingTag">
+            <parameter>summary</parameter>
+            <parameter>M:WikiClientLibrary.Wikibase.Infrastructures.UnorderedKeyedCollection`2.System#Collections#IEnumerable#GetEnumerator</parameter>
+          </include>
+        </markup>
+      </summary>
+    </member>
+    <member name="T:WikiClientLibrary.Wikibase.Infrastructures.UnorderedKeyedMultiCollection`2">
+      <summary>
+            An unordered 1:n dictionary whose keys lies in the items.
+            </summary>
+      <typeparam name="TKey">Type of the key.</typeparam>
+      <typeparam name="TItem">Type of the item.</typeparam>
+    </member>
+    <member name="M:WikiClientLibrary.Wikibase.Infrastructures.UnorderedKeyedMultiCollection`2.#ctor">
+      <summary>
+        <markup>
+          <include item="SMCAutoDocConstructor">
+            <parameter>WikiClientLibrary.Wikibase.Infrastructures.UnorderedKeyedMultiCollection`2</parameter>
+          </include>
+        </markup>
+      </summary>
+    </member>
+    <member name="M:WikiClientLibrary.Wikibase.Infrastructures.UnorderedKeyedMultiCollection`2.#ctor(System.Collections.Generic.IEqualityComparer{`0})">
+      <summary>
+        <markup>
+          <include item="SMCAutoDocConstructor">
+            <parameter>WikiClientLibrary.Wikibase.Infrastructures.UnorderedKeyedMultiCollection`2</parameter>
+          </include>
+        </markup>
+      </summary>
+      <param name="keyComparer">
+        <markup>
+          <include item="SMCMissingParamTag">
+            <parameter>param</parameter>
+            <parameter>keyComparer</parameter>
+            <parameter>M:WikiClientLibrary.Wikibase.Infrastructures.UnorderedKeyedMultiCollection`2.#ctor(System.Collections.Generic.IEqualityComparer{`0})</parameter>
+          </include>
+        </markup>
+      </param>
+    </member>
+    <member name="M:WikiClientLibrary.Wikibase.Infrastructures.UnorderedKeyedMultiCollection`2.Add(`1)">
+      <summary>
+        <markup>
+          <include item="SMCMissingTag">
+            <parameter>summary</parameter>
+            <parameter>M:WikiClientLibrary.Wikibase.Infrastructures.UnorderedKeyedMultiCollection`2.Add(`1)</parameter>
+          </include>
+        </markup>
+      </summary>
+      <param name="item">
+        <markup>
+          <include item="SMCMissingParamTag">
+            <parameter>param</parameter>
+            <parameter>item</parameter>
+            <parameter>M:WikiClientLibrary.Wikibase.Infrastructures.UnorderedKeyedMultiCollection`2.Add(`1)</parameter>
+          </include>
+        </markup>
+      </param>
+    </member>
+    <member name="M:WikiClientLibrary.Wikibase.Infrastructures.UnorderedKeyedMultiCollection`2.AssertMutable">
+      <summary>
+        <markup>
+          <include item="SMCMissingTag">
+            <parameter>summary</parameter>
+            <parameter>M:WikiClientLibrary.Wikibase.Infrastructures.UnorderedKeyedMultiCollection`2.AssertMutable</parameter>
+          </include>
+        </markup>
+      </summary>
+    </member>
+    <member name="M:WikiClientLibrary.Wikibase.Infrastructures.UnorderedKeyedMultiCollection`2.ChangeItemKey(`1,`0)">
+      <summary>
+        <markup>
+          <include item="SMCMissingTag">
+            <parameter>summary</parameter>
+            <parameter>M:WikiClientLibrary.Wikibase.Infrastructures.UnorderedKeyedMultiCollection`2.ChangeItemKey(`1,`0)</parameter>
+          </include>
+        </markup>
+      </summary>
+      <param name="item">
+        <markup>
+          <include item="SMCMissingParamTag">
+            <parameter>param</parameter>
+            <parameter>item</parameter>
+            <parameter>M:WikiClientLibrary.Wikibase.Infrastructures.UnorderedKeyedMultiCollection`2.ChangeItemKey(`1,`0)</parameter>
+          </include>
+        </markup>
+      </param>
+      <param name="newKey">
+        <markup>
+          <include item="SMCMissingParamTag">
+            <parameter>param</parameter>
+            <parameter>newKey</parameter>
+            <parameter>M:WikiClientLibrary.Wikibase.Infrastructures.UnorderedKeyedMultiCollection`2.ChangeItemKey(`1,`0)</parameter>
+          </include>
+        </markup>
+      </param>
+    </member>
+    <member name="M:WikiClientLibrary.Wikibase.Infrastructures.UnorderedKeyedMultiCollection`2.Clear">
+      <summary>
+        <markup>
+          <include item="SMCMissingTag">
+            <parameter>summary</parameter>
+            <parameter>M:WikiClientLibrary.Wikibase.Infrastructures.UnorderedKeyedMultiCollection`2.Clear</parameter>
+          </include>
+        </markup>
+      </summary>
+    </member>
+    <member name="M:WikiClientLibrary.Wikibase.Infrastructures.UnorderedKeyedMultiCollection`2.Contains(`1)">
+      <summary>
+        <markup>
+          <include item="SMCMissingTag">
+            <parameter>summary</parameter>
+            <parameter>M:WikiClientLibrary.Wikibase.Infrastructures.UnorderedKeyedMultiCollection`2.Contains(`1)</parameter>
+          </include>
+        </markup>
+      </summary>
+      <param name="item">
+        <markup>
+          <include item="SMCMissingParamTag">
+            <parameter>param</parameter>
+            <parameter>item</parameter>
+            <parameter>M:WikiClientLibrary.Wikibase.Infrastructures.UnorderedKeyedMultiCollection`2.Contains(`1)</parameter>
+          </include>
+        </markup>
+      </param>
+    </member>
+    <member name="M:WikiClientLibrary.Wikibase.Infrastructures.UnorderedKeyedMultiCollection`2.ContainsKey(`0)">
+      <summary>
+        <markup>
+          <include item="SMCMissingTag">
+            <parameter>summary</parameter>
+            <parameter>M:WikiClientLibrary.Wikibase.Infrastructures.UnorderedKeyedMultiCollection`2.ContainsKey(`0)</parameter>
+          </include>
+        </markup>
+      </summary>
+      <param name="key">
+        <markup>
+          <include item="SMCMissingParamTag">
+            <parameter>param</parameter>
+            <parameter>key</parameter>
+            <parameter>M:WikiClientLibrary.Wikibase.Infrastructures.UnorderedKeyedMultiCollection`2.ContainsKey(`0)</parameter>
+          </include>
+        </markup>
+      </param>
+    </member>
+    <member name="M:WikiClientLibrary.Wikibase.Infrastructures.UnorderedKeyedMultiCollection`2.CopyTo(System.Array,System.Int32)">
+      <summary>
+        <markup>
+          <include item="SMCMissingTag">
+            <parameter>summary</parameter>
+            <parameter>M:WikiClientLibrary.Wikibase.Infrastructures.UnorderedKeyedMultiCollection`2.CopyTo(System.Array,System.Int32)</parameter>
+          </include>
+        </markup>
+      </summary>
+      <param name="array">
+        <markup>
+          <include item="SMCMissingParamTag">
+            <parameter>param</parameter>
+            <parameter>array</parameter>
+            <parameter>M:WikiClientLibrary.Wikibase.Infrastructures.UnorderedKeyedMultiCollection`2.CopyTo(System.Array,System.Int32)</parameter>
+          </include>
+        </markup>
+      </param>
+      <param name="index">
+        <markup>
+          <include item="SMCMissingParamTag">
+            <parameter>param</parameter>
+            <parameter>index</parameter>
+            <parameter>M:WikiClientLibrary.Wikibase.Infrastructures.UnorderedKeyedMultiCollection`2.CopyTo(System.Array,System.Int32)</parameter>
+          </include>
+        </markup>
+      </param>
+    </member>
+    <member name="M:WikiClientLibrary.Wikibase.Infrastructures.UnorderedKeyedMultiCollection`2.CopyTo(`1[],System.Int32)">
+      <summary>
+        <markup>
+          <include item="SMCMissingTag">
+            <parameter>summary</parameter>
+            <parameter>M:WikiClientLibrary.Wikibase.Infrastructures.UnorderedKeyedMultiCollection`2.CopyTo(`1[],System.Int32)</parameter>
+          </include>
+        </markup>
+      </summary>
+      <param name="array">
+        <markup>
+          <include item="SMCMissingParamTag">
+            <parameter>param</parameter>
+            <parameter>array</parameter>
+            <parameter>M:WikiClientLibrary.Wikibase.Infrastructures.UnorderedKeyedMultiCollection`2.CopyTo(`1[],System.Int32)</parameter>
+          </include>
+        </markup>
+      </param>
+      <param name="arrayIndex">
+        <markup>
+          <include item="SMCMissingParamTag">
+            <parameter>param</parameter>
+            <parameter>arrayIndex</parameter>
+            <parameter>M:WikiClientLibrary.Wikibase.Infrastructures.UnorderedKeyedMultiCollection`2.CopyTo(`1[],System.Int32)</parameter>
+          </include>
+        </markup>
+      </param>
+    </member>
+    <member name="P:WikiClientLibrary.Wikibase.Infrastructures.UnorderedKeyedMultiCollection`2.Count">
+      <summary>
+        <markup>
+          <include item="SMCMissingTag">
+            <parameter>summary</parameter>
+            <parameter>P:WikiClientLibrary.Wikibase.Infrastructures.UnorderedKeyedMultiCollection`2.Count</parameter>
+          </include>
+        </markup>
+      </summary>
+    </member>
+    <member name="M:WikiClientLibrary.Wikibase.Infrastructures.UnorderedKeyedMultiCollection`2.EnumItems">
+      <summary>
+        <markup>
+          <include item="SMCMissingTag">
+            <parameter>summary</parameter>
+            <parameter>M:WikiClientLibrary.Wikibase.Infrastructures.UnorderedKeyedMultiCollection`2.EnumItems</parameter>
+          </include>
+        </markup>
+      </summary>
+    </member>
+    <member name="M:WikiClientLibrary.Wikibase.Infrastructures.UnorderedKeyedMultiCollection`2.GetEnumerator">
+      <summary>
+        <markup>
+          <include item="SMCMissingTag">
+            <parameter>summary</parameter>
+            <parameter>M:WikiClientLibrary.Wikibase.Infrastructures.UnorderedKeyedMultiCollection`2.GetEnumerator</parameter>
+          </include>
+        </markup>
+      </summary>
+    </member>
+    <member name="M:WikiClientLibrary.Wikibase.Infrastructures.UnorderedKeyedMultiCollection`2.GetKeyForItem(`1)">
+      <summary>
+        <markup>
+          <include item="SMCMissingTag">
+            <parameter>summary</parameter>
+            <parameter>M:WikiClientLibrary.Wikibase.Infrastructures.UnorderedKeyedMultiCollection`2.GetKeyForItem(`1)</parameter>
+          </include>
+        </markup>
+      </summary>
+      <param name="item">
+        <markup>
+          <include item="SMCMissingParamTag">
+            <parameter>param</parameter>
+            <parameter>item</parameter>
+            <parameter>M:WikiClientLibrary.Wikibase.Infrastructures.UnorderedKeyedMultiCollection`2.GetKeyForItem(`1)</parameter>
+          </include>
+        </markup>
+      </param>
+    </member>
+    <member name="P:WikiClientLibrary.Wikibase.Infrastructures.UnorderedKeyedMultiCollection`2.IsReadOnly">
+      <summary>
+        <markup>
+          <include item="SMCMissingTag">
+            <parameter>summary</parameter>
+            <parameter>P:WikiClientLibrary.Wikibase.Infrastructures.UnorderedKeyedMultiCollection`2.IsReadOnly</parameter>
+          </include>
+        </markup>
+      </summary>
+    </member>
+    <member name="P:WikiClientLibrary.Wikibase.Infrastructures.UnorderedKeyedMultiCollection`2.Item(`0)">
+      <summary>
+            Gets a readonly view of the items with the specified key.
+            </summary>
+      <returns>The items with specified key, or empty collection if no such item exists.
+            The view is guaranteed to be valid until any modifications to the collection.</returns>
+    </member>
+    <member name="P:WikiClientLibrary.Wikibase.Infrastructures.UnorderedKeyedMultiCollection`2.Keys">
+      <summary>
+            Gets a readonly view of the key collection.
+            </summary>
+    </member>
+    <member name="M:WikiClientLibrary.Wikibase.Infrastructures.UnorderedKeyedMultiCollection`2.Remove(`1)">
+      <summary>
+        <markup>
+          <include item="SMCMissingTag">
+            <parameter>summary</parameter>
+            <parameter>M:WikiClientLibrary.Wikibase.Infrastructures.UnorderedKeyedMultiCollection`2.Remove(`1)</parameter>
+          </include>
+        </markup>
+      </summary>
+      <param name="item">
+        <markup>
+          <include item="SMCMissingParamTag">
+            <parameter>param</parameter>
+            <parameter>item</parameter>
+            <parameter>M:WikiClientLibrary.Wikibase.Infrastructures.UnorderedKeyedMultiCollection`2.Remove(`1)</parameter>
+          </include>
+        </markup>
+      </param>
+    </member>
+    <member name="M:WikiClientLibrary.Wikibase.Infrastructures.UnorderedKeyedMultiCollection`2.Remove(`0)">
+      <summary>
+            Removes all the items with specified key.
+            </summary>
+      <param name="key">
+        <markup>
+          <include item="SMCMissingParamTag">
+            <parameter>param</parameter>
+            <parameter>key</parameter>
+            <parameter>M:WikiClientLibrary.Wikibase.Infrastructures.UnorderedKeyedMultiCollection`2.Remove(`0)</parameter>
+          </include>
+        </markup>
+      </param>
+      <returns>Whether one or more items has been removed.</returns>
+    </member>
+    <member name="P:WikiClientLibrary.Wikibase.Infrastructures.UnorderedKeyedMultiCollection`2.System#Collections#ICollection#IsSynchronized">
+      <summary>
+        <markup>
+          <include item="SMCMissingTag">
+            <parameter>summary</parameter>
+            <parameter>P:WikiClientLibrary.Wikibase.Infrastructures.UnorderedKeyedMultiCollection`2.System#Collections#ICollection#IsSynchronized</parameter>
+          </include>
+        </markup>
+      </summary>
+    </member>
+    <member name="P:WikiClientLibrary.Wikibase.Infrastructures.UnorderedKeyedMultiCollection`2.System#Collections#ICollection#SyncRoot">
+      <summary>
+        <markup>
+          <include item="SMCMissingTag">
+            <parameter>summary</parameter>
+            <parameter>P:WikiClientLibrary.Wikibase.Infrastructures.UnorderedKeyedMultiCollection`2.System#Collections#ICollection#SyncRoot</parameter>
+          </include>
+        </markup>
+      </summary>
+    </member>
+    <member name="M:WikiClientLibrary.Wikibase.Infrastructures.UnorderedKeyedMultiCollection`2.System#Collections#IEnumerable#GetEnumerator">
+      <summary>
+        <markup>
+          <include item="SMCMissingTag">
+            <parameter>summary</parameter>
+            <parameter>M:WikiClientLibrary.Wikibase.Infrastructures.UnorderedKeyedMultiCollection`2.System#Collections#IEnumerable#GetEnumerator</parameter>
+          </include>
+        </markup>
+      </summary>
+    </member>
+  </members>
+</doc>
