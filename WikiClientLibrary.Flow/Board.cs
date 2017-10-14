@@ -85,19 +85,35 @@ namespace WikiClientLibrary.Flow
         }
 
         /// <summary>
-        /// Asynchronously enumerates the topics in this board.
+        /// Asynchronously enumerates the topics in the order of time posted in this board.
         /// </summary>
         public IAsyncEnumerable<Topic> EnumTopicsAsync()
         {
-            return EnumTopicsAsync(20);
+            return EnumTopicsAsync(TopicListingOptions.OrderByPosted, 20);
+        }
+
+        /// <inheritdoc cref="EnumTopicsAsync(TopicListingOptions, int)"/>
+        public IAsyncEnumerable<Topic> EnumTopicsAsync(TopicListingOptions options)
+        {
+            return EnumTopicsAsync(options, 20);
         }
 
         /// <summary>
         /// Asynchronously enumerates the topics in this board.
         /// </summary>
-        public IAsyncEnumerable<Topic> EnumTopicsAsync(int pageSize)
+        /// <param name="options">Enumeration options.</param>
+        /// <param name="pageSize">
+        /// How many topics should be fetched in batch per MediaWiki API request.
+        /// No more than 100 (100 for bots) is allowed.
+        /// </param>
+        public IAsyncEnumerable<Topic> EnumTopicsAsync(TopicListingOptions options, int pageSize)
         {
             if (pageSize <= 0) throw new ArgumentOutOfRangeException(nameof(pageSize));
+            var sortParam = "user";
+            if ((options & TopicListingOptions.OrderByPosted) == TopicListingOptions.OrderByPosted)
+                sortParam = "newest";
+            if ((options & TopicListingOptions.OrderByUpdated) == TopicListingOptions.OrderByUpdated)
+                sortParam = "updated";
             return AsyncEnumerableFactory.FromAsyncGenerator<Topic>(async (sink, ct) =>
             {
                 var queryParams = new Dictionary<string, object>
@@ -105,6 +121,8 @@ namespace WikiClientLibrary.Flow
                     {"action", "flow"},
                     {"submodule", "view-topiclist"},
                     {"page", Title},
+                    {"vtlsortby", sortParam},
+                    {"vtlsavesortby", (options & TopicListingOptions.SaveSortingPreference) == TopicListingOptions.SaveSortingPreference},
                     {"vtllimit", pageSize},
                     {"vtlformat", "wikitext"},
                 };
@@ -112,11 +130,15 @@ namespace WikiClientLibrary.Flow
                 var jresult = await Site.GetJsonAsync(new WikiFormRequestMessage(queryParams), ct);
                 var jtopiclist = (JObject)jresult["flow"]["view-topiclist"]["result"]["topiclist"];
                 await sink.YieldAndWait(Topic.FromJsonTopicList(Site, jtopiclist));
-                // TODO Implement Pagination
                 var nextPageUrl = (string)jtopiclist["links"]?["pagination"]?["fwd"]?["url"];
                 if (nextPageUrl != null)
                 {
-
+                    var urlParams = FlowUtility.ParseUrlQueryParametrs(nextPageUrl);
+                    foreach (var pa in urlParams)
+                    {
+                        if (pa.Key.StartsWith("topiclist_"))
+                            queryParams["vtl" + pa.Key.Substring(10)] = pa.Value;
+                    }
                     goto NEXT_PAGE;
                 }
             });
@@ -156,4 +178,21 @@ namespace WikiClientLibrary.Flow
         /// <inheritdoc />
         public override string ToString() => Title;
     }
+
+    /// <summary>
+    /// Defines how a Flow topic list should be enumerated.
+    /// </summary>
+    [Flags]
+    public enum TopicListingOptions
+    {
+        /// <summary>Use user's default sorting preference.</summary>
+        Default = 0,
+        /// <summary>Flow topic list should be sorted descending by the time a topic is posed.</summary>
+        OrderByPosted = 1,
+        /// <summary>Flow topic list should be sorted descending by the time a topic's last activity.</summary>
+        OrderByUpdated = 2,
+        /// <summary>Save the current sorting option as user's preference.</summary>
+        SaveSortingPreference = 4,
+    }
+
 }

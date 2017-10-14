@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Diagnostics;
+using System.Linq;
 using System.Text;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
@@ -54,6 +56,24 @@ namespace WikiClientLibrary.Flow
         {
             // 621355968000000000: 1970-01-01
             return new DateTime(621355968000000000L + ticks * 10000L, DateTimeKind.Utc);
+        }
+
+        private static readonly IList<KeyValuePair<string, string>> emptyQueryParams
+            = new KeyValuePair<string, string>[0];
+
+        public static IList<KeyValuePair<string, string>> ParseUrlQueryParametrs(string url)
+        {
+            if (url == null) throw new ArgumentNullException(nameof(url));
+            var queryStarts = url.IndexOf('?');
+            if (queryStarts < 0) return emptyQueryParams;
+            var query = url.Substring(queryStarts + 1);
+            if (query.Length == 0) return emptyQueryParams;
+            return query.Split('&').Select(p =>
+            {
+                var equalIndex = p.IndexOf('=');
+                if (equalIndex < 0) return new KeyValuePair<string, string>(null, p);
+                return new KeyValuePair<string, string>(p.Substring(0, equalIndex), p.Substring(equalIndex + 1));
+            }).ToList();
         }
 
     }

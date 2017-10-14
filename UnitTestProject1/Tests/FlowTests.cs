@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using WikiClientLibrary;
@@ -20,15 +21,38 @@ namespace UnitTestProject1.Tests
             SiteNeedsLogin(Endpoints.WikipediaBetaEn);
         }
 
+        private IEnumerable<Post> ExpandPosts(IEnumerable<Post> posts)
+        {
+            foreach (var post in posts)
+            {
+                yield return post;
+                if (post.Replies.Count > 0)
+                {
+                    foreach (var rep in ExpandPosts(post.Replies))
+                    {
+                        yield return rep;
+                    }
+                }
+            }
+        }
+
         [Fact]
         public async Task BoardTest()
         {
             var board = new Board(await WpBetaSiteAsync, "Talk:Flow QA");
             await board.RefreshAsync();
             ShallowTrace(board);
-            var topics = await board.EnumTopicsAsync(10).Take(10).ToArray();
+            var topics = await board.EnumTopicsAsync(TopicListingOptions.OrderByPosted, 4).Take(10).ToArray();
             ShallowTrace(topics, 3);
             Assert.DoesNotContain(null, topics);
+            for (int i = 1; i < topics.Length; i++)
+                Assert.True(topics[i - 1].TopicTitleRevision.TimeStamp >= topics[i].TopicTitleRevision.TimeStamp,
+                    "Topic list is not sorted in posted order as expectation.");
+            topics = await board.EnumTopicsAsync(TopicListingOptions.OrderByUpdated, 5).Take(10).ToArray();
+            for (int i = 1; i < topics.Length; i++)
+                Assert.True(ExpandPosts(topics[i - 1].Posts).Select(p => p.LastRevision.TimeStamp).Max()
+                            >= ExpandPosts(topics[i].Posts).Select(p => p.LastRevision.TimeStamp).Max(),
+                    "Topic list is not sorted in updated order as expectation.");
         }
 
         [Fact]
@@ -42,8 +66,13 @@ namespace UnitTestProject1.Tests
             var post11 = await post1.ReplyAsync("It's sunny.");
             var post21 = await post2.ReplyAsync("Reply to the topic, again.");
 
-            // Refetch the topic and check.
-            var topic = await board.EnumTopicsAsync(1).First();
+            // Check if the post can be seen in the board,
+            // assuming there's no other users posting too many new topics concurrently.
+            Assert.True(await board.EnumTopicsAsync(TopicListingOptions.OrderByPosted, 4).Take(32)
+                .Any(t => t.WorkflowId == topic1.WorkflowId));
+            // Refetch the topic. Keep topic1 intact, as reference.
+            var topic = new Topic(topic1.Site, topic1.Title);
+            await topic.RefreshAsync();
             ShallowTrace(topic);
             Assert.Equal(topic1.Title, topic.Title);
             Assert.Equal(topicTitle, topic.TopicTitle);
