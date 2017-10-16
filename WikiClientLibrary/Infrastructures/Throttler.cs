@@ -23,7 +23,6 @@ namespace WikiClientLibrary.Infrastructures
         private int _QueuedWorkCount;
         private readonly object workQueueLock = new object();
         private TimeSpan _ThrottleTime = TimeSpan.FromSeconds(5);
-        private ILoggerFactory _LoggerFactory;
 
         /// <summary>
         /// Asynchronously enqueues a work item.

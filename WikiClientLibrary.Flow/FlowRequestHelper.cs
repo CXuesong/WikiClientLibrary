@@ -21,7 +21,7 @@ namespace WikiClientLibrary.Flow
             Debug.Assert(workflowId != null);
             Debug.Assert(content != null);
             JToken jresult;
-            using (await site.ModificationThrottler.QueueWorkAsync("Reply", cancellationToken))
+            using (await site.ModificationThrottler.QueueWorkAsync("Reply: " + workflowId, cancellationToken))
             {
                 jresult = await site.GetJsonAsync(new WikiFormRequestMessage(new
                 {

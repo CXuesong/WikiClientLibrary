@@ -139,7 +139,7 @@ namespace WikiClientLibrary.Flow
             if (reason == null) throw new ArgumentNullException(nameof(reason));
             if (reason.Length == 0) throw new ArgumentException("Reason cannot be empty.", nameof(reason));
             JToken jresult;
-            using (await Site.ModificationThrottler.QueueWorkAsync("Moderation", cancellationToken))
+            using (await Site.ModificationThrottler.QueueWorkAsync("Moderate: " + WorkflowId, cancellationToken))
             {
                 jresult = await Site.GetJsonAsync(new WikiFormRequestMessage(new
                 {
@@ -167,7 +167,7 @@ namespace WikiClientLibrary.Flow
         public async Task UpdateSummaryAsync(CancellationToken cancellationToken)
         {
             JToken jresult;
-            using (await Site.ModificationThrottler.QueueWorkAsync("UpdateSummary", cancellationToken))
+            using (await Site.ModificationThrottler.QueueWorkAsync("UpdateSummary: " + WorkflowId, cancellationToken))
             {
                 jresult = await Site.GetJsonAsync(new WikiFormRequestMessage(new
                 {
@@ -196,7 +196,7 @@ namespace WikiClientLibrary.Flow
         public async Task UpdateTopicTitleAsync(CancellationToken cancellationToken)
         {
             JToken jresult;
-            using (await Site.ModificationThrottler.QueueWorkAsync("UpdateTitle", cancellationToken))
+            using (await Site.ModificationThrottler.QueueWorkAsync("UpdateTitle: " + WorkflowId, cancellationToken))
             {
                 jresult = await Site.GetJsonAsync(new WikiFormRequestMessage(new
                 {
@@ -222,7 +222,7 @@ namespace WikiClientLibrary.Flow
             if (reason == null) throw new ArgumentNullException(nameof(reason));
             if (reason.Length == 0) throw new ArgumentException("Reason cannot be empty.", nameof(reason));
             JToken jresult;
-            using (await Site.ModificationThrottler.QueueWorkAsync("Moderation", cancellationToken))
+            using (await Site.ModificationThrottler.QueueWorkAsync("Moderate: " + WorkflowId, cancellationToken))
             {
                 jresult = await Site.GetJsonAsync(new WikiFormRequestMessage(new
                 {

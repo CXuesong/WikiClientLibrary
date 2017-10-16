@@ -119,7 +119,7 @@ namespace WikiClientLibrary.Flow
             if (reason == null) throw new ArgumentNullException(nameof(reason));
             if (reason.Length == 0) throw new ArgumentException("Reason cannot be empty.", nameof(reason));
             JToken jresult;
-            using (await Site.ModificationThrottler.QueueWorkAsync("Moderation", cancellationToken))
+            using (await Site.ModificationThrottler.QueueWorkAsync("Moderate: " + WorkflowId, cancellationToken))
             {
                 jresult = await Site.GetJsonAsync(new WikiFormRequestMessage(new
                 {
