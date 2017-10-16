@@ -45,8 +45,8 @@ namespace WikiClientLibrary.Sites
     public class WikiFamily : IWikiFamily, IWikiClientLoggable, IReadOnlyCollection<string>
     {
 
-        private ILoggerFactory _LoggerFactory;
         private readonly Dictionary<string, SiteEntry> sites = new Dictionary<string, SiteEntry>();
+        private ILogger _Logger;
 
         /// <summary>
         /// Initializes the instance with a <see cref="Client.WikiClient"/> and family name.
@@ -64,12 +64,9 @@ namespace WikiClientLibrary.Sites
             if (wikiClient == null) throw new ArgumentNullException(nameof(wikiClient));
             WikiClient = wikiClient;
             Name = name;
-            LoggerFactory = wikiClient.LoggerFactory;
         }
 
         public WikiClientBase WikiClient { get; }
-
-        protected ILogger Logger { get; private set; } = NullLogger.Instance;
 
         /// <summary>
         /// Add a new wiki site into this family.
@@ -91,8 +88,7 @@ namespace WikiClientLibrary.Sites
         public string TryNormalize(string prefix)
         {
             if (prefix == null) throw new ArgumentNullException(nameof(prefix));
-            SiteEntry entry;
-            if (sites.TryGetValue(prefix.ToLower(), out entry))
+            if (sites.TryGetValue(prefix.ToLower(), out var entry))
                 return entry.Prefix;
             return null;
         }
@@ -109,8 +105,7 @@ namespace WikiClientLibrary.Sites
         {
             if (prefix == null) throw new ArgumentNullException(nameof(prefix));
             prefix = prefix.ToLower();
-            SiteEntry entry;
-            if (sites.TryGetValue(prefix, out entry))
+            if (sites.TryGetValue(prefix, out var entry))
             {
                 var task = entry.Task;
                 if (task != null) return task;
@@ -134,7 +129,6 @@ namespace WikiClientLibrary.Sites
         protected virtual async Task<WikiSite> CreateSiteAsync(string prefix, string apiEndpoint)
         {
             var site = await WikiSite.CreateAsync(WikiClient, apiEndpoint);
-            site.LoggerFactory = LoggerFactory;
             Logger.LogTrace("[[{Family}:{prefix}:]] has been instantiated.", Name, prefix);
             return site;
         }
@@ -143,13 +137,17 @@ namespace WikiClientLibrary.Sites
         public IEnumerator<string> GetEnumerator() => sites.Keys.GetEnumerator();
 
         /// <inheritdoc />
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return GetEnumerator();
-        }
+        IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 
         /// <inheritdoc />
         public int Count => sites.Count;
+
+        /// <inheritdoc />
+        public ILogger Logger
+        {
+            get => _Logger;
+            set => _Logger = value ?? NullLogger.Instance;
+        }
 
         private class SiteEntry
         {
@@ -169,17 +167,9 @@ namespace WikiClientLibrary.Sites
 
             public Task<WikiSite> Task
             {
-                get { return _Task; }
-                set { _Task = value; }
+                get => _Task;
+                set => _Task = value;
             }
         }
-
-        /// <inheritdoc />
-        public ILoggerFactory LoggerFactory
-        {
-            get => _LoggerFactory;
-            set => Logger = Utility.SetLoggerFactory(ref _LoggerFactory, value, GetType());
-        }
-
     }
 }

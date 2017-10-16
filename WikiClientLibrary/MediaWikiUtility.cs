@@ -8,6 +8,7 @@ using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using WikiClientLibrary.Client;
+using WikiClientLibrary.Infrastructures.Logging;
 
 namespace WikiClientLibrary
 {
@@ -28,30 +29,34 @@ namespace WikiClientLibrary
         }
 
         // See Site.SearchApiEndpointAsync .
-        public static async Task<string> SearchApiEndpointAsync(WikiClient client, string urlExpression, ILogger logger)
+        public static async Task<string> SearchApiEndpointAsync(WikiClient client, string urlExpression)
         {
             if (client == null) throw new ArgumentNullException(nameof(client));
             if (urlExpression == null) throw new ArgumentNullException(nameof(urlExpression));
             urlExpression = urlExpression.Trim();
-            if (urlExpression == "") return null;
-            // Directly try the given URL.
-            var current = await TestApiEndpointAsync(client, urlExpression, logger);
-            if (current != null) return current;
-            // Try to infer from the page content.
-            var result = await DownloadStringAsync(client, urlExpression, true);
-            if (result != null)
+            if (urlExpression.Length == 0) return null;
+            using (client.BeginActionScope(null))
             {
-                current = result.Item1;
-                // <link rel="EditURI" type="application/rsd+xml" href="http://..../api.php?action=rsd"/>
-                var match = Regex.Match(result.Item2, @"(?<=href\s*=\s*[""']?)[^\?""']+(?=\?action=rsd)");
-                if (match.Success)
+                client.Logger.LogInformation("Search MediaWiki API endpoint starting from {Url}.", urlExpression);
+                // Directly try the given URL.
+                var current = await TestApiEndpointAsync(client, urlExpression);
+                if (current != null) return current;
+                // Try to infer from the page content.
+                var result = await DownloadStringAsync(client, urlExpression, true);
+                if (result != null)
                 {
-                    var v = NavigateTo(current, match.Value);
-                    v = await TestApiEndpointAsync(client, v, logger);
-                    if (v != null) return v;
+                    current = result.Item1;
+                    // <link rel="EditURI" type="application/rsd+xml" href="http://..../api.php?action=rsd"/>
+                    var match = Regex.Match(result.Item2, @"(?<=href\s*=\s*[""']?)[^\?""']+(?=\?action=rsd)");
+                    if (match.Success)
+                    {
+                        var v = NavigateTo(current, match.Value);
+                        v = await TestApiEndpointAsync(client, v);
+                        if (v != null) return v;
+                    }
                 }
+                return null;
             }
-            return null;
         }
 
         // Tuple<final URL, downloaded string>
@@ -91,7 +96,7 @@ namespace WikiClientLibrary
         /// Tests whether the specific URL is a valid MediaWiki API endpoint, and
         /// returns the final URL, if redirected.
         /// </summary>
-        private static async Task<string> TestApiEndpointAsync(WikiClient client, string url, ILogger logger)
+        private static async Task<string> TestApiEndpointAsync(WikiClient client, string url)
         {
             // Append default protocol.
             if (!ProtocolMatcher.IsMatch(url))
@@ -101,7 +106,7 @@ namespace WikiClientLibrary
                 url = "http:" + url;
             try
             {
-                logger.LogDebug("Test MediaWiki API endpoint: {Url}.", url);
+                client.Logger.LogDebug("Test MediaWiki API endpoint: {Url}.", url);
                 var result = await DownloadStringAsync(client, url + "?action=query&format=json", false);
                 if (result == null) return null;
                 var content = result.Item2;
@@ -112,7 +117,8 @@ namespace WikiClientLibrary
                 var finalUrl = result.Item1;
                 // Remove query string in the result
                 var querySplitter = finalUrl.IndexOf('?');
-                if (querySplitter > 0) return finalUrl.Substring(0, querySplitter);
+                if (querySplitter > 0) finalUrl = finalUrl.Substring(0, querySplitter);
+                client.Logger.LogInformation("Found MediaWiki API endpoint at: {Url}.", finalUrl);
                 return finalUrl;
             }
             catch (JsonException)

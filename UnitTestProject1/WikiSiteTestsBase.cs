@@ -20,11 +20,16 @@ namespace UnitTestProject1
 
     public class UnitTestsBase : IDisposable
     {
+
         public UnitTestsBase(ITestOutputHelper output)
         {
             if (output == null) throw new ArgumentNullException(nameof(output));
             Output = output;
+            OutputLoggerFactory = new LoggerFactory();
+            OutputLoggerFactory.AddProvider(new TestOutputLoggerProvider(Output));
         }
+
+        public LoggerFactory OutputLoggerFactory { get; }
 
         public ITestOutputHelper Output { get; }
 
@@ -32,8 +37,7 @@ namespace UnitTestProject1
         {
             Output.WriteLine(Utility.DumpObject(obj, depth));
         }
-
-        /// <inheritdoc />
+        
         protected virtual void Dispose(bool disposing)
         {
             if (disposing)
@@ -96,9 +100,10 @@ namespace UnitTestProject1
         {
             var options = new SiteOptions(url)
             {
-                AccountAssertion = AccountAssertionBehavior.AssertAll
+                AccountAssertion = AccountAssertionBehavior.AssertAll,
             };
             var site = await WikiSite.CreateAsync(wikiClient, options);
+            site.Logger = OutputLoggerFactory.CreateLogger<WikiSite>();
             if (sitesNeedsLogin.Contains(url))
             {
                 await CredentialManager.LoginAsync(site);
@@ -139,14 +144,12 @@ namespace UnitTestProject1
 
         protected WikiClient CreateWikiClient()
         {
-            var lf = new LoggerFactory();
-            lf.AddProvider(new TestOutputLoggerProvider(Output));
             var client = new WikiClient
             {
                 Timeout = TimeSpan.FromSeconds(20),
                 RetryDelay = TimeSpan.FromSeconds(5),
                 ClientUserAgent = "UnitTest/1.0 (.NET CLR)",
-                LoggerFactory = lf,
+                Logger = OutputLoggerFactory.CreateLogger<WikiClient>(),
             };
             return client;
         }

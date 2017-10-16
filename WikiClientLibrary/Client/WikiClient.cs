@@ -120,15 +120,10 @@ namespace WikiClientLibrary.Client
 #endif
         }
 
-        /// <summary>
-        /// 返回表示当前对象的字符串。
-        /// </summary>
-        /// <returns>
-        /// 表示当前对象的字符串。
-        /// </returns>
+        /// <inheritdoc />
         public override string ToString()
         {
-            return $"{GetType()}";
+            return $"{GetType().Name}#{GetHashCode()}";
         }
 
         /// <inheritdoc />

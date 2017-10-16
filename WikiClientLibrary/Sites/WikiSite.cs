@@ -11,6 +11,7 @@ using Newtonsoft.Json.Linq;
 using WikiClientLibrary.Client;
 using WikiClientLibrary.Infrastructures;
 using WikiClientLibrary.Pages;
+using WikiClientLibrary.Infrastructures.Logging;
 
 namespace WikiClientLibrary.Sites
 {
@@ -44,11 +45,10 @@ namespace WikiClientLibrary.Sites
         {
             get
             {
-                return LazyInitializer.EnsureInitialized(ref _ModificationThrottler, () =>
-                {
-                    var t = new Throttler {LoggerFactory = LoggerFactory};
-                    return t;
-                });
+                if (_ModificationThrottler != null) return _ModificationThrottler;
+                var t = new Throttler {Logger = Logger};
+                Volatile.Write(ref _ModificationThrottler, t);
+                return t;
             }
             set { _ModificationThrottler = value; }
         }
@@ -80,7 +80,9 @@ namespace WikiClientLibrary.Sites
             if (options == null) throw new ArgumentNullException(nameof(options));
             if (string.IsNullOrEmpty(options.ApiEndpoint))
                 throw new ArgumentException("Invalid API endpoint url.", nameof(options));
-            var site = new WikiSite(wikiClient, options) {LoggerFactory = wikiClient.LoggerFactory};
+            // Do not directly use WikiClient's logger,
+            // as client might want to use a different logger category for WikiSite.
+            var site = new WikiSite(wikiClient, options);
             if (!options.ExplicitInfoRefresh)
                 await Task.WhenAll(site.RefreshSiteInfoAsync(), site.RefreshAccountInfoAsync());
             return site;
@@ -96,10 +98,7 @@ namespace WikiClientLibrary.Sites
         /// <returns>The URL of Api Endpoint. OR <c>null</c> if such search has failed.</returns>
         public static Task<string> SearchApiEndpointAsync(WikiClient client, string urlExpression)
         {
-            var logger = client.LoggerFactory == null
-                ? NullLogger.Instance
-                : (ILogger) client.LoggerFactory.CreateLogger<WikiSite>();
-            return MediaWikiUtility.SearchApiEndpointAsync(client, urlExpression, logger);
+            return MediaWikiUtility.SearchApiEndpointAsync(client, urlExpression);
         }
 
         protected WikiSite(WikiClientBase wikiClient, SiteOptions options)
@@ -140,32 +139,35 @@ namespace WikiClientLibrary.Sites
         /// <exception cref="UnauthorizedOperationException">Cannot access query API module due to target site permission settings. You may need to login first.</exception>
         public async Task RefreshSiteInfoAsync()
         {
-            var jobj = await GetJsonAsync(new WikiFormRequestMessage(new
+            using (this.BeginActionScope(null))
             {
-                action = "query",
-                meta = "siteinfo",
-                siprop = "general|namespaces|namespacealiases|interwikimap|extensions"
-            }), true, CancellationToken.None);
-            var qg = (JObject) jobj["query"]["general"];
-            var ns = (JObject) jobj["query"]["namespaces"];
-            var aliases = (JArray) jobj["query"]["namespacealiases"];
-            var interwiki = (JArray) jobj["query"]["interwikimap"];
-            var extensions = (JArray) jobj["query"]["extensions"];
-            try
-            {
-                _SiteInfo = qg.ToObject<SiteInfo>(Utility.WikiJsonSerializer);
-                _Namespaces = new NamespaceCollection(this, ns, aliases);
-                _InterwikiMap = new InterwikiMap(this, interwiki);
-                _Extensions = new ExtensionCollection(this, extensions);
-            }
-            catch (Exception)
-            {
-                // Reset the state so that AssertSiteInitialized will work properly.
-                _SiteInfo = null;
-                _Namespaces = null;
-                _InterwikiMap = null;
-                _Extensions = null;
-                throw;
+                var jobj = await GetJsonAsync(new WikiFormRequestMessage(new
+                {
+                    action = "query",
+                    meta = "siteinfo",
+                    siprop = "general|namespaces|namespacealiases|interwikimap|extensions"
+                }), true, CancellationToken.None);
+                var qg = (JObject)jobj["query"]["general"];
+                var ns = (JObject)jobj["query"]["namespaces"];
+                var aliases = (JArray)jobj["query"]["namespacealiases"];
+                var interwiki = (JArray)jobj["query"]["interwikimap"];
+                var extensions = (JArray)jobj["query"]["extensions"];
+                try
+                {
+                    _SiteInfo = qg.ToObject<SiteInfo>(Utility.WikiJsonSerializer);
+                    _Namespaces = new NamespaceCollection(this, ns, aliases);
+                    _InterwikiMap = new InterwikiMap(this, interwiki);
+                    _Extensions = new ExtensionCollection(this, extensions);
+                }
+                catch (Exception)
+                {
+                    // Reset the state so that AssertSiteInitialized will work properly.
+                    _SiteInfo = null;
+                    _Namespaces = null;
+                    _InterwikiMap = null;
+                    _Extensions = null;
+                    throw;
+                }
             }
         }
 
@@ -188,14 +190,17 @@ namespace WikiClientLibrary.Sites
         /// <exception cref="UnauthorizedOperationException">Cannot access query API module due to target site permission settings. You may need to login first.</exception>
         public async Task RefreshAccountInfoAsync()
         {
-            var jobj = await GetJsonAsync(new WikiFormRequestMessage(new
+            using (this.BeginActionScope(null))
             {
-                action = "query",
-                meta = "userinfo",
-                uiprop = "blockinfo|groups|hasmsg|rights"
-            }), true, CancellationToken.None);
-            _AccountInfo = ((JObject) jobj["query"]["userinfo"]).ToObject<AccountInfo>(Utility.WikiJsonSerializer);
-            ListingPagingSize = _AccountInfo.HasRight(UserRights.ApiHighLimits) ? 5000 : 500;
+                var jobj = await GetJsonAsync(new WikiFormRequestMessage(new
+                {
+                    action = "query",
+                    meta = "userinfo",
+                    uiprop = "blockinfo|groups|hasmsg|rights"
+                }), true, CancellationToken.None);
+                _AccountInfo = ((JObject)jobj["query"]["userinfo"]).ToObject<AccountInfo>(Utility.WikiJsonSerializer);
+                ListingPagingSize = _AccountInfo.HasRight(UserRights.ApiHighLimits) ? 5000 : 500;
+            }
         }
 
         private SiteInfo _SiteInfo;
@@ -296,7 +301,7 @@ namespace WikiClientLibrary.Sites
         /// Invokes MediaWiki API and gets JSON result.
         /// </summary>
         /// <param name="message">The request message.</param>
-        /// <param name="supressAccountAssertion">Whether to temporarily disable account assertion as set in <see cref="SiteOptions.AccountAssertion"/>.</param>
+        /// <param name="suppressAccountAssertion">Whether to temporarily disable account assertion as set in <see cref="SiteOptions.AccountAssertion"/>.</param>
         /// <param name="cancellationToken">The cancellation token that will be checked prior to completing the returned task.</param>
         /// <exception cref="InvalidActionException">Specified action is not supported.</exception>
         /// <exception cref="OperationFailedException">There is "error" node in returned JSON. Instances of dervied types may be thrown.</exception>
@@ -315,7 +320,7 @@ namespace WikiClientLibrary.Sites
         /// </description></item>
         /// </list>
         /// </remarks>
-        public async Task<JToken> GetJsonAsync(WikiRequestMessage message, bool supressAccountAssertion,
+        public async Task<JToken> GetJsonAsync(WikiRequestMessage message, bool suppressAccountAssertion,
             CancellationToken cancellationToken)
         {
             var form = message as WikiFormRequestMessage;
@@ -333,7 +338,7 @@ namespace WikiClientLibrary.Sites
                             false, cancellationToken)));
                 }
                 // Apply account assertions
-                if (!supressAccountAssertion && _AccountInfo != null)
+                if (!suppressAccountAssertion && _AccountInfo != null)
                 {
                     if ((options.AccountAssertion & AccountAssertionBehavior.AssertBot) ==
                         AccountAssertionBehavior.AssertBot && _AccountInfo.IsBot)
@@ -345,6 +350,8 @@ namespace WikiClientLibrary.Sites
                 if (overridenFields.Count > 0)
                     localRequest = new WikiFormRequestMessage(form.Id, form, overridenFields, false);
             }
+            Logger.LogDebug("Sending request {Request}, SuppressAccountAssertion={SuppressAccountAssertion}",
+                localRequest, suppressAccountAssertion);
             try
             {
                 return await WikiClient.GetJsonAsync(options.ApiEndpoint, localRequest, cancellationToken);
@@ -661,6 +668,7 @@ namespace WikiClientLibrary.Sites
 
         private Task<bool> reLoginTask;
         private ILoggerFactory _LoggerFactory;
+        private ILogger _Logger = NullLogger.Instance;
 
         private async Task<bool> Relogin()
         {
@@ -672,24 +680,16 @@ namespace WikiClientLibrary.Sites
 
         #endregion
 
-        /// <summary>
-        /// 返回表示当前对象的字符串。
-        /// </summary>
-        /// <returns>
-        /// 表示当前对象的字符串。
-        /// </returns>
+        /// <inheritdoc/>
         public override string ToString()
         {
-            return string.IsNullOrEmpty(SiteInfo.SiteName) ? options.ApiEndpoint : SiteInfo.SiteName;
+            return string.IsNullOrEmpty(_SiteInfo?.SiteName) ? options.ApiEndpoint : _SiteInfo.SiteName;
         }
 
-        protected internal ILogger Logger { get; private set; } = NullLogger.Instance;
-
-        /// <inheritdoc />
-        public ILoggerFactory LoggerFactory
+        public ILogger Logger
         {
-            get => _LoggerFactory;
-            set => Logger = Utility.SetLoggerFactory(ref _LoggerFactory, value, GetType());
+            get => _Logger;
+            set => _Logger = value ?? NullLogger.Instance;
         }
     }
 

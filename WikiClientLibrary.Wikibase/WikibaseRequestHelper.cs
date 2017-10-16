@@ -5,10 +5,9 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Logging;
 using Newtonsoft.Json.Linq;
 using WikiClientLibrary.Client;
-using WikiClientLibrary.Infrastructures;
+using WikiClientLibrary.Infrastructures.Logging;
 using WikiClientLibrary.Sites;
 
 namespace WikiClientLibrary.Wikibase
@@ -72,23 +71,26 @@ namespace WikiClientLibrary.Wikibase
                 var req = BuildQueryOptions(langs, options);
                 req["action"] = "wbgetentities";
                 var titleLimit = site.AccountInfo.HasRight(UserRights.ApiHighLimits) ? 500 : 50;
-                foreach (var partition in siteEntities.Partition(titleLimit).Select(partition => partition.ToList()))
+                using (site.BeginActionScope(entities, options))
                 {
-                    //site.Logger.LogDebug("Fetching {Count} pages from {Site}.", partition.Count, site);
-                    // We use ids to query pages.
-                    req["ids"] = string.Join("|", partition.Select(p => p.Id));
-                    var jresult = await site.GetJsonAsync(new WikiFormRequestMessage(req), cancellationToken);
-                    var jentities = (JObject) jresult["entities"];
-                    foreach (var entity in partition)
+                    foreach (var partition in siteEntities.Partition(titleLimit).Select(partition => partition.ToList()))
                     {
-                        var jentity = jentities[entity.Id];
-                        // We can write Q123456 as q123456 in query params, but server will return Q123456 anyway.
-                        if (jentity == null)
-                            jentity = jentities.Properties().FirstOrDefault(p =>
-                                string.Equals(p.Name, entity.Id, StringComparison.OrdinalIgnoreCase));
-                        if (jentity == null)
-                            throw new UnexpectedDataException($"Cannot find the entity with id {entity.Id} in the response.");
-                        entity.LoadFromJson(jentity, options, false);
+                        //site.Logger.LogDebug("Fetching {Count} pages from {Site}.", partition.Count, site);
+                        // We use ids to query pages.
+                        req["ids"] = string.Join("|", partition.Select(p => p.Id));
+                        var jresult = await site.GetJsonAsync(new WikiFormRequestMessage(req), cancellationToken);
+                        var jentities = (JObject)jresult["entities"];
+                        foreach (var entity in partition)
+                        {
+                            var jentity = jentities[entity.Id];
+                            // We can write Q123456 as q123456 in query params, but server will return Q123456 anyway.
+                            if (jentity == null)
+                                jentity = jentities.Properties().FirstOrDefault(p =>
+                                    string.Equals(p.Name, entity.Id, StringComparison.OrdinalIgnoreCase));
+                            if (jentity == null)
+                                throw new UnexpectedDataException($"Cannot find the entity with id {entity.Id} in the response.");
+                            entity.LoadFromJson(jentity, options, false);
+                        }
                     }
                 }
             }

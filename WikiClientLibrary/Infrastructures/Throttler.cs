@@ -19,7 +19,6 @@ namespace WikiClientLibrary.Infrastructures
     public class Throttler : IWikiClientLoggable
     {
 
-        private ILogger logger = NullLogger.Instance;
         private WorkItem lastWork;
         private int _QueuedWorkCount;
         private readonly object workQueueLock = new object();
@@ -46,9 +45,9 @@ namespace WikiClientLibrary.Infrastructures
                     if (previousWork != null)
                     {
                         // Wait for previous work.
-                        if (logger.IsEnabled(LogLevel.Debug))
+                        if (Logger.IsEnabled(LogLevel.Debug))
                         {
-                            logger.LogDebug("{Work}: Waiting for {WorkItems} WorkItem(s).", thisWork, QueuedWorkCount);
+                            Logger.LogDebug("{Work}: Waiting for {WorkItems} WorkItem(s).", thisWork, QueuedWorkCount);
                         }
                         if (ct.CanBeCanceled)
                         {
@@ -65,7 +64,7 @@ namespace WikiClientLibrary.Infrastructures
                         }
                     }
                     ct.ThrowIfCancellationRequested();
-                    logger.LogDebug("{Work}: Waiting for delay {Delay}.", thisWork, _ThrottleTime);
+                    Logger.LogDebug("{Work}: Waiting for delay {Delay}.", thisWork, _ThrottleTime);
                     await Task.Delay(_ThrottleTime, ct);
                 }
                 catch (OperationCanceledException)
@@ -102,7 +101,7 @@ namespace WikiClientLibrary.Infrastructures
         /// </summary>
         public TimeSpan ThrottleTime
         {
-            get { return _ThrottleTime; }
+            get => _ThrottleTime;
             set
             {
                 if (value < TimeSpan.Zero) throw new ArgumentOutOfRangeException(nameof(value));
@@ -111,6 +110,7 @@ namespace WikiClientLibrary.Infrastructures
         }
 
         private static readonly Task completedTask = Task.FromResult(0);
+        private ILogger _Logger;
 
         /// <summary>
         /// Gets a task that is completed when all the queued work items up till now
@@ -154,10 +154,10 @@ namespace WikiClientLibrary.Infrastructures
         }
 
         /// <inheritdoc />
-        public ILoggerFactory LoggerFactory
+        public ILogger Logger
         {
-            get => _LoggerFactory;
-            set => logger = Utility.SetLoggerFactory<Throttler>(ref _LoggerFactory, value);
+            get => _Logger;
+            set => _Logger = value ?? NullLogger.Instance;
         }
     }
 }

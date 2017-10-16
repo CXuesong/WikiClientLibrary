@@ -8,12 +8,12 @@ using System.Runtime.Serialization;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Logging.Abstractions;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using WikiClientLibrary.Client;
 using WikiClientLibrary.Generators;
 using WikiClientLibrary.Infrastructures;
+using WikiClientLibrary.Infrastructures.Logging;
 using WikiClientLibrary.Sites;
 
 namespace WikiClientLibrary.Pages
@@ -21,11 +21,9 @@ namespace WikiClientLibrary.Pages
     /// <summary>
     /// Represents a page on MediaWiki site.
     /// </summary>
-    public partial class WikiPage : IWikiClientLoggable
+    public partial class WikiPage
     {
         
-        private ILoggerFactory _LoggerFactory;
-
         public WikiPage(WikiSite site, string title) : this(site, title, BuiltInNamespaces.Main)
         {
         }
@@ -40,7 +38,6 @@ namespace WikiClientLibrary.Pages
             var parsedTitle = WikiLink.Parse(site, title, defaultNamespaceId);
             Title = parsedTitle.FullTitle;
             NamespaceId = parsedTitle.Namespace.Id;
-            LoggerFactory = site.LoggerFactory;
         }
 
         internal WikiPage(WikiSite site)
@@ -257,7 +254,7 @@ namespace WikiClientLibrary.Pages
             if ((options & PageQueryOptions.ResolveRedirects) != PageQueryOptions.ResolveRedirects
                 && Id != 0 && !AreIdEquals(Id, id))
                 // The page has been overwritten, or deleted.
-                Logger.LogWarning("Detected change of page id for [[{Title}]]: {Id1} -> {Id2}.", Title, Id, id);
+                Site.Logger.LogWarning("Detected change of page id for [[{Title}]]: {Id1} -> {Id2}.", Title, Id, id);
             Id = id;
             var page = (JObject) prop.Value;
             OnLoadPageInfo(page);
@@ -488,6 +485,7 @@ namespace WikiClientLibrary.Pages
         public async Task<bool> UpdateContentAsync(string summary, bool minor, bool bot, AutoWatchBehavior watch,
             CancellationToken cancellationToken)
         {
+            using (Site.BeginActionScope(this))
             using (await Site.ModificationThrottler.QueueWorkAsync("Edit: " + this, cancellationToken))
             {
                 // When passing this to the Edit API, always pass the token parameter last
@@ -530,15 +528,14 @@ namespace WikiClientLibrary.Pages
                 {
                     if (jedit["nochange"] != null)
                     {
-                        Logger.LogInformation("Submitted empty edit to page [[{Page}]] on {Site}.", this, Site);
+                        Site.Logger.LogInformation("Submitted empty edit to page.");
                         return false;
                     }
                     ContentModel = (string) jedit["contentmodel"];
                     LastRevisionId = (int) jedit["newrevid"];
                     Id = (int) jedit["pageid"];
                     Title = (string) jedit["title"];
-                    Logger.LogInformation("Edited page [[{Page}]] on {Site}. New revid={RevisionId}.", this, Site,
-                        LastRevisionId);
+                    Site.Logger.LogInformation("Edited page. New revid={RevisionId}.", LastRevisionId);
                     return true;
                 }
                 // No "errors" in json result but result is not Success.
@@ -583,6 +580,7 @@ namespace WikiClientLibrary.Pages
         {
             if (newTitle == null) throw new ArgumentNullException(nameof(newTitle));
             if (newTitle == Title) return;
+            using (Site.BeginActionScope(this))
             using (await Site.ModificationThrottler.QueueWorkAsync("Move: " + this, cancellationToken))
             {
                 // When passing this to the Edit API, always pass the token parameter last
@@ -624,7 +622,7 @@ namespace WikiClientLibrary.Pages
                 }
                 var fromTitle = (string) jresult["move"]["from"];
                 var toTitle = (string) jresult["move"]["to"];
-                Logger.LogInformation("Page [[{fromTitle}]] has been moved to [[{toTitle}]].", fromTitle, toTitle);
+                Site.Logger.LogInformation("Page [[{fromTitle}]] has been moved to [[{toTitle}]].", fromTitle, toTitle);
                 Title = toTitle;
             }
         }
@@ -650,6 +648,7 @@ namespace WikiClientLibrary.Pages
         /// </summary>
         public async Task<bool> DeleteAsync(string reason, AutoWatchBehavior watch, CancellationToken cancellationToken)
         {
+            using (Site.BeginActionScope(this))
             using (await Site.ModificationThrottler.QueueWorkAsync("Delete: " + this, cancellationToken))
             {
                 JToken jresult;
@@ -681,7 +680,7 @@ namespace WikiClientLibrary.Pages
                 Exists = false;
                 LastRevision = null;
                 LastRevisionId = 0;
-                Logger.LogInformation("[[{Page}]] has been deleted.", title);
+                Site.Logger.LogInformation("[[{Page}]] has been deleted.", title);
                 return true;
             }
         }
@@ -716,25 +715,12 @@ namespace WikiClientLibrary.Pages
 
         #endregion
 
-        /// <summary>
-        /// 返回表示当前对象的字符串。
-        /// </summary>
-        /// <returns>
-        /// 表示当前对象的字符串。
-        /// </returns>
+        /// <inheritdoc/>
         public override string ToString()
         {
             return string.IsNullOrEmpty(Title) ? ("#" + Id) : Title;
         }
 
-        protected ILogger Logger { get; private set; } = NullLogger.Instance;
-
-        /// <inheritdoc />
-        public ILoggerFactory LoggerFactory
-        {
-            get => _LoggerFactory;
-            set => Logger = Utility.SetLoggerFactory(ref _LoggerFactory, value, GetType());
-        }
     }
 
     /// <summary>

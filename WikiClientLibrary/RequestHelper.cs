@@ -14,6 +14,7 @@ using WikiClientLibrary.Infrastructures;
 using WikiClientLibrary.Pages;
 using WikiClientLibrary.Sites;
 using AsyncEnumerableExtensions;
+using WikiClientLibrary.Infrastructures.Logging;
 
 namespace WikiClientLibrary
 {
@@ -35,7 +36,7 @@ namespace WikiClientLibrary
                 // We also fetch category info, just in case.
                 {"prop", "info|categoryinfo|imageinfo|revisions|pageprops"},
                 {"inprop", "protection"},
-                {"iiprop", "timestamp|user|comment|url|size|sha1" },
+                {"iiprop", "timestamp|user|comment|url|size|sha1"},
                 {"rvprop", "ids|timestamp|flags|comment|user|contentmodel|sha1|tags|size"},
                 {"redirects", (options & PageQueryOptions.ResolveRedirects) == PageQueryOptions.ResolveRedirects},
                 {"maxlag", 5},
@@ -47,7 +48,8 @@ namespace WikiClientLibrary
             return queryParams;
         }
 
-        public static IAsyncEnumerable<JObject> QueryWithContinuation(WikiSite site, IEnumerable<KeyValuePair<string, object>> parameters, bool distinctPages = false)
+        public static IAsyncEnumerable<JObject> QueryWithContinuation(WikiSite site, IEnumerable<KeyValuePair<string, object>> parameters,
+            bool distinctPages = false)
         {
             return AsyncEnumerableFactory.FromAsyncGenerator<JObject>(async (sink, ct) =>
             {
@@ -131,42 +133,45 @@ namespace WikiClientLibrary
                 var titleLimit = site.AccountInfo.HasRight(UserRights.ApiHighLimits)
                     ? 500
                     : 50;
-                foreach (var partition in sitePages.Partition(titleLimit).Select(partition => partition.ToList()))
+                using (site.BeginActionScope(sitePages, options))
                 {
-                    site.Logger.LogDebug("Fetching {Count} pages from {Site}.", partition.Count, site);
-                    // We use titles to query pages.
-                    queryParams["titles"] = string.Join("|", partition.Select(p => p.Title));
-                    var jobj = await site.GetJsonAsync(new WikiFormRequestMessage(queryParams), cancellationToken);
-                    // Process title normalization.
-                    var normalized = jobj["query"]["normalized"]?.ToDictionary(n => (string) n["from"],
-                        n => (string) n["to"]);
-                    // Process redirects.
-                    var redirects = jobj["query"]["redirects"]?.ToDictionary(n => (string) n["from"],
-                        n => (string) n["to"]);
-                    var pageInfoDict = ((JObject) jobj["query"]["pages"]).Properties()
-                        .ToDictionary(p => p.Value["title"]);
-                    foreach (var page in partition)
+                    foreach (var partition in sitePages.Partition(titleLimit).Select(partition => partition.ToList()))
                     {
-                        var title = page.Title;
-                        // Normalize the title first.
-                        if (normalized?.ContainsKey(title) ?? false)
-                            title = normalized[title];
-                        // Then process the redirects.
-                        var redirectTrace = new List<string>();
-                        while (redirects?.ContainsKey(title) ?? false)
+                        site.Logger.LogDebug("Fetching {Count} pages.", partition.Count);
+                        // We use titles to query pages.
+                        queryParams["titles"] = string.Join("|", partition.Select(p => p.Title));
+                        var jobj = await site.GetJsonAsync(new WikiFormRequestMessage(queryParams), cancellationToken);
+                        // Process title normalization.
+                        var normalized = jobj["query"]["normalized"]?.ToDictionary(n => (string)n["from"],
+                            n => (string)n["to"]);
+                        // Process redirects.
+                        var redirects = jobj["query"]["redirects"]?.ToDictionary(n => (string)n["from"],
+                            n => (string)n["to"]);
+                        var pageInfoDict = ((JObject)jobj["query"]["pages"]).Properties()
+                            .ToDictionary(p => p.Value["title"]);
+                        foreach (var page in partition)
                         {
-                            redirectTrace.Add(title); // Adds the last title
-                            var next = redirects[title];
-                            if (redirectTrace.Contains(next))
-                                throw new InvalidOperationException(
-                                    $"Cannot resolve circular redirect: {string.Join("->", redirectTrace)}.");
-                            title = next;
+                            var title = page.Title;
+                            // Normalize the title first.
+                            if (normalized?.ContainsKey(title) ?? false)
+                                title = normalized[title];
+                            // Then process the redirects.
+                            var redirectTrace = new List<string>();
+                            while (redirects?.ContainsKey(title) ?? false)
+                            {
+                                redirectTrace.Add(title); // Adds the last title
+                                var next = redirects[title];
+                                if (redirectTrace.Contains(next))
+                                    throw new InvalidOperationException(
+                                        $"Cannot resolve circular redirect: {string.Join("->", redirectTrace)}.");
+                                title = next;
+                            }
+                            // Finally, get the page.
+                            var pageInfo = pageInfoDict[title];
+                            if (redirectTrace.Count > 0)
+                                page.RedirectPath = redirectTrace;
+                            page.LoadFromJson(pageInfo, options);
                         }
-                        // Finally, get the page.
-                        var pageInfo = pageInfoDict[title];
-                        if (redirectTrace.Count > 0)
-                            page.RedirectPath = redirectTrace;
-                        page.LoadFromJson(pageInfo, options);
                     }
                 }
             }
@@ -178,7 +183,8 @@ namespace WikiClientLibrary
         /// <remarks>
         /// <para>If there's invalid revision id in <paramref name="revIds"/>, an <see cref="ArgumentException"/> will be thrown while enumerating.</para>
         /// </remarks>
-        public static IAsyncEnumerable<Revision> FetchRevisionsAsync(WikiSite site, IEnumerable<int> revIds, PageQueryOptions options, CancellationToken cancellationToken)
+        public static IAsyncEnumerable<Revision> FetchRevisionsAsync(WikiSite site, IEnumerable<int> revIds, PageQueryOptions options,
+            CancellationToken cancellationToken)
         {
             if (revIds == null) throw new ArgumentNullException(nameof(revIds));
             var queryParams = GetPageFetchingParams(options);
@@ -193,10 +199,10 @@ namespace WikiClientLibrary
                     site.Logger.LogDebug("Fetching {Count} revisions from {Site}.", partition.Count, site);
                     queryParams["revids"] = string.Join("|", partition);
                     var jobj = await site.GetJsonAsync(new WikiFormRequestMessage(queryParams), cancellationToken);
-                    var jpages = (JObject) jobj["query"]["pages"];
+                    var jpages = (JObject)jobj["query"]["pages"];
                     // Generate converters first
                     // Use DelegateCreationConverter to create Revision with constructor
-                    var pages = WikiPage.FromJsonQueryResult(site, (JObject) jobj["query"], options);
+                    var pages = WikiPage.FromJsonQueryResult(site, (JObject)jobj["query"], options);
                     foreach (var p in pages)
                     {
                         if (!pagePool.ContainsKey(p.Id))
@@ -212,7 +218,7 @@ namespace WikiClientLibrary
                         .SelectMany(p => p.Value["revisions"].Select(r => new
                         {
                             Serializer = pagePool[Convert.ToInt32(p.Name)],
-                            RevisionId = (int) r["revid"],
+                            RevisionId = (int)r["revid"],
                             Revision = r
                         })).ToDictionary(o => o.RevisionId);
                     return partition.Select(revId =>
@@ -262,13 +268,14 @@ namespace WikiClientLibrary
                     return AsyncEnumerable.Empty<Revision>();
                 });
         }
+
         #endregion
 
         /// <summary>
         /// Asynchronously purges the pages.
         /// </summary>
         /// <returns>A collection of pages that haven't been successfully purged, because of either missing or invalid titles.</returns>
-        public static async Task<IReadOnlyCollection<WikiPage>> PurgePagesAsync(IEnumerable<WikiPage> pages, 
+        public static async Task<IReadOnlyCollection<WikiPage>> PurgePagesAsync(IEnumerable<WikiPage> pages,
             PagePurgeOptions options, CancellationToken cancellationToken)
         {
             if (pages == null) throw new ArgumentNullException(nameof(pages));
@@ -280,47 +287,55 @@ namespace WikiClientLibrary
                 var titleLimit = site.AccountInfo.HasRight(UserRights.ApiHighLimits)
                     ? 500
                     : 50;
-                foreach (var partition in sitePages.Partition(titleLimit).Select(partition => partition.ToList()))
+                using (site.BeginActionScope(sitePages, options))
                 {
-                    site.Logger.LogDebug("Purging {Count} pages on {Site}.", partition.Count, site);
-                    // We purge pages by titles.
-                    try
+                    foreach (var partition in sitePages.Partition(titleLimit).Select(partition => partition.ToList()))
                     {
-                        var jresult = await site.GetJsonAsync(new WikiFormRequestMessage(new
+                        site.Logger.LogDebug("Purging {Count} pages on {Site}.", partition.Count, site);
+                        // We purge pages by titles.
+                        try
                         {
-                            action = "purge",
-                            titles = string.Join("|", partition.Select(p => p.Title)),
-                            forcelinkupdate =
+                            var jresult = await site.GetJsonAsync(new WikiFormRequestMessage(new
+                            {
+                                action = "purge",
+                                titles = string.Join("|", partition.Select(p => p.Title)),
+                                forcelinkupdate =
                                 (options & PagePurgeOptions.ForceLinkUpdate) == PagePurgeOptions.ForceLinkUpdate,
-                            forcerecursivelinkupdate =
+                                forcerecursivelinkupdate =
                                 (options & PagePurgeOptions.ForceRecursiveLinkUpdate) ==
                                 PagePurgeOptions.ForceRecursiveLinkUpdate,
-                        }), cancellationToken);
-                        // Now check whether the pages have been purged successfully.
-                        // Process title normalization.
-                        var normalized = jresult["normalized"]?.ToDictionary(n => (string) n["from"],
-                            n => (string) n["to"]);
-                        var purgeStatusDict = jresult["purge"].ToDictionary(o => o["title"]);
-                        foreach (var page in partition)
-                        {
-                            var title = page.Title;
-                            // Normalize the title.
-                            if (normalized?.ContainsKey(title) ?? false)
-                                title = normalized[title];
-                            // No redirects here ^_^
-                            var jpage = purgeStatusDict[title];
-                            if (jpage["invalid"] != null || jpage["missing"] != null)
+                            }), cancellationToken);
+                            // Now check whether the pages have been purged successfully.
+                            // Process title normalization.
+                            var normalized = jresult["normalized"]?.ToDictionary(n => (string)n["from"],
+                                n => (string)n["to"]);
+                            var purgeStatusDict = jresult["purge"].ToDictionary(o => o["title"]);
+                            foreach (var page in partition)
                             {
-                                site.Logger.LogWarning("Cannot purge the page: [[{Page}]] on {Site}. {Reason}",
-                                    page, site, jpage["invalidreason"]);
-                                failedPages.Add(page);
+                                var title = page.Title;
+                                // Normalize the title.
+                                if (normalized?.ContainsKey(title) ?? false)
+                                    title = normalized[title];
+                                // No redirects here ^_^
+                                var jpage = purgeStatusDict[title];
+                                if (jpage["invalid"] != null)
+                                {
+                                    site.Logger.LogWarning("Cannot purge the page: [[{Page}]]. {Reason}",
+                                        page, jpage["invalidreason"]);
+                                    failedPages.Add(page);
+                                }
+                                if (jpage["missing"] != null)
+                                {
+                                    site.Logger.LogWarning("Cannot purge the inexistent page: [[{Page}]].", page);
+                                    failedPages.Add(page);
+                                }
                             }
                         }
-                    }
-                    catch (OperationFailedException ex)
-                    {
-                        if (ex.ErrorCode == "cantpurge") throw new UnauthorizedOperationException(ex);
-                        throw;
+                        catch (OperationFailedException ex)
+                        {
+                            if (ex.ErrorCode == "cantpurge") throw new UnauthorizedOperationException(ex);
+                            throw;
+                        }
                     }
                 }
             }
@@ -347,7 +362,7 @@ namespace WikiClientLibrary
                     revid = revisionId,
                     token = token,
                 }), cancellationToken);
-                if (recentChangeId != null) Debug.Assert((int) jresult["patrol"]["rcid"] == recentChangeId.Value);
+                if (recentChangeId != null) Debug.Assert((int)jresult["patrol"]["rcid"] == recentChangeId.Value);
             }
             catch (OperationFailedException ex)
             {
@@ -404,10 +419,10 @@ namespace WikiClientLibrary
             }
             var jresult = await site.GetJsonAsync(new WikiFormRequestMessage(pa), CancellationToken.None);
             var jmodules =
-                ((JObject) jresult["paraminfo"]).Properties().FirstOrDefault(p => p.Name.EndsWith("modules"))?.Value;
+                ((JObject)jresult["paraminfo"]).Properties().FirstOrDefault(p => p.Name.EndsWith("modules"))?.Value;
             // For now we use the method internally.
             Debug.Assert(jmodules != null);
-            return (JObject) jmodules.First;
+            return (JObject)jmodules.First;
         }
 
         /// <summary>
@@ -429,13 +444,13 @@ namespace WikiClientLibrary
                 .SelectMany(jquery =>
                 {
                     var page = jquery["pages"].Values().First();
-                    var links = (JArray) page?["links"];
+                    var links = (JArray)page?["links"];
                     if (links != null)
                     {
                         resultCounter += links.Count;
                         site.Logger.LogDebug("Loaded {Count} items linking to [[{Title}]] on {Site}.",
                             resultCounter, titlesExpr, site);
-                        return links.Select(l => (string) l["title"]).ToAsyncEnumerable();
+                        return links.Select(l => (string)l["title"]).ToAsyncEnumerable();
                     }
                     return AsyncEnumerable.Empty<string>();
                 });
@@ -462,13 +477,13 @@ namespace WikiClientLibrary
                 .SelectMany(jquery =>
                 {
                     var page = jquery["pages"].Values().First();
-                    var links = (JArray) page?["templates"];
+                    var links = (JArray)page?["templates"];
                     if (links != null)
                     {
                         resultCounter += links.Count;
                         site.Logger.LogDebug("Loaded {Count} items transcluded by [[{Title}]] on {Site}.",
                             resultCounter, titlesExpr, site);
-                        return links.Select(l => (string) l["title"]).ToAsyncEnumerable();
+                        return links.Select(l => (string)l["title"]).ToAsyncEnumerable();
                     }
                     return AsyncEnumerable.Empty<string>();
                 });

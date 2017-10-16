@@ -21,6 +21,7 @@ namespace WikiClientLibrary.Client
 
         private int _MaxRetries = 3;
         private ILoggerFactory _LoggerFactory = null;
+        private ILogger _Logger = NullLogger.Instance;
 
         /// <summary>
         /// Timeout for each query.
@@ -80,12 +81,10 @@ namespace WikiClientLibrary.Client
         }
 
         /// <inheritdoc />
-        public ILoggerFactory LoggerFactory
+        public ILogger Logger
         {
-            get => _LoggerFactory;
-            set => Logger = Utility.SetLoggerFactory(ref _LoggerFactory, value, GetType());
+            get => _Logger;
+            set => _Logger = value ?? NullLogger.Instance;
         }
-
-        protected ILogger Logger { get; private set; } = NullLogger.Instance;
     }
 }

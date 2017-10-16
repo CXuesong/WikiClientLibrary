@@ -38,7 +38,11 @@ namespace WikiClientLibrary.Pages
         {
             return new[] {new KeyValuePair<string, object>("file", Stream)};
         }
-
+        /// <inheritdoc />
+        public override string ToString()
+        {
+            return "StreamUploadSource(" + Stream + ")";
+        }
     }
 
     /// <summary>
@@ -70,6 +74,11 @@ namespace WikiClientLibrary.Pages
             };
         }
 
+        /// <inheritdoc />
+        public override string ToString()
+        {
+            return "FileKeyUploadSource(" + FileKey + ")";
+        }
     }
 
     /// <summary>
@@ -95,6 +104,12 @@ namespace WikiClientLibrary.Pages
         {
             if (SourceUrl == null) throw new ArgumentNullException(nameof(SourceUrl));
             return new[] {new KeyValuePair<string, object>("url", SourceUrl)};
+        }
+
+        /// <inheritdoc />
+        public override string ToString()
+        {
+            return "ExternalFileUploadSource(" + SourceUrl + ")";
         }
     }
 

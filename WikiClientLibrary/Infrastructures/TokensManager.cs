@@ -7,6 +7,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
 using WikiClientLibrary.Client;
+using WikiClientLibrary.Infrastructures.Logging;
 using WikiClientLibrary.Sites;
 
 namespace WikiClientLibrary.Infrastructures
@@ -56,12 +57,12 @@ namespace WikiClientLibrary.Infrastructures
             if (warnings != null)
             {
                 // "*": "Unrecognized value for parameter 'type': xxxx"
-                var warn = (string) warnings["*"];
+                var warn = (string)warnings["*"];
                 if (warn != null && warn.Contains("Unrecognized value") && warn.Contains("type"))
                     throw new ArgumentException(warn, nameof(tokenTypeExpr));
                 throw new OperationFailedException(warnings.ToString());
             }
-            return (JObject) jobj["query"]["tokens"];
+            return (JObject)jobj["query"]["tokens"];
         }
 
         /// <summary>
@@ -79,7 +80,7 @@ namespace WikiClientLibrary.Infrastructures
                 titles = "Dummy Title",
                 intoken = tokenTypeExpr,
             }), true, cancellationToken);
-            var page = (JObject) ((JProperty) jobj["query"]["pages"].First).Value;
+            var page = (JObject)((JProperty)jobj["query"]["pages"].First).Value;
             return new JObject(page.Properties().Where(p => p.Name.EndsWith("token")));
         }
 
@@ -119,7 +120,7 @@ namespace WikiClientLibrary.Infrastructures
                 if (!forceRefetch && tokensCache.TryGetValue(realTokenType, out var value))
                 {
                     if (value is string s) return s;
-                    var task = (Task<string>) value;
+                    var task = (Task<string>)value;
                     if (task.Status == TaskStatus.RanToCompletion)
                     {
                         tokensCache[realTokenType] = task.Result;
@@ -145,7 +146,7 @@ namespace WikiClientLibrary.Infrastructures
             if (cancellationToken.CanBeCanceled)
             {
                 var cancellationTcs = new TaskCompletionSource<string>();
-                using (cancellationToken.Register(o => ((TaskCompletionSource<string>) o).TrySetCanceled(),
+                using (cancellationToken.Register(o => ((TaskCompletionSource<string>)o).TrySetCanceled(),
                     cancellationTcs))
                 {
                     // p.Value completes/failed, or cancellationTcs cancelled.
@@ -165,14 +166,15 @@ namespace WikiClientLibrary.Infrastructures
             string ExtractToken(JObject jTokens, string tokenType1)
             {
                 if (jTokens == null) throw new ArgumentNullException(nameof(jTokens));
-                var value = (string) (jTokens[tokenType1] ?? jTokens[tokenType1 + "token"]);
+                var value = (string)(jTokens[tokenType1] ?? jTokens[tokenType1 + "token"]);
                 if (value == null)
                     throw new ArgumentException($"Invalid token type: {tokenType1}.", nameof(tokenType));
                 return value;
             }
 
-            // We want to prevent the token fetching request get stuck. Anyway.
+            using (site.BeginActionScope(null, (object)tokenType))
             using (var cts = new CancellationTokenSource(
+            // We want to prevent the token fetching request get stuck. Anyway.
                 Math.Max(1000, (site.WikiClient.Timeout + site.WikiClient.RetryDelay).Milliseconds) *
                 Math.Max(1, site.WikiClient.MaxRetries)))
             {
@@ -200,7 +202,7 @@ namespace WikiClientLibrary.Infrastructures
                             }), cts.Token);
                             try
                             {
-                                return ExtractToken((JObject) jobj["query"]["recentchanges"].First, "patroltoken");
+                                return ExtractToken((JObject)jobj["query"]["recentchanges"].First, "patroltoken");
                             }
                             catch (ArgumentException)
                             {

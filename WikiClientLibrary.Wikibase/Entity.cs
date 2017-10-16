@@ -25,7 +25,7 @@ namespace WikiClientLibrary.Wikibase
     /// The object represents a readonly snapshot of the Wikibase entity.
     /// To edit the entity, use <see cref="EditAsync(IEnumerable{EntityEditEntry},string)"/> method.
     /// </remarks>
-    public sealed partial class Entity : IWikiClientLoggable
+    public sealed partial class Entity
     {
         private static readonly WbMonolingualTextCollection emptyStringDict
             = new WbMonolingualTextCollection {IsReadOnly = true};
@@ -38,9 +38,7 @@ namespace WikiClientLibrary.Wikibase
 
         private static readonly WbClaimCollection emptyClaims
             = new WbClaimCollection {IsReadOnly = true};
-
-        private ILoggerFactory _LoggerFactory;
-
+        
         /// <summary>
         /// Initializes a new <see cref="Entity"/> entity from Wikibase site,
         /// marked for creation.
@@ -57,7 +55,6 @@ namespace WikiClientLibrary.Wikibase
             Site = site ?? throw new ArgumentNullException(nameof(site));
             Id = null;
             Type = type;
-            LoggerFactory = site.LoggerFactory;
         }
 
         /// <summary>
@@ -74,9 +71,7 @@ namespace WikiClientLibrary.Wikibase
         }
 
         public WikiSite Site { get; }
-
-        private ILogger Logger { get; set; } = NullLogger.Instance;
-
+        
         /// <summary>
         /// Id of the entity.
         /// </summary>
@@ -239,7 +234,7 @@ namespace WikiClientLibrary.Wikibase
                         Type = EntityType.Property;
                         break;
                     default:
-                        Logger.LogWarning("Unrecognized entity type: {Type} for {Entity} on {Site}.",
+                        Site.Logger.LogWarning("Unrecognized entity type: {Type} for {Entity} on {Site}.",
                             (string)entity["type"], this, Site);
                         break;
                 }
@@ -304,12 +299,6 @@ namespace WikiClientLibrary.Wikibase
             return Id;
         }
 
-        /// <inheritdoc />
-        public ILoggerFactory LoggerFactory
-        {
-            get => _LoggerFactory;
-            set => Logger = Utility.SetLoggerFactory(ref _LoggerFactory, value, GetType());
-        }
     }
 
     /// <summary>

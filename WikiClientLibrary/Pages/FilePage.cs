@@ -13,6 +13,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using WikiClientLibrary.Client;
 using WikiClientLibrary.Infrastructures;
+using WikiClientLibrary.Infrastructures.Logging;
 using WikiClientLibrary.Sites;
 
 namespace WikiClientLibrary.Pages
@@ -213,23 +214,26 @@ namespace WikiClientLibrary.Pages
         {
             if (source == null) throw new ArgumentNullException(nameof(source));
             Debug.Assert(source != null);
-            var requestFields = new Dictionary<string, object>
+            using (Site.BeginActionScope(this, source))
             {
-                {"action", "upload"},
-                {"watchlist", watch},
-                {"token", WikiSiteToken.Edit},
-                {"filename", Title},
-                {"comment", comment},
-                {"ignorewarnings", ignoreWarnings},
-            };
-            foreach (var p in source.GetUploadParameters(Site.SiteInfo))
-                requestFields[p.Key] = p.Value;
-            var request = new WikiFormRequestMessage(requestFields, true);
-            Logger.LogDebug("Uploading [[{Title}]] from {Source}.", this, source);
-            var jresult = await Site.GetJsonAsync(request, cancellationToken);
-            var result = jresult["upload"].ToObject<UploadResult>(Utility.WikiJsonSerializer);
-            Logger.LogInformation("Uploaded [[{Title}]]. Result={Result}.", this, result.ResultCode);
-            return result;
+                var requestFields = new Dictionary<string, object>
+                {
+                    {"action", "upload"},
+                    {"watchlist", watch},
+                    {"token", WikiSiteToken.Edit},
+                    {"filename", Title},
+                    {"comment", comment},
+                    {"ignorewarnings", ignoreWarnings},
+                };
+                foreach (var p in source.GetUploadParameters(Site.SiteInfo))
+                    requestFields[p.Key] = p.Value;
+                var request = new WikiFormRequestMessage(requestFields, true);
+                Site.Logger.LogDebug("Start uploading.", this, source);
+                var jresult = await Site.GetJsonAsync(request, cancellationToken);
+                var result = jresult["upload"].ToObject<UploadResult>(Utility.WikiJsonSerializer);
+                Site.Logger.LogInformation("Uploaded. Result={Result}.", this, result.ResultCode);
+                return result;
+            }
         }
 
         protected override void OnLoadPageInfo(JObject jpage)

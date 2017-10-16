@@ -8,6 +8,7 @@ using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using WikiClientLibrary.Client;
+using WikiClientLibrary.Infrastructures.Logging;
 using WikiClientLibrary.Sites;
 using WikiClientLibrary.Wikibase.DataTypes;
 
@@ -35,7 +36,7 @@ namespace WikiClientLibrary.Wikibase
                             prop.GroupBy(e => ((WbMonolingualText)e.Value).Language)
                                 .ToJObject(g => g.Key, g =>
                                 {
-                                    var obj = new JObject {{"language", g.Key}};
+                                    var obj = new JObject { { "language", g.Key } };
                                     var item = g.Single();
                                     if (item.State == WbEntityEditEntryState.Updated)
                                         obj.Add("value", ((WbMonolingualText)item.Value).Text);
@@ -64,7 +65,7 @@ namespace WikiClientLibrary.Wikibase
                             prop.GroupBy(e => ((WbEntitySiteLink)e.Value).Site)
                                 .ToJObject(g => g.Key, g => g.Select(item =>
                                 {
-                                    var obj = new JObject {{"site", g.Key}};
+                                    var obj = new JObject { { "site", g.Key } };
                                     if (item.State == WbEntityEditEntryState.Updated)
                                     {
                                         obj.Add("title", ((WbEntitySiteLink)item.Value).Title);
@@ -106,7 +107,7 @@ namespace WikiClientLibrary.Wikibase
         {
             return EditAsync(edits, summary, false);
         }
-        
+
         /// <inheritdoc cref="EditAsync(IEnumerable{EntityEditEntry},string,bool,bool,CancellationToken)"/>
         public Task EditAsync(IEnumerable<EntityEditEntry> edits, string summary, bool isBot)
         {
@@ -155,25 +156,27 @@ namespace WikiClientLibrary.Wikibase
             if (edits == null) throw new ArgumentNullException(nameof(edits));
             if (summary == null) throw new ArgumentNullException(nameof(summary));
             cancellationToken.ThrowIfCancellationRequested();
-            var jdata = EditEntriesToJObject(edits);
-            var jresult = await Site.GetJsonAsync(new WikiFormRequestMessage(new
+            using (Site.BeginActionScope(this))
             {
-                action = "wbeditentity",
-                token = WikiSiteToken.Edit,
-                id = Id,
-                @new = Id == null ? FormatEntityType(Type) : null,
-                baserevid = LastRevisionId > 0 ? (int?)LastRevisionId : null,
-                bot = isBot,
-                summary = summary,
-                clear = clearData,
-                data = jdata.ToString(Formatting.None)
-            }), cancellationToken);
-            var jentity = jresult["entity"];
-            if (jentity == null)
-                throw new UnexpectedDataException("Missing \"entity\" node in the JSON response.");
-            LoadFromJson(jresult["entity"], EntityQueryOptions.FetchAllProperties, true);
-            Logger.LogInformation("Edited {Entity} on {Site}. New revid={RevisionId}", this, Site, LastRevisionId);
+                var jdata = EditEntriesToJObject(edits);
+                var jresult = await Site.GetJsonAsync(new WikiFormRequestMessage(new
+                {
+                    action = "wbeditentity",
+                    token = WikiSiteToken.Edit,
+                    id = Id,
+                    @new = Id == null ? FormatEntityType(Type) : null,
+                    baserevid = LastRevisionId > 0 ? (int?)LastRevisionId : null,
+                    bot = isBot,
+                    summary = summary,
+                    clear = clearData,
+                    data = jdata.ToString(Formatting.None)
+                }), cancellationToken);
+                var jentity = jresult["entity"];
+                if (jentity == null)
+                    throw new UnexpectedDataException("Missing \"entity\" node in the JSON response.");
+                LoadFromJson(jresult["entity"], EntityQueryOptions.FetchAllProperties, true);
+                Site.Logger.LogInformation("Edited {Entity} on {Site}. New revid={RevisionId}", this, Site, LastRevisionId);
+            }
         }
-
     }
 }

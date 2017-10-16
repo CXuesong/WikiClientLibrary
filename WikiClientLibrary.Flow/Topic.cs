@@ -19,10 +19,8 @@ namespace WikiClientLibrary.Flow
     /// <summary>
     /// Reporesents a topic on a Flow board.
     /// </summary>
-    public class Topic : IWikiClientLoggable
+    public class Topic
     {
-        private ILoggerFactory _LoggerFactory;
-        private ILogger logger = NullLogger.Instance;
 
         /// <summary>
         /// Initializes a new <see cref="Topic"/> instance from MW site and topic page title.
@@ -37,14 +35,12 @@ namespace WikiClientLibrary.Flow
             var link = WikiLink.Parse(site, title, FlowNamespaces.Topic);
             Title = link.ToString();
             WorkflowId = link.Title.ToLowerInvariant();
-            LoggerFactory = site.LoggerFactory;
         }
 
         private Topic(WikiSite site)
         {
             Debug.Assert(site != null);
             Site = site;
-            LoggerFactory = site.LoggerFactory;
         }
 
         /// <summary>
@@ -298,14 +294,7 @@ namespace WikiClientLibrary.Flow
         {
             return FlowRequestHelper.ReplyAsync(Site, Title, WorkflowId, content, cancellationToken);
         }
-
-        /// <inheritdoc />
-        public ILoggerFactory LoggerFactory
-        {
-            get => _LoggerFactory;
-            set { /*logger = Utility.SetLoggerFactory(ref _LoggerFactory, value, GetType());*/ }
-        }
-
+        
         /// <summary>
         /// Returns the user-friendly title of the topic.
         /// </summary>

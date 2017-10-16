@@ -12,13 +12,9 @@ using System.Threading;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
-using WikiClientLibrary.Client;
 using WikiClientLibrary.Generators;
 using System.Runtime.CompilerServices;
 using AsyncEnumerableExtensions;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Logging.Abstractions;
-using Newtonsoft.Json.Linq;
 using WikiClientLibrary.Infrastructures;
 using WikiClientLibrary.Pages;
 
@@ -272,17 +268,6 @@ namespace WikiClientLibrary
                     await sink.YieldAndWait(await selector(item));
                 }
             });
-        }
-
-        public static ILogger SetLoggerFactory<TOwner>(ref ILoggerFactory loggerFactoryField, ILoggerFactory value)
-        {
-            return SetLoggerFactory(ref loggerFactoryField, value, typeof(TOwner));
-        }
-
-        public static ILogger SetLoggerFactory(ref ILoggerFactory loggerFactoryField, ILoggerFactory value, Type ownerType)
-        {
-            loggerFactoryField = value;
-            return value == null ? (ILogger) NullLogger.Instance : value.CreateLogger(ownerType);
         }
 
         public static Task<int> CopyRangeToAsync(this Stream source, Stream destination, int byteCount,

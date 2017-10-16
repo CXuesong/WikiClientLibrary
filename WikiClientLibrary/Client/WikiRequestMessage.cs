@@ -67,8 +67,7 @@ namespace WikiClientLibrary.Client
             {
                 foreach (var module in ((JObject) response["warnings"]).Properties())
                 {
-                    logger.LogWarning("Ignored warning for {Request}: {Module}: {Warning}", this, module.Name,
-                        module.Value);
+                    logger.LogWarning("API Warning [{Module}]: {Warning}", module.Name, module.Value);
                 }
             }
             var err = response["error"];

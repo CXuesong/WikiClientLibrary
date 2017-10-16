@@ -21,10 +21,9 @@ namespace WikiClientLibrary.Generators
     /// Represents a generator (or iterator) of <see cref="WikiPage"/>.
     /// Generator implementations should use its generic version, <see cref="WikiPageGenerator{T}"/>, as base class.
     /// </summary>
-    public abstract class WikiPageGeneratorBase : IWikiClientLoggable
+    public abstract class WikiPageGeneratorBase
     {
 
-        internal ILogger logger = NullLogger.Instance;
         private int? _PagingSize;
         private ILoggerFactory _LoggerFactory;
 
@@ -35,7 +34,7 @@ namespace WikiClientLibrary.Generators
         }
 
         public WikiSite Site { get; }
-
+        
         /// <summary>
         /// Maximum items requested per MediaWiki API invocation.
         /// </summary>
@@ -113,13 +112,6 @@ namespace WikiClientLibrary.Generators
         public override string ToString()
         {
             return GetType().Name;
-        }
-
-        /// <inheritdoc />
-        public ILoggerFactory LoggerFactory
-        {
-            get => _LoggerFactory;
-            set => logger = Utility.SetLoggerFactory(ref _LoggerFactory, value, GetType());
         }
     }
 

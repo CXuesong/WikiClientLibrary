@@ -24,11 +24,9 @@ namespace WikiClientLibrary.Flow
     /// <para>See https://www.mediawiki.org/wiki/Extension:Flow for more information about Flow extension.</para>
     /// <para>Note that the development of Flow extension seems now paused. See https://en.wikipedia.org/wiki/Wikipedia:Flow for more information.</para>
     /// </remarks>
-    public class Board : IWikiClientLoggable
+    public class Board
     {
 
-        private ILoggerFactory _LoggerFactory;
-        private ILogger logger = NullLogger.Instance;
         private string editToken;
 
         /// <summary>
@@ -41,7 +39,6 @@ namespace WikiClientLibrary.Flow
         {
             Site = site ?? throw new ArgumentNullException(nameof(site));
             Title = title ?? throw new ArgumentNullException(nameof(title));
-            LoggerFactory = site.LoggerFactory;
         }
 
         /// <summary>The MediaWiki site hosting this board.</summary>
@@ -166,13 +163,6 @@ namespace WikiClientLibrary.Flow
             if (topicTitle == null) throw new ArgumentNullException(nameof(topicTitle));
             if (topicContent == null) throw new ArgumentNullException(nameof(topicContent));
             return FlowRequestHelper.NewTopicAsync(Site, Title, topicTitle, topicContent, cancellationToken);
-        }
-
-        /// <inheritdoc />
-        public ILoggerFactory LoggerFactory
-        {
-            get => _LoggerFactory;
-            set { /*logger = Utility.SetLoggerFactory(ref _LoggerFactory, value, GetType());*/ }
         }
 
         /// <inheritdoc />
