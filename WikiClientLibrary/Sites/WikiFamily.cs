@@ -39,6 +39,25 @@ namespace WikiClientLibrary.Sites
     }
 
     /// <summary>
+    /// Provides arguments for <see cref="WikiFamily.SiteCreated"/> event.
+    /// </summary>
+    public class WikiFamilySiteCreatedEventArgs : EventArgs
+    {
+        public WikiFamilySiteCreatedEventArgs(string prefix, WikiSite site)
+        {
+            Prefix = prefix;
+            Site = site ?? throw new ArgumentNullException(nameof(site));
+        }
+
+        /// <summary>Interwiki prefix of the site.</summary>
+        public string Prefix { get; }
+
+        /// <summary><see cref="WikiSite"/> instance of the site.</summary>
+        public WikiSite Site { get; }
+
+    }
+
+    /// <summary>
     /// Provides a simple <see cref="IWikiFamily"/> implementation based on
     /// a list of API endpoint URLs.
     /// </summary>
@@ -47,6 +66,12 @@ namespace WikiClientLibrary.Sites
 
         private readonly Dictionary<string, SiteEntry> sites = new Dictionary<string, SiteEntry>();
         private ILogger _Logger;
+
+        /// <summary>
+        /// Raised when a new <see cref="WikiSite"/> has been instantiated, but before it is
+        /// stored into the site cache.
+        /// </summary>
+        public event EventHandler<WikiFamilySiteCreatedEventArgs> SiteCreated;
 
         /// <summary>
         /// Initializes the instance with a <see cref="Client.WikiClient"/> and family name.
@@ -130,6 +155,7 @@ namespace WikiClientLibrary.Sites
         {
             var site = await WikiSite.CreateAsync(WikiClient, apiEndpoint);
             Logger.LogTrace("[[{Family}:{prefix}:]] has been instantiated.", Name, prefix);
+            OnSiteCreated(new WikiFamilySiteCreatedEventArgs(prefix, site));
             return site;
         }
 
@@ -143,10 +169,23 @@ namespace WikiClientLibrary.Sites
         public int Count => sites.Count;
 
         /// <inheritdoc />
+        /// <remarks>
+        /// This property only affects the logger used for the <see cref="WikiFamily"/> instance.
+        /// The created <see cref="WikiSite"/> instances will still use <see cref="NullLogger"/> by default.
+        /// </remarks>
         public ILogger Logger
         {
             get => _Logger;
             set => _Logger = value ?? NullLogger.Instance;
+        }
+        
+        /// <summary>
+        /// Raises <see cref="SiteCreated"/> event.
+        /// </summary>
+        /// <param name="e">Event arguments.</param>
+        protected virtual void OnSiteCreated(WikiFamilySiteCreatedEventArgs e)
+        {
+            SiteCreated?.Invoke(this, e);
         }
 
         private class SiteEntry
