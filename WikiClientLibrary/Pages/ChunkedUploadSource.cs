@@ -246,7 +246,15 @@ namespace WikiClientLibrary.Pages
                             {"ignorewarnings", true},
                             {"chunk", chunkStream},
                         };
-                        var jresult = await Site.GetJsonAsync(new ChunkedUploadMessage(jparams), cancellationToken);
+                        var message = new WikiFormRequestMessage(jparams, true);
+                        message.ApiErrorRaised += (_, e) =>
+                        {
+                            // Possible error: code=stashfailed, info=Invalid chunk offset, offset=xxxx
+                            // We will try to recover.
+                            if (e.ErrorCode == "stashfailed" && e.ErrorNode["offset"] != null)
+                                e.Handled = true;
+                        };
+                        var jresult = await Site.GetJsonAsync(message, cancellationToken);
                         // Possible error: code=stashfailed, info=Invalid chunk offset
                         // We will retry from the server-expected offset.
                         var err = jresult["error"];
@@ -304,30 +312,6 @@ namespace WikiClientLibrary.Pages
         {
             return "ChunkedUploadSource(" + SourceStream + ")";
         }
-
-        private class ChunkedUploadMessage : WikiFormRequestMessage
-        {
-            /// <inheritdoc />
-            public ChunkedUploadMessage(object fieldCollection) : base(fieldCollection, true)
-            {
-            }
-
-            /// <inheritdoc />
-            public override void ValidateResponse(JToken response, ILogger logger)
-            {
-                var err = response["error"];
-                if (err != null)
-                {
-                    // Possible error: code=stashfailed, info=Invalid chunk offset, offset=xxxx
-                    // We will try to recover.
-                    if ((string) err["code"] == "stashfailed" && err["offset"] != null)
-                    {
-                        return;
-                    }
-                }
-                base.ValidateResponse(response, logger);
-            }
-        }
-
+        
     }
 }

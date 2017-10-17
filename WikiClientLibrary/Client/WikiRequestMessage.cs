@@ -17,6 +17,46 @@ namespace WikiClientLibrary.Client
 {
 
     /// <summary>
+    /// Provides arguments for <see cref="WikiRequestMessage.ApiErrorRaised"/> event.
+    /// </summary>
+    public class ApiErrorRaisedEventArgs : EventArgs
+    {
+        public ApiErrorRaisedEventArgs(string errorCode, string errorMessage, JToken response, JToken errorNode)
+        {
+            ErrorCode = errorCode ?? throw new ArgumentNullException(nameof(errorCode));
+            ErrorMessage = errorMessage;
+            Response = response;
+            ErrorNode = errorNode;
+        }
+
+        /// <summary>
+        /// Gets the MediaWiki API error code.
+        /// </summary>
+        public string ErrorCode { get; }
+
+        /// <summary>
+        /// Gets the MediaWiki API error message.
+        /// </summary>
+        public string ErrorMessage { get; }
+
+        /// <summary>
+        /// Gets the JSON root node in MediaWiki API response, if available.
+        /// </summary>
+        public JToken Response { get; }
+
+        /// <summary>
+        /// Gets the <c>error</c> node in MediaWiki API response, if available.
+        /// </summary>
+        public JToken ErrorNode { get; }
+
+        /// <summary>
+        /// Gets/sets the value determines whether the error has been properly handled by the event handlers.
+        /// </summary>
+        public bool Handled { get; set; }
+
+    }
+
+    /// <summary>
     /// The traceable MediaWiki API request message.
     /// </summary>
     public abstract class WikiRequestMessage
@@ -26,6 +66,11 @@ namespace WikiClientLibrary.Client
             (long) (Environment.TickCount ^ RuntimeInformation.OSDescription.GetHashCode()) << 32;
 
         private static int idCounter;
+
+        /// <summary>
+        /// Raises when a MediaWiki API error has been detected in the response content.
+        /// </summary>
+        public event EventHandler<ApiErrorRaisedEventArgs> ApiErrorRaised;
 
         /// <param name="id">Id of the request, for tracing. If left <c>null</c>, an automatically-generated id will be used.</param>
         public WikiRequestMessage(string id)
@@ -67,7 +112,7 @@ namespace WikiClientLibrary.Client
             {
                 foreach (var module in ((JObject) response["warnings"]).Properties())
                 {
-                    logger.LogWarning("API Warning [{Module}]: {Warning}", module.Name, module.Value);
+                    logger.LogWarning("API warning [{Module}]: {Warning}", module.Name, module.Value);
                 }
             }
             var err = response["error"];
@@ -76,7 +121,10 @@ namespace WikiClientLibrary.Client
                 var errcode = (string) err["code"];
                 // err["*"]: API usage.
                 var errmessage = ((string) err["info"]).Trim();
-                logger.LogWarning("Dispatch error for {Request}: {Code} - {Message}", this, errcode, errmessage);
+                logger.LogWarning("API error: {Code} - {Message}", errcode, errmessage);
+                var e = new ApiErrorRaisedEventArgs(errcode, errmessage, response, err);
+                OnApiErrorRaised(e);
+                if (e.Handled) return;
                 switch (errcode)
                 {
                     case "permissiondenied":
@@ -113,6 +161,15 @@ namespace WikiClientLibrary.Client
         public override string ToString()
         {
             return Id;
+        }
+
+        /// <summary>
+        /// Raises <see cref="ApiErrorRaised"/> event.
+        /// </summary>
+        /// <param name="e">Event arguments.</param>
+        protected virtual void OnApiErrorRaised(ApiErrorRaisedEventArgs e)
+        {
+            ApiErrorRaised?.Invoke(this, e);
         }
     }
 
