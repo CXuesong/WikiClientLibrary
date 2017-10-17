@@ -86,7 +86,7 @@ namespace WikiClientLibrary.Sites
             var p = BuildParsingParams(options);
             p["page"] = title;
             p["uselang"] = lang;
-            var jobj = await GetJsonAsync(new WikiFormRequestMessage(p), cancellationToken);
+            var jobj = await GetJsonAsync(new MediaWikiFormRequestMessage(p), cancellationToken);
             var parsed = ((JObject)jobj["parse"]).ToObject<ParsedContentInfo>(Utility.WikiJsonSerializer);
             return parsed;
         }
@@ -139,7 +139,7 @@ namespace WikiClientLibrary.Sites
             var p = BuildParsingParams(options);
             p["pageid"] = id;
             p["uselang"] = lang;
-            var jobj = await GetJsonAsync(new WikiFormRequestMessage(p), cancellationToken);
+            var jobj = await GetJsonAsync(new MediaWikiFormRequestMessage(p), cancellationToken);
             var parsed = ((JObject)jobj["parse"]).ToObject<ParsedContentInfo>(Utility.WikiJsonSerializer);
             return parsed;
         }
@@ -190,7 +190,7 @@ namespace WikiClientLibrary.Sites
             if (revId <= 0) throw new ArgumentOutOfRangeException(nameof(revId));
             var p = BuildParsingParams(options);
             p["oldid"] = revId;
-            var jobj = await GetJsonAsync(new WikiFormRequestMessage(p), cancellationToken);
+            var jobj = await GetJsonAsync(new MediaWikiFormRequestMessage(p), cancellationToken);
             var parsed = ((JObject)jobj["parse"]).ToObject<ParsedContentInfo>(Utility.WikiJsonSerializer);
             return parsed;
         }
@@ -276,7 +276,7 @@ namespace WikiClientLibrary.Sites
             p["summary"] = summary;
             p["title"] = title;
             p["uselang"] = lang;
-            var jobj = await GetJsonAsync(new WikiFormRequestMessage(p), cancellationToken);
+            var jobj = await GetJsonAsync(new MediaWikiFormRequestMessage(p), cancellationToken);
             var parsed = ((JObject)jobj["parse"]).ToObject<ParsedContentInfo>(Utility.WikiJsonSerializer);
             return parsed;
         }

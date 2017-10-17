@@ -246,15 +246,8 @@ namespace WikiClientLibrary.Pages
                             {"ignorewarnings", true},
                             {"chunk", chunkStream},
                         };
-                        var message = new WikiFormRequestMessage(jparams, true);
-                        message.ApiErrorRaised += (_, e) =>
-                        {
-                            // Possible error: code=stashfailed, info=Invalid chunk offset, offset=xxxx
-                            // We will try to recover.
-                            if (e.ErrorCode == "stashfailed" && e.ErrorNode["offset"] != null)
-                                e.Handled = true;
-                        };
-                        var jresult = await Site.GetJsonAsync(message, cancellationToken);
+                        var jresult = await Site.GetJsonAsync(new MediaWikiFormRequestMessage(jparams, true),
+                            ChunkedUploadResponseParser.Default, false, cancellationToken);
                         // Possible error: code=stashfailed, info=Invalid chunk offset
                         // We will retry from the server-expected offset.
                         var err = jresult["error"];
@@ -311,6 +304,24 @@ namespace WikiClientLibrary.Pages
         public override string ToString()
         {
             return "ChunkedUploadSource(" + SourceStream + ")";
+        }
+
+        private class ChunkedUploadResponseParser : MediaWikiJsonResponseParser
+        {
+
+            public new static readonly ChunkedUploadResponseParser Default = new ChunkedUploadResponseParser();
+
+            /// <inheritdoc />
+            protected override void OnApiError(string errorCode, string errorMessage, JToken errorNode, JToken responseNode, WikiResponseParsingContext context)
+            {
+                // Possible error: code=stashfailed, info=Invalid chunk offset, offset=xxxx
+                // We will try to recover.
+                if (errorCode == "stashfailed" && errorNode["offset"] != null)
+                {
+                    return;
+                }
+                base.OnApiError(errorCode, errorMessage, errorNode, responseNode, context);
+            }
         }
         
     }

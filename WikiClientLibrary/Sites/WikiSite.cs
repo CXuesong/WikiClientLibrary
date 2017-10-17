@@ -28,7 +28,7 @@ namespace WikiClientLibrary.Sites
         /// <summary>
         /// Gets the MediaWiki API client used to perform the requests.
         /// </summary>
-        public IMediaWikiApiClient WikiClient { get; }
+        public IWikiClient WikiClient { get; }
 
         /// <summary>
         /// A handler used to re-login when account assertion fails.
@@ -46,7 +46,7 @@ namespace WikiClientLibrary.Sites
             get
             {
                 if (_ModificationThrottler != null) return _ModificationThrottler;
-                var t = new Throttler {Logger = Logger};
+                var t = new Throttler { Logger = Logger };
                 Volatile.Write(ref _ModificationThrottler, t);
                 return t;
             }
@@ -61,7 +61,7 @@ namespace WikiClientLibrary.Sites
         /// <exception cref="ArgumentNullException"><paramref name="wikiClient"/> or <paramref name="apiEndpoint"/> is <c>null</c>.</exception>
         /// <exception cref="ArgumentException"><paramref name="apiEndpoint"/> is invalid.</exception>
         /// <exception cref="UnauthorizedOperationException">Cannot access query API module due to target site permission settings. You may take a look at <see cref="SiteOptions.ExplicitInfoRefresh"/>.</exception>
-        public static Task<WikiSite> CreateAsync(IMediaWikiApiClient wikiClient, string apiEndpoint)
+        public static Task<WikiSite> CreateAsync(IWikiClient wikiClient, string apiEndpoint)
         {
             if (wikiClient == null) throw new ArgumentNullException(nameof(wikiClient));
             if (apiEndpoint == null) throw new ArgumentNullException(nameof(apiEndpoint));
@@ -74,7 +74,7 @@ namespace WikiClientLibrary.Sites
         /// <exception cref="ArgumentNullException"><paramref name="wikiClient"/> or <paramref name="options"/> is <c>null</c>.</exception>
         /// <exception cref="ArgumentException">One or more settings in <paramref name="options"/> is invalid.</exception>
         /// <exception cref="UnauthorizedOperationException">Cannot access query API module due to target site permission settings. You may take a look at <see cref="SiteOptions.ExplicitInfoRefresh"/>.</exception>
-        public static async Task<WikiSite> CreateAsync(IMediaWikiApiClient wikiClient, SiteOptions options)
+        public static async Task<WikiSite> CreateAsync(IWikiClient wikiClient, SiteOptions options)
         {
             if (wikiClient == null) throw new ArgumentNullException(nameof(wikiClient));
             if (options == null) throw new ArgumentNullException(nameof(options));
@@ -101,7 +101,7 @@ namespace WikiClientLibrary.Sites
             return MediaWikiUtility.SearchApiEndpointAsync(client, urlExpression);
         }
 
-        protected WikiSite(IMediaWikiApiClient wikiClient, SiteOptions options)
+        protected WikiSite(IWikiClient wikiClient, SiteOptions options)
         {
             // Perform basic checks.
             Debug.Assert(wikiClient != null);
@@ -114,7 +114,7 @@ namespace WikiClientLibrary.Sites
                 if (this.options.DisambiguationTemplates == null)
                 {
                     var dabPages = await RequestHelper
-                        .EnumLinksAsync(this, "MediaWiki:Disambiguationspage", new[] {BuiltInNamespaces.Template})
+                        .EnumLinksAsync(this, "MediaWiki:Disambiguationspage", new[] { BuiltInNamespaces.Template })
                         .ToList();
                     if (dabPages.Count == 0)
                     {
@@ -141,7 +141,7 @@ namespace WikiClientLibrary.Sites
         {
             using (this.BeginActionScope(null))
             {
-                var jobj = await GetJsonAsync(new WikiFormRequestMessage(new
+                var jobj = await GetJsonAsync(new MediaWikiFormRequestMessage(new
                 {
                     action = "query",
                     meta = "siteinfo",
@@ -192,7 +192,7 @@ namespace WikiClientLibrary.Sites
         {
             using (this.BeginActionScope(null))
             {
-                var jobj = await GetJsonAsync(new WikiFormRequestMessage(new
+                var jobj = await GetJsonAsync(new MediaWikiFormRequestMessage(new
                 {
                     action = "query",
                     meta = "userinfo",
@@ -291,16 +291,26 @@ namespace WikiClientLibrary.Sites
 
         #region Basic API
 
-        /// <inheritdoc cref="GetJsonAsync(WikiRequestMessage,bool,CancellationToken)"/>
+        /// <inheritdoc cref="GetJsonAsync(WikiRequestMessage,IWikiResponseMessageParser,bool,CancellationToken)"/>
+        /// <remarks>This overload uses <see cref="MediaWikiJsonResponseParser.Default"/> as response parser.</remarks>
         public Task<JToken> GetJsonAsync(WikiRequestMessage message, CancellationToken cancellationToken)
         {
-            return GetJsonAsync(message, false, cancellationToken);
+            return GetJsonAsync(message, MediaWikiJsonResponseParser.Default, false, cancellationToken);
+        }
+
+        /// <inheritdoc cref="GetJsonAsync(WikiRequestMessage,IWikiResponseMessageParser,bool,CancellationToken)"/>
+        /// <remarks>This overload uses <see cref="MediaWikiJsonResponseParser.Default"/> as response parser.</remarks>
+        public Task<JToken> GetJsonAsync(WikiRequestMessage message,
+            bool suppressAccountAssertion, CancellationToken cancellationToken)
+        {
+            return GetJsonAsync(message, MediaWikiJsonResponseParser.Default, suppressAccountAssertion, cancellationToken);
         }
 
         /// <summary>
         /// Invokes MediaWiki API and gets JSON result.
         /// </summary>
         /// <param name="message">The request message.</param>
+        /// <param name="responseParser">The parser that checks and parses the API response into <see cref="JToken"/>.</param>
         /// <param name="suppressAccountAssertion">Whether to temporarily disable account assertion as set in <see cref="SiteOptions.AccountAssertion"/>.</param>
         /// <param name="cancellationToken">The cancellation token that will be checked prior to completing the returned task.</param>
         /// <exception cref="InvalidActionException">Specified action is not supported.</exception>
@@ -308,7 +318,7 @@ namespace WikiClientLibrary.Sites
         /// <exception cref="AccountAssertionFailureException">You enabled account assertion, the assertion failed, and it also failed to retry logging in.</exception>
         /// <returns>A task that returns the JSON response when completed.</returns>
         /// <remarks>
-        /// Some enhancements are available only if <paramref name="message"/> is <see cref="WikiFormRequestMessage"/>, including
+        /// Some enhancements are available only if <paramref name="message"/> is <see cref="MediaWikiFormRequestMessage"/>, including
         /// <list type="bullet">
         /// <item><description>
         /// Account assertion, as specified in <see cref="SiteOptions.AccountAssertion"/>.
@@ -320,10 +330,12 @@ namespace WikiClientLibrary.Sites
         /// </description></item>
         /// </list>
         /// </remarks>
-        public async Task<JToken> GetJsonAsync(WikiRequestMessage message, bool suppressAccountAssertion,
-            CancellationToken cancellationToken)
+        public async Task<JToken> GetJsonAsync(WikiRequestMessage message, IWikiResponseMessageParser responseParser,
+            bool suppressAccountAssertion, CancellationToken cancellationToken)
         {
-            var form = message as WikiFormRequestMessage;
+            if (message == null) throw new ArgumentNullException(nameof(message));
+            if (responseParser == null) throw new ArgumentNullException(nameof(responseParser));
+            var form = message as MediaWikiFormRequestMessage;
             var localRequest = message;
             var badTokenRetries = 0;
             RETRY:
@@ -334,7 +346,7 @@ namespace WikiClientLibrary.Sites
                 foreach (var tokenField in form.Fields.Where(p => p.Value is WikiSiteToken))
                 {
                     overridenFields.Add(new KeyValuePair<string, object>(tokenField.Key,
-                        await tokensManager.GetTokenAsync(((WikiSiteToken) tokenField.Value).Type,
+                        await tokensManager.GetTokenAsync(((WikiSiteToken)tokenField.Value).Type,
                             false, cancellationToken)));
                 }
                 // Apply account assertions
@@ -348,13 +360,14 @@ namespace WikiClientLibrary.Sites
                         overridenFields.Add(new KeyValuePair<string, object>("assert", "user"));
                 }
                 if (overridenFields.Count > 0)
-                    localRequest = new WikiFormRequestMessage(form.Id, form, overridenFields, false);
+                    localRequest = new MediaWikiFormRequestMessage(form.Id, form, overridenFields, false);
             }
             Logger.LogDebug("Sending request {Request}, SuppressAccountAssertion={SuppressAccountAssertion}",
                 localRequest, suppressAccountAssertion);
             try
             {
-                return await WikiClient.GetJsonAsync(options.ApiEndpoint, localRequest, cancellationToken);
+                return (JToken)await WikiClient.InvokeAsync(options.ApiEndpoint, localRequest,
+                    MediaWikiJsonResponseParser.Default, cancellationToken);
             }
             catch (AccountAssertionFailureException)
             {
@@ -382,7 +395,7 @@ namespace WikiClientLibrary.Sites
                 string invalidatedToken = null;
                 foreach (var tokenField in form.Fields.Where(p => p.Value is WikiSiteToken))
                 {
-                    invalidatedToken = ((WikiSiteToken) tokenField.Value).Type;
+                    invalidatedToken = ((WikiSiteToken)tokenField.Value).Type;
                     tokensManager.ClearCache(invalidatedToken);
                 }
                 if (invalidatedToken == null) throw;
@@ -404,7 +417,7 @@ namespace WikiClientLibrary.Sites
         [Obsolete("Please use WikiSite.GetJsonAsync method.")]
         public Task<JToken> PostValuesAsync(IEnumerable<KeyValuePair<string, string>> queryParams,
             CancellationToken cancellationToken)
-            => GetJsonAsync(new WikiFormRequestMessage(queryParams), false, cancellationToken);
+            => GetJsonAsync(new MediaWikiFormRequestMessage(queryParams), false, cancellationToken);
 
         /// <summary>
         /// Invokes API and get JSON result.
@@ -418,7 +431,7 @@ namespace WikiClientLibrary.Sites
         public Task<JToken> PostValuesAsync(IEnumerable<KeyValuePair<string, string>> queryParams,
             bool supressAccountAssertion, CancellationToken cancellationToken)
         {
-            return GetJsonAsync(new WikiFormRequestMessage(new WikiFormRequestMessage(queryParams)),
+            return GetJsonAsync(new MediaWikiFormRequestMessage(new MediaWikiFormRequestMessage(queryParams)),
                 supressAccountAssertion, cancellationToken);
         }
 
@@ -432,7 +445,7 @@ namespace WikiClientLibrary.Sites
         /// <exception cref="OperationFailedException">There's "error" node in returned JSON.</exception>
         [Obsolete("Please use WikiSite.GetJsonAsync method.")]
         public Task<JToken> PostValuesAsync(object queryParams, CancellationToken cancellationToken)
-            => GetJsonAsync(new WikiFormRequestMessage(queryParams), false, cancellationToken);
+            => GetJsonAsync(new MediaWikiFormRequestMessage(queryParams), false, cancellationToken);
 
         /// <summary>
         /// Invoke API and get JSON result.
@@ -448,7 +461,7 @@ namespace WikiClientLibrary.Sites
             CancellationToken cancellationToken)
         {
             if (queryParams == null) throw new ArgumentNullException(nameof(queryParams));
-            return GetJsonAsync(new WikiFormRequestMessage(Utility.ToWikiStringValuePairs(queryParams)),
+            return GetJsonAsync(new MediaWikiFormRequestMessage(Utility.ToWikiStringValuePairs(queryParams)),
                 supressAccountAssertion,
                 cancellationToken);
         }
@@ -593,7 +606,7 @@ namespace WikiClientLibrary.Sites
                 // If options.ExplicitInfoRefresh is true, we just treat it the same as MedaiWiki < 1.27,
                 //  because any "query" operation might raise readapidenied error.
                 RETRY:
-                var jobj = await GetJsonAsync(new WikiFormRequestMessage(new
+                var jobj = await GetJsonAsync(new MediaWikiFormRequestMessage(new
                 {
                     action = "login",
                     lgname = userName,
@@ -601,7 +614,7 @@ namespace WikiClientLibrary.Sites
                     lgtoken = token,
                     lgdomain = domain,
                 }), true, cancellationToken);
-                var result = (string) jobj["login"]["result"];
+                var result = (string)jobj["login"]["result"];
                 string message = null;
                 switch (result)
                 {
@@ -616,17 +629,17 @@ namespace WikiClientLibrary.Sites
                             "The login using the main account password (rather than a bot password) cannot proceed because user interaction is required. The clientlogin action should be used instead.";
                         break;
                     case "Throttled":
-                        var time = (int) jobj["login"]["wait"];
+                        var time = (int)jobj["login"]["wait"];
                         Logger.LogWarning("{Site} login throttled: {Time}sec.", ToString(), time);
                         await Task.Delay(TimeSpan.FromSeconds(time), cancellationToken);
                         goto RETRY;
                     case "NeedToken":
-                        token = (string) jobj["login"]["token"];
+                        token = (string)jobj["login"]["token"];
                         goto RETRY;
                     case "WrongToken": // We should have got correct token.
                         throw new UnexpectedDataException($"Unexpected login result: {result} .");
                 }
-                message = (string) jobj["login"]["reason"] ?? message;
+                message = (string)jobj["login"]["reason"] ?? message;
                 throw new OperationFailedException(result, message);
             }
             finally
@@ -650,7 +663,7 @@ namespace WikiClientLibrary.Sites
                 throw new InvalidOperationException("Cannot login/logout concurrently.");
             try
             {
-                var jobj = await GetJsonAsync(new WikiFormRequestMessage(new
+                var jobj = await GetJsonAsync(new MediaWikiFormRequestMessage(new
                 {
                     action = "logout",
                 }), true, CancellationToken.None);

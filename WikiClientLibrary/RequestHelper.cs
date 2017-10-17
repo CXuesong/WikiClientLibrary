@@ -58,7 +58,7 @@ namespace WikiClientLibrary
                 ct.ThrowIfCancellationRequested();
                 var retrivedPageIds = distinctPages ? new HashSet<int>() : null;
                 NEXT_PAGE:
-                var jresult = await site.GetJsonAsync(new WikiFormRequestMessage(queryParams), ct);
+                var jresult = await site.GetJsonAsync(new MediaWikiFormRequestMessage(queryParams), ct);
                 // If there's no result, "query" node will not exist.
                 var queryNode = (JObject)jresult["query"];
                 if (queryNode != null)
@@ -140,7 +140,7 @@ namespace WikiClientLibrary
                         site.Logger.LogDebug("Fetching {Count} pages.", partition.Count);
                         // We use titles to query pages.
                         queryParams["titles"] = string.Join("|", partition.Select(p => p.Title));
-                        var jobj = await site.GetJsonAsync(new WikiFormRequestMessage(queryParams), cancellationToken);
+                        var jobj = await site.GetJsonAsync(new MediaWikiFormRequestMessage(queryParams), cancellationToken);
                         // Process title normalization.
                         var normalized = jobj["query"]["normalized"]?.ToDictionary(n => (string)n["from"],
                             n => (string)n["to"]);
@@ -198,7 +198,7 @@ namespace WikiClientLibrary
                 {
                     site.Logger.LogDebug("Fetching {Count} revisions from {Site}.", partition.Count, site);
                     queryParams["revids"] = string.Join("|", partition);
-                    var jobj = await site.GetJsonAsync(new WikiFormRequestMessage(queryParams), cancellationToken);
+                    var jobj = await site.GetJsonAsync(new MediaWikiFormRequestMessage(queryParams), cancellationToken);
                     var jpages = (JObject)jobj["query"]["pages"];
                     // Generate converters first
                     // Use DelegateCreationConverter to create Revision with constructor
@@ -295,7 +295,7 @@ namespace WikiClientLibrary
                         // We purge pages by titles.
                         try
                         {
-                            var jresult = await site.GetJsonAsync(new WikiFormRequestMessage(new
+                            var jresult = await site.GetJsonAsync(new MediaWikiFormRequestMessage(new
                             {
                                 action = "purge",
                                 titles = string.Join("|", partition.Select(p => p.Title)),
@@ -355,7 +355,7 @@ namespace WikiClientLibrary
             var token = await site.GetTokenAsync("patrol");
             try
             {
-                var jresult = await site.GetJsonAsync(new WikiFormRequestMessage(new
+                var jresult = await site.GetJsonAsync(new MediaWikiFormRequestMessage(new
                 {
                     action = "patrol",
                     rcid = recentChangeId,
@@ -417,7 +417,7 @@ namespace WikiClientLibrary
             {
                 pa["modules"] = moduleName;
             }
-            var jresult = await site.GetJsonAsync(new WikiFormRequestMessage(pa), CancellationToken.None);
+            var jresult = await site.GetJsonAsync(new MediaWikiFormRequestMessage(pa), CancellationToken.None);
             var jmodules =
                 ((JObject)jresult["paraminfo"]).Properties().FirstOrDefault(p => p.Name.EndsWith("modules"))?.Value;
             // For now we use the method internally.

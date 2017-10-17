@@ -96,7 +96,7 @@ namespace UnitTestProject1
         /// <summary>
         /// Create a wiki site, login if necessary.
         /// </summary>
-        private async Task<WikiSite> CreateWikiSiteAsync(WikiClientBase wikiClient, string url)
+        private async Task<WikiSite> CreateWikiSiteAsync(IWikiClient wikiClient, string url)
         {
             var options = new SiteOptions(url)
             {

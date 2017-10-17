@@ -23,7 +23,7 @@ namespace WikiClientLibrary.Flow
             JToken jresult;
             using (await site.ModificationThrottler.QueueWorkAsync("Reply: " + workflowId, cancellationToken))
             {
-                jresult = await site.GetJsonAsync(new WikiFormRequestMessage(new
+                jresult = await site.GetJsonAsync(new MediaWikiFormRequestMessage(new
                 {
                     action = "flow",
                     submodule = "reply",
@@ -51,7 +51,7 @@ namespace WikiClientLibrary.Flow
             JToken jresult;
             using (await site.ModificationThrottler.QueueWorkAsync("New topic", cancellationToken))
             {
-                jresult = await site.GetJsonAsync(new WikiFormRequestMessage(new
+                jresult = await site.GetJsonAsync(new MediaWikiFormRequestMessage(new
                 {
                     action = "flow",
                     submodule = "new-topic",

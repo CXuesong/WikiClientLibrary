@@ -227,7 +227,7 @@ namespace WikiClientLibrary.Pages
                 };
                 foreach (var p in source.GetUploadParameters(Site.SiteInfo))
                     requestFields[p.Key] = p.Value;
-                var request = new WikiFormRequestMessage(requestFields, true);
+                var request = new MediaWikiFormRequestMessage(requestFields, true);
                 Site.Logger.LogDebug("Start uploading.", this, source);
                 var jresult = await Site.GetJsonAsync(request, cancellationToken);
                 var result = jresult["upload"].ToObject<UploadResult>(Utility.WikiJsonSerializer);

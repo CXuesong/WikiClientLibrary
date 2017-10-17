@@ -20,11 +20,13 @@ namespace UnitTestProject1.Tests
         {
             var client = WikiClient;
             var query = new {action = "query", meta = "siteinfo"};
-            var json1 = await client.GetJsonAsync(Endpoints.WikipediaTest2,
-                new WikiFormRequestMessage(query),
+            var json1 = await client.InvokeAsync(Endpoints.WikipediaTest2,
+                new MediaWikiFormRequestMessage(query),
+                MediaWikiJsonResponseParser.Default,
                 CancellationToken.None);
-            var json2 = await client.GetJsonAsync(Endpoints.WikipediaTest2,
-                new WikiFormRequestMessage(query, true),
+            var json2 = await client.InvokeAsync(Endpoints.WikipediaTest2,
+                new MediaWikiFormRequestMessage(query, true),
+                MediaWikiJsonResponseParser.Default,
                 CancellationToken.None);
             Output.WriteLine(json1.ToString());
         }
@@ -34,12 +36,13 @@ namespace UnitTestProject1.Tests
         {
             var client = WikiClient;
             await Assert.ThrowsAsync<InvalidActionException>(() =>
-                client.GetJsonAsync(Endpoints.WikipediaTest2,
-                    new WikiFormRequestMessage(new
+                client.InvokeAsync(Endpoints.WikipediaTest2,
+                    new MediaWikiFormRequestMessage(new
                     {
                         action = "invalid_action_test",
                         description = "This is a test case for invalid action parameter."
                     }),
+                    MediaWikiJsonResponseParser.Default,
                     CancellationToken.None));
         }
     }

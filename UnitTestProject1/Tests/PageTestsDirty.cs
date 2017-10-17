@@ -4,6 +4,7 @@ using System;
 using System.IO;
 using System.Threading.Tasks;
 using WikiClientLibrary;
+using WikiClientLibrary.Client;
 using WikiClientLibrary.Pages;
 using WikiClientLibrary.Sites;
 using Xunit;
@@ -119,9 +120,10 @@ The original title of the page is '''{title}'''.
             await localSite.GetTokenAsync("edit");
             Output.WriteLine("Try uploading…");
             // We want to timeout and retry.
-            localSite.WikiClient.Timeout = TimeSpan.FromSeconds(0.5);
-            localSite.WikiClient.RetryDelay = TimeSpan.FromSeconds(1);
-            localSite.WikiClient.MaxRetries = 1;
+            var wikiClient = (WikiClient)localSite.WikiClient;
+            wikiClient.Timeout = TimeSpan.FromSeconds(0.5);
+            wikiClient.RetryDelay = TimeSpan.FromSeconds(1);
+            wikiClient.MaxRetries = 1;
             var buffer = new byte[1024 * 1024 * 2];     // 2MB, I think this size is fairly large.
                                                         // If your connection speed is too fast then, well, trottle it plz.
             using (var ms = new MemoryStream(buffer))
@@ -161,7 +163,7 @@ JasonHise grants anyone the right to use this work for any purpose, without any 
             const string FileName = "File:8-cell-simple.gif";
             var site = await CreateIsolatedWikiSiteAsync(CredentialManager.DirtyTestsEntryPointUrl);
             // Allow for more time to wait.
-            site.WikiClient.Timeout = TimeSpan.FromSeconds(30);
+            ((WikiClient)site.WikiClient).Timeout = TimeSpan.FromSeconds(30);
             var page = new FilePage(site, FileName);
             try
             {

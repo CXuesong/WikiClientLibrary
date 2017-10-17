@@ -84,14 +84,14 @@ namespace WikiClientLibrary.Sites
         /// Initializes the instance with a <see cref="Client.WikiClient"/> and family name.
         /// </summary>
         /// <exception cref="ArgumentNullException"><paramref name="wikiClient"/> is <c>null</c>.</exception>
-        public WikiFamily(IMediaWikiApiClient wikiClient, string name)
+        public WikiFamily(IWikiClient wikiClient, string name)
         {
             if (wikiClient == null) throw new ArgumentNullException(nameof(wikiClient));
             WikiClient = wikiClient;
             Name = name;
         }
 
-        public IMediaWikiApiClient WikiClient { get; }
+        public IWikiClient WikiClient { get; }
 
         /// <summary>
         /// Add a new wiki site into this family.

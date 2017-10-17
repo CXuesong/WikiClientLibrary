@@ -9,18 +9,51 @@ using System.Threading;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using WikiClientLibrary.Infrastructures;
+using WikiClientLibrary.Infrastructures.Logging;
 
 namespace WikiClientLibrary.Client
 {
     /// <summary>
     /// Provides basic operations for MediaWiki API via HTTP(S).
     /// </summary>
-    public partial class WikiClient : IMediaWikiApiClient, IWikiClientLoggable, IDisposable
+    public partial class WikiClient : IWikiClient, IWikiClientLoggable, IDisposable
     {
         /// <summary>
         /// The User Agent of Wiki Client Library.
         /// </summary>
         public const string WikiClientUserAgent = "WikiClientLibrary/0.6 (.NET Portable; http://github.com/cxuesong/WikiClientLibrary)";
+
+        public WikiClient() : this(new HttpClientHandler(), true)
+        {
+            _HttpClientHandler.UseCookies = true;
+            // https://www.mediawiki.org/wiki/API:Client_code
+            // Please use GZip compression when making API calls (Accept-Encoding: gzip).
+            // Bots eat up a lot of bandwidth, which is not free.
+            if (_HttpClientHandler.SupportsAutomaticDecompression)
+            {
+                _HttpClientHandler.AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate;
+            }
+        }
+
+        /// <param name="handler">The HttpMessageHandler responsible for processing the HTTP response messages.</param>
+        /// <exception cref="ArgumentNullException"><paramref name="handler"/> is <c>null</c>.</exception>
+        public WikiClient(HttpMessageHandler handler) : this(handler, true)
+        {
+        }
+
+        /// <param name="handler">The HttpMessageHandler responsible for processing the HTTP response messages.</param>
+        /// <param name="disposeHandler">Whether to automatically dispose the handler when disposing this Client.</param>
+        /// <exception cref="ArgumentNullException"><paramref name="handler"/> is <c>null</c>.</exception>
+        public WikiClient(HttpMessageHandler handler, bool disposeHandler)
+        {
+            if (handler == null) throw new ArgumentNullException(nameof(handler));
+            HttpClient = new HttpClient(handler, disposeHandler);
+            ClientUserAgent = null;
+            _HttpClientHandler = handler as HttpClientHandler;
+#if DEBUG
+            HttpClient.DefaultRequestHeaders.Add("X-WCL-DEBUG-CLIENT-ID", GetHashCode().ToString());
+#endif
+        }
 
         #region Configurations
 
@@ -112,46 +145,18 @@ namespace WikiClientLibrary.Client
         };
 
         /// <inheritdoc />
-        public async Task<JToken> GetJsonAsync(string endPointUrl, WikiRequestMessage message, CancellationToken cancellationToken)
+        public async Task<object> InvokeAsync(string endPointUrl, WikiRequestMessage message,
+            IWikiResponseMessageParser responseParser, CancellationToken cancellationToken)
         {
             if (endPointUrl == null) throw new ArgumentNullException(nameof(endPointUrl));
             if (message == null) throw new ArgumentNullException(nameof(message));
-            if (message is WikiFormRequestMessage form)
-                message = new WikiFormRequestMessage(form.Id, form, formatJsonKeyValue, false);
-            var result = await SendAsync(endPointUrl, message, cancellationToken);
-            return result;
-        }
-
-        public WikiClient() : this(new HttpClientHandler(), true)
-        {
-            _HttpClientHandler.UseCookies = true;
-            // https://www.mediawiki.org/wiki/API:Client_code
-            // Please use GZip compression when making API calls (Accept-Encoding: gzip).
-            // Bots eat up a lot of bandwidth, which is not free.
-            if (_HttpClientHandler.SupportsAutomaticDecompression)
+            if (message is MediaWikiFormRequestMessage form)
+                message = new MediaWikiFormRequestMessage(form.Id, form, formatJsonKeyValue, false);
+            using (this.BeginActionScope(null, message))
             {
-                _HttpClientHandler.AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate;
+                var result = await SendAsync(endPointUrl, message, responseParser, cancellationToken);
+                return result;
             }
-        }
-
-        /// <param name="handler">The HttpMessageHandler responsible for processing the HTTP response messages.</param>
-        /// <exception cref="ArgumentNullException"><paramref name="handler"/> is <c>null</c>.</exception>
-        public WikiClient(HttpMessageHandler handler) : this(handler, true)
-        {
-        }
-
-        /// <param name="handler">The HttpMessageHandler responsible for processing the HTTP response messages.</param>
-        /// <param name="disposeHandler">Whether to automatically dispose the handler when disposing this Client.</param>
-        /// <exception cref="ArgumentNullException"><paramref name="handler"/> is <c>null</c>.</exception>
-        public WikiClient(HttpMessageHandler handler, bool disposeHandler)
-        {
-            if (handler == null) throw new ArgumentNullException(nameof(handler));
-            HttpClient = new HttpClient(handler, disposeHandler);
-            ClientUserAgent = null;
-            _HttpClientHandler = handler as HttpClientHandler;
-#if DEBUG
-            HttpClient.DefaultRequestHeaders.Add("X-WCL-DEBUG-CLIENT-ID", GetHashCode().ToString());
-#endif
         }
 
         /// <inheritdoc />

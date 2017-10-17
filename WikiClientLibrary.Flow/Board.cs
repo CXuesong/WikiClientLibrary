@@ -66,7 +66,7 @@ namespace WikiClientLibrary.Flow
         public async Task RefreshAsync(CancellationToken cancellationToken)
         {
             // Known Issue: view-header doesn't support multiple page names.
-            var jresult = await Site.GetJsonAsync(new WikiFormRequestMessage(new
+            var jresult = await Site.GetJsonAsync(new MediaWikiFormRequestMessage(new
             {
                 action = "flow",
                 submodule = "view-header",
@@ -124,7 +124,7 @@ namespace WikiClientLibrary.Flow
                     {"vtlformat", "wikitext"},
                 };
                 NEXT_PAGE:
-                var jresult = await Site.GetJsonAsync(new WikiFormRequestMessage(queryParams), ct);
+                var jresult = await Site.GetJsonAsync(new MediaWikiFormRequestMessage(queryParams), ct);
                 var jtopiclist = (JObject)jresult["flow"]["view-topiclist"]["result"]["topiclist"];
                 await sink.YieldAndWait(Topic.FromJsonTopicList(Site, jtopiclist));
                 var nextPageUrl = (string)jtopiclist["links"]?["pagination"]?["fwd"]?["url"];

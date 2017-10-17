@@ -6,7 +6,7 @@ using WikiClientLibrary.Client;
 namespace WikiClientLibrary.Sites
 {
     /// <summary>
-    /// Represents a token placeholder in the <see cref="WikiFormRequestMessage"/>.
+    /// Represents a token placeholder in the <see cref="MediaWikiFormRequestMessage"/>.
     /// This enables <see cref="WikiSite"/> to detect bad tokens.
     /// </summary>
     public sealed class WikiSiteToken
