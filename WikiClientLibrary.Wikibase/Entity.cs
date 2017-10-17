@@ -128,15 +128,15 @@ namespace WikiClientLibrary.Wikibase
         /// </summary>
         public int LastRevisionId { get; private set; }
 
-        public WbMonolingualTextCollection Labels { get; private set; }
+        public WbMonolingualTextCollection Labels { get; private set; } = emptyStringDict;
 
-        public WbMonolingualTextCollection Descriptions { get; private set; }
+        public WbMonolingualTextCollection Descriptions { get; private set; } = emptyStringDict;
 
-        public WbMonolingualTextsCollection Aliases { get; private set; }
+        public WbMonolingualTextsCollection Aliases { get; private set; } = emptyStringsDict;
 
-        public WbEntitySiteLinkCollection SiteLinks { get; private set; }
+        public WbEntitySiteLinkCollection SiteLinks { get; private set; } = emptySiteLinks;
 
-        public WbClaimCollection Claims { get; private set; }
+        public WbClaimCollection Claims { get; private set; } = emptyClaims;
 
         /// <summary>
         /// The last query options used with <see cref="RefreshAsync()"/> or effectively equivalent methods.

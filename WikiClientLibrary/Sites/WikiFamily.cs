@@ -65,7 +65,7 @@ namespace WikiClientLibrary.Sites
     {
 
         private readonly Dictionary<string, SiteEntry> sites = new Dictionary<string, SiteEntry>();
-        private ILogger _Logger;
+        private ILogger _Logger = NullLogger.Instance;
 
         /// <summary>
         /// Raised when a new <see cref="WikiSite"/> has been instantiated, but before it is

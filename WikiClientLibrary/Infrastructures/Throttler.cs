@@ -109,7 +109,7 @@ namespace WikiClientLibrary.Infrastructures
         }
 
         private static readonly Task completedTask = Task.FromResult(0);
-        private ILogger _Logger;
+        private ILogger _Logger = NullLogger.Instance;
 
         /// <summary>
         /// Gets a task that is completed when all the queued work items up till now
