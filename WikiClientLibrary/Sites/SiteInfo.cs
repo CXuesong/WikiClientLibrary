@@ -4,7 +4,9 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Linq;
+using System.Net;
 using System.Runtime.Serialization;
+using System.Threading;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -13,7 +15,7 @@ using WikiClientLibrary.Pages;
 namespace WikiClientLibrary.Sites
 {
     /// <summary>
-    /// Provides read-only access to site information.
+    /// Provides read-only access to general site information.
     /// </summary>
     [JsonObject(MemberSerialization.OptIn)]
     public class SiteInfo
@@ -61,6 +63,43 @@ namespace WikiClientLibrary.Sites
 
         [JsonProperty("favicon")]
         public string FavIconUrl { get; private set; }
+
+        private Tuple<string, string> articleUrlTemplateCache;
+
+        /// <summary>
+        /// Makes the full URL to the page of specified title.
+        /// </summary>
+        /// <param name="title">The title of the article.</param>
+        /// <exception cref="ArgumentNullException"><paramref name="title"/> is <c>null</c>.</exception>
+        /// <remarks>This overload uses <c>https:</c> as default protocol for protocol-relative.</remarks>
+        public string MakeArticleUrl(string title)
+        {
+            return MakeArticleUrl(title, "https:");
+        }
+
+        /// <summary>
+        /// Makes the full URL to the page of specified title.
+        /// </summary>
+        /// <param name="title">The title of the article.</param>
+        /// <param name="defaultProtocol">For protocol-relative URL, (e.g. <c>//en.wikipedia.org/</c>)
+        /// specifies the default protocol to use. (e.g. <c>https:</c>)</param>
+        /// <exception cref="ArgumentNullException">Either <paramref name="title"/> or <paramref name="defaultProtocol"/> is <c>null</c>.</exception>
+        /// <returns>The full URL of the article.</returns>
+        public string MakeArticleUrl(string title, string defaultProtocol)
+        {
+            if (title == null) throw new ArgumentNullException(nameof(title));
+            if (defaultProtocol == null) throw new ArgumentNullException(nameof(defaultProtocol));
+            var cache = articleUrlTemplateCache;
+            if (cache == null || cache.Item1 != defaultProtocol)
+            {
+                var urlTemplate = ServerUrl;
+                if (urlTemplate.StartsWith("//")) urlTemplate = defaultProtocol + urlTemplate;
+                urlTemplate = new Uri(new Uri(urlTemplate, UriKind.Absolute), ArticlePath).ToString();
+                cache = new Tuple<string, string>(defaultProtocol, urlTemplate);
+                Volatile.Write(ref articleUrlTemplateCache, cache);
+            }
+            return cache.Item2.Replace("$1", Uri.EscapeUriString(title));
+        }
 
         #endregion
 

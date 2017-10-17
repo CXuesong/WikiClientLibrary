@@ -48,6 +48,7 @@ namespace UnitTestProject1.Tests
             ShallowTrace(site);
             Assert.Equal("Wikipedia", site.SiteInfo.SiteName);
             Assert.Equal("Main Page", site.SiteInfo.MainPage);
+            Assert.Equal("https://test2.wikipedia.org/wiki/test%20page", site.SiteInfo.MakeArticleUrl("test page"));
             var messages = await site.GetMessagesAsync(new[] {"august"});
             Assert.Equal("August", messages["august"]);
             ValidateNamespaces(site);
