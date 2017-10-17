@@ -173,10 +173,8 @@ namespace WikiClientLibrary.Infrastructures
             }
 
             using (site.BeginActionScope(null, (object)tokenType))
-            using (var cts = new CancellationTokenSource(
             // We want to prevent the token fetching request get stuck. Anyway.
-                Math.Max(1000, (site.WikiClient.Timeout + site.WikiClient.RetryDelay).Milliseconds) *
-                Math.Max(1, site.WikiClient.MaxRetries)))
+            using (var cts = new CancellationTokenSource(1000 * 180))
             {
                 try
                 {

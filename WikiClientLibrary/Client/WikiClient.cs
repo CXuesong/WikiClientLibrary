@@ -6,6 +6,8 @@ using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
 using System.Net.Http;
 using System.Threading;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
 using WikiClientLibrary.Infrastructures;
 
 namespace WikiClientLibrary.Client
@@ -13,7 +15,7 @@ namespace WikiClientLibrary.Client
     /// <summary>
     /// Provides basic operations for MediaWiki API via HTTP(S).
     /// </summary>
-    public partial class WikiClient : WikiClientBase
+    public partial class WikiClient : IMediaWikiApiClient, IWikiClientLoggable, IDisposable
     {
         /// <summary>
         /// The User Agent of Wiki Client Library.
@@ -24,6 +26,31 @@ namespace WikiClientLibrary.Client
 
         private string _ClientUserAgent;
         private readonly HttpClientHandler _HttpClientHandler;
+        private int _MaxRetries = 3;
+        private ILogger _Logger = NullLogger.Instance;
+
+        /// <summary>
+        /// Timeout for each query.
+        /// </summary>
+        public TimeSpan Timeout { get; set; } = TimeSpan.FromSeconds(10);
+
+        /// <summary>
+        /// Delay before each retry.
+        /// </summary>
+        public TimeSpan RetryDelay { get; set; } = TimeSpan.FromSeconds(10);
+
+        /// <summary>
+        /// Max retries count.
+        /// </summary>
+        public int MaxRetries
+        {
+            get { return _MaxRetries; }
+            set
+            {
+                if (value < 0) throw new ArgumentOutOfRangeException(nameof(value));
+                _MaxRetries = value;
+            }
+        }
 
         /// <summary>
         /// User Agent for client-side application.
@@ -70,6 +97,13 @@ namespace WikiClientLibrary.Client
 
         internal HttpClient HttpClient { get; }
 
+        /// <inheritdoc />
+        public ILogger Logger
+        {
+            get => _Logger;
+            set => _Logger = value ?? NullLogger.Instance;
+        }
+
         #endregion
 
         private static readonly KeyValuePair<string, object>[] formatJsonKeyValue =
@@ -78,7 +112,7 @@ namespace WikiClientLibrary.Client
         };
 
         /// <inheritdoc />
-        public override async Task<JToken> GetJsonAsync(string endPointUrl, WikiRequestMessage message, CancellationToken cancellationToken)
+        public async Task<JToken> GetJsonAsync(string endPointUrl, WikiRequestMessage message, CancellationToken cancellationToken)
         {
             if (endPointUrl == null) throw new ArgumentNullException(nameof(endPointUrl));
             if (message == null) throw new ArgumentNullException(nameof(message));
@@ -126,14 +160,19 @@ namespace WikiClientLibrary.Client
             return $"{GetType().Name}#{GetHashCode()}";
         }
 
-        /// <inheritdoc />
-        protected override void Dispose(bool disposing)
+        protected virtual void Dispose(bool disposing)
         {
             if (disposing)
             {
                 HttpClient.Dispose();
             }
-            base.Dispose(disposing);
+        }
+
+        /// <inheritdoc />
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
         }
     }
 }

@@ -26,9 +26,9 @@ namespace WikiClientLibrary.Sites
         #region Services
 
         /// <summary>
-        /// Gets the <see cref="WikiClientBase" /> used to perform the requests.
+        /// Gets the MediaWiki API client used to perform the requests.
         /// </summary>
-        public WikiClientBase WikiClient { get; }
+        public IMediaWikiApiClient WikiClient { get; }
 
         /// <summary>
         /// A handler used to re-login when account assertion fails.
@@ -61,7 +61,7 @@ namespace WikiClientLibrary.Sites
         /// <exception cref="ArgumentNullException"><paramref name="wikiClient"/> or <paramref name="apiEndpoint"/> is <c>null</c>.</exception>
         /// <exception cref="ArgumentException"><paramref name="apiEndpoint"/> is invalid.</exception>
         /// <exception cref="UnauthorizedOperationException">Cannot access query API module due to target site permission settings. You may take a look at <see cref="SiteOptions.ExplicitInfoRefresh"/>.</exception>
-        public static Task<WikiSite> CreateAsync(WikiClientBase wikiClient, string apiEndpoint)
+        public static Task<WikiSite> CreateAsync(IMediaWikiApiClient wikiClient, string apiEndpoint)
         {
             if (wikiClient == null) throw new ArgumentNullException(nameof(wikiClient));
             if (apiEndpoint == null) throw new ArgumentNullException(nameof(apiEndpoint));
@@ -74,7 +74,7 @@ namespace WikiClientLibrary.Sites
         /// <exception cref="ArgumentNullException"><paramref name="wikiClient"/> or <paramref name="options"/> is <c>null</c>.</exception>
         /// <exception cref="ArgumentException">One or more settings in <paramref name="options"/> is invalid.</exception>
         /// <exception cref="UnauthorizedOperationException">Cannot access query API module due to target site permission settings. You may take a look at <see cref="SiteOptions.ExplicitInfoRefresh"/>.</exception>
-        public static async Task<WikiSite> CreateAsync(WikiClientBase wikiClient, SiteOptions options)
+        public static async Task<WikiSite> CreateAsync(IMediaWikiApiClient wikiClient, SiteOptions options)
         {
             if (wikiClient == null) throw new ArgumentNullException(nameof(wikiClient));
             if (options == null) throw new ArgumentNullException(nameof(options));
@@ -101,7 +101,7 @@ namespace WikiClientLibrary.Sites
             return MediaWikiUtility.SearchApiEndpointAsync(client, urlExpression);
         }
 
-        protected WikiSite(WikiClientBase wikiClient, SiteOptions options)
+        protected WikiSite(IMediaWikiApiClient wikiClient, SiteOptions options)
         {
             // Perform basic checks.
             Debug.Assert(wikiClient != null);

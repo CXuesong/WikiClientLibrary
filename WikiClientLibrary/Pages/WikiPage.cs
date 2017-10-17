@@ -33,8 +33,6 @@ namespace WikiClientLibrary.Pages
             if (site == null) throw new ArgumentNullException(nameof(site));
             if (string.IsNullOrWhiteSpace(title)) throw new ArgumentNullException(nameof(title));
             Site = site;
-            WikiClient = Site.WikiClient;
-            Debug.Assert(WikiClient != null);
             var parsedTitle = WikiLink.Parse(site, title, defaultNamespaceId);
             Title = parsedTitle.FullTitle;
             NamespaceId = parsedTitle.Namespace.Id;
@@ -44,15 +42,8 @@ namespace WikiClientLibrary.Pages
         {
             if (site == null) throw new ArgumentNullException(nameof(site));
             Site = site;
-            WikiClient = Site.WikiClient;
-            Debug.Assert(WikiClient != null);
             Site = site;
         }
-
-        /// <summary>
-        /// Synonym for <c>Site.WikiClient</c> .
-        /// </summary>
-        public WikiClientBase WikiClient { get; }
 
         /// <summary>
         /// Gets the Site the page is on.
