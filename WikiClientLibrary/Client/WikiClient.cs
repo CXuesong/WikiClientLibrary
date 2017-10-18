@@ -140,19 +140,12 @@ namespace WikiClientLibrary.Client
 
         #endregion
 
-        private static readonly KeyValuePair<string, object>[] formatJsonKeyValue =
-        {
-            new KeyValuePair<string, object>("format", "json")
-        };
-
         /// <inheritdoc />
         public async Task<object> InvokeAsync(string endPointUrl, WikiRequestMessage message,
             IWikiResponseMessageParser responseParser, CancellationToken cancellationToken)
         {
             if (endPointUrl == null) throw new ArgumentNullException(nameof(endPointUrl));
             if (message == null) throw new ArgumentNullException(nameof(message));
-            if (message is MediaWikiFormRequestMessage form)
-                message = new MediaWikiFormRequestMessage(form.Id, form, formatJsonKeyValue, false);
             using (this.BeginActionScope(null, message))
             {
                 var result = await SendAsync(endPointUrl, message, responseParser, cancellationToken);

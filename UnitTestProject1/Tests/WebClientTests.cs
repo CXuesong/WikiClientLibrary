@@ -19,7 +19,7 @@ namespace UnitTestProject1.Tests
         public async Task TestMethod1()
         {
             var client = WikiClient;
-            var query = new {action = "query", meta = "siteinfo"};
+            var query = new {action = "query", meta = "siteinfo", format = "json"};
             var json1 = await client.InvokeAsync(Endpoints.WikipediaTest2,
                 new MediaWikiFormRequestMessage(query),
                 MediaWikiJsonResponseParser.Default,
@@ -40,7 +40,8 @@ namespace UnitTestProject1.Tests
                     new MediaWikiFormRequestMessage(new
                     {
                         action = "invalid_action_test",
-                        description = "This is a test case for invalid action parameter."
+                        description = "This is a test case for invalid action parameter.",
+                        format = "json",
                     }),
                     MediaWikiJsonResponseParser.Default,
                     CancellationToken.None));

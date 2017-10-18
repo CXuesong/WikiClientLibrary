@@ -342,7 +342,7 @@ namespace WikiClientLibrary.Sites
             if (form != null)
             {
                 // Apply tokens
-                var overridenFields = new List<KeyValuePair<string, object>>();
+                var overridenFields = new List<KeyValuePair<string, object>>(4);
                 foreach (var tokenField in form.Fields.Where(p => p.Value is WikiSiteToken))
                 {
                     overridenFields.Add(new KeyValuePair<string, object>(tokenField.Key,
@@ -359,8 +359,8 @@ namespace WikiClientLibrary.Sites
                              AccountAssertionBehavior.AssertUser && _AccountInfo.IsUser)
                         overridenFields.Add(new KeyValuePair<string, object>("assert", "user"));
                 }
-                if (overridenFields.Count > 0)
-                    localRequest = new MediaWikiFormRequestMessage(form.Id, form, overridenFields, false);
+                overridenFields.Add(new KeyValuePair<string, object>("format", "json"));
+                localRequest = new MediaWikiFormRequestMessage(form.Id, form, overridenFields, false);
             }
             Logger.LogDebug("Sending request {Request}, SuppressAccountAssertion={SuppressAccountAssertion}",
                 localRequest, suppressAccountAssertion);
