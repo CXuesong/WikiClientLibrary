@@ -21,7 +21,7 @@ namespace WikiClientLibrary.Client
     /// <para>
     /// This is the primary message type used in the WikiClientLibrary.
     /// This type provides some useful functionalities such as constructing fields from anonymous objects,
-    /// simple type marshalling, or inherit some of the fields of other <see cref="MediaWikiFormRequestMessage"/> instance,
+    /// and simple type (e.g. <see cref="DateTime"/>) marshalling.
     /// while overriding the rest.
     /// </para>
     /// <para>
@@ -59,12 +59,13 @@ namespace WikiClientLibrary.Client
     /// may also change the way the message is marshaled. For the detailed information, please see the message sender's
     /// documentations respectively.
     /// </para>
+    /// <para>This message uses POST method to invoke API requests.</para>
     /// </remarks>
     public class MediaWikiFormRequestMessage : WikiRequestMessage
     {
-        
-        private readonly IDictionary<string, object> fieldDict;
-        private IDictionary<string, object> readonlyFieldDict;
+
+        private readonly IList<KeyValuePair<string, object>> fields;
+        private IList<KeyValuePair<string, object>> readonlyFields;
         // Memorizes the stream position upon first request.
         private IDictionary<Stream, long> streamPositions;
 
@@ -76,38 +77,25 @@ namespace WikiClientLibrary.Client
         // GetHttpContent invoked, un-recoverable
         private const int STATUS_UNRECOVERABLE = 2;
 
-        /// <inheritdoc cref="MediaWikiFormRequestMessage(string,MediaWikiFormRequestMessage,object,bool)"/>
-        public MediaWikiFormRequestMessage(object fieldCollection) : this(null, null, fieldCollection, false)
+        /// <inheritdoc cref="MediaWikiFormRequestMessage(string,object,bool)"/>
+        public MediaWikiFormRequestMessage(object fieldCollection) : this(null, fieldCollection, false)
         {
         }
 
-        /// <inheritdoc cref="MediaWikiFormRequestMessage(string,MediaWikiFormRequestMessage,object,bool)"/>
-        public MediaWikiFormRequestMessage(object fieldCollection, bool forceMultipartFormData) : this(null, null,
-            fieldCollection, forceMultipartFormData)
-        {
-        }
-
-        /// <inheritdoc cref="MediaWikiFormRequestMessage(string,MediaWikiFormRequestMessage,object,bool)"/>
-        public MediaWikiFormRequestMessage(string id, object fieldCollection) : this(id, null, fieldCollection, false)
+        /// <inheritdoc cref="MediaWikiFormRequestMessage(string,object,bool)"/>
+        public MediaWikiFormRequestMessage(object fieldCollection, bool forceMultipartFormData) : this(null, fieldCollection, forceMultipartFormData)
         {
         }
 
         /// <inheritdoc />
-        /// <param name="baseForm">The form from which this new instance copies the fields. Can be <c>null</c>.</param>
         /// <param name="fieldCollection">A dictionary or anonymous object containing the key-value pairs. See <see cref="MediaWikiHelper.EnumValues"/> for more information.</param>
         /// <param name="forceMultipartFormData">Forces the message to be marshaled as multipart/form-data, regardless of the fields.</param>
-        public MediaWikiFormRequestMessage(string id, MediaWikiFormRequestMessage baseForm,
-            object fieldCollection, bool forceMultipartFormData) : base(id)
+        /// <exception cref="ArgumentNullException"><paramref name="fieldCollection"/> is <c>null</c>.</exception>
+        public MediaWikiFormRequestMessage(string id, object fieldCollection, bool forceMultipartFormData) : base(id)
         {
-            if (baseForm == null)
-                fieldDict = new Dictionary<string, object>();
-            else
-                fieldDict = new Dictionary<string, object>(baseForm.fieldDict);
-            // Override values.
-            foreach (var p in MediaWikiHelper.EnumValues(fieldCollection))
-                fieldDict[p.Key] = p.Value;
-            if (forceMultipartFormData || (baseForm?.AsMultipartFormData ?? false)) AsMultipartFormData = true;
-            else AsMultipartFormData = this.fieldDict.Any(p => p.Value is Stream);
+            if (fieldCollection == null) throw new ArgumentNullException(nameof(fieldCollection));
+            fields = new List<KeyValuePair<string, object>>(MediaWikiHelper.EnumValues(fieldCollection));
+            AsMultipartFormData = forceMultipartFormData || fields.Any(p => p.Value is Stream);
         }
 
         /// <summary>
@@ -116,16 +104,16 @@ namespace WikiClientLibrary.Client
         public bool AsMultipartFormData { get; }
 
         /// <summary>
-        /// Gets a readonly dictionary of all the fields in the form.
+        /// Gets a readonly list of all the fields in the form.
         /// </summary>
-        public IDictionary<string, object> Fields
+        public IList<KeyValuePair<string, object>> Fields
         {
             get
             {
-                if (readonlyFieldDict != null) return readonlyFieldDict;
-                var local = new ReadOnlyDictionary<string, object>(fieldDict);
-                Volatile.Write(ref readonlyFieldDict, local);
-                return local;
+                if (readonlyFields != null) return readonlyFields;
+                var local = new ReadOnlyCollection<KeyValuePair<string, object>>(readonlyFields);
+                Volatile.Write(ref readonlyFields, local);
+                return readonlyFields;
             }
         }
 
@@ -143,7 +131,7 @@ namespace WikiClientLibrary.Client
             {
                 case STATUS_CREATED:
                     IDictionary<Stream, long> sps = null;
-                    foreach (var p in fieldDict)
+                    foreach (var p in fields)
                     {
                         if (p.Value is Stream s)
                         {
@@ -166,7 +154,7 @@ namespace WikiClientLibrary.Client
                     sps = streamPositions;
                     if (sps != null)
                     {
-                        foreach (var p in fieldDict)
+                        foreach (var p in fields)
                         {
                             if (p.Value is Stream s) s.Position = sps[s];
                         }
@@ -179,7 +167,7 @@ namespace WikiClientLibrary.Client
             if (AsMultipartFormData)
             {
                 var content = new MultipartFormDataContent();
-                foreach (var p in fieldDict)
+                foreach (var p in fields)
                 {
                     switch (p.Value)
                     {
@@ -203,8 +191,7 @@ namespace WikiClientLibrary.Client
             }
             else
             {
-                return new FormLongUrlEncodedContent(Utility.ToWikiStringValuePairs(fieldDict)
-                    .Select(p => new KeyValuePair<string, string>(p.Key, Utility.ToWikiQueryValue(p.Value)))
+                return new FormLongUrlEncodedContent(Utility.ToWikiStringValuePairs(fields)
                     .Where(p => p.Value != null));
             }
         }

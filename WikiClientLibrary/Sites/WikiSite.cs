@@ -342,25 +342,29 @@ namespace WikiClientLibrary.Sites
             if (form != null)
             {
                 // Apply tokens
-                var overridenFields = new List<KeyValuePair<string, object>>(4);
-                foreach (var tokenField in form.Fields.Where(p => p.Value is WikiSiteToken))
+                var newFields = new List<KeyValuePair<string, object>>(form.Fields.Count + 3)
                 {
-                    overridenFields.Add(new KeyValuePair<string, object>(tokenField.Key,
-                        await tokensManager.GetTokenAsync(((WikiSiteToken)tokenField.Value).Type,
-                            false, cancellationToken)));
+                    new KeyValuePair<string, object>("format", "json")
+                };
+                foreach (var tokenField in form.Fields)
+                {
+                    var value = tokenField.Value;
+                    if (value is WikiSiteToken)
+                        value = await tokensManager.GetTokenAsync(
+                            ((WikiSiteToken)tokenField.Value).Type, false, cancellationToken);
+                    newFields.Add(new KeyValuePair<string, object>(tokenField.Key, value));
                 }
                 // Apply account assertions
                 if (!suppressAccountAssertion && _AccountInfo != null)
                 {
                     if ((options.AccountAssertion & AccountAssertionBehavior.AssertBot) ==
                         AccountAssertionBehavior.AssertBot && _AccountInfo.IsBot)
-                        overridenFields.Add(new KeyValuePair<string, object>("assert", "bot"));
+                        newFields.Add(new KeyValuePair<string, object>("assert", "bot"));
                     else if ((options.AccountAssertion & AccountAssertionBehavior.AssertUser) ==
                              AccountAssertionBehavior.AssertUser && _AccountInfo.IsUser)
-                        overridenFields.Add(new KeyValuePair<string, object>("assert", "user"));
+                        newFields.Add(new KeyValuePair<string, object>("assert", "user"));
                 }
-                overridenFields.Add(new KeyValuePair<string, object>("format", "json"));
-                localRequest = new MediaWikiFormRequestMessage(form.Id, form, overridenFields, false);
+                localRequest = new MediaWikiFormRequestMessage(form.Id, newFields, form.AsMultipartFormData);
             }
             Logger.LogDebug("Sending request {Request}, SuppressAccountAssertion={SuppressAccountAssertion}",
                 localRequest, suppressAccountAssertion);
