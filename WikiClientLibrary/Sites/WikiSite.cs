@@ -376,12 +376,12 @@ namespace WikiClientLibrary.Sites
                     // ISSUE Relogin might be called nultiple times.
                     if (reLoginTask == null)
                     {
-                        Logger.LogWarning("Account assertion failed. Try to relogin: {Request}.", message);
+                        Logger.LogWarning("Account assertion failed. Try to relogin.");
                         Volatile.Write(ref reLoginTask, Relogin());
                     }
                     else
                     {
-                        Logger.LogWarning("Account assertion failed. Waiting for relongin: {Request}.", message);
+                        Logger.LogWarning("Account assertion failed. Waiting for relongin.");
                     }
                     var result = await reLoginTask;
                     if (result) goto RETRY;
@@ -594,57 +594,61 @@ namespace WikiClientLibrary.Sites
             if (string.IsNullOrEmpty(password)) throw new ArgumentNullException(nameof(password));
             if (Interlocked.Exchange(ref isLoggingInOut, 1) != 0)
                 throw new InvalidOperationException("Cannot login/logout concurrently.");
-            try
+            using (this.BeginActionScope(null, (object)userName))
             {
-                string token = null;
-                // If _SiteInfo is null, it indicates options.ExplicitInfoRefresh must be true.
-                Debug.Assert(options.ExplicitInfoRefresh || _SiteInfo != null);
-                // For MedaiWiki 1.27+
-                if (!options.ExplicitInfoRefresh && _SiteInfo.Version >= new Version("1.27"))
-                    token = await GetTokenAsync("login", true, cancellationToken);
-                // For MedaiWiki < 1.27, We'll have to request twice.
-                // If options.ExplicitInfoRefresh is true, we just treat it the same as MedaiWiki < 1.27,
-                //  because any "query" operation might raise readapidenied error.
-                RETRY:
-                var jobj = await GetJsonAsync(new MediaWikiFormRequestMessage(new
+                try
                 {
-                    action = "login",
-                    lgname = userName,
-                    lgpassword = password,
-                    lgtoken = token,
-                    lgdomain = domain,
-                }), true, cancellationToken);
-                var result = (string)jobj["login"]["result"];
-                string message = null;
-                switch (result)
-                {
-                    case "Success":
-                        tokensManager.ClearCache();
-                        await RefreshAccountInfoAsync();
-                        Debug.Assert(AccountInfo.IsUser,
-                            "API result indicates the login is successful, but you are not currently in \"user\" group. Are you logging out on the other Site instance with the same API endpoint and the same WikiClient?");
-                        return;
-                    case "Aborted":
-                        message =
-                            "The login using the main account password (rather than a bot password) cannot proceed because user interaction is required. The clientlogin action should be used instead.";
-                        break;
-                    case "Throttled":
-                        var time = (int)jobj["login"]["wait"];
-                        Logger.LogWarning("{Site} login throttled: {Time}sec.", ToString(), time);
-                        await Task.Delay(TimeSpan.FromSeconds(time), cancellationToken);
-                        goto RETRY;
-                    case "NeedToken":
-                        token = (string)jobj["login"]["token"];
-                        goto RETRY;
-                    case "WrongToken": // We should have got correct token.
-                        throw new UnexpectedDataException($"Unexpected login result: {result} .");
+                    string token = null;
+                    // If _SiteInfo is null, it indicates options.ExplicitInfoRefresh must be true.
+                    Debug.Assert(options.ExplicitInfoRefresh || _SiteInfo != null);
+                    // For MedaiWiki 1.27+
+                    if (!options.ExplicitInfoRefresh && _SiteInfo.Version >= new Version("1.27"))
+                        token = await GetTokenAsync("login", true, cancellationToken);
+                    // For MedaiWiki < 1.27, We'll have to request twice.
+                    // If options.ExplicitInfoRefresh is true, we just treat it the same as MedaiWiki < 1.27,
+                    //  because any "query" operation might raise readapidenied error.
+                    RETRY:
+                    var jobj = await GetJsonAsync(new MediaWikiFormRequestMessage(new
+                    {
+                        action = "login",
+                        lgname = userName,
+                        lgpassword = password,
+                        lgtoken = token,
+                        lgdomain = domain,
+                    }), true, cancellationToken);
+                    var result = (string)jobj["login"]["result"];
+                    string message = null;
+                    switch (result)
+                    {
+                        case "Success":
+                            tokensManager.ClearCache();
+                            await RefreshAccountInfoAsync();
+                            Logger.LogInformation("Logged in as {Account}.", AccountInfo);
+                            Debug.Assert(AccountInfo.IsUser,
+                                "API result indicates the login is successful, but you are not currently in \"user\" group. Are you logging out on the other Site instance with the same API endpoint and the same WikiClient?");
+                            return;
+                        case "Aborted":
+                            message =
+                                "The login using the main account password (rather than a bot password) cannot proceed because user interaction is required. The clientlogin action should be used instead.";
+                            break;
+                        case "Throttled":
+                            var time = (int)jobj["login"]["wait"];
+                            Logger.LogWarning("{Site} login throttled: {Time}sec.", ToString(), time);
+                            await Task.Delay(TimeSpan.FromSeconds(time), cancellationToken);
+                            goto RETRY;
+                        case "NeedToken":
+                            token = (string)jobj["login"]["token"];
+                            goto RETRY;
+                        case "WrongToken": // We should have got correct token.
+                            throw new UnexpectedDataException($"Unexpected login result: {result} .");
+                    }
+                    message = (string)jobj["login"]["reason"] ?? message;
+                    throw new OperationFailedException(result, message);
                 }
-                message = (string)jobj["login"]["reason"] ?? message;
-                throw new OperationFailedException(result, message);
-            }
-            finally
-            {
-                Interlocked.Exchange(ref isLoggingInOut, 0);
+                finally
+                {
+                    Interlocked.Exchange(ref isLoggingInOut, 0);
+                }
             }
         }
 
@@ -661,26 +665,28 @@ namespace WikiClientLibrary.Sites
         {
             if (Interlocked.Exchange(ref isLoggingInOut, 1) != 0)
                 throw new InvalidOperationException("Cannot login/logout concurrently.");
-            try
+            using (this.BeginActionScope(null))
             {
-                var jobj = await GetJsonAsync(new MediaWikiFormRequestMessage(new
+                try
                 {
-                    action = "logout",
-                }), true, CancellationToken.None);
-                tokensManager.ClearCache();
-                if (options.ExplicitInfoRefresh)
-                    _AccountInfo = null;
-                else
-                    await RefreshAccountInfoAsync();
-            }
-            finally
-            {
-                Interlocked.Exchange(ref isLoggingInOut, 0);
+                    var jobj = await GetJsonAsync(new MediaWikiFormRequestMessage(new
+                    {
+                        action = "logout",
+                    }), true, CancellationToken.None);
+                    tokensManager.ClearCache();
+                    if (options.ExplicitInfoRefresh)
+                        _AccountInfo = null;
+                    else
+                        await RefreshAccountInfoAsync();
+                }
+                finally
+                {
+                    Interlocked.Exchange(ref isLoggingInOut, 0);
+                }
             }
         }
 
         private Task<bool> reLoginTask;
-        private ILoggerFactory _LoggerFactory;
         private ILogger _Logger = NullLogger.Instance;
 
         private async Task<bool> Relogin()
