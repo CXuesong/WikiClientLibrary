@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 using WikiClientLibrary;
 using WikiClientLibrary.Client;
 using WikiClientLibrary.Generators;
@@ -30,15 +32,19 @@ namespace ConsoleTestApplication1
 
         static async Task HelloWikiWorld()
         {
+            var loggerFactory = new LoggerFactory();
+            loggerFactory.AddConsole(LogLevel.Information, true);
             // Create a MediaWiki API client.
             var wikiClient = new WikiClient
             {
                 // UA of Client Application. The UA of WikiClientLibrary will
                 // be append to the end of this when sending requests.
                 ClientUserAgent = "ConsoleTestApplication1/1.0",
+                Logger = loggerFactory.CreateLogger<WikiClient>(),
             };
             // Create a MediaWiki Site instance with the URL of API endpoint.
             var site = await WikiSite.CreateAsync(wikiClient, "https://test2.wikipedia.org/w/api.php");
+            site.Logger = loggerFactory.CreateLogger<WikiSite>();
             // Access site information via Site.SiteInfo
             Console.WriteLine("API version: {0}", site.SiteInfo.Generator);
             // Access user information via Site.UserInfo
