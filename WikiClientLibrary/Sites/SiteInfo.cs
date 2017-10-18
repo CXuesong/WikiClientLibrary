@@ -10,6 +10,7 @@ using System.Threading;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using WikiClientLibrary.Infrastructures;
 using WikiClientLibrary.Pages;
 
 namespace WikiClientLibrary.Sites
@@ -23,7 +24,7 @@ namespace WikiClientLibrary.Sites
         private string _Generator;
 
         /// <summary>
-        /// The title of the main page, as found in MediaWiki:Mainpage. 1.8+
+        /// The title of the main page, as found in MediaWiki:Mainpage. (MediaWiki 1.8+)
         /// </summary>
         [JsonProperty] // This should be kept or private setter will be ignored by Newtonsoft.JSON.
         public string MainPage { get; private set; }
@@ -31,32 +32,35 @@ namespace WikiClientLibrary.Sites
         #region Url & Path
 
         /// <summary>
-        /// The absolute path to the main page. 1.8+
+        /// The absolute path to the main page. (MediaWiki 1.8+)
         /// </summary>
         [JsonProperty("base")]
         public string BaseUrl { get; private set; }
 
         /// <summary>
-        /// The absolute or protocol-relative base URL for the server. See $wgServer. 1.16+
+        /// The absolute or protocol-relative base URL for the server.
+        /// (MediaWiki 1.16+, <a href="https://www.mediawiki.org/wiki/Manual:$wgServer">mw:Manual:$wgServer</a>)
         /// </summary>
         [JsonProperty("server")]
         public string ServerUrl { get; private set; }
 
         /// <summary>
         /// The relative or absolute path to any article. $1 should be replaced by the article name.
-        /// See $wgArticlePath. 1.16+
+        /// (MediaWiki 1.16+, <a href="https://www.mediawiki.org/wiki/Manual:$wgArticlePath">mw:Manual:$wgArticlePath</a>)
         /// </summary>
         [JsonProperty]
         public string ArticlePath { get; private set; }
 
         /// <summary>
-        /// The path of index.php relative to the document root. 
+        /// The path of <c>index.php</c> relative to the document root.
+        /// (MediaWiki 1.1.0+, <a href="https://www.mediawiki.org/wiki/Manual:$wgScript">mw:Manual:$wgScript</a>)
         /// </summary>
         [JsonProperty("script")]
         public string ScriptFilePath { get; private set; }
 
         /// <summary>
         /// The base URL path relative to the document root. 
+        /// (MediaWiki 1.1.0+, <a href="https://www.mediawiki.org/wiki/Manual:$wgScriptPath">mw:Manual:$wgScriptPath</a>)
         /// </summary>
         [JsonProperty("scriptpath")]
         public string ScriptDirectoryPath { get; private set; }
@@ -92,9 +96,7 @@ namespace WikiClientLibrary.Sites
             var cache = articleUrlTemplateCache;
             if (cache == null || cache.Item1 != defaultProtocol)
             {
-                var urlTemplate = ServerUrl;
-                if (urlTemplate.StartsWith("//")) urlTemplate = defaultProtocol + urlTemplate;
-                urlTemplate = new Uri(new Uri(urlTemplate, UriKind.Absolute), ArticlePath).ToString();
+                var urlTemplate = MediaWikiHelper.MakeAbsoluteUrl(ServerUrl, ArticlePath);
                 cache = new Tuple<string, string>(defaultProtocol, urlTemplate);
                 Volatile.Write(ref articleUrlTemplateCache, cache);
             }
