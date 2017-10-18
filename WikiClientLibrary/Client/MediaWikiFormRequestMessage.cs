@@ -94,7 +94,7 @@ namespace WikiClientLibrary.Client
 
         /// <inheritdoc />
         /// <param name="baseForm">The form from which this new instance copies the fields. Can be <c>null</c>.</param>
-        /// <param name="fieldCollection">A dictionary or anonymous object containing the key-value pairs.</param>
+        /// <param name="fieldCollection">A dictionary or anonymous object containing the key-value pairs. See <see cref="MediaWikiHelper.EnumValues"/> for more information.</param>
         /// <param name="forceMultipartFormData">Forces the message to be marshaled as multipart/form-data, regardless of the fields.</param>
         public MediaWikiFormRequestMessage(string id, MediaWikiFormRequestMessage baseForm,
             object fieldCollection, bool forceMultipartFormData) : base(id)
@@ -104,7 +104,7 @@ namespace WikiClientLibrary.Client
             else
                 fieldDict = new Dictionary<string, object>(baseForm.fieldDict);
             // Override values.
-            foreach (var p in Utility.EnumValues(fieldCollection))
+            foreach (var p in MediaWikiHelper.EnumValues(fieldCollection))
                 fieldDict[p.Key] = p.Value;
             if (forceMultipartFormData || (baseForm?.AsMultipartFormData ?? false)) AsMultipartFormData = true;
             else AsMultipartFormData = this.fieldDict.Any(p => p.Value is Stream);

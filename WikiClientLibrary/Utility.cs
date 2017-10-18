@@ -68,7 +68,7 @@ namespace WikiClientLibrary
         public static IEnumerable<KeyValuePair<string, string>> ToWikiStringValuePairs(object values)
         {
             if (values is IEnumerable<KeyValuePair<string, string>> pc) return pc;
-            return EnumValues(values)
+            return MediaWikiHelper.EnumValues(values)
                 .Select(p => new KeyValuePair<string, string>(p.Key, ToWikiQueryValue(p.Value)));
         }
 
@@ -101,33 +101,6 @@ namespace WikiClientLibrary
                 default:
                     return value.ToString();
             }
-        }
-
-        public static IEnumerable<KeyValuePair<string, object>> EnumValues(object dict)
-        {
-            if (dict == null) throw new ArgumentNullException(nameof(dict));
-            if (dict is IEnumerable<KeyValuePair<string, object>> objEnu)
-                return objEnu;
-            if (dict is IEnumerable<KeyValuePair<string, string>> stringEnu)
-                return stringEnu.Select(p => new KeyValuePair<string, object>(p.Key, p.Value));
-            if (dict is IDictionary idict0)
-            {
-                IEnumerable<KeyValuePair<string, object>> Enumerator(IDictionary idict)
-                {
-                    var de = idict.GetEnumerator();
-                    while (de.MoveNext()) yield return new KeyValuePair<string, object>((string) de.Key, de.Value);
-                }
-
-                return Enumerator(idict0);
-            }
-            // Sanity check: We only want to marshal anonymous types.
-            // If you are in RELEASE mode… I wish you good luck.
-            Debug.Assert(dict.GetType().GetTypeInfo().CustomAttributes
-                    .Any(a => a.AttributeType != typeof(CompilerGeneratedAttribute)),
-                "We only want to marshal anonymous types. Did you accidentally pass in a wrong object?");
-            return from p in dict.GetType().GetRuntimeProperties()
-                let value = p.GetValue(dict)
-                select new KeyValuePair<string, object>(p.Name, value);
         }
 
         /// <summary>

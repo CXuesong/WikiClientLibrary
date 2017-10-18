@@ -1,12 +1,17 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.Linq;
+using System.Reflection;
+using System.Runtime.CompilerServices;
 using System.Text;
 using Newtonsoft.Json;
 
 namespace WikiClientLibrary.Infrastructures
 {
     /// <summary>
-    /// Helper methods for extending MW API.
+    /// Helper methods for extending MediaWiki API.
     /// </summary>
     public static class MediaWikiHelper
     {
@@ -65,6 +70,40 @@ namespace WikiClientLibrary.Infrastructures
             if (defaultProtocol == null) throw new ArgumentNullException(nameof(defaultProtocol));
             baseUrl = MakeAbsoluteProtocol(baseUrl, defaultProtocol);
             return new Uri(new Uri(baseUrl, UriKind.Absolute), relativeUrl).ToString();
+        }
+
+        /// <summary>
+        /// Enumerates from either a sequence of key-value pairs, or the property-value pairs of an anonymous object.
+        /// </summary>
+        /// <param name="dict">A <see cref="IEnumerable{T}"/> of <see cref="KeyValuePair{TKey,TValue}"/>,
+        /// where <c>TKey</c> should be <see cref="string"/>, while <c>TValue</c> can either be <see cref="string"/> or <see cref="object"/>.
+        /// Or an anonymous object, in which case, its properties and values are enumerated.</param>
+        /// <returns>A sequence containning the enumerated key-value pairs.</returns>
+        public static IEnumerable<KeyValuePair<string, object>> EnumValues(object dict)
+        {
+            if (dict == null) throw new ArgumentNullException(nameof(dict));
+            if (dict is IEnumerable<KeyValuePair<string, object>> objEnu)
+                return objEnu;
+            if (dict is IEnumerable<KeyValuePair<string, string>> stringEnu)
+                return stringEnu.Select(p => new KeyValuePair<string, object>(p.Key, p.Value));
+            if (dict is IDictionary idict0)
+            {
+                IEnumerable<KeyValuePair<string, object>> Enumerator(IDictionary idict)
+                {
+                    var de = idict.GetEnumerator();
+                    while (de.MoveNext()) yield return new KeyValuePair<string, object>((string)de.Key, de.Value);
+                }
+
+                return Enumerator(idict0);
+            }
+            // Sanity check: We only want to marshal anonymous types.
+            // If you are in RELEASE mode… I wish you good luck.
+            Debug.Assert(dict.GetType().GetTypeInfo().CustomAttributes
+                    .Any(a => a.AttributeType != typeof(CompilerGeneratedAttribute)),
+                "We only want to marshal anonymous types. Did you accidentally pass in a wrong object?");
+            return from p in dict.GetType().GetRuntimeProperties()
+                let value = p.GetValue(dict)
+                select new KeyValuePair<string, object>(p.Name, value);
         }
 
     }
