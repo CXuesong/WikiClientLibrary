@@ -46,21 +46,25 @@ namespace WikiClientLibrary.Client
         }
     }
              */
-            if (jroot["warnings"] != null && context.Logger.IsEnabled(LogLevel.Warning))
+            // Note that in MW 1.19, action=logout returns [] instead of {}
+            if (jroot is JObject jobj)
             {
-                foreach (var module in ((JObject)jroot["warnings"]).Properties())
+                if (jobj["warnings"] != null && context.Logger.IsEnabled(LogLevel.Warning))
                 {
-                    context.Logger.LogWarning("API warning [{Module}]: {Warning}", module.Name, module.Value);
+                    foreach (var module in ((JObject)jobj["warnings"]).Properties())
+                    {
+                        context.Logger.LogWarning("API warning [{Module}]: {Warning}", module.Name, module.Value);
+                    }
                 }
-            }
-            var err = jroot["error"];
-            if (err != null)
-            {
-                var errcode = (string)err["code"];
-                // err["*"]: API usage.
-                var errmessage = ((string)err["info"]).Trim();
-                context.Logger.LogWarning("API error: {Code} - {Message}", errcode, errmessage);
-                OnApiError(errcode, errmessage, err, jroot, context);
+                var err = jobj["error"];
+                if (err != null)
+                {
+                    var errcode = (string)err["code"];
+                    // err["*"]: API usage.
+                    var errmessage = ((string)err["info"]).Trim();
+                    context.Logger.LogWarning("API error: {Code} - {Message}", errcode, errmessage);
+                    OnApiError(errcode, errmessage, err, jobj, context);
+                }
             }
             return jroot;
         }
