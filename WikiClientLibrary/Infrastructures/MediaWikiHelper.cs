@@ -2,11 +2,15 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace WikiClientLibrary.Infrastructures
 {
@@ -104,6 +108,14 @@ namespace WikiClientLibrary.Infrastructures
             return from p in dict.GetType().GetRuntimeProperties()
                 let value = p.GetValue(dict)
                 select new KeyValuePair<string, object>(p.Name, value);
+        }
+
+        public static async Task<JToken> ParseJsonAsync(Stream stream, CancellationToken cancellationToken)
+        {
+            // TODO buffer stream, instead of reading all
+            var content = await stream.ReadAllStringAsync(cancellationToken);
+            //Logger?.Trace(content);
+            return JToken.Parse(content);
         }
 
     }

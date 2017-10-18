@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using WikiClientLibrary.Infrastructures;
 
 namespace WikiClientLibrary.Client
 {
@@ -17,21 +18,21 @@ namespace WikiClientLibrary.Client
         {
             if (response == null) throw new ArgumentNullException(nameof(response));
             if (context == null) throw new ArgumentNullException(nameof(context));
+            // Check response status first.
+            if (!response.IsSuccessStatusCode)
+            {
+                context.NeedRetry = true;
+                response.EnsureSuccessStatusCode();
+            }
             JToken jroot;
             try
             {
-                string content;
                 using (var s = await response.Content.ReadAsStreamAsync())
-                {
-                    context.CancellationToken.ThrowIfCancellationRequested();
-                    content = await s.ReadAllStringAsync(context.CancellationToken);
-                }
-                //Logger?.Trace(content);
-                jroot = JToken.Parse(content);
+                    jroot = await MediaWikiHelper.ParseJsonAsync(s, context.CancellationToken);
             }
             catch (JsonException)
             {
-                // Input is not a valid json.
+                // Input is not valid json.
                 context.NeedRetry = true;
                 throw;
             }
