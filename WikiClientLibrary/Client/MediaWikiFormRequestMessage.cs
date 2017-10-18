@@ -111,7 +111,7 @@ namespace WikiClientLibrary.Client
             get
             {
                 if (readonlyFields != null) return readonlyFields;
-                var local = new ReadOnlyCollection<KeyValuePair<string, object>>(readonlyFields);
+                var local = new ReadOnlyCollection<KeyValuePair<string, object>>(fields);
                 Volatile.Write(ref readonlyFields, local);
                 return readonlyFields;
             }

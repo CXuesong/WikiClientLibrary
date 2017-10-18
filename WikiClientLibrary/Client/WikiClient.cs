@@ -230,24 +230,20 @@ namespace WikiClientLibrary.Client
                 Logger.LogTrace("HTTP {StatusCode}, elapsed: {Time}", statusCode, requestSw.Elapsed);
                 if (!response.IsSuccessStatusCode)
                     Logger.LogWarning("HTTP {StatusCode} {Reason}.", statusCode, response.ReasonPhrase, requestSw.Elapsed);
-                if (statusCode >= 500 && statusCode <= 599)
+                var localRetryDelay = RetryDelay;
+                if (retries < MaxRetries && response.Headers.RetryAfter != null)
                 {
                     // Service Error. We can retry.
                     // HTTP 503 : https://www.mediawiki.org/wiki/Manual:Maxlag_parameter
-                    if (retries < MaxRetries)
-                    {
-                        // Delay per Retry-After Header
-                        var date = response.Headers.RetryAfter?.Date;
-                        var delay = response.Headers.RetryAfter?.Delta;
-                        if (delay == null && date != null) delay = date - DateTimeOffset.Now;
-                        // Or use the default delay
-                        if (delay == null) delay = RetryDelay;
-                        else if (delay > RetryDelay) delay = RetryDelay;
-                        if (await PrepareForRetry(delay.Value)) goto RETRY;
-                    }
+                    // Delay per Retry-After Header
+                    var date = response.Headers.RetryAfter.Date;
+                    var delay = response.Headers.RetryAfter.Delta;
+                    if (delay == null && date != null) delay = date - DateTimeOffset.Now;
+                    // Or use the default delay
+                    if (delay != null && delay < RetryDelay)
+                        localRetryDelay = delay.Value;
                 }
-                // For HTTP 500~599, EnsureSuccessStatusCode will throw an Exception.
-                response.EnsureSuccessStatusCode();
+                // It's responseParser's turn to check status code.
                 cancellationToken.ThrowIfCancellationRequested();
                 var context = new WikiResponseParsingContext(Logger, cancellationToken);
                 try
@@ -255,14 +251,14 @@ namespace WikiClientLibrary.Client
                     var parsed = await responseParser.ParseResponseAsync(response, context);
                     if (context.NeedRetry)
                     {
-                        if (await PrepareForRetry(RetryDelay)) goto RETRY;
+                        if (await PrepareForRetry(localRetryDelay)) goto RETRY;
                         throw new InvalidOperationException("Reached maximum count of retries.");
                     }
                     return parsed;
                 }
                 catch (Exception ex)
                 {
-                    if (context.NeedRetry && await PrepareForRetry(RetryDelay))
+                    if (context.NeedRetry && await PrepareForRetry(localRetryDelay))
                     {
                         Logger.LogWarning("{Parser}: {Message}", responseParser, ex.Message);
                         goto RETRY;

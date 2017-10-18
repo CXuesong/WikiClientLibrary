@@ -22,13 +22,13 @@ namespace WikiClientLibrary.Client
         /// <param name="response">The HTTP response message to parse.</param>
         /// <param name="context">The parsing context.</param>
         /// <exception cref="ArgumentNullException">Either <paramref name="response"/> or <paramref name="context"/> is <c>null</c>.</exception>
-        /// <exception cref="Exception">An exception occurred when parsing the response.
-        /// Setting 
-        /// to request for a retry.</exception>
+        /// <exception cref="Exception">An exception occurred when parsing the response. Setting <c>context.NeedRetry</c> to <c>true</c> to request for a retry.</exception>
         /// <returns>The task that will return the parsed value.</returns>
-        /// <remarks>If <paramref name="context"/>.<see cref="WikiResponseParsingContext.NeedRetry"/> is set to <c>true</c>,
+        /// <remarks>
+        /// <para>The implementation should check <see cref="HttpResponseMessage.StatusCode"/> first, then parse the content.</para>
+        /// <para>If <paramref name="context"/>.<see cref="WikiResponseParsingContext.NeedRetry"/> is set to <c>true</c>,
         /// then the invoker should attempt to retry first, even if the returned <see cref="Task"/> throws an exception.
-        /// However, the caller may regardless throw the exception if it decides that the request cannot be retried.
+        /// However, the caller may regardless throw the exception if it decides that the request cannot be retried.</para>
         /// </remarks>
         Task<object> ParseResponseAsync(HttpResponseMessage response, WikiResponseParsingContext context);
 
