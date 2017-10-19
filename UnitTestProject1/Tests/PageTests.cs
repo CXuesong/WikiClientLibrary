@@ -197,7 +197,7 @@ namespace UnitTestProject1.Tests
             AssertModify();
             var site = await WpTest2SiteAsync;
             // Usually 500 is the limit for normal users.
-            var pages = new AllPagesGenerator(site) {PagingSize = 300}.EnumPages().Take(300).ToList();
+            var pages = await new AllPagesGenerator(site) {PaginationSize = 300}.EnumPagesAsync().Take(300).ToList();
             var badPage = new WikiPage(site, "Inexistent page title");
             pages.Insert(pages.Count/2, badPage);
             Output.WriteLine("Attempt to purge: ");

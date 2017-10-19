@@ -112,7 +112,7 @@ namespace WikiClientLibrary.Generators
         {
             var pa = new Dictionary<string, object>
             {
-                {"rvlimit", ActualPagingSize},
+                {"rvlimit", PagingSize},
                 {"rvdir", TimeAscending ? "newer" : "older"},
                 {"titles", Page.Title},
                 {"rvstart", StartTime},

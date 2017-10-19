@@ -137,7 +137,7 @@ namespace ConsoleTestApplication1
             var rcg = new RecentChangesGenerator(site)
             {
                 TypeFilters = RecentChangesFilterTypes.Create,
-                PagingSize = 50, // We already know we're not going to fetch results as many as 500 or 5000
+                PaginationSize = 50, // We already know we're not going to fetch results as many as 500 or 5000
                 // so this will help.
             };
             // List the 10 latest new pages
@@ -147,7 +147,7 @@ namespace ConsoleTestApplication1
                 Console.WriteLine("{0, -30} {1, 8}B {2}", p, p.ContentLength, p.LastTouched);
             // List the 10 latest recent changes
             rcg.TypeFilters = RecentChangesFilterTypes.All;
-            var rcs = await rcg.EnumRecentChangesAsync().Take(10).ToList();
+            var rcs = await rcg.EnumItemsAsync().Take(10).ToList();
             Console.WriteLine();
             Console.WriteLine("Recent changes");
             foreach (var rc in rcs)
@@ -167,11 +167,11 @@ namespace ConsoleTestApplication1
             var rcg = new RecentChangesGenerator(site)
             {
                 TypeFilters = RecentChangesFilterTypes.Create,
-                PagingSize = 5,
+                PaginationSize = 5,
                 PatrolledFilter = PropertyFilterOption.WithoutProperty
             };
             // List the first unpatrolled result.
-            var rc = await rcg.EnumRecentChangesAsync().FirstOrDefault();
+            var rc = await rcg.EnumItemsAsync().FirstOrDefault();
             if (rc == null)
             {
                 Console.WriteLine("Nothing to patrol.");

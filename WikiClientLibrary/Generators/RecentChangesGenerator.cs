@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Runtime.Serialization;
+using System.Threading;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Linq;
@@ -16,7 +17,7 @@ namespace WikiClientLibrary.Generators
     /// <summary>
     /// Get all recent changes to the wiki, à la Special:Recentchanges.
     /// </summary>
-    public class RecentChangesGenerator : WikiPageGenerator<WikiPage>
+    public class RecentChangesGenerator : WikiPageGenerator<RecentChangeItem, WikiPage>
     {
         public RecentChangesGenerator(WikiSite site) : base(site)
         {
@@ -115,33 +116,44 @@ namespace WikiClientLibrary.Generators
             return types.Length > 1 ? types.Substring(1) : null;
         }
 
-        private IEnumerable<KeyValuePair<string, object>> GetParams(bool asList, int actualPagingSize)
+        private IEnumerable<KeyValuePair<string, object>> EnumParams(bool isList)
         {
+            var prefix = isList ? null : "g";
             var dict = new Dictionary<string, object>
             {
-                {asList ? "list" : "generator", "recentchanges"}
+                {prefix + "rcdir", TimeAscending ? "newer" : "older"},
+                {prefix + "rcstart", StartTime},
+                {prefix + "rcend", EndTime},
+                {prefix + "rcnamespace", NamespaceIds == null ? null : string.Join("|", NamespaceIds)},
+                {prefix + "rcuser", UserName},
+                {prefix + "rcexcludeuser", ExcludedUserName},
+                {prefix + "rctag", Tag},
+                {prefix + "rctype", ParseRecentChangesTypes(TypeFilters)},
+                {prefix + "rcshow", ParseFilters()},
+                {prefix + "rctoponly", LastRevisionsOnly},
+                {prefix + "rclimit", PaginationSize}
             };
-            Action<string, object> addParam = (k, v) => dict.Add(asList ? k : ("g" + k), v);
-            addParam("rcdir", TimeAscending ? "newer" : "older");
-            addParam("rcstart", StartTime);
-            addParam("rcend", EndTime);
-            addParam("rcnamespace", NamespaceIds == null ? null : string.Join("|", NamespaceIds));
-            addParam("rcuser", UserName);
-            addParam("rcexcludeuser", ExcludedUserName);
-            addParam("rctag", Tag);
-            addParam("rctype", ParseRecentChangesTypes(TypeFilters));
-            addParam("rcshow", ParseFilters());
-            addParam("rctoponly", LastRevisionsOnly);
-            addParam("rclimit", actualPagingSize);
-            if (asList)
+            if (isList)
             {
                 // All except userid .
                 // rcpermissiondenied
                 var fields = "user|comment|parsedcomment|flags|timestamp|title|ids|sizes|redirect|loginfo|tags|sha1";
                 if (Site.AccountInfo.HasRight(UserRights.Patrol)) fields += "|patrolled";
-                addParam("rcprop", fields);
+                dict.Add("rcprop", fields);
             }
             return dict;
+        }
+
+        /// <inheritdoc />
+        public override IEnumerable<KeyValuePair<string, object>> EnumListParameters()
+        {
+            return EnumParams(true);
+        }
+
+        /// <inheritdoc />
+        public override IEnumerable<KeyValuePair<string, object>> EnumGeneratorParameters()
+        {
+            return EnumParams(false);
         }
 
         // Duplicate results can be shown among continued query results in recent changes,
@@ -150,38 +162,22 @@ namespace WikiClientLibrary.Generators
         // which will screw up Page.LoadFromJson .
         protected override bool DistinctGeneratedPages => true;
 
-        /// <inheritdoc/>
-        public override IEnumerable<KeyValuePair<string, object>> GetGeneratorParams(int actualPagingSize)
-        {
-            return GetParams(false, actualPagingSize);
-        }
+        /// <inheritdoc />
+        public override string ListName => "recentchanges";
 
-        /// <summary>
-        /// Asynchronously generate a sequence of <see cref="RecentChangeItem"/>.
-        /// </summary>
-        public IAsyncEnumerable<RecentChangeItem> EnumRecentChangesAsync()
+        private JsonSerializer rcitemSerializer;
+
+        /// <inheritdoc />
+        protected override RecentChangeItem ItemFromJson(JToken json)
         {
-            var valuesDict = new Dictionary<string, object>
+            var serializer = rcitemSerializer;
+            if (serializer == null)
             {
-                {"action", "query"},
-                {"maxlag", 5}
-            };
-            foreach (var v in GetParams(true, GetActualPagingSize(PageQueryOptions.None)))
-                valuesDict[v.Key] = v.Value;
-            Debug.Assert((string) valuesDict["action"] == "query");
-            var paging = RequestHelper.QueryWithContinuation(Site, valuesDict);
-            var serializer = Utility.CreateWikiJsonSerializer();
-            serializer.Converters.Insert(0, new RcEntryCreator(Site));
-            return paging.SelectMany(jquery => jquery["recentchanges"]
-                .ToObject<IList<RecentChangeItem>>(serializer).ToAsyncEnumerable());
-        }
-
-        /// <summary>
-        /// Generate a sequence of <see cref="RecentChangeItem"/>.
-        /// </summary>
-        public IEnumerable<RecentChangeItem> EnumRecentChanges()
-        {
-            return EnumRecentChangesAsync().ToEnumerable();
+                serializer = Utility.CreateWikiJsonSerializer();
+                serializer.Converters.Insert(0, new RcEntryCreator(Site));
+                Volatile.Write(ref rcitemSerializer, serializer);
+            }
+            return json.ToObject<RecentChangeItem>(serializer);
         }
 
         private class RcEntryCreator : CustomCreationConverter<RecentChangeItem>

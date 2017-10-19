@@ -67,17 +67,19 @@ namespace WikiClientLibrary.Generators
             return types.Substring(1);
         }
 
+        /// <inheritdoc />
+        public override string ListName => "categorymembers";
+
         /// <inheritdoc/>
-        public override IEnumerable<KeyValuePair<string, object>> GetGeneratorParams(int actualPagingSize)
+        public override IEnumerable<KeyValuePair<string, object>> EnumListParameters()
         {
             if (string.IsNullOrEmpty(CategoryTitle)) throw new InvalidOperationException("CateogryTitle is empty.");
             return new Dictionary<string, object>
             {
-                {"generator", "categorymembers"},
-                {"gcmtitle", CategoryTitle},
-                {"gcmlimit", GetActualPagingSize()},
-                {"gcmnamespace", NamespaceIds == null ? null : string.Join("|", NamespaceIds)},
-                {"gcmtype", ParseMemberTypes(MemberTypes)}
+                {"cmtitle", CategoryTitle},
+                {"cmlimit", PaginationSize},
+                {"cmnamespace", NamespaceIds == null ? null : string.Join("|", NamespaceIds)},
+                {"cmtype", ParseMemberTypes(MemberTypes)}
             };
         }
     }

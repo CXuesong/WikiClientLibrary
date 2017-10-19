@@ -39,15 +39,17 @@ namespace WikiClientLibrary.Generators
         public PropertyFilterOption RedirectsFilter { get; set; }
 
         /// <inheritdoc />
-        public override IEnumerable<KeyValuePair<string, object>> GetGeneratorParams(int actualPagingSize)
+        public override string ListName => "embeddedin";
+
+        /// <inheritdoc />
+        public override IEnumerable<KeyValuePair<string, object>> EnumListParameters()
         {
             return new Dictionary<string, object>
             {
-                {"generator", "embeddedin"},
-                {"geititle", TargetTitle},
-                {"geinamespace", NamespaceIds == null ? null : string.Join("|", NamespaceIds)},
-                {"geifilterredir", RedirectsFilter.ToString("redirects", "nonredirects")},
-                {"geilimit", actualPagingSize}
+                {"eititle", TargetTitle},
+                {"einamespace", NamespaceIds == null ? null : string.Join("|", NamespaceIds)},
+                {"eifilterredir", RedirectsFilter.ToString("redirects", "nonredirects")},
+                {"eilimit", PaginationSize}
             };
         }
     }

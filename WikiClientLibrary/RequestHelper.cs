@@ -28,7 +28,7 @@ namespace WikiClientLibrary
         /// <summary>
         /// Builds common parameters for fetching a page.
         /// </summary>
-        private static IDictionary<string, object> GetPageFetchingParams(PageQueryOptions options)
+        public static IDictionary<string, object> GetPageFetchingParams(PageQueryOptions options)
         {
             var queryParams = new Dictionary<string, object>
             {
@@ -102,21 +102,6 @@ namespace WikiClientLibrary
                     site.Logger.LogWarning("Empty query page with continuation received on {Site}.", site);
                 goto NEXT_PAGE;
             });
-        }
-
-        /// <summary>
-        /// Enumerate pages from the generator.
-        /// </summary>
-        public static IAsyncEnumerable<WikiPage> EnumPagesAsync(WikiPageGeneratorBase generator, PageQueryOptions options, bool distinctGeneratedPages)
-        {
-            if (generator == null) throw new ArgumentNullException(nameof(generator));
-            if ((options & PageQueryOptions.ResolveRedirects) == PageQueryOptions.ResolveRedirects)
-                throw new ArgumentException("Cannot resolve redirects when using generators.", nameof(options));
-            var queryParams = GetPageFetchingParams(options);
-            foreach (var v in generator.GetGeneratorParams(generator.GetActualPagingSize(options)))
-                queryParams[v.Key] = v.Value;
-            return QueryWithContinuation(generator.Site, queryParams, distinctGeneratedPages)
-                .SelectMany(jquery => WikiPage.FromJsonQueryResult(generator.Site, jquery, options).ToAsyncEnumerable());
         }
 
         /// <summary>

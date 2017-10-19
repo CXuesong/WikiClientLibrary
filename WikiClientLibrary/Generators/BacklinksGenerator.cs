@@ -49,11 +49,14 @@ namespace WikiClientLibrary.Generators
         public bool AllowRedirectedLinks { get; set; }
 
         /// <inheritdoc />
-        public override IEnumerable<KeyValuePair<string, object>> GetGeneratorParams(int actualPagingSize)
+        public override string ListName => "backlinks";
+
+        /// <inheritdoc />
+        public override IEnumerable<KeyValuePair<string, object>> EnumListParameters()
         {
             if ((TargetTitle != null) == (TargetPageId != null))
                 throw new ArgumentException("Either TargetTitle and TargetPageId should be null, not both, nor none.");
-            var pagingSize = actualPagingSize;
+            var actualPaginationSize = PaginationSize;
             if (AllowRedirectedLinks)
             {
                 // When the blredirect parameter is set, this module behaves slightly differently.
@@ -61,17 +64,16 @@ namespace WikiClientLibrary.Generators
                 // at most 10 first-level pages (pages that link to bltitle) and
                 // 10 second-level pages (pages that link to bltitle through a redirect) will be listed.
                 // Continuing queries also works differently.
-                pagingSize = Math.Max(1, actualPagingSize / 2);
+                actualPaginationSize = Math.Max(1, PaginationSize / 2);
             }
             return new Dictionary<string, object>
             {
-                {"generator", "backlinks"},
-                {"gbltitle", TargetTitle},
-                {"gblpageid", TargetPageId},
-                {"gblnamespace", NamespaceIds == null ? null : string.Join("|", NamespaceIds)},
-                {"gblfilterredir", RedirectsFilter.ToString("redirects", "nonredirects")},
-                {"gbllimit", pagingSize},
-                {"gblredirect", AllowRedirectedLinks}
+                {"bltitle", TargetTitle},
+                {"blpageid", TargetPageId},
+                {"blnamespace", NamespaceIds == null ? null : string.Join("|", NamespaceIds)},
+                {"blfilterredir", RedirectsFilter.ToString("redirects", "nonredirects")},
+                {"bllimit", actualPaginationSize},
+                {"blredirect", AllowRedirectedLinks}
             };
         }
     }

@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Newtonsoft.Json.Linq;
 using WikiClientLibrary.Pages;
 using WikiClientLibrary.Sites;
 
@@ -15,6 +16,11 @@ namespace WikiClientLibrary.Generators
     /// </summary>
     public class AllPagesGenerator : WikiPageGenerator<WikiPage>
     {
+
+        public AllPagesGenerator(WikiSite site) : base(site)
+        {
+        }
+
         public int NamespaceId { get; set; } = 0;
 
         /// <summary>
@@ -53,27 +59,28 @@ namespace WikiClientLibrary.Generators
         public int? MaxPageContentLength { get; set; }
 
         /// <inheritdoc/>
-        public override IEnumerable<KeyValuePair<string, object>> GetGeneratorParams(int actualPagingSize)
+        public override string ListName => "allpages";
+
+        /// <inheritdoc/>
+        public override IEnumerable<KeyValuePair<string, object>> EnumListParameters()
         {
             return new Dictionary<string, object>
             {
-                {"generator", "allpages"},
-                {"gapfrom", StartTitle},
-                {"gapto", EndTitle},
-                {"gaplimit", actualPagingSize},
-                {"gapnamespace", NamespaceId},
-                {"gapprefix", Prefix},
-                {"gapfilterredir", RedirectsFilter.ToString("redirects", "nonredirects")},
-                {"gapfilterlanglinks", LanguageLinkFilter.ToString("withlanglinks", "withoutlanglinks")},
-                {"gapminsize", MinPageContentLength},
-                {"gapmaxsize", MaxPageContentLength},
+                {"apfrom", StartTitle},
+                {"apto", EndTitle},
+                {"aplimit", PaginationSize},
+                {"apnamespace", NamespaceId},
+                {"apprefix", Prefix},
+                {"apfilterredir", RedirectsFilter.ToString("redirects", "nonredirects")},
+                {"apfilterlanglinks", LanguageLinkFilter.ToString("withlanglinks", "withoutlanglinks")},
+                {"apminsize", MinPageContentLength},
+                {"apmaxsize", MaxPageContentLength},
                 // TODO add other filters
             };
         }
 
-        public AllPagesGenerator(WikiSite site) : base(site)
-        {
-        }
+        /// <inheritdoc />
+
     }
 
     /// <summary>

@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using Newtonsoft.Json.Linq;
 using WikiClientLibrary.Generators;
 using WikiClientLibrary.Sites;
@@ -57,12 +58,12 @@ namespace WikiClientLibrary.Pages
 
         public IEnumerable<WikiPage> EnumMembers(PageQueryOptions options)
         {
-            return new CategoryMembersGenerator(Site, Title).EnumPages(options);
+            return EnumMembersAsync(options).ToEnumerable();
         }
 
         public IEnumerable<WikiPage> EnumMembers()
         {
-            return new CategoryMembersGenerator(Site, Title).EnumPages();
+            return EnumMembersAsync().ToEnumerable();
         }
 
         /// <summary>
