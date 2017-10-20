@@ -266,8 +266,10 @@ namespace UnitTestProject1.Tests
         public async Task WpLzhSearchTest()
         {
             var site = await WpLzhSiteAsync;
-            var generator = new SearchGenerator(site, "維基") {PaginationSize = 30};
+            var generator = new SearchGenerator(site, "維基") {PaginationSize = 50};
+            var searchResults = await generator.EnumItemsAsync().Take(50).ToList();
             var pages = await generator.EnumPagesAsync().Take(50).ToList();
+            ShallowTrace(searchResults, 1);
             TracePages(pages);
             AssertTitlesDistinct(pages);
             // Note as 2017-03-07, [[維基]] actually exists on lzh wiki, but it's a redirect to [[維基媒體基金會]].
@@ -276,6 +278,12 @@ namespace UnitTestProject1.Tests
             Assert.Contains(pages, p => p.Title == "維基媒體基金會");
             Assert.Contains(pages, p => p.Title == "維基大典");
             Assert.Contains(pages, p => p.Title == "文言維基大典");
+            Assert.All(searchResults, r => Assert.Contains(generator.Keyword, r.Snippet));
+            // Note there might be pages in the list with equal score, in which case, some adjacent items
+            // in the result might have different order between each request.
+            // We will take care of the situation. Just ensure we have most of the desired items.
+            Assert.ProperSuperset(new HashSet<string>(searchResults.Select(r => r.Title).Take(40)),
+                new HashSet<string>(pages.Select(p => p.Title)));
         }
 
         [Fact]

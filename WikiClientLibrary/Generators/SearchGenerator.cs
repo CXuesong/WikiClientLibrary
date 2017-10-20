@@ -4,6 +4,7 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Newtonsoft.Json.Linq;
 using WikiClientLibrary.Pages;
 using WikiClientLibrary.Sites;
 
@@ -13,7 +14,7 @@ namespace WikiClientLibrary.Generators
     /// Search titles and text.
     /// </summary>
     /// <remarks>See https://www.mediawiki.org/wiki/API:Search .</remarks>
-    public class SearchGenerator : WikiPageGenerator<WikiPage>
+    public class SearchGenerator : WikiPageGenerator<SearchResultItem, WikiPage>
     {
         private SearchableField _MatchingField = SearchableField.Text;
 
@@ -96,6 +97,12 @@ namespace WikiClientLibrary.Generators
                     throw new ArgumentOutOfRangeException();
             }
             return dict;
+        }
+
+        /// <inheritdoc />
+        protected override SearchResultItem ItemFromJson(JToken json)
+        {
+            return json.ToObject<SearchResultItem>(Utility.WikiJsonSerializer);
         }
     }
 
