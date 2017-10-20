@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
+using WikiClientLibrary.Generators.Primitive;
 using WikiClientLibrary.Pages;
 using WikiClientLibrary.Sites;
 
@@ -78,9 +79,7 @@ namespace WikiClientLibrary.Generators
                 // TODO add other filters
             };
         }
-
-        /// <inheritdoc />
-
+        
     }
 
     /// <summary>

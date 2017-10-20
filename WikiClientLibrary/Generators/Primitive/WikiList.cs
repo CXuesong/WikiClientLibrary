@@ -1,7 +1,6 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using AsyncEnumerableExtensions;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
@@ -10,7 +9,7 @@ using WikiClientLibrary.Client;
 using WikiClientLibrary.Infrastructures.Logging;
 using WikiClientLibrary.Sites;
 
-namespace WikiClientLibrary.Generators
+namespace WikiClientLibrary.Generators.Primitive
 {
     public interface IWikiList<out T>
     {
@@ -31,7 +30,7 @@ namespace WikiClientLibrary.Generators
 
         private int _PaginationSize = 10;
 
-        internal WikiList(WikiSite site)
+        public WikiList(WikiSite site)
         {
             if (site == null) throw new ArgumentNullException(nameof(site));
             Site = site;

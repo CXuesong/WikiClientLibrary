@@ -1,16 +1,11 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
 using WikiClientLibrary.Pages;
 using WikiClientLibrary.Sites;
 
-namespace WikiClientLibrary.Generators
+namespace WikiClientLibrary.Generators.Primitive
 {
 
     public interface IWikiPageGenerator<out T> where T : WikiPage
