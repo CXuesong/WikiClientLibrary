@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using WikiClientLibrary.Pages;
 using WikiClientLibrary.Wikia;
 using WikiClientLibrary.Wikia.WikiaApi;
 using Xunit;
@@ -56,6 +57,19 @@ namespace UnitTestProject1.Tests
             Assert.Equal(new[] {0}, data.ContentNamespaceIds);
             Assert.Equal("en", data.LanguageInfo.ContentLanguage);
             Assert.Equal("ltr", data.LanguageInfo.ContentFlowDirection);
+        }
+
+        [Fact]
+        public async Task FetchRelatedPagesTest()
+        {
+            var site = await WikiaTestSiteAsync;
+            var wikiaSite = new WikiaSite(site);
+            var mainPage = new WikiPage(site, site.SiteInfo.MainPage);
+            await mainPage.RefreshAsync();
+            var relatedPages = await wikiaSite.FetchRelatedPagesAsync(mainPage.Id);
+            ShallowTrace(relatedPages);
+            // These are just random titles.
+            Assert.All(relatedPages, p => Assert.Matches(@"\w+\d+", p.Title));
         }
 
     }

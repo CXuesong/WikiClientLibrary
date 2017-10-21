@@ -42,7 +42,7 @@ namespace WikiClientLibrary.Wikia.WikiaApi
             try
             {
                 jresult = await site.InvokeWikiaApiAsync("/User/Details",
-                    new WikiaQueryRequestMessage(new { ids = userName }), cancellationToken);
+                    new WikiaQueryRequestMessage(new {ids = userName}), cancellationToken);
             }
             catch (WikiaApiException ex) when (ex.ErrorType == "NotFoundApiException")
             {
@@ -79,7 +79,7 @@ namespace WikiClientLibrary.Wikia.WikiaApi
                         try
                         {
                             jresult = await site.InvokeWikiaApiAsync("/User/Details",
-                                new WikiaQueryRequestMessage(new { ids = string.Join(", ", names) }), ct);
+                                new WikiaQueryRequestMessage(new {ids = string.Join(", ", names)}), ct);
                         }
                         catch (WikiaApiException ex) when (ex.ErrorType == "NotFoundApiException")
                         {
@@ -118,6 +118,51 @@ namespace WikiClientLibrary.Wikia.WikiaApi
             var jdata = jresult["data"];
             if (jdata == null) throw new UnexpectedDataException("Missing data node in the JSON response.");
             return jdata.ToObject<SiteVariableData>();
+        }
+
+        /// <inheritdoc cref="FetchRelatedPagesAsync(WikiaSite,int,int,CancellationToken)"/>
+        /// <remarks>This overload fetches 10 items at most.</remarks>
+        public static Task<IList<RelatedPageItem>> FetchRelatedPagesAsync(this WikiaSite site, int pageId)
+        {
+            return FetchRelatedPagesAsync(site, pageId, 10, CancellationToken.None);
+        }
+
+        /// <inheritdoc cref="FetchRelatedPagesAsync(WikiaSite,int,int,CancellationToken)"/>
+        public static Task<IList<RelatedPageItem>> FetchRelatedPagesAsync(this WikiaSite site, int pageId, int maxCount)
+        {
+            return FetchRelatedPagesAsync(site, pageId, maxCount, CancellationToken.None);
+        }
+
+        private static readonly RelatedPageItem[] emptyRelatedPages = { };
+
+        /// <summary>
+        /// Asynchronously fetches the specified page's related pages.
+        /// </summary>
+        /// <param name="site">The site to issue the request.</param>
+        /// <param name="pageId">ID of the page to find the related ones.</param>
+        /// <param name="maxCount">Maximum count of the returned items.</param>
+        /// <param name="cancellationToken">A token used to cancel the operation.</param>
+        /// <exception cref="ArgumentNullException"><paramref name="site"/> is <c>null</c>.</exception>
+        /// <exception cref="ArgumentOutOfRangeException"><paramref name="pageId"/> is less than or equals to 0.</exception>
+        /// <returns></returns>
+        public static async Task<IList<RelatedPageItem>> FetchRelatedPagesAsync(this WikiaSite site,
+            int pageId, int maxCount, CancellationToken cancellationToken)
+        {
+            if (site == null) throw new ArgumentNullException(nameof(site));
+            if (maxCount <= 0) throw new ArgumentOutOfRangeException(nameof(maxCount));
+            var jresult = await site.InvokeWikiaApiAsync("/RelatedPages/List",
+                new WikiaQueryRequestMessage(new {ids = pageId, limit = maxCount}),
+                cancellationToken);
+            var jitems = jresult["items"][pageId.ToString()];
+            if (jitems == null) jitems = ((JProperty)jresult["items"].First)?.Value;
+            if (jitems == null || !jitems.HasValues) return emptyRelatedPages;
+            var items = jitems.ToObject<IList<RelatedPageItem>>();
+            var basePath = (string)jresult["basepath"];
+            if (basePath != null)
+            {
+                foreach (var i in items) i.ApplyBasePath(basePath);
+            }
+            return items;
         }
 
     }
