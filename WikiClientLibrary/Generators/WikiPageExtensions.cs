@@ -17,7 +17,13 @@ namespace WikiClientLibrary.Generators
             return new LinksGenerator(page.Site, page.Title);
         }
 
-        public static RevisionsGenerator CreateRevisionGenerator(this WikiPage page)
+        public static TransclusionsGenerator CreateTransclusionsGenerator(this WikiPage page)
+        {
+            if (page == null) throw new ArgumentNullException(nameof(page));
+            return new TransclusionsGenerator(page.Site, page.Title);
+        }
+
+        public static RevisionsGenerator CreateRevisionsGenerator(this WikiPage page)
         {
             if (page == null) throw new ArgumentNullException(nameof(page));
             return new RevisionsGenerator(page.Site, page.Title);

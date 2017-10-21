@@ -8,21 +8,21 @@ using WikiClientLibrary.Sites;
 namespace WikiClientLibrary.Generators
 {
     /// <summary>
-    /// Generates pages from all links on the provided page.
-    /// (<a href="https://www.mediawiki.org/wiki/API:Links">mw:API:Links</a>, MediaWiki 1.11+)
+    /// Generates pages from all pages (typically templates) transcluded in the provided page.
+    /// (<a href="https://www.mediawiki.org/wiki/API:Templates">mw:API:Templates</a>, MediaWiki 1.11+)
     /// </summary>
-    /// <see cref="TransclusionsGenerator"/>
-    /// <see cref="BacklinksGenerator"/>
-    public class LinksGenerator : WikiPagePropertyGenerator<WikiPage>
+    /// <seealso cref="LinksGenerator"/>
+    /// <see cref="TranscludedInGenerator"/>
+    public class TransclusionsGenerator : WikiPagePropertyGenerator<WikiPage>
     {
         /// <inheritdoc />
-        public LinksGenerator(WikiSite site) : base(site)
+        public TransclusionsGenerator(WikiSite site) : base(site)
         {
         }
 
         /// <inheritdoc />
         /// <param name="pageTitle">The page title from which to enumerate links.</param>
-        public LinksGenerator(WikiSite site, string pageTitle) : base(site)
+        public TransclusionsGenerator(WikiSite site, string pageTitle) : base(site)
         {
             PageTitle = pageTitle;
         }
@@ -34,7 +34,7 @@ namespace WikiClientLibrary.Generators
         public IEnumerable<int> NamespaceIds { get; set; }
 
         /// <summary>
-        /// Only list links to these titles. Useful for checking whether a certain page links to a certain title.
+        /// Only list transclusion to these titles. Useful for checking whether a certain page links to a certain title.
         /// (MediaWiki 1.17+)
         /// </summary>
         /// <value>A sequence of page titles, or <c>null</c> to list all the linked pages.</value>
@@ -47,17 +47,17 @@ namespace WikiClientLibrary.Generators
         public bool DocumentOrderDescending { get; set; }
 
         /// <inheritdoc />
-        public override string PropertyName => "links";
+        public override string PropertyName => "templates";
 
         /// <inheritdoc />
         public override IEnumerable<KeyValuePair<string, object>> EnumListParameters()
         {
             return new Dictionary<string, object>
             {
-                {"plnamespace", NamespaceIds == null ? null : string.Join("|", NamespaceIds)},
-                {"pllimit", PaginationSize},
-                {"pltitles", MatchingTitles == null ? null : string.Join("|", MatchingTitles)},
-                {"pldir", DocumentOrderDescending ? "descending" : "ascending"}
+                {"tlnamespace", NamespaceIds == null ? null : string.Join("|", NamespaceIds)},
+                {"tllimit", PaginationSize},
+                {"tltemplates", MatchingTitles == null ? null : string.Join("|", MatchingTitles)},
+                {"tldir", DocumentOrderDescending ? "descending" : "ascending"}
             };
         }
     }

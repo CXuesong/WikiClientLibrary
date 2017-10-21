@@ -22,7 +22,7 @@ namespace UnitTestProject1.Tests
         {
             var site = await WpTest2SiteAsync;
             var page = new WikiPage(site, "Page:Edit_page_for_chrome");
-            var gen = page.CreateRevisionGenerator();
+            var gen = page.CreateRevisionsGenerator();
             gen.PaginationSize = 20;
             var revisions = await gen.EnumItemsAsync().Skip(5).Take(5).ToList();
             Assert.Equal(5, revisions.Count);
@@ -36,7 +36,7 @@ namespace UnitTestProject1.Tests
             var site = await WpTest2SiteAsync;
             // 5,100 revisions in total
             var page = new WikiPage(site, "Page:Edit_page_for_chrome");
-            var gen = page.CreateRevisionGenerator();
+            var gen = page.CreateRevisionsGenerator();
             gen.PaginationSize = 500;
             var revisions = await gen.EnumItemsAsync().Take(2000).ToList();
             Assert.True(revisions.SequenceEqual(revisions.OrderByDescending(r => r.TimeStamp)));
@@ -73,7 +73,7 @@ namespace UnitTestProject1.Tests
         {
             var site = await WikiaTestSiteAsync;
             var page = new WikiPage(site, "Project:Sandbox");
-            var gen = page.CreateRevisionGenerator();
+            var gen = page.CreateRevisionsGenerator();
             gen.PaginationSize = 20;
             var revisions = await gen.EnumItemsAsync().Skip(5).Take(5).ToList();
             Assert.All(revisions, Assert.NotNull);
@@ -87,7 +87,7 @@ namespace UnitTestProject1.Tests
         {
             var site = await WikiaTestSiteAsync;
             var page = new WikiPage(site, "Project:Sandbox");
-            var gen = page.CreateRevisionGenerator();
+            var gen = page.CreateRevisionsGenerator();
             gen.PaginationSize = 500;
             var revisions = await gen.EnumItemsAsync().Take(2000).ToList();
             Assert.True(revisions.SequenceEqual(revisions.OrderByDescending(r => r.TimeStamp)));

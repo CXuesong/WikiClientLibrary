@@ -360,7 +360,7 @@ namespace WikiClientLibrary.Pages
         /// This overload asks for as many items as possible per request. This is usually 500 for user, and 5000 for bots.
         /// </summary>
         /// <remarks>To gain full control of revision enumeration, you can use <see cref="RevisionsGenerator" />.</remarks>
-        [Obsolete("Please use RevisionGenerator class or WikiPageExtensions.CreateRevisionGenerator extension method instead.")]
+        [Obsolete("Please use RevisionsGenerator class or WikiPageExtensions.CreateRevisionsGenerator extension method instead.")]
         public IAsyncEnumerable<Revision> EnumRevisionsAsync()
         {
             return EnumRevisionsAsync(500);
@@ -372,7 +372,7 @@ namespace WikiClientLibrary.Pages
         /// <param name="pagingSize">Maximum items returned per request.</param>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="pagingSize"/> is non-positive.</exception>
         /// <remarks>To gain full control of revision enumeration, you can use <see cref="RevisionsGenerator" />.</remarks>
-        [Obsolete("Please use RevisionGenerator class or WikiPageExtensions.CreateRevisionGenerator extension method instead.")]
+        [Obsolete("Please use RevisionsGenerator class or WikiPageExtensions.CreateRevisionsGenerator extension method instead.")]
         public IAsyncEnumerable<Revision> EnumRevisionsAsync(int pagingSize)
         {
             return EnumRevisionsAsync(pagingSize, PageQueryOptions.None);
@@ -419,6 +419,7 @@ namespace WikiClientLibrary.Pages
         /// <summary>
         /// Enumerate all pages (typically templates) transcluded on the pages.
         /// </summary>
+        [Obsolete("Please use TransclusionsGenerator class or WikiPageExtensions.CreateTransclusionsGenerator extension method instead.")]
         public IAsyncEnumerable<string> EnumTransclusionsAsync()
         {
             return EnumTransclusionsAsync(null);
@@ -431,6 +432,7 @@ namespace WikiClientLibrary.Pages
         /// Only list links to pages in these namespaces.
         /// If this is empty or <c>null</c>, all the transcluded pages will be listed.
         /// </param>
+        [Obsolete("Please use TransclusionsGenerator class or WikiPageExtensions.CreateTransclusionsGenerator extension method instead.")]
         public IAsyncEnumerable<string> EnumTransclusionsAsync(IEnumerable<int> namespaces)
         {
             return RequestHelper.EnumTransclusionsAsync(Site, Title, namespaces);
