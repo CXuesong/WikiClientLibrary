@@ -14,9 +14,19 @@ namespace WikiClientLibrary.Wikia
     public class WikiaQueryRequestMessage : WikiRequestMessage
     {
 
+        private static readonly KeyValuePair<string, object>[] emptyReadonlyFields = { };
+
         private readonly IList<KeyValuePair<string, object>> fields;
         private IList<KeyValuePair<string, object>> readonlyFields;
         private string queryString;
+
+        /// <summary>
+        /// Initializes a <see cref="WikiaQueryRequestMessage"/> instance with
+        /// the automatically-generated message ID and empty query fields.
+        /// </summary>
+        public WikiaQueryRequestMessage() : this(null, null)
+        {
+        }
 
         /// <inheritdoc />
         public WikiaQueryRequestMessage(object dict) : this(null, dict)
@@ -24,10 +34,26 @@ namespace WikiClientLibrary.Wikia
         }
 
         /// <inheritdoc />
-        public WikiaQueryRequestMessage(string id, object dict) : base(id)
+        /// <summary>
+        /// Initializes a <see cref="WikiaQueryRequestMessage"/> instance with
+        /// the message ID and query fields.
+        /// </summary>
+        /// <param name="fieldCollection">
+        /// A dictionary or anonymous object containing the key-value pairs.
+        /// See <see cref="MediaWikiHelper.EnumValues"/> for more information.
+        /// For queries without query part, you can set this parameter to <c>null</c>.
+        /// </param>
+        public WikiaQueryRequestMessage(string id, object fieldCollection) : base(id)
         {
-            if (dict == null) throw new ArgumentNullException(nameof(dict));
-            fields = MediaWikiHelper.EnumValues(dict).ToList();
+            if (fieldCollection == null)
+            {
+                fields = null;
+                readonlyFields = emptyReadonlyFields;
+            }
+            else
+            {
+                fields = MediaWikiHelper.EnumValues(fieldCollection).ToList();
+            }
         }
 
         /// <inheritdoc />
@@ -36,6 +62,7 @@ namespace WikiClientLibrary.Wikia
         /// <inheritdoc />
         public override string GetHttpQuery()
         {
+            if (fields == null) return null;
             if (queryString != null) return queryString;
             var sb = new StringBuilder();
             foreach (var p in fields)
