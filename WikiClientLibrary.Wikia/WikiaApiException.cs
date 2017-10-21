@@ -11,9 +11,6 @@ namespace WikiClientLibrary.Wikia
     /// </summary>
     public class WikiaApiException : WikiClientException
     {
-
-        private readonly string localMessage;
-
         /// <summary>
         /// Wikia Exception type.
         /// </summary>
@@ -30,40 +27,63 @@ namespace WikiClientLibrary.Wikia
         public int ErrorCode { get; }
 
         /// <summary>
+        /// Wikia Exception details.
+        /// </summary>
+        public string ErrorDetails { get; }
+
+        /// <summary>
         /// Wikia error trace ID.
         /// </summary>
         public string TraceId { get; }
 
         public WikiaApiException()
             : this("The Wikia API invocation has failed.")
-        { }
-
-        public WikiaApiException(string errorType, string errorMessage, int errorCode, string traceId)
-            : this(null, errorType, errorMessage, errorCode, traceId)
         {
         }
 
-        public WikiaApiException(string message, string errorType, string errorMessage, int errorCode, string traceId)
+        public WikiaApiException(string errorType, string errorMessage, int errorCode, string errorDetails, string traceId)
+            : this(null, errorType, errorMessage, errorCode, errorDetails, traceId)
         {
-            localMessage = message;
+        }
+
+        public WikiaApiException(string message, string errorType, string errorMessage, int errorCode,
+            string errorDetails, string traceId)
+        {
+            if (message != null)
+                Message = message;
+            else if (errorDetails != null)
+                Message = $"{errorType}:{errorMessage} ({errorCode}); {errorDetails}";
+            else
+                Message = $"{errorType}:{errorMessage} ({errorCode})";
             ErrorType = errorType;
             ErrorMessage = errorMessage;
             ErrorCode = errorCode;
+            ErrorDetails = errorDetails;
             TraceId = traceId;
         }
 
-        public WikiaApiException(string message) : this(message, null, null, 0, null)
+        public WikiaApiException(string message) : this(message, null, null, 0, null, null)
         {
         }
 
         /// <inheritdoc />
-        public override string Message
+        public override string Message { get; }
+    }
+
+    /// <summary>
+    /// The CLR counterpart for <c>NotFoundApiException</c>.
+    /// </summary>
+    public class NotFoundApiException : WikiaApiException
+    {
+        public NotFoundApiException() : base()
         {
-            get
-            {
-                if (localMessage != null) return localMessage;
-                return $"{ErrorType}:{ErrorMessage} ({ErrorCode})";
-            }
+        }
+
+        public NotFoundApiException(string errorType, string errorMessage, int errorCode,
+            string errorDetails, string traceId)
+            : base(errorType, errorMessage, errorCode, errorDetails, traceId)
+        {
         }
     }
+
 }

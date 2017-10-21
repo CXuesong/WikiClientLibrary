@@ -38,21 +38,24 @@ namespace WikiClientLibrary.Wikia.WikiaApi
             if (userName == null) throw new ArgumentNullException(nameof(userName));
             if (userName.IndexOf(',') >= 0)
                 throw new ArgumentException("User name cannot contain comma (,).", nameof(userName));
-            JToken jresult;
-            try
+            using (site.BeginActionScope(null, (object)userName))
             {
-                jresult = await site.InvokeWikiaApiAsync("/User/Details",
-                    new WikiaQueryRequestMessage(new {ids = userName}), cancellationToken);
+                JToken jresult;
+                try
+                {
+                    jresult = await site.InvokeWikiaApiAsync("/User/Details",
+                        new WikiaQueryRequestMessage(new {ids = userName}), cancellationToken);
+                }
+                catch (NotFoundApiException)
+                {
+                    return null;
+                }
+                var user = jresult["items"][0].ToObject<UserInfo>();
+                if (user == null) return null;
+                var basePath = (string)jresult["basepath"];
+                if (basePath != null) user.ApplyBasePath(basePath);
+                return user;
             }
-            catch (WikiaApiException ex) when (ex.ErrorType == "NotFoundApiException")
-            {
-                return null;
-            }
-            var user = jresult["items"][0].ToObject<UserInfo>();
-            if (user == null) return null;
-            var basePath = (string)jresult["basepath"];
-            if (basePath != null) user.ApplyBasePath(basePath);
-            return user;
         }
 
         /// <summary>
@@ -71,7 +74,7 @@ namespace WikiClientLibrary.Wikia.WikiaApi
             if (userNames == null) throw new ArgumentNullException(nameof(userNames));
             return AsyncEnumerableFactory.FromAsyncGenerator<UserInfo>(async (sink, ct) =>
             {
-                using (site.BeginActionScope(null, userNames as ICollection))
+                using (site.BeginActionScope(null, (object)(userNames as ICollection)))
                 {
                     foreach (var names in userNames.Partition(100))
                     {
@@ -114,10 +117,13 @@ namespace WikiClientLibrary.Wikia.WikiaApi
         /// <returns></returns>
         public static async Task<SiteVariableData> FetchWikiVariablesAsync(this WikiaSite site, CancellationToken cancellationToken)
         {
-            var jresult = await site.InvokeWikiaApiAsync("/Mercury/WikiVariables", new WikiaQueryRequestMessage(), cancellationToken);
-            var jdata = jresult["data"];
-            if (jdata == null) throw new UnexpectedDataException("Missing data node in the JSON response.");
-            return jdata.ToObject<SiteVariableData>();
+            using (site.BeginActionScope(null))
+            {
+                var jresult = await site.InvokeWikiaApiAsync("/Mercury/WikiVariables", new WikiaQueryRequestMessage(), cancellationToken);
+                var jdata = jresult["data"];
+                if (jdata == null) throw new UnexpectedDataException("Missing data node in the JSON response.");
+                return jdata.ToObject<SiteVariableData>();
+            }
         }
 
         /// <inheritdoc cref="FetchRelatedPagesAsync(WikiaSite,int,int,CancellationToken)"/>
@@ -144,26 +150,31 @@ namespace WikiClientLibrary.Wikia.WikiaApi
         /// <param name="cancellationToken">A token used to cancel the operation.</param>
         /// <exception cref="ArgumentNullException"><paramref name="site"/> is <c>null</c>.</exception>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="pageId"/> is less than or equals to 0.</exception>
+        /// <exception cref="NotFoundApiException"><c>Related Pages</c> extension is not available.</exception>
         /// <returns></returns>
         public static async Task<IList<RelatedPageItem>> FetchRelatedPagesAsync(this WikiaSite site,
             int pageId, int maxCount, CancellationToken cancellationToken)
         {
             if (site == null) throw new ArgumentNullException(nameof(site));
             if (maxCount <= 0) throw new ArgumentOutOfRangeException(nameof(maxCount));
-            var jresult = await site.InvokeWikiaApiAsync("/RelatedPages/List",
-                new WikiaQueryRequestMessage(new {ids = pageId, limit = maxCount}),
-                cancellationToken);
-            var jitems = jresult["items"][pageId.ToString()];
-            if (jitems == null) jitems = ((JProperty)jresult["items"].First)?.Value;
-            if (jitems == null || !jitems.HasValues) return emptyRelatedPages;
-            var items = jitems.ToObject<IList<RelatedPageItem>>();
-            var basePath = (string)jresult["basepath"];
-            if (basePath != null)
+            using (site.BeginActionScope(null, pageId, maxCount))
             {
-                foreach (var i in items) i.ApplyBasePath(basePath);
+                var jresult = await site.InvokeWikiaApiAsync("/RelatedPages/List",
+                    new WikiaQueryRequestMessage(new {ids = pageId, limit = maxCount}),
+                    cancellationToken);
+                var jitems = jresult["items"][pageId.ToString()];
+                if (jitems == null) jitems = ((JProperty)jresult["items"].First)?.Value;
+                if (jitems == null || !jitems.HasValues) return emptyRelatedPages;
+                var items = jitems.ToObject<IList<RelatedPageItem>>();
+                var basePath = (string)jresult["basepath"];
+                if (basePath != null)
+                {
+                    foreach (var i in items) i.ApplyBasePath(basePath);
+                }
+                return items;
             }
-            return items;
         }
 
     }
+
 }

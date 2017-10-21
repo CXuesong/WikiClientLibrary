@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 using WikiClientLibrary.Pages;
+using WikiClientLibrary.Sites;
 using WikiClientLibrary.Wikia;
 using WikiClientLibrary.Wikia.WikiaApi;
 using Xunit;
@@ -18,11 +20,16 @@ namespace UnitTestProject1.Tests
         {
         }
 
+        protected WikiaSite CreateWikiaSite(WikiSite site)
+        {
+            return new WikiaSite(site) {Logger = OutputLoggerFactory.CreateLogger<WikiaSite>()};
+        }
+
         [Fact]
         public async Task FetchUsersTest()
         {
             var site = await WikiaTestSiteAsync;
-            var wikiaSite = new WikiaSite(site);
+            var wikiaSite = CreateWikiaSite(site);
             var users = await wikiaSite.FetchUsersAsync(new[] {"Jasonr", "angela", "user_not_exist"}).ToArray();
             ShallowTrace(users);
             Assert.Equal(2, users.Length);
@@ -47,7 +54,7 @@ namespace UnitTestProject1.Tests
         public async Task FetchSiteVariablesTest()
         {
             var site = await WikiaTestSiteAsync;
-            var wikiaSite = new WikiaSite(site);
+            var wikiaSite = CreateWikiaSite(site);
             var data = await wikiaSite.FetchWikiVariablesAsync();
             ShallowTrace(data);
             Assert.Equal(203236, data.Id);
@@ -63,7 +70,7 @@ namespace UnitTestProject1.Tests
         public async Task FetchRelatedPagesTest()
         {
             var site = await WikiaTestSiteAsync;
-            var wikiaSite = new WikiaSite(site);
+            var wikiaSite = CreateWikiaSite(site);
             var mainPage = new WikiPage(site, site.SiteInfo.MainPage);
             await mainPage.RefreshAsync();
             var relatedPages = await wikiaSite.FetchRelatedPagesAsync(mainPage.Id);

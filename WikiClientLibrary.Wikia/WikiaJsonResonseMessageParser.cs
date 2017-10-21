@@ -40,9 +40,16 @@ namespace WikiClientLibrary.Wikia
                 {
                     var type = (string)exception["type"];
                     var message = (string)exception["message"];
+                    var details = (string)exception["details"];
                     var code = (int?)exception["code"] ?? (int)response.StatusCode;
                     var traceId = (string)jroot["trace_id"];
-                    throw new WikiaApiException(type, message, code, traceId);
+                    switch (type)
+                    {
+                        case "NotFoundApiException":
+                            throw new NotFoundApiException(type, message, code, details, traceId);
+                        default:
+                            throw new WikiaApiException(type, message, code, details, traceId);
+                    }
                 }
             }
             return jroot;
