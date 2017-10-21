@@ -42,5 +42,21 @@ namespace UnitTestProject1.Tests
             Assert.Null(user);
         }
 
+        [Fact]
+        public async Task FetchSiteVariablesTest()
+        {
+            var site = await WikiaTestSiteAsync;
+            var wikiaSite = new WikiaSite(site);
+            var data = await wikiaSite.FetchWikiVariablesAsync();
+            ShallowTrace(data);
+            Assert.Equal(203236, data.Id);
+            Assert.Equal("Mediawiki 1.19 test Wiki", data.SiteName);
+            Assert.Equal("http://mediawiki119.wikia.com", data.BasePath);
+            Assert.Equal("/wiki/", data.ArticlePath);
+            Assert.Equal(new[] {0}, data.ContentNamespaceIds);
+            Assert.Equal("en", data.LanguageInfo.ContentLanguage);
+            Assert.Equal("ltr", data.LanguageInfo.ContentFlowDirection);
+        }
+
     }
 }

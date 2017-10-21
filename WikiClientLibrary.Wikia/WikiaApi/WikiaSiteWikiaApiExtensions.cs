@@ -20,7 +20,7 @@ namespace WikiClientLibrary.Wikia.WikiaApi
         /// <inheritdoc cref="FetchUserAsync(WikiaSite,string,CancellationToken)"/>
         public static Task<UserInfo> FetchUserAsync(this WikiaSite site, string userName)
         {
-            return FetchUserAsync(site, userName, new CancellationToken());
+            return FetchUserAsync(site, userName, CancellationToken.None);
         }
 
         /// <summary>
@@ -98,6 +98,26 @@ namespace WikiClientLibrary.Wikia.WikiaApi
                     }
                 }
             });
+        }
+
+        /// <inheritdoc cref="FetchWikiVariablesAsync(WikiaSite,CancellationToken)"/>
+        public static Task<SiteVariableData> FetchWikiVariablesAsync(this WikiaSite site)
+        {
+            return FetchWikiVariablesAsync(site, CancellationToken.None);
+        }
+
+        /// <summary>
+        /// Asynchronously fetches the site information.
+        /// </summary>
+        /// <param name="site">The site to issue the request.</param>
+        /// <param name="cancellationToken">A token used to cancel the operation.</param>
+        /// <returns></returns>
+        public static async Task<SiteVariableData> FetchWikiVariablesAsync(this WikiaSite site, CancellationToken cancellationToken)
+        {
+            var jresult = await site.InvokeWikiaApiAsync("/Mercury/WikiVariables", new WikiaQueryRequestMessage(), cancellationToken);
+            var jdata = jresult["data"];
+            if (jdata == null) throw new UnexpectedDataException("Missing data node in the JSON response.");
+            return jdata.ToObject<SiteVariableData>();
         }
 
     }
