@@ -42,9 +42,9 @@ namespace WikiClientLibrary.Generators
 
         /// <summary>
         /// Gets/sets a value that indicates whether the links should be listed in
-        /// the descending document-order. (MediaWiki 1.19+)
+        /// the descending order. (MediaWiki 1.19+)
         /// </summary>
-        public bool DocumentOrderDescending { get; set; }
+        public bool OrderDescending { get; set; }
 
         /// <inheritdoc />
         public override string PropertyName => "links";
@@ -57,7 +57,7 @@ namespace WikiClientLibrary.Generators
                 {"plnamespace", NamespaceIds == null ? null : string.Join("|", NamespaceIds)},
                 {"pllimit", PaginationSize},
                 {"pltitles", MatchingTitles == null ? null : string.Join("|", MatchingTitles)},
-                {"pldir", DocumentOrderDescending ? "descending" : "ascending"}
+                {"pldir", OrderDescending ? "descending" : "ascending"}
             };
         }
     }
