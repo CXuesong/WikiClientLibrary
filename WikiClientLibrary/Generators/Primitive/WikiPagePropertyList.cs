@@ -17,6 +17,7 @@ namespace WikiClientLibrary.Generators.Primitive
     /// that supports pagination, and that thus can be enumerated asynchronously.
     /// This class provides basic functionality for enumerating such list-like property values.
     /// </remarks>
+    /// <see cref="WikiList{T}"/>
     public abstract class WikiPagePropertyList<T> : IWikiList<T>
     {
         private int _PaginationSize = 10;

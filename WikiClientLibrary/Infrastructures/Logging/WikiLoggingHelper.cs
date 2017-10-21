@@ -9,33 +9,54 @@ using System.Collections;
 using System.Reflection;
 using System.Threading;
 using Microsoft.Extensions.Logging.Abstractions;
+using WikiClientLibrary.Pages;
 using WikiClientLibrary.Sites;
 
 namespace WikiClientLibrary.Infrastructures.Logging
 {
+
+    /// <summary>
+    /// Provides helper methods for logging in WCL.
+    /// </summary>
     public static class WikiLoggingHelper
     {
 
+        /// <inheritdoc cref="BeginActionScope(ILogger,object,IEnumerable,string)"/>
         public static IDisposable BeginActionScope(this ILogger logger, object target, [CallerMemberName] string actionName = null)
         {
             return BeginActionScope(logger, target, null, actionName);
         }
 
+        /// <inheritdoc cref="BeginActionScope(ILogger,object,IEnumerable,string)"/>
+        /// <param name="param1">The first parameter for the action.</param>
+        /// <param name="param2">The second parameter for the action.</param>
+        /// <param name="param3">The third parameter for the action.</param>
         public static IDisposable BeginActionScope(this ILogger logger, object target, object param1, object param2, object param3, [CallerMemberName] string actionName = null)
         {
             return BeginActionScope(logger, target, new[] { param1, param2, param3 }, actionName);
         }
 
+        /// <inheritdoc cref="BeginActionScope(ILogger,object,object,object,string)"/>
         public static IDisposable BeginActionScope(this ILogger logger, object target, object param1, object param2, [CallerMemberName] string actionName = null)
         {
             return BeginActionScope(logger, target, new[] { param1, param2 }, actionName);
         }
 
+        /// <inheritdoc cref="BeginActionScope(ILogger,object,object,object,string)"/>
         public static IDisposable BeginActionScope(this ILogger logger, object target, object param1, [CallerMemberName] string actionName = null)
         {
             return BeginActionScope(logger, target, new[] { param1 }, actionName);
         }
 
+        /// <summary>
+        /// Invokes <see cref="ILogger.BeginScope{TState}"/> with the current action(method) name and parameters.
+        /// </summary>
+        /// <param name="logger">The logger that will enter a new scope.</param>
+        /// <param name="target">The action target. Usually the target <see cref="WikiSite"/>, <see cref="WikiPage"/>, etc.
+        /// Can be <c>null</c>.</param>
+        /// <param name="parameters">The action parameters. Can be <c>null</c>.</param>
+        /// <param name="actionName">The action name. Leave it missing to use the caller's member name.</param>
+        /// <returns>An <see cref="IDisposable"/> that when disposed, indicates the action is over.</returns>
         public static IDisposable BeginActionScope(this ILogger logger, object target, IEnumerable parameters, [CallerMemberName] string actionName = null)
         {
             if (logger == null) throw new ArgumentNullException(nameof(logger));
@@ -43,30 +64,47 @@ namespace WikiClientLibrary.Infrastructures.Logging
             return logger.BeginScope(new ActionLogScopeState(target, actionName, parameters));
         }
 
+        /// <inheritdoc cref="BeginActionScope(IWikiClientLoggable,object,IEnumerable,string)"/>
         public static IDisposable BeginActionScope(this IWikiClientLoggable loggable, object target, [CallerMemberName] string actionName = null)
         {
             if (loggable == null) throw new ArgumentNullException(nameof(loggable));
             return BeginActionScope(loggable, target, null, actionName);
         }
 
+        /// <inheritdoc cref="BeginActionScope(IWikiClientLoggable,object,IEnumerable,string)"/>
+        /// <param name="param1">The first parameter for the action.</param>
+        /// <param name="param2">The second parameter for the action.</param>
+        /// <param name="param3">The third parameter for the action.</param>
         public static IDisposable BeginActionScope(this IWikiClientLoggable loggable, object target, 
             object param1, object param2, object param3, [CallerMemberName] string actionName = null)
         {
             return BeginActionScope(loggable, target, new[] { param1, param2, param3 }, actionName);
         }
 
+        /// <inheritdoc cref="BeginActionScope(IWikiClientLoggable,object,object,object,string)"/>
         public static IDisposable BeginActionScope(this IWikiClientLoggable loggable, object target,
             object param1, object param2, [CallerMemberName] string actionName = null)
         {
             return BeginActionScope(loggable, target, new[] { param1, param2 }, actionName);
         }
 
+        /// <inheritdoc cref="BeginActionScope(IWikiClientLoggable,object,object,object,string)"/>
         public static IDisposable BeginActionScope(this IWikiClientLoggable loggable, object target, 
             object param1, [CallerMemberName] string actionName = null)
         {
             return BeginActionScope(loggable, target, new[] { param1 }, actionName);
         }
 
+        /// <summary>
+        /// Invokes <see cref="ILogger.BeginScope{TState}"/> on the <see cref="IWikiClientLoggable.Logger"/>
+        /// with the current action(method) name and parameters.
+        /// </summary>
+        /// <param name="loggable">The instance whose <see cref="IWikiClientLoggable.Logger"/> will enter a new scope.</param>
+        /// <param name="target">The action target. Usually the target <see cref="WikiSite"/>, <see cref="WikiPage"/>, etc.
+        /// Can be <c>null</c>.</param>
+        /// <param name="parameters">The action parameters. Can be <c>null</c>.</param>
+        /// <param name="actionName">The action name. Leave it missing to use the caller's member name.</param>
+        /// <returns>An <see cref="IDisposable"/> that when disposed, indicates the action is over.</returns>
         public static IDisposable BeginActionScope(this IWikiClientLoggable loggable, object target,
             IEnumerable parameters, [CallerMemberName] string actionName = null)
         {
