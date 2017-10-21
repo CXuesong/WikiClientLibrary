@@ -359,7 +359,7 @@ namespace WikiClientLibrary.Pages
         /// Enumerates revisions of the page, descending in time, without revision content.
         /// This overload asks for as many items as possible per request. This is usually 500 for user, and 5000 for bots.
         /// </summary>
-        /// <remarks>To gain full control of revision enumeration, you can use <see cref="RevisionGenerator" />.</remarks>
+        /// <remarks>To gain full control of revision enumeration, you can use <see cref="RevisionsGenerator" />.</remarks>
         [Obsolete("Please use RevisionGenerator class or WikiPageExtensions.CreateRevisionGenerator extension method instead.")]
         public IAsyncEnumerable<Revision> EnumRevisionsAsync()
         {
@@ -371,7 +371,7 @@ namespace WikiClientLibrary.Pages
         /// </summary>
         /// <param name="pagingSize">Maximum items returned per request.</param>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="pagingSize"/> is non-positive.</exception>
-        /// <remarks>To gain full control of revision enumeration, you can use <see cref="RevisionGenerator" />.</remarks>
+        /// <remarks>To gain full control of revision enumeration, you can use <see cref="RevisionsGenerator" />.</remarks>
         [Obsolete("Please use RevisionGenerator class or WikiPageExtensions.CreateRevisionGenerator extension method instead.")]
         public IAsyncEnumerable<Revision> EnumRevisionsAsync(int pagingSize)
         {
@@ -384,12 +384,12 @@ namespace WikiClientLibrary.Pages
         /// <param name="pagingSize">Maximum items returned per request.</param>
         /// <param name="options">Options for revision listing. Note <see cref="PageQueryOptions.ResolveRedirects"/> will raise exception.</param>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="pagingSize"/> is non-positive.</exception>
-        /// <remarks>To gain full control of revision enumeration, you can use <see cref="RevisionGenerator" />.</remarks>
+        /// <remarks>To gain full control of revision enumeration, you can use <see cref="RevisionsGenerator" />.</remarks>
         [Obsolete("Please use RevisionGenerator class or WikiPageExtensions.CreateRevisionGenerator extension method instead.")]
         public IAsyncEnumerable<Revision> EnumRevisionsAsync(int pagingSize, PageQueryOptions options)
         {
             if (pagingSize <= 0) throw new ArgumentOutOfRangeException(nameof(pagingSize));
-            var gen = new RevisionGenerator(Site, Title) { PaginationSize = pagingSize};
+            var gen = new RevisionsGenerator(Site, Title) { PaginationSize = pagingSize};
             return gen.EnumItemsAsync();
         }
 

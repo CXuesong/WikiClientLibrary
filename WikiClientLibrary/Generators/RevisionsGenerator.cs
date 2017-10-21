@@ -13,18 +13,19 @@ using WikiClientLibrary.Sites;
 
 namespace WikiClientLibrary.Generators
 {
+
     /// <summary>
     /// Represents a generator (or iterator) of <see cref="Revision"/> on a specific page.
     /// </summary>
-    public class RevisionGenerator : WikiPagePropertyGenerator<Revision, WikiPage>
+    public class RevisionsGenerator : WikiPagePropertyGenerator<Revision, WikiPage>
     {
 
         /// <inheritdoc />
-        public RevisionGenerator(WikiSite site) : base(site)
+        public RevisionsGenerator(WikiSite site) : base(site)
         {
         }
 
-        public RevisionGenerator(WikiSite site, string pageTitle) : base(site)
+        public RevisionsGenerator(WikiSite site, string pageTitle) : base(site)
         {
             PageTitle = pageTitle;
         }

@@ -17,10 +17,10 @@ namespace WikiClientLibrary.Generators
             return new LinksGenerator(page.Site, page.Title);
         }
 
-        public static RevisionGenerator CreateRevisionGenerator(this WikiPage page)
+        public static RevisionsGenerator CreateRevisionGenerator(this WikiPage page)
         {
             if (page == null) throw new ArgumentNullException(nameof(page));
-            return new RevisionGenerator(page.Site, page.Title);
+            return new RevisionsGenerator(page.Site, page.Title);
         }
 
     }
