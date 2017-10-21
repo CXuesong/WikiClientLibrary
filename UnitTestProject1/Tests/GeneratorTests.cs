@@ -311,10 +311,26 @@ namespace UnitTestProject1.Tests
         public async Task WpTranscludedInGeneratorTest()
         {
             var site = await WpTest2SiteAsync;
-            var tig = new TranscludedInGenerator(site, "Module:Portal‏‎") { PaginationSize = 100 };
+            var tig = new TranscludedInGenerator(site, "Module:Portal‏‎") {PaginationSize = 100};
             var pages = await tig.EnumPagesAsync().Take(100).ToList();
             ShallowTrace(pages, 1);
             Assert.Contains(pages, p => p.Title == "Template:Portal bar");
+        }
+
+        [Fact]
+        public async Task WpTestEnumPageLinksTest()
+        {
+            var site = await WpLzhSiteAsync;
+            var gen = new LinksGenerator(site, site.SiteInfo.MainPage) {PaginationSize = 20};
+            Output.WriteLine(gen.PageTitle);
+            var links = await gen.EnumItemsAsync().Select(stub => stub.Title).ToList();
+            var linkPages = await gen.EnumPagesAsync().Select(p => p.Title).ToList();
+            ShallowTrace(links);
+            Assert.Contains("文言維基大典", links);
+            Assert.Contains("幫助:凡例", links);
+            Assert.Contains("維基大典:卓著", links);
+            // The items taken from generator are unordered.
+            Assert.Equal(links.ToHashSet(), linkPages.ToHashSet());
         }
 
     }

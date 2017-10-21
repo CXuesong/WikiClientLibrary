@@ -393,6 +393,7 @@ namespace WikiClientLibrary.Pages
         /// <summary>
         /// Enumerate all links on the pages.
         /// </summary>
+        [Obsolete("Please use LinksGenerator class instead.")]
         public IAsyncEnumerable<string> EnumLinksAsync()
         {
             return EnumLinksAsync(null);
@@ -405,9 +406,11 @@ namespace WikiClientLibrary.Pages
         /// Only list links to pages in these namespaces.
         /// If this is empty or <c>null</c>, all the pages will be listed.
         /// </param>
+        [Obsolete("Please use LinksGenerator class instead.")]
         public IAsyncEnumerable<string> EnumLinksAsync(IEnumerable<int> namespaces)
         {
-            return RequestHelper.EnumLinksAsync(Site, Title, namespaces);
+            return new LinksGenerator(Site, Title) {NamespaceIds = namespaces}
+                .EnumItemsAsync().Select(stub => stub.Title);
         }
 
         /// <summary>

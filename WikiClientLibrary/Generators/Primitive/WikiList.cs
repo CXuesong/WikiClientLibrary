@@ -78,7 +78,7 @@ namespace WikiClientLibrary.Generators.Primitive
         /// Parses an item contained in the <c>action=query&amp;list=</c> JSON response.
         /// </summary>
         /// <param name="json">One of the item node under the JSON path <c>query/{listname}</c>.</param>
-        /// <returns></returns>
+        /// <returns>The item that will be returned in the sequence from <see cref="EnumItemsAsync"/>.</returns>
         protected abstract T ItemFromJson(JToken json);
 
         /// <inheritdoc />

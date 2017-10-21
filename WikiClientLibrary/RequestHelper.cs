@@ -48,59 +48,64 @@ namespace WikiClientLibrary
             return queryParams;
         }
 
-        public static IAsyncEnumerable<JObject> QueryWithContinuation(WikiSite site, IEnumerable<KeyValuePair<string, object>> parameters,
+        public static IAsyncEnumerable<JObject> QueryWithContinuation(WikiSite site,
+            IEnumerable<KeyValuePair<string, object>> parameters,
+            Func<IDisposable> beginActionScope,
             bool distinctPages = false)
         {
             return AsyncEnumerableFactory.FromAsyncGenerator<JObject>(async (sink, ct) =>
             {
-                var queryParams = parameters.ToDictionary(p => p.Key, p => p.Value);
-                Debug.Assert("query".Equals(queryParams["action"]));
                 ct.ThrowIfCancellationRequested();
                 var retrivedPageIds = distinctPages ? new HashSet<int>() : null;
-                NEXT_PAGE:
-                var jresult = await site.GetJsonAsync(new MediaWikiFormRequestMessage(queryParams), ct);
-                // If there's no result, "query" node will not exist.
-                var queryNode = (JObject)jresult["query"];
-                if (queryNode != null)
+                using (beginActionScope?.Invoke())
                 {
-                    var jpages = (JObject)queryNode["pages"];
-                    if (retrivedPageIds != null && jpages != null)
+                    var queryParams = parameters.ToDictionary(p => p.Key, p => p.Value);
+                    Debug.Assert("query".Equals(queryParams["action"]));
+                    NEXT_PAGE:
+                    var jresult = await site.GetJsonAsync(new MediaWikiFormRequestMessage(queryParams), ct);
+                    // If there's no result, "query" node will not exist.
+                    var queryNode = (JObject)jresult["query"];
+                    if (queryNode != null)
                     {
-                        // Remove duplicate results
-                        var duplicateKeys = new List<string>(jpages.Count);
-                        foreach (var jpage in jpages)
+                        var jpages = (JObject)queryNode["pages"];
+                        if (retrivedPageIds != null && jpages != null)
                         {
-                            if (!retrivedPageIds.Add(Convert.ToInt32(jpage.Key)))
+                            // Remove duplicate results
+                            var duplicateKeys = new List<string>(jpages.Count);
+                            foreach (var jpage in jpages)
                             {
-                                // The page has been retrieved before.
-                                duplicateKeys.Add(jpage.Key);
+                                if (!retrivedPageIds.Add(Convert.ToInt32(jpage.Key)))
+                                {
+                                    // The page has been retrieved before.
+                                    duplicateKeys.Add(jpage.Key);
+                                }
+                            }
+                            var originalPageCount = jpages.Count;
+                            foreach (var k in duplicateKeys) jpages.Remove(k);
+                            if (originalPageCount != jpages.Count)
+                            {
+                                site.Logger.LogWarning(
+                                    "Received {Count} results on {Site}, {DistinctCount} distinct results.",
+                                    originalPageCount, site, jpages.Count);
                             }
                         }
-                        var originalPageCount = jpages.Count;
-                        foreach (var k in duplicateKeys) jpages.Remove(k);
-                        if (originalPageCount != jpages.Count)
-                        {
-                            site.Logger.LogWarning(
-                                "Received {Count} results on {Site}, {DistinctCount} distinct results.",
-                                originalPageCount, site, jpages.Count);
-                        }
+                        await sink.YieldAndWait(queryNode);
                     }
-                    await sink.YieldAndWait(queryNode);
+                    var continuation = (JObject)(jresult["continue"]
+                                                 ?? ((JProperty)jresult["query-continue"]?.First)?.Value);
+                    // No more results.
+                    if (continuation == null || continuation.Count == 0) return;
+                    foreach (var p in continuation.Properties())
+                    {
+                        object parsed;
+                        if (p.Value is JValue value) parsed = value.Value;
+                        else parsed = p.Value.ToString(Formatting.None);
+                        queryParams[p.Name] = parsed;
+                    }
+                    if (queryNode == null)
+                        site.Logger.LogWarning("Empty query page with continuation received on {Site}.", site);
+                    goto NEXT_PAGE;
                 }
-                var continuation = (JObject)(jresult["continue"]
-                                             ?? ((JProperty)jresult["query-continue"]?.First)?.Value);
-                // No more results.
-                if (continuation == null || continuation.Count == 0) return;
-                foreach (var p in continuation.Properties())
-                {
-                    object parsed;
-                    if (p.Value is JValue value) parsed = value.Value;
-                    else parsed = p.Value.ToString(Formatting.None);
-                    queryParams[p.Name] = parsed;
-                }
-                if (queryNode == null)
-                    site.Logger.LogWarning("Empty query page with continuation received on {Site}.", site);
-                goto NEXT_PAGE;
             });
         }
 
@@ -238,7 +243,7 @@ namespace WikiClientLibrary
             var serializer = Utility.CreateWikiJsonSerializer();
             serializer.Converters.Add(new DelegateCreationConverter<Revision>(t => new Revision(generator.Page)));
             var resultCounter = 0;
-            return QueryWithContinuation(site, pa)
+            return QueryWithContinuation(site, pa, null)
                 .SelectMany(jresult =>
                 {
                     var jpage = jresult["pages"].Values().First();
@@ -375,7 +380,7 @@ namespace WikiClientLibrary
         public static async Task<JObject> QueryParameterInformationAsync(WikiSite site, string moduleName)
         {
             if (site == null) throw new ArgumentNullException(nameof(site));
-            var pa = new Dictionary<string, object> {{"action", "paraminfo"}};
+            var pa = new Dictionary<string, object> { { "action", "paraminfo" } };
             if (site.SiteInfo.Version < new Version("1.25"))
             {
                 var parts = moduleName.Split('+');
@@ -425,7 +430,7 @@ namespace WikiClientLibrary
             };
             pa["titles"] = titlesExpr;
             var resultCounter = 0;
-            return QueryWithContinuation(site, pa)
+            return QueryWithContinuation(site, pa, null)
                 .SelectMany(jquery =>
                 {
                     var page = jquery["pages"].Values().First();
@@ -458,7 +463,7 @@ namespace WikiClientLibrary
             };
             pa["titles"] = titlesExpr;
             var resultCounter = 0;
-            return QueryWithContinuation(site, pa)
+            return QueryWithContinuation(site, pa, null)
                 .SelectMany(jquery =>
                 {
                     var page = jquery["pages"].Values().First();

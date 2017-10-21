@@ -130,19 +130,6 @@ namespace UnitTestProject1.Tests
         }
 
         [Fact]
-        public async Task WpTestEnumPageLinksTest()
-        {
-            var site = await WpLzhSiteAsync;
-            var page = new WikiPage(site, site.SiteInfo.MainPage);
-            Output.WriteLine(page.ToString());
-            var links = await page.EnumLinksAsync().ToList();
-            ShallowTrace(links);
-            Assert.Contains("文言維基大典", links);
-            Assert.Contains("幫助:凡例", links);
-            Assert.Contains("維基大典:卓著", links);
-        }
-
-        [Fact]
         public async Task WpLzhRedirectedPageReadTest()
         {
             var site = await WpLzhSiteAsync;
