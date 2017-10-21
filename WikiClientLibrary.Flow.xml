@@ -75,11 +75,6 @@
     <member name="P:WikiClientLibrary.Flow.Board.HeaderRevision">
       <summary>Latest header content revision.</summary>
     </member>
-    <member name="P:WikiClientLibrary.Flow.Board.LoggerFactory">
-      <summary>
-            Sets/replaces the logger factory of the specified class.
-            </summary>
-    </member>
     <member name="M:WikiClientLibrary.Flow.Board.NewTopicAsync(System.String,System.String)">
       <summary>
             Creates a new topic on the current board.
@@ -639,11 +634,6 @@
       <param name="action">The action to perform.</param>
       <param name="reason">The reason for operation.</param>
       <param name="cancellationToken">A token used to cancel the operation.</param>
-    </member>
-    <member name="P:WikiClientLibrary.Flow.Topic.LoggerFactory">
-      <summary>
-            Sets/replaces the logger factory of the specified class.
-            </summary>
     </member>
     <member name="M:WikiClientLibrary.Flow.Topic.ModerateAsync(WikiClientLibrary.Flow.ModerationAction,System.String)">
       <summary>

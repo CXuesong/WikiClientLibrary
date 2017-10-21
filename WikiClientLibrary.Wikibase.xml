@@ -190,11 +190,6 @@
             The revid of the last revision.
             </summary>
     </member>
-    <member name="P:WikiClientLibrary.Wikibase.Entity.LoggerFactory">
-      <summary>
-            Sets/replaces the logger factory of the specified class.
-            </summary>
-    </member>
     <member name="P:WikiClientLibrary.Wikibase.Entity.NamespaceId">
       <summary>
             Namespace ID of the entity page.
