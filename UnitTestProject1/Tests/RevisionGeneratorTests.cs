@@ -22,7 +22,9 @@ namespace UnitTestProject1.Tests
         {
             var site = await WpTest2SiteAsync;
             var page = new WikiPage(site, "Page:Edit_page_for_chrome");
-            var revisions = await page.EnumRevisionsAsync(20).Skip(5).Take(5).ToList();
+            var gen = page.CreateRevisionGenerator();
+            gen.PaginationSize = 20;
+            var revisions = await gen.EnumItemsAsync().Skip(5).Take(5).ToList();
             Assert.Equal(5, revisions.Count);
             Assert.True(revisions.SequenceEqual(revisions.OrderByDescending(r => r.TimeStamp)));
             ShallowTrace(revisions);
@@ -34,7 +36,9 @@ namespace UnitTestProject1.Tests
             var site = await WpTest2SiteAsync;
             // 5,100 revisions in total
             var page = new WikiPage(site, "Page:Edit_page_for_chrome");
-            var revisions = await page.EnumRevisionsAsync(2000).Take(2000).ToList();
+            var gen = page.CreateRevisionGenerator();
+            gen.PaginationSize = 500;
+            var revisions = await gen.EnumItemsAsync().Take(2000).ToList();
             Assert.True(revisions.SequenceEqual(revisions.OrderByDescending(r => r.TimeStamp)));
             ShallowTrace(revisions);
         }
@@ -69,7 +73,9 @@ namespace UnitTestProject1.Tests
         {
             var site = await WikiaTestSiteAsync;
             var page = new WikiPage(site, "Project:Sandbox");
-            var revisions = await page.EnumRevisionsAsync().Skip(5).Take(5).ToList();
+            var gen = page.CreateRevisionGenerator();
+            gen.PaginationSize = 20;
+            var revisions = await gen.EnumItemsAsync().Skip(5).Take(5).ToList();
             Assert.All(revisions, Assert.NotNull);
             Assert.Equal(5, revisions.Count);
             Assert.True(revisions.SequenceEqual(revisions.OrderByDescending(r => r.TimeStamp)));
@@ -81,7 +87,9 @@ namespace UnitTestProject1.Tests
         {
             var site = await WikiaTestSiteAsync;
             var page = new WikiPage(site, "Project:Sandbox");
-            var revisions = await page.EnumRevisionsAsync().Take(2000).ToList();
+            var gen = page.CreateRevisionGenerator();
+            gen.PaginationSize = 500;
+            var revisions = await gen.EnumItemsAsync().Take(2000).ToList();
             Assert.True(revisions.SequenceEqual(revisions.OrderByDescending(r => r.TimeStamp)));
             ShallowTrace(revisions);
         }
