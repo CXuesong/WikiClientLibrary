@@ -184,51 +184,41 @@ namespace WikiClientLibrary
             var titleLimit = site.AccountInfo.HasRight(UserRights.ApiHighLimits)
                 ? 500
                 : 50;
-            // PageId --> JsonSerializer that can new Revision(Page)
-            var pagePool = new Dictionary<int, JsonSerializer>();
-            var revPartition = revIds.Partition(titleLimit).Select(partition => partition.ToList())
-                .SelectAsync(async partition =>
+            return AsyncEnumerableFactory.FromAsyncGenerator<Revision>(async sink =>
+            {
+                // Page ID --> Page Stub
+                var stubDict = new Dictionary<int, WikiPageStub>();
+                var revDict = new Dictionary<int, Revision>();
+                using (site.BeginActionScope(null, (object)revIds))
                 {
-                    site.Logger.LogDebug("Fetching {Count} revisions from {Site}.", partition.Count, site);
-                    queryParams["revids"] = string.Join("|", partition);
-                    var jobj = await site.GetJsonAsync(new MediaWikiFormRequestMessage(queryParams), cancellationToken);
-                    var jpages = (JObject)jobj["query"]["pages"];
-                    // Generate converters first
-                    // Use DelegateCreationConverter to create Revision with constructor
-                    var pages = WikiPage.FromJsonQueryResult(site, (JObject)jobj["query"], options);
-                    foreach (var p in pages)
+                    foreach (var partition in revIds.Partition(titleLimit))
                     {
-                        if (!pagePool.ContainsKey(p.Id))
+                        site.Logger.LogDebug("Fetching {Count} revisions from {Site}.", partition.Count, site);
+                        queryParams["revids"] = string.Join("|", partition);
+                        var jobj = await site.GetJsonAsync(new MediaWikiFormRequestMessage(queryParams), cancellationToken);
+                        var jpages = (JObject)jobj["query"]["pages"];
+                        // Generate stubs first
+                        foreach (var p in jpages)
                         {
-                            var p1 = p;
-                            var serializer = Utility.CreateWikiJsonSerializer();
-                            serializer.Converters.Add(new DelegateCreationConverter<Revision>(t => new Revision(p1)));
-                            pagePool.Add(p.Id, serializer);
+                            var jrevs = p.Value["revisions"];
+                            if (jrevs == null || !jrevs.HasValues) continue;
+                            var id = Convert.ToInt32(p.Key);
+                            if (!stubDict.TryGetValue(id, out var stub))
+                            {
+                                stub = new WikiPageStub(id, (string)p.Value["title"], (int)p.Value["ns"]);
+                                stubDict.Add(id, stub);
+                            }
+                            foreach (var jrev in jrevs)
+                            {
+                                var rev = jrev.ToObject<Revision>(Utility.WikiJsonSerializer);
+                                rev.Page = stub;
+                                revDict.Add(rev.Id, rev);
+                            }
                         }
+                        await sink.YieldAndWait(partition.Select(id => revDict.TryGetValue(id, out var rev) ? rev : null));
                     }
-                    // Then convert revisions
-                    var rawRev = jpages.Properties()
-                        .SelectMany(p => p.Value["revisions"].Select(r => new
-                        {
-                            Serializer = pagePool[Convert.ToInt32(p.Name)],
-                            RevisionId = (int)r["revid"],
-                            Revision = r
-                        })).ToDictionary(o => o.RevisionId);
-                    return partition.Select(revId =>
-                    {
-                        try
-                        {
-                            var raw = rawRev[revId];
-                            return raw.Revision.ToObject<Revision>(raw.Serializer);
-                        }
-                        catch (KeyNotFoundException)
-                        {
-                            throw new ArgumentException($"The revision id {revId} could not be found on the site.",
-                                nameof(revIds));
-                        }
-                    }).ToAsyncEnumerable();
-                });
-            return revPartition.SelectMany(p => p);
+                }
+            });
         }
 
         #endregion

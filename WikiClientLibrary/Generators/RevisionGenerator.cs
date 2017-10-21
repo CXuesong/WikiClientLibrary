@@ -52,7 +52,9 @@ namespace WikiClientLibrary.Generators
         /// <inheritdoc />
         protected override Revision ItemFromJson(JToken json, JObject jpage)
         {
-            return json.ToObject<Revision>();
+            var rev = json.ToObject<Revision>(Utility.WikiJsonSerializer);
+            rev.Page = new WikiPageStub((int)jpage["pageid"], (string)jpage["title"], (int)jpage["ns"]);
+            return rev;
         }
 
         /// <summary>

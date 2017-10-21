@@ -303,8 +303,8 @@ namespace WikiClientLibrary.Pages
             if (revision != null)
             {
                 var serializer = Utility.CreateWikiJsonSerializer();
-                serializer.Converters.Add(new DelegateCreationConverter<Revision>(t => new Revision(this)));
                 LastRevision = revision.ToObject<Revision>(serializer);
+                LastRevision.Page = ToPageStub();
                 // Check if the client has requested for revision content…
                 if (LastRevision.Content != null)
                     Content = LastRevision.Content;
@@ -708,6 +708,11 @@ namespace WikiClientLibrary.Pages
         }
 
         #endregion
+
+        /// <summary>
+        /// Gets a initialized <see cref="WikiPageStub"/> from the current instance.
+        /// </summary>
+        public WikiPageStub ToPageStub() => new WikiPageStub(Id, Title, NamespaceId);
 
         /// <inheritdoc/>
         public override string ToString()

@@ -90,8 +90,8 @@ namespace UnitTestProject1.Tests
             var pageTitles = new[] {"清", "清", "香草"};
             var rev = await Revision.FetchRevisionsAsync(site, revIds).ToList();
             ShallowTrace(rev);
-            Assert.True(rev.Select(r => r.Id).SequenceEqual(revIds));
-            Assert.True(rev.Select(r => r.Page.Title).SequenceEqual(pageTitles));
+            Assert.Equal(revIds, rev.Select(r => r.Id));
+            Assert.Equal(pageTitles, rev.Select(r => r.Page.Title));
             // Asserts that pages with the same title shares the same reference
             // Or an Exception will raise.
             var pageDict = rev.Select(r => r.Page).Distinct().ToDictionary(p => p.Title);

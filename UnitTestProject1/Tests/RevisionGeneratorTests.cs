@@ -70,6 +70,7 @@ namespace UnitTestProject1.Tests
             var site = await WikiaTestSiteAsync;
             var page = new WikiPage(site, "Project:Sandbox");
             var revisions = await page.EnumRevisionsAsync().Skip(5).Take(5).ToList();
+            Assert.All(revisions, Assert.NotNull);
             Assert.Equal(5, revisions.Count);
             Assert.True(revisions.SequenceEqual(revisions.OrderByDescending(r => r.TimeStamp)));
             ShallowTrace(revisions);

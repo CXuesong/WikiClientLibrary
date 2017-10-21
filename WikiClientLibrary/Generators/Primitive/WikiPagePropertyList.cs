@@ -109,7 +109,9 @@ namespace WikiClientLibrary.Generators.Primitive
                     {
                         var jprop = jpage[PropertyName];
                         return jprop.Select(v => ItemFromJson(v, (JObject)jpage));
-                    }).ToAsyncEnumerable();
+                    }).ToList().ToAsyncEnumerable();
+                    // ToList is necessary. See
+                    // https://github.com/CXuesong/WikiClientLibrary/issues/27
                 });
         }
 
