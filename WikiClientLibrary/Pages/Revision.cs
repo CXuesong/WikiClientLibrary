@@ -16,11 +16,6 @@ namespace WikiClientLibrary.Pages
     [JsonObject(MemberSerialization.OptIn)]
     public class Revision
     {
-        internal Revision(WikiPage page)
-        {
-            if (page == null) throw new ArgumentNullException(nameof(page));
-            Page = page;
-        }
 
         /// <summary>
         /// Fetch a revision by revid. This overload will also fetch the content of revision.
@@ -81,9 +76,9 @@ namespace WikiClientLibrary.Pages
         }
 
         /// <summary>
-        /// Gets the page this revision applies to.
+        /// Gets the stub of page this revision applies to.
         /// </summary>
-        public WikiPage Page { get; private set; }
+        public WikiPageStub Page { get; internal set; }
 
         [JsonProperty("revid")]
         public int Id { get; private set; }

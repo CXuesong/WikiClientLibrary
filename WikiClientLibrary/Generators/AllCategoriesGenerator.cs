@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using WikiClientLibrary.Generators.Primitive;
 using WikiClientLibrary.Pages;
 using WikiClientLibrary.Sites;
 
@@ -42,18 +43,20 @@ namespace WikiClientLibrary.Generators
         /// </summary>
         public int? MaxChildrenCount { get; set; }
 
+        /// <inheritdoc />
+        public override string ListName => "allcategories";
+
         /// <inheritdoc/>
-        public override IEnumerable<KeyValuePair<string, object>> GetGeneratorParams(int actualPagingSize)
+        public override IEnumerable<KeyValuePair<string, object>> EnumListParameters()
         {
             return new Dictionary<string, object>
             {
-                {"generator", "allcategories"},
-                {"gacfrom", StartTitle},
-                {"gacto", EndTitle},
-                {"gaclimit", actualPagingSize},
-                {"gacprefix", Prefix},
-                {"acmin", MinChildrenCount},
-                {"acmax", MaxChildrenCount},
+                {"acfrom", StartTitle},
+                {"acto", EndTitle},
+                {"aclimit", PaginationSize},
+                {"acprefix", Prefix},
+                {"cmin", MinChildrenCount},
+                {"cmax", MaxChildrenCount},
             };
         }
     }

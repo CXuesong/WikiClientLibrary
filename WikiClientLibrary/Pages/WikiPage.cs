@@ -303,8 +303,8 @@ namespace WikiClientLibrary.Pages
             if (revision != null)
             {
                 var serializer = Utility.CreateWikiJsonSerializer();
-                serializer.Converters.Add(new DelegateCreationConverter<Revision>(t => new Revision(this)));
                 LastRevision = revision.ToObject<Revision>(serializer);
+                LastRevision.Page = ToPageStub();
                 // Check if the client has requested for revision content…
                 if (LastRevision.Content != null)
                     Content = LastRevision.Content;
@@ -359,19 +359,21 @@ namespace WikiClientLibrary.Pages
         /// Enumerates revisions of the page, descending in time, without revision content.
         /// This overload asks for as many items as possible per request. This is usually 500 for user, and 5000 for bots.
         /// </summary>
-        /// <remarks>To gain full control of revision enumeration, you can use <see cref="RevisionGenerator" />.</remarks>
+        /// <remarks>To gain full control of revision enumeration, you can use <see cref="RevisionsGenerator" />.</remarks>
+        [Obsolete("Please use RevisionsGenerator class or WikiPageExtensions.CreateRevisionsGenerator extension method instead.")]
         public IAsyncEnumerable<Revision> EnumRevisionsAsync()
         {
-            return EnumRevisionsAsync(null);
+            return EnumRevisionsAsync(500);
         }
 
         /// <summary>
         /// Enumerates revisions of the page, descending in time, without revision content.
         /// </summary>
-        /// <param name="pagingSize">Maximum items returned per request. <c>null</c> for maximum allowed count.</param>
+        /// <param name="pagingSize">Maximum items returned per request.</param>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="pagingSize"/> is non-positive.</exception>
-        /// <remarks>To gain full control of revision enumeration, you can use <see cref="RevisionGenerator" />.</remarks>
-        public IAsyncEnumerable<Revision> EnumRevisionsAsync(int? pagingSize)
+        /// <remarks>To gain full control of revision enumeration, you can use <see cref="RevisionsGenerator" />.</remarks>
+        [Obsolete("Please use RevisionsGenerator class or WikiPageExtensions.CreateRevisionsGenerator extension method instead.")]
+        public IAsyncEnumerable<Revision> EnumRevisionsAsync(int pagingSize)
         {
             return EnumRevisionsAsync(pagingSize, PageQueryOptions.None);
         }
@@ -379,20 +381,22 @@ namespace WikiClientLibrary.Pages
         /// <summary>
         /// Enumerates revisions of the page, descending in tim.
         /// </summary>
-        /// <param name="pagingSize">Maximum items returned per request. <c>null</c> for maximum allowed count.</param>
+        /// <param name="pagingSize">Maximum items returned per request.</param>
         /// <param name="options">Options for revision listing. Note <see cref="PageQueryOptions.ResolveRedirects"/> will raise exception.</param>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="pagingSize"/> is non-positive.</exception>
-        /// <remarks>To gain full control of revision enumeration, you can use <see cref="RevisionGenerator" />.</remarks>
-        public IAsyncEnumerable<Revision> EnumRevisionsAsync(int? pagingSize, PageQueryOptions options)
+        /// <remarks>To gain full control of revision enumeration, you can use <see cref="RevisionsGenerator" />.</remarks>
+        [Obsolete("Please use RevisionGenerator class or WikiPageExtensions.CreateRevisionGenerator extension method instead.")]
+        public IAsyncEnumerable<Revision> EnumRevisionsAsync(int pagingSize, PageQueryOptions options)
         {
             if (pagingSize <= 0) throw new ArgumentOutOfRangeException(nameof(pagingSize));
-            var gen = new RevisionGenerator(this) {PagingSize = pagingSize};
-            return gen.EnumRevisionsAsync(options);
+            var gen = new RevisionsGenerator(Site, Title) { PaginationSize = pagingSize};
+            return gen.EnumItemsAsync();
         }
 
         /// <summary>
         /// Enumerate all links on the pages.
         /// </summary>
+        [Obsolete("Please use LinksGenerator class or WikiPageExtensions.CreateLinksGenerator extension method instead.")]
         public IAsyncEnumerable<string> EnumLinksAsync()
         {
             return EnumLinksAsync(null);
@@ -405,14 +409,17 @@ namespace WikiClientLibrary.Pages
         /// Only list links to pages in these namespaces.
         /// If this is empty or <c>null</c>, all the pages will be listed.
         /// </param>
+        [Obsolete("Please use LinksGenerator class or WikiPageExtensions.CreateLinksGenerator extension method instead.")]
         public IAsyncEnumerable<string> EnumLinksAsync(IEnumerable<int> namespaces)
         {
-            return RequestHelper.EnumLinksAsync(Site, Title, namespaces);
+            return new LinksGenerator(Site, Title) {NamespaceIds = namespaces}
+                .EnumItemsAsync().Select(stub => stub.Title);
         }
 
         /// <summary>
         /// Enumerate all pages (typically templates) transcluded on the pages.
         /// </summary>
+        [Obsolete("Please use TransclusionsGenerator class or WikiPageExtensions.CreateTransclusionsGenerator extension method instead.")]
         public IAsyncEnumerable<string> EnumTransclusionsAsync()
         {
             return EnumTransclusionsAsync(null);
@@ -425,6 +432,7 @@ namespace WikiClientLibrary.Pages
         /// Only list links to pages in these namespaces.
         /// If this is empty or <c>null</c>, all the transcluded pages will be listed.
         /// </param>
+        [Obsolete("Please use TransclusionsGenerator class or WikiPageExtensions.CreateTransclusionsGenerator extension method instead.")]
         public IAsyncEnumerable<string> EnumTransclusionsAsync(IEnumerable<int> namespaces)
         {
             return RequestHelper.EnumTransclusionsAsync(Site, Title, namespaces);
@@ -705,6 +713,11 @@ namespace WikiClientLibrary.Pages
         }
 
         #endregion
+
+        /// <summary>
+        /// Gets a initialized <see cref="WikiPageStub"/> from the current instance.
+        /// </summary>
+        public WikiPageStub ToPageStub() => new WikiPageStub(Id, Title, NamespaceId);
 
         /// <inheritdoc/>
         public override string ToString()

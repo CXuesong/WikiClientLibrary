@@ -90,8 +90,8 @@ namespace UnitTestProject1.Tests
             var pageTitles = new[] {"清", "清", "香草"};
             var rev = await Revision.FetchRevisionsAsync(site, revIds).ToList();
             ShallowTrace(rev);
-            Assert.True(rev.Select(r => r.Id).SequenceEqual(revIds));
-            Assert.True(rev.Select(r => r.Page.Title).SequenceEqual(pageTitles));
+            Assert.Equal(revIds, rev.Select(r => r.Id));
+            Assert.Equal(pageTitles, rev.Select(r => r.Page.Title));
             // Asserts that pages with the same title shares the same reference
             // Or an Exception will raise.
             var pageDict = rev.Select(r => r.Page).Distinct().ToDictionary(p => p.Title);
@@ -127,19 +127,6 @@ namespace UnitTestProject1.Tests
             var page = new WikiPage(site, "Test (Disambiguation)");
             await page.RefreshAsync();
             Assert.True(await page.IsDisambiguationAsync());
-        }
-
-        [Fact]
-        public async Task WpTestEnumPageLinksTest()
-        {
-            var site = await WpLzhSiteAsync;
-            var page = new WikiPage(site, site.SiteInfo.MainPage);
-            Output.WriteLine(page.ToString());
-            var links = await page.EnumLinksAsync().ToList();
-            ShallowTrace(links);
-            Assert.Contains("文言維基大典", links);
-            Assert.Contains("幫助:凡例", links);
-            Assert.Contains("維基大典:卓著", links);
         }
 
         [Fact]
@@ -197,7 +184,7 @@ namespace UnitTestProject1.Tests
             AssertModify();
             var site = await WpTest2SiteAsync;
             // Usually 500 is the limit for normal users.
-            var pages = new AllPagesGenerator(site) {PagingSize = 300}.EnumPages().Take(300).ToList();
+            var pages = await new AllPagesGenerator(site) {PaginationSize = 300}.EnumPagesAsync().Take(300).ToList();
             var badPage = new WikiPage(site, "Inexistent page title");
             pages.Insert(pages.Count/2, badPage);
             Output.WriteLine("Attempt to purge: ");

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
+using WikiClientLibrary.Generators.Primitive;
 using WikiClientLibrary.Pages;
 using WikiClientLibrary.Sites;
 
@@ -52,16 +53,18 @@ namespace WikiClientLibrary.Generators
         /// </summary>
         public string QueryPageName { get; set; }
 
+        /// <inheritdoc />
+        public override string ListName => "querypage";
+
         /// <inheritdoc/>
-        public override IEnumerable<KeyValuePair<string, object>> GetGeneratorParams(int actualPagingSize)
+        public override IEnumerable<KeyValuePair<string, object>> EnumListParameters()
         {
             if (string.IsNullOrWhiteSpace(QueryPageName))
                 throw new InvalidOperationException("Invalid QueryPageName.");
             return new Dictionary<string, object>
             {
-                {"generator", "querypage"},
-                {"gqppage", QueryPageName},
-                {"gqplimit", actualPagingSize}
+                {"qppage", QueryPageName},
+                {"qplimit", PaginationSize}
             };
         }
 

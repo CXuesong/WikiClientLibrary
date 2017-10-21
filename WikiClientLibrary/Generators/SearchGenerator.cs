@@ -4,6 +4,8 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Newtonsoft.Json.Linq;
+using WikiClientLibrary.Generators.Primitive;
 using WikiClientLibrary.Pages;
 using WikiClientLibrary.Sites;
 
@@ -13,7 +15,7 @@ namespace WikiClientLibrary.Generators
     /// Search titles and text.
     /// </summary>
     /// <remarks>See https://www.mediawiki.org/wiki/API:Search .</remarks>
-    public class SearchGenerator : WikiPageGenerator<WikiPage>
+    public class SearchGenerator : WikiPageGenerator<SearchResultItem, WikiPage>
     {
         private SearchableField _MatchingField = SearchableField.Text;
 
@@ -66,34 +68,42 @@ namespace WikiClientLibrary.Generators
         public string BackendName { get; set; }
 
         /// <inheritdoc />
-        public override IEnumerable<KeyValuePair<string, object>> GetGeneratorParams(int actualPagingSize)
+        public override string ListName => "search";
+
+        /// <inheritdoc />
+        public override IEnumerable<KeyValuePair<string, object>> EnumListParameters()
         {
             var dict = new Dictionary<string, object>
             {
-                {"generator", "search"},
-                {"gsrsearch", Keyword},
-                {"gsrnamespace", NamespaceIds == null ? "*" : string.Join("|", NamespaceIds)},
-                {"gsrwhat", MatchingField},
-                {"gsrlimit", actualPagingSize},
+                {"srsearch", Keyword},
+                {"srnamespace", NamespaceIds == null ? "*" : string.Join("|", NamespaceIds)},
+                {"srwhat", MatchingField},
+                {"srlimit", PaginationSize},
             };
             // Include redirect pages in the search. From 1.23 onwards, redirects are always included. (Removed in 1.23)
             if (Site.SiteInfo.Version < new Version(1, 23))
-                dict["gsrredirects"] = true;
+                dict["srredirects"] = true;
             switch (MatchingField)
             {
                 case SearchableField.Title:
-                    dict["gsrwhat"] = "title";
+                    dict["srwhat"] = "title";
                     break;
                 case SearchableField.Text:
-                    dict["gsrwhat"] = "text";
+                    dict["srwhat"] = "text";
                     break;
                 case SearchableField.NearMatch:
-                    dict["gsrwhat"] = "nearmatch";
+                    dict["srwhat"] = "nearmatch";
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();
             }
             return dict;
+        }
+
+        /// <inheritdoc />
+        protected override SearchResultItem ItemFromJson(JToken json)
+        {
+            return json.ToObject<SearchResultItem>(Utility.WikiJsonSerializer);
         }
     }
 
