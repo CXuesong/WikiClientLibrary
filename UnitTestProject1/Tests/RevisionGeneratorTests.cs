@@ -48,13 +48,14 @@ namespace UnitTestProject1.Tests
             var page = new WikiPage(site, "Page:Edit_page_for_chrome");
             var t1 = new DateTime(2014, 10, 20, 10, 0, 0, DateTimeKind.Utc);
             var t2 = new DateTime(2014, 10, 22, 10, 0, 0, DateTimeKind.Utc);
-            var gen = new RevisionGenerator(page)
+            var gen = new RevisionGenerator(page.Site, page.Title)
             {
                 TimeAscending = true,
                 StartTime = t1,
                 EndTime = t2,
+                PaginationSize = 30,
             };
-            var revisions = await gen.EnumRevisionsAsync().ToList();
+            var revisions = await gen.EnumItemsAsync().Take(50).ToList();
             Assert.True(revisions.SequenceEqual(revisions.OrderBy(r => r.TimeStamp)));
             Assert.True(revisions.First().TimeStamp >= t1);
             Assert.True(revisions.Last().TimeStamp <= t2);

@@ -36,7 +36,7 @@ namespace WikiClientLibrary.Generators.Primitive
         where TPage : WikiPage
     {
         /// <inheritdoc/>
-        internal WikiPagePropertyGenerator(WikiSite site) : base(site)
+        protected WikiPagePropertyGenerator(WikiSite site) : base(site)
         {
         }
 
@@ -62,7 +62,7 @@ namespace WikiClientLibrary.Generators.Primitive
         /// <summary>
         /// Asynchornously generate the sequence of pages.
         /// </summary>
-        public IAsyncEnumerable<TPage> EnumPagesAsync()
+        public virtual IAsyncEnumerable<TPage> EnumPagesAsync()
         {
             return EnumPagesAsync(PageQueryOptions.None);
         }

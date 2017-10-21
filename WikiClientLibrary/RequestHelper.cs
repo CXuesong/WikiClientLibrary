@@ -25,6 +25,13 @@ namespace WikiClientLibrary
     {
         #region Page/Revision query
 
+        public static string GetRvProp(PageQueryOptions options)
+        {
+            if ((options & PageQueryOptions.FetchContent) == PageQueryOptions.FetchContent)
+                return "ids|timestamp|flags|comment|user|contentmodel|sha1|tags|size|content";
+            return "ids|timestamp|flags|comment|user|contentmodel|sha1|tags|size";
+        }
+
         /// <summary>
         /// Builds common parameters for fetching a page.
         /// </summary>
@@ -37,14 +44,10 @@ namespace WikiClientLibrary
                 {"prop", "info|categoryinfo|imageinfo|revisions|pageprops"},
                 {"inprop", "protection"},
                 {"iiprop", "timestamp|user|comment|url|size|sha1"},
-                {"rvprop", "ids|timestamp|flags|comment|user|contentmodel|sha1|tags|size"},
+                {"rvprop", GetRvProp(options)},
                 {"redirects", (options & PageQueryOptions.ResolveRedirects) == PageQueryOptions.ResolveRedirects},
                 {"maxlag", 5},
             };
-            if ((options & PageQueryOptions.FetchContent) == PageQueryOptions.FetchContent)
-            {
-                queryParams["rvprop"] += "|content";
-            }
             return queryParams;
         }
 
@@ -226,37 +229,6 @@ namespace WikiClientLibrary
                     }).ToAsyncEnumerable();
                 });
             return revPartition.SelectMany(p => p);
-        }
-
-        /// <summary>
-        /// Enumerate revisions from the page.
-        /// </summary>
-        /// <remarks>Redirect resolution is disabled in this operation.</remarks>
-        public static IAsyncEnumerable<Revision> EnumRevisionsAsync(RevisionGenerator generator, PageQueryOptions options)
-        {
-            Debug.Assert(generator != null);
-            Debug.Assert(generator.Page != null);
-            Debug.Assert((options & PageQueryOptions.ResolveRedirects) != PageQueryOptions.ResolveRedirects);
-            var site = generator.Site;
-            var pa = GetPageFetchingParams(options);
-            foreach (var p in generator.GetGeneratorParams()) pa[p.Key] = p.Value;
-            var serializer = Utility.CreateWikiJsonSerializer();
-            serializer.Converters.Add(new DelegateCreationConverter<Revision>(t => new Revision(generator.Page)));
-            var resultCounter = 0;
-            return QueryWithContinuation(site, pa, null)
-                .SelectMany(jresult =>
-                {
-                    var jpage = jresult["pages"].Values().First();
-                    var revisions = (JArray)jpage?["revisions"];
-                    if (revisions != null)
-                    {
-                        resultCounter += revisions.Count;
-                        site.Logger.LogDebug("Fetching {Count} revisions from [[{Page}]].", resultCounter, generator.Page);
-                        var result = revisions.ToObject<IList<Revision>>(serializer);
-                        return result.ToAsyncEnumerable();
-                    }
-                    return AsyncEnumerable.Empty<Revision>();
-                });
         }
 
         #endregion

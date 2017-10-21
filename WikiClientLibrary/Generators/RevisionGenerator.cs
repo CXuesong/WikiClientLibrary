@@ -1,10 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Newtonsoft.Json.Linq;
 using WikiClientLibrary.Client;
+using WikiClientLibrary.Generators.Primitive;
 using WikiClientLibrary.Pages;
 using WikiClientLibrary.Sites;
 
@@ -13,56 +16,44 @@ namespace WikiClientLibrary.Generators
     /// <summary>
     /// Represents a generator (or iterator) of <see cref="Revision"/> on a specific page.
     /// </summary>
-    public class RevisionGenerator
+    public class RevisionGenerator : WikiPagePropertyGenerator<Revision, WikiPage>
     {
-        private int? _PagingSize;
 
-        public RevisionGenerator(WikiPage page)
+        /// <inheritdoc />
+        public RevisionGenerator(WikiSite site) : base(site)
         {
-            if (page == null) throw new ArgumentNullException(nameof(page));
-            Debug.Assert(page.Site != null);
-            Page = page;
-            Site = page.Site;
         }
 
-        public WikiSite Site { get; }
-
-        /// <summary>
-        /// Maximum items returned per request.
-        /// </summary>
-        /// <value>
-        /// Maximum count of items returned per request.
-        /// <c>null</c> if using the default limit.
-        /// (5000 for bots and 500 for users.)
-        /// </value>
-        /// <remarks>
-        /// If you're also requesting for the content of each page,
-        /// you might need to reduce this value to somewhere below 50,
-        /// or the content might be <c>null</c> for some retrieved pages.
-        /// </remarks>
-        public int? PagingSize
+        public RevisionGenerator(WikiSite site, string pageTitle) : base(site)
         {
-            get { return _PagingSize; }
-            set
+            PageTitle = pageTitle;
+        }
+
+        /// <inheritdoc />
+        public override string PropertyName => "revisions";
+
+        /// <inheritdoc />
+        public override IEnumerable<KeyValuePair<string, object>> EnumListParameters()
+        {
+            return new Dictionary<string, object>
             {
-                if (value < 1) throw new ArgumentOutOfRangeException(nameof(value));
-                _PagingSize = value;
-            }
+                {"rvlimit", PaginationSize},
+                {"rvdir", TimeAscending ? "newer" : "older"},
+                {"rvstart", StartTime},
+                {"rvend", EndTime},
+                {"rvstartid", StartRevisionId},
+                {"rvendid", EndRevisionId},
+                {"rvuser", UserName},
+                {"rvexcludeuser", ExcludedUserName},
+                {"rvprop", RequestHelper.GetRvProp(RevisionOptions)},
+            };
         }
 
-        /// <summary>
-        /// Gets the actual value of <see cref="PagingSize"/> used for request.
-        /// </summary>
-        /// <value>
-        /// The same of <see cref="PagingSize"/> if specified, or the default limit
-        /// (5000 for bots and 500 for users) otherwise.
-        /// </value>
-        public int ActualPagingSize => PagingSize ?? Site.ListingPagingSize;
-
-        /// <summary>
-        /// The page to query for revisions.
-        /// </summary>
-        public WikiPage Page { get; }
+        /// <inheritdoc />
+        protected override Revision ItemFromJson(JToken json, JObject jpage)
+        {
+            return json.ToObject<Revision>();
+        }
 
         /// <summary>
         /// Whether to list revisions in an ascending order of time.
@@ -105,46 +96,36 @@ namespace WikiClientLibrary.Generators
         public string ExcludedUserName { get; set; }
 
         /// <summary>
-        /// When overridden, fills generator parameters for action=query request.
+        /// Gets/sets the page query options for <see cref="WikiPagePropertyList{T}.EnumItemsAsync"/>
         /// </summary>
-        /// <returns>The dictioanry containing request value pairs, which will override the basic query parameters.</returns>
-        internal IEnumerable<KeyValuePair<string, object>> GetGeneratorParams()
+        public PageQueryOptions RevisionOptions { get; set; }
+
+        /// <inheritdoc />
+        /// <summary>Infrastructure. Not intended to be used directly in your code.
+        /// Asynchronously enumerates the pages from generator.</summary>
+        /// <remarks>
+        /// Using <c>revisions</c> as generator is not supported until MediaWiki 1.25.
+        /// Usually this generator will only returns the title specified in
+        /// <see cref="WikiPagePropertyList{T}.PageTitle"/> or <see cref="WikiPagePropertyList{T}.PageId"/>.
+        /// </remarks>
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public override IAsyncEnumerable<WikiPage> EnumPagesAsync()
         {
-            var pa = new Dictionary<string, object>
-            {
-                {"rvlimit", PagingSize},
-                {"rvdir", TimeAscending ? "newer" : "older"},
-                {"titles", Page.Title},
-                {"rvstart", StartTime},
-                {"rvend", EndTime},
-                {"rvstartid", StartRevisionId},
-                {"rvendid", EndRevisionId},
-                {"rvuser", UserName},
-                {"rvexcludeuser", ExcludedUserName},
-            };
-            return pa;
+            return base.EnumPagesAsync();
         }
 
-        /// <summary>
-        /// Asynchornously generate the sequence of revisions.
-        /// </summary>
-        public IAsyncEnumerable<Revision> EnumRevisionsAsync()
+        /// <inheritdoc />
+        /// <summary>Infrastructure. Not intended to be used directly in your code.
+        /// Asynchronously enumerates the pages from generator.</summary>
+        /// <remarks>
+        /// Using <c>revisions</c> as generator is not supported until MediaWiki 1.25.
+        /// Usually this generator will only returns the title specified in
+        /// <see cref="WikiPagePropertyList{T}.PageTitle"/> or <see cref="WikiPagePropertyList{T}.PageId"/>.
+        /// </remarks>
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public override IAsyncEnumerable<WikiPage> EnumPagesAsync(PageQueryOptions options)
         {
-            return EnumRevisionsAsync(PageQueryOptions.None);
-        }
-
-        /// <summary>
-        /// Asynchornously generate the sequence of revisions.
-        /// </summary>
-        /// <param name="options">Options when querying for the revisions. Note <see cref="PageQueryOptions.ResolveRedirects"/> will raise exception.</param>
-        /// <exception cref="ArgumentException"><see cref="PageQueryOptions.ResolveRedirects"/> is set.</exception>
-        /// <exception cref="InvalidOperationException"><see cref="WikiPage"/> is <c>null</c>.</exception>
-        public IAsyncEnumerable<Revision> EnumRevisionsAsync(PageQueryOptions options)
-        {
-            // We do not resolve redirects.
-            if ((options & PageQueryOptions.ResolveRedirects) == PageQueryOptions.ResolveRedirects)
-                throw new ArgumentException("Cannot resolve redirects when querying for revisions.", nameof(options));
-            return RequestHelper.EnumRevisionsAsync(this, options);
+            return base.EnumPagesAsync(options);
         }
     }
 }

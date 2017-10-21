@@ -362,16 +362,16 @@ namespace WikiClientLibrary.Pages
         /// <remarks>To gain full control of revision enumeration, you can use <see cref="RevisionGenerator" />.</remarks>
         public IAsyncEnumerable<Revision> EnumRevisionsAsync()
         {
-            return EnumRevisionsAsync(null);
+            return EnumRevisionsAsync(500);
         }
 
         /// <summary>
         /// Enumerates revisions of the page, descending in time, without revision content.
         /// </summary>
-        /// <param name="pagingSize">Maximum items returned per request. <c>null</c> for maximum allowed count.</param>
+        /// <param name="pagingSize">Maximum items returned per request.</param>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="pagingSize"/> is non-positive.</exception>
         /// <remarks>To gain full control of revision enumeration, you can use <see cref="RevisionGenerator" />.</remarks>
-        public IAsyncEnumerable<Revision> EnumRevisionsAsync(int? pagingSize)
+        public IAsyncEnumerable<Revision> EnumRevisionsAsync(int pagingSize)
         {
             return EnumRevisionsAsync(pagingSize, PageQueryOptions.None);
         }
@@ -379,15 +379,15 @@ namespace WikiClientLibrary.Pages
         /// <summary>
         /// Enumerates revisions of the page, descending in tim.
         /// </summary>
-        /// <param name="pagingSize">Maximum items returned per request. <c>null</c> for maximum allowed count.</param>
+        /// <param name="pagingSize">Maximum items returned per request.</param>
         /// <param name="options">Options for revision listing. Note <see cref="PageQueryOptions.ResolveRedirects"/> will raise exception.</param>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="pagingSize"/> is non-positive.</exception>
         /// <remarks>To gain full control of revision enumeration, you can use <see cref="RevisionGenerator" />.</remarks>
-        public IAsyncEnumerable<Revision> EnumRevisionsAsync(int? pagingSize, PageQueryOptions options)
+        public IAsyncEnumerable<Revision> EnumRevisionsAsync(int pagingSize, PageQueryOptions options)
         {
             if (pagingSize <= 0) throw new ArgumentOutOfRangeException(nameof(pagingSize));
-            var gen = new RevisionGenerator(this) {PagingSize = pagingSize};
-            return gen.EnumRevisionsAsync(options);
+            var gen = new RevisionGenerator(Site, Title) { PaginationSize = pagingSize};
+            return gen.EnumItemsAsync();
         }
 
         /// <summary>

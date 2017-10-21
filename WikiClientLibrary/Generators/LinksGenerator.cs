@@ -55,7 +55,7 @@ namespace WikiClientLibrary.Generators
                 {"plnamespace", NamespaceIds == null ? null : string.Join("|", NamespaceIds)},
                 {"pllimit", PaginationSize},
                 {"pltitles", MatchingTitles == null ? null : string.Join("|", MatchingTitles)},
-                {"pldir", DocumentOrderDescending ? "ascending" : "descending"}
+                {"pldir", DocumentOrderDescending ? "descending" : "ascending"}
             };
         }
     }
