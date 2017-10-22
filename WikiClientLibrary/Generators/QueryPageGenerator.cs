@@ -13,13 +13,19 @@ namespace WikiClientLibrary.Generators
     /// <summary>
     /// Get a list provided by a QueryPage-based special page. (MediaWiki 1.18)
     /// </summary>
-    /// <remarks>See https://www.mediawiki.org/wiki/API:Querypage .</remarks>
+    /// <remarks>For a list of available query pages,
+    /// See <a href="https://www.mediawiki.org/wiki/API:Querypage">mw:API:Querypage</a>.
+    /// You can also invoke <see cref="GetQueryPageNamesAsync()"/> to ask for the list in the runtime.
+    /// </remarks>
     public class QueryPageGenerator : WikiPageGenerator<WikiPage>
     {
+        /// <inheritdoc />
         public QueryPageGenerator(WikiSite site) : base(site)
         {
         }
 
+        /// <inheritdoc />
+        /// <param name="queryPageName">The name of the special page. The name is case sensitive.</param>
         public QueryPageGenerator(WikiSite site, string queryPageName) : base(site)
         {
             QueryPageName = queryPageName;
@@ -49,7 +55,7 @@ namespace WikiClientLibrary.Generators
         }
 
         /// <summary>
-        /// The name of the special page. Note, this is case sensitive.
+        /// Gets/sets the name of the special page. The name is case sensitive.
         /// </summary>
         public string QueryPageName { get; set; }
 

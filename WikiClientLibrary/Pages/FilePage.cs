@@ -24,10 +24,12 @@ namespace WikiClientLibrary.Pages
     public class FilePage : WikiPage
     {
         // Use FilePage to distinguish from System.IO.File
+        /// <inheritdoc/>
         public FilePage(WikiSite site, string title) : base(site, title, BuiltInNamespaces.File)
         {
         }
 
+        /// <inheritdoc/>
         internal FilePage(WikiSite site) : base(site)
         {
         }
@@ -55,12 +57,12 @@ namespace WikiClientLibrary.Pages
         /// </exception>
         /// <exception cref="OperationFailedException"> There's an error while uploading the file. </exception>
         /// <exception cref="TimeoutException">
-        /// Timeout specified in <see cref="WikiClientBase.Timeout"/> has been reached. Note in this
+        /// Timeout specified in <see cref="WikiClient.Timeout"/> has been reached. Note in this
         /// invocation, there will be no retries.
         /// </exception>
         /// <returns>An <see cref="UploadResult"/>.</returns>
         /// <remarks>
-        /// Upload from external source may take a while, so be sure to set a long <see cref="WikiClientBase.Timeout"/>
+        /// Upload from external source may take a while, so be sure to set a long <see cref="WikiClient.Timeout"/>
         /// in case the response from the server is delayed.
         /// </remarks>
         [Obsolete("Please use FilePage.UploadAsync instance methods instead.")]
@@ -86,10 +88,10 @@ namespace WikiClientLibrary.Pages
         /// </exception>
         /// <exception cref="UnauthorizedAccessException">You do not have the permission to upload the file.</exception>
         /// <exception cref="OperationFailedException"> There's an error while uploading the file. </exception>
-        /// <exception cref="TimeoutException">Timeout specified in <see cref="WikiClientBase.Timeout"/> has been reached.</exception>
+        /// <exception cref="TimeoutException">Timeout specified in <see cref="WikiClient.Timeout"/> has been reached.</exception>
         /// <returns>An <see cref="UploadResult"/>.</returns>
         /// <remarks>
-        /// Upload from external source may take a while, so be sure to set a long <see cref="WikiClientBase.Timeout"/>
+        /// Upload from external source may take a while, so be sure to set a long <see cref="WikiClient.Timeout"/>
         /// in case the response from the server is delayed.
         /// </remarks>
         [Obsolete("Please use FilePage.UploadAsync instance methods instead.")]
@@ -114,7 +116,7 @@ namespace WikiClientLibrary.Pages
         /// </exception>
         /// <exception cref="UnauthorizedAccessException">You do not have the permission to upload the file.</exception>
         /// <exception cref="OperationFailedException"> There's an error while uploading the file. </exception>
-        /// <exception cref="TimeoutException">Timeout specified in <see cref="WikiClientBase.Timeout"/> has been reached.</exception>
+        /// <exception cref="TimeoutException">Timeout specified in <see cref="WikiClient.Timeout"/> has been reached.</exception>
         /// <returns>An <see cref="UploadResult"/>.</returns>
         /// <remarks>
         /// You should have obtained the previous upload result via <see cref="UploadException.UploadResult"/>.
@@ -141,7 +143,7 @@ namespace WikiClientLibrary.Pages
         /// </exception>
         /// <exception cref="UnauthorizedAccessException">You do not have the permission to upload the file.</exception>
         /// <exception cref="OperationFailedException"> There's an error while uploading the file. </exception>
-        /// <exception cref="TimeoutException">Timeout specified in <see cref="WikiClientBase.Timeout"/> has been reached.</exception>
+        /// <exception cref="TimeoutException">Timeout specified in <see cref="WikiClient.Timeout"/> has been reached.</exception>
         /// <returns>An <see cref="UploadResult"/>.</returns>
         [Obsolete("Please use FilePage.UploadAsync instance methods instead.")]
         public static Task<UploadResult> UploadAsync(WikiSite site, Stream content, string title,
@@ -167,7 +169,7 @@ namespace WikiClientLibrary.Pages
         /// </exception>
         /// <exception cref="UnauthorizedAccessException">You do not have the permission to upload the file.</exception>
         /// <exception cref="OperationFailedException"> There's an general failure while uploading the file. </exception>
-        /// <exception cref="TimeoutException">Timeout specified in <see cref="WikiClientBase.Timeout"/> has been reached.</exception>
+        /// <exception cref="TimeoutException">Timeout specified in <see cref="WikiClient.Timeout"/> has been reached.</exception>
         /// <returns>An <see cref="UploadResult"/>.</returns>
         [Obsolete("Please use FilePage.UploadAsync instance methods instead.")]
         public static Task<UploadResult> UploadAsync(WikiSite site, Stream content, string title,
@@ -207,7 +209,7 @@ namespace WikiClientLibrary.Pages
         /// you will reveive this exception with <see cref="OperationFailedException.ErrorCode"/>
         /// set to <c>fileexists-no-change</c>. See https://gerrit.wikimedia.org/r/378702 .
         /// </exception>
-        /// <exception cref="TimeoutException">Timeout specified in <see cref="WikiClientBase.Timeout"/> has been reached.</exception>
+        /// <exception cref="TimeoutException">Timeout specified in <see cref="WikiClient.Timeout"/> has been reached.</exception>
         /// <returns>An <see cref="UploadResult"/>. You need to check <see cref="UploadResult.ResultCode"/> for further action.</returns>
         public async Task<UploadResult> UploadAsync(WikiUploadSource source, string comment, bool ignoreWarnings,
             AutoWatchBehavior watch, CancellationToken cancellationToken)
@@ -236,6 +238,7 @@ namespace WikiClientLibrary.Pages
             }
         }
 
+        /// <inheritdoc/>
         protected override void OnLoadPageInfo(JObject jpage)
         {
             base.OnLoadPageInfo(jpage);
@@ -252,6 +255,9 @@ namespace WikiClientLibrary.Pages
             }
         }
 
+        /// <summary>
+        /// Gets the latest file revision information.
+        /// </summary>
         public FileRevision LastFileRevision { get; private set; }
     }
 
@@ -480,6 +486,9 @@ namespace WikiClientLibrary.Pages
             Empty.MakeReadonly();
         }
 
+        /// <summary>
+        /// The file content is empty.
+        /// </summary>
         public bool IsEmptyFile => GetValueDirect("emptyfile") != null;
 
         /// <summary>

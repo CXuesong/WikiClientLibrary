@@ -19,7 +19,7 @@ namespace WikiClientLibrary.Generators
     {
         public WikiSite Site { get; }
 
-        public RecentChangeItem(WikiSite site)
+        internal RecentChangeItem(WikiSite site)
         {
             if (site == null) throw new ArgumentNullException(nameof(site));
             Site = site;

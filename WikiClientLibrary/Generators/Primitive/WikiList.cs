@@ -15,8 +15,11 @@ namespace WikiClientLibrary.Generators.Primitive
     {
 
         /// <summary>
-        /// Asynchronously enumerate all the items in the list.
+        /// Asynchronously enumerates all the items in the list.
         /// </summary>
+        /// <remarks>In most cases, the whole sequence will be very long. To take only the top <c>n</c> results
+        /// from the sequence, chain the returned <see cref="IAsyncEnumerable{T}"/> with <see cref="AsyncEnumerable.Take{TSource}"/>
+        /// extension method.</remarks>
         IAsyncEnumerable<T> EnumItemsAsync();
 
     }
@@ -24,19 +27,22 @@ namespace WikiClientLibrary.Generators.Primitive
     /// <summary>
     /// Represents a configured MediaWiki <c>list</c>. (<a href="https://www.mediawiki.org/wiki/API:Lists">mw:API:Lists</a>)
     /// </summary>
-    /// <typeparam name="T">The type of listed item.</typeparam>
+    /// <typeparam name="T">The type of listed items.</typeparam>
+    /// <seealso cref="WikiPageGenerator{TItem,TPage}"/>
+    /// <seealso cref="WikiPagePropertyList{T}"/>
     public abstract class WikiList<T> : IWikiList<T>
     {
 
         private int _PaginationSize = 10;
 
+        /// <param name="site">The MediaWiki site this instance applies to.</param>
         public WikiList(WikiSite site)
         {
             if (site == null) throw new ArgumentNullException(nameof(site));
             Site = site;
         }
 
-        /// <inheritdoc/>
+        /// <summary>Gets the MediaWiki site this instance applies to.</summary>
         public WikiSite Site { get; }
 
         /// <summary>
@@ -45,12 +51,13 @@ namespace WikiClientLibrary.Generators.Primitive
         /// <value>
         /// Maximum count of items returned per MediaWiki API invocation.
         /// This limit is 10 by default, and can be set as high as 500 for regular users,
-        /// or 5000 for users with the <c>apihighlimits</c> right (typically bots and sysops). 
+        /// or 5000 for users with the <c>apihighlimits</c> right (typically in bot or sysop group).
         /// </value>
         /// <remarks>
         /// This property decides how many items returned at most per MediaWiki API invocation.
-        /// Note that the returned enumerator of <see cref="WikiPageGenerator{T}.EnumPagesAsync()"/>
-        /// will automatically make MediaWiki API invocation to ask for the next batch of results,
+        /// Note that the enumerator returned from <see cref="EnumItemsAsync"/>
+        /// or <seealso cref="WikiPageGenerator{TItem,TPage}.EnumPagesAsync()"/>
+        /// will automatically make further MediaWiki API invocations to ask for the next batch of results,
         /// when needed.
         /// </remarks>
         public int PaginationSize

@@ -17,14 +17,12 @@ namespace WikiClientLibrary.Generators
         // We cannot decide whether generated item is a page or category,
         // so we just use the base class Page for PageGenerator<T>.
 
+        /// <inheritdoc />
         public CategoryMembersGenerator(WikiSite site) : base(site)
         {
         }
 
-        /// <summary>
-        /// Initializes the generator from the site and category title.
-        /// </summary>
-        /// <param name="site">Site instance.</param>
+        /// <inheritdoc />
         /// <param name="categoryTitle">Title of the category, with or without Category: prefix.</param>
         public CategoryMembersGenerator(WikiSite site, string categoryTitle) : base(site)
         {

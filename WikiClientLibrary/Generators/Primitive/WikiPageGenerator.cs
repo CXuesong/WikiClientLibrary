@@ -9,13 +9,17 @@ using WikiClientLibrary.Sites;
 namespace WikiClientLibrary.Generators.Primitive
 {
 
+
     public interface IWikiPageGenerator<out T> where T : WikiPage
     {
 
         /// <summary>
-        /// Asynchornously generate the sequence of pages.
+        /// Asynchornously generates the sequence of pages.
         /// </summary>
         /// <param name="options">Options when querying for the pages.</param>
+        /// <remarks>In most cases, the whole sequence will be very long. To take only the top <c>n</c> results
+        /// from the sequence, chain the returned <see cref="IAsyncEnumerable{T}"/> with <see cref="AsyncEnumerable.Take{TSource}"/>
+        /// extension method.</remarks>
         IAsyncEnumerable<T> EnumPagesAsync(PageQueryOptions options);
 
     }
@@ -25,8 +29,10 @@ namespace WikiClientLibrary.Generators.Primitive
     /// (or sequence, see <a href="https://www.mediawiki.org/wiki/API:Generator">mw:API:Generator</a>)
     /// of <see cref="WikiPage"/>.
     /// </summary>
+    /// <typeparam name="TItem">The type of listed items.</typeparam>
+    /// <typeparam name="TPage">The type of listed <see cref="WikiPage"/>.</typeparam>
     /// <remarks>
-    /// <para>For a common implementations for MediaWiki generator, prefer inheriting from
+    /// <para>For common implementations for MediaWiki generator, prefer inheriting from
     /// <see cref="WikiPageGenerator{TPage}"/>, which returns <see cref="WikiPageStub"/>
     /// for <see cref="WikiList{T}.EnumItemsAsync"/> implementation.</para>
     /// </remarks>

@@ -11,13 +11,17 @@ namespace WikiClientLibrary.Generators
     /// Generates all the pages that transclude the specified title.
     /// </summary>
     /// <seealso cref="BacklinksGenerator"/>
+    /// <seealso cref="TransclusionsGenerator"/>
     public class TranscludedInGenerator : WikiPageGenerator<WikiPage>
     {
 
+        /// <inheritdoc />
         public TranscludedInGenerator(WikiSite site) : base(site)
         {
         }
 
+        /// <inheritdoc />
+        /// <param name="targetTitle">List pages transclude this title. The title does not need to exist.</param>
         public TranscludedInGenerator(WikiSite site, string targetTitle) : base(site)
         {
             TargetTitle = targetTitle;

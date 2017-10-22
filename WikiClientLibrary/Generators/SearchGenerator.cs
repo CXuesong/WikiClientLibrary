@@ -27,6 +27,7 @@ namespace WikiClientLibrary.Generators
         }
 
         /// <inheritdoc />
+        /// <param name="keyword">Search for all page titles (or content) that have this value.</param>
         public SearchGenerator(WikiSite site, string keyword) : base(site)
         {
             Keyword = keyword;

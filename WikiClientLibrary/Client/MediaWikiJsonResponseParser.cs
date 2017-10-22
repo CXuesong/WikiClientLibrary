@@ -8,9 +8,14 @@ using WikiClientLibrary.Infrastructures;
 
 namespace WikiClientLibrary.Client
 {
+
+    /// <summary>
+    /// Parser that parses the JSON and dispatches error in the response from MediaWiki API response.
+    /// </summary>
     public class MediaWikiJsonResponseParser : WikiResponseMessageParser<JToken>
     {
 
+        /// <summary>Gets a default instance of <see cref="MediaWikiJsonResponseParser"/>.</summary>
         public static MediaWikiJsonResponseParser Default { get; } = new MediaWikiJsonResponseParser();
 
         /// <inheritdoc />
@@ -70,6 +75,14 @@ namespace WikiClientLibrary.Client
             return jroot;
         }
 
+        /// <summary>
+        /// Called when <c>error</c> node presents in the API response.
+        /// </summary>
+        /// <param name="errorCode">Error code. (<c>error.code</c>)</param>
+        /// <param name="errorMessage">Errir message. (<c>error.info</c>)</param>
+        /// <param name="errorNode">The <c>error</c> JSON node.</param>
+        /// <param name="responseNode">The JSON root of the API response.</param>
+        /// <param name="context">The response parsing context, used for initiating a retry.</param>
         protected virtual void OnApiError(string errorCode, string errorMessage, JToken errorNode, JToken responseNode,
             WikiResponseParsingContext context)
         {

@@ -48,7 +48,7 @@ namespace WikiClientLibrary.Sites
         /// <see cref="WikiSite.Extensions"/>, <see cref="WikiSite.InterwikiMap"/>,
         /// and <see cref="WikiSite.Namespaces"/>), as well as <see cref="WikiSite.AccountInfo"/>.
         /// If the value is <c>true</c>, these info will not be initialized
-        /// when calling <see cref="WikiSite.CreateAsync(WikiClient,SiteOptions)"/>, and by the
+        /// when calling <see cref="WikiSite.CreateAsync(IWikiClient,string)"/>, and by the
         /// invocation of <see cref="WikiSite.LogoutAsync"/>, user info will just be invalidated,
         /// with no further internal invocation of <see cref="WikiSite.RefreshAccountInfoAsync"/>.</para>
         /// <para>For the priviate wiki where anonymous users cannot access query API,
@@ -60,7 +60,7 @@ namespace WikiClientLibrary.Sites
         /// attempting to perform those operations.</para>
         /// <para>In order to decide whether you have already logged in into a private wiki, you can
         /// <list type="number">
-        /// <item><description>Call <see cref="WikiSite.CreateAsync(WikiClient,SiteOptions)"/>, with <see cref="ExplicitInfoRefresh"/> set to <c>true</c>.</description></item>
+        /// <item><description>Call <see cref="WikiSite.CreateAsync(IWikiClient,SiteOptions)"/>, with <see cref="ExplicitInfoRefresh"/> set to <c>true</c>.</description></item>
         /// <item><description>Call and <c>await</c> for <see cref="WikiSite.RefreshAccountInfoAsync"/>. (Do not use <see cref="WikiSite.RefreshSiteInfoAsync"/>. See the explanation below.)</description></item>
         /// <item><description>If an <see cref="UnauthorizedOperationException"/> is raised, then you should call <see cref="WikiSite.LoginAsync(string,string)"/> to login.</description></item>
         /// <item><description>Otherwise, since you've called <see cref="WikiSite.RefreshAccountInfoAsync"/>, you can directly check <see cref="AccountInfo.IsUser"/>.
