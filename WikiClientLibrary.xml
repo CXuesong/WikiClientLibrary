@@ -1286,13 +1286,8 @@
     </member>
     <member name="T:WikiClientLibrary.Client.MediaWikiJsonResponseParser">
       <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>T:WikiClientLibrary.Client.MediaWikiJsonResponseParser</parameter>
-          </include>
-        </markup>
-      </summary>
+            Parser that parses the JSON and dispatches error in the response from MediaWiki API response.
+            </summary>
     </member>
     <member name="M:WikiClientLibrary.Client.MediaWikiJsonResponseParser.#ctor">
       <summary>
@@ -1304,97 +1299,25 @@
       </summary>
     </member>
     <member name="P:WikiClientLibrary.Client.MediaWikiJsonResponseParser.Default">
-      <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>P:WikiClientLibrary.Client.MediaWikiJsonResponseParser.Default</parameter>
-          </include>
-        </markup>
-      </summary>
+      <summary>Gets a default instance of <see cref="T:WikiClientLibrary.Client.MediaWikiJsonResponseParser" />.</summary>
     </member>
     <member name="M:WikiClientLibrary.Client.MediaWikiJsonResponseParser.OnApiError(System.String,System.String,Newtonsoft.Json.Linq.JToken,Newtonsoft.Json.Linq.JToken,WikiClientLibrary.Client.WikiResponseParsingContext)">
       <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>M:WikiClientLibrary.Client.MediaWikiJsonResponseParser.OnApiError(System.String,System.String,Newtonsoft.Json.Linq.JToken,Newtonsoft.Json.Linq.JToken,WikiClientLibrary.Client.WikiResponseParsingContext)</parameter>
-          </include>
-        </markup>
-      </summary>
-      <param name="errorCode">
-        <markup>
-          <include item="SMCMissingParamTag">
-            <parameter>param</parameter>
-            <parameter>errorCode</parameter>
-            <parameter>M:WikiClientLibrary.Client.MediaWikiJsonResponseParser.OnApiError(System.String,System.String,Newtonsoft.Json.Linq.JToken,Newtonsoft.Json.Linq.JToken,WikiClientLibrary.Client.WikiResponseParsingContext)</parameter>
-          </include>
-        </markup>
-      </param>
-      <param name="errorMessage">
-        <markup>
-          <include item="SMCMissingParamTag">
-            <parameter>param</parameter>
-            <parameter>errorMessage</parameter>
-            <parameter>M:WikiClientLibrary.Client.MediaWikiJsonResponseParser.OnApiError(System.String,System.String,Newtonsoft.Json.Linq.JToken,Newtonsoft.Json.Linq.JToken,WikiClientLibrary.Client.WikiResponseParsingContext)</parameter>
-          </include>
-        </markup>
-      </param>
-      <param name="errorNode">
-        <markup>
-          <include item="SMCMissingParamTag">
-            <parameter>param</parameter>
-            <parameter>errorNode</parameter>
-            <parameter>M:WikiClientLibrary.Client.MediaWikiJsonResponseParser.OnApiError(System.String,System.String,Newtonsoft.Json.Linq.JToken,Newtonsoft.Json.Linq.JToken,WikiClientLibrary.Client.WikiResponseParsingContext)</parameter>
-          </include>
-        </markup>
-      </param>
-      <param name="responseNode">
-        <markup>
-          <include item="SMCMissingParamTag">
-            <parameter>param</parameter>
-            <parameter>responseNode</parameter>
-            <parameter>M:WikiClientLibrary.Client.MediaWikiJsonResponseParser.OnApiError(System.String,System.String,Newtonsoft.Json.Linq.JToken,Newtonsoft.Json.Linq.JToken,WikiClientLibrary.Client.WikiResponseParsingContext)</parameter>
-          </include>
-        </markup>
-      </param>
-      <param name="context">
-        <markup>
-          <include item="SMCMissingParamTag">
-            <parameter>param</parameter>
-            <parameter>context</parameter>
-            <parameter>M:WikiClientLibrary.Client.MediaWikiJsonResponseParser.OnApiError(System.String,System.String,Newtonsoft.Json.Linq.JToken,Newtonsoft.Json.Linq.JToken,WikiClientLibrary.Client.WikiResponseParsingContext)</parameter>
-          </include>
-        </markup>
-      </param>
+            Called when <c>error</c> node presents in the API response.
+            </summary>
+      <param name="errorCode">Error code. (<c>error.code</c>)</param>
+      <param name="errorMessage">Errir message. (<c>error.info</c>)</param>
+      <param name="errorNode">The <c>error</c> JSON node.</param>
+      <param name="responseNode">The JSON root of the API response.</param>
+      <param name="context">The response parsing context, used for initiating a retry.</param>
     </member>
     <member name="M:WikiClientLibrary.Client.MediaWikiJsonResponseParser.ParseResponseAsync(System.Net.Http.HttpResponseMessage,WikiClientLibrary.Client.WikiResponseParsingContext)">
       <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>M:WikiClientLibrary.Client.MediaWikiJsonResponseParser.ParseResponseAsync(System.Net.Http.HttpResponseMessage,WikiClientLibrary.Client.WikiResponseParsingContext)</parameter>
-          </include>
-        </markup>
-      </summary>
-      <param name="response">
-        <markup>
-          <include item="SMCMissingParamTag">
-            <parameter>param</parameter>
-            <parameter>response</parameter>
-            <parameter>M:WikiClientLibrary.Client.MediaWikiJsonResponseParser.ParseResponseAsync(System.Net.Http.HttpResponseMessage,WikiClientLibrary.Client.WikiResponseParsingContext)</parameter>
-          </include>
-        </markup>
-      </param>
-      <param name="context">
-        <markup>
-          <include item="SMCMissingParamTag">
-            <parameter>param</parameter>
-            <parameter>context</parameter>
-            <parameter>M:WikiClientLibrary.Client.MediaWikiJsonResponseParser.ParseResponseAsync(System.Net.Http.HttpResponseMessage,WikiClientLibrary.Client.WikiResponseParsingContext)</parameter>
-          </include>
-        </markup>
-      </param>
+            Parses the specified HTTP response message.
+            </summary>
+      <param name="response">The HTTP response message to parse.</param>
+      <param name="context">The parsing context.</param>
+      <returns>A strongly-typed object containing the desired response.</returns>
     </member>
     <member name="T:WikiClientLibrary.Client.WikiClient">
       <summary>
@@ -1607,7 +1530,7 @@
     </member>
     <member name="T:WikiClientLibrary.Client.WikiResponseMessageParser`1">
       <summary>
-            A strong-typed base class of <see cref="T:WikiClientLibrary.Client.IWikiResponseMessageParser" />.
+            A strong-typed base class for implementing <see cref="T:WikiClientLibrary.Client.IWikiResponseMessageParser" />.
             </summary>
       <typeparam name="T">The type of parsed response value.</typeparam>
     </member>
@@ -1622,31 +1545,11 @@
     </member>
     <member name="M:WikiClientLibrary.Client.WikiResponseMessageParser`1.ParseResponseAsync(System.Net.Http.HttpResponseMessage,WikiClientLibrary.Client.WikiResponseParsingContext)">
       <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>M:WikiClientLibrary.Client.WikiResponseMessageParser`1.ParseResponseAsync(System.Net.Http.HttpResponseMessage,WikiClientLibrary.Client.WikiResponseParsingContext)</parameter>
-          </include>
-        </markup>
-      </summary>
-      <param name="response">
-        <markup>
-          <include item="SMCMissingParamTag">
-            <parameter>param</parameter>
-            <parameter>response</parameter>
-            <parameter>M:WikiClientLibrary.Client.WikiResponseMessageParser`1.ParseResponseAsync(System.Net.Http.HttpResponseMessage,WikiClientLibrary.Client.WikiResponseParsingContext)</parameter>
-          </include>
-        </markup>
-      </param>
-      <param name="context">
-        <markup>
-          <include item="SMCMissingParamTag">
-            <parameter>param</parameter>
-            <parameter>context</parameter>
-            <parameter>M:WikiClientLibrary.Client.WikiResponseMessageParser`1.ParseResponseAsync(System.Net.Http.HttpResponseMessage,WikiClientLibrary.Client.WikiResponseParsingContext)</parameter>
-          </include>
-        </markup>
-      </param>
+            Parses the specified HTTP response message.
+            </summary>
+      <param name="response">The HTTP response message to parse.</param>
+      <param name="context">The parsing context.</param>
+      <returns>A strongly-typed object containing the desired response.</returns>
     </member>
     <member name="M:WikiClientLibrary.Client.WikiResponseMessageParser`1.WikiClientLibrary#Client#IWikiResponseMessageParser#ParseResponseAsync(System.Net.Http.HttpResponseMessage,WikiClientLibrary.Client.WikiResponseParsingContext)">
       <summary>
@@ -1705,15 +1608,7 @@
           </include>
         </markup>
       </summary>
-      <param name="site">
-        <markup>
-          <include item="SMCMissingParamTag">
-            <parameter>param</parameter>
-            <parameter>site</parameter>
-            <parameter>M:WikiClientLibrary.Generators.AllCategoriesGenerator.#ctor(WikiClientLibrary.Sites.WikiSite)</parameter>
-          </include>
-        </markup>
-      </param>
+      <param name="site">The MediaWiki site this instance applies to.</param>
     </member>
     <member name="P:WikiClientLibrary.Generators.AllCategoriesGenerator.EndTitle">
       <summary>
@@ -1764,15 +1659,7 @@
           </include>
         </markup>
       </summary>
-      <param name="site">
-        <markup>
-          <include item="SMCMissingParamTag">
-            <parameter>param</parameter>
-            <parameter>site</parameter>
-            <parameter>M:WikiClientLibrary.Generators.AllPagesGenerator.#ctor(WikiClientLibrary.Sites.WikiSite)</parameter>
-          </include>
-        </markup>
-      </param>
+      <param name="site">The MediaWiki site this instance applies to.</param>
     </member>
     <member name="P:WikiClientLibrary.Generators.AllPagesGenerator.EndTitle">
       <summary>
@@ -1843,15 +1730,7 @@
           </include>
         </markup>
       </summary>
-      <param name="site">
-        <markup>
-          <include item="SMCMissingParamTag">
-            <parameter>param</parameter>
-            <parameter>site</parameter>
-            <parameter>M:WikiClientLibrary.Generators.BacklinksGenerator.#ctor(WikiClientLibrary.Sites.WikiSite)</parameter>
-          </include>
-        </markup>
-      </param>
+      <param name="site">The MediaWiki site this instance applies to.</param>
     </member>
     <member name="M:WikiClientLibrary.Generators.BacklinksGenerator.#ctor(WikiClientLibrary.Sites.WikiSite,System.String)">
       <summary>
@@ -1861,20 +1740,12 @@
           </include>
         </markup>
       </summary>
+      <param name="targetTitle">List pages linking to this title. The title does not need to exist.</param>
       <param name="site">
         <markup>
           <include item="SMCMissingParamTag">
             <parameter>param</parameter>
             <parameter>site</parameter>
-            <parameter>M:WikiClientLibrary.Generators.BacklinksGenerator.#ctor(WikiClientLibrary.Sites.WikiSite,System.String)</parameter>
-          </include>
-        </markup>
-      </param>
-      <param name="targetTitle">
-        <markup>
-          <include item="SMCMissingParamTag">
-            <parameter>param</parameter>
-            <parameter>targetTitle</parameter>
             <parameter>M:WikiClientLibrary.Generators.BacklinksGenerator.#ctor(WikiClientLibrary.Sites.WikiSite,System.String)</parameter>
           </include>
         </markup>
@@ -1943,22 +1814,26 @@
           </include>
         </markup>
       </summary>
+      <param name="site">The MediaWiki site this instance applies to.</param>
+    </member>
+    <member name="M:WikiClientLibrary.Generators.CategoryMembersGenerator.#ctor(WikiClientLibrary.Sites.WikiSite,System.String)">
+      <summary>
+        <markup>
+          <include item="SMCAutoDocConstructor">
+            <parameter>WikiClientLibrary.Generators.CategoryMembersGenerator</parameter>
+          </include>
+        </markup>
+      </summary>
+      <param name="categoryTitle">Title of the category, with or without Category: prefix.</param>
       <param name="site">
         <markup>
           <include item="SMCMissingParamTag">
             <parameter>param</parameter>
             <parameter>site</parameter>
-            <parameter>M:WikiClientLibrary.Generators.CategoryMembersGenerator.#ctor(WikiClientLibrary.Sites.WikiSite)</parameter>
+            <parameter>M:WikiClientLibrary.Generators.CategoryMembersGenerator.#ctor(WikiClientLibrary.Sites.WikiSite,System.String)</parameter>
           </include>
         </markup>
       </param>
-    </member>
-    <member name="M:WikiClientLibrary.Generators.CategoryMembersGenerator.#ctor(WikiClientLibrary.Sites.WikiSite,System.String)">
-      <summary>
-            Initializes the generator from the site and category title.
-            </summary>
-      <param name="site">Site instance.</param>
-      <param name="categoryTitle">Title of the category, with or without Category: prefix.</param>
     </member>
     <member name="P:WikiClientLibrary.Generators.CategoryMembersGenerator.CategoryTitle">
       <summary>
@@ -2011,15 +1886,7 @@
           </include>
         </markup>
       </summary>
-      <param name="site">
-        <markup>
-          <include item="SMCMissingParamTag">
-            <parameter>param</parameter>
-            <parameter>site</parameter>
-            <parameter>M:WikiClientLibrary.Generators.LinksGenerator.#ctor(WikiClientLibrary.Sites.WikiSite)</parameter>
-          </include>
-        </markup>
-      </param>
+      <param name="site">The MediaWiki site this instance applies to.</param>
     </member>
     <member name="M:WikiClientLibrary.Generators.LinksGenerator.#ctor(WikiClientLibrary.Sites.WikiSite,System.String)">
       <summary>
@@ -2237,15 +2104,7 @@
           </include>
         </markup>
       </summary>
-      <param name="site">
-        <markup>
-          <include item="SMCMissingParamTag">
-            <parameter>param</parameter>
-            <parameter>site</parameter>
-            <parameter>M:WikiClientLibrary.Generators.QueryPageGenerator.#ctor(WikiClientLibrary.Sites.WikiSite)</parameter>
-          </include>
-        </markup>
-      </param>
+      <param name="site">The MediaWiki site this instance applies to.</param>
     </member>
     <member name="M:WikiClientLibrary.Generators.QueryPageGenerator.#ctor(WikiClientLibrary.Sites.WikiSite,System.String)">
       <summary>
@@ -2255,20 +2114,12 @@
           </include>
         </markup>
       </summary>
+      <param name="queryPageName">The name of the special page. The name is case sensitive.</param>
       <param name="site">
         <markup>
           <include item="SMCMissingParamTag">
             <parameter>param</parameter>
             <parameter>site</parameter>
-            <parameter>M:WikiClientLibrary.Generators.QueryPageGenerator.#ctor(WikiClientLibrary.Sites.WikiSite,System.String)</parameter>
-          </include>
-        </markup>
-      </param>
-      <param name="queryPageName">
-        <markup>
-          <include item="SMCMissingParamTag">
-            <parameter>param</parameter>
-            <parameter>queryPageName</parameter>
             <parameter>M:WikiClientLibrary.Generators.QueryPageGenerator.#ctor(WikiClientLibrary.Sites.WikiSite,System.String)</parameter>
           </include>
         </markup>
@@ -2302,7 +2153,7 @@
     </member>
     <member name="P:WikiClientLibrary.Generators.QueryPageGenerator.QueryPageName">
       <summary>
-            The name of the special page. Note, this is case sensitive.
+            Gets/sets the name of the special page. The name is case sensitive.
             </summary>
     </member>
     <member name="M:WikiClientLibrary.Generators.QueryPageGenerator.ToString">
@@ -2319,24 +2170,6 @@
       <summary>
             Represents an item in RecentChanges list.
             </summary>
-    </member>
-    <member name="M:WikiClientLibrary.Generators.RecentChangeItem.#ctor(WikiClientLibrary.Sites.WikiSite)">
-      <summary>
-        <markup>
-          <include item="SMCAutoDocConstructor">
-            <parameter>WikiClientLibrary.Generators.RecentChangeItem</parameter>
-          </include>
-        </markup>
-      </summary>
-      <param name="site">
-        <markup>
-          <include item="SMCMissingParamTag">
-            <parameter>param</parameter>
-            <parameter>site</parameter>
-            <parameter>M:WikiClientLibrary.Generators.RecentChangeItem.#ctor(WikiClientLibrary.Sites.WikiSite)</parameter>
-          </include>
-        </markup>
-      </param>
     </member>
     <member name="P:WikiClientLibrary.Generators.RecentChangeItem.Comment">
       <summary>
@@ -2635,7 +2468,7 @@
     </member>
     <member name="T:WikiClientLibrary.Generators.RecentChangesGenerator">
       <summary>
-            Get all recent changes to the wiki, à la Special:Recentchanges.
+            Generates all recent changes to the wiki, à la Special:Recentchanges.
             </summary>
     </member>
     <member name="M:WikiClientLibrary.Generators.RecentChangesGenerator.#ctor(WikiClientLibrary.Sites.WikiSite)">
@@ -2646,15 +2479,7 @@
           </include>
         </markup>
       </summary>
-      <param name="site">
-        <markup>
-          <include item="SMCMissingParamTag">
-            <parameter>param</parameter>
-            <parameter>site</parameter>
-            <parameter>M:WikiClientLibrary.Generators.RecentChangesGenerator.#ctor(WikiClientLibrary.Sites.WikiSite)</parameter>
-          </include>
-        </markup>
-      </param>
+      <param name="site">The MediaWiki site this instance applies to.</param>
     </member>
     <member name="P:WikiClientLibrary.Generators.RecentChangesGenerator.AnonymousFilter">
       <summary>
@@ -2793,7 +2618,7 @@
     </member>
     <member name="T:WikiClientLibrary.Generators.RevisionsGenerator">
       <summary>
-            Represents a generator (or iterator) of <see cref="T:WikiClientLibrary.Pages.Revision" /> on a specific page.
+            Represents a generator (or iterator) of <see cref="T:WikiClientLibrary.Pages.Revision" />s on a specific page.
             </summary>
     </member>
     <member name="M:WikiClientLibrary.Generators.RevisionsGenerator.#ctor(WikiClientLibrary.Sites.WikiSite)">
@@ -2804,15 +2629,7 @@
           </include>
         </markup>
       </summary>
-      <param name="site">
-        <markup>
-          <include item="SMCMissingParamTag">
-            <parameter>param</parameter>
-            <parameter>site</parameter>
-            <parameter>M:WikiClientLibrary.Generators.RevisionsGenerator.#ctor(WikiClientLibrary.Sites.WikiSite)</parameter>
-          </include>
-        </markup>
-      </param>
+      <param name="site">The MediaWiki site this instance applies to.</param>
     </member>
     <member name="M:WikiClientLibrary.Generators.RevisionsGenerator.#ctor(WikiClientLibrary.Sites.WikiSite,System.String)">
       <summary>
@@ -2822,20 +2639,12 @@
           </include>
         </markup>
       </summary>
+      <param name="pageTitle">Title of the page from which to generate revisions.</param>
       <param name="site">
         <markup>
           <include item="SMCMissingParamTag">
             <parameter>param</parameter>
             <parameter>site</parameter>
-            <parameter>M:WikiClientLibrary.Generators.RevisionsGenerator.#ctor(WikiClientLibrary.Sites.WikiSite,System.String)</parameter>
-          </include>
-        </markup>
-      </param>
-      <param name="pageTitle">
-        <markup>
-          <include item="SMCMissingParamTag">
-            <parameter>param</parameter>
-            <parameter>pageTitle</parameter>
             <parameter>M:WikiClientLibrary.Generators.RevisionsGenerator.#ctor(WikiClientLibrary.Sites.WikiSite,System.String)</parameter>
           </include>
         </markup>
@@ -2960,15 +2769,7 @@
           </include>
         </markup>
       </summary>
-      <param name="site">
-        <markup>
-          <include item="SMCMissingParamTag">
-            <parameter>param</parameter>
-            <parameter>site</parameter>
-            <parameter>M:WikiClientLibrary.Generators.SearchGenerator.#ctor(WikiClientLibrary.Sites.WikiSite)</parameter>
-          </include>
-        </markup>
-      </param>
+      <param name="site">The MediaWiki site this instance applies to.</param>
     </member>
     <member name="M:WikiClientLibrary.Generators.SearchGenerator.#ctor(WikiClientLibrary.Sites.WikiSite,System.String)">
       <summary>
@@ -2978,20 +2779,12 @@
           </include>
         </markup>
       </summary>
+      <param name="keyword">Search for all page titles (or content) that have this value.</param>
       <param name="site">
         <markup>
           <include item="SMCMissingParamTag">
             <parameter>param</parameter>
             <parameter>site</parameter>
-            <parameter>M:WikiClientLibrary.Generators.SearchGenerator.#ctor(WikiClientLibrary.Sites.WikiSite,System.String)</parameter>
-          </include>
-        </markup>
-      </param>
-      <param name="keyword">
-        <markup>
-          <include item="SMCMissingParamTag">
-            <parameter>param</parameter>
-            <parameter>keyword</parameter>
             <parameter>M:WikiClientLibrary.Generators.SearchGenerator.#ctor(WikiClientLibrary.Sites.WikiSite,System.String)</parameter>
           </include>
         </markup>
@@ -3112,15 +2905,7 @@
           </include>
         </markup>
       </summary>
-      <param name="site">
-        <markup>
-          <include item="SMCMissingParamTag">
-            <parameter>param</parameter>
-            <parameter>site</parameter>
-            <parameter>M:WikiClientLibrary.Generators.TranscludedInGenerator.#ctor(WikiClientLibrary.Sites.WikiSite)</parameter>
-          </include>
-        </markup>
-      </param>
+      <param name="site">The MediaWiki site this instance applies to.</param>
     </member>
     <member name="M:WikiClientLibrary.Generators.TranscludedInGenerator.#ctor(WikiClientLibrary.Sites.WikiSite,System.String)">
       <summary>
@@ -3130,20 +2915,12 @@
           </include>
         </markup>
       </summary>
+      <param name="targetTitle">List pages transclude this title. The title does not need to exist.</param>
       <param name="site">
         <markup>
           <include item="SMCMissingParamTag">
             <parameter>param</parameter>
             <parameter>site</parameter>
-            <parameter>M:WikiClientLibrary.Generators.TranscludedInGenerator.#ctor(WikiClientLibrary.Sites.WikiSite,System.String)</parameter>
-          </include>
-        </markup>
-      </param>
-      <param name="targetTitle">
-        <markup>
-          <include item="SMCMissingParamTag">
-            <parameter>param</parameter>
-            <parameter>targetTitle</parameter>
             <parameter>M:WikiClientLibrary.Generators.TranscludedInGenerator.#ctor(WikiClientLibrary.Sites.WikiSite,System.String)</parameter>
           </include>
         </markup>
@@ -3189,15 +2966,7 @@
           </include>
         </markup>
       </summary>
-      <param name="site">
-        <markup>
-          <include item="SMCMissingParamTag">
-            <parameter>param</parameter>
-            <parameter>site</parameter>
-            <parameter>M:WikiClientLibrary.Generators.TransclusionsGenerator.#ctor(WikiClientLibrary.Sites.WikiSite)</parameter>
-          </include>
-        </markup>
-      </param>
+      <param name="site">The MediaWiki site this instance applies to.</param>
     </member>
     <member name="M:WikiClientLibrary.Generators.TransclusionsGenerator.#ctor(WikiClientLibrary.Sites.WikiSite,System.String)">
       <summary>
@@ -3329,7 +3098,7 @@
     </member>
     <member name="M:WikiClientLibrary.Generators.Primitive.IWikiList`1.EnumItemsAsync">
       <summary>
-            Asynchronously enumerate all the items in the list.
+            Asynchronously enumerates all the items in the list.
             </summary>
     </member>
     <member name="T:WikiClientLibrary.Generators.Primitive.IWikiPageGenerator`1">
@@ -3374,7 +3143,7 @@
       <summary>
             Represents a configured MediaWiki <c>list</c>. (<a href="https://www.mediawiki.org/wiki/API:Lists">mw:API:Lists</a>)
             </summary>
-      <typeparam name="T">The type of listed item.</typeparam>
+      <typeparam name="T">The type of listed items.</typeparam>
     </member>
     <member name="M:WikiClientLibrary.Generators.Primitive.WikiList`1.#ctor(WikiClientLibrary.Sites.WikiSite)">
       <summary>
@@ -3384,19 +3153,11 @@
           </include>
         </markup>
       </summary>
-      <param name="site">
-        <markup>
-          <include item="SMCMissingParamTag">
-            <parameter>param</parameter>
-            <parameter>site</parameter>
-            <parameter>M:WikiClientLibrary.Generators.Primitive.WikiList`1.#ctor(WikiClientLibrary.Sites.WikiSite)</parameter>
-          </include>
-        </markup>
-      </param>
+      <param name="site">The MediaWiki site this instance applies to.</param>
     </member>
     <member name="M:WikiClientLibrary.Generators.Primitive.WikiList`1.EnumItemsAsync">
       <summary>
-            Asynchronously enumerate all the items in the list.
+            Asynchronously enumerates all the items in the list.
             </summary>
     </member>
     <member name="M:WikiClientLibrary.Generators.Primitive.WikiList`1.EnumListParameters">
@@ -3423,14 +3184,7 @@
             </summary>
     </member>
     <member name="P:WikiClientLibrary.Generators.Primitive.WikiList`1.Site">
-      <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>P:WikiClientLibrary.Generators.Primitive.WikiList`1.Site</parameter>
-          </include>
-        </markup>
-      </summary>
+      <summary>Gets the MediaWiki site this instance applies to.</summary>
     </member>
     <member name="T:WikiClientLibrary.Generators.Primitive.WikiPageGenerator`1">
       <summary>
@@ -3455,15 +3209,7 @@
           </include>
         </markup>
       </summary>
-      <param name="site">
-        <markup>
-          <include item="SMCMissingParamTag">
-            <parameter>param</parameter>
-            <parameter>site</parameter>
-            <parameter>M:WikiClientLibrary.Generators.Primitive.WikiPageGenerator`1.#ctor(WikiClientLibrary.Sites.WikiSite)</parameter>
-          </include>
-        </markup>
-      </param>
+      <param name="site">The MediaWiki site this instance applies to.</param>
     </member>
     <member name="M:WikiClientLibrary.Generators.Primitive.WikiPageGenerator`1.ItemFromJson(Newtonsoft.Json.Linq.JToken)">
       <summary>
@@ -3478,24 +3224,8 @@
             (or sequence, see <a href="https://www.mediawiki.org/wiki/API:Generator">mw:API:Generator</a>)
             of <see cref="T:WikiClientLibrary.Pages.WikiPage" />.
             </summary>
-      <typeparam name="TItem">
-        <markup>
-          <include item="SMCMissingParamTag">
-            <parameter>typeparam</parameter>
-            <parameter>TItem</parameter>
-            <parameter>T:WikiClientLibrary.Generators.Primitive.WikiPageGenerator`2</parameter>
-          </include>
-        </markup>
-      </typeparam>
-      <typeparam name="TPage">
-        <markup>
-          <include item="SMCMissingParamTag">
-            <parameter>typeparam</parameter>
-            <parameter>TPage</parameter>
-            <parameter>T:WikiClientLibrary.Generators.Primitive.WikiPageGenerator`2</parameter>
-          </include>
-        </markup>
-      </typeparam>
+      <typeparam name="TItem">The type of listed items.</typeparam>
+      <typeparam name="TPage">The type of listed <see cref="T:WikiClientLibrary.Pages.WikiPage" />.</typeparam>
     </member>
     <member name="M:WikiClientLibrary.Generators.Primitive.WikiPageGenerator`2.#ctor(WikiClientLibrary.Sites.WikiSite)">
       <summary>
@@ -3505,15 +3235,7 @@
           </include>
         </markup>
       </summary>
-      <param name="site">
-        <markup>
-          <include item="SMCMissingParamTag">
-            <parameter>param</parameter>
-            <parameter>site</parameter>
-            <parameter>M:WikiClientLibrary.Generators.Primitive.WikiPageGenerator`2.#ctor(WikiClientLibrary.Sites.WikiSite)</parameter>
-          </include>
-        </markup>
-      </param>
+      <param name="site">The MediaWiki site this instance applies to.</param>
     </member>
     <member name="P:WikiClientLibrary.Generators.Primitive.WikiPageGenerator`2.DistinctGeneratedPages">
       <summary>
@@ -3579,15 +3301,7 @@
           </include>
         </markup>
       </summary>
-      <param name="site">
-        <markup>
-          <include item="SMCMissingParamTag">
-            <parameter>param</parameter>
-            <parameter>site</parameter>
-            <parameter>M:WikiClientLibrary.Generators.Primitive.WikiPagePropertyGenerator`1.#ctor(WikiClientLibrary.Sites.WikiSite)</parameter>
-          </include>
-        </markup>
-      </param>
+      <param name="site">The MediaWiki site this instance applies to.</param>
     </member>
     <member name="M:WikiClientLibrary.Generators.Primitive.WikiPagePropertyGenerator`1.ItemFromJson(Newtonsoft.Json.Linq.JToken,Newtonsoft.Json.Linq.JObject)">
       <summary>
@@ -3603,24 +3317,8 @@
             (or sequence, see <a href="https://www.mediawiki.org/wiki/API:Generator">mw:API:Generator</a>)
             of <see cref="T:WikiClientLibrary.Pages.WikiPage" />.
             </summary>
-      <typeparam name="TItem">
-        <markup>
-          <include item="SMCMissingParamTag">
-            <parameter>typeparam</parameter>
-            <parameter>TItem</parameter>
-            <parameter>T:WikiClientLibrary.Generators.Primitive.WikiPagePropertyGenerator`2</parameter>
-          </include>
-        </markup>
-      </typeparam>
-      <typeparam name="TPage">
-        <markup>
-          <include item="SMCMissingParamTag">
-            <parameter>typeparam</parameter>
-            <parameter>TPage</parameter>
-            <parameter>T:WikiClientLibrary.Generators.Primitive.WikiPagePropertyGenerator`2</parameter>
-          </include>
-        </markup>
-      </typeparam>
+      <typeparam name="TItem">The type of listed items.</typeparam>
+      <typeparam name="TPage">The type of listed <see cref="T:WikiClientLibrary.Pages.WikiPage" />.</typeparam>
     </member>
     <member name="M:WikiClientLibrary.Generators.Primitive.WikiPagePropertyGenerator`2.#ctor(WikiClientLibrary.Sites.WikiSite)">
       <summary>
@@ -3630,15 +3328,7 @@
           </include>
         </markup>
       </summary>
-      <param name="site">
-        <markup>
-          <include item="SMCMissingParamTag">
-            <parameter>param</parameter>
-            <parameter>site</parameter>
-            <parameter>M:WikiClientLibrary.Generators.Primitive.WikiPagePropertyGenerator`2.#ctor(WikiClientLibrary.Sites.WikiSite)</parameter>
-          </include>
-        </markup>
-      </param>
+      <param name="site">The MediaWiki site this instance applies to.</param>
     </member>
     <member name="P:WikiClientLibrary.Generators.Primitive.WikiPagePropertyGenerator`2.DistinctGeneratedPages">
       <summary>
@@ -3700,19 +3390,11 @@
           </include>
         </markup>
       </summary>
-      <param name="site">
-        <markup>
-          <include item="SMCMissingParamTag">
-            <parameter>param</parameter>
-            <parameter>site</parameter>
-            <parameter>M:WikiClientLibrary.Generators.Primitive.WikiPagePropertyList`1.#ctor(WikiClientLibrary.Sites.WikiSite)</parameter>
-          </include>
-        </markup>
-      </param>
+      <param name="site">The MediaWiki site this instance applies to.</param>
     </member>
     <member name="M:WikiClientLibrary.Generators.Primitive.WikiPagePropertyList`1.EnumItemsAsync">
       <summary>
-            Asynchronously enumerate all the items in the list.
+            Asynchronously enumerates all the items in the list.
             </summary>
     </member>
     <member name="M:WikiClientLibrary.Generators.Primitive.WikiPagePropertyList`1.EnumListParameters">
@@ -3750,9 +3432,7 @@
             </summary>
     </member>
     <member name="P:WikiClientLibrary.Generators.Primitive.WikiPagePropertyList`1.Site">
-      <summary>
-            Gets the MediaWiki site where the requests should be performed.
-            </summary>
+      <summary>Gets the MediaWiki site this instance applies to.</summary>
     </member>
     <member name="M:WikiClientLibrary.Generators.Primitive.WikiPagePropertyList`1.ToString">
       <summary>
@@ -5124,13 +4804,8 @@
     </member>
     <member name="P:WikiClientLibrary.Pages.FilePage.LastFileRevision">
       <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>P:WikiClientLibrary.Pages.FilePage.LastFileRevision</parameter>
-          </include>
-        </markup>
-      </summary>
+            Gets the latest file revision information.
+            </summary>
     </member>
     <member name="M:WikiClientLibrary.Pages.FilePage.OnLoadPageInfo(Newtonsoft.Json.Linq.JObject)">
       <summary>
@@ -5170,7 +4845,7 @@
             you will reveive this exception with <see cref="P:WikiClientLibrary.OperationFailedException.ErrorCode" />
             set to <c>fileexists-no-change</c>. See https://gerrit.wikimedia.org/r/378702 .
             </exception>
-      <exception cref="T:System.TimeoutException">Timeout specified in <see cref="!:WikiClientBase.Timeout" /> has been reached.</exception>
+      <exception cref="T:System.TimeoutException">Timeout specified in <see cref="P:WikiClientLibrary.Client.WikiClient.Timeout" /> has been reached.</exception>
     </member>
     <member name="M:WikiClientLibrary.Pages.FilePage.UploadAsync(WikiClientLibrary.Pages.WikiUploadSource,System.String,System.Boolean,WikiClientLibrary.Pages.AutoWatchBehavior)">
       <summary>
@@ -5191,7 +4866,7 @@
             you will reveive this exception with <see cref="P:WikiClientLibrary.OperationFailedException.ErrorCode" />
             set to <c>fileexists-no-change</c>. See https://gerrit.wikimedia.org/r/378702 .
             </exception>
-      <exception cref="T:System.TimeoutException">Timeout specified in <see cref="!:WikiClientBase.Timeout" /> has been reached.</exception>
+      <exception cref="T:System.TimeoutException">Timeout specified in <see cref="P:WikiClientLibrary.Client.WikiClient.Timeout" /> has been reached.</exception>
     </member>
     <member name="M:WikiClientLibrary.Pages.FilePage.UploadAsync(WikiClientLibrary.Pages.WikiUploadSource,System.String,System.Boolean,WikiClientLibrary.Pages.AutoWatchBehavior,System.Threading.CancellationToken)">
       <summary>
@@ -5212,7 +4887,7 @@
             you will reveive this exception with <see cref="P:WikiClientLibrary.OperationFailedException.ErrorCode" />
             set to <c>fileexists-no-change</c>. See https://gerrit.wikimedia.org/r/378702 .
             </exception>
-      <exception cref="T:System.TimeoutException">Timeout specified in <see cref="!:WikiClientBase.Timeout" /> has been reached.</exception>
+      <exception cref="T:System.TimeoutException">Timeout specified in <see cref="P:WikiClientLibrary.Client.WikiClient.Timeout" /> has been reached.</exception>
     </member>
     <member name="M:WikiClientLibrary.Pages.FilePage.UploadAsync(WikiClientLibrary.Sites.WikiSite,System.IO.Stream,System.String,System.String,System.Boolean)">
       <summary>
@@ -5230,7 +4905,7 @@
             </exception>
       <exception cref="T:System.UnauthorizedAccessException">You do not have the permission to upload the file.</exception>
       <exception cref="T:WikiClientLibrary.OperationFailedException"> There's an error while uploading the file. </exception>
-      <exception cref="T:System.TimeoutException">Timeout specified in <see cref="!:WikiClientBase.Timeout" /> has been reached.</exception>
+      <exception cref="T:System.TimeoutException">Timeout specified in <see cref="P:WikiClientLibrary.Client.WikiClient.Timeout" /> has been reached.</exception>
     </member>
     <member name="M:WikiClientLibrary.Pages.FilePage.UploadAsync(WikiClientLibrary.Sites.WikiSite,System.IO.Stream,System.String,System.String,System.Boolean,WikiClientLibrary.Pages.AutoWatchBehavior,System.Threading.CancellationToken)">
       <summary>
@@ -5250,7 +4925,7 @@
             </exception>
       <exception cref="T:System.UnauthorizedAccessException">You do not have the permission to upload the file.</exception>
       <exception cref="T:WikiClientLibrary.OperationFailedException"> There's an general failure while uploading the file. </exception>
-      <exception cref="T:System.TimeoutException">Timeout specified in <see cref="!:WikiClientBase.Timeout" /> has been reached.</exception>
+      <exception cref="T:System.TimeoutException">Timeout specified in <see cref="P:WikiClientLibrary.Client.WikiClient.Timeout" /> has been reached.</exception>
     </member>
     <member name="M:WikiClientLibrary.Pages.FilePage.UploadAsync(WikiClientLibrary.Sites.WikiSite,System.String,System.String,System.String,System.Boolean)">
       <summary>
@@ -5268,7 +4943,7 @@
             </exception>
       <exception cref="T:WikiClientLibrary.OperationFailedException"> There's an error while uploading the file. </exception>
       <exception cref="T:System.TimeoutException">
-            Timeout specified in <see cref="!:WikiClientBase.Timeout" /> has been reached. Note in this
+            Timeout specified in <see cref="P:WikiClientLibrary.Client.WikiClient.Timeout" /> has been reached. Note in this
             invocation, there will be no retries.
             </exception>
     </member>
@@ -5289,7 +4964,7 @@
             </exception>
       <exception cref="T:System.UnauthorizedAccessException">You do not have the permission to upload the file.</exception>
       <exception cref="T:WikiClientLibrary.OperationFailedException"> There's an error while uploading the file. </exception>
-      <exception cref="T:System.TimeoutException">Timeout specified in <see cref="!:WikiClientBase.Timeout" /> has been reached.</exception>
+      <exception cref="T:System.TimeoutException">Timeout specified in <see cref="P:WikiClientLibrary.Client.WikiClient.Timeout" /> has been reached.</exception>
     </member>
     <member name="M:WikiClientLibrary.Pages.FilePage.UploadAsync(WikiClientLibrary.Sites.WikiSite,WikiClientLibrary.Pages.UploadResult,System.String,System.String,System.Boolean)">
       <summary>
@@ -5307,7 +4982,7 @@
             </exception>
       <exception cref="T:System.UnauthorizedAccessException">You do not have the permission to upload the file.</exception>
       <exception cref="T:WikiClientLibrary.OperationFailedException"> There's an error while uploading the file. </exception>
-      <exception cref="T:System.TimeoutException">Timeout specified in <see cref="!:WikiClientBase.Timeout" /> has been reached.</exception>
+      <exception cref="T:System.TimeoutException">Timeout specified in <see cref="P:WikiClientLibrary.Client.WikiClient.Timeout" /> has been reached.</exception>
     </member>
     <member name="T:WikiClientLibrary.Pages.FileRevision">
       <summary>
@@ -6057,13 +5732,8 @@
     </member>
     <member name="P:WikiClientLibrary.Pages.UploadWarningCollection.IsEmptyFile">
       <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>P:WikiClientLibrary.Pages.UploadWarningCollection.IsEmptyFile</parameter>
-          </include>
-        </markup>
-      </summary>
+            The file content is empty.
+            </summary>
     </member>
     <member name="P:WikiClientLibrary.Pages.UploadWarningCollection.IsUnwantedType">
       <summary>
@@ -6714,15 +6384,11 @@
             Submits content contained in <see cref="P:WikiClientLibrary.Pages.WikiPage.Content" />, making edit to the page.
             (MediaWiki 1.16)
             </summary>
-      <param name="summary">
-        <markup>
-          <include item="SMCMissingParamTag">
-            <parameter>param</parameter>
-            <parameter>summary</parameter>
-            <parameter>M:WikiClientLibrary.Pages.WikiPage.UpdateContentAsync(System.String)</parameter>
-          </include>
-        </markup>
-      </param>
+      <param name="summary">The edit summary. Leave it blank to use the default edit summary.</param>
+      <param name="minor">Whether the edit is a minor edit. (See <a href="https://meta.wikimedia.org/wiki/Help:Minor_edit">m:Help:Minor Edit</a>)</param>
+      <param name="bot">Whether to mark the edit as bot; even if you are using a bot account the edits will not be marked unless you set this flag.</param>
+      <param name="watch">Specify how the watchlist is affected by this edit.</param>
+      <param name="cancellationToken">A token used to cancel the operation.</param>
       <returns>
         <c>true</c> if page content has been changed; <c>false</c> otherwise.</returns>
       <exception cref="T:System.InvalidOperationException">Cannot create actual page in the specified namespace.</exception>
@@ -6734,24 +6400,11 @@
             Submits content contained in <see cref="P:WikiClientLibrary.Pages.WikiPage.Content" />, making edit to the page.
             (MediaWiki 1.16)
             </summary>
-      <param name="summary">
-        <markup>
-          <include item="SMCMissingParamTag">
-            <parameter>param</parameter>
-            <parameter>summary</parameter>
-            <parameter>M:WikiClientLibrary.Pages.WikiPage.UpdateContentAsync(System.String,System.Boolean)</parameter>
-          </include>
-        </markup>
-      </param>
-      <param name="minor">
-        <markup>
-          <include item="SMCMissingParamTag">
-            <parameter>param</parameter>
-            <parameter>minor</parameter>
-            <parameter>M:WikiClientLibrary.Pages.WikiPage.UpdateContentAsync(System.String,System.Boolean)</parameter>
-          </include>
-        </markup>
-      </param>
+      <param name="summary">The edit summary. Leave it blank to use the default edit summary.</param>
+      <param name="minor">Whether the edit is a minor edit. (See <a href="https://meta.wikimedia.org/wiki/Help:Minor_edit">m:Help:Minor Edit</a>)</param>
+      <param name="bot">Whether to mark the edit as bot; even if you are using a bot account the edits will not be marked unless you set this flag.</param>
+      <param name="watch">Specify how the watchlist is affected by this edit.</param>
+      <param name="cancellationToken">A token used to cancel the operation.</param>
       <returns>
         <c>true</c> if page content has been changed; <c>false</c> otherwise.</returns>
       <exception cref="T:System.InvalidOperationException">Cannot create actual page in the specified namespace.</exception>
@@ -6763,33 +6416,11 @@
             Submits content contained in <see cref="P:WikiClientLibrary.Pages.WikiPage.Content" />, making edit to the page.
             (MediaWiki 1.16)
             </summary>
-      <param name="summary">
-        <markup>
-          <include item="SMCMissingParamTag">
-            <parameter>param</parameter>
-            <parameter>summary</parameter>
-            <parameter>M:WikiClientLibrary.Pages.WikiPage.UpdateContentAsync(System.String,System.Boolean,System.Boolean)</parameter>
-          </include>
-        </markup>
-      </param>
-      <param name="minor">
-        <markup>
-          <include item="SMCMissingParamTag">
-            <parameter>param</parameter>
-            <parameter>minor</parameter>
-            <parameter>M:WikiClientLibrary.Pages.WikiPage.UpdateContentAsync(System.String,System.Boolean,System.Boolean)</parameter>
-          </include>
-        </markup>
-      </param>
-      <param name="bot">
-        <markup>
-          <include item="SMCMissingParamTag">
-            <parameter>param</parameter>
-            <parameter>bot</parameter>
-            <parameter>M:WikiClientLibrary.Pages.WikiPage.UpdateContentAsync(System.String,System.Boolean,System.Boolean)</parameter>
-          </include>
-        </markup>
-      </param>
+      <param name="summary">The edit summary. Leave it blank to use the default edit summary.</param>
+      <param name="minor">Whether the edit is a minor edit. (See <a href="https://meta.wikimedia.org/wiki/Help:Minor_edit">m:Help:Minor Edit</a>)</param>
+      <param name="bot">Whether to mark the edit as bot; even if you are using a bot account the edits will not be marked unless you set this flag.</param>
+      <param name="watch">Specify how the watchlist is affected by this edit.</param>
+      <param name="cancellationToken">A token used to cancel the operation.</param>
       <returns>
         <c>true</c> if page content has been changed; <c>false</c> otherwise.</returns>
       <exception cref="T:System.InvalidOperationException">Cannot create actual page in the specified namespace.</exception>
@@ -6801,42 +6432,11 @@
             Submits content contained in <see cref="P:WikiClientLibrary.Pages.WikiPage.Content" />, making edit to the page.
             (MediaWiki 1.16)
             </summary>
-      <param name="summary">
-        <markup>
-          <include item="SMCMissingParamTag">
-            <parameter>param</parameter>
-            <parameter>summary</parameter>
-            <parameter>M:WikiClientLibrary.Pages.WikiPage.UpdateContentAsync(System.String,System.Boolean,System.Boolean,WikiClientLibrary.Pages.AutoWatchBehavior)</parameter>
-          </include>
-        </markup>
-      </param>
-      <param name="minor">
-        <markup>
-          <include item="SMCMissingParamTag">
-            <parameter>param</parameter>
-            <parameter>minor</parameter>
-            <parameter>M:WikiClientLibrary.Pages.WikiPage.UpdateContentAsync(System.String,System.Boolean,System.Boolean,WikiClientLibrary.Pages.AutoWatchBehavior)</parameter>
-          </include>
-        </markup>
-      </param>
-      <param name="bot">
-        <markup>
-          <include item="SMCMissingParamTag">
-            <parameter>param</parameter>
-            <parameter>bot</parameter>
-            <parameter>M:WikiClientLibrary.Pages.WikiPage.UpdateContentAsync(System.String,System.Boolean,System.Boolean,WikiClientLibrary.Pages.AutoWatchBehavior)</parameter>
-          </include>
-        </markup>
-      </param>
-      <param name="watch">
-        <markup>
-          <include item="SMCMissingParamTag">
-            <parameter>param</parameter>
-            <parameter>watch</parameter>
-            <parameter>M:WikiClientLibrary.Pages.WikiPage.UpdateContentAsync(System.String,System.Boolean,System.Boolean,WikiClientLibrary.Pages.AutoWatchBehavior)</parameter>
-          </include>
-        </markup>
-      </param>
+      <param name="summary">The edit summary. Leave it blank to use the default edit summary.</param>
+      <param name="minor">Whether the edit is a minor edit. (See <a href="https://meta.wikimedia.org/wiki/Help:Minor_edit">m:Help:Minor Edit</a>)</param>
+      <param name="bot">Whether to mark the edit as bot; even if you are using a bot account the edits will not be marked unless you set this flag.</param>
+      <param name="watch">Specify how the watchlist is affected by this edit.</param>
+      <param name="cancellationToken">A token used to cancel the operation.</param>
       <returns>
         <c>true</c> if page content has been changed; <c>false</c> otherwise.</returns>
       <exception cref="T:System.InvalidOperationException">Cannot create actual page in the specified namespace.</exception>
@@ -6848,51 +6448,11 @@
             Submits content contained in <see cref="P:WikiClientLibrary.Pages.WikiPage.Content" />, making edit to the page.
             (MediaWiki 1.16)
             </summary>
-      <param name="summary">
-        <markup>
-          <include item="SMCMissingParamTag">
-            <parameter>param</parameter>
-            <parameter>summary</parameter>
-            <parameter>M:WikiClientLibrary.Pages.WikiPage.UpdateContentAsync(System.String,System.Boolean,System.Boolean,WikiClientLibrary.Pages.AutoWatchBehavior,System.Threading.CancellationToken)</parameter>
-          </include>
-        </markup>
-      </param>
-      <param name="minor">
-        <markup>
-          <include item="SMCMissingParamTag">
-            <parameter>param</parameter>
-            <parameter>minor</parameter>
-            <parameter>M:WikiClientLibrary.Pages.WikiPage.UpdateContentAsync(System.String,System.Boolean,System.Boolean,WikiClientLibrary.Pages.AutoWatchBehavior,System.Threading.CancellationToken)</parameter>
-          </include>
-        </markup>
-      </param>
-      <param name="bot">
-        <markup>
-          <include item="SMCMissingParamTag">
-            <parameter>param</parameter>
-            <parameter>bot</parameter>
-            <parameter>M:WikiClientLibrary.Pages.WikiPage.UpdateContentAsync(System.String,System.Boolean,System.Boolean,WikiClientLibrary.Pages.AutoWatchBehavior,System.Threading.CancellationToken)</parameter>
-          </include>
-        </markup>
-      </param>
-      <param name="watch">
-        <markup>
-          <include item="SMCMissingParamTag">
-            <parameter>param</parameter>
-            <parameter>watch</parameter>
-            <parameter>M:WikiClientLibrary.Pages.WikiPage.UpdateContentAsync(System.String,System.Boolean,System.Boolean,WikiClientLibrary.Pages.AutoWatchBehavior,System.Threading.CancellationToken)</parameter>
-          </include>
-        </markup>
-      </param>
-      <param name="cancellationToken">
-        <markup>
-          <include item="SMCMissingParamTag">
-            <parameter>param</parameter>
-            <parameter>cancellationToken</parameter>
-            <parameter>M:WikiClientLibrary.Pages.WikiPage.UpdateContentAsync(System.String,System.Boolean,System.Boolean,WikiClientLibrary.Pages.AutoWatchBehavior,System.Threading.CancellationToken)</parameter>
-          </include>
-        </markup>
-      </param>
+      <param name="summary">The edit summary. Leave it blank to use the default edit summary.</param>
+      <param name="minor">Whether the edit is a minor edit. (See <a href="https://meta.wikimedia.org/wiki/Help:Minor_edit">m:Help:Minor Edit</a>)</param>
+      <param name="bot">Whether to mark the edit as bot; even if you are using a bot account the edits will not be marked unless you set this flag.</param>
+      <param name="watch">Specify how the watchlist is affected by this edit.</param>
+      <param name="cancellationToken">A token used to cancel the operation.</param>
       <returns>
         <c>true</c> if page content has been changed; <c>false</c> otherwise.</returns>
       <exception cref="T:System.InvalidOperationException">Cannot create actual page in the specified namespace.</exception>
