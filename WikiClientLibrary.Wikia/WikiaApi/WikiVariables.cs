@@ -257,6 +257,9 @@ namespace WikiClientLibrary.Wikia.WikiaApi
         [JsonProperty("localNav")]
         public IList<NavigationItem> NavigationItems { get; private set; }
 
+        /// <summary>
+        /// Gets the site's Wikia hub name (e.g. Gaming, Entertainment, Lifestyle).
+        /// </summary>
         [JsonProperty("vertical")]
         public string Vertical { get; private set; }
 

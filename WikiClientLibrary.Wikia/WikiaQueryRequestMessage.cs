@@ -11,6 +11,13 @@ using WikiClientLibrary.Infrastructures;
 
 namespace WikiClientLibrary.Wikia
 {
+    /// <summary>
+    /// The request message used with Wikia publicized and non-public API endpoints.
+    /// </summary>
+    /// <remarks>
+    /// The requests are issued with HTTP GET method. The fiedls are concatenated after the endpoint
+    /// URL as URI query part (e.g. <c>endpointUrl?query</c>).
+    /// </remarks>
     public class WikiaQueryRequestMessage : WikiRequestMessage
     {
 

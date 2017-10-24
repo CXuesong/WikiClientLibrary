@@ -79,5 +79,27 @@ namespace UnitTestProject1.Tests
             Assert.All(relatedPages, p => Assert.Matches(@"\w+\d+", p.Title));
         }
 
+        [Fact]
+        public async Task SearchListTest()
+        {
+            var site = await WikiaTestSiteAsync;
+            var wikiaSite = CreateWikiaSite(site);
+            var list = new LocalWikiSearchList(wikiaSite, "test keyword")
+            {
+                PaginationSize = 10,
+            };
+            var results = await list.EnumItemsAsync().Take(30).ToList();
+            ShallowTrace(results);
+            Assert.NotEmpty(results);
+            Assert.All(results, p => Assert.True(p.Quality >= list.MinimumArticleQuality));
+            var exactMatches = results.Count(p =>
+                p.Snippet.IndexOf("test", StringComparison.OrdinalIgnoreCase) >= 0
+                || p.Snippet.IndexOf("keyword", StringComparison.OrdinalIgnoreCase) >= 0
+            );
+            Output.WriteLine($"Exact matches: {exactMatches}/{results.Count}");
+            // At least 80% of the items are exact match.
+            Assert.True(exactMatches > (int)0.8 * results.Count);
+        }
+
     }
 }
