@@ -7,6 +7,7 @@ using Microsoft.Extensions.Logging;
 using WikiClientLibrary.Pages;
 using WikiClientLibrary.Sites;
 using WikiClientLibrary.Wikia;
+using WikiClientLibrary.Wikia.Discussions;
 using WikiClientLibrary.Wikia.WikiaApi;
 using Xunit;
 using Xunit.Abstractions;
@@ -18,6 +19,7 @@ namespace UnitTestProject1.Tests
         /// <inheritdoc />
         public WikiaApiTests(ITestOutputHelper output) : base(output)
         {
+            // SiteNeedsLogin(Endpoints.WikiaTest);
         }
 
         protected WikiaSite CreateWikiaSite(WikiSite site)
@@ -99,6 +101,21 @@ namespace UnitTestProject1.Tests
             Output.WriteLine($"Exact matches: {exactMatches}/{results.Count}");
             // At least 80% of the items are exact match.
             Assert.True(exactMatches > (int)0.8 * results.Count);
+        }
+
+        [SkippableFact]
+        public async Task DiscussionsTest()
+        {
+            var site = await WikiaTestSiteAsync;
+            var wikiaSite = CreateWikiaSite(site);
+            var x = await wikiaSite.EnumArticleCommentsAsync(190273).FirstOrDefault();
+            var page = new WikiPage(site, "1WEPN1UE18M6N");
+            await page.RefreshAsync();
+            Skip.IfNot(page.Exists, $"Page [[{page}]] is gone. There is nothing we can do for it.");
+            // [[w:c:mediawiki119:1WEPN1UE18M6N]]
+            var comments = await wikiaSite.EnumArticleCommentsAsync(page.Id).ToList();
+            ShallowTrace(comments);
+            Assert.True(comments.Count >= 90);
         }
 
     }

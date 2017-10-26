@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netstandard1.1</TargetFramework>
+    <TargetFramework>netstandard1.3</TargetFramework>
     <AssemblyName>WikiClientLibrary.Wikia</AssemblyName>
     <PackageId>CXuesong.MW.WikiClientLibrary.Wikia</PackageId>
     <Version>0.6.0-int8</Version>
@@ -25,6 +25,10 @@
     <SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>../WikiClientLibrary.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="HtmlAgilityPack" Version="1.6.2" />
+  </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\WikiClientLibrary\WikiClientLibrary.csproj" />

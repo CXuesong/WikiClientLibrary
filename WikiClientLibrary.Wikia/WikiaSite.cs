@@ -44,6 +44,13 @@ namespace WikiClientLibrary.Wikia
         /// </summary>
         public IWikiClient WikiClient { get; }
 
+        /// <inheritdoc cref="InvokeWikiaAjaxAsync(WikiRequestMessage,IWikiResponseMessageParser,CancellationToken)"/>
+        public async Task<T> InvokeWikiaAjaxAsync<T>(WikiRequestMessage request,
+            WikiResponseMessageParser<T> responseParser, CancellationToken cancellationToken)
+        {
+            return (T)await InvokeWikiaAjaxAsync(request, (IWikiResponseMessageParser)responseParser, cancellationToken);
+        }
+
         /// <summary>
         /// Invokes <c>index.php</c> call with <c>action=ajax</c> query.
         /// </summary>
@@ -53,7 +60,7 @@ namespace WikiClientLibrary.Wikia
         /// <returns>The parsed JSON root of response.</returns>
         /// <exception cref="ArgumentNullException">Either <paramref name="request"/> or <paramref name="responseParser"/> is <c>null</c>.</exception>
         /// <remarks>This method will automatically add <c>action=ajax</c> field in the request.</remarks>
-        public async Task<JToken> InvokeWikiaAjaxAsync(WikiRequestMessage request,
+        public async Task<object> InvokeWikiaAjaxAsync(WikiRequestMessage request,
             IWikiResponseMessageParser responseParser, CancellationToken cancellationToken)
         {
             if (request == null) throw new ArgumentNullException(nameof(request));
@@ -68,10 +75,16 @@ namespace WikiClientLibrary.Wikia
                 fields.AddRange(queryRequest.Fields);
                 localRequest = new WikiaQueryRequestMessage(request.Id, fields);
             }
-            Logger.LogDebug("Invoking Wikia Ajax v1: {Request}", localRequest);
-            var result = (JToken)await WikiClient.InvokeAsync(options.ScriptUrl, localRequest,
+            Logger.LogDebug("Invoking Wikia Ajax: {Request}", localRequest);
+            var result = await WikiClient.InvokeAsync(options.ScriptUrl, localRequest,
                 responseParser, cancellationToken);
             return result;
+        }
+
+        /// <inheritdoc cref="InvokeNirvanaAsync(WikiRequestMessage,IWikiResponseMessageParser,CancellationToken)"/>
+        public async Task<T> InvokeNirvanaAsync<T>(WikiRequestMessage request, WikiResponseMessageParser<T> responseParser, CancellationToken cancellationToken)
+        {
+            return (T)await InvokeNirvanaAsync(request, (IWikiResponseMessageParser)responseParser, cancellationToken);
         }
 
         /// <summary>
@@ -83,10 +96,10 @@ namespace WikiClientLibrary.Wikia
         /// <exception cref="ArgumentNullException">Either <paramref name="request"/> or <paramref name="responseParser"/> is <c>null</c>.</exception>
         /// <returns>The parsed JSON root of response.</returns>
         /// <seealso cref="WikiaSiteOptions.NirvanaEndPointUrl"/>
-        public async Task<JToken> InvokeNirvanaAsync(WikiRequestMessage request, IWikiResponseMessageParser responseParser, CancellationToken cancellationToken)
+        public async Task<object> InvokeNirvanaAsync(WikiRequestMessage request, IWikiResponseMessageParser responseParser, CancellationToken cancellationToken)
         {
             Logger.LogDebug("Invoking Nirvana API: {Request}", request);
-            var result = (JToken)await WikiClient.InvokeAsync(options.NirvanaEndPointUrl, request, responseParser, cancellationToken);
+            var result = await WikiClient.InvokeAsync(options.NirvanaEndPointUrl, request, responseParser, cancellationToken);
             return result;
         }
 
