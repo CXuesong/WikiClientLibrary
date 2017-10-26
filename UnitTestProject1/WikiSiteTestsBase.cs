@@ -102,8 +102,8 @@ namespace UnitTestProject1
             {
                 AccountAssertion = AccountAssertionBehavior.AssertAll,
             };
-            var site = await WikiSite.CreateAsync(wikiClient, options);
-            site.Logger = OutputLoggerFactory.CreateLogger<WikiSite>();
+            var site = new WikiSite(wikiClient, options) {Logger = OutputLoggerFactory.CreateLogger<WikiSite>()};
+            await site.Initialization;
             if (sitesNeedsLogin.Contains(url))
             {
                 await CredentialManager.LoginAsync(site);

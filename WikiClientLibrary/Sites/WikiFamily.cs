@@ -153,7 +153,8 @@ namespace WikiClientLibrary.Sites
         /// <returns>A <see cref="WikiSite"/> instance.</returns>
         protected virtual async Task<WikiSite> CreateSiteAsync(string prefix, string apiEndpoint)
         {
-            var site = await WikiSite.CreateAsync(WikiClient, apiEndpoint);
+            var site = new WikiSite(WikiClient, apiEndpoint);
+            await site.Initialization;
             Logger.LogTrace("[[{Family}:{prefix}:]] has been instantiated.", Name, prefix);
             OnSiteCreated(new WikiFamilySiteCreatedEventArgs(prefix, site));
             return site;
