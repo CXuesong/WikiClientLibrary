@@ -13,8 +13,11 @@ namespace WikiClientLibrary.Generators
 {
     /// <summary>
     /// Search titles and text.
+    /// (<a href="https://www.mediawiki.org/wiki/API:Search">mw:API:Search</a>, MediaWiki 1.11+)
     /// </summary>
-    /// <remarks>See https://www.mediawiki.org/wiki/API:Search .</remarks>
+    /// <remarks>
+    /// <para>For full-text search on Wikia, use <c>LocalWikiSearchList</c> in <c>WikiClientLibrary.Wikia.WikiaApi</c> namespace.</para>
+    /// </remarks>
     public class SearchGenerator : WikiPageGenerator<SearchResultItem, WikiPage>
     {
         private SearchableField _MatchingField = SearchableField.Text;
@@ -41,8 +44,9 @@ namespace WikiClientLibrary.Generators
         /// <summary>
         /// Only list pages in these namespaces.
         /// </summary>
-        /// <value>The namespace(s) to enumerate. No more than 50 (500 for bots) allowed. Set to <c>null</c> to search
-        /// in all the namespaces. (Default: [0], i.e. Main Namespace)</value>
+        /// <value>The namespace(s) to enumerate. No more than 50 (500 for bots) allowed.
+        /// See <see cref="BuiltInNamespaces"/> for a list of MediaWiki built-in namespace IDs.
+        /// Set to <c>null</c> to search in all the namespaces. (Default: [0], i.e. Main Namespace)</value>
         public IEnumerable<int> NamespaceIds { get; set; } = defaultNamespace;
 
         /// <summary>
@@ -53,7 +57,8 @@ namespace WikiClientLibrary.Generators
             get { return _MatchingField; }
             set
             {
-                if (!Enum.IsDefined(typeof(SearchableField), value)) throw new ArgumentOutOfRangeException(nameof(value));
+                if (!Enum.IsDefined(typeof(SearchableField), value))
+                    throw new ArgumentOutOfRangeException(nameof(value));
                 _MatchingField = value;
             }
         }
