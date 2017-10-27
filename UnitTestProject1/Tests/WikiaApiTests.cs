@@ -19,7 +19,7 @@ namespace UnitTestProject1.Tests
         /// <inheritdoc />
         public WikiaApiTests(ITestOutputHelper output) : base(output)
         {
-            // SiteNeedsLogin(Endpoints.WikiaTest);
+            SiteNeedsLogin(Endpoints.WikiaTest);
         }
 
         [Fact]
@@ -105,6 +105,18 @@ namespace UnitTestProject1.Tests
             var comments = await site.EnumArticleCommentsAsync(page.Id).ToList();
             ShallowTrace(comments);
             Assert.True(comments.Count >= 90);
+        }
+
+        [SkippableFact]
+        public async Task DiscussionsPostCommentTest()
+        {
+            var site = await WikiaTestSiteAsync;
+            var page = new WikiPage(site, "Random40156");
+            await page.RefreshAsync();
+            Skip.IfNot(page.Exists, $"Page [[{page}]] is gone. There is nothing we can do for it.");
+            var post = await site.PostCommentAsync(page.Id, null, "Test comment.");
+            var rep = await post.ReplyAsync("Test reply.");
+            await rep.ReplyAsync("Test reply, 3rd level.");
         }
 
     }

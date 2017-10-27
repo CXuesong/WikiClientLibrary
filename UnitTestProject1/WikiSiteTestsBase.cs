@@ -99,6 +99,7 @@ namespace UnitTestProject1
         /// </summary>
         private async Task<WikiSite> CreateWikiSiteAsync(IWikiClient wikiClient, string url)
         {
+            WikiSite site;
             if (url.Contains(".wikia.com"))
             {
                 var uri = new Uri(url, UriKind.Absolute);
@@ -106,13 +107,7 @@ namespace UnitTestProject1
                 {
                     AccountAssertion = AccountAssertionBehavior.AssertAll,
                 };
-                var site = new WikiaSite(wikiClient, options) { Logger = OutputLoggerFactory.CreateLogger<WikiaSite>() };
-                await site.Initialization;
-                if (sitesNeedsLogin.Contains(url))
-                {
-                    await CredentialManager.LoginAsync(site);
-                }
-                return site;
+                site = new WikiaSite(wikiClient, options) {Logger = OutputLoggerFactory.CreateLogger<WikiaSite>()};
             }
             else
             {
@@ -120,14 +115,14 @@ namespace UnitTestProject1
                 {
                     AccountAssertion = AccountAssertionBehavior.AssertAll,
                 };
-                var site = new WikiSite(wikiClient, options) { Logger = OutputLoggerFactory.CreateLogger<WikiSite>() };
-                await site.Initialization;
-                if (sitesNeedsLogin.Contains(url))
-                {
-                    await CredentialManager.LoginAsync(site);
-                }
-                return site;
+                site = new WikiSite(wikiClient, options) {Logger = OutputLoggerFactory.CreateLogger<WikiSite>()};
             }
+            await site.Initialization;
+            if (sitesNeedsLogin.Contains(url))
+            {
+                await CredentialManager.LoginAsync(site);
+            }
+            return site;
         }
 
         /// <summary>

@@ -31,12 +31,23 @@ namespace WikiClientLibrary.Wikia
         /// Initializes a <see cref="WikiaQueryRequestMessage"/> instance with
         /// the automatically-generated message ID and empty query fields.
         /// </summary>
+        /// <remarks>Note that you cannot insert fields after initialization.</remarks>
         public WikiaQueryRequestMessage() : this(null, null)
         {
         }
+        
+        /// <inheritdoc cref="WikiaQueryRequestMessage(string,object,bool)"/>
+        public WikiaQueryRequestMessage(object dict) : this(null, dict, false)
+        {
+        }
+        
+        /// <inheritdoc cref="WikiaQueryRequestMessage(string,object,bool)"/>
+        public WikiaQueryRequestMessage(object dict, bool httpPost) : this(null, dict, httpPost)
+        {
+        }
 
-        /// <inheritdoc />
-        public WikiaQueryRequestMessage(object dict) : this(null, dict)
+        /// <inheritdoc cref="WikiaQueryRequestMessage(string,object,bool)"/>
+        public WikiaQueryRequestMessage(string id, object fieldCollection) : this(id, fieldCollection, false)
         {
         }
 
@@ -50,7 +61,8 @@ namespace WikiClientLibrary.Wikia
         /// See <see cref="MediaWikiHelper.EnumValues"/> for more information.
         /// For queries without query part, you can set this parameter to <c>null</c>.
         /// </param>
-        public WikiaQueryRequestMessage(string id, object fieldCollection) : base(id)
+        /// <param name="httpPost">Whether to use HTTP POST method to issue the request.</param>
+        public WikiaQueryRequestMessage(string id, object fieldCollection, bool httpPost) : base(id)
         {
             if (fieldCollection == null)
             {
@@ -61,19 +73,26 @@ namespace WikiClientLibrary.Wikia
             {
                 fields = MediaWikiHelper.EnumValues(fieldCollection).ToList();
             }
+            UseHttpPost = httpPost;
         }
 
-        /// <inheritdoc />
-        public override HttpMethod GetHttpMethod() => HttpMethod.Get;
+        /// <summary>
+        /// Gets a value that indicates whether the message should be sent via HTTP POST instead of HTTP GET.
+        /// </summary>
+        public bool UseHttpPost { get; }
 
+        /// <inheritdoc />
+        public override HttpMethod GetHttpMethod() => UseHttpPost ? HttpMethod.Post : HttpMethod.Get;
+        
         /// <inheritdoc />
         public override string GetHttpQuery()
         {
-            if (fields == null) return null;
+            if (UseHttpPost || fields == null) return null;
             if (queryString != null) return queryString;
             var sb = new StringBuilder();
             foreach (var p in fields)
             {
+                if (p.Value == null) continue;
                 if (sb.Length > 0) sb.Append('&');
                 // This encodes space(' ') to '+'
                 sb.Append(WebUtility.UrlEncode(p.Key));
@@ -102,7 +121,9 @@ namespace WikiClientLibrary.Wikia
         /// <inheritdoc />
         public override HttpContent GetHttpContent()
         {
-            return null;
+            if (!UseHttpPost) return null;
+            return new FormUrlEncodedContent(fields.Where(p => p.Value != null)
+                .Select(p => new KeyValuePair<string, string>(p.Key, p.Value?.ToString())));
         }
     }
 }

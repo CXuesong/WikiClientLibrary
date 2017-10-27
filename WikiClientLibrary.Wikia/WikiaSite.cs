@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
@@ -68,10 +69,10 @@ namespace WikiClientLibrary.Wikia
                     new KeyValuePair<string, object>("action", "ajax")
                 };
                 fields.AddRange(queryRequest.Fields);
-                localRequest = new WikiaQueryRequestMessage(request.Id, fields);
+                localRequest = new WikiaQueryRequestMessage(request.Id, fields, queryRequest.UseHttpPost);
             }
             Logger.LogDebug("Invoking Wikia Ajax: {Request}", localRequest);
-            var result = await WikiClient.InvokeAsync(Options.ApiEndpoint, localRequest,
+            var result = await WikiClient.InvokeAsync(Options.ScriptUrl, localRequest,
                 responseParser, cancellationToken);
             return result;
         }
