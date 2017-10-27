@@ -21,9 +21,11 @@ namespace WikiClientLibrary.Wikia.Discussions
 
         private static readonly Post[] emptyPosts = { };
 
-        internal Post(WikiaSite site)
+        public Post(WikiaSite site, int pageId, int id)
         {
             Site = site ?? throw new ArgumentNullException(nameof(site));
+            PageId = pageId;
+            Id = id;
         }
 
         public WikiaSite Site { get; }
@@ -64,7 +66,7 @@ namespace WikiClientLibrary.Wikia.Discussions
         /// the comment will be placed as level-2 (top-level) post.</remarks>
         public Task<Post> ReplyAsync(string content, CancellationToken cancellationToken)
         {
-            return Site.PostCommentAsync(PageId, Id, content, cancellationToken);
+            return RequestHelper.PostCommentAsync(Site, this, PageId, Id, content, cancellationToken);
         }
 
         // http://xxx.wikia.com/wiki/Talk:ArticleName/@comment-UserName-20170704160847?permalink=1234#comm-1234
@@ -73,7 +75,7 @@ namespace WikiClientLibrary.Wikia.Discussions
         internal static Post FromHtmlNode(WikiaSite site, int pageId, HtmlNode listItem)
         {
             if (listItem == null) throw new ArgumentNullException(nameof(listItem));
-            var post = new Post(site);
+            var post = new Post(site, pageId, 0);
             post.LoadFromHtmlNode(pageId, listItem);
             return post;
         }

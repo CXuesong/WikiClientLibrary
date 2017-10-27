@@ -98,11 +98,11 @@ namespace UnitTestProject1.Tests
         public async Task DiscussionsTest()
         {
             var site = await WikiaTestSiteAsync;
-            var page = new WikiPage(site, "1WEPN1UE18M6N");
-            await page.RefreshAsync();
-            Skip.IfNot(page.Exists, $"Page [[{page}]] is gone. There is nothing we can do for it.");
+            var commentArea = new ArticleCommentArea(site, "1WEPN1UE18M6N");
+            await commentArea.RefreshAsync();
+            Skip.IfNot(commentArea.Exists, $"Page [[{commentArea}]] is gone. There is nothing we can do for it.");
             // [[w:c:mediawiki119:1WEPN1UE18M6N]]
-            var comments = await site.EnumArticleCommentsAsync(page.Id).ToList();
+            var comments = await commentArea.EnumPostsAsync().ToList();
             ShallowTrace(comments);
             Assert.True(comments.Count >= 90);
         }
@@ -111,13 +111,26 @@ namespace UnitTestProject1.Tests
         public async Task DiscussionsPostCommentTest()
         {
             var site = await WikiaTestSiteAsync;
-            var page = new WikiPage(site, "Random40156");
-            await page.RefreshAsync();
-            Skip.IfNot(page.Exists, $"Page [[{page}]] is gone. There is nothing we can do for it.");
-            var post = await site.PostCommentAsync(page.Id, null, "Test comment.");
+            var commentArea = new ArticleCommentArea(site, "Random40156");
+            await commentArea.RefreshAsync();
+            Skip.IfNot(commentArea.Exists, $"Page [[{commentArea}]] is gone. There is nothing we can do for it.");
+            var post = await commentArea.NewPostAsync("Test comment.");
             var rep = await post.ReplyAsync("Test reply.");
             await rep.ReplyAsync("Test reply, 3rd level.");
         }
+
+        // Thread pages are always in-existent.
+        //[SkippableFact]
+        //public async Task ForumPostCommentTest()
+        //{
+        //    var site = await WikiaTestSiteAsync;
+        //    var board = new Board(site, "Thread:568625");
+        //    await board.RefreshAsync();
+        //    Skip.IfNot(board.Exists, $"Page [[{board}]] is gone. There is nothing we can do for it.");
+        //    var post = await board.NewPostAsync("Test comment.");
+        //    var rep = await post.ReplyAsync("Test reply.");
+        //    await rep.ReplyAsync("Test reply, 3rd level.");
+        //}
 
     }
 }

@@ -7,39 +7,38 @@ using System.Threading.Tasks;
 using AsyncEnumerableExtensions;
 using HtmlAgilityPack;
 using WikiClientLibrary.Infrastructures.Logging;
+using WikiClientLibrary.Wikia.Discussions;
 
-namespace WikiClientLibrary.Wikia.Discussions
+namespace WikiClientLibrary.Wikia
 {
-    public static class DiscussionsExtensions
+    internal static class RequestHelper
     {
 
-        /// <summary>
-        /// Asynchronously enumerates all the comments on the specified page.
-        /// </summary>
-        /// <param name="site">The site to issue the request.</param>
-        /// <param name="pageId">The page id from which to enumerate the comments</param>
-        public static IAsyncEnumerable<Post> EnumArticleCommentsAsync(this WikiaSite site, int pageId)
+        public static IAsyncEnumerable<Post> EnumArticleCommentsAsync(ArticleCommentArea articleCommentArea)
         {
-            using (site.BeginActionScope(pageId))
+            using (articleCommentArea.Site.BeginActionScope(articleCommentArea))
             {
                 return AsyncEnumerableFactory.FromAsyncGenerator<Post>(async (sink, ct) =>
                 {
+                    // Refresh to get the page id.
+                    if (articleCommentArea.Id == 0) await articleCommentArea.RefreshAsync(ct);
+                    if (!articleCommentArea.Exists) return;
                     var page = 1;
                     while (true)
                     {
-                        var doc = await site.InvokeNirvanaAsync(new WikiaQueryRequestMessage(new
+                        var doc = await articleCommentArea.Site.InvokeNirvanaAsync(new WikiaQueryRequestMessage(new
                         {
                             format = "html",
                             controller = "ArticleComments",
                             method = "Content",
-                            articleId = pageId,
+                            articleId = articleCommentArea.Id,
                             page = page
                         }), WikiaHtmlResponseParser.Default, ct);
                         var rootNode = doc.GetElementbyId("article-comments-ul")
                                        ?? doc.DocumentNode.SelectSingleNode(".//ul[@class='comments']");
                         if (rootNode == null)
                             throw new UnexpectedDataException("Cannot locate comments root node.");
-                        await sink.YieldAndWait(Post.FromHtmlCommentsRoot(site, pageId, rootNode));
+                        await sink.YieldAndWait(Post.FromHtmlCommentsRoot(articleCommentArea.Site, articleCommentArea.Id, rootNode));
                         var paginationNode = doc.GetElementbyId("article-comments-pagination-link-next");
                         var nextPageExpr = paginationNode?.GetAttributeValue("page", "");
                         if (string.IsNullOrEmpty(nextPageExpr)) return;
@@ -51,25 +50,10 @@ namespace WikiClientLibrary.Wikia.Discussions
             }
         }
 
-        /// <inheritdoc cref="PostCommentAsync(WikiaSite,int,int?,string,CancellationToken)"/>
-        public static Task<Post> PostCommentAsync(this WikiaSite site, int pageId, int? parentId, string content)
-        {
-            return PostCommentAsync(site, pageId, parentId, content, CancellationToken.None);
-        }
-
-        /// <summary>
-        /// Add a new reply to the post.
-        /// </summary>
-        /// <param name="site">The site to issue the request.</param>
-        /// <param name="pageId">The page ID to post new comment.</param>
-        /// <param name="parentId">The parent comment ID to reply.</param>
-        /// <param name="content">The content in reply.</param>
-        /// <param name="cancellationToken">A token used to cancel the operation.</param>
-        /// <returns>A new post containing the workflow ID of the new post.</returns>
-        public static async Task<Post> PostCommentAsync(this WikiaSite site, int pageId, int? parentId, string content, CancellationToken cancellationToken)
+        public static async Task<Post> PostCommentAsync(WikiaSite site, object scopeInst, int pageId, int? parentId, string content, CancellationToken cancellationToken)
         {
             if (site == null) throw new ArgumentNullException(nameof(site));
-            using (site.BeginActionScope(null, pageId, parentId))
+            using (site.BeginActionScope(scopeInst, pageId, parentId))
             {
                 var jresult = await site.InvokeWikiaAjaxAsync(new WikiaQueryRequestMessage(new
                 {
@@ -92,5 +76,6 @@ namespace WikiClientLibrary.Wikia.Discussions
                 return Post.FromHtmlNode(site, pageId, node);
             }
         }
+
     }
 }
