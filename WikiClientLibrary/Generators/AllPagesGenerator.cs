@@ -18,6 +18,7 @@ namespace WikiClientLibrary.Generators
     public class AllPagesGenerator : WikiPageGenerator<WikiPage>
     {
 
+        /// <inheritdoc />
         public AllPagesGenerator(WikiSite site) : base(site)
         {
         }

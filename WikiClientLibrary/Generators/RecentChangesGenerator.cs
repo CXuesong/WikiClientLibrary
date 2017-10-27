@@ -16,10 +16,12 @@ using WikiClientLibrary.Sites;
 namespace WikiClientLibrary.Generators
 {
     /// <summary>
-    /// Get all recent changes to the wiki, à la Special:Recentchanges.
+    /// Generates all recent changes to the wiki, à la Special:Recentchanges.
     /// </summary>
     public class RecentChangesGenerator : WikiPageGenerator<RecentChangeItem, WikiPage>
     {
+
+        /// <inheritdoc />
         public RecentChangesGenerator(WikiSite site) : base(site)
         {
         }

@@ -17,20 +17,20 @@ namespace WikiClientLibrary.Generators.Primitive
     /// that supports pagination, and that thus can be enumerated asynchronously.
     /// This class provides basic functionality for enumerating such list-like property values.
     /// </remarks>
-    /// <see cref="WikiList{T}"/>
+    /// <seealso cref="WikiPagePropertyGenerator{TItem,TPage}"/>
+    /// <seealso cref="WikiList{T}"/>
     public abstract class WikiPagePropertyList<T> : IWikiList<T>
     {
         private int _PaginationSize = 10;
 
-        public WikiPagePropertyList(WikiSite site)
+        /// <param name="site">The MediaWiki site this instance applies to.</param>
+        protected WikiPagePropertyList(WikiSite site)
         {
             if (site == null) throw new ArgumentNullException(nameof(site));
             Site = site;
         }
 
-        /// <summary>
-        /// Gets the MediaWiki site where the requests should be performed.
-        /// </summary>
+        /// <summary>Gets the MediaWiki site this instance applies to.</summary>
         public WikiSite Site { get; }
 
         /// <summary>

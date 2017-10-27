@@ -18,7 +18,7 @@ namespace WikiClientLibrary.Sites
     /// <summary>
     /// Represents a MediaWiki site.
     /// </summary>
-    public partial class WikiSite : IWikiClientLoggable
+    public partial class WikiSite : IWikiClientLoggable, IWikiClientAsyncInitialization
     {
 
         private readonly SiteOptions options;
@@ -61,6 +61,7 @@ namespace WikiClientLibrary.Sites
         /// <exception cref="ArgumentNullException"><paramref name="wikiClient"/> or <paramref name="apiEndpoint"/> is <c>null</c>.</exception>
         /// <exception cref="ArgumentException"><paramref name="apiEndpoint"/> is invalid.</exception>
         /// <exception cref="UnauthorizedOperationException">Cannot access query API module due to target site permission settings. You may take a look at <see cref="SiteOptions.ExplicitInfoRefresh"/>.</exception>
+        [Obsolete("Use var x = new WikiSite(...) in combination with await x.Initialization instead.")]
         public static Task<WikiSite> CreateAsync(IWikiClient wikiClient, string apiEndpoint)
         {
             if (wikiClient == null) throw new ArgumentNullException(nameof(wikiClient));
@@ -69,22 +70,17 @@ namespace WikiClientLibrary.Sites
         }
 
         /// <summary>
-        /// Initialize a <see cref="WikiSite"/> instance with the specified settings.
+        /// Initialize a <see cref="WikiSite"/> instance with the given options.
         /// </summary>
         /// <exception cref="ArgumentNullException"><paramref name="wikiClient"/> or <paramref name="options"/> is <c>null</c>.</exception>
-        /// <exception cref="ArgumentException">One or more settings in <paramref name="options"/> is invalid.</exception>
         /// <exception cref="UnauthorizedOperationException">Cannot access query API module due to target site permission settings. You may take a look at <see cref="SiteOptions.ExplicitInfoRefresh"/>.</exception>
+        [Obsolete("Use var x = new WikiSite(...) in combination with await x.Initialization instead.")]
         public static async Task<WikiSite> CreateAsync(IWikiClient wikiClient, SiteOptions options)
         {
             if (wikiClient == null) throw new ArgumentNullException(nameof(wikiClient));
             if (options == null) throw new ArgumentNullException(nameof(options));
-            if (string.IsNullOrEmpty(options.ApiEndpoint))
-                throw new ArgumentException("Invalid API endpoint url.", nameof(options));
-            // Do not directly use WikiClient's logger,
-            // as client might want to use a different logger category for WikiSite.
             var site = new WikiSite(wikiClient, options);
-            if (!options.ExplicitInfoRefresh)
-                await Task.WhenAll(site.RefreshSiteInfoAsync(), site.RefreshAccountInfoAsync());
+            await site.Initialization;
             return site;
         }
 
@@ -101,11 +97,49 @@ namespace WikiClientLibrary.Sites
             return MediaWikiUtility.SearchApiEndpointAsync(client, urlExpression);
         }
 
-        protected WikiSite(IWikiClient wikiClient, SiteOptions options)
+        /// <inheritdoc cref="WikiSite(IWikiClient,SiteOptions,string,string)"/>
+        /// <summary>
+        /// Initializes a <see cref="WikiSite"/> instance with the specified API endpoint.
+        /// </summary>
+        /// <remarks></remarks>
+        public WikiSite(IWikiClient wikiClient, string apiEndpoint)
+          : this(wikiClient, new SiteOptions(apiEndpoint), null, null)
         {
-            // Perform basic checks.
-            Debug.Assert(wikiClient != null);
-            Debug.Assert(options != null);
+
+        }
+
+        /// <inheritdoc cref="WikiSite(IWikiClient,SiteOptions,string,string)"/>
+        /// <summary>
+        /// Initializes a <see cref="WikiSite"/> instance with the specified settings.
+        /// </summary>
+        /// <remarks></remarks>
+        public WikiSite(IWikiClient wikiClient, SiteOptions options)
+            : this(wikiClient, options, null, null)
+        {
+
+        }
+
+        /// <summary>
+        /// Initializes a <see cref="WikiSite"/> instance with the specified settings
+        /// and optional login before fetching for site information.
+        /// </summary>
+        /// <param name="wikiClient">WikiClient instance.</param>
+        /// <param name="options">Site options.</param>
+        /// <param name="userName">The user name used to login before fetching for site information. Pass <c>null</c> to fetch site information without login first.</param>
+        /// <param name="password">The password used to login before fetching for site information.</param>
+        /// <exception cref="ArgumentNullException"><paramref name="wikiClient"/> or <paramref name="options"/> is <c>null</c>.</exception>
+        /// <exception cref="ArgumentException">One or more settings in <paramref name="options"/> is invalid.</exception>
+        /// <exception cref="UnauthorizedOperationException">Cannot access query API module due to target site permission settings. You may take a look at <see cref="SiteOptions.ExplicitInfoRefresh"/>.</exception>
+        /// <remarks>
+        /// <para>For the priviate wiki where anonymous users cannot access query API, you can use this
+        /// overload to login to the site before any querying API invocations are issued.</para>
+        /// </remarks>
+        public WikiSite(IWikiClient wikiClient, SiteOptions options, string userName, string password)
+        {
+            if (wikiClient == null) throw new ArgumentNullException(nameof(wikiClient));
+            if (options == null) throw new ArgumentNullException(nameof(options));
+            if (string.IsNullOrEmpty(options.ApiEndpoint))
+                throw new ArgumentException("Invalid API endpoint url.", nameof(options));
             WikiClient = wikiClient;
             this.options = options.Clone();
             tokensManager = new TokensManager(this);
@@ -127,6 +161,25 @@ namespace WikiClientLibrary.Sites
                 }
                 return this.options.DisambiguationTemplates;
             });
+
+            async Task InitializeAsync()
+            {
+                if (userName != null)
+                {
+                    await LoginAsync(userName, password);
+                    await RefreshSiteInfoAsync();
+                }
+                else
+                {
+                    var refSi = RefreshSiteInfoAsync();
+                    var refAi = RefreshAccountInfoAsync();
+                    await refSi;
+                    await refAi;
+                }
+            }
+
+            localInitialization = InitializeAsync();
+            Initialization = localInitialization;
         }
 
         /// <summary>
@@ -152,33 +205,11 @@ namespace WikiClientLibrary.Sites
                 var aliases = (JArray)jobj["query"]["namespacealiases"];
                 var interwiki = (JArray)jobj["query"]["interwikimap"];
                 var extensions = (JArray)jobj["query"]["extensions"];
-                try
-                {
-                    _SiteInfo = qg.ToObject<SiteInfo>(Utility.WikiJsonSerializer);
-                    _Namespaces = new NamespaceCollection(this, ns, aliases);
-                    _InterwikiMap = new InterwikiMap(this, interwiki);
-                    _Extensions = new ExtensionCollection(this, extensions);
-                }
-                catch (Exception)
-                {
-                    // Reset the state so that AssertSiteInitialized will work properly.
-                    _SiteInfo = null;
-                    _Namespaces = null;
-                    _InterwikiMap = null;
-                    _Extensions = null;
-                    throw;
-                }
+                _SiteInfo = qg.ToObject<SiteInfo>(Utility.WikiJsonSerializer);
+                _Namespaces = new NamespaceCollection(this, ns, aliases);
+                _InterwikiMap = new InterwikiMap(this, interwiki);
+                _Extensions = new ExtensionCollection(this, extensions);
             }
-        }
-
-        /// <summary>
-        /// Asserts that <see cref="SiteInfo"/> has been loaded.
-        /// </summary>
-        private void AssertSiteInfoInitialized()
-        {
-            if (_SiteInfo == null)
-                throw new InvalidOperationException(
-                    "Site.RefreshSiteInfoAsync should be successfully invoked before performing the operation.");
         }
 
         /// <summary>
@@ -190,6 +221,7 @@ namespace WikiClientLibrary.Sites
         /// <exception cref="UnauthorizedOperationException">Cannot access query API module due to target site permission settings. You may need to login first.</exception>
         public async Task RefreshAccountInfoAsync()
         {
+            // Note: _SiteInfo can be null here.
             using (this.BeginActionScope(null))
             {
                 var jobj = await GetJsonAsync(new MediaWikiFormRequestMessage(new
@@ -216,7 +248,7 @@ namespace WikiClientLibrary.Sites
         {
             get
             {
-                AssertSiteInfoInitialized();
+                AsyncInitializationHelper.EnsureInitialized(typeof(WikiSite), localInitialization);
                 return _SiteInfo;
             }
         }
@@ -228,9 +260,10 @@ namespace WikiClientLibrary.Sites
         {
             get
             {
-                if (_AccountInfo == null)
-                    throw new InvalidOperationException(
-                        "Site.RefreshUserInfoAsync should be successfully invoked before performing the operation.");
+                AsyncInitializationHelper.EnsureInitialized(typeof(WikiSite), localInitialization);
+                var ai = _AccountInfo;
+                // User has logged out.
+                if (ai == null) throw new InvalidOperationException("The AccountInfo is not initialized.");
                 return _AccountInfo;
             }
         }
@@ -242,7 +275,7 @@ namespace WikiClientLibrary.Sites
         {
             get
             {
-                AssertSiteInfoInitialized();
+                AsyncInitializationHelper.EnsureInitialized(typeof(WikiSite), localInitialization);
                 return _Namespaces;
             }
         }
@@ -254,7 +287,7 @@ namespace WikiClientLibrary.Sites
         {
             get
             {
-                AssertSiteInfoInitialized();
+                AsyncInitializationHelper.EnsureInitialized(typeof(WikiSite), localInitialization);
                 return _InterwikiMap;
             }
         }
@@ -266,7 +299,7 @@ namespace WikiClientLibrary.Sites
         {
             get
             {
-                AssertSiteInfoInitialized();
+                AsyncInitializationHelper.EnsureInitialized(typeof(WikiSite), localInitialization);
                 return _Extensions;
             }
         }
@@ -594,6 +627,7 @@ namespace WikiClientLibrary.Sites
             CancellationToken cancellationToken)
         {
             // Note: this method may be invoked BEFORE the initialization of _SiteInfo.
+            // Note: this method may be invoked upon initialization, so use _AccountInfo instead of AccountInfo.
             if (string.IsNullOrEmpty(userName)) throw new ArgumentNullException(nameof(userName));
             if (string.IsNullOrEmpty(password)) throw new ArgumentNullException(nameof(password));
             if (Interlocked.Exchange(ref isLoggingInOut, 1) != 0)
@@ -603,14 +637,13 @@ namespace WikiClientLibrary.Sites
                 try
                 {
                     string token = null;
-                    // If _SiteInfo is null, it indicates options.ExplicitInfoRefresh must be true.
-                    Debug.Assert(options.ExplicitInfoRefresh || _SiteInfo != null);
                     // For MedaiWiki 1.27+
-                    if (!options.ExplicitInfoRefresh && _SiteInfo.Version >= new Version("1.27"))
+                    if (_SiteInfo != null && _SiteInfo.Version >= new Version("1.27"))
                         token = await GetTokenAsync("login", true, cancellationToken);
                     // For MedaiWiki < 1.27, We'll have to request twice.
-                    // If options.ExplicitInfoRefresh is true, we just treat it the same as MedaiWiki < 1.27,
-                    //  because any "query" operation might raise readapidenied error.
+                    // If we are logging in before initialization of WikiSite, we just treat it the same as MedaiWiki < 1.27,
+                    //  because the client might be logging to a private wiki,
+                    //  where any "query" operation before logging-in might raise readapidenied error.
                     RETRY:
                     var jobj = await GetJsonAsync(new MediaWikiFormRequestMessage(new
                     {
@@ -627,8 +660,8 @@ namespace WikiClientLibrary.Sites
                         case "Success":
                             tokensManager.ClearCache();
                             await RefreshAccountInfoAsync();
-                            Logger.LogInformation("Logged in as {Account}.", AccountInfo);
-                            Debug.Assert(AccountInfo.IsUser,
+                            Logger.LogInformation("Logged in as {Account}.", _AccountInfo);
+                            Debug.Assert(_AccountInfo.IsUser,
                                 "API result indicates the login is successful, but you are not currently in \"user\" group. Are you logging out on the other Site instance with the same API endpoint and the same WikiClient?");
                             return;
                         case "Aborted":
@@ -656,16 +689,24 @@ namespace WikiClientLibrary.Sites
             }
         }
 
+        /// <inheritdoc cref="LogoutAsync(bool)"/>
+        /// <remarks></remarks>
+        public Task LogoutAsync()
+        {
+            return LogoutAsync(false);
+        }
+
         /// <summary>
         /// Logouts from the wiki site.
         /// </summary>
-        /// <remarks>This operation will refresh <see cref="AccountInfo"/>,
-        /// unless <see cref="SiteOptions.ExplicitInfoRefresh"/> is <c>true</c> when initializing
-        /// the instance. In the latter case, <see cref="AccountInfo"/> will be invalidated,
+        /// <param name="invalidateAccountInfo">Whether to invalidate <see cref="AccountInfo"/>
+        /// instead of calling <see cref="RefreshAccountInfoAsync"/> to retrieve the latest account information after logging out.</param>
+        /// <remarks>If <paramref name="invalidateAccountInfo"/> is <c>true</c>,
+        /// <see cref="AccountInfo"/> will be invalidated,
         /// and any attempt to read the property will raise <see cref="InvalidOperationException"/>
         /// until the next successful login.</remarks>
         /// <exception cref="InvalidOperationException">Attempt to login/logout concurrently.</exception>
-        public async Task LogoutAsync()
+        public async Task LogoutAsync(bool invalidateAccountInfo)
         {
             if (Interlocked.Exchange(ref isLoggingInOut, 1) != 0)
                 throw new InvalidOperationException("Cannot login/logout concurrently.");
@@ -678,7 +719,7 @@ namespace WikiClientLibrary.Sites
                         action = "logout",
                     }), true, CancellationToken.None);
                     tokensManager.ClearCache();
-                    if (options.ExplicitInfoRefresh)
+                    if (invalidateAccountInfo)
                         _AccountInfo = null;
                     else
                         await RefreshAccountInfoAsync();
@@ -709,11 +750,23 @@ namespace WikiClientLibrary.Sites
             return string.IsNullOrEmpty(_SiteInfo?.SiteName) ? options.ApiEndpoint : _SiteInfo.SiteName;
         }
 
+        /// <inheritdoc />
         public ILogger Logger
         {
             get => _Logger;
             set => _Logger = value ?? NullLogger.Instance;
         }
+
+        private readonly Task localInitialization;
+
+        /// <inheritdoc />
+        /// <remarks>
+        /// For derived classes with their own asynchronous initialization logic,
+        /// a. in asynchronous initialization task, await the value of this property set by the base class first,
+        /// then do your own initialization work.
+        /// b. in your class constructor, replace the value of this property with your combined initialization task.
+        /// </remarks>
+        public Task Initialization { get; protected set; }
     }
 
 }

@@ -39,6 +39,15 @@ namespace UnitTestProject1
         private static Func<WikiSite, Task> LoginCoreAsyncHandler { get; set; }
 
         /// <summary>
+        /// When implemented in your own credential file,
+        /// set this property to a function that can return a <see cref="WikiSite"/> instance
+        /// using <see cref="WikiSite(IWikiClient,SiteOptions,string,string)"/> overload
+        /// to login to the site during initialization.
+        /// You can use <see cref="SiteOptions.ApiEndpoint"/> to determine which site to login into.
+        /// </summary>
+        private static Func<IWikiClient, SiteOptions, Task<WikiSite>> EarlyLoginCoreAsyncHandler { get; set; }
+
+        /// <summary>
         /// Initialize confidential information.
         /// </summary>
         /// <remarks>You can initialize <see cref="DirtyTestsEntryPointUrl"/> in this method.</remarks>
@@ -52,12 +61,32 @@ namespace UnitTestProject1
             if (site == null) throw new ArgumentNullException(nameof(site));
             if (LoginCoreAsyncHandler == null)
             {
-                // This is usually because LoginCore hasn't been implemented yet.
-                throw new NotSupportedException("To enable login feature, you should implement LoginCoreAsync private function. See http://github.com/cxuesong/WikiClientLibrary for more information.");
+                throw new NotSupportedException("To enable login feature, you should set `LoginCoreAsyncHandler` in `Initialize` private function. See http://github.com/cxuesong/WikiClientLibrary for more information.");
             }
             await LoginCoreAsyncHandler(site);
             if (!site.AccountInfo.IsUser)
-                throw new NotSupportedException("Failed to login into: " + site + " . Check your LoginCoreAsync implementation.");
+                throw new NotSupportedException("Failed to login into: " + site + " . Check your LoginCoreAsyncHandler implementation.");
+        }
+
+        /// <summary>
+        /// Use predefined credential routine, return a logged-in WikiSite instance.
+        /// </summary>
+        public static async Task<WikiSite> EarlyLoginAsync(IWikiClient wikiClient, SiteOptions options)
+        {
+            if (wikiClient == null) throw new ArgumentNullException(nameof(wikiClient));
+            if (options == null) throw new ArgumentNullException(nameof(options));
+            if (EarlyLoginCoreAsyncHandler == null)
+            {
+                throw new NotSupportedException("To enable login feature, you should set `EarlyLoginCoreAsyncHandler` in `Initialize` private function. See http://github.com/cxuesong/WikiClientLibrary for more information.");
+            }
+            var site = await EarlyLoginCoreAsyncHandler(wikiClient, options);
+            if (!site.Initialization.IsCompleted)
+                throw new InvalidOperationException("You forgot to await WikiSite.Initialization in your EarlyLoginCoreAsyncHandler implementation.");
+            if (site == null)
+                throw new NotSupportedException("Your EarlyLoginCoreAsyncHandler implementation returned null for site: " + options.ApiEndpoint + ".");
+            if (!site.AccountInfo.IsUser)
+                throw new NotSupportedException("Failed to login into: " + site + " . Check your EarlyLoginCoreAsyncHandler implementation.");
+            return site;
         }
 
         static CredentialManager()

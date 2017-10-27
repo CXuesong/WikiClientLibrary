@@ -471,6 +471,11 @@ namespace WikiClientLibrary.Pages
         /// Submits content contained in <see cref="Content"/>, making edit to the page.
         /// (MediaWiki 1.16)
         /// </summary>
+        /// <param name="summary">The edit summary. Leave it blank to use the default edit summary.</param>
+        /// <param name="minor">Whether the edit is a minor edit. (See <a href="https://meta.wikimedia.org/wiki/Help:Minor_edit">m:Help:Minor Edit</a>)</param>
+        /// <param name="bot">Whether to mark the edit as bot; even if you are using a bot account the edits will not be marked unless you set this flag.</param>
+        /// <param name="watch">Specify how the watchlist is affected by this edit.</param>
+        /// <param name="cancellationToken">A token used to cancel the operation.</param>
         /// <returns><c>true</c> if page content has been changed; <c>false</c> otherwise.</returns>
         /// <remarks>
         /// This action will refill <see cref="Id" />, <see cref="Title"/>,

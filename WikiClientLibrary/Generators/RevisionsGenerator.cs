@@ -15,7 +15,7 @@ namespace WikiClientLibrary.Generators
 {
 
     /// <summary>
-    /// Represents a generator (or iterator) of <see cref="Revision"/> on a specific page.
+    /// Represents a generator (or iterator) of <see cref="Revision"/>s on a specific page.
     /// </summary>
     public class RevisionsGenerator : WikiPagePropertyGenerator<Revision, WikiPage>
     {
@@ -25,6 +25,8 @@ namespace WikiClientLibrary.Generators
         {
         }
 
+        /// <inheritdoc />
+        /// <param name="pageTitle">Title of the page from which to generate revisions.</param>
         public RevisionsGenerator(WikiSite site, string pageTitle) : base(site)
         {
             PageTitle = pageTitle;

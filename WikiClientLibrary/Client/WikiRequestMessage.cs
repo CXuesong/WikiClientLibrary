@@ -8,6 +8,9 @@ namespace WikiClientLibrary.Client
     /// <summary>
     /// The traceable API request message to be sent to the wiki sites.
     /// </summary>
+    /// <remarks>
+    /// <para>For the role this interface plays in invoking wiki API, see <see cref="IWikiClient.InvokeAsync"/>.</para>
+    /// </remarks>
     public abstract class WikiRequestMessage
     {
 
@@ -17,7 +20,7 @@ namespace WikiClientLibrary.Client
         private static int idCounter;
 
         /// <param name="id">Id of the request, for tracing. If left <c>null</c>, an automatically-generated id will be used.</param>
-        public WikiRequestMessage(string id)
+        protected WikiRequestMessage(string id)
         {
             Id = id ?? NextId();
         }

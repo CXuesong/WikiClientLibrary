@@ -104,17 +104,15 @@ namespace UnitTestProject1.Tests
             Output.WriteLine($"{site.AccountInfo.Name} has logged out.");
         }
 
-        /// <summary>
-        /// Tests <see cref="SiteOptions.ExplicitInfoRefresh"/>.
-        /// </summary>
         [Fact]
         public async Task LoginWpTest2_3()
         {
-            var site = await WikiSite.CreateAsync(CreateWikiClient(),
-                new SiteOptions(Endpoints.WikipediaTest2) {ExplicitInfoRefresh = true});
-            Assert.Throws<InvalidOperationException>(() => site.SiteInfo.Version);
+            var site = new WikiSite(CreateWikiClient(),
+                new SiteOptions(Endpoints.WikipediaTest2), "!!RandomUserName!!", "!!RandomPassword!!");
+            await Assert.ThrowsAsync<OperationFailedException>(() => site.Initialization);
+            // The initialization has failed.
+            Assert.Throws<InvalidOperationException>(() => site.SiteInfo);
         }
-        
 
         /// <summary>
         /// Tests legacy way for logging in. That is, to call "login" API action
@@ -123,10 +121,8 @@ namespace UnitTestProject1.Tests
         [Fact]
         public async Task LoginWpTest2_4()
         {
-            var site = await WikiSite.CreateAsync(CreateWikiClient(),
-                new SiteOptions(Endpoints.WikipediaTest2) {ExplicitInfoRefresh = true});
-            await CredentialManager.LoginAsync(site);
-            await site.RefreshSiteInfoAsync();
+            var site = await CredentialManager.EarlyLoginAsync(CreateWikiClient(),
+                new SiteOptions(Endpoints.WikipediaTest2));
             ShallowTrace(site);
             await site.LogoutAsync();
         }
@@ -140,39 +136,13 @@ namespace UnitTestProject1.Tests
             if (string.IsNullOrEmpty(CredentialManager.PrivateWikiTestsEntryPointUrl))
                 throw new SkipException("The test needs CredentialManager.PrivateWikiTestsEntryPointUrl to be set.");
             var client = CreateWikiClient();
-            // Load cookies, if any. Here we just create a client from scratch.
-            var site = await WikiSite.CreateAsync(client,
-                new SiteOptions(CredentialManager.PrivateWikiTestsEntryPointUrl)
-                {
-                    ExplicitInfoRefresh = true
-                });
-            bool needsLogin;
-            try
-            {
-                // It's better to get user (rather than site) info here.
-                await site.RefreshAccountInfoAsync();
-                // If the attempt is succcessful, it means we should have logged in.
-                // After all, it's a private wiki, where anonymous users shouldn't have
-                // access to reading the wiki.
-                needsLogin = !site.AccountInfo.IsUser;
-                // If needsLogin evaluates to true here... Well, you'd better
-                // check if your private wiki is private enough.
-                // Nonetheless, the code still works XD
-            }
-            catch (UnauthorizedOperationException)
-            {
-                // Cannot read user info. We must haven't logged in.
-                needsLogin = true;
-            }
-            if (needsLogin)
-            {
-                // Login if needed.
-                await CredentialManager.LoginAsync(site);
-                Debug.Assert(site.AccountInfo.IsUser);
-            }
-            // Login succeeded. We should initialize site information.
-            await site.RefreshSiteInfoAsync();
-            // Now we can do something.
+            // In your client code, you may load cookies beforehand,
+            // and use the following statements to check whether you have already logged in
+            //      var site = new WikiSite(WikiClient, "api-endpoint");
+            //      await site.Initialization;
+            // The second statement will throw exception if you haven't logged in.
+            var site = await CredentialManager.EarlyLoginAsync(CreateWikiClient(), 
+                new SiteOptions(CredentialManager.PrivateWikiTestsEntryPointUrl));
             ShallowTrace(site);
             await site.LogoutAsync();
         }

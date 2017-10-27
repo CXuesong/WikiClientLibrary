@@ -18,6 +18,8 @@ namespace WikiClientLibrary.Generators
         {
         }
 
+        /// <inheritdoc />
+        /// <param name="targetTitle">List pages linking to this title. The title does not need to exist.</param>
         public BacklinksGenerator(WikiSite site, string targetTitle) : base(site)
         {
             TargetTitle = targetTitle;

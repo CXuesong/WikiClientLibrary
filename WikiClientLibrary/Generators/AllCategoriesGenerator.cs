@@ -14,6 +14,8 @@ namespace WikiClientLibrary.Generators
     /// </summary>
     public class AllCategoriesGenerator : WikiPageGenerator<CategoryPage>
     {
+
+        /// <inheritdoc />
         public AllCategoriesGenerator(WikiSite site) : base(site)
         {
         }

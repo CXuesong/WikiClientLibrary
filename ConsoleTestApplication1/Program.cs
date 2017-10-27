@@ -43,8 +43,12 @@ namespace ConsoleTestApplication1
                 Logger = loggerFactory.CreateLogger<WikiClient>(),
             };
             // Create a MediaWiki Site instance with the URL of API endpoint.
-            var site = await WikiSite.CreateAsync(wikiClient, "https://test2.wikipedia.org/w/api.php");
-            site.Logger = loggerFactory.CreateLogger<WikiSite>();
+            var site = new WikiSite(wikiClient, "https://test2.wikipedia.org/w/api.php")
+            {
+                Logger = loggerFactory.CreateLogger<WikiSite>()
+            };
+            // Waits for the WikiSite to initialize
+            await site.Initialization;
             // Access site information via Site.SiteInfo
             Console.WriteLine("API version: {0}", site.SiteInfo.Generator);
             // Access user information via Site.UserInfo
@@ -104,7 +108,8 @@ namespace ConsoleTestApplication1
             // Create a MediaWiki API client.
             var wikiClient = new WikiClient();
             // Create a MediaWiki Site instance.
-            var site = await WikiSite.CreateAsync(wikiClient, "https://en.wikipedia.org/w/api.php");
+            var site = new WikiSite(wikiClient, "https://en.wikipedia.org/w/api.php");
+            await site.Initialization;
             // List all pages starting from item "Wiki", without redirect pages.
             var allpages = new AllPagesGenerator(site)
             {
@@ -133,7 +138,8 @@ namespace ConsoleTestApplication1
             // Create a MediaWiki API client.
             var wikiClient = new WikiClient();
             // Create a MediaWiki Site instance.
-            var site = await WikiSite.CreateAsync(wikiClient, "https://en.wikipedia.org/w/api.php");
+            var site = new WikiSite(wikiClient, "https://en.wikipedia.org/w/api.php");
+            await site.Initialization;
             var rcg = new RecentChangesGenerator(site)
             {
                 TypeFilters = RecentChangesFilterTypes.Create,
@@ -162,7 +168,8 @@ namespace ConsoleTestApplication1
             // Create a MediaWiki API client.
             var wikiClient = new WikiClient();
             // Create a MediaWiki Site instance.
-            var site = await WikiSite.CreateAsync(wikiClient, Input("Wiki site API URL"));
+            var site = new WikiSite(wikiClient, Input("Wiki site API URL"));
+            await site.Initialization;
             await site.LoginAsync(Input("User name"), Input("Password"));
             var rcg = new RecentChangesGenerator(site)
             {

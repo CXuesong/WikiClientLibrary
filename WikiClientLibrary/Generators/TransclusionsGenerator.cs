@@ -12,7 +12,7 @@ namespace WikiClientLibrary.Generators
     /// (<a href="https://www.mediawiki.org/wiki/API:Templates">mw:API:Templates</a>, MediaWiki 1.11+)
     /// </summary>
     /// <seealso cref="LinksGenerator"/>
-    /// <see cref="TranscludedInGenerator"/>
+    /// <seealso cref="TranscludedInGenerator"/>
     public class TransclusionsGenerator : WikiPagePropertyGenerator<WikiPage>
     {
         /// <inheritdoc />

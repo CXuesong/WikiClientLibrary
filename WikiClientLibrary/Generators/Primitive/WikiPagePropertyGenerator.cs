@@ -19,8 +19,10 @@ namespace WikiClientLibrary.Generators.Primitive
     /// (or sequence, see <a href="https://www.mediawiki.org/wiki/API:Generator">mw:API:Generator</a>)
     /// of <see cref="WikiPage"/>.
     /// </summary>
+    /// <typeparam name="TItem">The type of listed items.</typeparam>
+    /// <typeparam name="TPage">The type of listed <see cref="WikiPage"/>.</typeparam>
     /// <remarks>
-    /// <para>For a common implementations for MediaWiki generator, prefer inheriting from
+    /// <para>For common implementations for MediaWiki generator, prefer inheriting from
     /// <see cref="WikiPagePropertyGenerator{TPage}"/>, which returns <see cref="WikiPageStub"/>
     /// for <see cref="WikiList{T}.EnumItemsAsync"/> implementation.</para>
     /// <para>
