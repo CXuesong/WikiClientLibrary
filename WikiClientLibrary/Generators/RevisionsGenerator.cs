@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
 using WikiClientLibrary.Client;
 using WikiClientLibrary.Generators.Primitive;
+using WikiClientLibrary.Infrastructures;
 using WikiClientLibrary.Pages;
 using WikiClientLibrary.Sites;
 
@@ -55,9 +56,7 @@ namespace WikiClientLibrary.Generators
         /// <inheritdoc />
         protected override Revision ItemFromJson(JToken json, JObject jpage)
         {
-            var rev = json.ToObject<Revision>(Utility.WikiJsonSerializer);
-            rev.Page = new WikiPageStub((int)jpage["pageid"], (string)jpage["title"], (int)jpage["ns"]);
-            return rev;
+            return MediaWikiHelper.RevisionFromJson((JObject)json, MediaWikiHelper.PageStubFromRevision(jpage));
         }
 
         /// <summary>

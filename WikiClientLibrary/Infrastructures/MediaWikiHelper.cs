@@ -11,6 +11,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using WikiClientLibrary.Pages;
 
 namespace WikiClientLibrary.Infrastructures
 {
@@ -116,6 +117,18 @@ namespace WikiClientLibrary.Infrastructures
             var content = await stream.ReadAllStringAsync(cancellationToken);
             //Logger?.Trace(content);
             return JToken.Parse(content);
+        }
+
+        public static WikiPageStub PageStubFromRevision(JObject jPage)
+        {
+            return new WikiPageStub((int)jPage["pageid"], (string)jPage["title"], (int)jPage["ns"]);
+        }
+
+        public static Revision RevisionFromJson(JObject jRevision, WikiPageStub pageStub)
+        {
+            var rev = jRevision.ToObject<Revision>(Utility.WikiJsonSerializer);
+            rev.Page = pageStub;
+            return rev;
         }
 
     }
