@@ -22,17 +22,11 @@ namespace UnitTestProject1.Tests
             // SiteNeedsLogin(Endpoints.WikiaTest);
         }
 
-        protected WikiaSite CreateWikiaSite(WikiSite site)
-        {
-            return new WikiaSite(site) {Logger = OutputLoggerFactory.CreateLogger<WikiaSite>()};
-        }
-
         [Fact]
         public async Task FetchUsersTest()
         {
             var site = await WikiaTestSiteAsync;
-            var wikiaSite = CreateWikiaSite(site);
-            var users = await wikiaSite.FetchUsersAsync(new[] {"Jasonr", "angela", "user_not_exist"}).ToArray();
+            var users = await site.FetchUsersAsync(new[] {"Jasonr", "angela", "user_not_exist"}).ToArray();
             ShallowTrace(users);
             Assert.Equal(2, users.Length);
             Assert.Equal("Jasonr", users[0].Name);
@@ -43,12 +37,12 @@ namespace UnitTestProject1.Tests
             Assert.Equal("Angela", users[1].Title);
             Assert.Equal("http://mediawiki119.wikia.com/wiki/User:Angela", users[1].UserPageUrl);
             Assert.Equal(2, users[1].Id);
-            var user = await wikiaSite.FetchUserAsync("__mattisManzel_");
+            var user = await site.FetchUserAsync("__mattisManzel_");
             Assert.Equal("MattisManzel", user.Name);
             Assert.Equal("MattisManzel", user.Title);
             Assert.Equal("http://mediawiki119.wikia.com/wiki/User:MattisManzel", user.UserPageUrl);
             Assert.Equal(4, user.Id);
-            user = await wikiaSite.FetchUserAsync("user_not_exist");
+            user = await site.FetchUserAsync("user_not_exist");
             Assert.Null(user);
         }
 
@@ -56,8 +50,7 @@ namespace UnitTestProject1.Tests
         public async Task FetchSiteVariablesTest()
         {
             var site = await WikiaTestSiteAsync;
-            var wikiaSite = CreateWikiaSite(site);
-            var data = await wikiaSite.FetchWikiVariablesAsync();
+            var data = await site.FetchWikiVariablesAsync();
             ShallowTrace(data);
             Assert.Equal(203236, data.Id);
             Assert.Equal("Mediawiki 1.19 test Wiki", data.SiteName);
@@ -72,10 +65,9 @@ namespace UnitTestProject1.Tests
         public async Task FetchRelatedPagesTest()
         {
             var site = await WikiaTestSiteAsync;
-            var wikiaSite = CreateWikiaSite(site);
             var mainPage = new WikiPage(site, site.SiteInfo.MainPage);
             await mainPage.RefreshAsync();
-            var relatedPages = await wikiaSite.FetchRelatedPagesAsync(mainPage.Id);
+            var relatedPages = await site.FetchRelatedPagesAsync(mainPage.Id);
             ShallowTrace(relatedPages);
             // These are just random titles.
             Assert.All(relatedPages, p => Assert.Matches(@"\w+\d+", p.Title));
@@ -85,8 +77,7 @@ namespace UnitTestProject1.Tests
         public async Task SearchListTest()
         {
             var site = await WikiaTestSiteAsync;
-            var wikiaSite = CreateWikiaSite(site);
-            var list = new LocalWikiSearchList(wikiaSite, "test keyword")
+            var list = new LocalWikiSearchList(site, "test keyword")
             {
                 PaginationSize = 10,
             };
@@ -107,13 +98,11 @@ namespace UnitTestProject1.Tests
         public async Task DiscussionsTest()
         {
             var site = await WikiaTestSiteAsync;
-            var wikiaSite = CreateWikiaSite(site);
-            var x = await wikiaSite.EnumArticleCommentsAsync(190273).FirstOrDefault();
             var page = new WikiPage(site, "1WEPN1UE18M6N");
             await page.RefreshAsync();
             Skip.IfNot(page.Exists, $"Page [[{page}]] is gone. There is nothing we can do for it.");
             // [[w:c:mediawiki119:1WEPN1UE18M6N]]
-            var comments = await wikiaSite.EnumArticleCommentsAsync(page.Id).ToList();
+            var comments = await site.EnumArticleCommentsAsync(page.Id).ToList();
             ShallowTrace(comments);
             Assert.True(comments.Count >= 90);
         }

@@ -14,35 +14,30 @@ namespace WikiClientLibrary.Wikia
     /// <summary>
     /// The encapsulated Wikia site endpoint.
     /// </summary>
-    public class WikiaSite : IWikiClientLoggable
+    public class WikiaSite : WikiSite
     {
 
-        private readonly WikiaSiteOptions options;
-        private ILogger _Logger = NullLogger.Instance;
+        protected new WikiaSiteOptions Options => (WikiaSiteOptions)base.Options;
 
-        public WikiaSite(WikiSite wikiSite)
-        {
-            if (wikiSite == null) throw new ArgumentNullException(nameof(wikiSite));
-            WikiClient = wikiSite.WikiClient;
-            options = new WikiaSiteOptions(wikiSite.SiteInfo);
-        }
-
-        public WikiaSite(IWikiClient wikiClient, string siteRootUrl)
-        {
-            WikiClient = wikiClient ?? throw new ArgumentNullException(nameof(wikiClient));
-            options = new WikiaSiteOptions(siteRootUrl);
-        }
-
-        public WikiaSite(IWikiClient wikiClient, WikiaSiteOptions options)
-        {
-            WikiClient = wikiClient ?? throw new ArgumentNullException(nameof(wikiClient));
-            this.options = options ?? throw new ArgumentNullException(nameof(options));
-        }
-
+        /// <inheritdoc />
         /// <summary>
-        /// Gets the API client used to perform the requests.
+        /// Initializes a new <see cref="WikiaSite"/> instance from the Wikia site root URL.
         /// </summary>
-        public IWikiClient WikiClient { get; }
+        /// <param name="siteRootUrl">Wikia site root URL, with the ending slash. e.g. <c>http://community.wikia.com/</c>.</param>
+        public WikiaSite(IWikiClient wikiClient, string siteRootUrl) : this(wikiClient, new WikiaSiteOptions(siteRootUrl), null, null)
+        {
+        }
+
+        /// <inheritdoc />
+        public WikiaSite(IWikiClient wikiClient, WikiaSiteOptions options) : this(wikiClient, options, null, null)
+        {
+        }
+
+        /// <inheritdoc />
+        public WikiaSite(IWikiClient wikiClient, WikiaSiteOptions options, string userName, string password)
+            : base(wikiClient, options, userName, password)
+        {
+        }
 
         /// <inheritdoc cref="InvokeWikiaAjaxAsync(WikiRequestMessage,IWikiResponseMessageParser,CancellationToken)"/>
         public async Task<T> InvokeWikiaAjaxAsync<T>(WikiRequestMessage request,
@@ -76,7 +71,7 @@ namespace WikiClientLibrary.Wikia
                 localRequest = new WikiaQueryRequestMessage(request.Id, fields);
             }
             Logger.LogDebug("Invoking Wikia Ajax: {Request}", localRequest);
-            var result = await WikiClient.InvokeAsync(options.ScriptUrl, localRequest,
+            var result = await WikiClient.InvokeAsync(Options.ApiEndpoint, localRequest,
                 responseParser, cancellationToken);
             return result;
         }
@@ -99,7 +94,7 @@ namespace WikiClientLibrary.Wikia
         public async Task<object> InvokeNirvanaAsync(WikiRequestMessage request, IWikiResponseMessageParser responseParser, CancellationToken cancellationToken)
         {
             Logger.LogDebug("Invoking Nirvana API: {Request}", request);
-            var result = await WikiClient.InvokeAsync(options.NirvanaEndPointUrl, request, responseParser, cancellationToken);
+            var result = await WikiClient.InvokeAsync(Options.NirvanaEndPointUrl, request, responseParser, cancellationToken);
             return result;
         }
 
@@ -123,16 +118,10 @@ namespace WikiClientLibrary.Wikia
             CancellationToken cancellationToken)
         {
             Logger.LogDebug("Invoking Wikia API v1: {Request}", request);
-            var result = (JToken)await WikiClient.InvokeAsync(options.WikiaApiRootUrl + relativeUri,
+            var result = (JToken)await WikiClient.InvokeAsync(Options.WikiaApiRootUrl + relativeUri,
                 request, responseParser, cancellationToken);
             return result;
         }
 
-        /// <inheritdoc />
-        public ILogger Logger
-        {
-            get => _Logger;
-            set => _Logger = value ?? NullLogger.Instance;
-        }
     }
 }

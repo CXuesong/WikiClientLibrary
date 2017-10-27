@@ -23,6 +23,14 @@ namespace WikiClientLibrary.Sites
 
         private readonly SiteOptions options;
 
+        /// <summary>
+        /// Gets the options applied to the current instance.
+        /// </summary>
+        /// <remarks>
+        /// The value is cloned from the <see cref="SiteOptions"/> passed into constructor.
+        /// </remarks>
+        protected SiteOptions Options => options;
+
         #region Services
 
         /// <summary>

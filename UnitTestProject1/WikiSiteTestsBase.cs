@@ -12,6 +12,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using WikiClientLibrary.Client;
 using WikiClientLibrary.Sites;
+using WikiClientLibrary.Wikia;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -37,7 +38,7 @@ namespace UnitTestProject1
         {
             Output.WriteLine(Utility.DumpObject(obj, depth));
         }
-        
+
         protected virtual void Dispose(bool disposing)
         {
             if (disposing)
@@ -98,17 +99,35 @@ namespace UnitTestProject1
         /// </summary>
         private async Task<WikiSite> CreateWikiSiteAsync(IWikiClient wikiClient, string url)
         {
-            var options = new SiteOptions(url)
+            if (url.Contains(".wikia.com"))
             {
-                AccountAssertion = AccountAssertionBehavior.AssertAll,
-            };
-            var site = new WikiSite(wikiClient, options) {Logger = OutputLoggerFactory.CreateLogger<WikiSite>()};
-            await site.Initialization;
-            if (sitesNeedsLogin.Contains(url))
-            {
-                await CredentialManager.LoginAsync(site);
+                var uri = new Uri(url, UriKind.Absolute);
+                var options = new WikiaSiteOptions(uri.GetLeftPart(UriPartial.Authority) + "/")
+                {
+                    AccountAssertion = AccountAssertionBehavior.AssertAll,
+                };
+                var site = new WikiaSite(wikiClient, options) { Logger = OutputLoggerFactory.CreateLogger<WikiaSite>() };
+                await site.Initialization;
+                if (sitesNeedsLogin.Contains(url))
+                {
+                    await CredentialManager.LoginAsync(site);
+                }
+                return site;
             }
-            return site;
+            else
+            {
+                var options = new SiteOptions(url)
+                {
+                    AccountAssertion = AccountAssertionBehavior.AssertAll,
+                };
+                var site = new WikiSite(wikiClient, options) { Logger = OutputLoggerFactory.CreateLogger<WikiSite>() };
+                await site.Initialization;
+                if (sitesNeedsLogin.Contains(url))
+                {
+                    await CredentialManager.LoginAsync(site);
+                }
+                return site;
+            }
         }
 
         /// <summary>
@@ -123,7 +142,18 @@ namespace UnitTestProject1
 
         protected Task<WikiSite> WpTest2SiteAsync => GetWikiSiteAsync(Endpoints.WikipediaTest2);
 
-        protected Task<WikiSite> WikiaTestSiteAsync => GetWikiSiteAsync(Endpoints.WikiaTest);
+        protected Task<WikiaSite> WikiaTestSiteAsync
+        {
+            get
+            {
+                async Task<WikiaSite> Cast()
+                {
+                    return (WikiaSite)await GetWikiSiteAsync(Endpoints.WikiaTest);
+                }
+
+                return Cast();
+            }
+        }
 
         protected Task<WikiSite> WpLzhSiteAsync => GetWikiSiteAsync(Endpoints.WikipediaLzh);
 
@@ -137,7 +167,7 @@ namespace UnitTestProject1
 
         protected Task<WikiSite> WikiSiteFromNameAsync(string sitePropertyName)
         {
-            return (Task<WikiSite>) GetType()
+            return (Task<WikiSite>)GetType()
                 .GetProperty(sitePropertyName, BindingFlags.NonPublic | BindingFlags.Instance)
                 .GetValue(this);
         }
