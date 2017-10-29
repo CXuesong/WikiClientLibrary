@@ -22,7 +22,7 @@ namespace WikiClientLibrary.Wikia
     internal static class RequestHelper
     {
 
-        public static IAsyncEnumerable<Post> EnumArticleCommentsAsync(ArticleCommentArea board, PostQueryOptions options)
+        public static IAsyncEnumerable<Post> EnumArticleCommentsAsync(Board board, PostQueryOptions options)
         {
             IList<Post> PostsFromJsonOutline(JObject commentList)
             {
@@ -75,10 +75,10 @@ namespace WikiClientLibrary.Wikia
                             page = page
                         }), WikiaJsonResonseParser.Default, ct);
                         // Build comment structure.
-                        var jcomments = (JObject)jroot["commentListRaw"];
+                        var jcomments = jroot["commentListRaw"];
                         if (jcomments != null && jcomments.HasValues)
                         {
-                            var comments = PostsFromJsonOutline(jcomments);
+                            var comments = PostsFromJsonOutline((JObject)jcomments);
                             pagesCount = (int)jroot["pagesCount"];
                             await RefreshPostsAsync(PostsAndDescendants(comments), options, ct);
                             await sink.YieldAndWait(comments);

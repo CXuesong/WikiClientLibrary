@@ -187,7 +187,7 @@ namespace WikiClientLibrary.Wikia.Discussions
         /// <remarks>
         /// <para>Due to the limitations of Wikia API, we need to issue multiple requests to the
         /// server to retrieve the first revisions and the last revisions for the comments.
-        /// To reduce network traffic, by default the <see cref="ArticleCommentArea.EnumPostsAsync(PostQueryOptions)"/>
+        /// To reduce network traffic, by default the <see cref="Board.EnumPostsAsync(PostQueryOptions)"/>
         /// will fetch only the latest revision information, and try to determine the author,
         /// as well as the creation time of the comment by parsing the comment page title (e.g. <c>Talk:ArticleName/@comment-UserName-20170704160847</c>).
         /// This is inaccurate, because a user can change his/her user name, while the page title

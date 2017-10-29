@@ -95,10 +95,10 @@ namespace UnitTestProject1.Tests
         }
 
         [SkippableFact]
-        public async Task DiscussionsTest()
+        public async Task ArticleEnumCommentsTest()
         {
             var site = await WikiaTestSiteAsync;
-            var commentArea = new ArticleCommentArea(site, "1WEPN1UE18M6N");
+            var commentArea = new Board(site, "1WEPN1UE18M6N");
             await commentArea.RefreshAsync();
             Skip.IfNot(commentArea.Exists, $"Page [[{commentArea}]] is gone. There is nothing we can do for it.");
             // [[w:c:mediawiki119:1WEPN1UE18M6N]]
@@ -122,11 +122,38 @@ namespace UnitTestProject1.Tests
                 });
         }
 
+        //[SkippableFact]
+        //public async Task DiscussionsPostCommentTest()
+        //{
+        //    var site = await WikiaTestSiteAsync;
+        //    var commentArea = new Board(site, "Random40156");
+        //    await commentArea.RefreshAsync();
+        //    Skip.IfNot(commentArea.Exists, $"Page [[{commentArea}]] is gone. There is nothing we can do for it.");
+        //    var post = await commentArea.NewPostAsync("Test [[comment]].");
+        //    await post.RefreshAsync();
+        //    Assert.Equal("Test [[comment]].", post.Content);
+        //    var rep = await post.ReplyAsync("Test reply.");
+        //    await rep.ReplyAsync("Test reply, 3rd level.");
+        //}
+
         [SkippableFact]
-        public async Task DiscussionsPostCommentTest()
+        public async Task MessageWallEnumCommentsTest()
         {
             var site = await WikiaTestSiteAsync;
-            var commentArea = new ArticleCommentArea(site, "Random40156");
+            var commentArea = new Board(site, "Message Wall:QATestsUser");
+            await commentArea.RefreshAsync();
+            Skip.IfNot(commentArea.Exists, $"Page [[{commentArea}]] is gone. There is nothing we can do for it.");
+            var comments = await commentArea.EnumPostsAsync().Take(100).ToList();
+            ShallowTrace(comments);
+            // There are a lot of comments there...
+            Assert.Equal(100, comments.Count);
+        }
+
+        [SkippableFact]
+        public async Task MessageWallPostCommentTest()
+        {
+            var site = await WikiaTestSiteAsync;
+            var commentArea = new Board(site, site.AccountInfo.Name, WikiaNamespaces.MessageWall);
             await commentArea.RefreshAsync();
             Skip.IfNot(commentArea.Exists, $"Page [[{commentArea}]] is gone. There is nothing we can do for it.");
             var post = await commentArea.NewPostAsync("Test [[comment]].");
@@ -134,6 +161,18 @@ namespace UnitTestProject1.Tests
             Assert.Equal("Test [[comment]].", post.Content);
             var rep = await post.ReplyAsync("Test reply.");
             await rep.ReplyAsync("Test reply, 3rd level.");
+        }
+
+        [SkippableFact]
+        public async Task BoardEnumCommentsTest()
+        {
+            var site = await WikiaTestSiteAsync;
+            var commentArea = new Board(site, "Board:ForumBoard1509020771711");
+            await commentArea.RefreshAsync();
+            Skip.IfNot(commentArea.Exists, $"Page [[{commentArea}]] is gone. There is nothing we can do for it.");
+            var comments = await commentArea.EnumPostsAsync().Take(100).ToList();
+            ShallowTrace(comments);
+            Assert.True(comments.Count >= 2);
         }
 
         // Thread pages are always in-existent.

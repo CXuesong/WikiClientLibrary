@@ -9,13 +9,13 @@ using WikiClientLibrary.Pages;
 
 namespace WikiClientLibrary.Wikia.Discussions
 {
-    public class ArticleCommentArea
+    public class Board
     {
-        public ArticleCommentArea(WikiaSite site, string title) : this(site, title, BuiltInNamespaces.Main)
+        public Board(WikiaSite site, string title) : this(site, title, BuiltInNamespaces.Main)
         {
         }
 
-        public ArticleCommentArea(WikiaSite site, string title, int defaultNamespaceId)
+        public Board(WikiaSite site, string title, int defaultNamespaceId)
         {
             Site = site ?? throw new ArgumentNullException(nameof(site));
             var link = WikiLink.Parse(site, title, defaultNamespaceId);
@@ -23,7 +23,7 @@ namespace WikiClientLibrary.Wikia.Discussions
             Title = link.FullTitle;
         }
 
-        public ArticleCommentArea(WikiaSite site, int pageId)
+        public Board(WikiaSite site, int pageId)
         {
             Site = site ?? throw new ArgumentNullException(nameof(site));
             Id = pageId;
@@ -31,7 +31,7 @@ namespace WikiClientLibrary.Wikia.Discussions
             Title = null;
         }
 
-        public ArticleCommentArea(WikiPage page)
+        public Board(WikiPage page)
         {
             if (page == null) throw new ArgumentNullException(nameof(page));
             Site = (WikiaSite)page.Site;
