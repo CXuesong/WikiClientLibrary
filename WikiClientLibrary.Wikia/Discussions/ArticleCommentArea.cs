@@ -69,12 +69,19 @@ namespace WikiClientLibrary.Wikia.Discussions
             Title = (string)jpage["title"];
         }
 
+        /// <inheritdoc cref="EnumPostsAsync(PostQueryOptions)"/>
+        public IAsyncEnumerable<Post> EnumPostsAsync()
+        {
+            return EnumPostsAsync(PostQueryOptions.None);
+        }
+
         /// <summary>
         /// Asynchronously enumerates all the comments on the specified page.
         /// </summary>
-        public IAsyncEnumerable<Post> EnumPostsAsync()
+        /// <param name="options">The options used to fetch the post.</param>
+        public IAsyncEnumerable<Post> EnumPostsAsync(PostQueryOptions options)
         {
-            return RequestHelper.EnumArticleCommentsAsync(this);
+            return RequestHelper.EnumArticleCommentsAsync(this, options);
         }
 
         /// <inheritdoc cref="NewPostAsync(string,CancellationToken)"/>

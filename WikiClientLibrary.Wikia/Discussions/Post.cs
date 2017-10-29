@@ -9,6 +9,7 @@ using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using HtmlAgilityPack;
+using Microsoft.Extensions.Logging;
 using WikiClientLibrary.Pages;
 using WikiClientLibrary.Sites;
 
@@ -37,6 +38,8 @@ namespace WikiClientLibrary.Wikia.Discussions
         /// <summary>Gets the ID of the page that owns the comment.</summary>
         public int PageId { get; private set; }
 
+        public bool Exists { get; internal set; }
+
         /// <summary>Gets the comment content.</summary>
         public string Content { get; set; }
 
@@ -54,22 +57,32 @@ namespace WikiClientLibrary.Wikia.Discussions
 
         public IReadOnlyList<Post> Replies { get; internal set; } = emptyPosts;
 
-        /// <inheritdoc cref="RefreshAsync(CancellationToken)"/>
+        /// <inheritdoc cref="RefreshAsync(PostQueryOptions,CancellationToken)"/>
+        /// <seealso cref="DiscussionsExtensions.RefreshAsync(IEnumerable{Post})"/>
         public Task RefreshAsync()
         {
-            return RefreshAsync(CancellationToken.None);
+            return RefreshAsync(PostQueryOptions.None, CancellationToken.None);
+        }
+
+        /// <inheritdoc cref="RefreshAsync(PostQueryOptions,CancellationToken)"/>
+        /// <seealso cref="DiscussionsExtensions.RefreshAsync(IEnumerable{Post},PostQueryOptions)"/>
+        public Task RefreshAsync(PostQueryOptions options)
+        {
+            return RefreshAsync(options, CancellationToken.None);
         }
 
         /// <summary>
         /// Refreshes the post content from the server.
         /// </summary>
+        /// <param name="options">The options used to fetch the post.</param>
         /// <param name="cancellationToken">The token used to cancel the operation.</param>
         /// <remarks>
         /// This method will not fetch replies. <see cref="Replies"/> will remain unchanged after the invocation.
         /// </remarks>
-        public Task RefreshAsync(CancellationToken cancellationToken)
+        /// <seealso cref="DiscussionsExtensions.RefreshAsync(IEnumerable{Post},PostQueryOptions,CancellationToken)"/>
+        public Task RefreshAsync(PostQueryOptions options, CancellationToken cancellationToken)
         {
-            return RequestHelper.RefreshPostsAsync(new[] {this}, cancellationToken);
+            return RequestHelper.RefreshPostsAsync(new[] {this}, options, cancellationToken);
         }
 
         /// <inheritdoc cref="ReplyAsync(string,CancellationToken)"/>
@@ -92,7 +105,7 @@ namespace WikiClientLibrary.Wikia.Discussions
             return RequestHelper.PostCommentAsync(Site, this, PageId, Id, content, cancellationToken);
         }
 
-        // Talk:ArticleName/@comment-UserName-20170704160847?permalink=1234#comm-1234
+        // Talk:ArticleName/@comment-UserName-20170704160847
         private static readonly Regex PermalinkTimeStampMatcher = new Regex(@"@comment-(?<UserName>.+?)-(?<TimeStamp>\d{14})$");
 
         internal void SetRevisions(Revision firstRevision, Revision lastRevision)
@@ -100,7 +113,8 @@ namespace WikiClientLibrary.Wikia.Discussions
             Debug.Assert(lastRevision != null);
             if (firstRevision != null)
                 Debug.Assert(lastRevision.TimeStamp >= firstRevision.TimeStamp);
-            //Id = lastRevision.Page.Id;
+            Id = lastRevision.Page.Id;
+            Exists = true;
             TimeStamp = DateTime.MinValue;
             Replies = emptyPosts;
             Content = lastRevision.Content;
@@ -121,7 +135,7 @@ namespace WikiClientLibrary.Wikia.Discussions
                 }
                 else
                 {
-                    throw new UnexpectedDataException($"Cannot infer author from comment page title: {lastRevision.Page}.");
+                    Site.Logger.LogWarning("Cannot infer author from comment page title: {PageStub}.", lastRevision.Page);
                 }
             }
             else
@@ -157,4 +171,35 @@ namespace WikiClientLibrary.Wikia.Discussions
         }
 
     }
+
+    /// <summary>
+    /// Provides options for fetching a post from the server.
+    /// </summary>
+    [Flags]
+    public enum PostQueryOptions
+    {
+        /// <summary>No options.</summary>
+        None,
+        /// <summary>
+        /// Asks for exact author information, even if we are fetching for multiple
+        /// comments at one time.
+        /// </summary>
+        /// <remarks>
+        /// <para>Due to the limitations of Wikia API, we need to issue multiple requests to the
+        /// server to retrieve the first revisions and the last revisions for the comments.
+        /// To reduce network traffic, by default the <see cref="ArticleCommentArea.EnumPostsAsync(PostQueryOptions)"/>
+        /// will fetch only the latest revision information, and try to determine the author,
+        /// as well as the creation time of the comment by parsing the comment page title (e.g. <c>Talk:ArticleName/@comment-UserName-20170704160847</c>).
+        /// This is inaccurate, because a user can change his/her user name, while the page title
+        /// will not be changed necessarily. If you specify this flag, all the comment's first revision
+        /// will be fetched to determine the information of authoring user and time stamp. However,
+        /// you should note that MediaWiki API only allows to request for one page at a time when
+        /// you are requesting for the earliest revision of a page, so specifying this flag will cause
+        /// much network traffic.</para>
+        /// <para>If you are fetching for only 1 comment at a time, the exact authoring information
+        /// will be fetching regardless of this flag.</para>
+        /// </remarks>
+        ExactAuthoringInformation
+    }
+
 }

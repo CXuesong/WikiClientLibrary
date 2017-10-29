@@ -105,6 +105,21 @@ namespace UnitTestProject1.Tests
             var comments = await commentArea.EnumPostsAsync().ToList();
             ShallowTrace(comments);
             Assert.True(comments.Count >= 90);
+            var exactComments = comments.Take(10).Select(p => new Post(site, p.PageId, p.Id)).ToList();
+            await exactComments.RefreshAsync(PostQueryOptions.ExactAuthoringInformation);
+            Assert.All(comments.Zip(exactComments, (original, exact) => (original:original, exact:exact)),
+                pair =>
+                {
+                    // Assume the author hasn't changed the user name.
+                    // No, the assumption doesn't hold,
+                    // User:QATestsUser was originally User:WikiaUser
+                    //Assert.Equal(pair.original.Author.Name, pair.exact.Author.Name);
+                    // The revision time stamp might be some time lagged behind the time stamp in the page titie
+                    //Assert.Equal(pair.original.TimeStamp, pair.exact.TimeStamp);
+                    // Thus, allow for 15 sec. difference.
+                    Assert.True(pair.exact.TimeStamp - pair.original.TimeStamp < TimeSpan.FromSeconds(20),
+                        $"Expect TimeStamp = {pair.original.TimeStamp}; Actual TimeStamp = {pair.exact.TimeStamp}.");
+                });
         }
 
         [SkippableFact]

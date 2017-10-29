@@ -22,7 +22,7 @@ namespace WikiClientLibrary.Wikia
     internal static class RequestHelper
     {
 
-        public static IAsyncEnumerable<Post> EnumArticleCommentsAsync(ArticleCommentArea board)
+        public static IAsyncEnumerable<Post> EnumArticleCommentsAsync(ArticleCommentArea board, PostQueryOptions options)
         {
             IList<Post> PostsFromJsonOutline(JObject commentList)
             {
@@ -78,14 +78,15 @@ namespace WikiClientLibrary.Wikia
                         var jcomments = (JObject)jroot["commentListRaw"];
                         var comments = PostsFromJsonOutline(jcomments);
                         pagesCount = (int)jroot["pagesCount"];
-                        await RefreshPostsAsync(PostsAndDescendants(comments), ct);
+                        await RefreshPostsAsync(PostsAndDescendants(comments), options, ct);
                         await sink.YieldAndWait(comments);
                     }
                 }
             });
         }
 
-        public static async Task RefreshPostsAsync(IEnumerable<Post> posts, CancellationToken cancellationToken)
+        public static async Task RefreshPostsAsync(IEnumerable<Post> posts,
+            PostQueryOptions options, CancellationToken cancellationToken)
         {
             Debug.Assert(posts != null);
             // Fetch comment content.
@@ -98,44 +99,57 @@ namespace WikiClientLibrary.Wikia
                     : 50;
                 foreach (var partition in sitePosts.Partition(titleLimit))
                 {
-                    // Fetch first revision to determine author
-                    var idExpr = string.Join("|", partition.Select(p => p.Id));
-                    Task<JToken> firstRevisionTask = null;
-                    if (partition.Count == 1)
+                    using (site.BeginActionScope(partition, options))
                     {
-                        // We can only fetch for 1 page at a time, with rvdir = "newer"
-                        firstRevisionTask = site.GetJsonAsync(new MediaWikiFormRequestMessage(new
+                        // Fetch last revisions to determine content and last editor
+                        var lastRevisionTask = site.GetJsonAsync(new MediaWikiFormRequestMessage(new
                         {
                             action = "query",
-                            pageids = idExpr,
+                            pageids = string.Join("|", partition.Select(p => p.Id)),
                             prop = "revisions",
-                            rvdir = "newer",
-                            rvlimit = 1,
+                            rvlimit = partition.Count == 1 ? (int?)1 : null,
                             rvprop = MediaWikiHelper.GetQueryParamRvProp(PageQueryOptions.FetchContent)
                         }), cancellationToken);
-                    }
-                    // Fetch first revision to determine content and last editor
-                    var jLastRevResult = await site.GetJsonAsync(new MediaWikiFormRequestMessage(new
-                    {
-                        action = "query",
-                        pageids = idExpr,
-                        prop = "revisions",
-                        rvlimit = partition.Count == 1 ? (int?)1 : null,
-                        rvprop = MediaWikiHelper.GetQueryParamRvProp(PageQueryOptions.FetchContent)
-                    }), cancellationToken);
-                    var jFirstRevResult = firstRevisionTask == null ? null : await firstRevisionTask;
-                    foreach (var post in partition)
-                    {
-                        Revision rev1 = null;
-                        var jpage2 = jLastRevResult["query"]["pages"][post.Id.ToString(CultureInfo.InvariantCulture)];
-                        var pageStub = MediaWikiHelper.PageStubFromRevision((JObject)jpage2);
-                        var rev2 = MediaWikiHelper.RevisionFromJson((JObject)jpage2["revisions"].First, pageStub);
-                        if (jFirstRevResult != null)
+                        // Fetch the first revisions, when needed, to determine author.
+                        Dictionary<int, Revision> firstRevisionDict = null;
+                        if (partition.Count == 1
+                            || (options & PostQueryOptions.ExactAuthoringInformation) == PostQueryOptions.ExactAuthoringInformation)
                         {
-                            var jpage1 = jFirstRevResult["query"]["pages"][post.Id.ToString(CultureInfo.InvariantCulture)];
-                            rev1 = MediaWikiHelper.RevisionFromJson((JObject)jpage1["revisions"].First, pageStub);
+                            firstRevisionDict = new Dictionary<int, Revision>();
+                            foreach (var post in partition)
+                            {
+                                // We can only fetch for 1 page at a time, with rvdir = "newer"
+                                var jresult = await site.GetJsonAsync(new MediaWikiFormRequestMessage(new
+                                {
+                                    action = "query",
+                                    pageids = post.Id,
+                                    prop = "revisions",
+                                    rvdir = "newer",
+                                    rvlimit = 1,
+                                    rvprop = MediaWikiHelper.GetQueryParamRvProp(PageQueryOptions.FetchContent)
+                                }), cancellationToken);
+                                var jpage = jresult["query"]["pages"][post.Id.ToString(CultureInfo.InvariantCulture)];
+                                if (jpage["missing"] != null)
+                                {
+                                    post.Exists = false;
+                                    continue;
+                                }
+                                var pageStub = MediaWikiHelper.PageStubFromRevision((JObject)jpage);
+                                var rev = MediaWikiHelper.RevisionFromJson((JObject)jpage["revisions"].First, pageStub);
+                                firstRevisionDict[post.Id] = rev;
+                            }
+
                         }
-                        post.SetRevisions(rev1, rev2);
+                        var jLastRevResult = await lastRevisionTask;
+                        foreach (var post in partition)
+                        {
+                            var jpage = jLastRevResult["query"]["pages"][post.Id.ToString(CultureInfo.InvariantCulture)];
+                            var pageStub = MediaWikiHelper.PageStubFromRevision((JObject)jpage);
+                            var lastRev = MediaWikiHelper.RevisionFromJson((JObject)jpage["revisions"].First, pageStub);
+                            Revision firstRev = null;
+                            firstRevisionDict?.TryGetValue(post.Id, out firstRev);
+                            post.SetRevisions(firstRev, lastRev);
+                        }
                     }
                 }
             }
