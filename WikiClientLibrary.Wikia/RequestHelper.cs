@@ -76,10 +76,13 @@ namespace WikiClientLibrary.Wikia
                         }), WikiaJsonResonseParser.Default, ct);
                         // Build comment structure.
                         var jcomments = (JObject)jroot["commentListRaw"];
-                        var comments = PostsFromJsonOutline(jcomments);
-                        pagesCount = (int)jroot["pagesCount"];
-                        await RefreshPostsAsync(PostsAndDescendants(comments), options, ct);
-                        await sink.YieldAndWait(comments);
+                        if (jcomments != null && jcomments.HasValues)
+                        {
+                            var comments = PostsFromJsonOutline(jcomments);
+                            pagesCount = (int)jroot["pagesCount"];
+                            await RefreshPostsAsync(PostsAndDescendants(comments), options, ct);
+                            await sink.YieldAndWait(comments);
+                        }
                     }
                 }
             });
