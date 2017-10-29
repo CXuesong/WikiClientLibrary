@@ -25,32 +25,6 @@ namespace WikiClientLibrary
     {
         #region Page/Revision query
 
-        public static string GetRvProp(PageQueryOptions options)
-        {
-            if ((options & PageQueryOptions.FetchContent) == PageQueryOptions.FetchContent)
-                return "ids|timestamp|flags|comment|user|contentmodel|sha1|tags|size|content";
-            return "ids|timestamp|flags|comment|user|contentmodel|sha1|tags|size";
-        }
-
-        /// <summary>
-        /// Builds common parameters for fetching a page.
-        /// </summary>
-        public static IDictionary<string, object> GetPageFetchingParams(PageQueryOptions options)
-        {
-            var queryParams = new Dictionary<string, object>
-            {
-                {"action", "query"},
-                // We also fetch category info, just in case.
-                {"prop", "info|categoryinfo|imageinfo|revisions|pageprops"},
-                {"inprop", "protection"},
-                {"iiprop", "timestamp|user|comment|url|size|sha1"},
-                {"rvprop", GetRvProp(options)},
-                {"redirects", (options & PageQueryOptions.ResolveRedirects) == PageQueryOptions.ResolveRedirects},
-                {"maxlag", 5},
-            };
-            return queryParams;
-        }
-
         public static IAsyncEnumerable<JObject> QueryWithContinuation(WikiSite site,
             IEnumerable<KeyValuePair<string, object>> parameters,
             Func<IDisposable> beginActionScope,
@@ -122,7 +96,7 @@ namespace WikiClientLibrary
             foreach (var sitePages in pages.GroupBy(p => Tuple.Create(p.Site, p.GetType())))
             {
                 var site = sitePages.Key.Item1;
-                var queryParams = GetPageFetchingParams(options);
+                var queryParams = MediaWikiHelper.GetQueryParams(options);
                 var titleLimit = site.AccountInfo.HasRight(UserRights.ApiHighLimits)
                     ? 500
                     : 50;
@@ -133,6 +107,11 @@ namespace WikiClientLibrary
                         site.Logger.LogDebug("Fetching {Count} pages.", partition.Count);
                         // We use titles to query pages.
                         queryParams["titles"] = string.Join("|", partition.Select(p => p.Title));
+                        // For single-page fetching, force fetching 1 revision only.
+                        if (partition.Count == 1)
+                            queryParams["rvlimit"] = 1;
+                        else
+                            queryParams.Remove("rvlimit");
                         var jobj = await site.GetJsonAsync(new MediaWikiFormRequestMessage(queryParams), cancellationToken);
                         // Process title normalization.
                         var normalized = jobj["query"]["normalized"]?.ToDictionary(n => (string)n["from"],
@@ -180,7 +159,7 @@ namespace WikiClientLibrary
             CancellationToken cancellationToken)
         {
             if (revIds == null) throw new ArgumentNullException(nameof(revIds));
-            var queryParams = GetPageFetchingParams(options);
+            var queryParams = MediaWikiHelper.GetQueryParams(options);
             var titleLimit = site.AccountInfo.HasRight(UserRights.ApiHighLimits)
                 ? 500
                 : 50;
