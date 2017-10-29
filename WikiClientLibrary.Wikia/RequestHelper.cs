@@ -1,12 +1,20 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Diagnostics;
+using System.Globalization;
+using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using AsyncEnumerableExtensions;
 using HtmlAgilityPack;
+using Newtonsoft.Json.Linq;
+using WikiClientLibrary.Client;
+using WikiClientLibrary.Infrastructures;
 using WikiClientLibrary.Infrastructures.Logging;
+using WikiClientLibrary.Pages;
+using WikiClientLibrary.Sites;
 using WikiClientLibrary.Wikia.Discussions;
 
 namespace WikiClientLibrary.Wikia
@@ -14,39 +22,122 @@ namespace WikiClientLibrary.Wikia
     internal static class RequestHelper
     {
 
-        public static IAsyncEnumerable<Post> EnumArticleCommentsAsync(ArticleCommentArea articleCommentArea)
+        public static IAsyncEnumerable<Post> EnumArticleCommentsAsync(ArticleCommentArea board)
         {
-            using (articleCommentArea.Site.BeginActionScope(articleCommentArea))
+            IList<Post> PostsFromJsonOutline(JObject commentList)
             {
-                return AsyncEnumerableFactory.FromAsyncGenerator<Post>(async (sink, ct) =>
+                return commentList.Properties().Select(p =>
+                {
+                    var post = new Post(board.Site, board.Id, Convert.ToInt32(p.Name));
+                    var level2 = (JObject)p.Value["level2"];
+                    if (level2 != null && level2.HasValues)
+                    {
+                        post.Replies = new ReadOnlyCollection<Post>(level2.Properties().Select(p2 =>
+                            new Post(board.Site, board.Id, Convert.ToInt32(p2.Name))).ToList());
+                    }
+                    return post;
+                }).ToList();
+            }
+
+            IEnumerable<Post> PostsAndDescendants(IEnumerable<Post> posts)
+            {
+                foreach (var p in posts)
+                {
+                    yield return p;
+                    if (p.Replies.Count > 0)
+                    {
+                        foreach (var p2 in p.Replies)
+                        {
+                            yield return p2;
+                            // Wikia only supports level-2 comments for now.
+                            Debug.Assert(p2.Replies.Count == 0);
+                        }
+                    }
+                }
+            }
+
+            return AsyncEnumerableFactory.FromAsyncGenerator<Post>(async (sink, ct) =>
+            {
+                using (board.Site.BeginActionScope(board))
                 {
                     // Refresh to get the page id.
-                    if (articleCommentArea.Id == 0) await articleCommentArea.RefreshAsync(ct);
-                    if (!articleCommentArea.Exists) return;
-                    var page = 1;
-                    while (true)
+                    if (board.Id == 0) await board.RefreshAsync(ct);
+                    if (!board.Exists) return;
+                    var pagesCount = 1;
+                    for (int page = 1; page <= pagesCount; page++)
                     {
-                        var doc = await articleCommentArea.Site.InvokeNirvanaAsync(new WikiaQueryRequestMessage(new
+                        var jroot = await board.Site.InvokeNirvanaAsync(new WikiaQueryRequestMessage(new
                         {
-                            format = "html",
+                            format = "json",
                             controller = "ArticleComments",
                             method = "Content",
-                            articleId = articleCommentArea.Id,
+                            articleId = board.Id,
                             page = page
-                        }), WikiaHtmlResponseParser.Default, ct);
-                        var rootNode = doc.GetElementbyId("article-comments-ul")
-                                       ?? doc.DocumentNode.SelectSingleNode(".//ul[@class='comments']");
-                        if (rootNode == null)
-                            throw new UnexpectedDataException("Cannot locate comments root node.");
-                        await sink.YieldAndWait(Post.FromHtmlCommentsRoot(articleCommentArea.Site, articleCommentArea.Id, rootNode));
-                        var paginationNode = doc.GetElementbyId("article-comments-pagination-link-next");
-                        var nextPageExpr = paginationNode?.GetAttributeValue("page", "");
-                        if (string.IsNullOrEmpty(nextPageExpr)) return;
-                        var nextPageNumber = Convert.ToInt32(nextPageExpr);
-                        Debug.Assert(nextPageNumber > page, "The next page number should increase.");
-                        page = nextPageNumber;
+                        }), WikiaJsonResonseParser.Default, ct);
+                        // Build comment structure.
+                        var jcomments = (JObject)jroot["commentListRaw"];
+                        var comments = PostsFromJsonOutline(jcomments);
+                        pagesCount = (int)jroot["pagesCount"];
+                        await RefreshPostsAsync(PostsAndDescendants(comments), ct);
+                        await sink.YieldAndWait(comments);
                     }
-                });
+                }
+            });
+        }
+
+        public static async Task RefreshPostsAsync(IEnumerable<Post> posts, CancellationToken cancellationToken)
+        {
+            Debug.Assert(posts != null);
+            // Fetch comment content.
+            // You can even fetch posts from different sites.
+            foreach (var sitePosts in posts.GroupBy(p => p.Site))
+            {
+                var site = sitePosts.Key;
+                var titleLimit = site.AccountInfo.HasRight(UserRights.ApiHighLimits)
+                    ? 500
+                    : 50;
+                foreach (var partition in sitePosts.Partition(titleLimit))
+                {
+                    // Fetch first revision to determine author
+                    var idExpr = string.Join("|", partition.Select(p => p.Id));
+                    Task<JToken> firstRevisionTask = null;
+                    if (partition.Count == 1)
+                    {
+                        // We can only fetch for 1 page at a time, with rvdir = "newer"
+                        firstRevisionTask = site.GetJsonAsync(new MediaWikiFormRequestMessage(new
+                        {
+                            action = "query",
+                            pageids = idExpr,
+                            prop = "revisions",
+                            rvdir = "newer",
+                            rvlimit = 1,
+                            rvprop = MediaWikiHelper.GetQueryParamRvProp(PageQueryOptions.FetchContent)
+                        }), cancellationToken);
+                    }
+                    // Fetch first revision to determine content and last editor
+                    var jLastRevResult = await site.GetJsonAsync(new MediaWikiFormRequestMessage(new
+                    {
+                        action = "query",
+                        pageids = idExpr,
+                        prop = "revisions",
+                        rvlimit = partition.Count == 1 ? (int?)1 : null,
+                        rvprop = MediaWikiHelper.GetQueryParamRvProp(PageQueryOptions.FetchContent)
+                    }), cancellationToken);
+                    var jFirstRevResult = firstRevisionTask == null ? null : await firstRevisionTask;
+                    foreach (var post in partition)
+                    {
+                        Revision rev1 = null;
+                        var jpage2 = jLastRevResult["query"]["pages"][post.Id.ToString(CultureInfo.InvariantCulture)];
+                        var pageStub = MediaWikiHelper.PageStubFromRevision((JObject)jpage2);
+                        var rev2 = MediaWikiHelper.RevisionFromJson((JObject)jpage2["revisions"].First, pageStub);
+                        if (jFirstRevResult != null)
+                        {
+                            var jpage1 = jFirstRevResult["query"]["pages"][post.Id.ToString(CultureInfo.InvariantCulture)];
+                            rev1 = MediaWikiHelper.RevisionFromJson((JObject)jpage1["revisions"].First, pageStub);
+                        }
+                        post.SetRevisions(rev1, rev2);
+                    }
+                }
             }
         }
 

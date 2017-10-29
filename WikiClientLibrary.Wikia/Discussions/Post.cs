@@ -9,6 +9,7 @@ using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using HtmlAgilityPack;
+using WikiClientLibrary.Pages;
 using WikiClientLibrary.Sites;
 
 namespace WikiClientLibrary.Wikia.Discussions
@@ -39,15 +40,37 @@ namespace WikiClientLibrary.Wikia.Discussions
         /// <summary>Gets the comment content.</summary>
         public string Content { get; set; }
 
-        /// <summary>Gets the parsed HTML comment content.</summary>
-        public string ParsedContent { get; private set; }
+        /// <summary>Gets the author of the post.</summary>
+        public UserStub Author { get; private set; }
 
-        /// <summary>Gets the name of the author.</summary>
-        public string AuthorName { get; private set; }
+        /// <summary>Gets the last editor of the post.</summary>
+        public UserStub LastEditor { get; private set; }
 
         public DateTime TimeStamp { get; private set; }
 
-        public IReadOnlyList<Post> Replies { get; private set; } = emptyPosts;
+        public DateTime? LastUpdated { get; private set; }
+
+        public Revision LastRevision { get; private set; }
+
+        public IReadOnlyList<Post> Replies { get; internal set; } = emptyPosts;
+
+        /// <inheritdoc cref="RefreshAsync(CancellationToken)"/>
+        public Task RefreshAsync()
+        {
+            return RefreshAsync(CancellationToken.None);
+        }
+
+        /// <summary>
+        /// Refreshes the post content from the server.
+        /// </summary>
+        /// <param name="cancellationToken">The token used to cancel the operation.</param>
+        /// <remarks>
+        /// This method will not fetch replies. <see cref="Replies"/> will remain unchanged after the invocation.
+        /// </remarks>
+        public Task RefreshAsync(CancellationToken cancellationToken)
+        {
+            return RequestHelper.RefreshPostsAsync(new[] {this}, cancellationToken);
+        }
 
         /// <inheritdoc cref="ReplyAsync(string,CancellationToken)"/>
         public Task<Post> ReplyAsync(string content)
@@ -69,71 +92,68 @@ namespace WikiClientLibrary.Wikia.Discussions
             return RequestHelper.PostCommentAsync(Site, this, PageId, Id, content, cancellationToken);
         }
 
-        // http://xxx.wikia.com/wiki/Talk:ArticleName/@comment-UserName-20170704160847?permalink=1234#comm-1234
-        private static readonly Regex PermalinkTimeStampMatcher = new Regex(@"@comment-(?<UserName>.+?)-(?<TimeStamp>\d{14})[&?#$]");
+        // Talk:ArticleName/@comment-UserName-20170704160847?permalink=1234#comm-1234
+        private static readonly Regex PermalinkTimeStampMatcher = new Regex(@"@comment-(?<UserName>.+?)-(?<TimeStamp>\d{14})$");
+
+        internal void SetRevisions(Revision firstRevision, Revision lastRevision)
+        {
+            Debug.Assert(lastRevision != null);
+            if (firstRevision != null)
+                Debug.Assert(lastRevision.TimeStamp >= firstRevision.TimeStamp);
+            //Id = lastRevision.Page.Id;
+            TimeStamp = DateTime.MinValue;
+            Replies = emptyPosts;
+            Content = lastRevision.Content;
+            if (firstRevision == null)
+            {
+                // Need to infer from the page title
+                // Assuming the author hasn't changed the user name
+                var match = PermalinkTimeStampMatcher.Match(lastRevision.Page.Title);
+                if (match.Success)
+                {
+                    Author = new UserStub(match.Groups["UserName"].Value, 0);
+                    TimeStamp = DateTime.ParseExact(match.Groups["TimeStamp"].Value,
+                        "yyyyMMddHHmmss", CultureInfo.InvariantCulture);
+                    if (TimeStamp != lastRevision.TimeStamp)
+                        LastUpdated = lastRevision.TimeStamp;
+                    else
+                        LastUpdated = null;
+                }
+                else
+                {
+                    throw new UnexpectedDataException($"Cannot infer author from comment page title: {lastRevision.Page}.");
+                }
+            }
+            else
+            {
+                Author = firstRevision.UserStub;
+                TimeStamp = firstRevision.TimeStamp;
+                if (lastRevision.Id != firstRevision.Id)
+                    LastUpdated = lastRevision.TimeStamp;
+                else
+                    LastUpdated = null;
+            }
+            LastEditor = lastRevision.UserStub;
+            LastRevision = lastRevision;
+        }
 
         internal static Post FromHtmlNode(WikiaSite site, int pageId, HtmlNode listItem)
         {
-            if (listItem == null) throw new ArgumentNullException(nameof(listItem));
-            var post = new Post(site, pageId, 0);
-            post.LoadFromHtmlNode(pageId, listItem);
-            return post;
-        }
-
-        internal void LoadFromHtmlNode(int pageId, HtmlNode listItem)
-        {
             Debug.Assert(listItem.Name == "li");
-            Id = 0;
-            PageId = pageId;
-            AuthorName = null;
-            TimeStamp = DateTime.MinValue;
-            Replies = emptyPosts;
+            int id = 0;
             if (listItem.Id.StartsWith("comm-"))
             {
-                Id = Convert.ToInt32(listItem.Id.Substring(5));
+                id = Convert.ToInt32(listItem.Id.Substring(5));
             }
             else
             {
                 var sep = listItem.Id.LastIndexOf('-');
                 if (sep >= 0)
-                    Id = Convert.ToInt32(listItem.Id.Substring(sep + 1));
+                    id = Convert.ToInt32(listItem.Id.Substring(sep + 1));
             }
-            if (Id == 0)
+            if (id == 0)
                 throw new UnexpectedDataException("Unexpected li[@id] value: " + listItem.Id);
-            var node = listItem.OwnerDocument.GetElementbyId("comm-text-" + Id)
-                              ?? listItem.SelectSingleNode(".//*[contains(@class, 'article-comm-text')]");
-            if (node == null)
-                throw new UnexpectedDataException("Cannot locate content node for comment #" + Id + ".");
-            ParsedContent = node.InnerHtml;
-            // TODO figure out the wikitext somehow
-            Content = node.InnerText;
-            node = listItem.SelectSingleNode(".//*[contains(@class, 'edited-by')][not(ancestor::*[contains(@class, 'article-comm-text')])]");
-            if (node != null)
-            {
-                var permalinkNode = node.SelectSingleNode("a[contains(@class, 'permalink')]");
-                var permalink = permalinkNode.GetAttributeValue("href", "");
-                var matches = PermalinkTimeStampMatcher.Match(permalink);
-                if (matches.Success)
-                {
-                    AuthorName = Uri.UnescapeDataString(matches.Groups["UserName"].Value);
-                    TimeStamp = DateTime.ParseExact(matches.Groups["TimeStamp"].Value,
-                        "yyyyMMddHHmmss", CultureInfo.InvariantCulture);
-                }
-            }
-            node = listItem.NextSibling;
-            if (node.Name == "ul" && node.GetAttributeValue("class", "") == "sub-comments")
-            {
-                Replies = new ReadOnlyCollection<Post>(FromHtmlCommentsRoot(Site, PageId, node).ToList());
-            }
-        }
-
-        internal static IEnumerable<Post> FromHtmlCommentsRoot(WikiaSite site, int pageId, HtmlNode rootNode)
-        {
-            Debug.Assert(rootNode.Name == "ul");
-            var replyNodes = rootNode.SelectNodes("li");
-            if (replyNodes != null && replyNodes.Count > 0)
-                return replyNodes.Select(node => FromHtmlNode(site, pageId, node)).ToList();
-            return Enumerable.Empty<Post>();
+            return new Post(site, pageId, id);
         }
 
     }

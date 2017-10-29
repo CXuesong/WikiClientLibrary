@@ -114,7 +114,9 @@ namespace UnitTestProject1.Tests
             var commentArea = new ArticleCommentArea(site, "Random40156");
             await commentArea.RefreshAsync();
             Skip.IfNot(commentArea.Exists, $"Page [[{commentArea}]] is gone. There is nothing we can do for it.");
-            var post = await commentArea.NewPostAsync("Test comment.");
+            var post = await commentArea.NewPostAsync("Test [[comment]].");
+            await post.RefreshAsync();
+            Assert.Equal("Test [[comment]].", post.Content);
             var rep = await post.ReplyAsync("Test reply.");
             await rep.ReplyAsync("Test reply, 3rd level.");
         }
