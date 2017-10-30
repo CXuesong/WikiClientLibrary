@@ -120,7 +120,7 @@ namespace WikiClientLibrary
                         var redirects = jobj["query"]["redirects"]?.ToDictionary(n => (string)n["from"],
                             n => (string)n["to"]);
                         var pageInfoDict = ((JObject)jobj["query"]["pages"]).Properties()
-                            .ToDictionary(p => p.Value["title"]);
+                            .ToDictionary(p => (string)p.Value["title"]);
                         foreach (var page in partition)
                         {
                             var title = page.Title;
