@@ -107,7 +107,7 @@ namespace UnitTestProject1
                 {
                     AccountAssertion = AccountAssertionBehavior.AssertAll,
                 };
-                site = new WikiaSite(wikiClient, options) {Logger = OutputLoggerFactory.CreateLogger<WikiaSite>()};
+                site = new WikiaSite(wikiClient, options) { Logger = OutputLoggerFactory.CreateLogger<WikiaSite>() };
             }
             else
             {
@@ -115,7 +115,7 @@ namespace UnitTestProject1
                 {
                     AccountAssertion = AccountAssertionBehavior.AssertAll,
                 };
-                site = new WikiSite(wikiClient, options) {Logger = OutputLoggerFactory.CreateLogger<WikiSite>()};
+                site = new WikiSite(wikiClient, options) { Logger = OutputLoggerFactory.CreateLogger<WikiSite>() };
             }
             await site.Initialization;
             if (sitesNeedsLogin.Contains(url))
@@ -162,9 +162,16 @@ namespace UnitTestProject1
 
         protected Task<WikiSite> WikiSiteFromNameAsync(string sitePropertyName)
         {
-            return (Task<WikiSite>)GetType()
+            async Task<TDest> CastAsync<TSource, TDest>(Task<TSource> sourceTask)
+            {
+                return (TDest)(object)await sourceTask;
+            }
+            var task = GetType()
                 .GetProperty(sitePropertyName, BindingFlags.NonPublic | BindingFlags.Instance)
                 .GetValue(this);
+            if (task is Task<WikiSite> ws) return ws;
+            if (task is Task<WikiaSite> was) return CastAsync<WikiaSite, WikiSite>(was);
+            throw new NotSupportedException();
         }
 
         protected WikiClient CreateWikiClient()
