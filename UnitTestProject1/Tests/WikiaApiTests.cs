@@ -26,7 +26,7 @@ namespace UnitTestProject1.Tests
         public async Task FetchUsersTest()
         {
             var site = await WikiaTestSiteAsync;
-            var users = await site.FetchUsersAsync(new[] {"Jasonr", "angela", "user_not_exist"}).ToArray();
+            var users = await site.FetchUsersAsync(new[] { "Jasonr", "angela", "user_not_exist" }).ToArray();
             ShallowTrace(users);
             Assert.Equal(2, users.Length);
             Assert.Equal("Jasonr", users[0].Name);
@@ -56,7 +56,7 @@ namespace UnitTestProject1.Tests
             Assert.Equal("Mediawiki 1.19 test Wiki", data.SiteName);
             Assert.Equal("http://mediawiki119.wikia.com", data.BasePath);
             Assert.Equal("/wiki/", data.ArticlePath);
-            Assert.Equal(new[] {0}, data.ContentNamespaceIds);
+            Assert.Equal(new[] { 0 }, data.ContentNamespaceIds);
             Assert.Equal("en", data.LanguageInfo.ContentLanguage);
             Assert.Equal("ltr", data.LanguageInfo.ContentFlowDirection);
         }
@@ -105,9 +105,9 @@ namespace UnitTestProject1.Tests
             var comments = await commentArea.EnumPostsAsync().ToList();
             ShallowTrace(comments);
             Assert.True(comments.Count >= 90);
-            var exactComments = comments.Take(10).Select(p => new Post(site, p.PageId, p.Id)).ToList();
+            var exactComments = comments.Take(10).Select(p => new Post(site, p.OwnerPage, p.Id)).ToList();
             await exactComments.RefreshAsync(PostQueryOptions.ExactAuthoringInformation);
-            Assert.All(comments.Zip(exactComments, (original, exact) => (original:original, exact:exact)),
+            Assert.All(comments.Zip(exactComments, (original, exact) => (original: original, exact: exact)),
                 pair =>
                 {
                     // Assume the author hasn't changed the user name.
@@ -122,19 +122,19 @@ namespace UnitTestProject1.Tests
                 });
         }
 
-        //[SkippableFact]
-        //public async Task DiscussionsPostCommentTest()
-        //{
-        //    var site = await WikiaTestSiteAsync;
-        //    var commentArea = new Board(site, "Random40156");
-        //    await commentArea.RefreshAsync();
-        //    Skip.IfNot(commentArea.Exists, $"Page [[{commentArea}]] is gone. There is nothing we can do for it.");
-        //    var post = await commentArea.NewPostAsync("Test [[comment]].");
-        //    await post.RefreshAsync();
-        //    Assert.Equal("Test [[comment]].", post.Content);
-        //    var rep = await post.ReplyAsync("Test reply.");
-        //    await rep.ReplyAsync("Test reply, 3rd level.");
-        //}
+        [SkippableFact]
+        public async Task ArticlePostCommentTest()
+        {
+            var site = await WikiaTestSiteAsync;
+            var commentArea = new Board(site, "Random40156");
+            await commentArea.RefreshAsync();
+            Skip.IfNot(commentArea.Exists, $"Page [[{commentArea}]] is gone. There is nothing we can do for it.");
+            var post = await commentArea.NewPostAsync("Test [[comment]].");
+            await post.RefreshAsync();
+            Assert.Equal("Test [[comment]].", post.Content);
+            var rep = await post.ReplyAsync("Test reply.");
+            await rep.ReplyAsync("Test reply, 3rd level.");
+        }
 
         [SkippableFact]
         public async Task MessageWallEnumCommentsTest()
@@ -156,9 +156,9 @@ namespace UnitTestProject1.Tests
             var commentArea = new Board(site, site.AccountInfo.Name, WikiaNamespaces.MessageWall);
             await commentArea.RefreshAsync();
             Skip.IfNot(commentArea.Exists, $"Page [[{commentArea}]] is gone. There is nothing we can do for it.");
-            var post = await commentArea.NewPostAsync("Test [[comment]].");
+            var post = await commentArea.NewPostAsync("Test title", "Test [[comment]].", new[] { "Sandbox", "Project:Sandbox" });
             await post.RefreshAsync();
-            Assert.Equal("Test [[comment]].", post.Content);
+            Assert.Equal("Test [[comment]].<ac_metadata title=\"Test title\" related_topics=\"Sandbox|Project:Sandbox\"> </ac_metadata>", post.Content);
             var rep = await post.ReplyAsync("Test reply.");
             await rep.ReplyAsync("Test reply, 3rd level.");
         }
@@ -175,18 +175,17 @@ namespace UnitTestProject1.Tests
             Assert.True(comments.Count >= 2);
         }
 
-        // Thread pages are always in-existent.
-        //[SkippableFact]
-        //public async Task ForumPostCommentTest()
-        //{
-        //    var site = await WikiaTestSiteAsync;
-        //    var board = new Board(site, "Thread:568625");
-        //    await board.RefreshAsync();
-        //    Skip.IfNot(board.Exists, $"Page [[{board}]] is gone. There is nothing we can do for it.");
-        //    var post = await board.NewPostAsync("Test comment.");
-        //    var rep = await post.ReplyAsync("Test reply.");
-        //    await rep.ReplyAsync("Test reply, 3rd level.");
-        //}
+        [SkippableFact]
+        public async Task ForumPostCommentTest()
+        {
+            var site = await WikiaTestSiteAsync;
+            var board = new Board(site, "Board:ForumBoard1509020691220");
+            await board.RefreshAsync();
+            Skip.IfNot(board.Exists, $"Page [[{board}]] is gone. There is nothing we can do for it.");
+            var post = await board.NewPostAsync("Comment title here", "Test comment.", new[] { "Sandbox", "Project:Sandbox" });
+            var rep = await post.ReplyAsync("Test reply.");
+            await rep.ReplyAsync("Test reply, 3rd level.");
+        }
 
     }
 }

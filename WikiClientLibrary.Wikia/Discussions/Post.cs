@@ -23,10 +23,11 @@ namespace WikiClientLibrary.Wikia.Discussions
 
         private static readonly Post[] emptyPosts = { };
 
-        public Post(WikiaSite site, int pageId, int id)
+        public Post(WikiaSite site, WikiPageStub ownerPage, int id)
         {
+            if (ownerPage.IsEmpty) throw new ArgumentException("ownerPage is empty.", nameof(ownerPage));
             Site = site ?? throw new ArgumentNullException(nameof(site));
-            PageId = pageId;
+            OwnerPage = ownerPage;
             Id = id;
         }
 
@@ -35,8 +36,8 @@ namespace WikiClientLibrary.Wikia.Discussions
         /// <summary>Gets the ID of the post.</summary>
         public int Id { get; private set; }
 
-        /// <summary>Gets the ID of the page that owns the comment.</summary>
-        public int PageId { get; private set; }
+        /// <summary>Gets the stub of the page that owns the comment.</summary>
+        public WikiPageStub OwnerPage { get; private set; }
 
         public bool Exists { get; internal set; }
 
@@ -82,27 +83,79 @@ namespace WikiClientLibrary.Wikia.Discussions
         /// <seealso cref="DiscussionsExtensions.RefreshAsync(IEnumerable{Post},PostQueryOptions,CancellationToken)"/>
         public Task RefreshAsync(PostQueryOptions options, CancellationToken cancellationToken)
         {
-            return RequestHelper.RefreshPostsAsync(new[] {this}, options, cancellationToken);
+            return RequestHelper.RefreshPostsAsync(new[] { this }, options, cancellationToken);
         }
 
-        /// <inheritdoc cref="ReplyAsync(string,CancellationToken)"/>
+        internal const int METHOD_UNKNOWN = -1;
+        internal const int METHOD_ARTICLE_COMMENT = 0;
+        internal const int METHOD_WALL_MESSAGE = 1;
+
+        internal static int GetPostCreationMethod(WikiPageStub owner, PostCreationOptions options)
+        {
+            if ((options & PostCreationOptions.AsArticleComment) == PostCreationOptions.AsArticleComment
+                && (options & PostCreationOptions.AsWallMessage) == PostCreationOptions.AsWallMessage)
+                throw new ArgumentException("AsArticleComment and AsWallMessage are mutually exclusive.", nameof(options));
+            if ((options & PostCreationOptions.AsArticleComment) == PostCreationOptions.AsArticleComment)
+                return METHOD_ARTICLE_COMMENT;
+            if ((options & PostCreationOptions.AsWallMessage) == PostCreationOptions.AsWallMessage)
+                return METHOD_WALL_MESSAGE;
+            if (!owner.HasNamespaceId) return METHOD_UNKNOWN;
+            var ns = owner.NamespaceId;
+            return (ns == WikiaNamespaces.MessageWall || ns == WikiaNamespaces.Board)
+                ? METHOD_WALL_MESSAGE
+                : METHOD_ARTICLE_COMMENT;
+        }
+
+        /// <inheritdoc cref="ReplyAsync(string,PostCreationOptions,CancellationToken)"/>
         public Task<Post> ReplyAsync(string content)
         {
-            return ReplyAsync(content, CancellationToken.None);
+            return ReplyAsync(content, PostCreationOptions.None, CancellationToken.None);
+        }
+
+        /// <inheritdoc cref="ReplyAsync(string,PostCreationOptions,CancellationToken)"/>
+        public Task<Post> ReplyAsync(string content, PostCreationOptions options)
+        {
+            return ReplyAsync(content, options, CancellationToken.None);
         }
 
         /// <summary>
         /// Add a new reply to the post.
         /// </summary>
         /// <param name="content">The content in reply.</param>
+        /// <param name="options">The options for creating the reply.</param>
         /// <param name="cancellationToken">A token used to cancel the operation.</param>
         /// <returns>A new post containing the workflow ID of the new post.</returns>
         /// <remarks>For now Wikia only supports 2-level posts.
         /// If you attempt to reply to the level-2 post,
         /// the comment will be placed as level-2 (top-level) post.</remarks>
-        public Task<Post> ReplyAsync(string content, CancellationToken cancellationToken)
+        public async Task<Post> ReplyAsync(string content, PostCreationOptions options, CancellationToken cancellationToken)
         {
-            return RequestHelper.PostCommentAsync(Site, this, PageId, Id, content, cancellationToken);
+            cancellationToken.ThrowIfCancellationRequested();
+            var method = GetPostCreationMethod(OwnerPage, options);
+            if (method == METHOD_UNKNOWN)
+            {
+                await RefreshAsync(PostQueryOptions.None, cancellationToken);
+                method = GetPostCreationMethod(OwnerPage, options);
+                Debug.Assert(method != METHOD_UNKNOWN);
+            }
+            switch (method)
+            {
+                case METHOD_ARTICLE_COMMENT:
+                    if (!OwnerPage.HasId)
+                    {
+                        await RefreshAsync(PostQueryOptions.None, cancellationToken);
+                        Debug.Assert(OwnerPage.IsMissing || OwnerPage.HasId);
+                    }
+                    return await RequestHelper.PostCommentAsync(Site, this, OwnerPage, Id, content, cancellationToken);
+                case METHOD_WALL_MESSAGE:
+                    if (!OwnerPage.HasTitle)
+                    {
+                        await RefreshAsync(PostQueryOptions.None, cancellationToken);
+                        Debug.Assert(OwnerPage.IsMissing || OwnerPage.HasTitle);
+                    }
+                    return await RequestHelper.ReplyWallMessageAsync(Site, this, OwnerPage, Id, content, cancellationToken);
+            }
+            return null;
         }
 
         // Talk:ArticleName/@comment-UserName-20170704160847
@@ -151,10 +204,13 @@ namespace WikiClientLibrary.Wikia.Discussions
             LastRevision = lastRevision;
         }
 
-        internal static Post FromHtmlNode(WikiaSite site, int pageId, HtmlNode listItem)
+        internal static Post FromHtmlNode(WikiaSite site, WikiPageStub owner, HtmlNode listItem)
         {
             Debug.Assert(listItem.Name == "li");
-            int id = 0;
+            var id = listItem.GetAttributeValue("data-id", 0);
+            if (id > 0)
+            {
+            }
             if (listItem.Id.StartsWith("comm-"))
             {
                 id = Convert.ToInt32(listItem.Id.Substring(5));
@@ -166,8 +222,8 @@ namespace WikiClientLibrary.Wikia.Discussions
                     id = Convert.ToInt32(listItem.Id.Substring(sep + 1));
             }
             if (id == 0)
-                throw new UnexpectedDataException("Unexpected li[@id] value: " + listItem.Id);
-            return new Post(site, pageId, id);
+                throw new UnexpectedDataException($"Cannot infer comment ID from <li> node. @id={listItem.Id}.");
+            return new Post(site, owner, id);
         }
 
     }
@@ -179,7 +235,7 @@ namespace WikiClientLibrary.Wikia.Discussions
     public enum PostQueryOptions
     {
         /// <summary>No options.</summary>
-        None,
+        None = 0,
         /// <summary>
         /// Asks for exact author information, even if we are fetching for multiple
         /// comments at one time.
@@ -200,6 +256,28 @@ namespace WikiClientLibrary.Wikia.Discussions
         /// will be fetching regardless of this flag.</para>
         /// </remarks>
         ExactAuthoringInformation
+    }
+
+    /// <summary>
+    /// Provides options for creating or repying to a post.
+    /// </summary>
+    [Flags]
+    public enum PostCreationOptions
+    {
+        /// <summary>
+        /// No options.
+        /// </summary>
+        None = 0,
+        /// <summary>
+        /// Creates the new post using article comment API,
+        /// regardless of the current namespace.
+        /// </summary>
+        AsArticleComment = 1,
+        /// <summary>
+        /// Creates the new post using message wall API,
+        /// regardless of the current namespace.
+        /// </summary>
+        AsWallMessage = 2,
     }
 
 }
