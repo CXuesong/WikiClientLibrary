@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Newtonsoft.Json.Linq;
+using WikiClientLibrary.Infrastructures;
 using WikiClientLibrary.Infrastructures.Logging;
 using WikiClientLibrary.Pages;
 using WikiClientLibrary.Sites;
@@ -83,7 +84,7 @@ namespace WikiClientLibrary.Generators.Primitive
         {
             if ((options & PageQueryOptions.ResolveRedirects) == PageQueryOptions.ResolveRedirects)
                 throw new ArgumentException("Cannot resolve redirects when using generators.", nameof(options));
-            var queryParams = RequestHelper.GetPageFetchingParams(options);
+            var queryParams = MediaWikiHelper.GetQueryParams(options);
             queryParams.Add("generator", GeneratorName);
             foreach (var v in EnumGeneratorParameters())
                 queryParams[v.Key] = v.Value;

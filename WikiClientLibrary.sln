@@ -28,6 +28,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WikiClientLibrary.Wikibase"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WikiClientLibrary.Flow", "WikiClientLibrary.Flow\WikiClientLibrary.Flow.csproj", "{C7EDDB8C-6880-4211-9608-23EA730F638D}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WikiClientLibrary.Wikia", "WikiClientLibrary.Wikia\WikiClientLibrary.Wikia.csproj", "{C17C49FD-F760-45AA-8D6C-7A230F871B44}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -75,6 +77,12 @@ Global
 		{C7EDDB8C-6880-4211-9608-23EA730F638D}.Documentation|Any CPU.Build.0 = Release|Any CPU
 		{C7EDDB8C-6880-4211-9608-23EA730F638D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C7EDDB8C-6880-4211-9608-23EA730F638D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C17C49FD-F760-45AA-8D6C-7A230F871B44}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C17C49FD-F760-45AA-8D6C-7A230F871B44}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C17C49FD-F760-45AA-8D6C-7A230F871B44}.Documentation|Any CPU.ActiveCfg = Release|Any CPU
+		{C17C49FD-F760-45AA-8D6C-7A230F871B44}.Documentation|Any CPU.Build.0 = Release|Any CPU
+		{C17C49FD-F760-45AA-8D6C-7A230F871B44}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C17C49FD-F760-45AA-8D6C-7A230F871B44}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

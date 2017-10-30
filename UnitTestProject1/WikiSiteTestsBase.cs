@@ -12,6 +12,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using WikiClientLibrary.Client;
 using WikiClientLibrary.Sites;
+using WikiClientLibrary.Wikia;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -37,7 +38,7 @@ namespace UnitTestProject1
         {
             Output.WriteLine(Utility.DumpObject(obj, depth));
         }
-        
+
         protected virtual void Dispose(bool disposing)
         {
             if (disposing)
@@ -98,11 +99,24 @@ namespace UnitTestProject1
         /// </summary>
         private async Task<WikiSite> CreateWikiSiteAsync(IWikiClient wikiClient, string url)
         {
-            var options = new SiteOptions(url)
+            WikiSite site;
+            if (url.Contains(".wikia.com"))
             {
-                AccountAssertion = AccountAssertionBehavior.AssertAll,
-            };
-            var site = new WikiSite(wikiClient, options) {Logger = OutputLoggerFactory.CreateLogger<WikiSite>()};
+                var uri = new Uri(url, UriKind.Absolute);
+                var options = new WikiaSiteOptions(uri.GetLeftPart(UriPartial.Authority) + "/")
+                {
+                    AccountAssertion = AccountAssertionBehavior.AssertAll,
+                };
+                site = new WikiaSite(wikiClient, options) { Logger = OutputLoggerFactory.CreateLogger<WikiaSite>() };
+            }
+            else
+            {
+                var options = new SiteOptions(url)
+                {
+                    AccountAssertion = AccountAssertionBehavior.AssertAll,
+                };
+                site = new WikiSite(wikiClient, options) { Logger = OutputLoggerFactory.CreateLogger<WikiSite>() };
+            }
             await site.Initialization;
             if (sitesNeedsLogin.Contains(url))
             {
@@ -123,7 +137,18 @@ namespace UnitTestProject1
 
         protected Task<WikiSite> WpTest2SiteAsync => GetWikiSiteAsync(Endpoints.WikipediaTest2);
 
-        protected Task<WikiSite> WikiaTestSiteAsync => GetWikiSiteAsync(Endpoints.WikiaTest);
+        protected Task<WikiaSite> WikiaTestSiteAsync
+        {
+            get
+            {
+                async Task<WikiaSite> Cast()
+                {
+                    return (WikiaSite)await GetWikiSiteAsync(Endpoints.WikiaTest);
+                }
+
+                return Cast();
+            }
+        }
 
         protected Task<WikiSite> WpLzhSiteAsync => GetWikiSiteAsync(Endpoints.WikipediaLzh);
 
@@ -137,9 +162,16 @@ namespace UnitTestProject1
 
         protected Task<WikiSite> WikiSiteFromNameAsync(string sitePropertyName)
         {
-            return (Task<WikiSite>) GetType()
+            async Task<TDest> CastAsync<TSource, TDest>(Task<TSource> sourceTask)
+            {
+                return (TDest)(object)await sourceTask;
+            }
+            var task = GetType()
                 .GetProperty(sitePropertyName, BindingFlags.NonPublic | BindingFlags.Instance)
                 .GetValue(this);
+            if (task is Task<WikiSite> ws) return ws;
+            if (task is Task<WikiaSite> was) return CastAsync<WikiaSite, WikiSite>(was);
+            throw new NotSupportedException();
         }
 
         protected WikiClient CreateWikiClient()

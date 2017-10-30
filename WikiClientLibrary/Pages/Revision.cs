@@ -105,6 +105,12 @@ namespace WikiClientLibrary.Pages
         [JsonProperty("user")]
         public string UserName { get; private set; }
 
+        [JsonProperty]
+        public int UserId { get; private set; }
+
+        [JsonProperty]
+        public UserStub UserStub => new UserStub(UserName, UserId);
+
         [JsonProperty("size")]
         public int ContentLength { get; private set; }
 

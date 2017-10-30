@@ -49,7 +49,7 @@ namespace WikiClientLibrary.Generators
                 {"rvendid", EndRevisionId},
                 {"rvuser", UserName},
                 {"rvexcludeuser", ExcludedUserName},
-                {"rvprop", RequestHelper.GetRvProp(RevisionOptions)},
+                {"rvprop", MediaWikiHelper.GetQueryParamRvProp(RevisionOptions)},
             };
         }
 

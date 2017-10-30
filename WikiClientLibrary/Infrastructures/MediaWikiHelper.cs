@@ -107,8 +107,8 @@ namespace WikiClientLibrary.Infrastructures
                     .Any(a => a.AttributeType != typeof(CompilerGeneratedAttribute)),
                 "We only want to marshal anonymous types. Did you accidentally pass in a wrong object?");
             return from p in dict.GetType().GetRuntimeProperties()
-                let value = p.GetValue(dict)
-                select new KeyValuePair<string, object>(p.Name, value);
+                   let value = p.GetValue(dict)
+                   select new KeyValuePair<string, object>(p.Name, value);
         }
 
         public static async Task<JToken> ParseJsonAsync(Stream stream, CancellationToken cancellationToken)
@@ -131,5 +131,30 @@ namespace WikiClientLibrary.Infrastructures
             return rev;
         }
 
+        public static string GetQueryParamRvProp(PageQueryOptions options)
+        {
+            if ((options & PageQueryOptions.FetchContent) == PageQueryOptions.FetchContent)
+                return "ids|timestamp|flags|comment|user|userid|contentmodel|sha1|tags|size|content";
+            return "ids|timestamp|flags|comment|user|userid|contentmodel|sha1|tags|size";
+        }
+
+        /// <summary>
+        /// Builds common parameters for fetching a page.
+        /// </summary>
+        public static IDictionary<string, object> GetQueryParams(PageQueryOptions options)
+        {
+            var queryParams = new Dictionary<string, object>
+            {
+                {"action", "query"},
+                // We also fetch category info, just in case.
+                {"prop", "info|categoryinfo|imageinfo|revisions|pageprops"},
+                {"inprop", "protection"},
+                {"iiprop", "timestamp|user|comment|url|size|sha1"},
+                {"rvprop", GetQueryParamRvProp(options)},
+                {"redirects", (options & PageQueryOptions.ResolveRedirects) == PageQueryOptions.ResolveRedirects},
+                {"maxlag", 5},
+            };
+            return queryParams;
+        }
     }
 }

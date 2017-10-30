@@ -23,6 +23,7 @@
   
   <ItemGroup>
     <ProjectReference Include="..\WikiClientLibrary.Flow\WikiClientLibrary.Flow.csproj" />
+    <ProjectReference Include="..\WikiClientLibrary.Wikia\WikiClientLibrary.Wikia.csproj" />
     <ProjectReference Include="..\WikiClientLibrary.Wikibase\WikiClientLibrary.Wikibase.csproj" />
     <ProjectReference Include="..\WikiClientLibrary\WikiClientLibrary.csproj" />
   </ItemGroup>
