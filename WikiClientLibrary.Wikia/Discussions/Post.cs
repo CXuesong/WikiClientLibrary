@@ -169,7 +169,6 @@ namespace WikiClientLibrary.Wikia.Discussions
             Id = lastRevision.Page.Id;
             Exists = true;
             TimeStamp = DateTime.MinValue;
-            Replies = emptyPosts;
             Content = lastRevision.Content;
             if (firstRevision == null)
             {
