@@ -11,29 +11,19 @@ namespace WikiClientLibrary.Wikia
     /// </summary>
     public class WikiaApiException : WikiClientException
     {
-        /// <summary>
-        /// Wikia Exception type.
-        /// </summary>
+        /// <summary>Wikia Exception type.</summary>
         public string ErrorType { get; }
 
-        /// <summary>
-        /// Wikia Exception message.
-        /// </summary>
+        /// <summary>Wikia Exception message.</summary>
         public string ErrorMessage { get; }
 
-        /// <summary>
-        /// Wikia Exception code.
-        /// </summary>
+        /// <summary>Wikia Exception code.</summary>
         public int ErrorCode { get; }
 
-        /// <summary>
-        /// Wikia Exception details.
-        /// </summary>
+        /// <summary>Wikia Exception details.</summary>
         public string ErrorDetails { get; }
 
-        /// <summary>
-        /// Wikia error trace ID.
-        /// </summary>
+        /// <summary>Wikia error trace ID.</summary>
         public string TraceId { get; }
 
         public WikiaApiException()
@@ -71,7 +61,7 @@ namespace WikiClientLibrary.Wikia
     }
 
     /// <summary>
-    /// The CLR counterpart for <c>NotFoundApiException</c>.
+    /// The CLR counterpart for Wikia <c>NotFoundApiException</c>.
     /// </summary>
     public class NotFoundApiException : WikiaApiException
     {

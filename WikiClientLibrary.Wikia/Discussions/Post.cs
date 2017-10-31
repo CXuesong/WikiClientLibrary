@@ -16,13 +16,26 @@ using WikiClientLibrary.Sites;
 namespace WikiClientLibrary.Wikia.Discussions
 {
     /// <summary>
-    /// Represents a post in the discussion.
+    /// Represents a post in the commenting area,
+    /// or a thread in a board on the Wikia forum (<c>Special:Forum</c>).
     /// </summary>
     public class Post
     {
 
         private static readonly Post[] emptyPosts = { };
 
+        /// <summary>
+        /// Initializes a new instance of <see cref="Post"/>.
+        /// </summary>
+        /// <param name="site">The Wikia site.</param>
+        /// <param name="ownerPage">Stub of the page/board that owns the post.</param>
+        /// <param name="id">ID of the post.</param>
+        /// <exception cref="ArgumentNullException"><paramref name="site"/> is <c>null</c>.</exception>
+        /// <exception cref="ArgumentException"><paramref name="ownerPage"/>.<see cref="WikiPageStub.IsEmpty"/> is <c>true</c>.</exception>
+        /// <remarks>
+        /// For now, it is not possible to get the replies by using the constructor provided here.
+        /// To achieve this, you need to invoke <see cref="Board.EnumPostsAsync()"/> on a <see cref="Board"/> instance.
+        /// </remarks>
         public Post(WikiaSite site, WikiPageStub ownerPage, int id)
         {
             if (ownerPage.IsEmpty) throw new ArgumentException("ownerPage is empty.", nameof(ownerPage));
@@ -31,6 +44,7 @@ namespace WikiClientLibrary.Wikia.Discussions
             Id = id;
         }
 
+        /// <summary>Gets the Wikia site.</summary>
         public WikiaSite Site { get; }
 
         /// <summary>Gets the ID of the post.</summary>
@@ -39,6 +53,9 @@ namespace WikiClientLibrary.Wikia.Discussions
         /// <summary>Gets the stub of the page that owns the comment.</summary>
         public WikiPageStub OwnerPage { get; private set; }
 
+        /// <summary>Gets a value, determining whether the page exists.</summary>
+        /// <remarks>If you have created the <see cref="Post"/> instance via its constructor,
+        /// this value is valid only after a <see cref="RefreshAsync()"/> call.</remarks>
         public bool Exists { get; internal set; }
 
         /// <summary>Gets the comment content.</summary>
@@ -50,12 +67,17 @@ namespace WikiClientLibrary.Wikia.Discussions
         /// <summary>Gets the last editor of the post.</summary>
         public UserStub LastEditor { get; private set; }
 
+        /// <summary>Gets the time when the post is first submitted.</summary>
         public DateTime TimeStamp { get; private set; }
 
+        /// <summary>Gets the time when the post is last edited.</summary>
+        /// <value>The time when the post is last edited, or <c>null</c>, if the post has not been edited at all.</value>
         public DateTime? LastUpdated { get; private set; }
 
+        /// <summary>Gets the latest revision of the post.</summary>
         public Revision LastRevision { get; private set; }
 
+        /// <summary>Gets the replies of the post.</summary>
         public IReadOnlyList<Post> Replies { get; internal set; } = emptyPosts;
 
         /// <inheritdoc cref="RefreshAsync(PostQueryOptions,CancellationToken)"/>

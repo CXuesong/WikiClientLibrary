@@ -10,12 +10,39 @@ using WikiClientLibrary.Infrastructures;
 
 namespace WikiClientLibrary.Wikia
 {
+
+    /// <summary>
+    /// Parser that parses the JSON and dispatches error in the response from generic Wikia API response.
+    /// </summary>
     public class WikiaJsonResonseParser : WikiResponseMessageParser<JToken>
     {
 
         internal static readonly WikiaJsonResonseParser Default = new WikiaJsonResonseParser();
 
         /// <inheritdoc />
+        /// <remarks>
+        /// <para>This method do not check the HTTP status code, because for certain JSON responses,
+        /// the status code might has its semantic meanings.</para>
+        /// <para>Then the content will be parsed as JSON, in <see cref="JToken"/>. If there is
+        /// <see cref="JsonException"/> thrown while parsing the response, a retry will be requested.</para>
+        /// <para>The default implementation for this method throws a <see cref="WikiaApiException"/>
+        /// or one of its derived exceptions when detected <c>exception</c> node in the JSON response.
+        /// The exception mapping is as follows</para>
+        /// <list type="table">
+        /// <listheader>
+        /// <term><c>exception.code</c> value</term>
+        /// <description>Mapped exception type</description>
+        /// </listheader>
+        /// <item>
+        /// <term><c>NotFoundApiException</c></term>
+        /// <description><see cref="NotFoundApiException"/></description>
+        /// </item>
+        /// <item>
+        /// <term>Others</term>
+        /// <description><see cref="WikiaApiException"/></description>
+        /// </item>
+        /// </list> 
+        /// </remarks>
         public override async Task<JToken> ParseResponseAsync(HttpResponseMessage response, WikiResponseParsingContext context)
         {
             if (response == null) throw new ArgumentNullException(nameof(response));

@@ -18,11 +18,11 @@ namespace WikiClientLibrary.Client
         /// </summary>
         /// <param name="endPointUrl">The API endpoint URL.</param>
         /// <param name="request">The request message.</param>
-        /// <param name="responseParser">The parser that checks and parses the API response into <see cref="JToken"/>.</param>
+        /// <param name="responseParser">The parser that checks and parses the API response into the desired CLR object.</param>
         /// <param name="cancellationToken">The cancellation token that will be checked prior to completing the returned task.</param>
-        /// <returns>The parsed response value.</returns>
+        /// <returns>The parsed response value. The acutal object type depends on the <paramref name="responseParser"/>.</returns>
         /// <exception cref="ArgumentNullException">Either <paramref name="endPointUrl"/>, <paramref name="request"/>, or <paramref name="responseParser"/> is <c>null</c>.</exception>
-        /// <exception cref="OperationFailedException">There is <c>error</c> node in returned JSON and error is unhandled.</exception>
+        /// <exception cref="Exception">Other <see cref="IWikiResponseMessageParser"/>-specified exceptions.</exception>
         /// <remarks>
         /// The implementation of this method involves
         /// <list type="bullet">

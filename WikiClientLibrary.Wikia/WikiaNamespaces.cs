@@ -4,6 +4,9 @@ using System.Text;
 
 namespace WikiClientLibrary.Wikia
 {
+    /// <summary>
+    /// Contains Wikia-specific namespace IDs.
+    /// </summary>
     public static class WikiaNamespaces
     {
 

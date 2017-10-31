@@ -19,6 +19,16 @@ namespace WikiClientLibrary.Client
         public static MediaWikiJsonResponseParser Default { get; } = new MediaWikiJsonResponseParser();
 
         /// <inheritdoc />
+        /// <remarks>
+        /// <para>This method checkes the HTTP status code first.
+        /// For non-successful HTTP status codes, this method will request for a retry.</para>
+        /// <para>Then the content will be parsed as JSON, in <see cref="JToken"/>. If there is
+        /// <see cref="JsonException"/> thrown while parsing the response, a retry will be requested.</para>
+        /// <para>Finally, before returining the parsed JSON, this method checks for <c>warning</c> and <c>error</c>
+        /// nodes. If there exists <c>warning</c> node, a warning will be issued to the logger. If there exists <c>error</c>
+        /// node, a <see cref="OperationFailedException"/> or its derived exception will be thrown. You can
+        /// customize the error generation behavior by overriding <see cref="OnApiError"/> method.</para>
+        /// </remarks>
         public override async Task<JToken> ParseResponseAsync(HttpResponseMessage response, WikiResponseParsingContext context)
         {
             if (response == null) throw new ArgumentNullException(nameof(response));
@@ -83,6 +93,48 @@ namespace WikiClientLibrary.Client
         /// <param name="errorNode">The <c>error</c> JSON node.</param>
         /// <param name="responseNode">The JSON root of the API response.</param>
         /// <param name="context">The response parsing context, used for initiating a retry.</param>
+        /// <remarks>
+        /// <para>The default implementation for this method throws a <see cref="OperationFailedException"/>
+        /// or one of its derived exceptions. The default exception mapping is as follows</para>
+        /// <list type="table">
+        /// <listheader>
+        /// <term><paramref name="errorCode"/> value</term>
+        /// <description>Mapped exception type</description>
+        /// </listheader>
+        /// <item>
+        /// <term><c>permissiondenied</c>, <c>readapidenied</c>, <c>mustbeloggedin</c></term>
+        /// <description><see cref="UnauthorizedOperationException"/></description>
+        /// </item>
+        /// <item>
+        /// <term><c>permissions</c> (Flow)</term>
+        /// <description><see cref="UnauthorizedOperationException"/></description>
+        /// </item>
+        /// <item>
+        /// <term><c>badtoken</c></term>
+        /// <description><see cref="BadTokenException"/></description>
+        /// </item>
+        /// <item>
+        /// <term><c>unknown_action</c></term>
+        /// <description><see cref="InvalidActionException"/></description>
+        /// </item>
+        /// <item>
+        /// <term><c>assertuserfailed</c>, <c>assertbotfailed</c></term>
+        /// <description><see cref="AccountAssertionFailureException"/></description>
+        /// </item>
+        /// <item>
+        /// <term><c>*conflict</c></term>
+        /// <description><see cref="OperationConflictException"/></description>
+        /// </item>
+        /// <item>
+        /// <term><c>prev_revision</c> (Flow)</term>
+        /// <description><see cref="OperationConflictException"/></description>
+        /// </item>
+        /// <item>
+        /// <term>others</term>
+        /// <description><see cref="OperationFailedException"/></description>
+        /// </item>
+        /// </list> 
+        /// </remarks>
         protected virtual void OnApiError(string errorCode, string errorMessage, JToken errorNode, JToken responseNode,
             WikiResponseParsingContext context)
         {

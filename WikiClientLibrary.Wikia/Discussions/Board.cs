@@ -10,12 +10,25 @@ using WikiClientLibrary.Pages;
 
 namespace WikiClientLibrary.Wikia.Discussions
 {
+    /// <summary>
+    /// Represents the commenting area of an article, a message wall,
+    /// or a board on the Wikia forum (<c>Special:Forum</c>).
+    /// </summary>
     public class Board
     {
+
+        /// <inheritdoc cref="Board(WikiaSite,string,int)"/>
         public Board(WikiaSite site, string title) : this(site, title, BuiltInNamespaces.Main)
         {
         }
 
+        /// <summary>
+        /// Initializes a new instance of <see cref="Board"/> from site and page title.
+        /// </summary>
+        /// <param name="site">The Wikia site.</param>
+        /// <param name="title">Full page title of the board.</param>
+        /// <param name="defaultNamespaceId">The default namespace ID to be used for the <paramref name="title"/>.</param>
+        /// <exception cref="ArgumentNullException"><paramref name="site"/> or <paramref name="title"/> is <c>null</c>.</exception>
         public Board(WikiaSite site, string title, int defaultNamespaceId)
         {
             Site = site ?? throw new ArgumentNullException(nameof(site));
@@ -23,12 +36,23 @@ namespace WikiClientLibrary.Wikia.Discussions
             Page = new WikiPageStub(link.FullTitle, link.Namespace.Id);
         }
 
+        /// <summary>
+        /// Initializes a new instance of <see cref="Board"/> from site and page ID.
+        /// </summary>
+        /// <param name="site">The Wikia site.</param>
+        /// <param name="pageId">Page ID of the board.</param>
+        /// <exception cref="ArgumentNullException"><paramref name="site"/> is <c>null</c>.</exception>
         public Board(WikiaSite site, int pageId)
         {
             Site = site ?? throw new ArgumentNullException(nameof(site));
             Page = new WikiPageStub(pageId);
         }
 
+        /// <summary>
+        /// Initializes a new instance of <see cref="Board"/> from an existing <see cref="WikiPage"/>.
+        /// </summary>
+        /// <param name="page">The page used to initialize the Board instance.</param>
+        /// <exception cref="ArgumentNullException"><paramref name="page"/> is <c>null</c>.</exception>
         public Board(WikiPage page)
         {
             if (page == null) throw new ArgumentNullException(nameof(page));
@@ -37,10 +61,14 @@ namespace WikiClientLibrary.Wikia.Discussions
             Page = page.ToPageStub();
         }
 
+        /// <summary>Gets the Wikia site.</summary>
         public WikiaSite Site { get; }
 
+        /// <summary>Gets the corresponding page information.</summary>
         public WikiPageStub Page { get; private set; }
 
+        /// <summary>Gets a value, determining whether the page exists.</summary>
+        /// <remarks>This value is valid only after a <see cref="RefreshAsync()"/> call.</remarks>
         public bool Exists { get; private set; }
 
         internal void LoadFromPageStub(WikiPageStub stub)
@@ -49,11 +77,19 @@ namespace WikiClientLibrary.Wikia.Discussions
             Exists = !stub.IsMissing;
         }
 
+        /// <see cref="RefreshAsync(CancellationToken)"/>
         public Task RefreshAsync()
         {
             return RefreshAsync(CancellationToken.None);
         }
 
+        /// <summary>
+        /// Asynchronously refreshes the basic information of current board.
+        /// </summary>
+        /// <param name="cancellationToken">A token used to cancel the operation.</param>
+        /// <remarks>
+        /// This method will refresh the <see cref="Page"/> and <see cref="Exists"/> properties.
+        /// </remarks>
         public Task RefreshAsync(CancellationToken cancellationToken)
         {
             return RequestHelper.RefreshBaordsAsync(new[] { this }, cancellationToken);

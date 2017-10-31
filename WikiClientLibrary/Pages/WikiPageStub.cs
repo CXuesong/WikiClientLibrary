@@ -14,12 +14,32 @@ namespace WikiClientLibrary.Pages
     /// <summary>
     /// Contains basic information for identifying a page.
     /// </summary>
+    /// <remarks>
+    /// <para>Depending on the given information, the structure may contain page ID, page name, or both.
+    /// If the owner does not know part of the information, these properties can be <c>0</c> and <c>null</c> respectively.</para>
+    /// <para>This structure can also represent missing (or inexistent) pages. A missing page has either a page ID or
+    /// a page name, not both. For the missing page with the given page ID, its <see cref="Title"/> should be
+    /// <see cref="MissingPageTitle"/>; for the missing page with the given page title, the <see cref="Id"/>
+    /// should be <ses cref="MissingPageId"/>. You can use <see cref="IsMissing"/> property to check for missing pages.</para>
+    /// </remarks>
     public struct WikiPageStub : IEquatable<WikiPageStub>
     {
 
+        /// <summary>The <see cref="Id"/> value used for missing page.</summary>
+        /// <remarks>For how the missing pages are handled, see the "remarks" section of <see cref="WikiPage"/>.</remarks>
         public const int MissingPageId = -10000;
+
+        /// <summary>The <see cref="Title"/> value used for missing page.</summary>
+        /// <remarks>For how the missing pages are handled, see the "remarks" section of <see cref="WikiPage"/>.</remarks>
         public const string MissingPageTitle = "#Missing";
+
+        /// <summary>The <see cref="NamespaceId"/> used when the constructor do not have namespace information about the page.</summary>
         public const int UnknownNamespaceId = -10000;
+
+        /// <summary>
+        /// An <see cref="WikiPageStub"/> that represents no page.
+        /// This is the default value of the structure.
+        /// </summary>
         public static readonly WikiPageStub Empty = new WikiPageStub();
 
         /// <inheritdoc cref="WikiPageStub(int,string,int)"/>
@@ -45,23 +65,43 @@ namespace WikiClientLibrary.Pages
             NamespaceId = namespaceId;
         }
 
-        /// <summary>Page ID.</summary>
+        /// <summary>Gets the page ID.</summary>
+        /// <value>Page ID; or <c>0</c> if the information is not avaiable;
+        /// or <see cref="MissingPageId"/> for the confirmed missing page.</value>
         public int Id { get; }
 
-        /// <summary>Page full title.</summary>
+        /// <summary>Gets the full title of the page.</summary>
+        /// <value>Normalized or un-normalized page title; or <c>null</c> if the information is not avaiable;
+        /// or <see cref="MissingPageTitle"/> for the confirmed missing page.</value>
         public string Title { get; }
 
-        /// <summary>Page namespace ID.</summary>
+        /// <summary>Gets the namespace ID of the page.</summary>
+        /// <value>Namespace ID for the page; or <see cref="UnknownNamespaceId"/> if the information is not avaiable.</value>
         public int NamespaceId { get; }
 
+        /// <summary>Checks whether the page is confirmed as missing.</summary>
+        /// <remarks>If the returned value is <c>false</c>, the caller still cannot confirm the page
+        /// does exist, unless otherwise informed so.</remarks>
         public bool IsMissing => Id == MissingPageId || Title == MissingPageTitle;
 
+        /// <summary>
+        /// Gets a value that indicates whether <see cref="Id"/> contains page ID information.
+        /// </summary>
         public bool HasId => Id != 0 && Id != MissingPageId;
 
+        /// <summary>
+        /// Gets a value that indicates whether <see cref="Title"/> contains page title information.
+        /// </summary>
         public bool HasTitle => Title != null && Title != MissingPageTitle;
 
+        /// <summary>
+        /// Gets a value that indicates whether <see cref="Id"/> contains page namespace ID information.
+        /// </summary>
         public bool HasNamespaceId => NamespaceId != UnknownNamespaceId;
 
+        /// <summary>
+        /// Checks whether the current structure does not represent an (existent or missing) page.
+        /// </summary>
         public bool IsEmpty => !HasId && !HasTitle;
 
         /// <inheritdoc />
@@ -102,6 +142,14 @@ namespace WikiClientLibrary.Pages
             return !left.Equals(right);
         }
 
+        /// <summary>
+        /// Construct a sequence of <see cref="WikiPageStub"/> from the given page IDs.
+        /// </summary>
+        /// <param name="site">The site in which to query for the pages.</param>
+        /// <param name="ids">The page IDs to query.</param>
+        /// <exception cref="ArgumentNullException">Either <paramref name="site"/> or <paramref name="ids"/> is <c>null</c>.</exception>
+        /// <returns>A sequence of <see cref="WikiPageStub"/> containing the page information.</returns>
+        /// <remarks>For how the missing pages are handled, see the "remarks" section of <see cref="WikiPage"/>.</remarks>
         public static IAsyncEnumerable<WikiPageStub> FromPageIds(WikiSite site, IEnumerable<int> ids)
         {
             return AsyncEnumerableFactory.FromAsyncGenerator<WikiPageStub>(async (sink, ct) =>
@@ -131,8 +179,18 @@ namespace WikiClientLibrary.Pages
             });
         }
 
+        /// <summary>
+        /// Construct a sequence of <see cref="WikiPageStub"/> from the given page titles.
+        /// </summary>
+        /// <param name="site">The site in which to query for the pages.</param>
+        /// <param name="titles">The page IDs to query.</param>
+        /// <exception cref="ArgumentNullException">Either <paramref name="site"/> or <paramref name="titles"/> is <c>null</c>.</exception>
+        /// <returns>A sequence of <see cref="WikiPageStub"/> containing the page information.</returns>
+        /// <remarks>For how the missing pages are handled, see the "remarks" section of <see cref="WikiPage"/>.</remarks>
         public static IAsyncEnumerable<WikiPageStub> FromPageTitles(WikiSite site, IEnumerable<string> titles)
         {
+            if (site == null) throw new ArgumentNullException(nameof(site));
+            if (titles == null) throw new ArgumentNullException(nameof(titles));
             return AsyncEnumerableFactory.FromAsyncGenerator<WikiPageStub>(async (sink, ct) =>
             {
                 var titleLimit = site.AccountInfo.HasRight(UserRights.ApiHighLimits)
