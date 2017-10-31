@@ -216,6 +216,7 @@ namespace WikiClientLibrary.Pages
         {
             if (source == null) throw new ArgumentNullException(nameof(source));
             Debug.Assert(source != null);
+            var link = WikiLink.Parse(Site, Title, BuiltInNamespaces.File);
             using (Site.BeginActionScope(this, source))
             {
                 var requestFields = new Dictionary<string, object>
@@ -223,7 +224,7 @@ namespace WikiClientLibrary.Pages
                     {"action", "upload"},
                     {"watchlist", watch},
                     {"token", WikiSiteToken.Edit},
-                    {"filename", Title},
+                    {"filename", link.Title},
                     {"comment", comment},
                     {"ignorewarnings", ignoreWarnings},
                 };
@@ -233,7 +234,7 @@ namespace WikiClientLibrary.Pages
                 Site.Logger.LogDebug("Start uploading.", this, source);
                 var jresult = await Site.GetJsonAsync(request, cancellationToken);
                 var result = jresult["upload"].ToObject<UploadResult>(Utility.WikiJsonSerializer);
-                Site.Logger.LogInformation("Uploaded. Result={Result}.", this, result.ResultCode);
+                Site.Logger.LogInformation("Uploaded. Result={Result}.", result.ResultCode);
                 return result;
             }
         }
