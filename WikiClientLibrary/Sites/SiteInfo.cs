@@ -968,7 +968,7 @@ namespace WikiClientLibrary.Sites
         public int JobsCount { get; private set; }
 
         [JsonProperty("queued-massmessages")]
-        public int MassMssageQueueLength { get; private set; }
+        public int MassMessageQueueLength { get; private set; }
     }
 
 }
