@@ -132,6 +132,14 @@ namespace WikiClientLibrary.Pages
             }
         }
 
+        /// <inheritdoc />
+        public override string ToString()
+        {
+            if (IsEmpty) return "<Empty>";
+            if (Title == MissingPageTitle) return ("#Missing#" + Id);
+            return Title ?? ("#" + Id);
+        }
+
         public static bool operator ==(WikiPageStub left, WikiPageStub right)
         {
             return left.Equals(right);
