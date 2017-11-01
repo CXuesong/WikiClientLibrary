@@ -243,8 +243,9 @@ namespace WikiClientLibrary.Pages
         protected override void OnLoadPageInfo(JObject jpage)
         {
             base.OnLoadPageInfo(jpage);
+            // Can be null, if the page is missing.
             var jfile = jpage["imageinfo"];
-            var lastRev = jfile.LastOrDefault();
+            var lastRev = jfile?.LastOrDefault();
             if (lastRev != null)
             {
                 LastFileRevision = lastRev.ToObject<FileRevision>(Utility.WikiJsonSerializer);
