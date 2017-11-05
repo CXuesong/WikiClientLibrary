@@ -1102,7 +1102,7 @@
       </summary>
     </member>
     <member name="T:WikiClientLibrary.Wikibase.DataTypes.WbGlobeCoordinate">
-      <summary>Represents a point on the globe.</summary>
+      <summary>In Wikibase, represents a point on the globe.</summary>
     </member>
     <member name="M:WikiClientLibrary.Wikibase.DataTypes.WbGlobeCoordinate.#ctor(System.Double,System.Double,System.Double,WikiClientLibrary.Wikibase.DataTypes.WbUri)">
       <summary>

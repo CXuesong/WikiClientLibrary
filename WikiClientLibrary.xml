@@ -313,6 +313,194 @@
     <member name="F:WikiClientLibrary.Gender.Female">
       <summary>Female.</summary>
     </member>
+    <member name="T:WikiClientLibrary.GeoCoordinate">
+      <summary>
+            Represents a coordinate on the globe.
+            </summary>
+    </member>
+    <member name="M:WikiClientLibrary.GeoCoordinate.#ctor(System.Double,System.Double)">
+      <summary>Initializes a new instance of <see cref="T:WikiClientLibrary.GeoCoordinate" /> representing a location on the Earth.</summary>
+      <param name="latitude">latitude of the location.</param>
+      <param name="longitude">logitude of the location.</param>
+      <param name="dimension">size of the object.</param>
+      <param name="globe">globe identifier of the coordinate.</param>
+    </member>
+    <member name="M:WikiClientLibrary.GeoCoordinate.#ctor(System.Double,System.Double,System.Double)">
+      <summary>Initializes a new instance of <see cref="T:WikiClientLibrary.GeoCoordinate" /> representing a location on the Earth.</summary>
+      <param name="latitude">latitude of the location.</param>
+      <param name="longitude">logitude of the location.</param>
+      <param name="dimension">size of the object.</param>
+      <param name="globe">globe identifier of the coordinate.</param>
+    </member>
+    <member name="M:WikiClientLibrary.GeoCoordinate.#ctor(System.Double,System.Double,System.Double,System.String)">
+      <summary>
+        <markup>
+          <include item="SMCAutoDocConstructor">
+            <parameter>WikiClientLibrary.GeoCoordinate</parameter>
+          </include>
+        </markup>
+      </summary>
+      <param name="latitude">latitude of the location.</param>
+      <param name="longitude">logitude of the location.</param>
+      <param name="dimension">size of the object.</param>
+      <param name="globe">globe identifier of the coordinate.</param>
+    </member>
+    <member name="P:WikiClientLibrary.GeoCoordinate.Dimension">
+      <summary>
+            Gets/sets the size of the object.
+            </summary>
+    </member>
+    <member name="F:WikiClientLibrary.GeoCoordinate.Earth">
+      <summary>
+            The globe identifier of the Earth.
+            </summary>
+    </member>
+    <member name="F:WikiClientLibrary.GeoCoordinate.Empty">
+      <summary>
+            Gets an <see cref="T:WikiClientLibrary.GeoCoordinate" /> value with its members uninitialized.
+            </summary>
+    </member>
+    <member name="M:WikiClientLibrary.GeoCoordinate.Equals(System.Object)">
+      <summary>
+        <markup>
+          <include item="SMCMissingTag">
+            <parameter>summary</parameter>
+            <parameter>M:WikiClientLibrary.GeoCoordinate.Equals(System.Object)</parameter>
+          </include>
+        </markup>
+      </summary>
+      <param name="obj">
+        <markup>
+          <include item="SMCMissingParamTag">
+            <parameter>param</parameter>
+            <parameter>obj</parameter>
+            <parameter>M:WikiClientLibrary.GeoCoordinate.Equals(System.Object)</parameter>
+          </include>
+        </markup>
+      </param>
+    </member>
+    <member name="M:WikiClientLibrary.GeoCoordinate.Equals(WikiClientLibrary.GeoCoordinate)">
+      <summary>
+        <markup>
+          <include item="SMCMissingTag">
+            <parameter>summary</parameter>
+            <parameter>M:WikiClientLibrary.GeoCoordinate.Equals(WikiClientLibrary.GeoCoordinate)</parameter>
+          </include>
+        </markup>
+      </summary>
+      <param name="other">
+        <markup>
+          <include item="SMCMissingParamTag">
+            <parameter>param</parameter>
+            <parameter>other</parameter>
+            <parameter>M:WikiClientLibrary.GeoCoordinate.Equals(WikiClientLibrary.GeoCoordinate)</parameter>
+          </include>
+        </markup>
+      </param>
+    </member>
+    <member name="M:WikiClientLibrary.GeoCoordinate.GetHashCode">
+      <summary>
+        <markup>
+          <include item="SMCMissingTag">
+            <parameter>summary</parameter>
+            <parameter>M:WikiClientLibrary.GeoCoordinate.GetHashCode</parameter>
+          </include>
+        </markup>
+      </summary>
+    </member>
+    <member name="P:WikiClientLibrary.GeoCoordinate.Globe">
+      <summary>
+            Gets/set the globe identifier of the coordinate.
+            </summary>
+    </member>
+    <member name="P:WikiClientLibrary.GeoCoordinate.IsEmpty">
+      <summary>
+            Gets a value that indicates if all the members in the structure have their uninitialized values.
+            </summary>
+    </member>
+    <member name="P:WikiClientLibrary.GeoCoordinate.Latitude">
+      <summary>
+            Gets/sets the latitude of the location.
+            </summary>
+    </member>
+    <member name="P:WikiClientLibrary.GeoCoordinate.Longitude">
+      <summary>
+            Gets/sets the logitude of the location.
+            </summary>
+    </member>
+    <member name="M:WikiClientLibrary.GeoCoordinate.Offset(System.Double,System.Double)">
+      <summary>
+            Offsets the coordinates by the specified values.
+            </summary>
+      <param name="longitudeOffset">Offset of the logitude.</param>
+      <param name="latitudeOffset">Offset of the latitude.</param>
+    </member>
+    <member name="M:WikiClientLibrary.GeoCoordinate.op_Equality(WikiClientLibrary.GeoCoordinate,WikiClientLibrary.GeoCoordinate)">
+      <summary>
+        <markup>
+          <include item="SMCMissingTag">
+            <parameter>summary</parameter>
+            <parameter>M:WikiClientLibrary.GeoCoordinate.op_Equality(WikiClientLibrary.GeoCoordinate,WikiClientLibrary.GeoCoordinate)</parameter>
+          </include>
+        </markup>
+      </summary>
+      <param name="left">
+        <markup>
+          <include item="SMCMissingParamTag">
+            <parameter>param</parameter>
+            <parameter>left</parameter>
+            <parameter>M:WikiClientLibrary.GeoCoordinate.op_Equality(WikiClientLibrary.GeoCoordinate,WikiClientLibrary.GeoCoordinate)</parameter>
+          </include>
+        </markup>
+      </param>
+      <param name="right">
+        <markup>
+          <include item="SMCMissingParamTag">
+            <parameter>param</parameter>
+            <parameter>right</parameter>
+            <parameter>M:WikiClientLibrary.GeoCoordinate.op_Equality(WikiClientLibrary.GeoCoordinate,WikiClientLibrary.GeoCoordinate)</parameter>
+          </include>
+        </markup>
+      </param>
+    </member>
+    <member name="M:WikiClientLibrary.GeoCoordinate.op_Inequality(WikiClientLibrary.GeoCoordinate,WikiClientLibrary.GeoCoordinate)">
+      <summary>
+        <markup>
+          <include item="SMCMissingTag">
+            <parameter>summary</parameter>
+            <parameter>M:WikiClientLibrary.GeoCoordinate.op_Inequality(WikiClientLibrary.GeoCoordinate,WikiClientLibrary.GeoCoordinate)</parameter>
+          </include>
+        </markup>
+      </summary>
+      <param name="left">
+        <markup>
+          <include item="SMCMissingParamTag">
+            <parameter>param</parameter>
+            <parameter>left</parameter>
+            <parameter>M:WikiClientLibrary.GeoCoordinate.op_Inequality(WikiClientLibrary.GeoCoordinate,WikiClientLibrary.GeoCoordinate)</parameter>
+          </include>
+        </markup>
+      </param>
+      <param name="right">
+        <markup>
+          <include item="SMCMissingParamTag">
+            <parameter>param</parameter>
+            <parameter>right</parameter>
+            <parameter>M:WikiClientLibrary.GeoCoordinate.op_Inequality(WikiClientLibrary.GeoCoordinate,WikiClientLibrary.GeoCoordinate)</parameter>
+          </include>
+        </markup>
+      </param>
+    </member>
+    <member name="M:WikiClientLibrary.GeoCoordinate.ToString">
+      <summary>
+        <markup>
+          <include item="SMCMissingTag">
+            <parameter>summary</parameter>
+            <parameter>M:WikiClientLibrary.GeoCoordinate.ToString</parameter>
+          </include>
+        </markup>
+      </summary>
+    </member>
     <member name="T:WikiClientLibrary.InvalidActionException">
       <summary>
             An exception indicating the requested action is invalid.
@@ -2075,6 +2263,90 @@
             Invalid member type. Attempt to use this value will cause exceptions.
             </summary>
     </member>
+    <member name="T:WikiClientLibrary.Generators.GeoSearchGenerator">
+      <summary>
+            Searches for articles around the given point (determined either by coordinates or by article name).
+            (<a href="https://www.mediawiki.org/wiki/Extension:GeoData#list%253Dgeosearch">mw:Extension:GeoData#list=geosearch</a>)
+            </summary>
+    </member>
+    <member name="M:WikiClientLibrary.Generators.GeoSearchGenerator.#ctor(WikiClientLibrary.Sites.WikiSite)">
+      <summary>
+        <markup>
+          <include item="SMCAutoDocConstructor">
+            <parameter>WikiClientLibrary.Generators.GeoSearchGenerator</parameter>
+          </include>
+        </markup>
+      </summary>
+      <param name="site">The MediaWiki site this instance applies to.</param>
+    </member>
+    <member name="M:WikiClientLibrary.Generators.GeoSearchGenerator.EnumListParameters">
+      <summary>
+            When overridden, fills generator parameters for <c>action=query&amp;list={ListName}</c> request.
+            </summary>
+      <returns>A sequence of fields, which will override the basic query parameters.</returns>
+    </member>
+    <member name="P:WikiClientLibrary.Generators.GeoSearchGenerator.IncludesSecondaryCoordinates">
+      <summary>
+            Gets/set a value indicating whether to include secondary coordinates in the search results.
+            </summary>
+    </member>
+    <member name="M:WikiClientLibrary.Generators.GeoSearchGenerator.ItemFromJson(Newtonsoft.Json.Linq.JToken)">
+      <summary>
+            Parses an item contained in the <c>action=query&amp;list=</c> JSON response.
+            </summary>
+      <param name="json">One of the item node under the JSON path <c>query/{listname}</c>.</param>
+      <returns>The item that will be returned in the sequence from <see cref="M:WikiClientLibrary.Generators.Primitive.WikiList`1.EnumItemsAsync" />.</returns>
+    </member>
+    <member name="P:WikiClientLibrary.Generators.GeoSearchGenerator.ListName">
+      <summary>
+            The name of list, used as the value of <c>list</c> parameter in <c>action=query</c> request.
+            </summary>
+    </member>
+    <member name="P:WikiClientLibrary.Generators.GeoSearchGenerator.NamespaceIds">
+      <summary>
+            Only list pages in these namespaces.
+            </summary>
+    </member>
+    <member name="P:WikiClientLibrary.Generators.GeoSearchGenerator.Radius">
+      <summary>
+            Gets/sets the search radius in meters (10-10000).
+            </summary>
+    </member>
+    <member name="P:WikiClientLibrary.Generators.GeoSearchGenerator.TargetCoordinate">
+      <summary>
+            Gets/sets the coordinate around which to search.
+            </summary>
+    </member>
+    <member name="P:WikiClientLibrary.Generators.GeoSearchGenerator.TargetTitle">
+      <summary>
+            Gets/sets the title of page around which to search.
+            </summary>
+    </member>
+    <member name="T:WikiClientLibrary.Generators.GeoSearchResultItem">
+      <summary>
+            An item in the GeoSearch result.
+            </summary>
+    </member>
+    <member name="P:WikiClientLibrary.Generators.GeoSearchResultItem.Coordinate">
+      <summary>
+            Gets the coordinate of the object.
+            </summary>
+    </member>
+    <member name="P:WikiClientLibrary.Generators.GeoSearchResultItem.Distance">
+      <summary>
+            Distance of the object from the search location, in meters.
+            </summary>
+    </member>
+    <member name="P:WikiClientLibrary.Generators.GeoSearchResultItem.IsPrimaryCoordinate">
+      <summary>
+            Gets a value indicating whether the coordinate is the primary coordinate of the object.
+            </summary>
+    </member>
+    <member name="P:WikiClientLibrary.Generators.GeoSearchResultItem.Page">
+      <summary>
+            Gets the object's associated page stub.
+            </summary>
+    </member>
     <member name="T:WikiClientLibrary.Generators.LinksGenerator">
       <summary>
             Generates pages from all links on the provided page.
@@ -3710,6 +3982,25 @@
             where <c>TKey</c> should be <see cref="T:System.String" />, while <c>TValue</c> can either be <see cref="T:System.String" /> or <see cref="T:System.Object" />.
             Or an anonymous object, in which case, its properties and values are enumerated.</param>
       <returns>A sequence containning the enumerated key-value pairs.</returns>
+    </member>
+    <member name="M:WikiClientLibrary.Infrastructures.MediaWikiHelper.GeoCoordinateFromJson(Newtonsoft.Json.Linq.JObject)">
+      <summary>
+        <markup>
+          <include item="SMCMissingTag">
+            <parameter>summary</parameter>
+            <parameter>M:WikiClientLibrary.Infrastructures.MediaWikiHelper.GeoCoordinateFromJson(Newtonsoft.Json.Linq.JObject)</parameter>
+          </include>
+        </markup>
+      </summary>
+      <param name="jcoordinate">
+        <markup>
+          <include item="SMCMissingParamTag">
+            <parameter>param</parameter>
+            <parameter>jcoordinate</parameter>
+            <parameter>M:WikiClientLibrary.Infrastructures.MediaWikiHelper.GeoCoordinateFromJson(Newtonsoft.Json.Linq.JObject)</parameter>
+          </include>
+        </markup>
+      </param>
     </member>
     <member name="M:WikiClientLibrary.Infrastructures.MediaWikiHelper.GetQueryParamRvProp(WikiClientLibrary.Pages.PageQueryOptions)">
       <summary>
@@ -5523,6 +5814,16 @@
             In the case of multiple redirects, all redirects will be resolved.
             </summary>
     </member>
+    <member name="F:WikiClientLibrary.Pages.PageQueryOptions.FetchExtract">
+      <summary>
+            Fetch plaintext extract of the page.
+            </summary>
+    </member>
+    <member name="F:WikiClientLibrary.Pages.PageQueryOptions.FetchGeoCoordinate">
+      <summary>
+            Fetch primary GeoLocation of the page.
+            </summary>
+    </member>
     <member name="T:WikiClientLibrary.Pages.ProtectionInfo">
       <summary>
             Page protection information.
@@ -6377,6 +6678,11 @@
             For category, gets whether the categories description page exists.
             </summary>
     </member>
+    <member name="P:WikiClientLibrary.Pages.WikiPage.Extract">
+      <summary>
+            Gets the plain-text extract of the page content.
+            </summary>
+    </member>
     <member name="M:WikiClientLibrary.Pages.WikiPage.FromTitle(WikiClientLibrary.Sites.WikiSite,System.String)">
       <summary>
             Create an instance of <see cref="T:WikiClientLibrary.Pages.WikiPage" /> or its derived class,
@@ -6605,6 +6911,11 @@
     <member name="P:WikiClientLibrary.Pages.WikiPage.PageProperties">
       <summary>
             Gets the properties of the page.
+            </summary>
+    </member>
+    <member name="P:WikiClientLibrary.Pages.WikiPage.PrimaryCoordinate">
+      <summary>
+            Gets the primary geo-coordinate associated with the page.
             </summary>
     </member>
     <member name="P:WikiClientLibrary.Pages.WikiPage.Protections">
