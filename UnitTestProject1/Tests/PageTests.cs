@@ -81,8 +81,8 @@ namespace UnitTestProject1.Tests
             await page.RefreshAsync(PageQueryOptions.FetchGeoCoordinate);
             ShallowTrace(page);
             Assert.False(page.PrimaryCoordinate.IsEmpty);
-            Assert.Equal(2, page.PrimaryCoordinate.Longitude, 12);
             Assert.Equal(47, page.PrimaryCoordinate.Latitude, 12);
+            Assert.Equal(2, page.PrimaryCoordinate.Longitude, 12);
             Assert.Equal(GeoCoordinate.Earth, page.PrimaryCoordinate.Globe);
         }
 

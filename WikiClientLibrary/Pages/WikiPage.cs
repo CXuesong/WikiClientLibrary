@@ -278,17 +278,6 @@ namespace WikiClientLibrary.Pages
             QueryOptions = options;
         }
 
-        internal static GeoCoordinate CoordinateFromJson(JToken jcoordinate)
-        {
-            return new GeoCoordinate
-            {
-                Longitude = (double)jcoordinate["lon"],
-                Latitude = (double)jcoordinate["lat"],
-                Dimension = (double?)jcoordinate["dim"] ?? 0,
-                Globe = (string)jcoordinate["globe"],
-            };
-        }
-
         protected virtual void OnLoadPageInfo(JObject jpage)
         {
             Title = (string) jpage["title"];
@@ -309,9 +298,9 @@ namespace WikiClientLibrary.Pages
             if (jcoordinates != null && jcoordinates.HasValues)
             {
                 // Prefer primary coordinates
-                PrimaryCoordinate = CoordinateFromJson(
-                    jcoordinates.FirstOrDefault(coord => coord["primary"] != null)
-                    ?? jcoordinates.First);
+                PrimaryCoordinate = MediaWikiHelper.GeoCoordinateFromJson((JObject)
+                (jcoordinates.FirstOrDefault(coord => coord["primary"] != null)
+                 ?? jcoordinates.First));
             }
             else
             {
@@ -777,7 +766,6 @@ namespace WikiClientLibrary.Pages
         {
             return string.IsNullOrEmpty(Title) ? ("#" + Id) : Title;
         }
-
     }
 
     /// <summary>

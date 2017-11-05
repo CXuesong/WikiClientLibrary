@@ -131,6 +131,17 @@ namespace WikiClientLibrary.Infrastructures
             return rev;
         }
 
+        public static GeoCoordinate GeoCoordinateFromJson(JObject jcoordinate)
+        {
+            return new GeoCoordinate
+            {
+                Longitude = (double)jcoordinate["lon"],
+                Latitude = (double)jcoordinate["lat"],
+                Dimension = (double?)jcoordinate["dim"] ?? 0,
+                Globe = (string)jcoordinate["globe"],
+            };
+        }
+
         public static string GetQueryParamRvProp(PageQueryOptions options)
         {
             if ((options & PageQueryOptions.FetchContent) == PageQueryOptions.FetchContent)

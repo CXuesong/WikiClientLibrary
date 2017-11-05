@@ -318,7 +318,7 @@ namespace UnitTestProject1.Tests
         }
 
         [Fact]
-        public async Task WpTestEnumPageLinksTest()
+        public async Task WpLzhEnumPageLinksTest()
         {
             var site = await WpLzhSiteAsync;
             var gen = new LinksGenerator(site, site.SiteInfo.MainPage) {PaginationSize = 20};
@@ -331,6 +331,19 @@ namespace UnitTestProject1.Tests
             Assert.Contains("維基大典:卓著", links);
             // The items taken from generator are unordered.
             Assert.Equal(links.ToHashSet(), linkPages.ToHashSet());
+        }
+
+        [Fact]
+        public async Task WpTest2GeoSearchTest()
+        {
+            var site = await WpTest2SiteAsync;
+            var gen = new GeoSearchGenerator(site) {TargetCoordinate = new GeoCoordinate(47.01, 2), Radius = 2000};
+            var result = await gen.EnumItemsAsync().FirstOrDefault();
+            ShallowTrace(result);
+            Assert.NotNull(result);
+            Assert.Equal("France", result.Page.Title);
+            Assert.InRange(result.Distance, 1110, 1113);
+            Assert.True(result.IsPrimaryCoordinate);
         }
 
     }

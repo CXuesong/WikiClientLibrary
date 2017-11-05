@@ -22,15 +22,40 @@ namespace WikiClientLibrary
         /// </summary>
         public static readonly GeoCoordinate Empty = new GeoCoordinate();
 
+        /// <summary>Initializes a new instance of <see cref="GeoCoordinate"/> representing a location on the Earth.</summary>
+        /// <inheritdoc cref="GeoCoordinate(double,double,double,string)"/>
+        /// <remarks>The <see cref="Dimension"/> is set to <c>0</c>.</remarks>
+        public GeoCoordinate(double latitude, double longitude) : this(latitude, longitude, 0, Earth)
+        {
+        }
+
+        /// <summary>Initializes a new instance of <see cref="GeoCoordinate"/> representing a location on the Earth.</summary>
+        /// <inheritdoc cref="GeoCoordinate(double,double,double,string)"/>
+        public GeoCoordinate(double latitude, double longitude, double dimension) : this(latitude, longitude, dimension, Earth)
+        {
+        }
+
+        /// <param name="latitude">latitude of the location.</param>
+        /// <param name="longitude">logitude of the location.</param>
+        /// <param name="dimension">size of the object.</param>
+        /// <param name="globe">globe identifier of the coordinate.</param>
+        public GeoCoordinate(double latitude, double longitude, double dimension, string globe)
+        {
+            Longitude = longitude;
+            Latitude = latitude;
+            Dimension = dimension;
+            Globe = globe;
+        }
+
         /// <summary>
-        /// Gets/sets the logitude of the location.
+        /// Gets/sets the latitude of the location.
         /// </summary>
-        public double Longitude { get; set; }
+        public double Latitude { get; set; }
 
         /// <summary>
         /// Gets/sets the logitude of the location.
         /// </summary>
-        public double Latitude { get; set; }
+        public double Longitude { get; set; }
 
         /// <summary>
         /// Gets/sets the size of the object.
