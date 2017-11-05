@@ -100,9 +100,11 @@ namespace UnitTestProject1.Tests
         public async Task WpLzhPageReadDisambigTest()
         {
             var site = await WpLzhSiteAsync;
-            var page = new WikiPage(site, "莎拉伯恩哈特");
-            await page.RefreshAsync();
-            Assert.True(await page.IsDisambiguationAsync());
+            var page1 = new WikiPage(site, "莎拉伯恩哈特");
+            var page2 = new WikiPage(site, "中國_(釋義)");
+            await new[] {page1, page2}.RefreshAsync();
+            Assert.False(await page1.IsDisambiguationAsync());
+            Assert.True(await page2.IsDisambiguationAsync());
         }
 
         [Fact]
