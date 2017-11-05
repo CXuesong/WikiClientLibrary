@@ -2,7 +2,8 @@
 
 namespace WikiClientLibrary.Wikibase.DataTypes
 {
-    /// <summary>Represents a point on the globe.</summary>
+    /// <summary>In Wikibase, represents a point on the globe.</summary>
+    /// <see cref="GeoCoordinate"/>
     public struct WbGlobeCoordinate : IEquatable<WbGlobeCoordinate>
     {
 
@@ -36,7 +37,7 @@ namespace WikiClientLibrary.Wikibase.DataTypes
         /// <inheritdoc />
         public override string ToString()
         {
-            var s = Latitude + "°";
+            var s = Latitude.ToString();
             if (Latitude >= 0) s += "°N ";
             else s += "°S ";
             s += Longitude;
