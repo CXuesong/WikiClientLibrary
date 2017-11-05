@@ -154,6 +154,19 @@ namespace WikiClientLibrary.Infrastructures
                 {"redirects", (options & PageQueryOptions.ResolveRedirects) == PageQueryOptions.ResolveRedirects},
                 {"maxlag", 5},
             };
+            if ((options & PageQueryOptions.FetchExtract) == PageQueryOptions.FetchExtract)
+            {
+                queryParams["prop"] += "|extracts";
+                queryParams["exsentences"] = 1;
+                queryParams["exintro"] = 1;
+                queryParams["explaintext"] = 1;
+            }
+            if ((options & PageQueryOptions.FetchGeoCoordinate) == PageQueryOptions.FetchGeoCoordinate)
+            {
+                queryParams["prop"] += "|coordinates";
+                queryParams["coprop"] = "globe|dim";
+                queryParams["coprimary"] = "primary";
+            }
             return queryParams;
         }
     }

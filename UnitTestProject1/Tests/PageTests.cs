@@ -70,14 +70,37 @@ namespace UnitTestProject1.Tests
             var target = await page.GetRedirectTargetAsync();
             ShallowTrace(target);
             Assert.Equal("Foo24", target.Title);
-            Assert.True(target.RedirectPath.SequenceEqual(new[] {"Foo", "Foo2", "Foo23"}));
+            Assert.True(target.RedirectPath.SequenceEqual(new[] { "Foo", "Foo2", "Foo23" }));
+        }
+
+        [Fact]
+        public async Task WpTest2PageGeoCoordinateTest()
+        {
+            var site = await WpTest2SiteAsync;
+            var page = new WikiPage(site, "France");
+            await page.RefreshAsync(PageQueryOptions.FetchGeoCoordinate);
+            ShallowTrace(page);
+            Assert.False(page.PrimaryCoordinate.IsEmpty);
+            Assert.Equal(2, page.PrimaryCoordinate.Longitude, 12);
+            Assert.Equal(47, page.PrimaryCoordinate.Latitude, 12);
+            Assert.Equal(GeoCoordinate.Earth, page.PrimaryCoordinate.Globe);
+        }
+
+        [Fact]
+        public async Task WpLzhPageExtractTest()
+        {
+            var site = await WpLzhSiteAsync;
+            var page = new WikiPage(site, "莎拉伯恩哈特");
+            await page.RefreshAsync(PageQueryOptions.FetchExtract);
+            ShallowTrace(page);
+            Assert.Equal("莎拉·伯恩哈特，一八四四年生，法國巴黎人也。", page.Extract);
         }
 
         [Fact]
         public async Task WpLzhPageReadDisambigTest()
         {
             var site = await WpLzhSiteAsync;
-            var page = new WikiPage(site, "中國_(釋義)");
+            var page = new WikiPage(site, "莎拉伯恩哈特");
             await page.RefreshAsync();
             Assert.True(await page.IsDisambiguationAsync());
         }
@@ -86,8 +109,8 @@ namespace UnitTestProject1.Tests
         public async Task WpLzhFetchRevisionsTest()
         {
             var site = await WpLzhSiteAsync;
-            var revIds = new[] {248199, 248197, 255289};
-            var pageTitles = new[] {"清", "清", "香草"};
+            var revIds = new[] { 248199, 248197, 255289 };
+            var pageTitles = new[] { "清", "清", "香草" };
             var rev = await Revision.FetchRevisionsAsync(site, revIds).ToList();
             ShallowTrace(rev);
             Assert.Equal(revIds, rev.Select(r => r.Id));
@@ -184,9 +207,9 @@ namespace UnitTestProject1.Tests
             AssertModify();
             var site = await WpTest2SiteAsync;
             // Usually 500 is the limit for normal users.
-            var pages = await new AllPagesGenerator(site) {PaginationSize = 300}.EnumPagesAsync().Take(300).ToList();
+            var pages = await new AllPagesGenerator(site) { PaginationSize = 300 }.EnumPagesAsync().Take(300).ToList();
             var badPage = new WikiPage(site, "Inexistent page title");
-            pages.Insert(pages.Count/2, badPage);
+            pages.Insert(pages.Count / 2, badPage);
             Output.WriteLine("Attempt to purge: ");
             ShallowTrace(pages, 1);
             // Do a normal purge. It may take a while.

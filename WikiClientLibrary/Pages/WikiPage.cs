@@ -128,7 +128,13 @@ namespace WikiClientLibrary.Pages
         /// <summary>
         /// Gets / Sets the content of the page.
         /// </summary>
-        /// <remarks>You should have invoked <c>RefreshAsync(PageQueryOptions.FetchContent)</c> before trying to read the content of the page.</remarks>
+        /// <remarks>
+        /// <para>To make the edit to a page, after setting this property,
+        /// call <see cref="UpdateContentAsync(string)"/> to submit the change.</para>
+        /// <para>To fetch for the value of this property,
+        /// specify <see cref="PageQueryOptions.FetchContent"/>
+        /// when calling <see cref="RefreshAsync(PageQueryOptions)"/>.</para>
+        /// </remarks>
         public string Content { get; set; }
 
         /// <summary>
@@ -136,6 +142,24 @@ namespace WikiClientLibrary.Pages
         /// </summary>
         /// <remarks>Make sure to invoke <see cref="RefreshAsync()"/> before getting the value.</remarks>
         public Revision LastRevision { get; private set; }
+
+        /// <summary>
+        /// Gets the plain-text extract of the page content.
+        /// </summary>
+        /// <remarks>To fetch for the value of this property,
+        /// specify <see cref="PageQueryOptions.FetchExtract"/>
+        /// when calling <see cref="RefreshAsync(PageQueryOptions)"/>.
+        /// </remarks>
+        public string Extract { get; private set; }
+
+        /// <summary>
+        /// Gets the primary geo-coordinate associated with the page.
+        /// </summary>
+        /// <remarks>To fetch for the value of this property,
+        /// specify <see cref="PageQueryOptions.FetchGeoCoordinate"/>
+        /// when calling <see cref="RefreshAsync(PageQueryOptions)"/>.
+        /// </remarks>
+        public GeoCoordinate PrimaryCoordinate { get; private set; }
 
         /// <summary>
         /// Gets the properties of the page.
@@ -254,6 +278,17 @@ namespace WikiClientLibrary.Pages
             QueryOptions = options;
         }
 
+        internal static GeoCoordinate CoordinateFromJson(JToken jcoordinate)
+        {
+            return new GeoCoordinate
+            {
+                Longitude = (double)jcoordinate["lon"],
+                Latitude = (double)jcoordinate["lat"],
+                Dimension = (double?)jcoordinate["dim"] ?? 0,
+                Globe = (string)jcoordinate["globe"],
+            };
+        }
+
         protected virtual void OnLoadPageInfo(JObject jpage)
         {
             Title = (string) jpage["title"];
@@ -269,6 +304,19 @@ namespace WikiClientLibrary.Pages
             PageLanguage = (string) jpage["pagelanguage"];
             IsSpecialPage = jpage["special"] != null;
             IsRedirect = jpage["redirect"] != null;
+            Extract = (string)jpage["extract"];
+            var jcoordinates = (JArray)jpage["coordinates"];
+            if (jcoordinates != null && jcoordinates.HasValues)
+            {
+                // Prefer primary coordinates
+                PrimaryCoordinate = CoordinateFromJson(
+                    jcoordinates.FirstOrDefault(coord => coord["primary"] != null)
+                    ?? jcoordinates.First);
+            }
+            else
+            {
+                PrimaryCoordinate = GeoCoordinate.Empty;
+            }
             if (Exists && !IsSpecialPage)
             {
                 ContentLength = (int) jpage["length"];
@@ -800,6 +848,18 @@ namespace WikiClientLibrary.Pages
         /// In the case of multiple redirects, all redirects will be resolved.
         /// </summary>
         ResolveRedirects = 2,
+
+        /// <summary>
+        /// Fetch plaintext extract of the page.
+        /// </summary>
+        /// <remarks>When this flag is specified, the maximum allowed page count per API result
+        /// is 10 for <c>user</c> and 20 for <c>bot</c>.</remarks>
+        FetchExtract = 4,
+
+        /// <summary>
+        /// Fetch primary GeoLocation of the page.
+        /// </summary>
+        FetchGeoCoordinate = 8
     }
 
     /// <summary>

@@ -100,6 +100,10 @@ namespace WikiClientLibrary
                 var titleLimit = site.AccountInfo.HasRight(UserRights.ApiHighLimits)
                     ? 500
                     : 50;
+                if ((options & PageQueryOptions.FetchExtract) == PageQueryOptions.FetchExtract)
+                    titleLimit = site.AccountInfo.HasRight(UserRights.ApiHighLimits)
+                        ? 20
+                        : 10;
                 using (site.BeginActionScope(sitePages, options))
                 {
                     foreach (var partition in sitePages.Partition(titleLimit).Select(partition => partition.ToList()))
