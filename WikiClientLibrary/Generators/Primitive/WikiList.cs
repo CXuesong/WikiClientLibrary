@@ -11,6 +11,11 @@ using WikiClientLibrary.Sites;
 
 namespace WikiClientLibrary.Generators.Primitive
 {
+
+    /// <summary>
+    /// Provides method for asynchronously generating a sequence of items.
+    /// </summary>
+    /// <typeparam name="T">The page instance type.</typeparam>
     public interface IWikiList<out T>
     {
 

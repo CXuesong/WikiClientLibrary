@@ -10,7 +10,11 @@ using WikiClientLibrary.Sites;
 namespace WikiClientLibrary.Generators.Primitive
 {
 
-
+    /// <summary>
+    /// Provides method for asynchronously generating a sequence of <see cref="WikiPage"/>
+    /// with information fetched from server.
+    /// </summary>
+    /// <typeparam name="T">The page instance type.</typeparam>
     public interface IWikiPageGenerator<out T> where T : WikiPage
     {
 
