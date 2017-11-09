@@ -61,6 +61,8 @@ namespace WikiClientLibrary.Generators
     /// <para>For basic concepts on MediaWiki lists and generators, see
     /// <a href="https://www.mediawiki.org/wiki/API:Lists">mw:API:Lists</a> and
     /// <a href="https://www.mediawiki.org/wiki/API:Generator">mw:API:Generator</a>.</para>
+    /// <para>The inheritance diagram of generator classes in this namespace is as follows</para>
+    /// <para><img src="/images/wcl-generator-classes.png"/></para>
     /// </remarks>
     [CompilerGenerated]
     internal class NamespaceDoc
