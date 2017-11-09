@@ -14,7 +14,8 @@ namespace WikiClientLibrary.Wikibase.Infrastructures
     /// <remarks>The key cannot be <c>null</c> in the collection.</remarks>
     /// <typeparam name="TKey">Type of the key.</typeparam>
     /// <typeparam name="TItem">Type of the item.</typeparam>
-    [DebuggerDisplay("Count = {Count}")]
+    [DebuggerDisplay("Keys.Count = {Keys.Count}, Count = {Count}")]
+    [DebuggerTypeProxy(typeof(UnorderedKeyedMultiCollection<, >.DebugView))]
     public abstract class UnorderedKeyedMultiCollection<TKey, TItem> : ICollection<TItem>, ICollection
     {
 
@@ -204,6 +205,36 @@ namespace WikiClientLibrary.Wikibase.Infrastructures
 
             public ReadOnlyCollection<TItem> ReadOnlyItems { get; }
 
+        }
+
+        private sealed class DebugView
+        {
+            private readonly UnorderedKeyedMultiCollection<TKey, TItem> source;
+
+            public DebugView(UnorderedKeyedMultiCollection<TKey, TItem> source)
+            {
+                Debug.Assert(source != null);
+                this.source = source;
+            }
+
+            [DebuggerBrowsable(DebuggerBrowsableState.RootHidden)]
+            public KeyValuePair<TKey, TItem>[] Items
+            {
+                get
+                {
+                    var buffer = new KeyValuePair<TKey, TItem>[source.Count];
+                    int index = 0;
+                    foreach (var p in source.dict)
+                    {
+                        foreach (var item in p.Value.Items)
+                        {
+                            buffer[index] = new KeyValuePair<TKey, TItem>(p.Key, item);
+                            index++;
+                        }
+                    }
+                    return buffer;
+                }
+            }
         }
 
     }

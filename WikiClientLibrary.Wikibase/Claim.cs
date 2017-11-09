@@ -13,17 +13,18 @@ namespace WikiClientLibrary.Wikibase
     /// <summary>
     /// Represents a claim applied to a Wikibase entity.
     /// </summary>
+    [DebuggerDisplay("{MainSnak}; {Qualifiers.Count} qualifier(s),  {References.Count} reference(s)")]
     public sealed class Claim
     {
-        private readonly List<WbSnak> _Qualifiers = new List<WbSnak>();
-        private readonly List<WbClaimReference> _References = new List<WbClaimReference>();
+        private readonly List<Snak> _Qualifiers = new List<Snak>();
+        private readonly List<ClaimReference> _References = new List<ClaimReference>();
 
         /// <summary>
         /// Initializes a new <see cref="Claim"/> instance with the specified main snak.
         /// </summary>
         /// <param name="mainSnak">The main snak containing the property and value of the claim.</param>
         /// <exception cref="ArgumentNullException"><paramref name="mainSnak"/> is <c>null</c>.</exception>
-        public Claim(WbSnak mainSnak)
+        public Claim(Snak mainSnak)
         {
             MainSnak = mainSnak ?? throw new ArgumentNullException(nameof(mainSnak));
         }
@@ -36,14 +37,14 @@ namespace WikiClientLibrary.Wikibase
         public Claim(string mainSnakPropertyId)
         {
             if (mainSnakPropertyId == null) throw new ArgumentNullException(nameof(mainSnakPropertyId));
-            MainSnak = new WbSnak(mainSnakPropertyId);
+            MainSnak = new Snak(mainSnakPropertyId);
         }
         
         /// <summary>
         /// Gets the main snak of the claim.
         /// </summary>
-        /// <remarks>This property is read-only; however you can change its content exception <see cref="WbSnak.PropertyId"/> value.</remarks>
-        public WbSnak MainSnak { get; }
+        /// <remarks>This property is read-only; however you can change its content exception <see cref="Snak.PropertyId"/> value.</remarks>
+        public Snak MainSnak { get; }
 
         /// <summary>Claim ID.</summary>
         public string Id { get; set; }
@@ -59,12 +60,18 @@ namespace WikiClientLibrary.Wikibase
         /// <summary>
         /// Gets/sets the collection of qualifiers.
         /// </summary>
-        public IList<WbSnak> Qualifiers => _Qualifiers;
+        public IList<Snak> Qualifiers => _Qualifiers;
 
         /// <summary>
         /// Gets/sets the collection of citations for the claim.
         /// </summary>
-        public IList<WbClaimReference> References => _References;
+        public IList<ClaimReference> References => _References;
+
+        /// <inheritdoc />
+        public override string ToString()
+        {
+            return MainSnak.ToString();
+        }
 
         internal static IEnumerable<T> ToOrderedList<T>(JObject dict, JArray order, Func<JToken, IEnumerable<T>> valueSelector)
         {
@@ -80,7 +87,7 @@ namespace WikiClientLibrary.Wikibase
         internal static Claim FromJson(JToken claim)
         {
             Debug.Assert(claim != null);
-            var inst = new Claim(WbSnak.FromJson(claim["mainsnak"]));
+            var inst = new Claim(Snak.FromJson(claim["mainsnak"]));
             inst.LoadFromJson(claim);
             return inst;
         }
@@ -96,11 +103,11 @@ namespace WikiClientLibrary.Wikibase
             if (claim["qualifiers"] != null)
             {
                 _Qualifiers.AddRange(ToOrderedList((JObject)claim["qualifiers"], (JArray)claim["qualifiers-order"],
-                    jsnaks => jsnaks.Select(WbSnak.FromJson)));
+                    jsnaks => jsnaks.Select(Snak.FromJson)));
             }
             if (claim["references"] != null)
             {
-                _References.AddRange(claim["references"]?.Select(WbClaimReference.FromJson));
+                _References.AddRange(claim["references"]?.Select(ClaimReference.FromJson));
             }
         }
 
@@ -131,33 +138,36 @@ namespace WikiClientLibrary.Wikibase
 
     }
 
-    public sealed class WbClaimReference
+    /// <summary>
+    /// Represents the a reference (citation) item of a <see cref="Claim"/>.
+    /// </summary>
+    public sealed class ClaimReference
     {
-        private readonly List<WbSnak> _Snaks = new List<WbSnak>();
+        private readonly List<Snak> _Snaks = new List<Snak>();
 
-        public WbClaimReference()
+        public ClaimReference()
         {
         }
 
-        public WbClaimReference(IEnumerable<WbSnak> snaks)
+        public ClaimReference(IEnumerable<Snak> snaks)
         {
             if (snaks == null) throw new ArgumentNullException(nameof(snaks));
             _Snaks.AddRange(snaks);
         }
 
-        public WbClaimReference(params WbSnak[] snaks)
+        public ClaimReference(params Snak[] snaks)
         {
             _Snaks.AddRange(snaks);
         }
 
-        public IList<WbSnak> Snaks => _Snaks;
+        public IList<Snak> Snaks => _Snaks;
 
         public string Hash { get; set; }
 
-        internal static WbClaimReference FromJson(JToken claim)
+        internal static ClaimReference FromJson(JToken claim)
         {
             Debug.Assert(claim != null);
-            var inst = new WbClaimReference();
+            var inst = new ClaimReference();
             inst.LoadFromJson(claim);
             return inst;
         }
@@ -169,7 +179,7 @@ namespace WikiClientLibrary.Wikibase
             if (reference["snaks"] != null)
             {
                 _Snaks.AddRange(Claim.ToOrderedList((JObject)reference["snaks"], (JArray)reference["snaks-order"],
-                    jsnaks => jsnaks.Select(WbSnak.FromJson)));
+                    jsnaks => jsnaks.Select(Snak.FromJson)));
             }
             Hash = (string)reference["hash"];
         }
@@ -193,7 +203,7 @@ namespace WikiClientLibrary.Wikibase
     /// <summary>
     /// Represents a "snak", i.e. a pair of property and value.
     /// </summary>
-    public sealed class WbSnak
+    public sealed class Snak
     {
 
         private static readonly JToken DirtyDataValuePlaceholder = JValue.CreateNull();
@@ -206,7 +216,7 @@ namespace WikiClientLibrary.Wikibase
         /// </summary>
         /// <param name="propertyId">The property id.</param>
         /// <exception cref="ArgumentNullException"><paramref name="propertyId"/> is <c>null</c>.</exception>
-        public WbSnak(string propertyId)
+        public Snak(string propertyId)
         {
             PropertyId = propertyId ?? throw new ArgumentNullException(nameof(propertyId));
         }
@@ -218,7 +228,7 @@ namespace WikiClientLibrary.Wikibase
         /// <param name="dataValue">The data value of the property.</param>
         /// <param name="dataType">The data value type.</param>
         /// <exception cref="ArgumentNullException"><paramref name="propertyId"/> or <paramref name="dataType"/> is <c>null</c>.</exception>
-        public WbSnak(string propertyId, object dataValue, WikibaseDataType dataType)
+        public Snak(string propertyId, object dataValue, WikibaseDataType dataType)
         {
             PropertyId = propertyId ?? throw new ArgumentNullException(nameof(propertyId));
             DataType = dataType ?? throw new ArgumentNullException(nameof(dataType));
@@ -232,7 +242,7 @@ namespace WikiClientLibrary.Wikibase
         /// <param name="dataValue">The data value of the property.</param>
         /// <exception cref="ArgumentNullException"><paramref name="property"/> is <c>null</c>.</exception>
         /// <exception cref="ArgumentException"><paramref name="property"/> is not Wikibase property, or does not contain required information.</exception>
-        public WbSnak(Entity property, object dataValue)
+        public Snak(Entity property, object dataValue)
         {
             if (property == null) throw new ArgumentNullException(nameof(property));
             if (property.Type != EntityType.Property)
@@ -314,6 +324,26 @@ namespace WikiClientLibrary.Wikibase
         /// <summary>Data value type.</summary>
         public WikibaseDataType DataType { get; set; }
 
+        /// <inheritdoc />
+        public override string ToString()
+        {
+            // TODO need something link TryGetDataValue to handle unknown data types
+            var valueExpr = "[Invalid SnakType]";
+            switch (SnakType)
+            {
+                case SnakType.Value:
+                    valueExpr = DataValue?.ToString();
+                    break;
+                case SnakType.SomeValue:
+                    valueExpr = "[SomeValue]";
+                    break;
+                case SnakType.NoValue:
+                    valueExpr = "[NoValue]";
+                    break;
+            }
+            return $"{PropertyId} = {valueExpr}";
+        }
+
         private static SnakType ParseSnakType(string expr)
         {
             if (expr == null) throw new ArgumentNullException(nameof(expr));
@@ -337,10 +367,10 @@ namespace WikiClientLibrary.Wikibase
             }
         }
 
-        internal static WbSnak FromJson(JToken snak)
+        internal static Snak FromJson(JToken snak)
         {
             Debug.Assert(snak != null);
-            var inst = new WbSnak((string)snak["property"]);
+            var inst = new Snak((string)snak["property"]);
             inst.LoadFromJson(snak);
             return inst;
         }

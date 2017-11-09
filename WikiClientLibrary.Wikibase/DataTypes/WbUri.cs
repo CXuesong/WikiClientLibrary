@@ -15,6 +15,10 @@ namespace WikiClientLibrary.Wikibase.DataTypes
         private static readonly ConcurrentDictionary<string, WeakReference<WbUri>> cacheDict =
             new ConcurrentDictionary<string, WeakReference<WbUri>>();
 
+        /// <summary>
+        /// Gets an atomic instance of <see cref="WbUri"/> by URI.
+        /// </summary>
+        /// <param name="uri">URI of the entity.</param>
         public static WbUri Get(string uri)
         {
             if (uri == null) throw new ArgumentNullException(nameof(uri));

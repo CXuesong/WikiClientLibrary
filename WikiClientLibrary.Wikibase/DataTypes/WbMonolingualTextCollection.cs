@@ -14,6 +14,7 @@ namespace WikiClientLibrary.Wikibase.DataTypes
     /// <seealso cref="WbMonolingualTextsCollection"/>
     /// <seealso cref="WbMonolingualText"/>
     [DebuggerDisplay("Count = {Count}")]
+    [DebuggerTypeProxy(typeof(DebugView))]
     public class WbMonolingualTextCollection : ICollection<WbMonolingualText>
     {
 
@@ -184,6 +185,20 @@ namespace WikiClientLibrary.Wikibase.DataTypes
             if (_IsReadOnly) throw new NotSupportedException("The dictionary is read-only.");
         }
 
+        private sealed class DebugView
+        {
+            private readonly WbMonolingualTextCollection source;
+
+            public DebugView(WbMonolingualTextCollection source)
+            {
+                Debug.Assert(source != null);
+                this.source = source;
+            }
+
+            [DebuggerBrowsable(DebuggerBrowsableState.RootHidden)]
+            public WbMonolingualText[] Items => source.ToArray();
+        }
+
     }
 
     /// <summary>
@@ -191,7 +206,8 @@ namespace WikiClientLibrary.Wikibase.DataTypes
     /// </summary>
     /// <remarks>All the language codes are normalized to lower-case and are case-insensitive.</remarks>
     /// <seealso cref="WbMonolingualText"/>
-    [DebuggerDisplay("Count = {Count}")]
+    [DebuggerDisplay("Languages.Count = {Languages.Count}, Count = {Count}")]
+    [DebuggerTypeProxy(typeof(DebugView))]
     public class WbMonolingualTextsCollection : ICollection<WbMonolingualText>
     {
 
@@ -425,6 +441,20 @@ namespace WikiClientLibrary.Wikibase.DataTypes
         private void AssertMutable()
         {
             if (_IsReadOnly) throw new NotSupportedException("The dictionary is read-only.");
+        }
+
+        private sealed class DebugView
+        {
+            private readonly WbMonolingualTextsCollection source;
+
+            public DebugView(WbMonolingualTextsCollection source)
+            {
+                Debug.Assert(source != null);
+                this.source = source;
+            }
+
+            [DebuggerBrowsable(DebuggerBrowsableState.RootHidden)]
+            public WbMonolingualText[] Items => source.ToArray();
         }
 
     }

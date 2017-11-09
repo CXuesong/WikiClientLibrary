@@ -118,8 +118,8 @@ namespace UnitTestProject1.Tests
                 new EntityEditEntry(nameof(Entity.Labels), new WbMonolingualText("zh-hans", "测试实体" + rand)),
                 new EntityEditEntry(nameof(Entity.Labels), new WbMonolingualText("zh-hant", "測試實體" + rand)),
                 // One language can have multiple aliases, so we cannot use "dummy" here.
-                new EntityEditEntry(nameof(Entity.Aliases), new WbMonolingualText("en", "Test"), WbEntityEditEntryState.Removed),
-                new EntityEditEntry(nameof(Entity.Descriptions), new WbMonolingualText("zh", "dummy"), WbEntityEditEntryState.Removed),
+                new EntityEditEntry(nameof(Entity.Aliases), new WbMonolingualText("en", "Test"), EntityEditEntryState.Removed),
+                new EntityEditEntry(nameof(Entity.Descriptions), new WbMonolingualText("zh", "dummy"), EntityEditEntryState.Removed),
             };
             await entity.EditAsync(changelist, "Edit test entity.", true);
             ShallowTrace(entity);
@@ -143,10 +143,10 @@ namespace UnitTestProject1.Tests
             //  Add the claims.
             changelist = new[]
             {
-                new EntityEditEntry(nameof(Entity.Claims), new Claim(new WbSnak(prop, entity.Id))),
-                new EntityEditEntry(nameof(Entity.Claims), new Claim(new WbSnak(prop, ArbitaryItemEntityId))
+                new EntityEditEntry(nameof(Entity.Claims), new Claim(new Snak(prop, entity.Id))),
+                new EntityEditEntry(nameof(Entity.Claims), new Claim(new Snak(prop, ArbitaryItemEntityId))
                 {
-                    References = {new WbClaimReference(new WbSnak(prop, entity.Id))}
+                    References = {new ClaimReference(new Snak(prop, entity.Id))}
                 }),
             };
             await entity.EditAsync(changelist, "Edit test entity. Add claims.", true);
@@ -161,7 +161,7 @@ namespace UnitTestProject1.Tests
             // Remove a claim
             changelist = new[]
             {
-                new EntityEditEntry(nameof(Entity.Claims), claim2, WbEntityEditEntryState.Removed),
+                new EntityEditEntry(nameof(Entity.Claims), claim2, EntityEditEntryState.Removed),
             };
             await entity.EditAsync(changelist, "Edit test entity. Remove a claim.", true);
             Assert.Single(entity.Claims);

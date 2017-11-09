@@ -38,7 +38,7 @@ namespace WikiClientLibrary.Wikibase
                                 {
                                     var obj = new JObject { { "language", g.Key } };
                                     var item = g.Single();
-                                    if (item.State == WbEntityEditEntryState.Updated)
+                                    if (item.State == EntityEditEntryState.Updated)
                                         obj.Add("value", ((WbMonolingualText)item.Value).Text);
                                     else
                                         obj.Add("remove", "");
@@ -55,21 +55,21 @@ namespace WikiClientLibrary.Wikibase
                                         {"language", g.Key},
                                         {"value", ((WbMonolingualText)item.Value).Text}
                                     };
-                                    if (item.State == WbEntityEditEntryState.Removed)
+                                    if (item.State == EntityEditEntryState.Removed)
                                         obj.Add("remove", "");
                                     return obj;
                                 }).ToJArray()));
                         break;
                     case nameof(SiteLinks):
                         jdata.Add("sitelinks",
-                            prop.GroupBy(e => ((WbEntitySiteLink)e.Value).Site)
+                            prop.GroupBy(e => ((EntitySiteLink)e.Value).Site)
                                 .ToJObject(g => g.Key, g => g.Select(item =>
                                 {
                                     var obj = new JObject { { "site", g.Key } };
-                                    if (item.State == WbEntityEditEntryState.Updated)
+                                    if (item.State == EntityEditEntryState.Updated)
                                     {
-                                        obj.Add("title", ((WbEntitySiteLink)item.Value).Title);
-                                        obj.Add("badges", ((WbEntitySiteLink)item.Value).Badges.ToJArray());
+                                        obj.Add("title", ((EntitySiteLink)item.Value).Title);
+                                        obj.Add("badges", ((EntitySiteLink)item.Value).Badges.ToJArray());
                                     }
                                     else
                                     {
@@ -88,7 +88,7 @@ namespace WikiClientLibrary.Wikibase
                                 return pid;
                             }).ToJObject(g => g.Key, g => g.Select(item =>
                             {
-                                if (item.State == WbEntityEditEntryState.Updated)
+                                if (item.State == EntityEditEntryState.Updated)
                                     return ((Claim)item.Value).ToJson(false);
                                 var obj = ((Claim)item.Value).ToJson(true);
                                 obj.Add("remove", "");

@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using System.Text;
 
 namespace WikiClientLibrary.Wikibase.Infrastructures
@@ -13,6 +14,7 @@ namespace WikiClientLibrary.Wikibase.Infrastructures
     /// <typeparam name="TKey">Type of the key.</typeparam>
     /// <typeparam name="TItem">Type of the item.</typeparam>
     [DebuggerDisplay("Count = {Count}")]
+    [DebuggerTypeProxy(typeof(UnorderedKeyedCollection<, >.DebugView))]
     public abstract class UnorderedKeyedCollection<TKey, TItem> : ICollection<TItem>, ICollection
     {
 
@@ -129,6 +131,20 @@ namespace WikiClientLibrary.Wikibase.Infrastructures
         protected void AssertMutable()
         {
             if (_IsReadOnly) throw new NotSupportedException("The dictionary is read-only.");
+        }
+
+        private sealed class DebugView
+        {
+            private readonly UnorderedKeyedCollection<TKey, TItem> source;
+
+            public DebugView(UnorderedKeyedCollection<TKey, TItem> source)
+            {
+                Debug.Assert(source != null);
+                this.source = source;
+            }
+
+            [DebuggerBrowsable(DebuggerBrowsableState.RootHidden)]
+            public KeyValuePair<TKey, TItem>[] Items => source.dict.ToArray();
         }
 
     }

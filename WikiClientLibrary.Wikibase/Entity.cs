@@ -33,11 +33,11 @@ namespace WikiClientLibrary.Wikibase
         private static readonly WbMonolingualTextsCollection emptyStringsDict
             = new WbMonolingualTextsCollection {IsReadOnly = true};
 
-        private static readonly WbEntitySiteLinkCollection emptySiteLinks
-            = new WbEntitySiteLinkCollection {IsReadOnly = true};
+        private static readonly EntitySiteLinkCollection emptySiteLinks
+            = new EntitySiteLinkCollection {IsReadOnly = true};
 
-        private static readonly WbClaimCollection emptyClaims
-            = new WbClaimCollection {IsReadOnly = true};
+        private static readonly ClaimCollection emptyClaims
+            = new ClaimCollection {IsReadOnly = true};
         
         /// <summary>
         /// Initializes a new <see cref="Entity"/> entity from Wikibase site,
@@ -134,9 +134,9 @@ namespace WikiClientLibrary.Wikibase
 
         public WbMonolingualTextsCollection Aliases { get; private set; } = emptyStringsDict;
 
-        public WbEntitySiteLinkCollection SiteLinks { get; private set; } = emptySiteLinks;
+        public EntitySiteLinkCollection SiteLinks { get; private set; } = emptySiteLinks;
 
-        public WbClaimCollection Claims { get; private set; } = emptyClaims;
+        public ClaimCollection Claims { get; private set; } = emptyClaims;
 
         /// <summary>
         /// The last query options used with <see cref="RefreshAsync()"/> or effectively equivalent methods.
@@ -268,8 +268,8 @@ namespace WikiClientLibrary.Wikibase
                     }
                     else
                     {
-                        SiteLinks = new WbEntitySiteLinkCollection(
-                            jlinks.Values().Select(t => t.ToObject<WbEntitySiteLink>(Utility.WikiJsonSerializer)));
+                        SiteLinks = new EntitySiteLinkCollection(
+                            jlinks.Values().Select(t => t.ToObject<EntitySiteLink>(Utility.WikiJsonSerializer)));
                         SiteLinks.IsReadOnly = true;
                     }
                 }
@@ -283,7 +283,7 @@ namespace WikiClientLibrary.Wikibase
                     else
                     {
                         // { claims : { P47 : [ {}, {}, ... ], P105 : ... } }
-                        Claims = new WbClaimCollection(jclaims.Values()
+                        Claims = new ClaimCollection(jclaims.Values()
                             .SelectMany(jarray => jarray.Select(Claim.FromJson)));
                     }
                 }
@@ -369,19 +369,19 @@ namespace WikiClientLibrary.Wikibase
     /// <summary>
     /// Represents a corresponding link for an entity to an external wiki site.
     /// </summary>
-    public sealed class WbEntitySiteLink
+    public sealed class EntitySiteLink
     {
 
-        public WbEntitySiteLink(string site, string title) : this(site, title, null, null)
+        public EntitySiteLink(string site, string title) : this(site, title, null, null)
         {
         }
 
-        public WbEntitySiteLink(string site, string title, IList<string> badges) : this(site, title, badges, null)
+        public EntitySiteLink(string site, string title, IList<string> badges) : this(site, title, badges, null)
         {
         }
 
         [JsonConstructor]
-        public WbEntitySiteLink(string site, string title, IList<string> badges, string url)
+        public EntitySiteLink(string site, string title, IList<string> badges, string url)
         {
             Site = site;
             Title = title;
@@ -414,35 +414,35 @@ namespace WikiClientLibrary.Wikibase
 
     }
 
-    public sealed class WbEntitySiteLinkCollection : UnorderedKeyedCollection<string, WbEntitySiteLink>
+    public sealed class EntitySiteLinkCollection : UnorderedKeyedCollection<string, EntitySiteLink>
     {
-        public WbEntitySiteLinkCollection()
+        public EntitySiteLinkCollection()
         {
 
         }
 
-        public WbEntitySiteLinkCollection(IEnumerable<WbEntitySiteLink> items)
+        public EntitySiteLinkCollection(IEnumerable<EntitySiteLink> items)
         {
             Debug.Assert(items != null);
             foreach (var i in items) Add(i);
         }
 
         /// <inheritdoc />
-        protected override string GetKeyForItem(WbEntitySiteLink item)
+        protected override string GetKeyForItem(EntitySiteLink item)
         {
             return item.Site;
         }
     }
 
-    public sealed class WbClaimCollection : UnorderedKeyedMultiCollection<string, Claim>
+    public sealed class ClaimCollection : UnorderedKeyedMultiCollection<string, Claim>
     {
 
-        public WbClaimCollection()
+        public ClaimCollection()
         {
             
         }
 
-        public WbClaimCollection(IEnumerable<Claim> items)
+        public ClaimCollection(IEnumerable<Claim> items)
         {
             Debug.Assert(items != null);
             foreach (var i in items) Add(i);

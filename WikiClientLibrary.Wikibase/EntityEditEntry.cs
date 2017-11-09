@@ -10,13 +10,13 @@ namespace WikiClientLibrary.Wikibase
     /// </summary>
     public sealed class EntityEditEntry
     {
-        private WbEntityEditEntryState _State;
+        private EntityEditEntryState _State;
 
-        public EntityEditEntry(string propertyName, object value) : this(propertyName, value, WbEntityEditEntryState.Updated)
+        public EntityEditEntry(string propertyName, object value) : this(propertyName, value, EntityEditEntryState.Updated)
         {
         }
 
-        public EntityEditEntry(string propertyName, object value, WbEntityEditEntryState state)
+        public EntityEditEntry(string propertyName, object value, EntityEditEntryState state)
         {
             PropertyName = propertyName;
             Value = value;
@@ -45,19 +45,19 @@ namespace WikiClientLibrary.Wikibase
         /// <summary>
         /// The operation performed on this entry.
         /// </summary>
-        public WbEntityEditEntryState State
+        public EntityEditEntryState State
         {
             get { return _State; }
             set
             {
-                if (value != WbEntityEditEntryState.Updated && value != WbEntityEditEntryState.Removed)
+                if (value != EntityEditEntryState.Updated && value != EntityEditEntryState.Removed)
                     throw new ArgumentOutOfRangeException(nameof(value));
                 _State = value;
             }
         }
     }
 
-    public enum WbEntityEditEntryState
+    public enum EntityEditEntryState
     {
         /// <summary>
         /// Either the entry is a new item, or the value inside the item has been changed.
