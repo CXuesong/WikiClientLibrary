@@ -1,383 +1,46 @@
 # Wiki Client Library
 
-A hand-crafted asynchronous [MediaWiki](https://www.mediawiki.org/) API client library for wiki sites (including [Wikipedia](https://www.wikipedia.org/) and its sister projects, as well as [Wikia](https://cxuesong.github.io/WikiClientLibrary/html/community.wikia.com)). This library aims for human users, as well as bots.
+A hand-crafted asynchronous [MediaWiki](https://www.mediawiki.org/) API client library for wiki sites (including [Wikipedia](https://www.wikipedia.org/) and its sister projects, as well as [Wikia](https://cxuesong.github.io/WikiClientLibrary/html/community.wikia.com)). This library aims for both human users and bots.
 
-The package is now available on NuGet. You may install the package using the following command in the Package Management Console
+The packages `CXuesong.MW.WikiClientLibrary.*` are now available on NuGet. You may install the main package using the following command
 
 ```powershell
-Install-Package CXuesong.MW.WikiClientLibrary
+#  Package Management Console
+Install-Package CXuesong.MW.WikiClientLibrary -Pre
+#  .NET CLI
+dotnet add package CXuesong.MW.WikiClientLibrary --version 0.6.0-intX1
 ```
 
-If you bump into bugs, have any suggestions or need a feature, feel free to open an issue or leave me a message on [This blog page](http://cxuesong.com/archives/747).
+The other related packages include
 
-The change logs are on the [releases page](https://github.com/CXuesong/WikiClientLibrary/releases).
+*   [CXuesong.MW.WikiClientLibrary.Flow](https://www.nuget.org/packages/CXuesong.MW.WikiClientLibrary.Flow)
+*   [CXuesong.MW.WikiClientLibrary.Wikia](https://www.nuget.org/packages/CXuesong.MW.WikiClientLibrary.Wikia)
+*   [CXuesong.MW.WikiClientLibrary.Wikibase](https://www.nuget.org/packages/CXuesong.MW.WikiClientLibrary.Wikibase)
 
-For the API references of the latest pre-release, see <https://cxuesong.github.io/WikiClientLibrary>.
-
-Before running the test cases, please take a look at the [last section](#setting-up-test-cases).
-
->   The current v0.6-int pre-release of WCL contains some reorganization and renaming of classes. If you are a v0.5.x user, see [v0.5.1](https://github.com/CXuesong/WikiClientLibrary/tree/0.5.1) for the README of latest stable version.
->
->   However, we suggest you to use the latest pre-release, if possible. See [Releases](https://github.com/CXuesong/WikiClientLibrary/releases) page for the improvements since v0.6.0-int0.
-
-[TOC]
+If you bump into bugs, have any suggestions or feature requests, feel free to open an issue. Thank you.
 
 ## Overview
 
-This portable & asynchronous MediaWiki API client provides an easy and asynchronous access to commonly-used MediaWiki API. Developed in Visual Studio 2017, the portable library targets at .NET Standard 1.1 (See [Supported Platforms](https://docs.microsoft.com/zh-cn/dotnet/standard/net-standard#net-platforms-support)). It has the following features
+This portable & asynchronous MediaWiki API client provides an easy and asynchronous access to commonly-used MediaWiki API. Developed in Visual Studio 2017, the portable library targets at .NET Standard 1.1 (See [Supported Platforms](https://docs.microsoft.com/en-us/dotnet/standard/net-standard#net-platforms-support)). It has the following features
 
-*   Queries and edits for pages, including standard pages, category pages, and file pages.
-
-    *   Queries for category statistical info and its members.
-    *   Queries for basic file info.
-    *   file uploading with chunked uploading support.
-
-*   Login/logout via simple asynchronous functions, as shown in the demo below.
+*   Queries for and edits to pages, categories, and files; page information inspection; file uploading.
+*   Login/logout via simple asynchronous functions.
 
     *   Client code has access to `CookieContainer`, and therefore has chance to persist it.
-
-*   Tokens are hidden in the library functions, so that client won't bother to retrieve them over and over again.
-
+*   Tokens are encapsulated in the library functions, so that client won't bother to retrieve them over and over again.
 *   Query continuations are encapsulated by `IAsyncEnumerable`, which will ease the pain when using page generators.
-
 *   Other miscellaneous MediaWiki API, such as
 
     *   OpenSearch
     *   Page parsing
     *   Patrol
+*   StructuredDiscussions (aka. Flow) support
+*   Basic Wikibase (Wikidata's backend) support
+*   Basic Wikia API (Nirvana, Wikia AJAX, and Wikia REST-ful API v1) support
 
 
-## A Brief Demo
+## See also
 
-You can find a demo in `ConsoleTestApplication1`. It's also suggested that you take a look at `UnitTestProject1` to find out what can be done with the library.
-
-```c#
-static async Task HelloWikiWorld()
-{
-    // Create a MediaWiki API client.
-    var wikiClient = new WikiClient
-    {
-        // UA of Client Application. The UA of WikiClientLibrary will
-        // be append to the end of this when sending requests.
-        ClientUserAgent = "ConsoleTestApplication1/1.0",
-    };
-    // Create a MediaWiki Site instance with the URL of API endpoint.
-    var site = await WikiSite.CreateAsync(wikiClient, "https://test2.wikipedia.org/w/api.php");
-    // Access site information via WikiSite.SiteInfo
-    Console.WriteLine("API version: {0}", site.SiteInfo.Generator);
-    // Access user information via WikiSite.UserInfo
-    Console.WriteLine("Hello, {0}!", site.AccountInfo.Name);
-    // Site login
-    Console.WriteLine("We will edit [[Project:Sandbox]].");
-    if (Confirm($"Do you want to login into {site.SiteInfo.SiteName}?"))
-    {
-        LOGIN_RETRY:
-        try
-        {
-        await site.LoginAsync(Input("User name"), Input("Password"));
-        }
-        catch (OperationFailedException ex)
-        {
-            Console.WriteLine(ex.ErrorMessage);
-            goto LOGIN_RETRY;
-        }
-        Console.WriteLine("You have successfully logged in as {0}.", site.AccountInfo.Name);
-        Console.WriteLine("You're in the following groups: {0}.", string.Join(",", site.AccountInfo.Groups));
-    }
-    // Find out more members in Site class, such as
-    //  page.Namespaces
-    //  page.InterwikiMap
-
-    // Page Operations
-    // Fetch information and content
-    var page = new WikiPage(site, site.SiteInfo.MainPage);
-    Console.WriteLine("Retriving {0}...", page);
-    await page.RefreshAsync(PageQueryOptions.FetchContent);
-
-    Console.WriteLine("Last touched at {0}.", page.LastTouched);
-    Console.WriteLine("Last revision {0} by {1} at {2}.", page.LastRevisionId,
-        page.LastRevision.UserName, page.LastRevision.TimeStamp);
-    Console.WriteLine("Content length: {0} bytes ----------", page.ContentLength);
-    Console.WriteLine(page.Content);
-    // Purge the page
-    if (await page.PurgeAsync())
-        Console.WriteLine("  The page has been purged successfully.");
-    // Edit the page
-    page = new WikiPage(site, "Project:Sandbox");
-    await page.RefreshAsync(PageQueryOptions.FetchContent);
-    if (!page.Exists) Console.WriteLine("Warning: The page {0} doesn't exist.", page);
-    page.Content += "\n\n'''Hello''' ''world''!";
-    await page.UpdateContentAsync("Test edit from WikiClientLibrary.");
-    Console.WriteLine("{0} has been saved. RevisionId = {1}.", page, page.LastRevisionId);
-    // Find out more operations in WikiPage class, such as
-    //  page.MoveAsync()
-    //  page.DeleteAsync()
-    // Logout
-    await site.LogoutAsync();
-    Console.WriteLine("You have successfully logged out.");
-}
-```
-
-Here's the output
-
-```
-API version: MediaWiki 1.30.0-wmf.17
-Hello, 206.161.*.*!
-We will edit [[Project:Sandbox]].
-Do you want to login into Wikipedia?[Y/N]> Y
-User name> XuesongBot
-Password> ******
-You have successfully logged in as XuesongBot.
-You're in the following groups: bot,editor,*,user,autoconfirmed.
-Retriving Main Page...
-Last touched at 2017/8/27 PM 4:25:06.
-Last revision 318038 by MacFan4000 at 2017/5/27 PM 1:07:11.
-Content length: 3687 bytes ----------
-Welcome to '''test2.wikipedia.org'''! This wiki is currently running a test release of the {{CURRENTVERSION}} version of MediaWiki.
-
-== What is the purpose of Test2? ==
-Test2 is primarily used to trial and debug global and cross-wiki features in conjunction with <span class="plainlinks">https://test.wikipedia.org</span> and <span class="plainlinks">https://test.wikidata.org</span>.
-
-[more]
-
-  The page has been purged successfully.
-Wikipedia:Sandbox has been saved. RevisionId = 327700.
-You have successfully logged out.
-Press any key to continue. . .
-```
-
-## Bulk fetching and generators
-
-You can fetch multiple pages at one time with `WikiPageExtensions.RefreshAsync` extension method, as long as you have a sequence of `WikiPage` objects. However, it's often the case that you're actually fetching pages using [generators](https://www.mediawiki.org/wiki/API:Generator), and that's what we're discussing in the section.
-
-You can query for a list of pages, fetching their information (with or without content) with lists (i.e. generators), such as [`allpages`](https://www.mediawiki.org/wiki/API:Allpages), [`allcategories`](https://www.mediawiki.org/wiki/API:Allcategories), [`querypage`](https://www.mediawiki.org/wiki/API:Querypage), and [`recentchanges`](https://www.mediawiki.org/wiki/API:Recentchanges). Such generators are implemented in `WikiClientLibrary.Generators` namespace. Though there're still a lot of types of generators yet to be supported, the routine for implementing a `Generator` class is quite the same. Up till now, the following generators have been implemented
-
-*   allpages
-*   allcategories
-*   categorymembers
-*   querypage
-*   recentchanges
-
-Here's a demo that can be found in `ConsoleTestApplication1`. Note here we used `IAsyncEnumerable` form Ix-async (System.Interactive.Async) package to enable a LINQ-like query expression. To get a synchronous `IEnumerable`, consider using `AsyncEnumerable.ToEnumerable`. Also keep in mind that the sequence is so long that we often use `Take()` to prevent getting to many results. (You may also want to take a look at `PageGenerator.PagingSize`.) And of course do not attempt to inverse the sequence, unless you know what you're doing. Instead, you can take a look at properties of Generators, which may include such sort options.
-
-```c#
-static async Task HelloWikiGenerators()
-{
-    // Create a MediaWiki API client.
-    var wikiClient = new WikiClient();
-    // Create a MediaWiki site instance.
-    var site = await WikiSite.CreateAsync(wikiClient, "https://en.wikipedia.org/w/api.php");
-    // List all pages starting from item "Wiki", without redirect pages.
-    var allpages = new AllPagesGenerator(site)
-    {
-        StartTitle = "Wiki",
-        RedirectsFilter = PropertyFilterOption.WithoutProperty
-    };
-    // Take the first 1000 results
-    var pages = await allpages.EnumPagesAsync().Take(1000).ToList();
-    foreach (var p in pages)
-        Console.WriteLine("{0, -30} {1, 8}B {2}", p, p.ContentLength, p.LastTouched);
-            
-    // List the first 10 subcategories in Category:Cats
-    Console.WriteLine();
-    Console.WriteLine("Cats");
-    var catmembers = new CategoryMembersGenerator(site, "Category:Cats")
-    {
-        MemberTypes = CategoryMemberTypes.Subcategory
-    };
-    pages = await catmembers.EnumPagesAsync().Take(10).ToList();
-    foreach (var p in pages)
-        Console.WriteLine("{0, -30} {1, 8}B {2}", p, p.ContentLength, p.LastTouched);
-}
-```
-
-## Recent changes and patrol
-
-You can list pages using `RecentChangesGenerator.EnumPagesAsync`, just like other generators, while this generator has another powerful method `RecentChangesGenerator.EnumRecentChangesAsync`, which can generate a sequence of `RecentChangesEntry`, containing the detailed information of each recent change.
-
-```c#
-static async Task HelloRecentChanges()
-{
-    // Create a MediaWiki API client.
-    var wikiClient = new WikiClient();
-    // Create a MediaWiki site instance.
-    var site = await WikiSite.CreateAsync(wikiClient, "https://en.wikipedia.org/w/api.php");
-    var rcg = new RecentChangesGenerator(site)
-    {
-        TypeFilters = RecentChangesFilterTypes.Create,
-        PagingSize = 50, // We already know we're not going to fetch results as many as 500 or 5000
-        // so this will help.
-    };
-    // List the 10 latest new pages
-    var pages = await rcg.EnumPagesAsync().Take(10).ToList();
-    Console.WriteLine("New pages");
-    foreach (var p in pages)
-        Console.WriteLine("{0, -30} {1, 8}B {2}", p, p.ContentLength, p.LastTouched);
-    // List the 10 latest recent changes
-    rcg.TypeFilters = RecentChangesFilterTypes.All;
-    var rcs = await rcg.EnumRecentChangesAsync().Take(10).ToList();
-    Console.WriteLine();
-    Console.WriteLine("Recent changes");
-    foreach (var rc in rcs)
-        Console.WriteLine(rc);
-}
-```
-
-The code produces the following result
-
-```
-New pages
-Bill Eigel                           43B 2016/8/27 AM 6:38:46
-Cool woods                         3971B 2016/8/27 AM 6:46:52
-Indian Institute Of Technical Computer Application       56B 2016/8/27 AM 6:59:20
-Leslie Bieh Yhan                    371B 2016/8/27 AM 6:58:02
-Maranathirkku Pinbu Helan           157B 2016/8/27 AM 6:46:17
-Mitchell Bolewski                    27B 2016/8/27 AM 6:44:45
-Palazzo Fani Mignanelli, Siena     1537B 2016/8/27 AM 6:39:52
-Punjab Highway Department          1940B 2016/8/27 AM 6:58:32
-Shiny waves                         968B 2016/8/27 AM 6:53:50
-Thailand national football team results (2000-09)    28321B 2016/8/27 AM 6:58:00
-
-Recent changes
-855757198,2016/8/27 AM 6:59:39,Edit,None,Melbourne Football Club,update coach
-855757197,2016/8/27 AM 6:59:39,Edit,None,The Ocean (Mike Perry song),Undid revision 734440122 by [[Special:Contributions/82.113.183.202|82.113.183.202]] ([[User talk:82.113.183.202|talk]]) Considering Shy Martin doesn't have an article, this gives a tidbit of info about her and shouldn't be removed.
-855757193,2016/8/27 AM 6:59:35,Edit,None,User:Lesbyan,db-g3
-855757192,2016/8/27 AM 6:59:35,Edit,None,Kashmiri phonology,[[WP:CHECKWIKI]] error fix. Broken bracket problem. Do [[Wikipedia:GENFIXES|general fixes]] and cleanup if needed. - using [[Project:AWB|AWB]] (12082)
-855757191,2016/8/27 AM 6:59:34,Edit,Annonymous,ConBravo!,
-855757188,2016/8/27 AM 6:59:32,Edit,None,User:Moxy,
-855757187,2016/8/27 AM 6:59:31,Edit,Minor, Bot,Society for the Propagation of the Faith,Dating maintenance tags: {{Cn}}
-855757186,2016/8/27 AM 6:59:31,Edit,None,1530 in India,
-855757185,2016/8/27 AM 6:59:30,Edit,None,User talk:101.98.246.169,Warning [[Special:Contributions/101.98.246.169|101.98.246.169]] - #1
-855757184,2016/8/27 AM 6:59:30,Edit,Minor,Bay of Plenty Region,Reverting possible vandalism by [[Special:Contribs/101.98.246.169|101.98.246.169]] to version by Villianifm. [[WP:CBFP|Report False Positive?]] Thanks, [[WP:CBNG|ClueBot NG]]. (2741830) (Bot)
-```
-
-Once you've got an instance of `RecentChangesEntry`, you can patrol it, as long as you have the `patrol` or `autopatrol` right.
-
-```c#
-static async Task InteractivePatrol()
-{
-    // Patrol the last unpatrolled change.
-    // Ususally a user should have the patrol right to perform such operation.
-
-    // Create a MediaWiki API client.
-    var wikiClient = new WikiClient();
-    // Create a MediaWiki site instance.
-    var site = await WikiSite.CreateAsync(wikiClient, Input("Wiki site API URL"));
-    await site.LoginAsync(Input("Username"), Input("Password"));
-    var rcg = new RecentChangesGenerator(site)
-    {
-        TypeFilters = RecentChangesFilterTypes.Create,
-        PagingSize = 5,
-        PatrolledFilter = PropertyFilterOption.WithoutProperty
-    };
-    // List the first unpatrolled result.
-    var rc = await rcg.EnumRecentChangesAsync().FirstOrDefault();
-    if (rc == null)
-    {
-        Console.WriteLine("Nothing to patrol.");
-        return;
-    }
-    Console.WriteLine("Unpatrolled:");
-    Console.WriteLine(rc);
-    // Show the involved revisions.
-    if (rc.OldRevisionId > 0 && rc.RevisionId > 0)
-    {
-        var rev = await Revision.FetchRevisionsAsync(site, rc.OldRevisionId, rc.RevisionId).ToList();
-        // Maybe we'll use some 3rd party diff lib
-        Console.WriteLine("Before, RevId={0}, {1}", rev[0].Id, rev[0].TimeStamp);
-        Console.WriteLine(rev[0].Content);
-        Console.WriteLine("After, RevId={0}, {1}", rev[1].Id, rev[1].TimeStamp);
-        Console.WriteLine(rev[1].Content);
-    }
-    else if (rc.RevisionId > 0)
-    {
-        var rev = await Revision.FetchRevisionAsync(site, rc.RevisionId);
-        Console.WriteLine("RevId={0}, {1}", rev.Id, rev.TimeStamp);
-        Console.WriteLine(rev.Content);
-    }
-    if (Confirm("Mark as patrolled?"))
-    {
-        await rc.PatrolAsync();
-        Console.WriteLine("The change {0} has been marked as patrolled.", (object) rc.Title ?? rc.Id);
-    }
-}
-```
-
-## Miscellaneous
-
-You can get/set/persist cookies with `WikiClient.CookieContainer` property.
-
-The following APIs have also been taken or partially taken into the library
-
-*   `opensearch`: See `WikiSite.OpenSearch`.
-*   `parse`: See `WikiSite.ParsePageAsync`,  `WikiSite.ParseRevisionAsync`, and `WikiSite.ParseContentAsync`. There's also a demo in `WpfTestApplication1`.
-
-You can search for a valid MediaWiki entry point with `WikiSite.SearchApiEndpointAsync`, given the URL of the website or the URL of a page on it. See `UnitTestProject1.SiteTests.SearchApiEndpointTest` for example.
-
-For private wiki users, please take a look at Issue #4 of this repository.
-
-Lately I've been working on a .NET Wikitext parser, [MwParserFromScratch](https://github.com/CXuesong/MwParserFromScratch) , but it's not quite done yet.
-
-## Behavior
-
-The following behavior has been implemented
-
-*   Request timeout and retry (See `WikiClient`)
-*   Throttle before edit/move/delete
-*   Logging (See `ILogger`, `WikiClient.Logger`, and `Site.Logger`.)
-
-The following behavior has yet to be implemented
-
-*   Detect {{inuse}}
-*   Detect {{bots}}, {{nobots}}
-
-### See also
-
-*   [API:Etiquette](https://www.mediawiki.org/wiki/API:Etiquette)
-
-
-*   [API:Faq](https://www.mediawiki.org/wiki/API:FAQ)
-
-## Setting up test cases
-
-Before you can run most of the test cases, please create a new file named `credentials.cs` and place it under `\UnitTestProject1\_private` folder. The content should be like this
-
-```c#
-using System;
-using WikiClientLibrary;
-using WikiClientLibrary.Sites;
-
-namespace UnitTestProject1
-{
-    partial class CredentialManager
-    {
-        static partial void LoginCore(WikiSite site)
-        {
-            var url = site.ApiEndpoint;
-          // We'll make changes to test2.wikipedia.org
-            if (url.Contains("wikipedia.org"))
-                Login(site, "Anne", "password" );
-          // We'll make changes to MediaWiki 119 test Wiki
-            else if (url.Contains("wikia.com"))
-                Login(site, "Bob", "password");
-          // Add other login routines if you need to.
-            else if (url.contains("domain.com"))
-                Login(site, "Calla", "password");
-            else
-                throw new NotSupportedException();
-        }
-
-        static partial void Initialize()
-        {
-          // A place to perform page moving and deleting
-          // You should have the bot or sysop right there
-          DirtyTestsEntryPointUrl = "http://testwiki.domain.com/api.php";
-          // A private wiki API entrypoint, where anonymous
-          // users have no read permission.
-          PrivateWikiTestsEntryPointUrl = null;
-        }
-    }
-}
-```
-
-You need to put valid user names and passwords into this file. As for the special API entry point URLs, they are optional, but certain tests will not work if you neglect or set them to null. As is configured in `.gitignore`, this file WILL NOT be included in the repository.
+*   [Repository Wiki](https://github.com/CXuesong/WikiClientLibrary/wiki)
+*   [Library References](https://cxuesong.github.io/WikiClientLibrary) (latest prerelease)
+*   [Releases](https://github.com/CXuesong/WikiClientLibrary/releases)
