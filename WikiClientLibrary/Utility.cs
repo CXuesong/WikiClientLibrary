@@ -271,5 +271,10 @@ namespace WikiClientLibrary
             return bytesRead;
         }
 
+        public static Dictionary<TKey, TValue> ToDictionary<TKey, TValue>(this IEnumerable<KeyValuePair<TKey, TValue>> source)
+        {
+            return source.ToDictionary(p => p.Key, p => p.Value);
+        }
+
     }
 }

@@ -12,6 +12,7 @@ using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using WikiClientLibrary.Pages;
+using WikiClientLibrary.Pages.Queries;
 
 namespace WikiClientLibrary.Infrastructures
 {
@@ -149,36 +150,51 @@ namespace WikiClientLibrary.Infrastructures
             return "ids|timestamp|flags|comment|user|userid|contentmodel|sha1|tags|size";
         }
 
+        private static readonly WikiPageQueryParameters
+            pageQueryNone = new WikiPageQueryParameters
+            {
+                Properties =
+                {
+                    new RevisionsPropertyQueryParameters { },
+                }
+            },
+            pageQueryContent = new WikiPageQueryParameters
+            {
+                Properties =
+                {
+                    new RevisionsPropertyQueryParameters {FetchContent = true},
+                }
+            },
+            pageQueryResolveRedirect = new WikiPageQueryParameters
+            {
+                Properties =
+                {
+                    new RevisionsPropertyQueryParameters { },
+                },
+                ResolveRedirects = true,
+            },
+            pageQueryContentResolveRedirect = new WikiPageQueryParameters
+            {
+                Properties =
+                {
+                    new RevisionsPropertyQueryParameters {FetchContent = true},
+                },
+                ResolveRedirects = true,
+            };
+
         /// <summary>
         /// Builds common parameters for fetching a page.
         /// </summary>
-        public static IDictionary<string, object> GetQueryParams(PageQueryOptions options)
+        internal static IWikiPageQueryParameters GetQueryParams(PageQueryOptions options)
         {
-            var queryParams = new Dictionary<string, object>
+            switch (options)
             {
-                {"action", "query"},
-                // We also fetch category info, just in case.
-                {"prop", "info|categoryinfo|imageinfo|revisions|pageprops"},
-                {"inprop", "protection"},
-                {"iiprop", "timestamp|user|comment|url|size|sha1"},
-                {"rvprop", GetQueryParamRvProp(options)},
-                {"redirects", (options & PageQueryOptions.ResolveRedirects) == PageQueryOptions.ResolveRedirects},
-                {"maxlag", 5},
-            };
-            if ((options & PageQueryOptions.FetchExtract) == PageQueryOptions.FetchExtract)
-            {
-                queryParams["prop"] += "|extracts";
-                queryParams["exsentences"] = 1;
-                queryParams["exintro"] = 1;
-                queryParams["explaintext"] = 1;
+                case PageQueryOptions.None: return pageQueryNone;
+                case PageQueryOptions.FetchContent: return pageQueryContent;
+                case PageQueryOptions.ResolveRedirects: return pageQueryResolveRedirect;
+                case PageQueryOptions.FetchContent | PageQueryOptions.ResolveRedirects: return pageQueryContentResolveRedirect;
             }
-            if ((options & PageQueryOptions.FetchGeoCoordinate) == PageQueryOptions.FetchGeoCoordinate)
-            {
-                queryParams["prop"] += "|coordinates";
-                queryParams["coprop"] = "globe|dim";
-                queryParams["coprimary"] = "primary";
-            }
-            return queryParams;
+            throw new ArgumentOutOfRangeException(nameof(options));
         }
     }
 }

@@ -10,6 +10,7 @@ using WikiClientLibrary.Client;
 using WikiClientLibrary.Generators.Primitive;
 using WikiClientLibrary.Infrastructures;
 using WikiClientLibrary.Pages;
+using WikiClientLibrary.Pages.Queries;
 using WikiClientLibrary.Sites;
 
 namespace WikiClientLibrary.Generators
@@ -128,6 +129,20 @@ namespace WikiClientLibrary.Generators
         /// </remarks>
         [EditorBrowsable(EditorBrowsableState.Never)]
         public override IAsyncEnumerable<WikiPage> EnumPagesAsync(PageQueryOptions options)
+        {
+            return base.EnumPagesAsync(options);
+        }
+
+        /// <inheritdoc />
+        /// <summary>Infrastructure. Not intended to be used directly in your code.
+        /// Asynchronously enumerates the pages from generator.</summary>
+        /// <remarks>
+        /// Using <c>revisions</c> as generator is not supported until MediaWiki 1.25.
+        /// Usually this generator will only returns the title specified in
+        /// <see cref="WikiPagePropertyList{T}.PageTitle"/> or <see cref="WikiPagePropertyList{T}.PageId"/>.
+        /// </remarks>
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public override IAsyncEnumerable<WikiPage> EnumPagesAsync(IWikiPageQueryParameters options)
         {
             return base.EnumPagesAsync(options);
         }

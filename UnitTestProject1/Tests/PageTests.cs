@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using WikiClientLibrary;
 using WikiClientLibrary.Generators;
 using WikiClientLibrary.Pages;
+using WikiClientLibrary.Pages.Queries;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -78,7 +79,13 @@ namespace UnitTestProject1.Tests
         {
             var site = await WpTest2SiteAsync;
             var page = new WikiPage(site, "France");
-            await page.RefreshAsync(PageQueryOptions.FetchGeoCoordinate);
+            await page.RefreshAsync(new WikiPageQueryParameters
+            {
+                Properties =
+                {
+                    new GeoCoordinatesPropertyQueryParameters()
+                }
+            });
             ShallowTrace(page);
             Assert.False(page.PrimaryCoordinate.IsEmpty);
             Assert.Equal(47, page.PrimaryCoordinate.Latitude, 12);
@@ -91,7 +98,18 @@ namespace UnitTestProject1.Tests
         {
             var site = await WpLzhSiteAsync;
             var page = new WikiPage(site, "莎拉伯恩哈特");
-            await page.RefreshAsync(PageQueryOptions.FetchExtract);
+            await page.RefreshAsync(new WikiPageQueryParameters
+            {
+                Properties =
+                {
+                    new ExtractsPropertyQueryParameters
+                    {
+                        AsPlainText = true,
+                        IntroductionOnly = true,
+                        MaxSentences = 1
+                    }
+                }
+            });
             ShallowTrace(page);
             Assert.Equal("莎拉·伯恩哈特，一八四四年生，法國巴黎人也。", page.Extract);
         }

@@ -14,6 +14,7 @@ using WikiClientLibrary.Client;
 using WikiClientLibrary.Generators;
 using WikiClientLibrary.Infrastructures;
 using WikiClientLibrary.Infrastructures.Logging;
+using WikiClientLibrary.Pages.Queries;
 using WikiClientLibrary.Sites;
 
 namespace WikiClientLibrary.Pages
@@ -166,12 +167,6 @@ namespace WikiClientLibrary.Pages
         /// </summary>
         public PagePropertyCollection PageProperties { get; private set; }
 
-
-        /// <summary>
-        /// Gets / Sets the options when querying page information.
-        /// </summary>
-        public PageQueryOptions QueryOptions { get; private set; }
-
         /// <summary>
         /// Determines whether the existing page is a disambiguation page.
         /// </summary>
@@ -260,22 +255,16 @@ namespace WikiClientLibrary.Pages
         /// Loads page information from JSON.
         /// </summary>
         /// <param name="prop">query.pages.xxx property.</param>
-        /// <param name="options">Provides options when performing the query.</param>
-        internal void LoadFromJson(JProperty prop, PageQueryOptions options)
+        internal void LoadFromJson(JProperty prop)
         {
             var id = Convert.ToInt32(prop.Name);
             // I'm not sure whether this assertion holds.
             Debug.Assert(id != 0);
-            if ((options & PageQueryOptions.ResolveRedirects) != PageQueryOptions.ResolveRedirects
-                && Id != 0 && !AreIdEquals(Id, id))
-                // The page has been overwritten, or deleted.
-                Site.Logger.LogWarning("Detected change of page id for [[{Title}]]: {Id1} -> {Id2}.", Title, Id, id);
             Id = id;
             var page = (JObject) prop.Value;
             OnLoadPageInfo(page);
             // TODO Cache content
             LoadLastRevision(page);
-            QueryOptions = options;
         }
 
         protected virtual void OnLoadPageInfo(JObject jpage)
@@ -353,6 +342,8 @@ namespace WikiClientLibrary.Pages
             }
         }
 
+
+        /// <inheritdoc cref="RefreshAsync(IWikiPageQueryParameters, CancellationToken)"/>
         /// <summary>
         /// Fetch information for the page.
         /// This overload will not fetch content.
@@ -365,17 +356,22 @@ namespace WikiClientLibrary.Pages
             return RefreshAsync(PageQueryOptions.None, CancellationToken.None);
         }
 
-        /// <summary>
-        /// Fetch information for the page.
-        /// </summary>
-        /// <param name="options">Options when querying for the pages.</param>
-        /// <remarks>
-        /// For fetching multiple pages at one time, see <see cref="WikiPageExtensions.RefreshAsync(IEnumerable{WikiPage}, PageQueryOptions)"/>.
-        /// </remarks>
-        /// <exception cref="InvalidOperationException">Circular redirect detected when resolving redirects.</exception>
+        /// <inheritdoc cref="RefreshAsync(IWikiPageQueryParameters, CancellationToken)"/>
+        public Task RefreshAsync(IWikiPageQueryParameters options)
+        {
+            return RefreshAsync(options, CancellationToken.None);
+        }
+
+        /// <inheritdoc cref="RefreshAsync(IWikiPageQueryParameters, CancellationToken)"/>
         public Task RefreshAsync(PageQueryOptions options)
         {
-            return RefreshAsync(options, new CancellationToken());
+            return RefreshAsync(options, CancellationToken.None);
+        }
+
+        /// <inheritdoc cref="RefreshAsync(IWikiPageQueryParameters, CancellationToken)"/>
+        public Task RefreshAsync(PageQueryOptions options, CancellationToken cancellationToken)
+        {
+            return RefreshAsync(MediaWikiHelper.GetQueryParams(options), cancellationToken);
         }
 
         /// <summary>
@@ -387,7 +383,7 @@ namespace WikiClientLibrary.Pages
         /// For fetching multiple pages at one time, see <see cref="WikiPageExtensions.RefreshAsync(IEnumerable{WikiPage}, PageQueryOptions)"/>.
         /// </remarks>
         /// <exception cref="InvalidOperationException">Circular redirect detected when resolving redirects.</exception>
-        public Task RefreshAsync(PageQueryOptions options, CancellationToken cancellationToken)
+        public Task RefreshAsync(IWikiPageQueryParameters options, CancellationToken cancellationToken)
         {
             return RequestHelper.RefreshPagesAsync(new[] {this}, options, cancellationToken);
         }
@@ -836,18 +832,6 @@ namespace WikiClientLibrary.Pages
         /// In the case of multiple redirects, all redirects will be resolved.
         /// </summary>
         ResolveRedirects = 2,
-
-        /// <summary>
-        /// Fetch plaintext extract of the page.
-        /// </summary>
-        /// <remarks>When this flag is specified, the maximum allowed page count per API result
-        /// is 10 for <c>user</c> and 20 for <c>bot</c>.</remarks>
-        FetchExtract = 4,
-
-        /// <summary>
-        /// Fetch primary GeoLocation of the page.
-        /// </summary>
-        FetchGeoCoordinate = 8
     }
 
     /// <summary>

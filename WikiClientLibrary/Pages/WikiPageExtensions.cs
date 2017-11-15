@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using WikiClientLibrary.Infrastructures;
+using WikiClientLibrary.Pages.Queries;
 
 namespace WikiClientLibrary.Pages
 {
@@ -10,32 +12,29 @@ namespace WikiClientLibrary.Pages
     /// </summary>
     public static class WikiPageExtensions
     {
-        /// <summary>
-        /// Asynchronously fetch information for a sequence of pages.
-        /// </summary>
-        /// <param name="pages">A sequence of pages to be refreshed.</param>
-        /// <remarks>
-        /// It's recommended that <paramref name="pages"/> is a list or a subset of a list
-        /// that is hold by caller, beccause this method will not return the refreshed pages.
-        /// </remarks>
+
+        /// <inheritdoc cref="RefreshAsync(IEnumerable{WikiPage},IWikiPageQueryParameters,CancellationToken)"/>
         public static Task RefreshAsync(this IEnumerable<WikiPage> pages)
         {
             return RefreshAsync(pages, PageQueryOptions.None);
         }
 
-        /// <summary>
-        /// Asynchronously fetch information for a sequence of pages.
-        /// </summary>
-        /// <param name="pages">A sequence of pages to be refreshed.</param>
-        /// <param name="options">Provides options when performing the query.</param>
-        /// <remarks>
-        /// It's recommended that <paramref name="pages"/> is a list or a subset of a list
-        /// that is hold by caller, because this method will not return the refreshed pages.
-        /// </remarks>
-        /// <exception cref="InvalidOperationException">Circular redirect detected when resolving redirects.</exception>
+        /// <inheritdoc cref="RefreshAsync(IEnumerable{WikiPage},IWikiPageQueryParameters,CancellationToken)"/>
+        public static Task RefreshAsync(this IEnumerable<WikiPage> pages, IWikiPageQueryParameters options)
+        {
+            return RefreshAsync(pages, options, CancellationToken.None);
+        }
+
+        /// <inheritdoc cref="RefreshAsync(IEnumerable{WikiPage},IWikiPageQueryParameters,CancellationToken)"/>
         public static Task RefreshAsync(this IEnumerable<WikiPage> pages, PageQueryOptions options)
         {
-            return RefreshAsync(pages, options, new CancellationToken());
+            return RefreshAsync(pages, options, CancellationToken.None);
+        }
+
+        /// <inheritdoc cref="RefreshAsync(IEnumerable{WikiPage},IWikiPageQueryParameters,CancellationToken)"/>
+        public static Task RefreshAsync(this IEnumerable<WikiPage> pages, PageQueryOptions options, CancellationToken cancellationToken)
+        {
+            return RequestHelper.RefreshPagesAsync(pages, MediaWikiHelper.GetQueryParams(options), cancellationToken);
         }
 
         /// <summary>
@@ -49,7 +48,7 @@ namespace WikiClientLibrary.Pages
         /// that is hold by caller, because this method will not return the refreshed pages.
         /// </remarks>
         /// <exception cref="InvalidOperationException">Circular redirect detected when resolving redirects.</exception>
-        public static Task RefreshAsync(this IEnumerable<WikiPage> pages, PageQueryOptions options, CancellationToken cancellationToken)
+        public static Task RefreshAsync(this IEnumerable<WikiPage> pages, IWikiPageQueryParameters options, CancellationToken cancellationToken)
         {
             return RequestHelper.RefreshPagesAsync(pages, options, cancellationToken);
         }

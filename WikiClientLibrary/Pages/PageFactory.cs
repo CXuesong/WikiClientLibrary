@@ -67,9 +67,8 @@ namespace WikiClientLibrary.Pages
         /// </summary>
         /// <param name="site">A <see cref="Site"/> object.</param>
         /// <param name="queryNode">The <c>qurey</c> node value object of JSON result.</param>
-        /// <param name="options">Provides options when performing the query.</param>
         /// <returns>Retrived pages.</returns>
-        internal static IList<WikiPage> FromJsonQueryResult(WikiSite site, JObject queryNode, PageQueryOptions options)
+        internal static IList<WikiPage> FromJsonQueryResult(WikiSite site, JObject queryNode)
         {
             if (site == null) throw new ArgumentNullException(nameof(site));
             if (queryNode == null) throw new ArgumentNullException(nameof(queryNode));
@@ -89,7 +88,7 @@ namespace WikiClientLibrary.Pages
                         newInst = new CategoryPage(site);
                     else
                         newInst = new WikiPage(site);
-                    newInst.LoadFromJson(page, options);
+                    newInst.LoadFromJson(page);
                     return newInst;
                 }).ToList();
         }

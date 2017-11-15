@@ -10,6 +10,7 @@ using WikiClientLibrary.Client;
 using WikiClientLibrary.Infrastructures;
 using WikiClientLibrary.Infrastructures.Logging;
 using WikiClientLibrary.Pages;
+using WikiClientLibrary.Pages.Queries;
 using WikiClientLibrary.Sites;
 
 namespace WikiClientLibrary.Generators.Primitive
@@ -28,7 +29,7 @@ namespace WikiClientLibrary.Generators.Primitive
     /// for <see cref="WikiList{T}.EnumItemsAsync"/> implementation.</para>
     /// <para>
     /// For <c>generator</c>s, it's not necessary for the sequence taken out
-    /// from <see cref="EnumPagesAsync(PageQueryOptions)"/> to be kept ordered.
+    /// from <see cref="EnumPagesAsync(WikiClientLibrary.Pages.Queries.IWikiPageQueryParameters)"/> to be kept ordered.
     /// If you need ordered sequence, for example,
     /// enumerating the links from the beginning of an article using <see cref="LinksGenerator"/>,
     /// use <see cref="WikiPagePropertyList{T}.EnumItemsAsync"/>.
@@ -55,10 +56,10 @@ namespace WikiClientLibrary.Generators.Primitive
         }
 
         /// <summary>
-        /// When using the default implementation of <see cref="EnumPagesAsync(PageQueryOptions)"/>,
+        /// When using the default implementation of <see cref="EnumPagesAsync(WikiClientLibrary.Pages.Queries.IWikiPageQueryParameters)"/>,
         /// determines whether to remove duplicate page results generated from generator results.
         /// </summary>
-        /// <remarks>If the derived class has overridden <see cref="EnumPagesAsync(PageQueryOptions)"/>,
+        /// <remarks>If the derived class has overridden <see cref="EnumPagesAsync(WikiClientLibrary.Pages.Queries.IWikiPageQueryParameters)"/>,
         /// the value of this property might be ignored.</remarks>
         protected virtual bool DistinctGeneratedPages => false;
 
@@ -67,23 +68,24 @@ namespace WikiClientLibrary.Generators.Primitive
         /// </summary>
         public virtual IAsyncEnumerable<TPage> EnumPagesAsync()
         {
-            return EnumPagesAsync(PageQueryOptions.None);
+            return EnumPagesAsync(MediaWikiHelper.GetQueryParams(PageQueryOptions.None));
         }
 
         /// <summary>
-        /// Asynchornously generate the sequence of pages.
+        /// Asynchornously generates the sequence of pages.
         /// </summary>
-        /// <param name="options">Options when querying for the pages.</param>
-        /// <remarks>
-        /// For <c>generator</c>s, it's not necessary for the sequence taken out
-        /// from <see cref="EnumPagesAsync(PageQueryOptions)"/> to be kept ordered.
-        /// See the "remarks" part of <see cref="WikiPagePropertyGenerator{TItem,TPage}"/> for more information.
-        /// </remarks>
         public virtual IAsyncEnumerable<TPage> EnumPagesAsync(PageQueryOptions options)
         {
-            if ((options & PageQueryOptions.ResolveRedirects) == PageQueryOptions.ResolveRedirects)
-                throw new ArgumentException("Cannot resolve redirects when using generators.", nameof(options));
-            var queryParams = MediaWikiHelper.GetQueryParams(options);
+            return EnumPagesAsync(MediaWikiHelper.GetQueryParams(options));
+        }
+
+        /// <summary>
+        /// Asynchornously generates the sequence of pages.
+        /// </summary>
+        /// <param name="options">Options when querying for the pages.</param>
+        public virtual IAsyncEnumerable<TPage> EnumPagesAsync(IWikiPageQueryParameters options)
+        {
+            var queryParams = options.EnumParameters().ToDictionary();
             queryParams.Add("generator", GeneratorName);
             queryParams.Add("titles", PageTitle);
             foreach (var v in EnumGeneratorParameters())
@@ -91,7 +93,7 @@ namespace WikiClientLibrary.Generators.Primitive
             return RequestHelper.QueryWithContinuation(Site, queryParams,
                 () => Site.BeginActionScope(this, options),
                 DistinctGeneratedPages)
-                .SelectMany(jquery => WikiPage.FromJsonQueryResult(Site, jquery, options).Cast<TPage>()
+                .SelectMany(jquery => WikiPage.FromJsonQueryResult(Site, jquery).Cast<TPage>()
                     .ToAsyncEnumerable());
         }
     }

@@ -15,6 +15,7 @@ using WikiClientLibrary.Pages;
 using WikiClientLibrary.Sites;
 using AsyncEnumerableExtensions;
 using WikiClientLibrary.Infrastructures.Logging;
+using WikiClientLibrary.Pages.Queries;
 
 namespace WikiClientLibrary
 {
@@ -89,21 +90,15 @@ namespace WikiClientLibrary
         /// <summary>
         /// Refresh a sequence of pages.
         /// </summary>
-        public static async Task RefreshPagesAsync(IEnumerable<WikiPage> pages, PageQueryOptions options, CancellationToken cancellationToken)
+        public static async Task RefreshPagesAsync(IEnumerable<WikiPage> pages, IWikiPageQueryParameters options, CancellationToken cancellationToken)
         {
             if (pages == null) throw new ArgumentNullException(nameof(pages));
             // You can even fetch pages from different sites.
             foreach (var sitePages in pages.GroupBy(p => Tuple.Create(p.Site, p.GetType())))
             {
                 var site = sitePages.Key.Item1;
-                var queryParams = MediaWikiHelper.GetQueryParams(options);
-                var titleLimit = site.AccountInfo.HasRight(UserRights.ApiHighLimits)
-                    ? 500
-                    : 50;
-                if ((options & PageQueryOptions.FetchExtract) == PageQueryOptions.FetchExtract)
-                    titleLimit = site.AccountInfo.HasRight(UserRights.ApiHighLimits)
-                        ? 20
-                        : 10;
+                var queryParams = options.EnumParameters().ToDictionary();
+                var titleLimit = options.GetMaxPaginationSize(site.AccountInfo.HasRight(UserRights.ApiHighLimits));
                 using (site.BeginActionScope(sitePages, options))
                 {
                     foreach (var partition in sitePages.Partition(titleLimit).Select(partition => partition.ToList()))
@@ -146,7 +141,7 @@ namespace WikiClientLibrary
                             var pageInfo = pageInfoDict[title];
                             if (redirectTrace.Count > 0)
                                 page.RedirectPath = redirectTrace;
-                            page.LoadFromJson(pageInfo, options);
+                            page.LoadFromJson(pageInfo);
                         }
                     }
                 }
@@ -159,14 +154,12 @@ namespace WikiClientLibrary
         /// <remarks>
         /// <para>If there's invalid revision id in <paramref name="revIds"/>, an <see cref="ArgumentException"/> will be thrown while enumerating.</para>
         /// </remarks>
-        public static IAsyncEnumerable<Revision> FetchRevisionsAsync(WikiSite site, IEnumerable<int> revIds, PageQueryOptions options,
+        public static IAsyncEnumerable<Revision> FetchRevisionsAsync(WikiSite site, IEnumerable<int> revIds, IWikiPageQueryParameters options,
             CancellationToken cancellationToken)
         {
             if (revIds == null) throw new ArgumentNullException(nameof(revIds));
-            var queryParams = MediaWikiHelper.GetQueryParams(options);
-            var titleLimit = site.AccountInfo.HasRight(UserRights.ApiHighLimits)
-                ? 500
-                : 50;
+            var queryParams = options.EnumParameters().ToDictionary();
+            var titleLimit = options.GetMaxPaginationSize(site.AccountInfo.HasRight(UserRights.ApiHighLimits));
             return AsyncEnumerableFactory.FromAsyncGenerator<Revision>(async sink =>
             {
                 // Page ID --> Page Stub
