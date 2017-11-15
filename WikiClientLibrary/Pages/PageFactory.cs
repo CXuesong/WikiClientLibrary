@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using Newtonsoft.Json.Linq;
 using WikiClientLibrary.Sites;
+using WikiClientLibrary.Pages.Queries;
+using WikiClientLibrary.Pages.Queries.Properties;
 
 namespace WikiClientLibrary.Pages
 {
@@ -68,7 +70,7 @@ namespace WikiClientLibrary.Pages
         /// <param name="site">A <see cref="Site"/> object.</param>
         /// <param name="queryNode">The <c>qurey</c> node value object of JSON result.</param>
         /// <returns>Retrived pages.</returns>
-        internal static IList<WikiPage> FromJsonQueryResult(WikiSite site, JObject queryNode)
+        internal static IList<WikiPage> FromJsonQueryResult(WikiSite site, JObject queryNode, IEnumerable<IWikiPagePropertyProvider> propertyProviders)
         {
             if (site == null) throw new ArgumentNullException(nameof(site));
             if (queryNode == null) throw new ArgumentNullException(nameof(queryNode));
@@ -88,7 +90,7 @@ namespace WikiClientLibrary.Pages
                         newInst = new CategoryPage(site);
                     else
                         newInst = new WikiPage(site);
-                    newInst.LoadFromJson(page);
+                    newInst.LoadFromJson((JObject)page.Value, propertyProviders);
                     return newInst;
                 }).ToList();
         }

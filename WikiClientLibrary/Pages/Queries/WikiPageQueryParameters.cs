@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using WikiClientLibrary.Pages.Queries.Properties;
 using WikiClientLibrary.Sites;
 
 namespace WikiClientLibrary.Pages.Queries
@@ -27,6 +28,10 @@ namespace WikiClientLibrary.Pages.Queries
         /// </returns>
         int GetMaxPaginationSize(bool apiHighLimits);
 
+        /// <summary>
+        /// Gets the page properties to fetch from MediaWiki site.
+        /// </summary>
+        ICollection<IWikiPagePropertyProvider> Properties { get; }
     }
 
     /// <summary>
@@ -35,7 +40,7 @@ namespace WikiClientLibrary.Pages.Queries
     public class WikiPageQueryParameters : IWikiPageQueryParameters
     {
 
-        private ICollection<IWikiPagePropertyQueryParameters> _Properties;
+        private ICollection<IWikiPagePropertyProvider> _Properties;
 
         /// <summary>
         /// Resolves directs automatically. This may later change <see cref="WikiPage.Title"/>.
@@ -45,13 +50,13 @@ namespace WikiClientLibrary.Pages.Queries
         public bool ResolveRedirects { get; set; }
 
         /// <summary>
-        /// Gets the page properties to fetch from MediaWiki site.
+        /// Gets/sets the page properties to fetch from MediaWiki site.
         /// </summary>
-        public ICollection<IWikiPagePropertyQueryParameters> Properties
+        public ICollection<IWikiPagePropertyProvider> Properties
         {
             get
             {
-                if (_Properties == null) _Properties = new List<IWikiPagePropertyQueryParameters>();
+                if (_Properties == null) _Properties = new List<IWikiPagePropertyProvider>();
                 return _Properties;
             }
             set { _Properties = value; }
@@ -73,8 +78,11 @@ namespace WikiClientLibrary.Pages.Queries
             {
                 foreach (var prop in _Properties)
                 {
-                    propBuilder.Append('|');
-                    propBuilder.Append(prop.PropertyName);
+                    if (prop.PropertyName != null)
+                    {
+                        propBuilder.Append('|');
+                        propBuilder.Append(prop.PropertyName);
+                    }
                     p.AddRange(prop.EnumParameters());
                 }
             }

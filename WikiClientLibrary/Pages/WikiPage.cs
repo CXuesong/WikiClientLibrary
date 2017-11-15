@@ -2,8 +2,10 @@
 using System.Collections;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Linq;
+using System.Reflection;
 using System.Runtime.Serialization;
 using System.Threading;
 using System.Threading.Tasks;
@@ -15,6 +17,7 @@ using WikiClientLibrary.Generators;
 using WikiClientLibrary.Infrastructures;
 using WikiClientLibrary.Infrastructures.Logging;
 using WikiClientLibrary.Pages.Queries;
+using WikiClientLibrary.Pages.Queries.Properties;
 using WikiClientLibrary.Sites;
 
 namespace WikiClientLibrary.Pages
@@ -24,7 +27,7 @@ namespace WikiClientLibrary.Pages
     /// </summary>
     public partial class WikiPage
     {
-        
+
         public WikiPage(WikiSite site, string title) : this(site, title, BuiltInNamespaces.Main)
         {
         }
@@ -35,8 +38,7 @@ namespace WikiClientLibrary.Pages
             if (string.IsNullOrWhiteSpace(title)) throw new ArgumentNullException(nameof(title));
             Site = site;
             var parsedTitle = WikiLink.Parse(site, title, defaultNamespaceId);
-            Title = parsedTitle.FullTitle;
-            NamespaceId = parsedTitle.Namespace.Id;
+            PageStub = new WikiPageStub(parsedTitle.FullTitle, parsedTitle.Namespace.Id);
         }
 
         internal WikiPage(WikiSite site)
@@ -54,12 +56,52 @@ namespace WikiClientLibrary.Pages
         /// <summary>
         /// Id of the page.
         /// </summary>
-        public int Id { get; private set; }
+        public int Id => PageStub.Id;
 
         /// <summary>
         /// Namespace id of the page.
         /// </summary>
-        public int NamespaceId { get; private set; }
+        public int NamespaceId => PageStub.NamespaceId;
+
+        private List<IWikiPagePropertyGroup> propertyGroups;
+
+        private IReadOnlyCollection<IWikiPagePropertyGroup> readonlyPropertyGroups;
+        private static readonly IWikiPagePropertyGroup[] emptyPropertyGroups = { };
+
+        public IWikiPagePropertyGroup GetPropertyGroup(Type propertyGroupType)
+        {
+            var ti = propertyGroupType.GetTypeInfo();
+            if (!typeof(IWikiPagePropertyGroup).GetTypeInfo().IsAssignableFrom(ti))
+                throw new ArgumentException("propertyGroupType is not a subtype of IWikiPagePropertyGroup.", nameof(propertyGroupType));
+            if (propertyGroups == null) return null;
+            foreach (var prop in propertyGroups)
+            {
+                if (ti.IsAssignableFrom(prop.GetType().GetTypeInfo())) return prop;
+            }
+            return null;
+        }
+
+        public T GetPropertyGroup<T>() where T : IWikiPagePropertyGroup
+        {
+            if (propertyGroups == null) return default(T);
+            foreach (var prop in propertyGroups)
+            {
+                if (prop is T t) return t;
+            }
+            return default(T);
+        }
+
+        public IReadOnlyCollection<IWikiPagePropertyGroup> PropertyGroups
+        {
+            get
+            {
+                if (readonlyPropertyGroups != null) return readonlyPropertyGroups;
+                if (propertyGroups == null) return emptyPropertyGroups;
+                var s = new ReadOnlyCollection<IWikiPagePropertyGroup>(propertyGroups);
+                Volatile.Write(ref readonlyPropertyGroups, s);
+                return s;
+            }
+        }
 
         /// <summary>
         /// Gets the id of last revision. In some cases, this property
@@ -98,12 +140,12 @@ namespace WikiClientLibrary.Pages
         /// For images existing on Wikimedia Commons, this property will return <c>false</c>,
         /// because they doesn't exist on this site.
         /// </remarks>
-        public bool Exists { get; private set; }
+        public bool Exists => !PageStub.IsMissing;
 
         /// <summary>
         /// Gets whether the page is a Special page.
         /// </summary>
-        public bool IsSpecialPage { get; private set; }
+        public bool IsSpecialPage => PageStub.IsSpecial;
 
         /// <summary>
         /// Content model. (MediaWiki 1.22)
@@ -124,7 +166,7 @@ namespace WikiClientLibrary.Pages
         /// Normalized title is a title with underscores(_) replaced by spaces,
         /// and the first letter is usually upper-case.
         /// </remarks>
-        public string Title { get; protected set; }
+        public string Title => PageStub.Title;
 
         /// <summary>
         /// Gets / Sets the content of the page.
@@ -143,24 +185,6 @@ namespace WikiClientLibrary.Pages
         /// </summary>
         /// <remarks>Make sure to invoke <see cref="RefreshAsync()"/> before getting the value.</remarks>
         public Revision LastRevision { get; private set; }
-
-        /// <summary>
-        /// Gets the plain-text extract of the page content.
-        /// </summary>
-        /// <remarks>To fetch for the value of this property,
-        /// specify <see cref="PageQueryOptions.FetchExtract"/>
-        /// when calling <see cref="RefreshAsync(PageQueryOptions)"/>.
-        /// </remarks>
-        public string Extract { get; private set; }
-
-        /// <summary>
-        /// Gets the primary geo-coordinate associated with the page.
-        /// </summary>
-        /// <remarks>To fetch for the value of this property,
-        /// specify <see cref="PageQueryOptions.FetchGeoCoordinate"/>
-        /// when calling <see cref="RefreshAsync(PageQueryOptions)"/>.
-        /// </remarks>
-        public GeoCoordinate PrimaryCoordinate { get; private set; }
 
         /// <summary>
         /// Gets the properties of the page.
@@ -186,7 +210,7 @@ namespace WikiClientLibrary.Pages
             // Check whether the page has transcluded one of the DAB templates.
             var dabt = await Site.DisambiguationTemplatesAsync;
             var dabp = await RequestHelper.EnumTransclusionsAsync(Site, Title,
-                new[] {BuiltInNamespaces.Template}, dabt, 1).Any();
+                new[] { BuiltInNamespaces.Template }, dabt, 1).Any();
             return dabp;
         }
 
@@ -254,52 +278,45 @@ namespace WikiClientLibrary.Pages
         /// <summary>
         /// Loads page information from JSON.
         /// </summary>
-        /// <param name="prop">query.pages.xxx property.</param>
-        internal void LoadFromJson(JProperty prop)
+        /// <param name="jpage">query.pages.xxx property value.</param>
+        /// <param name="propertyProviders"></param>
+        internal void LoadFromJson(JObject jpage, IEnumerable<IWikiPagePropertyProvider> propertyProviders)
         {
-            var id = Convert.ToInt32(prop.Name);
-            // I'm not sure whether this assertion holds.
-            Debug.Assert(id != 0);
-            Id = id;
-            var page = (JObject) prop.Value;
-            OnLoadPageInfo(page);
-            // TODO Cache content
-            LoadLastRevision(page);
+            Debug.Assert(jpage != null);
+            Debug.Assert(propertyProviders != null);
+            // Update page stub
+            PageStub = MediaWikiHelper.PageStubFromJson(jpage);
+            // Load page info
+            // Invalid page title (like File:)
+            if (jpage["invalid"] != null)
+            {
+                var reason = (string)jpage["invalidreason"];
+                throw new OperationFailedException(reason);
+            }
+            // Load property groups
+            propertyGroups?.Clear();
+            foreach (var provider in propertyProviders)
+            {
+                var group = provider.ParsePropertyGroup(jpage);
+                if (group != null)
+                {
+                    if (propertyGroups == null) propertyGroups = new List<IWikiPagePropertyGroup>();
+                    propertyGroups.Add(group);
+                }
+            }
+            OnLoadPageInfo(jpage);
         }
 
         protected virtual void OnLoadPageInfo(JObject jpage)
         {
-            Title = (string) jpage["title"];
-            // Invalid page title (like Special:)
-            if (jpage["invalid"] != null)
-            {
-                var reason = (string) jpage["invalidreason"];
-                throw new OperationFailedException(reason);
-            }
-            NamespaceId = (int) jpage["ns"];
-            Exists = jpage["missing"] == null;
-            ContentModel = (string) jpage["contentmodel"];
-            PageLanguage = (string) jpage["pagelanguage"];
-            IsSpecialPage = jpage["special"] != null;
+            ContentModel = (string)jpage["contentmodel"];
+            PageLanguage = (string)jpage["pagelanguage"];
             IsRedirect = jpage["redirect"] != null;
-            Extract = (string)jpage["extract"];
-            var jcoordinates = (JArray)jpage["coordinates"];
-            if (jcoordinates != null && jcoordinates.HasValues)
-            {
-                // Prefer primary coordinates
-                PrimaryCoordinate = MediaWikiHelper.GeoCoordinateFromJson((JObject)
-                (jcoordinates.FirstOrDefault(coord => coord["primary"] != null)
-                 ?? jcoordinates.First));
-            }
-            else
-            {
-                PrimaryCoordinate = GeoCoordinate.Empty;
-            }
             if (Exists && !IsSpecialPage)
             {
-                ContentLength = (int) jpage["length"];
-                LastRevisionId = (int) jpage["lastrevid"];
-                LastTouched = (DateTime) jpage["touched"];
+                ContentLength = (int)jpage["length"];
+                LastRevisionId = (int)jpage["lastrevid"];
+                LastTouched = (DateTime)jpage["touched"];
                 Protections = jpage["protection"].ToObject<IReadOnlyCollection<ProtectionInfo>>(
                     Utility.WikiJsonSerializer);
                 RestrictionTypes = jpage["restrictiontypes"]?.ToObject<IReadOnlyCollection<string>>(
@@ -317,31 +334,10 @@ namespace WikiClientLibrary.Pages
                 RestrictionTypes = null;
                 PageProperties = null;
             }
+            // Check if the client has requested for revision content…
+            LastRevision = GetPropertyGroup<RevisionPropertyGroup>()?.LatestRevision;
+            if (LastRevision?.Content != null) Content = LastRevision.Content;
         }
-
-        /// <summary>
-        /// Loads the last revision from JSON, assuming it's the latest revision.
-        /// </summary>
-        /// <param name="pageInfo">query.pages.xxx property value.</param>
-        private void LoadLastRevision(JObject pageInfo)
-        {
-            var revision = (JObject) pageInfo["revisions"]?.LastOrDefault();
-            if (revision != null)
-            {
-                var serializer = Utility.CreateWikiJsonSerializer();
-                LastRevision = revision.ToObject<Revision>(serializer);
-                LastRevision.Page = ToPageStub();
-                // Check if the client has requested for revision content…
-                if (LastRevision.Content != null)
-                    Content = LastRevision.Content;
-            }
-            else
-            {
-                // No revisions available.
-                LastRevision = null;
-            }
-        }
-
 
         /// <inheritdoc cref="RefreshAsync(IWikiPageQueryParameters, CancellationToken)"/>
         /// <summary>
@@ -385,7 +381,7 @@ namespace WikiClientLibrary.Pages
         /// <exception cref="InvalidOperationException">Circular redirect detected when resolving redirects.</exception>
         public Task RefreshAsync(IWikiPageQueryParameters options, CancellationToken cancellationToken)
         {
-            return RequestHelper.RefreshPagesAsync(new[] {this}, options, cancellationToken);
+            return RequestHelper.RefreshPagesAsync(new[] { this }, options, cancellationToken);
         }
 
         /// <summary>
@@ -422,7 +418,7 @@ namespace WikiClientLibrary.Pages
         public IAsyncEnumerable<Revision> EnumRevisionsAsync(int pagingSize, PageQueryOptions options)
         {
             if (pagingSize <= 0) throw new ArgumentOutOfRangeException(nameof(pagingSize));
-            var gen = new RevisionsGenerator(Site, Title) { PaginationSize = pagingSize};
+            var gen = new RevisionsGenerator(Site, Title) { PaginationSize = pagingSize };
             return gen.EnumItemsAsync();
         }
 
@@ -445,7 +441,7 @@ namespace WikiClientLibrary.Pages
         [Obsolete("Please use LinksGenerator class or WikiPageExtensions.CreateLinksGenerator extension method instead.")]
         public IAsyncEnumerable<string> EnumLinksAsync(IEnumerable<int> namespaces)
         {
-            return new LinksGenerator(Site, Title) {NamespaceIds = namespaces}
+            return new LinksGenerator(Site, Title) { NamespaceIds = namespaces }
                 .EnumItemsAsync().Select(stub => stub.Title);
         }
 
@@ -560,7 +556,7 @@ namespace WikiClientLibrary.Pages
                     }
                 }
                 var jedit = jresult["edit"];
-                var result = (string) jedit["result"];
+                var result = (string)jedit["result"];
                 if (result == "Success")
                 {
                     if (jedit["nochange"] != null)
@@ -568,15 +564,15 @@ namespace WikiClientLibrary.Pages
                         Site.Logger.LogInformation("Submitted empty edit to page.");
                         return false;
                     }
-                    ContentModel = (string) jedit["contentmodel"];
-                    LastRevisionId = (int) jedit["newrevid"];
-                    Id = (int) jedit["pageid"];
-                    Title = (string) jedit["title"];
+                    ContentModel = (string)jedit["contentmodel"];
+                    LastRevisionId = (int)jedit["newrevid"];
+                    // jedit["ns"] == null
+                    PageStub = new WikiPageStub((int)jedit["pageid"], (string)jedit["title"], PageStub.NamespaceId);
                     Site.Logger.LogInformation("Edited page. New revid={RevisionId}.", LastRevisionId);
                     return true;
                 }
                 // No "errors" in json result but result is not Success.
-                throw new OperationFailedException(result, (string) null);
+                throw new OperationFailedException(result, (string)null);
             }
         }
 
@@ -657,10 +653,11 @@ namespace WikiClientLibrary.Pages
                             throw;
                     }
                 }
-                var fromTitle = (string) jresult["move"]["from"];
-                var toTitle = (string) jresult["move"]["to"];
+                var fromTitle = (string)jresult["move"]["from"];
+                var toTitle = (string)jresult["move"]["to"];
                 Site.Logger.LogInformation("Page [[{fromTitle}]] has been moved to [[{toTitle}]].", fromTitle, toTitle);
-                Title = toTitle;
+                var link = WikiLink.Parse(Site, toTitle);
+                PageStub = new WikiPageStub(PageStub.Id, toTitle, link.Namespace.Id);
             }
         }
 
@@ -713,8 +710,8 @@ namespace WikiClientLibrary.Pages
                     }
                     throw;
                 }
-                var title = (string) jresult["delete"]["title"];
-                Exists = false;
+                var title = (string)jresult["delete"]["title"];
+                PageStub = new WikiPageStub(WikiPageStub.MissingPageId, PageStub.Title, PageStub.NamespaceId);
                 LastRevision = null;
                 LastRevisionId = 0;
                 Site.Logger.LogInformation("[[{Page}]] has been deleted.", title);
@@ -746,7 +743,7 @@ namespace WikiClientLibrary.Pages
         /// <returns><c>true</c> if the page has been successfully purged.</returns>
         public async Task<bool> PurgeAsync(PagePurgeOptions options, CancellationToken cancellationToken)
         {
-            var failure = await RequestHelper.PurgePagesAsync(new[] {this}, options, cancellationToken);
+            var failure = await RequestHelper.PurgePagesAsync(new[] { this }, options, cancellationToken);
             return failure.Count == 0;
         }
 
@@ -755,7 +752,7 @@ namespace WikiClientLibrary.Pages
         /// <summary>
         /// Gets a initialized <see cref="WikiPageStub"/> from the current instance.
         /// </summary>
-        public WikiPageStub ToPageStub() => new WikiPageStub(Id, Title, NamespaceId);
+        public WikiPageStub PageStub { get; private set; }
 
         /// <inheritdoc/>
         public override string ToString()

@@ -1,16 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
-using WikiClientLibrary.Sites;
+using Newtonsoft.Json.Linq;
 
-namespace WikiClientLibrary.Pages.Queries
+namespace WikiClientLibrary.Pages.Queries.Properties
 {
     /// <summary>
     /// Returns plain-text or limited HTML extracts of the given pages.
     /// <c>action=query&amp;prop=extracts</c>
     /// (<a href="https://www.mediawiki.org/wiki/Extension:TextExtracts#API">mw:Extension:TextExtracts#API</a>)
     /// </summary>
-    public class ExtractsPropertyQueryParameters : WikiPagePropertyQueryParameters
+    public class ExtractPropertyProvider : WikiPagePropertyProvider
     {
 
         /// <summary>
@@ -66,5 +65,36 @@ namespace WikiClientLibrary.Pages.Queries
 
         /// <inheritdoc />
         public override string PropertyName => "extracts";
+
+        /// <inheritdoc />
+        public override IWikiPagePropertyGroup ParsePropertyGroup(JObject json)
+        {
+            if (json == null) throw new ArgumentNullException(nameof(json));
+            return ExtractPropertyGroup.Create((string)json["extract"]);
+        }
+
+    }
+
+    public class ExtractPropertyGroup : WikiPagePropertyGroup
+    {
+
+        private static readonly ExtractPropertyGroup Null = new ExtractPropertyGroup(null);
+        private static readonly ExtractPropertyGroup Empty = new ExtractPropertyGroup("");
+
+        internal static ExtractPropertyGroup Create(string extract)
+        {
+            if (extract == null) return Null;
+            if (extract.Length == 0) return Empty;
+            return new ExtractPropertyGroup(extract);
+        }
+
+        private ExtractPropertyGroup(string extract)
+        {
+            Extract = extract;
+        }
+
+        /// <summary>Extract of the page.</summary>
+        public string Extract { get; }
+
     }
 }

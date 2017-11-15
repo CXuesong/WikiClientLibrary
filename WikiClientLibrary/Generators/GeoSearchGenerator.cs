@@ -81,7 +81,7 @@ namespace WikiClientLibrary.Generators
         /// <inheritdoc />
         protected override GeoSearchResultItem ItemFromJson(JToken json)
         {
-            return new GeoSearchResultItem(MediaWikiHelper.PageStubFromRevision((JObject)json),
+            return new GeoSearchResultItem(MediaWikiHelper.PageStubFromJson((JObject)json),
                 MediaWikiHelper.GeoCoordinateFromJson((JObject)json),
                 json["primary"] != null, (double)json["dist"]);
         }

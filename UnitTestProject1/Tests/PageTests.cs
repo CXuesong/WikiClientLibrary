@@ -9,6 +9,7 @@ using WikiClientLibrary;
 using WikiClientLibrary.Generators;
 using WikiClientLibrary.Pages;
 using WikiClientLibrary.Pages.Queries;
+using WikiClientLibrary.Pages.Queries.Properties;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -39,6 +40,7 @@ namespace UnitTestProject1.Tests
             Assert.Equal("Wikipedia:Sandbox", page.Title);
             Assert.Equal(4, page.NamespaceId);
             Assert.Equal("en", page.PageLanguage);
+            Assert.NotNull(page.Content);
             // Chars vs. Bytes
             Assert.True(page.Content.Length <= page.ContentLength);
             Output.WriteLine(new string('-', 10));
@@ -83,14 +85,15 @@ namespace UnitTestProject1.Tests
             {
                 Properties =
                 {
-                    new GeoCoordinatesPropertyQueryParameters()
+                    new GeoCoordinatePropertyProvider()
                 }
             });
             ShallowTrace(page);
-            Assert.False(page.PrimaryCoordinate.IsEmpty);
-            Assert.Equal(47, page.PrimaryCoordinate.Latitude, 12);
-            Assert.Equal(2, page.PrimaryCoordinate.Longitude, 12);
-            Assert.Equal(GeoCoordinate.Earth, page.PrimaryCoordinate.Globe);
+            var coordinate = page.GetPropertyGroup<GeoCoordinatePropertyGroup>();
+            Assert.False(coordinate.PrimaryCoordinate.IsEmpty);
+            Assert.Equal(47, coordinate.PrimaryCoordinate.Latitude, 12);
+            Assert.Equal(2, coordinate.PrimaryCoordinate.Longitude, 12);
+            Assert.Equal(GeoCoordinate.Earth, coordinate.PrimaryCoordinate.Globe);
         }
 
         [Fact]
@@ -102,7 +105,7 @@ namespace UnitTestProject1.Tests
             {
                 Properties =
                 {
-                    new ExtractsPropertyQueryParameters
+                    new ExtractPropertyProvider
                     {
                         AsPlainText = true,
                         IntroductionOnly = true,
@@ -111,7 +114,7 @@ namespace UnitTestProject1.Tests
                 }
             });
             ShallowTrace(page);
-            Assert.Equal("莎拉·伯恩哈特，一八四四年生，法國巴黎人也。", page.Extract);
+            Assert.Equal("莎拉·伯恩哈特，一八四四年生，法國巴黎人也。", page.GetPropertyGroup<ExtractPropertyGroup>().Extract);
         }
 
         [Fact]

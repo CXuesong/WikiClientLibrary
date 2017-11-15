@@ -101,7 +101,7 @@ namespace WikiClientLibrary.Generators.Primitive
             return RequestHelper.QueryWithContinuation(Site, queryParams,
                 () => Site.BeginActionScope(this, options),
                 DistinctGeneratedPages)
-                .SelectMany(jquery => WikiPage.FromJsonQueryResult(Site, jquery).Cast<TPage>()
+                .SelectMany(jquery => WikiPage.FromJsonQueryResult(Site, jquery, options.Properties).Cast<TPage>()
                     .ToAsyncEnumerable());
         }
     }

@@ -57,8 +57,7 @@ namespace WikiClientLibrary.Wikia.Discussions
         {
             if (page == null) throw new ArgumentNullException(nameof(page));
             Site = (WikiaSite)page.Site;
-            // TODO WikiPage should use WikiPageStub as underlying identifier.
-            Page = page.ToPageStub();
+            Page = page.PageStub;
         }
 
         /// <summary>Gets the Wikia site.</summary>

@@ -13,6 +13,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using WikiClientLibrary.Pages;
 using WikiClientLibrary.Pages.Queries;
+using WikiClientLibrary.Pages.Queries.Properties;
 
 namespace WikiClientLibrary.Infrastructures
 {
@@ -120,8 +121,18 @@ namespace WikiClientLibrary.Infrastructures
             return JToken.Parse(content);
         }
 
-        public static WikiPageStub PageStubFromRevision(JObject jPage)
+        public static WikiPageStub PageStubFromJson(JObject jPage)
         {
+            if (jPage["special"] != null)
+                return WikiPageStub.NewSpecialPage((string)jPage["title"], (int)jPage["ns"], jPage["missing"] != null);
+            if (jPage["missing"] != null)
+            {
+                if (jPage["title"] != null)
+                    return WikiPageStub.NewMissingPage((string)jPage["title"], (int)jPage["ns"]);
+                if (jPage["pageid"] != null)
+                    return WikiPageStub.NewMissingPage((int)jPage["pageid"]);
+                return WikiPageStub.NewMissingPage(WikiPageStub.MissingPageId);
+            }
             return new WikiPageStub((int)jPage["pageid"], (string)jPage["title"], (int)jPage["ns"]);
         }
 
@@ -155,21 +166,21 @@ namespace WikiClientLibrary.Infrastructures
             {
                 Properties =
                 {
-                    new RevisionsPropertyQueryParameters { },
+                    new RevisionPropertyProvider { },
                 }
             },
             pageQueryContent = new WikiPageQueryParameters
             {
                 Properties =
                 {
-                    new RevisionsPropertyQueryParameters {FetchContent = true},
+                    new RevisionPropertyProvider {FetchContent = true},
                 }
             },
             pageQueryResolveRedirect = new WikiPageQueryParameters
             {
                 Properties =
                 {
-                    new RevisionsPropertyQueryParameters { },
+                    new RevisionPropertyProvider { },
                 },
                 ResolveRedirects = true,
             },
@@ -177,7 +188,7 @@ namespace WikiClientLibrary.Infrastructures
             {
                 Properties =
                 {
-                    new RevisionsPropertyQueryParameters {FetchContent = true},
+                    new RevisionPropertyProvider {FetchContent = true},
                 },
                 ResolveRedirects = true,
             };

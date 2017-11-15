@@ -144,7 +144,7 @@ namespace WikiClientLibrary.Wikia
                                     post.Exists = false;
                                     continue;
                                 }
-                                var pageStub = MediaWikiHelper.PageStubFromRevision((JObject)jpage);
+                                var pageStub = MediaWikiHelper.PageStubFromJson((JObject)jpage);
                                 var rev = MediaWikiHelper.RevisionFromJson((JObject)jpage["revisions"].First, pageStub);
                                 firstRevisionDict[post.Id] = rev;
                             }
@@ -154,7 +154,7 @@ namespace WikiClientLibrary.Wikia
                         foreach (var post in partition)
                         {
                             var jpage = jLastRevResult["query"]["pages"][post.Id.ToString(CultureInfo.InvariantCulture)];
-                            var pageStub = MediaWikiHelper.PageStubFromRevision((JObject)jpage);
+                            var pageStub = MediaWikiHelper.PageStubFromJson((JObject)jpage);
                             var lastRev = MediaWikiHelper.RevisionFromJson((JObject)jpage["revisions"].First, pageStub);
                             Revision firstRev = null;
                             firstRevisionDict?.TryGetValue(post.Id, out firstRev);

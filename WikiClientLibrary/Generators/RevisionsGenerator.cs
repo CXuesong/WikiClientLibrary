@@ -57,7 +57,7 @@ namespace WikiClientLibrary.Generators
         /// <inheritdoc />
         protected override Revision ItemFromJson(JToken json, JObject jpage)
         {
-            return MediaWikiHelper.RevisionFromJson((JObject)json, MediaWikiHelper.PageStubFromRevision(jpage));
+            return MediaWikiHelper.RevisionFromJson((JObject)json, MediaWikiHelper.PageStubFromJson(jpage));
         }
 
         /// <summary>
