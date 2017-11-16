@@ -12,7 +12,7 @@ namespace WikiClientLibrary.Pages.Queries.Properties
     /// <c>action=query&amp;prop=extracts</c>
     /// (<a href="https://www.mediawiki.org/wiki/Extension:TextExtracts#API">mw:Extension:TextExtracts#API</a>)
     /// </summary>
-    public class GeoCoordinatePropertyProvider : WikiPagePropertyProvider
+    public class GeoCoordinatePropertyProvider : WikiPagePropertyProvider<GeoCoordinatePropertyGroup>
     {
 
         public bool QueryPrimaryCoordinate { get; set; } = true;
@@ -51,7 +51,7 @@ namespace WikiClientLibrary.Pages.Queries.Properties
         public override string PropertyName => "coordinates";
 
         /// <inheritdoc />
-        public override IWikiPagePropertyGroup ParsePropertyGroup(JObject json)
+        public override GeoCoordinatePropertyGroup ParsePropertyGroup(JObject json)
         {
             if (json == null) throw new ArgumentNullException(nameof(json));
             return GeoCoordinatePropertyGroup.Create((JArray)json["coordinates"]);

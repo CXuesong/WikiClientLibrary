@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
+using Newtonsoft.Json.Linq;
 using WikiClientLibrary.Pages.Queries.Properties;
 using WikiClientLibrary.Sites;
 
@@ -29,9 +31,12 @@ namespace WikiClientLibrary.Pages.Queries
         int GetMaxPaginationSize(bool apiHighLimits);
 
         /// <summary>
-        /// Gets the page properties to fetch from MediaWiki site.
+        /// Parses one or more property groups from the given<c>action=query</c> JSON response.
         /// </summary>
-        ICollection<IWikiPagePropertyProvider> Properties { get; }
+        /// <param name="json">One of the item node under the JSON path <c>query/pages</c>.</param>
+        /// <exception cref="ArgumentNullException"><paramref name="json"/> is <c>null</c>.</exception>
+        /// <returns>A sequence of property group instance, or <see cref="Enumerable.Empty{IWikiPagePropertyGroup}"/> if no property groups available.</returns>
+        IEnumerable<IWikiPagePropertyGroup> ParsePropertyGroups(JObject json);
     }
 
     /// <summary>
@@ -40,7 +45,7 @@ namespace WikiClientLibrary.Pages.Queries
     public class WikiPageQueryParameters : IWikiPageQueryParameters
     {
 
-        private ICollection<IWikiPagePropertyProvider> _Properties;
+        private ICollection<IWikiPagePropertyProvider<IWikiPagePropertyGroup>> _Properties;
 
         /// <summary>
         /// Resolves directs automatically. This may later change <see cref="WikiPage.Title"/>.
@@ -52,11 +57,11 @@ namespace WikiClientLibrary.Pages.Queries
         /// <summary>
         /// Gets/sets the page properties to fetch from MediaWiki site.
         /// </summary>
-        public ICollection<IWikiPagePropertyProvider> Properties
+        public ICollection<IWikiPagePropertyProvider<IWikiPagePropertyGroup>> Properties
         {
             get
             {
-                if (_Properties == null) _Properties = new List<IWikiPagePropertyProvider>();
+                if (_Properties == null) _Properties = new List<IWikiPagePropertyProvider<IWikiPagePropertyGroup>>();
                 return _Properties;
             }
             set { _Properties = value; }
@@ -103,6 +108,16 @@ namespace WikiClientLibrary.Pages.Queries
                 }
             }
             return limit;
+        }
+
+        /// <inheritdoc />
+        public IEnumerable<IWikiPagePropertyGroup> ParsePropertyGroups(JObject json)
+        {
+            foreach (var provider in _Properties)
+            {
+                var group = provider.ParsePropertyGroup(json);
+                if (group != null) yield return group;
+            }
         }
     }
 }

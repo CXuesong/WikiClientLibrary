@@ -11,6 +11,7 @@ using WikiClientLibrary.Generators.Primitive;
 using WikiClientLibrary.Infrastructures;
 using WikiClientLibrary.Pages;
 using WikiClientLibrary.Pages.Queries;
+using WikiClientLibrary.Pages.Queries.Properties;
 using WikiClientLibrary.Sites;
 
 namespace WikiClientLibrary.Generators
@@ -21,6 +22,8 @@ namespace WikiClientLibrary.Generators
     /// </summary>
     public class RevisionsGenerator : WikiPagePropertyGenerator<Revision, WikiPage>
     {
+
+        private RevisionPropertyProvider _PropertyProvider = new RevisionPropertyProvider();
 
         /// <inheritdoc />
         public RevisionsGenerator(WikiSite site) : base(site)
@@ -40,7 +43,7 @@ namespace WikiClientLibrary.Generators
         /// <inheritdoc />
         public override IEnumerable<KeyValuePair<string, object>> EnumListParameters()
         {
-            return new Dictionary<string, object>
+            var p = new KeyValuePairs<string, object>
             {
                 {"rvlimit", PaginationSize},
                 {"rvdir", TimeAscending ? "newer" : "older"},
@@ -50,8 +53,9 @@ namespace WikiClientLibrary.Generators
                 {"rvendid", EndRevisionId},
                 {"rvuser", UserName},
                 {"rvexcludeuser", ExcludedUserName},
-                {"rvprop", MediaWikiHelper.GetQueryParamRvProp(RevisionOptions)},
             };
+            p.AddRange(_PropertyProvider.EnumParameters());
+            return p;
         }
 
         /// <inheritdoc />
@@ -103,7 +107,11 @@ namespace WikiClientLibrary.Generators
         /// <summary>
         /// Gets/sets the page query options for <see cref="WikiPagePropertyList{T}.EnumItemsAsync"/>
         /// </summary>
-        public PageQueryOptions RevisionOptions { get; set; }
+        public RevisionPropertyProvider PropertyProvider
+        {
+            get { return _PropertyProvider; }
+            set { _PropertyProvider = value ?? new RevisionPropertyProvider(); }
+        }
 
         /// <inheritdoc />
         /// <summary>Infrastructure. Not intended to be used directly in your code.

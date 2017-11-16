@@ -13,7 +13,7 @@ namespace WikiClientLibrary.Pages.Queries.Properties
     /// <c>action=query&amp;prop=coordinates</c>
     /// (<a href="https://www.mediawiki.org/wiki/Extension:GeoData#prop.3Dcoordinates">mw:Extension:GeoData#prop=coordinates</a>)
     /// </summary>
-    public class RevisionPropertyProvider : WikiPagePropertyProvider
+    public class RevisionPropertyProvider : WikiPagePropertyProvider<RevisionPropertyGroup>
     {
 
         /// <summary>
@@ -44,7 +44,7 @@ namespace WikiClientLibrary.Pages.Queries.Properties
         public override string PropertyName => "revisions";
 
         /// <inheritdoc />
-        public override IWikiPagePropertyGroup ParsePropertyGroup(JObject json)
+        public override RevisionPropertyGroup ParsePropertyGroup(JObject json)
         {
             if (json == null) throw new ArgumentNullException(nameof(json));
             return RevisionPropertyGroup.Create(json);

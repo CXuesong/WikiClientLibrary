@@ -29,7 +29,7 @@ namespace WikiClientLibrary.Generators.Primitive
     /// for <see cref="WikiList{T}.EnumItemsAsync"/> implementation.</para>
     /// <para>
     /// For <c>generator</c>s, it's not necessary for the sequence taken out
-    /// from <see cref="EnumPagesAsync(WikiClientLibrary.Pages.Queries.IWikiPageQueryParameters)"/> to be kept ordered.
+    /// from <see cref="EnumPagesAsync(IWikiPageQueryParameters)"/> to be kept ordered.
     /// If you need ordered sequence, for example,
     /// enumerating the links from the beginning of an article using <see cref="LinksGenerator"/>,
     /// use <see cref="WikiPagePropertyList{T}.EnumItemsAsync"/>.
@@ -93,7 +93,7 @@ namespace WikiClientLibrary.Generators.Primitive
             return RequestHelper.QueryWithContinuation(Site, queryParams,
                 () => Site.BeginActionScope(this, options),
                 DistinctGeneratedPages)
-                .SelectMany(jquery => WikiPage.FromJsonQueryResult(Site, jquery, options.Properties).Cast<TPage>()
+                .SelectMany(jquery => WikiPage.FromJsonQueryResult(Site, jquery, options).Cast<TPage>()
                     .ToAsyncEnumerable());
         }
     }

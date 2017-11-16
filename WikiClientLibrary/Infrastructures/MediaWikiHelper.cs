@@ -154,13 +154,6 @@ namespace WikiClientLibrary.Infrastructures
             };
         }
 
-        public static string GetQueryParamRvProp(PageQueryOptions options)
-        {
-            if ((options & PageQueryOptions.FetchContent) == PageQueryOptions.FetchContent)
-                return "ids|timestamp|flags|comment|user|userid|contentmodel|sha1|tags|size|content";
-            return "ids|timestamp|flags|comment|user|userid|contentmodel|sha1|tags|size";
-        }
-
         private static readonly WikiPageQueryParameters
             pageQueryNone = new WikiPageQueryParameters
             {

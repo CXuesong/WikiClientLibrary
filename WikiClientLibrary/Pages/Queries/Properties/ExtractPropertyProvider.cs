@@ -9,7 +9,7 @@ namespace WikiClientLibrary.Pages.Queries.Properties
     /// <c>action=query&amp;prop=extracts</c>
     /// (<a href="https://www.mediawiki.org/wiki/Extension:TextExtracts#API">mw:Extension:TextExtracts#API</a>)
     /// </summary>
-    public class ExtractPropertyProvider : WikiPagePropertyProvider
+    public class ExtractPropertyProvider : WikiPagePropertyProvider<ExtractPropertyGroup>
     {
 
         /// <summary>
@@ -67,7 +67,7 @@ namespace WikiClientLibrary.Pages.Queries.Properties
         public override string PropertyName => "extracts";
 
         /// <inheritdoc />
-        public override IWikiPagePropertyGroup ParsePropertyGroup(JObject json)
+        public override ExtractPropertyGroup ParsePropertyGroup(JObject json)
         {
             if (json == null) throw new ArgumentNullException(nameof(json));
             return ExtractPropertyGroup.Create((string)json["extract"]);

@@ -141,7 +141,7 @@ namespace WikiClientLibrary
                             var pageInfo = pageInfoDict[title];
                             if (redirectTrace.Count > 0)
                                 page.RedirectPath = redirectTrace;
-                            page.LoadFromJson((JObject)pageInfo.Value, options.Properties);
+                            page.LoadFromJson((JObject)pageInfo.Value, options);
                         }
                     }
                 }

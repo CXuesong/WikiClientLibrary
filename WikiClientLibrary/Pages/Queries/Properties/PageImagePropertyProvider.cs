@@ -10,7 +10,7 @@ namespace WikiClientLibrary.Pages.Queries.Properties
     /// <c>action=query&amp;prop=pageimages</c>
     /// (<a href="https://www.mediawiki.org/wiki/Special:MyLanguage/Extension:PageImages#API">mw:Extension:PageImages#API</a>)
     /// </summary>
-    public class PageImagePropertyProvider : WikiPagePropertyProvider
+    public class PageImagePropertyProvider : WikiPagePropertyProvider<PageImagePropertyGroup>
     {
 
         /// <summary>
@@ -52,7 +52,7 @@ namespace WikiClientLibrary.Pages.Queries.Properties
         public override string PropertyName => "pageimages";
 
         /// <inheritdoc />
-        public override IWikiPagePropertyGroup ParsePropertyGroup(JObject json)
+        public override PageImagePropertyGroup ParsePropertyGroup(JObject json)
         {
             if (json == null) throw new ArgumentNullException(nameof(json));
             return PageImagePropertyGroup.Create(json);

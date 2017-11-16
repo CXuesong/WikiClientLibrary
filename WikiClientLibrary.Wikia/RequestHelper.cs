@@ -15,6 +15,7 @@ using WikiClientLibrary.Client;
 using WikiClientLibrary.Infrastructures;
 using WikiClientLibrary.Infrastructures.Logging;
 using WikiClientLibrary.Pages;
+using WikiClientLibrary.Pages.Queries.Properties;
 using WikiClientLibrary.Sites;
 using WikiClientLibrary.Wikia.Discussions;
 
@@ -89,6 +90,8 @@ namespace WikiClientLibrary.Wikia
             });
         }
 
+        private static readonly RevisionPropertyProvider postRevisionProvider = new RevisionPropertyProvider {FetchContent = true};
+
         public static async Task RefreshPostsAsync(IEnumerable<Post> posts,
             PostQueryOptions options, CancellationToken cancellationToken)
         {
@@ -112,13 +115,14 @@ namespace WikiClientLibrary.Wikia
 
                         }
                         // Fetch last revisions to determine content and last editor
+                        // TODO WikiPage should have methods to fetch from page id.
                         var lastRevisionTask = site.GetJsonAsync(new MediaWikiFormRequestMessage(new
                         {
                             action = "query",
                             pageids = string.Join("|", partition.Select(p => p.Id)),
                             prop = "revisions",
                             rvlimit = partition.Count == 1 ? (int?)1 : null,
-                            rvprop = MediaWikiHelper.GetQueryParamRvProp(PageQueryOptions.FetchContent)
+                            rvprop = postRevisionProvider.EnumParameters().First().Value
                         }), cancellationToken);
                         // Fetch the first revisions, when needed, to determine author.
                         Dictionary<int, Revision> firstRevisionDict = null;
@@ -129,6 +133,7 @@ namespace WikiClientLibrary.Wikia
                             foreach (var post in partition)
                             {
                                 // We can only fetch for 1 page at a time, with rvdir = "newer"
+                                // TODO WikiPage should have methods to fetch from page id.
                                 var jresult = await site.GetJsonAsync(new MediaWikiFormRequestMessage(new
                                 {
                                     action = "query",
@@ -136,7 +141,7 @@ namespace WikiClientLibrary.Wikia
                                     prop = "revisions",
                                     rvdir = "newer",
                                     rvlimit = 1,
-                                    rvprop = MediaWikiHelper.GetQueryParamRvProp(PageQueryOptions.FetchContent)
+                                    rvprop = postRevisionProvider.EnumParameters().First().Value
                                 }), cancellationToken);
                                 var jpage = jresult["query"]["pages"][post.Id.ToString(CultureInfo.InvariantCulture)];
                                 if (jpage["missing"] != null)

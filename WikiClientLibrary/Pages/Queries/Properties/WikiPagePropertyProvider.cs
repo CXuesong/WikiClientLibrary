@@ -5,7 +5,7 @@ using Newtonsoft.Json.Linq;
 namespace WikiClientLibrary.Pages.Queries.Properties
 {
 
-    public interface IWikiPagePropertyProvider
+    public interface IWikiPagePropertyProvider<out T> where T : IWikiPagePropertyGroup
     {
 
         /// <summary>
@@ -38,13 +38,11 @@ namespace WikiClientLibrary.Pages.Queries.Properties
         /// <param name="json">One of the item node under the JSON path <c>query/pages</c>.</param>
         /// <exception cref="ArgumentNullException"><paramref name="json"/> is <c>null</c>.</exception>
         /// <returns>A property group instance, or <c>null</c> if no extra property group available.</returns>
-        /// <remarks>
-        /// <para>When overriding this method, you do not need to invoke the base implementation.</para>
-        /// </remarks>
-        IWikiPagePropertyGroup ParsePropertyGroup(JObject json);
+        T ParsePropertyGroup(JObject json);
     }
-    
-    public abstract class WikiPagePropertyProvider : IWikiPagePropertyProvider
+
+
+    public abstract class WikiPagePropertyProvider<T> : IWikiPagePropertyProvider<T> where T : IWikiPagePropertyGroup
     {
         /// <inheritdoc />
         public abstract IEnumerable<KeyValuePair<string, object>> EnumParameters();
@@ -56,13 +54,13 @@ namespace WikiClientLibrary.Pages.Queries.Properties
         }
 
         /// <inheritdoc />
-        public abstract string PropertyName { get; }
+        /// <remarks>
+        /// </remarks>
+        public abstract T ParsePropertyGroup(JObject json);
 
         /// <inheritdoc />
-        public virtual IWikiPagePropertyGroup ParsePropertyGroup(JObject json)
-        {
-            if (json == null) throw new ArgumentNullException(nameof(json));
-            return null;
-        }
+        public abstract string PropertyName { get; }
+
+
     }
 }

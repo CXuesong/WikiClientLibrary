@@ -279,11 +279,11 @@ namespace WikiClientLibrary.Pages
         /// Loads page information from JSON.
         /// </summary>
         /// <param name="jpage">query.pages.xxx property value.</param>
-        /// <param name="propertyProviders"></param>
-        internal void LoadFromJson(JObject jpage, IEnumerable<IWikiPagePropertyProvider> propertyProviders)
+        /// <param name="options"></param>
+        internal void LoadFromJson(JObject jpage, IWikiPageQueryParameters options)
         {
             Debug.Assert(jpage != null);
-            Debug.Assert(propertyProviders != null);
+            Debug.Assert(options != null);
             // Update page stub
             PageStub = MediaWikiHelper.PageStubFromJson(jpage);
             // Load page info
@@ -295,14 +295,11 @@ namespace WikiClientLibrary.Pages
             }
             // Load property groups
             propertyGroups?.Clear();
-            foreach (var provider in propertyProviders)
+            foreach (var group in options.ParsePropertyGroups(jpage))
             {
-                var group = provider.ParsePropertyGroup(jpage);
-                if (group != null)
-                {
-                    if (propertyGroups == null) propertyGroups = new List<IWikiPagePropertyGroup>();
-                    propertyGroups.Add(group);
-                }
+                Debug.Assert(group != null, "The returned sequence from IWikiPageQueryParameters.ParsePropertyGroups contains null item.");
+                if (propertyGroups == null) propertyGroups = new List<IWikiPagePropertyGroup>();
+                propertyGroups.Add(group);
             }
             OnLoadPageInfo(jpage);
         }
