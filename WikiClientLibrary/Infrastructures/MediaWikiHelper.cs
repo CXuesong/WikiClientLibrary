@@ -179,6 +179,13 @@ namespace WikiClientLibrary.Infrastructures
             return rev;
         }
 
+        public static FileRevision FileRevisionFromJson(JObject jRevision, WikiPageStub pageStub)
+        {
+            var rev = jRevision.ToObject<FileRevision>(Utility.WikiJsonSerializer);
+            rev.Page = pageStub;
+            return rev;
+        }
+
         public static GeoCoordinate GeoCoordinateFromJson(JObject jcoordinate)
         {
             return new GeoCoordinate
@@ -195,21 +202,33 @@ namespace WikiClientLibrary.Infrastructures
             {
                 Properties =
                 {
+                    new PageInfoPropertyProvider { },
                     new RevisionPropertyProvider { },
+                    new CategoryInfoPropertyProvider { },
+                    new PagePropertyPropertyProvider { },
+                    new FileInfoPropertyProvider { },
                 }
             },
             pageQueryContent = new WikiPageQueryParameters
             {
                 Properties =
                 {
+                    new PageInfoPropertyProvider { },
                     new RevisionPropertyProvider {FetchContent = true},
+                    new CategoryInfoPropertyProvider { },
+                    new PagePropertyPropertyProvider { },
+                    new FileInfoPropertyProvider { },
                 }
             },
             pageQueryResolveRedirect = new WikiPageQueryParameters
             {
                 Properties =
                 {
+                    new PageInfoPropertyProvider { },
                     new RevisionPropertyProvider { },
+                    new CategoryInfoPropertyProvider { },
+                    new PagePropertyPropertyProvider { },
+                    new FileInfoPropertyProvider { },
                 },
                 ResolveRedirects = true,
             },
@@ -217,7 +236,11 @@ namespace WikiClientLibrary.Infrastructures
             {
                 Properties =
                 {
+                    new PageInfoPropertyProvider { },
                     new RevisionPropertyProvider {FetchContent = true},
+                    new CategoryInfoPropertyProvider { },
+                    new PagePropertyPropertyProvider { },
+                    new FileInfoPropertyProvider { },
                 },
                 ResolveRedirects = true,
             };

@@ -89,6 +89,7 @@ namespace WikiClientLibrary.Pages
 
         private IReadOnlyCollection<IWikiPagePropertyGroup> readonlyPropertyGroups;
         private static readonly IWikiPagePropertyGroup[] emptyPropertyGroups = { };
+        private PageInfoPropertyGroup pageInfo;
 
         public IWikiPagePropertyGroup GetPropertyGroup(Type propertyGroupType)
         {
@@ -139,20 +140,20 @@ namespace WikiClientLibrary.Pages
         /// Even if you haven't fetched content of the page when calling <see cref="RefreshAsync()"/>,
         /// this property will still get its value.
         /// </remarks>
-        public int ContentLength { get; private set; }
+        public int ContentLength => pageInfo?.ContentLength ?? 0;
 
         /// <summary>
         /// Page touched timestamp. It can be later than the timestamp of the last revision.
         /// </summary>
         /// <remarks>See https://www.mediawiki.org/wiki/Manual:Page_table#page_touched .</remarks>
-        public DateTime LastTouched { get; private set; }
+        public DateTime LastTouched => pageInfo?.LastTouched ?? DateTime.MinValue;
 
-        public IReadOnlyCollection<ProtectionInfo> Protections { get; private set; }
+        public IReadOnlyCollection<ProtectionInfo> Protections => pageInfo?.Protections;
 
         /// <summary>
         /// Applicable protection types. (MediaWiki 1.25)
         /// </summary>
-        public IReadOnlyCollection<string> RestrictionTypes { get; private set; }
+        public IReadOnlyCollection<string> RestrictionTypes => pageInfo?.RestrictionTypes;
 
         /// <summary>
         /// Gets whether the page exists.
@@ -179,7 +180,7 @@ namespace WikiClientLibrary.Pages
         /// Page language. (MediaWiki 1.24)
         /// </summary>
         /// <remarks>See https://www.mediawiki.org/wiki/API:PageLanguage .</remarks>
-        public string PageLanguage { get; private set; }
+        public string PageLanguage => pageInfo?.PageLanguage;
 
         /// <summary>
         /// Gets the normalized full title of the page.
@@ -209,11 +210,6 @@ namespace WikiClientLibrary.Pages
         public Revision LastRevision { get; private set; }
 
         /// <summary>
-        /// Gets the properties of the page.
-        /// </summary>
-        public PagePropertyCollection PageProperties { get; private set; }
-
-        /// <summary>
         /// Determines whether the existing page is a disambiguation page.
         /// </summary>
         /// <exception cref="InvalidOperationException">The page does not exist.</exception>
@@ -228,7 +224,11 @@ namespace WikiClientLibrary.Pages
             AssertExists();
             // If the Disambiguator extension is loaded, use it
             if (Site.Extensions.Contains("Disambiguator"))
-                return PageProperties.Disambiguation;
+            {
+                var group = GetPropertyGroup<PagePropertyPropertyGroup>();
+                if (group != null)
+                    return group.PageProperties.Disambiguation;
+            }
             // Check whether the page has transcluded one of the DAB templates.
             var dabt = await Site.DisambiguationTemplatesAsync;
             var dabp = await RequestHelper.EnumTransclusionsAsync(Site, Title,
@@ -241,7 +241,7 @@ namespace WikiClientLibrary.Pages
         /// <summary>
         /// Determines the last version of the page is a redirect page.
         /// </summary>
-        public bool IsRedirect { get; private set; }
+        public bool IsRedirect => pageInfo?.IsRedirect ?? false;
 
         /// <summary>
         /// Gets a list indicating the titles passed (except the final destination) when trying to
@@ -277,14 +277,6 @@ namespace WikiClientLibrary.Pages
         }
 
         #endregion
-
-        private static bool AreIdEquals(int id1, int id2)
-        {
-            if (id1 == id2) return false;
-            // For inexistent pages, id is negative.
-            if (id2 > 0 && id1 > 0 || Math.Sign(id2) != Math.Sign(id1)) return true;
-            return false;
-        }
 
         #region Query
 
@@ -328,34 +320,12 @@ namespace WikiClientLibrary.Pages
 
         protected virtual void OnLoadPageInfo(JObject jpage)
         {
-            ContentModel = (string)jpage["contentmodel"];
-            PageLanguage = (string)jpage["pagelanguage"];
-            IsRedirect = jpage["redirect"] != null;
-            if (Exists && !IsSpecialPage)
-            {
-                ContentLength = (int)jpage["length"];
-                LastRevisionId = (int)jpage["lastrevid"];
-                LastTouched = (DateTime)jpage["touched"];
-                Protections = jpage["protection"].ToObject<IReadOnlyCollection<ProtectionInfo>>(
-                    Utility.WikiJsonSerializer);
-                RestrictionTypes = jpage["restrictiontypes"]?.ToObject<IReadOnlyCollection<string>>(
-                                       Utility.WikiJsonSerializer) ?? EmptyStrings;
-                PageProperties = jpage["pageprops"]?.ToObject<PagePropertyCollection>(Utility.WikiJsonSerializer)
-                                 ?? PagePropertyCollection.Empty;
-            }
-            else
-            {
-                // N / A
-                ContentLength = 0;
-                LastRevisionId = 0;
-                LastTouched = DateTime.MinValue;
-                Protections = null;
-                RestrictionTypes = null;
-                PageProperties = null;
-            }
             // Check if the client has requested for revision content…
             LastRevision = GetPropertyGroup<RevisionPropertyGroup>()?.LatestRevision;
             if (LastRevision?.Content != null) Content = LastRevision.Content;
+            pageInfo = GetPropertyGroup<PageInfoPropertyGroup>();
+            LastRevisionId = pageInfo?.LastRevisionId ?? 0;
+            ContentModel = pageInfo?.ContentModel;
         }
 
         /// <inheritdoc cref="RefreshAsync(IWikiPageQueryParameters, CancellationToken)"/>
@@ -695,7 +665,7 @@ namespace WikiClientLibrary.Pages
         /// </summary>
         public Task<bool> DeleteAsync(string reason, AutoWatchBehavior watch)
         {
-            return DeleteAsync(reason, watch, new CancellationToken());
+            return DeleteAsync(reason, watch, CancellationToken.None);
         }
 
         /// <summary>

@@ -271,6 +271,11 @@ namespace WikiClientLibrary.Pages
     {
 
         /// <summary>
+        /// Gets the stub of page this revision applies to.
+        /// </summary>
+        public WikiPageStub Page { get; internal set; }
+
+        /// <summary>
         /// Whether the file is anonymous.
         /// </summary>
         /// <remarks>

@@ -61,8 +61,8 @@ namespace WikiClientLibrary.Pages.Queries.Properties
         internal static RevisionPropertyGroup Create(JObject jpage)
         {
             var jrevisions = jpage["revisions"];
-            if (jrevisions == null || !jrevisions.HasValues)
-                return Empty;
+            if (jrevisions == null) return null;
+            if (!jrevisions.HasValues) return Empty;
             var stub = MediaWikiHelper.PageStubFromJson(jpage);
             return new RevisionPropertyGroup(stub, (JArray)jrevisions);
         }
@@ -91,7 +91,7 @@ namespace WikiClientLibrary.Pages.Queries.Properties
             get
             {
                 if (_Revisions is Revision rev)
-                    _Revisions = new ReadOnlyCollection<Revision>(new[] {rev});
+                    _Revisions = new ReadOnlyCollection<Revision>(new[] { rev });
                 return (IReadOnlyCollection<Revision>)_Revisions;
             }
         }

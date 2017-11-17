@@ -71,12 +71,10 @@ namespace WikiClientLibrary.Pages.Queries
         /// <inheritdoc />
         public IEnumerable<KeyValuePair<string, object>> EnumParameters()
         {
-            var propBuilder = new StringBuilder("info|categoryinfo|imageinfo|pageprops");
+            var propBuilder = new StringBuilder();
             var p = new OrderedKeyValuePairs<string, object>
             {
                 {"action", "query"},
-                {"inprop", "protection"},
-                {"iiprop", "timestamp|user|comment|url|size|sha1"},
                 {"redirects", ResolveRedirects},
                 {"maxlag", 5},
             };
@@ -86,7 +84,7 @@ namespace WikiClientLibrary.Pages.Queries
                 {
                     if (prop.PropertyName != null)
                     {
-                        propBuilder.Append('|');
+                        if (propBuilder.Length > 0) propBuilder.Append('|');
                         propBuilder.Append(prop.PropertyName);
                     }
                     p.AddRange(prop.EnumParameters());
