@@ -44,13 +44,18 @@ namespace UnitTestProject1.Tests
             // Chars vs. Bytes
             Assert.True(page.Content.Length <= page.ContentLength);
             Output.WriteLine(new string('-', 10));
-            page = new WikiPage(site, "file:inexistent_file.jpg");
-            await page.RefreshAsync();
-            ShallowTrace(page);
-            Assert.False(page.Exists);
-            Assert.Equal("File:Inexistent file.jpg", page.Title);
-            Assert.Equal(6, page.NamespaceId);
-            Assert.Equal("en", page.PageLanguage);
+
+            var page2 = new WikiPage(site, 2076);
+            await page2.RefreshAsync();
+            Assert.Equal(page.PageStub, page2.PageStub);
+
+            var page3 = new WikiPage(site, "file:inexistent_file.jpg");
+            await page3.RefreshAsync();
+            ShallowTrace(page3);
+            Assert.False(page3.Exists);
+            Assert.Equal("File:Inexistent file.jpg", page3.Title);
+            Assert.Equal(6, page3.NamespaceId);
+            Assert.Equal("en", page3.PageLanguage);
         }
 
         [Fact]
@@ -167,6 +172,17 @@ namespace UnitTestProject1.Tests
         }
 
         [Fact]
+        public async Task WikiaPageReadByIdTest()
+        {
+            var site = await WikiaTestSiteAsync;
+            var page = new WikiPage(site, 190273);
+            await page.RefreshAsync();
+            Assert.Equal("Mediawiki 1.19 test Wiki:Sandbox", page.Title);
+            Assert.Equal(4, page.NamespaceId);
+            ShallowTrace(page);
+        }
+
+        [Fact]
         public async Task WikiaPageReadDisambigTest()
         {
             var site = await WikiaTestSiteAsync;
@@ -240,7 +256,7 @@ namespace UnitTestProject1.Tests
             Output.WriteLine("Failed pages: ");
             ShallowTrace(failedPages, 1);
             Assert.Equal(1, failedPages.Count);
-            Assert.Same(badPage, failedPages.Single());
+            Assert.Equal(badPage.Title, failedPages.Single().Page.Title);
         }
 
         [SkippableFact]

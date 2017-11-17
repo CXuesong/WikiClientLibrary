@@ -20,17 +20,21 @@ namespace WikiClientLibrary.Pages
     /// <para>This structure can also represent missing (or inexistent) pages. A missing page has either a page ID or
     /// a page name, not both. For the missing page with the given page ID, its <see cref="Title"/> should be
     /// <see cref="MissingPageTitle"/>; for the missing page with the given page title, the <see cref="Id"/>
-    /// should be <ses cref="MissingPageId"/>. You can use <see cref="IsMissing"/> property to check for missing pages.</para>
+    /// should be <ses cref="MissingPageIdMask"/>. You can use <see cref="IsMissing"/> property to check for missing pages.</para>
     /// </remarks>
     public struct WikiPageStub : IEquatable<WikiPageStub>
     {
 
         /// <summary>The <see cref="Id"/> value used for missing page.</summary>
         /// <remarks>For how the missing pages are handled, see the "remarks" section of <see cref="WikiPage"/>.</remarks>
-        public const int MissingPageId = unchecked((int)0x8F000001);
+        public const int MissingPageIdMask = unchecked((int)0x8F000001);
+
+        /// <summary>The <see cref="Id"/> value used for invalid page.</summary>
+        /// <remarks>For how the missing pages are handled, see the "remarks" section of <see cref="WikiPage"/>.</remarks>
+        public const int InvalidPageIdMask = unchecked((int)0x8F000002);
 
         /// <summary>The <see cref="Id"/> value used for Special page.</summary>
-        public const int SpecialPageId = unchecked((int)0x8F000002);
+        public const int SpecialPageIdMask = unchecked((int)0x8F000011);
 
         /// <summary>The <see cref="Title"/> value used for missing page.</summary>
         /// <remarks>For how the missing pages are handled, see the "remarks" section of <see cref="WikiPage"/>.</remarks>
@@ -58,11 +62,15 @@ namespace WikiClientLibrary.Pages
         /// <summary>
         /// Initializes a new instance of <see cref="WikiPageStub"/>.
         /// </summary>
-        /// <param name="id">Page ID.</param>
-        /// <param name="title">Page full title.</param>
-        /// <param name="namespaceId">Page namespace ID.</param>
+        /// <param name="id">Page ID. <c>0</c> for unknown.</param>
+        /// <param name="title">Page full title. <c>null</c> for unkown.</param>
+        /// <param name="namespaceId">Page namespace ID. <see cref="UnknownNamespaceId"/> for unkown.</param>
         public WikiPageStub(int id, string title, int namespaceId) : this()
         {
+            const int idMasks = SpecialPageIdMask | MissingPageIdMask | InvalidPageIdMask;
+            if (id < 0 && (id & idMasks) != id)
+                throw new ArgumentOutOfRangeException(nameof(id),
+                    "Invalid page ID. ID should be positive; 0 for unknown; bitwise-or of one or more WikiPageStub.****Mask fields.");
             Id = id;
             Title = title;
             NamespaceId = namespaceId;
@@ -70,7 +78,7 @@ namespace WikiClientLibrary.Pages
 
         public static WikiPageStub NewMissingPage(string title, int namespaceId)
         {
-            return new WikiPageStub(MissingPageId, title, namespaceId);
+            return new WikiPageStub(MissingPageIdMask, title, namespaceId);
         }
 
         public static WikiPageStub NewMissingPage(int id)
@@ -80,19 +88,24 @@ namespace WikiClientLibrary.Pages
 
         public static WikiPageStub NewSpecialPage(string title, int namespaceId)
         {
-            return new WikiPageStub(SpecialPageId, title, namespaceId);
+            return new WikiPageStub(SpecialPageIdMask, title, namespaceId);
         }
 
         public static WikiPageStub NewSpecialPage(string title, int namespaceId, bool isMissing)
         {
             if (isMissing)
-                return new WikiPageStub(SpecialPageId | MissingPageId, title, namespaceId);
-            return new WikiPageStub(SpecialPageId, title, namespaceId);
+                return new WikiPageStub(SpecialPageIdMask | MissingPageIdMask, title, namespaceId);
+            return new WikiPageStub(SpecialPageIdMask, title, namespaceId);
+        }
+
+        public static WikiPageStub NewInvalidPage(string title)
+        {
+            return new WikiPageStub(InvalidPageIdMask, title, UnknownNamespaceId);
         }
 
         /// <summary>Gets the page ID.</summary>
         /// <value>Page ID; or <c>0</c> if the information is not avaiable;
-        /// or <see cref="MissingPageId"/> for the confirmed missing page.</value>
+        /// or <see cref="MissingPageIdMask"/> for the confirmed missing page.</value>
         public int Id { get; }
 
         /// <summary>Gets the full title of the page.</summary>
@@ -107,17 +120,25 @@ namespace WikiClientLibrary.Pages
         /// <summary>Checks whether the page is confirmed as missing.</summary>
         /// <remarks>If the returned value is <c>false</c>, the caller still cannot confirm the page
         /// does exist, unless otherwise informed so.</remarks>
-        public bool IsMissing => (Id & MissingPageId) == MissingPageId || Title == MissingPageTitle;
+        public bool IsMissing => (Id & MissingPageIdMask) == MissingPageIdMask || Title == MissingPageTitle;
 
-        /// <summary>Checks whether the page represents a Special page.</summary>
+        /// <summary>Checks whether the structure represents a invalid page.</summary>
+        /// <remarks>
+        /// <para>An invalid page is usually a page reference with invalid title.</para>
+        /// <para>If the returned value is <c>false</c>, the caller still cannot confirm the page
+        /// does exist, unless otherwise informed so.</para>
+        /// </remarks>
+        public bool IsInvalid => (Id & InvalidPageIdMask) == InvalidPageIdMask;
+
+        /// <summary>Checks whether the structure represents a Special page.</summary>
         /// <remarks>If the returned value is <c>false</c>, the caller still cannot confirm the page
-        /// does exist, unless otherwise informed so.</remarks>
-        public bool IsSpecial => (Id & SpecialPageId) == SpecialPageId;
+        /// is not a Special page, unless otherwise informed so.</remarks>
+        public bool IsSpecial => (Id & SpecialPageIdMask) == SpecialPageIdMask;
 
         /// <summary>
         /// Gets a value that indicates whether <see cref="Id"/> contains page ID information.
         /// </summary>
-        public bool HasId => Id != 0 && Id != MissingPageId && Id != SpecialPageId;
+        public bool HasId => Id != 0 && Id != MissingPageIdMask && Id != SpecialPageIdMask;
 
         /// <summary>
         /// Gets a value that indicates whether <see cref="Title"/> contains page title information.
@@ -255,7 +276,7 @@ namespace WikiClientLibrary.Pages
                         if (jpage["missing"] == null)
                             sink.Yield(new WikiPageStub((int)jpage["pageid"], (string)jpage["title"], (int)jpage["ns"]));
                         else
-                            sink.Yield(new WikiPageStub(MissingPageId, (string)jpage["title"], (int)jpage["ns"]));
+                            sink.Yield(new WikiPageStub(MissingPageIdMask, (string)jpage["title"], (int)jpage["ns"]));
                     }
                     await sink.Wait();
                 }

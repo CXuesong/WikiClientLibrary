@@ -57,7 +57,7 @@ namespace WikiClientLibrary.Pages
         /// Asynchronously purges a sequence of pages.
         /// </summary>
         /// <returns>A collection of pages that haven't been successfully purged, because of either missing or invalid titles.</returns>
-        public static Task<IReadOnlyCollection<WikiPage>> PurgeAsync(this IEnumerable<WikiPage> pages)
+        public static Task<IReadOnlyCollection<PurgeFailureInfo>> PurgeAsync(this IEnumerable<WikiPage> pages)
         {
             return PurgeAsync(pages, PagePurgeOptions.None, CancellationToken.None);
         }
@@ -66,17 +66,17 @@ namespace WikiClientLibrary.Pages
         /// Asynchronously purges a sequence of pages with the given options.
         /// </summary>
         /// <returns>A collection of pages that haven't been successfully purged, because of either missing or invalid titles.</returns>
-        public static Task<IReadOnlyCollection<WikiPage>> PurgeAsync(this IEnumerable<WikiPage> pages,
+        public static Task<IReadOnlyCollection<PurgeFailureInfo>> PurgeAsync(this IEnumerable<WikiPage> pages,
             PagePurgeOptions options)
         {
-            return PurgeAsync(pages, options, new CancellationToken());
+            return PurgeAsync(pages, options, CancellationToken.None);
         }
 
         /// <summary>
         /// Asynchronously purges a sequence of pages with the given options.
         /// </summary>
         /// <returns>A collection of pages that haven't been successfully purged, because of either missing or invalid titles.</returns>
-        public static Task<IReadOnlyCollection<WikiPage>> PurgeAsync(this IEnumerable<WikiPage> pages,
+        public static Task<IReadOnlyCollection<PurgeFailureInfo>> PurgeAsync(this IEnumerable<WikiPage> pages,
             PagePurgeOptions options, CancellationToken cancellationToken)
         {
             return RequestHelper.PurgePagesAsync(pages, options, cancellationToken);

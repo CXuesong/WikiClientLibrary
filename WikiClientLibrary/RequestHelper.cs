@@ -87,6 +87,53 @@ namespace WikiClientLibrary
             });
         }
 
+        private struct WikiPageGroupKey : IEquatable<WikiPageGroupKey>
+        {
+
+            public readonly WikiSite Site;
+
+            public readonly bool HasTitle;
+
+            public WikiPageGroupKey(WikiPage page)
+            {
+                if (page == null) throw new ArgumentNullException(nameof(page));
+                Site = page.Site;
+                HasTitle = page.PageStub.HasTitle;
+            }
+
+            /// <inheritdoc />
+            public bool Equals(WikiPageGroupKey other)
+            {
+                return Site.Equals(other.Site) && HasTitle == other.HasTitle;
+            }
+
+            /// <inheritdoc />
+            public override bool Equals(object obj)
+            {
+                if (ReferenceEquals(null, obj)) return false;
+                return obj is WikiPageGroupKey && Equals((WikiPageGroupKey)obj);
+            }
+
+            /// <inheritdoc />
+            public override int GetHashCode()
+            {
+                unchecked
+                {
+                    return (Site == null ? 0 : Site.GetHashCode() * 397) ^ HasTitle.GetHashCode();
+                }
+            }
+
+            public static bool operator ==(WikiPageGroupKey left, WikiPageGroupKey right)
+            {
+                return left.Equals(right);
+            }
+
+            public static bool operator !=(WikiPageGroupKey left, WikiPageGroupKey right)
+            {
+                return !left.Equals(right);
+            }
+        }
+
         /// <summary>
         /// Refresh a sequence of pages.
         /// </summary>
@@ -94,54 +141,75 @@ namespace WikiClientLibrary
         {
             if (pages == null) throw new ArgumentNullException(nameof(pages));
             // You can even fetch pages from different sites.
-            foreach (var sitePages in pages.GroupBy(p => Tuple.Create(p.Site, p.GetType())))
+            foreach (var sitePages in pages.GroupBy(p => new WikiPageGroupKey(p)))
             {
-                var site = sitePages.Key.Item1;
+                var site = sitePages.Key.Site;
                 var queryParams = options.EnumParameters().ToDictionary();
                 var titleLimit = options.GetMaxPaginationSize(site.AccountInfo.HasRight(UserRights.ApiHighLimits));
                 using (site.BeginActionScope(sitePages, options))
                 {
-                    foreach (var partition in sitePages.Partition(titleLimit).Select(partition => partition.ToList()))
+                    foreach (var partition in sitePages.Partition(titleLimit))
                     {
-                        site.Logger.LogDebug("Fetching {Count} pages.", partition.Count);
-                        // We use titles to query pages.
-                        queryParams["titles"] = string.Join("|", partition.Select(p => p.Title));
+                        if (sitePages.Key.HasTitle)
+                        {
+                            // If a page has both title and ID information,
+                            // we will use title anyway.
+                            site.Logger.LogDebug("Fetching {Count} pages by title.", partition.Count);
+                            queryParams["titles"] = string.Join("|", partition.Select(p => p.Title));
+                        }
+                        else
+                        {
+                            site.Logger.LogDebug("Fetching {Count} pages by ID.", partition.Count);
+                            Debug.Assert(sitePages.All(p => p.PageStub.HasId));
+                            queryParams["pageids"] = string.Join("|", partition.Select(p => p.Id));
+                        }
                         // For single-page fetching, force fetching 1 revision only.
                         if (partition.Count == 1)
                             queryParams["rvlimit"] = 1;
                         else
                             queryParams.Remove("rvlimit");
                         var jobj = await site.GetJsonAsync(new MediaWikiFormRequestMessage(queryParams), cancellationToken);
-                        // Process title normalization.
-                        var normalized = jobj["query"]["normalized"]?.ToDictionary(n => (string)n["from"],
-                            n => (string)n["to"]);
-                        // Process redirects.
-                        var redirects = jobj["query"]["redirects"]?.ToDictionary(n => (string)n["from"],
-                            n => (string)n["to"]);
-                        var pageInfoDict = ((JObject)jobj["query"]["pages"]).Properties()
-                            .ToDictionary(p => (string)p.Value["title"]);
-                        foreach (var page in partition)
+                        if (sitePages.Key.HasTitle)
                         {
-                            var title = page.Title;
-                            // Normalize the title first.
-                            if (normalized?.ContainsKey(title) ?? false)
-                                title = normalized[title];
-                            // Then process the redirects.
-                            var redirectTrace = new List<string>();
-                            while (redirects?.ContainsKey(title) ?? false)
+                            // Process title normalization.
+                            var normalized = jobj["query"]["normalized"]?.ToDictionary(n => (string)n["from"],
+                                n => (string)n["to"]);
+                            // Process redirects.
+                            var redirects = jobj["query"]["redirects"]?.ToDictionary(n => (string)n["from"],
+                                n => (string)n["to"]);
+                            var pageInfoDict = ((JObject)jobj["query"]["pages"]).Properties()
+                                .ToDictionary(p => (string)p.Value["title"]);
+                            foreach (var page in partition)
                             {
-                                redirectTrace.Add(title); // Adds the last title
-                                var next = redirects[title];
-                                if (redirectTrace.Contains(next))
-                                    throw new InvalidOperationException(
-                                        $"Cannot resolve circular redirect: {string.Join("->", redirectTrace)}.");
-                                title = next;
+                                var title = page.Title;
+                                // Normalize the title first.
+                                if (normalized?.ContainsKey(title) ?? false)
+                                    title = normalized[title];
+                                // Then process the redirects.
+                                var redirectTrace = new List<string>();
+                                while (redirects?.ContainsKey(title) ?? false)
+                                {
+                                    redirectTrace.Add(title); // Adds the last title
+                                    var next = redirects[title];
+                                    if (redirectTrace.Contains(next))
+                                        throw new InvalidOperationException(
+                                            $"Cannot resolve circular redirect: {string.Join("->", redirectTrace)}.");
+                                    title = next;
+                                }
+                                // Finally, get the page.
+                                var pageInfo = pageInfoDict[title];
+                                if (redirectTrace.Count > 0)
+                                    page.RedirectPath = redirectTrace;
+                                page.LoadFromJson((JObject)pageInfo.Value, options);
                             }
-                            // Finally, get the page.
-                            var pageInfo = pageInfoDict[title];
-                            if (redirectTrace.Count > 0)
-                                page.RedirectPath = redirectTrace;
-                            page.LoadFromJson((JObject)pageInfo.Value, options);
+                        }
+                        else
+                        {
+                            foreach (var page in partition)
+                            {
+                                var jPage = (JObject)jobj["query"]["pages"][page.Id.ToString()];
+                                page.LoadFromJson(jPage, options);
+                            }
                         }
                     }
                 }
@@ -199,19 +267,21 @@ namespace WikiClientLibrary
 
         #endregion
 
+        private static readonly IReadOnlyCollection<PurgeFailureInfo> emptyPurgeFailures = new PurgeFailureInfo[0];
+
         /// <summary>
         /// Asynchronously purges the pages.
         /// </summary>
         /// <returns>A collection of pages that haven't been successfully purged, because of either missing or invalid titles.</returns>
-        public static async Task<IReadOnlyCollection<WikiPage>> PurgePagesAsync(IEnumerable<WikiPage> pages,
+        public static async Task<IReadOnlyCollection<PurgeFailureInfo>> PurgePagesAsync(IEnumerable<WikiPage> pages,
             PagePurgeOptions options, CancellationToken cancellationToken)
         {
             if (pages == null) throw new ArgumentNullException(nameof(pages));
-            var failedPages = new List<WikiPage>();
+            List<PurgeFailureInfo> failedPages = null;
             // You can even purge pages from different sites.
-            foreach (var sitePages in pages.GroupBy(p => Tuple.Create(p.Site, p.GetType())))
+            foreach (var sitePages in pages.GroupBy(p => new WikiPageGroupKey(p)))
             {
-                var site = sitePages.Key.Item1;
+                var site = sitePages.Key.Site;
                 var titleLimit = site.AccountInfo.HasRight(UserRights.ApiHighLimits)
                     ? 500
                     : 50;
@@ -219,14 +289,30 @@ namespace WikiClientLibrary
                 {
                     foreach (var partition in sitePages.Partition(titleLimit).Select(partition => partition.ToList()))
                     {
-                        site.Logger.LogDebug("Purging {Count} pages on {Site}.", partition.Count, site);
-                        // We purge pages by titles.
+                        string titles;
+                        string ids;
+                        if (sitePages.Key.HasTitle)
+                        {
+                            // If a page has both title and ID information,
+                            // we will use title anyway.
+                            site.Logger.LogDebug("Purging {Count} pages by title.", partition.Count);
+                            titles = string.Join("|", partition.Select(p => p.Title));
+                            ids = null;
+                        }
+                        else
+                        {
+                            site.Logger.LogDebug("Purging {Count} pages by ID.", partition.Count);
+                            Debug.Assert(sitePages.All(p => p.PageStub.HasId));
+                            titles = null;
+                            ids = string.Join("|", partition.Select(p => p.Id));
+                        }
                         try
                         {
                             var jresult = await site.GetJsonAsync(new MediaWikiFormRequestMessage(new
                             {
                                 action = "purge",
-                                titles = string.Join("|", partition.Select(p => p.Title)),
+                                titles = titles,
+                                pageids = ids,
                                 forcelinkupdate =
                                 (options & PagePurgeOptions.ForceLinkUpdate) == PagePurgeOptions.ForceLinkUpdate,
                                 forcerecursivelinkupdate =
@@ -234,28 +320,12 @@ namespace WikiClientLibrary
                                 PagePurgeOptions.ForceRecursiveLinkUpdate,
                             }), cancellationToken);
                             // Now check whether the pages have been purged successfully.
-                            // Process title normalization.
-                            var normalized = jresult["normalized"]?.ToDictionary(n => (string)n["from"],
-                                n => (string)n["to"]);
-                            var purgeStatusDict = jresult["purge"].ToDictionary(o => o["title"]);
-                            foreach (var page in partition)
+                            foreach (var jitem in jresult["purge"])
                             {
-                                var title = page.Title;
-                                // Normalize the title.
-                                if (normalized?.ContainsKey(title) ?? false)
-                                    title = normalized[title];
-                                // No redirects here ^_^
-                                var jpage = purgeStatusDict[title];
-                                if (jpage["invalid"] != null)
+                                if (jitem["missing"] != null || jitem["invalid"] != null)
                                 {
-                                    site.Logger.LogWarning("Cannot purge the page: [[{Page}]]. {Reason}",
-                                        page, jpage["invalidreason"]);
-                                    failedPages.Add(page);
-                                }
-                                if (jpage["missing"] != null)
-                                {
-                                    site.Logger.LogWarning("Cannot purge the inexistent page: [[{Page}]].", page);
-                                    failedPages.Add(page);
+                                    if (failedPages == null) failedPages = new List<PurgeFailureInfo>();
+                                    failedPages.Add(new PurgeFailureInfo(MediaWikiHelper.PageStubFromJson((JObject)jitem), (string)jitem["invalidreason"]));
                                 }
                             }
                         }
@@ -267,7 +337,7 @@ namespace WikiClientLibrary
                     }
                 }
             }
-            return failedPages;
+            return failedPages ?? emptyPurgeFailures;
         }
 
         public static async Task PatrolAsync(WikiSite site, int? recentChangeId, int? revisionId, CancellationToken cancellationToken)

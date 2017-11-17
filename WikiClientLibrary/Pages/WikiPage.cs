@@ -28,10 +28,19 @@ namespace WikiClientLibrary.Pages
     public partial class WikiPage
     {
 
+        /// <inheritdoc cref="WikiPage(WikiSite,string,int)"/>
         public WikiPage(WikiSite site, string title) : this(site, title, BuiltInNamespaces.Main)
         {
         }
 
+        /// <summary>
+        /// Initializes a new instance of <see cref="WikiPage"/> from page title.
+        /// </summary>
+        /// <param name="site">The wiki site this page is on.</param>
+        /// <param name="title">Page title with or without namespace prefix.</param>
+        /// <param name="defaultNamespaceId">The default namespace ID for page title without namespace prefix.</param>
+        /// <remarks>The initialized instance does not contain any live information from MediaWiki site.
+        /// Use <see cref="RefreshAsync()"/> to fetch for infromation from server.</remarks>
         public WikiPage(WikiSite site, string title, int defaultNamespaceId)
         {
             if (site == null) throw new ArgumentNullException(nameof(site));
@@ -41,10 +50,23 @@ namespace WikiClientLibrary.Pages
             PageStub = new WikiPageStub(parsedTitle.FullTitle, parsedTitle.Namespace.Id);
         }
 
-        internal WikiPage(WikiSite site)
+        /// <summary>
+        /// Initializes a new instance of <see cref="WikiPage"/> from page ID.
+        /// </summary>
+        /// <param name="site">The wiki site this page is on.</param>
+        /// <param name="id">Page ID.</param>
+        /// <remarks>The initialized instance does not contain any live information from MediaWiki site.
+        /// Use <see cref="RefreshAsync()"/> to fetch for infromation from server.</remarks>
+        public WikiPage(WikiSite site, int id)
         {
             if (site == null) throw new ArgumentNullException(nameof(site));
             Site = site;
+            PageStub = new WikiPageStub(id);
+        }
+
+        internal WikiPage(WikiSite site)
+        {
+            if (site == null) throw new ArgumentNullException(nameof(site));
             Site = site;
         }
 
@@ -166,7 +188,7 @@ namespace WikiClientLibrary.Pages
         /// Normalized title is a title with underscores(_) replaced by spaces,
         /// and the first letter is usually upper-case.
         /// </remarks>
-        public string Title => PageStub.Title;
+        public string Title => PageStub.HasTitle ? PageStub.Title : null;
 
         /// <summary>
         /// Gets / Sets the content of the page.
@@ -529,7 +551,8 @@ namespace WikiClientLibrary.Pages
                     {
                         action = "edit",
                         token = WikiSiteToken.Edit,
-                        title = Title,
+                        title = PageStub.HasTitle ? PageStub.Title : null,
+                        pageid = PageStub.HasTitle ? null : (int?)PageStub.Id,
                         minor = minor,
                         bot = bot,
                         recreate = true,
@@ -624,7 +647,8 @@ namespace WikiClientLibrary.Pages
                     {
                         action = "move",
                         token = WikiSiteToken.Move,
-                        from = Title,
+                        from = PageStub.HasTitle ? PageStub.Title : null,
+                        fromid = PageStub.HasTitle ? null : (int?)PageStub.Id,
                         to = newTitle,
                         maxlag = 5,
                         movetalk = (options & PageMovingOptions.LeaveTalk) != PageMovingOptions.LeaveTalk,
@@ -689,7 +713,8 @@ namespace WikiClientLibrary.Pages
                     {
                         action = "delete",
                         token = WikiSiteToken.Delete,
-                        title = Title,
+                        title = PageStub.HasTitle ? PageStub.Title : null,
+                        pageid = PageStub.HasTitle ? null : (int?)PageStub.Id,
                         maxlag = 5,
                         watchlist = watch,
                         reason = reason,
@@ -708,7 +733,7 @@ namespace WikiClientLibrary.Pages
                     throw;
                 }
                 var title = (string)jresult["delete"]["title"];
-                PageStub = new WikiPageStub(WikiPageStub.MissingPageId, PageStub.Title, PageStub.NamespaceId);
+                PageStub = new WikiPageStub(WikiPageStub.MissingPageIdMask, PageStub.Title, PageStub.NamespaceId);
                 LastRevision = null;
                 LastRevisionId = 0;
                 Site.Logger.LogInformation("[[{Page}]] has been deleted.", title);
@@ -731,7 +756,7 @@ namespace WikiClientLibrary.Pages
         /// <returns><c>true</c> if the page has been successfully purged.</returns>
         public Task<bool> PurgeAsync(PagePurgeOptions options)
         {
-            return PurgeAsync(options, new CancellationToken());
+            return PurgeAsync(options, CancellationToken.None);
         }
 
         /// <summary>

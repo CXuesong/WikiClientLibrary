@@ -121,8 +121,36 @@ namespace WikiClientLibrary.Infrastructures
             return JToken.Parse(content);
         }
 
+        /// <summary>
+        /// Creates a <see cref="WikiPageStub"/> instance from the given raw page information.
+        /// </summary>
+        /// <param name="jPage">The JSON page-like object.</param>
+        /// <exception cref="ArgumentException">The given JSON object contains none of <c>title</c>+<c>ns</c> or <c>pageid</c>.</exception>
+        /// <exception cref="ArgumentNullException"><paramref name="jPage"/> is <c>null</c>.</exception>
+        /// <returns>The page stub that contains the information given in <paramref name="jPage"/>.</returns>
+        /// <remarks>
+        /// A typical JSON page-like object has the following structure
+        /// <code language="js">
+        /// {
+        ///     // Basic page information
+        ///     "title": "Title",
+        ///     "pageud": 1234,
+        ///     "ns": 0
+        ///     // Page status
+        ///     "special": "",
+        ///     "missing": "",
+        ///     "invalid": ""
+        /// }
+        /// </code>
+        /// A valid JSON page-like object should at least has <c>title</c>+<c>ns</c>, <c>pageid</c>, or both.
+        /// The status flag corresponds with <a href="https://www.mediawiki.org/wiki/API:Data_formats#Boolean_values">format specification for Boolean</a>
+        /// in MediaWiki API.
+        /// </remarks>
         public static WikiPageStub PageStubFromJson(JObject jPage)
         {
+            if (jPage == null) throw new ArgumentNullException(nameof(jPage));
+            if (jPage["invalid"] != null)
+                return WikiPageStub.NewInvalidPage((string)jPage["title"]);
             if (jPage["special"] != null)
                 return WikiPageStub.NewSpecialPage((string)jPage["title"], (int)jPage["ns"], jPage["missing"] != null);
             if (jPage["missing"] != null)
@@ -131,9 +159,17 @@ namespace WikiClientLibrary.Infrastructures
                     return WikiPageStub.NewMissingPage((string)jPage["title"], (int)jPage["ns"]);
                 if (jPage["pageid"] != null)
                     return WikiPageStub.NewMissingPage((int)jPage["pageid"]);
-                return WikiPageStub.NewMissingPage(WikiPageStub.MissingPageId);
+                return WikiPageStub.NewMissingPage(WikiPageStub.MissingPageIdMask);
             }
-            return new WikiPageStub((int)jPage["pageid"], (string)jPage["title"], (int)jPage["ns"]);
+            if (jPage["pageid"] != null)
+            {
+                if (jPage["title"] != null)
+                    return new WikiPageStub((int)jPage["pageid"], (string)jPage["title"], (int)jPage["ns"]);
+                return new WikiPageStub((int)jPage["pageid"]);
+            }
+            if (jPage["title"] != null)
+                return new WikiPageStub((string)jPage["title"], (int)jPage["ns"]);
+            throw new ArgumentException("The specified JSON object does not contain MediaWiki page information.", nameof(jPage));
         }
 
         public static Revision RevisionFromJson(JObject jRevision, WikiPageStub pageStub)
