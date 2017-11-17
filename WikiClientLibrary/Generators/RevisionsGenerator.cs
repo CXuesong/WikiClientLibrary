@@ -43,7 +43,7 @@ namespace WikiClientLibrary.Generators
         /// <inheritdoc />
         public override IEnumerable<KeyValuePair<string, object>> EnumListParameters()
         {
-            var p = new KeyValuePairs<string, object>
+            var p = new OrderedKeyValuePairs<string, object>
             {
                 {"rvlimit", PaginationSize},
                 {"rvdir", TimeAscending ? "newer" : "older"},

@@ -224,13 +224,9 @@ namespace WikiClientLibrary.Wikia
                     pageTitle = link.Title;
                     pageNamespaceId = link.Namespace.Id;
                 }
-                // TODO need a utility class for this operation...
-                var queryParams = new List<KeyValuePair<string, object>>
+                var queryParams = new OrderedKeyValuePairs<string, object>
                 {
-                    new KeyValuePair<string, object>("token", null)
-                };
-                queryParams.AddRange(new Dictionary<string, object>
-                {
+                    {"token", null},
                     {"controller", "WallExternal"},
                     {"method", "postNewMessage"},
                     {"format", "json"},
@@ -240,16 +236,14 @@ namespace WikiClientLibrary.Wikia
                     {"body", messageBody},
                     {"notifyeveryone", 0},
                     {"convertToFormat", ""},
-                });
+                };
                 if (relatedPages != null)
                 {
                     foreach (var title in relatedPages)
-                    {
-                        queryParams.Add(new KeyValuePair<string, object>("relatedTopics[]", title));
-                    }
+                        queryParams.Add("relatedTopics[]", title);
                 }
                 BEGIN:
-                queryParams[0] = new KeyValuePair<string, object>("token", await site.GetTokenAsync("edit", cancellationToken));
+                queryParams["token"] = await site.GetTokenAsync("edit", cancellationToken);
                 var jresult = await site.InvokeNirvanaAsync(new WikiaQueryRequestMessage(queryParams, true), WikiaJsonResonseParser.Default, cancellationToken);
                 if (!string.Equals((string)jresult["status"], "True", StringComparison.OrdinalIgnoreCase))
                 {

@@ -26,7 +26,7 @@ namespace WikiClientLibrary.Pages.Queries.Properties
         /// <inheritdoc />
         public override IEnumerable<KeyValuePair<string, object>> EnumParameters()
         {
-            var p = new KeyValuePairs<string, object>
+            var p = new OrderedKeyValuePairs<string, object>
             {
                 {"coprop", "globe|dim"},
             };

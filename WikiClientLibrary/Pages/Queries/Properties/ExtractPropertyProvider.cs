@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Newtonsoft.Json.Linq;
+using WikiClientLibrary.Infrastructures;
 
 namespace WikiClientLibrary.Pages.Queries.Properties
 {
@@ -45,7 +46,7 @@ namespace WikiClientLibrary.Pages.Queries.Properties
         /// <inheritdoc />
         public override IEnumerable<KeyValuePair<string, object>> EnumParameters()
         {
-            var p = new KeyValuePairs<string, object>
+            var p = new OrderedKeyValuePairs<string, object>
             {
                 {"exlimit", "max"},
                 {"exintro", IntroductionOnly},

@@ -26,7 +26,7 @@ namespace WikiClientLibrary.Pages.Queries.Properties
         /// <inheritdoc />
         public override IEnumerable<KeyValuePair<string, object>> EnumParameters()
         {
-            return new KeyValuePairs<string, object>
+            return new OrderedKeyValuePairs<string, object>
             {
                 {
                     "rvprop",

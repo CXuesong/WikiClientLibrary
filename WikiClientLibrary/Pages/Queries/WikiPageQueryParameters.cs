@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Newtonsoft.Json.Linq;
+using WikiClientLibrary.Infrastructures;
 using WikiClientLibrary.Pages.Queries.Properties;
 using WikiClientLibrary.Sites;
 
@@ -71,7 +72,7 @@ namespace WikiClientLibrary.Pages.Queries
         public IEnumerable<KeyValuePair<string, object>> EnumParameters()
         {
             var propBuilder = new StringBuilder("info|categoryinfo|imageinfo|pageprops");
-            var p = new KeyValuePairs<string, object>
+            var p = new OrderedKeyValuePairs<string, object>
             {
                 {"action", "query"},
                 {"inprop", "protection"},
