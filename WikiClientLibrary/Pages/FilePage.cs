@@ -31,11 +31,6 @@ namespace WikiClientLibrary.Pages
         {
         }
 
-        /// <inheritdoc/>
-        internal FilePage(WikiSite site) : base(site)
-        {
-        }
-
         [Obsolete]
         private static async Task<UploadResult> LegacyDispatchResult(Task<UploadResult> result)
         {

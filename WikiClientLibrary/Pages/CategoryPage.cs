@@ -19,10 +19,6 @@ namespace WikiClientLibrary.Pages
         {
         }
 
-        internal CategoryPage(WikiSite site) : base(site)
-        {
-        }
-
         public int MembersCount => GetPropertyGroup<CategoryInfoPropertyGroup>()?.MembersCount ?? 0;
 
         public int PagesCount => GetPropertyGroup<CategoryInfoPropertyGroup>()?.PagesCount ?? 0;

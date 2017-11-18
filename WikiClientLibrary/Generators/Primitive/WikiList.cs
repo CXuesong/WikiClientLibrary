@@ -61,7 +61,7 @@ namespace WikiClientLibrary.Generators.Primitive
         /// <remarks>
         /// This property decides how many items returned at most per MediaWiki API invocation.
         /// Note that the enumerator returned from <see cref="EnumItemsAsync"/>
-        /// or <seealso cref="WikiPageGenerator{TItem,TPage}.EnumPagesAsync()"/>
+        /// or <seealso cref="WikiPageGenerator{TItem}.EnumPagesAsync()"/>
         /// will automatically make further MediaWiki API invocations to ask for the next batch of results,
         /// when needed.
         /// </remarks>

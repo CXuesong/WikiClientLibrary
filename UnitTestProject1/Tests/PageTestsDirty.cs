@@ -87,15 +87,15 @@ The original title of the page is '''{title}'''.
         public async Task LocalFileUploadTest1(string fileName, string imageName)
         {
             const string ReuploadSuffix = "\n\nReuploaded.";
+            var site = await SiteAsync;
             var file = Utility.GetDemoImage(imageName);
-            var page = new FilePage(await SiteAsync, fileName);
-            var result = await page.UploadAsync(new StreamUploadSource(file.ContentStream), file.Description, false);
+            var result = await site.UploadAsync(fileName, new StreamUploadSource(file.ContentStream), file.Description, false);
             // Usually we should notify the user, then perform the re-upload ignoring the warning.
             try
             {
                 if (result.Warnings.TitleExists)
                 {
-                    result = await page.UploadAsync(
+                    result = await site.UploadAsync(fileName,
                         new FileKeyUploadSource(result.FileKey), file.Description + ReuploadSuffix, true);
                 }
                 Assert.Equal(UploadResultCode.Success, result.ResultCode);
@@ -105,6 +105,7 @@ The original title of the page is '''{title}'''.
                 Output.WriteLine(ex.Message);
             }
             ShallowTrace(result);
+            var page = new WikiPage(site, fileName);
             await page.RefreshAsync();
             ShallowTrace(page);
             Assert.True(page.Exists);
@@ -114,9 +115,8 @@ The original title of the page is '''{title}'''.
         [Fact]
         public async Task LocalFileUploadRetryTest1()
         {
-            const string FileName = "File:Test image.jpg";
+            const string fileName = "File:Test image.jpg";
             var localSite = await CreateIsolatedWikiSiteAsync(CredentialManager.DirtyTestsEntryPointUrl);
-            var page = new FilePage(localSite, FileName);
             // Cahce the token first so it won't be affected by the short timeout.
             await localSite.GetTokenAsync("edit");
             Output.WriteLine("Try uploading…");
@@ -131,7 +131,7 @@ The original title of the page is '''{title}'''.
             {
                 await Assert.ThrowsAsync<TimeoutException>(async () =>
                 {
-                    var result = await page.UploadAsync(new StreamUploadSource(ms),
+                    var result = await localSite.UploadAsync(fileName, new StreamUploadSource(ms),
                         "This is an upload that is destined to fail. Upload timeout test.", false);
                     // Usually we should notify the user, then perform the re-upload ignoring the warning.
                     Assert.Equal(UploadResultCode.Warning, result.ResultCode);
@@ -143,9 +143,9 @@ The original title of the page is '''{title}'''.
         public async Task LocalFileUploadTest2()
         {
             var site = await SiteAsync;
-            var page = new FilePage(site, "File:Null.png");
             await Assert.ThrowsAsync<OperationFailedException>(() =>
-                page.UploadAsync(new StreamUploadSource(Stream.Null), "This upload should have failed.", false));
+                site.UploadAsync("File:Null.png", new StreamUploadSource(Stream.Null),
+                    "This upload should have failed.", false));
         }
 
         [SkippableFact]
@@ -160,19 +160,18 @@ This work has been released into the public domain by its author, JasonHise at E
 In some countries this may not be legally possible; if so:
 
 JasonHise grants anyone the right to use this work for any purpose, without any conditions, unless such conditions are required by law.";
-            const string ReuploadSuffix = "\n\nReuploaded.";
-            const string FileName = "File:8-cell-simple.gif";
+            const string reuploadSuffix = "\n\nReuploaded.";
+            const string fileName = "File:8-cell-simple.gif";
             var site = await CreateIsolatedWikiSiteAsync(CredentialManager.DirtyTestsEntryPointUrl);
             // Allow for more time to wait.
             ((WikiClient)site.WikiClient).Timeout = TimeSpan.FromSeconds(30);
-            var page = new FilePage(site, FileName);
             try
             {
-                var result = await page.UploadAsync(new ExternalFileUploadSource(SourceUrl), Description, false);
+                var result = await site.UploadAsync(fileName, new ExternalFileUploadSource(SourceUrl), Description, false);
                 // Usually we should notify the user, then perform the re-upload ignoring the warning.
                 if (result.Warnings.TitleExists)
-                    result = await page.UploadAsync(
-                        new FileKeyUploadSource(result.FileKey), Description + ReuploadSuffix, true);
+                    result = await site.UploadAsync(fileName,
+                        new FileKeyUploadSource(result.FileKey), Description + reuploadSuffix, true);
                 Assert.Equal(UploadResultCode.Success, result.ResultCode);
             }
             catch (OperationFailedException ex)
@@ -198,10 +197,9 @@ JasonHise grants anyone the right to use this work for any purpose, without any 
                     Assert.Equal(file.Sha1, result.FileRevision.Sha1, StringComparer.OrdinalIgnoreCase);
                 }
             } while (!chunked.IsStashed);
-            var page = new FilePage(site, "Test image.jpg");
             try
             {
-                await page.UploadAsync(chunked, file.Description, true);
+                await site.UploadAsync("Test image.jpg", chunked, file.Description, true);
             }
             catch (OperationFailedException ex) when (ex.ErrorCode == "fileexists-no-change")
             {

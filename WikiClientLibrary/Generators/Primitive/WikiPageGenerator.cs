@@ -68,6 +68,18 @@ namespace WikiClientLibrary.Generators.Primitive
         /// the value of this property might be ignored.</remarks>
         protected virtual bool DistinctGeneratedPages => false;
 
+        ///// <summary>
+        ///// Parses an item contained in the <c>action=query&amp;list=</c> JSON response.
+        ///// </summary>
+        ///// <param name="json">One of the item node under the JSON path <c>query/{listname}</c>.</param>
+        ///// <returns>The item that will be returned in the sequence from <see cref="EnumPagesAsync()"/>.</returns>
+        //protected virtual WikiPage PageFromJson(JObject json, IWikiPageQueryProvider options)
+        //{
+        //    var page = new WikiPage(Site, 0);
+        //    MediaWikiHelper.PopulatePageFromJson(page, json, options);
+        //    return page;
+        //}
+
         /// <summary>
         /// Asynchornously generates the sequence of pages.
         /// </summary>
@@ -95,10 +107,9 @@ namespace WikiClientLibrary.Generators.Primitive
             foreach (var v in EnumGeneratorParameters())
                 queryParams[v.Key] = v.Value;
             return RequestHelper.QueryWithContinuation(Site, queryParams,
-                () => Site.BeginActionScope(this, options),
-                DistinctGeneratedPages)
-                .SelectMany(jquery => WikiPage.FromJsonQueryResult(Site, jquery, options).Cast<WikiPage>()
-                    .ToAsyncEnumerable());
+                    () => Site.BeginActionScope(this, options),
+                    DistinctGeneratedPages)
+                .SelectMany(jquery => WikiPage.FromJsonQueryResult(Site, jquery, options).ToAsyncEnumerable());
         }
     }
 

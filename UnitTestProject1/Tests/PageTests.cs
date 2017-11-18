@@ -152,7 +152,7 @@ namespace UnitTestProject1.Tests
         public async Task WpLzhFetchFileTest()
         {
             var site = await WpLzhSiteAsync;
-            var file = new FilePage(site, "File:Empress Suiko.jpg");
+            var file = new WikiPage(site, "File:Empress Suiko.jpg");
             await file.RefreshAsync();
             ShallowTrace(file);
             //Assert.True(file.Exists);   //It's on WikiMedia!

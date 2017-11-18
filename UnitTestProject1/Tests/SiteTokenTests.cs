@@ -61,7 +61,7 @@ namespace UnitTestProject1.Tests
         {
             const string invalidToken = @"INVALID_TOKEN+\";
             var site = await CreateIsolatedWikiSiteAsync(endpointUrl);
-            var page = WikiPage.FromTitle(site, sandboxPageTitle);
+            var page = new WikiPage(site, sandboxPageTitle);
             await page.RefreshAsync(PageQueryOptions.FetchContent);
             Skip.IfNot(page.Exists, $"The page {sandboxPageTitle} doesn't exist on {site}.");
             var tokensManager = typeof(WikiSite)

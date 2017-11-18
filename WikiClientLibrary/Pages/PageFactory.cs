@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Newtonsoft.Json.Linq;
+using WikiClientLibrary.Infrastructures;
 using WikiClientLibrary.Sites;
 using WikiClientLibrary.Pages.Queries;
 using WikiClientLibrary.Pages.Queries.Properties;
@@ -20,6 +21,7 @@ namespace WikiClientLibrary.Pages
         /// <exception cref="ArgumentNullException">Either <paramref name="site"/> or <paramref name="title"/> is <c>null</c>.</exception>
         /// <exception cref="ArgumentException"><paramref name="title"/> has invalid title patterns.</exception>
         /// <exception cref="InvalidOperationException"><paramref name="title"/> is an interwiki link.</exception>
+        [Obsolete("Use new WikiPage(site, title, defaultNamespaceId) instead of this method.")]
         public static WikiPage FromTitle(WikiSite site, string title)
         {
             return FromTitle(site, title, 0);
@@ -38,6 +40,7 @@ namespace WikiClientLibrary.Pages
         /// <exception cref="ArgumentNullException">Either <paramref name="site"/> or <paramref name="title"/> is <c>null</c>.</exception>
         /// <exception cref="ArgumentException"><paramref name="title"/> has invalid title patterns.</exception>
         /// <exception cref="InvalidOperationException"><paramref name="title"/> is an interwiki link.</exception>
+        [Obsolete("Use new WikiPage(site, title, defaultNamespaceId) instead of this method.")]
         public static WikiPage FromTitle(WikiSite site, string title, int defaultNamespaceId)
         {
             if (site == null) throw new ArgumentNullException(nameof(site));
@@ -84,14 +87,8 @@ namespace WikiClientLibrary.Pages
             return pages.Properties().OrderBy(page => (int?)page.Value["index"])
                 .Select(page =>
                 {
-                    WikiPage newInst;
-                    if (page.Value["imageinfo"] != null)
-                        newInst = new FilePage(site);
-                    else if (page.Value["categoryinfo"] != null)
-                        newInst = new CategoryPage(site);
-                    else
-                        newInst = new WikiPage(site);
-                    newInst.LoadFromJson((JObject)page.Value, options);
+                    var newInst = new WikiPage(site, 0);
+                    MediaWikiHelper.PopulatePageFromJson(newInst, (JObject)page.Value, options);
                     return newInst;
                 }).ToList();
         }

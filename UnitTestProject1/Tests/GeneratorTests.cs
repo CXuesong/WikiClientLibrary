@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using WikiClientLibrary;
 using WikiClientLibrary.Generators;
 using WikiClientLibrary.Pages;
+using WikiClientLibrary.Pages.Queries.Properties;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -32,7 +33,8 @@ namespace UnitTestProject1.Tests
             foreach (var page in pages)
             {
                 var childrenField = "";
-                if (page is CategoryPage cat)
+                var cat = page.GetPropertyGroup<CategoryInfoPropertyGroup>();
+                if (cat != null)
                     childrenField = $"{cat.MembersCount}(sub:{cat.SubcategoriesCount})";
                 Output.WriteLine(string.Format(lineFormat, page.Title, page.ContentLength, page.LastRevisionId,
                     page.LastTouched, childrenField));
@@ -99,30 +101,31 @@ namespace UnitTestProject1.Tests
         public async Task WpCategoryMembersGeneratorTest()
         {
             var site = await WpTest2SiteAsync;
-            var cat = new CategoryPage(site, "Category:Template documentation pages‏‎");
+            var cat = new WikiPage(site, "Category:Template documentation pages‏‎");
             await cat.RefreshAsync();
             Output.WriteLine(cat.ToString());
             var generator = new CategoryMembersGenerator(cat) {PaginationSize = 50};
             var pages = await generator.EnumPagesAsync().ToList();
             TracePages(pages);
             AssertTitlesDistinct(pages);
-            Assert.Equal(cat.MembersCount, pages.Count);
+            var catInfo = cat.GetPropertyGroup<CategoryInfoPropertyGroup>();
+            Assert.Equal(catInfo.MembersCount, pages.Count);
         }
 
         [Fact]
         public async Task WikiaCategoryMembersGeneratorTest()
         {
             var site = await WikiaTestSiteAsync;
-            var cat = new CategoryPage(site, "Category:BlogListingPage‏‎‏‎");
+            var cat = new WikiPage(site, "Category:BlogListingPage‏‎‏‎");
             await cat.RefreshAsync();
             Output.WriteLine(cat.ToString());
             var generator = new CategoryMembersGenerator(cat) {PaginationSize = 50};
             var pages = await generator.EnumPagesAsync().ToList();
             TracePages(pages);
             AssertTitlesDistinct(pages);
-            Assert.Equal(cat.MembersCount, pages.Count);
+            var catInfo = cat.GetPropertyGroup<CategoryInfoPropertyGroup>();
+            Assert.Equal(catInfo.MembersCount, pages.Count);
         }
-
 
         [Fact]
         public async Task WpTest2RecentChangesGeneratorTest1()

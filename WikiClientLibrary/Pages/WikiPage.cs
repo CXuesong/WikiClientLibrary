@@ -64,12 +64,6 @@ namespace WikiClientLibrary.Pages
             PageStub = new WikiPageStub(id);
         }
 
-        internal WikiPage(WikiSite site)
-        {
-            if (site == null) throw new ArgumentNullException(nameof(site));
-            Site = site;
-        }
-
         /// <summary>
         /// Gets the Site the page is on.
         /// </summary>
@@ -295,37 +289,25 @@ namespace WikiClientLibrary.Pages
             if (!Exists) throw new InvalidOperationException($"The page {this} does not exist.");
         }
 
-        /// <summary>
-        /// Loads page information from JSON.
-        /// </summary>
-        /// <param name="jpage">query.pages.xxx property value.</param>
-        /// <param name="options"></param>
-        internal void LoadFromJson(JObject jpage, IWikiPageQueryProvider options)
+        protected internal virtual void OnLoadPageInfo(JObject jpage, IWikiPageQueryProvider options)
         {
-            Debug.Assert(jpage != null);
-            Debug.Assert(options != null);
+            // Initialize
+            propertyGroups?.Clear();
             // Update page stub
             PageStub = MediaWikiHelper.PageStubFromJson(jpage);
             // Load page info
             // Invalid page title (like File:)
-            if (jpage["invalid"] != null)
+            if (PageStub.IsInvalid)
             {
-                var reason = (string)jpage["invalidreason"];
-                throw new OperationFailedException(reason);
+                return;
             }
             // Load property groups
-            propertyGroups?.Clear();
             foreach (var group in options.ParsePropertyGroups(jpage))
             {
                 Debug.Assert(group != null, "The returned sequence from IWikiPageQueryParameters.ParsePropertyGroups contains null item.");
                 if (propertyGroups == null) propertyGroups = new List<IWikiPagePropertyGroup>();
                 propertyGroups.Add(group);
             }
-            OnLoadPageInfo(jpage);
-        }
-
-        protected virtual void OnLoadPageInfo(JObject jpage)
-        {
             // Check if the client has requested for revision content…
             LastRevision = GetPropertyGroup<RevisionsPropertyGroup>()?.LatestRevision;
             if (LastRevision?.Content != null) Content = LastRevision.Content;

@@ -30,9 +30,9 @@ namespace WikiClientLibrary.Generators
         }
 
         /// <summary>
-        /// Initializes <see cref="CategoryTitle"/> from specified <see cref="CategoryPage"/> .
+        /// Initializes <see cref="CategoryTitle"/> from specified <see cref="WikiPage"/> .
         /// </summary>
-        public CategoryMembersGenerator(CategoryPage category) : base(category.Site)
+        public CategoryMembersGenerator(WikiPage category) : base(category.Site)
         {
             if (category == null) throw new ArgumentNullException(nameof(category));
             CategoryTitle = category.Title;

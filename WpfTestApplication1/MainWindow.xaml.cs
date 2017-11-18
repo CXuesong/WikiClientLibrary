@@ -106,7 +106,8 @@ namespace WpfTestApplication1
                 ClientUserAgent = "WpfApplicationTest/1.0 (.NET CLR " + Environment.Version + ")",
             };
             SetStatus("Loading wiki site info: " + EndPointUrl);
-            site = await WikiSite.CreateAsync(client, EndPointUrl);
+            site = new WikiSite(client, EndPointUrl);
+            await site.Initialization;
             articleUrlMatcher = new Regex(Regex.Escape(site.SiteInfo.ArticlePath).Replace(@"\$1", "(.+?)") + "$");
             Navigate(site.SiteInfo.MainPage);
         }

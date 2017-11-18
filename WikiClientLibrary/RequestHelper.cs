@@ -200,7 +200,7 @@ namespace WikiClientLibrary
                                 var pageInfo = pageInfoDict[title];
                                 if (redirectTrace.Count > 0)
                                     page.RedirectPath = redirectTrace;
-                                page.LoadFromJson((JObject)pageInfo.Value, options);
+                                MediaWikiHelper.PopulatePageFromJson(page, (JObject)pageInfo.Value, options);
                             }
                         }
                         else
@@ -208,7 +208,7 @@ namespace WikiClientLibrary
                             foreach (var page in partition)
                             {
                                 var jPage = (JObject)jobj["query"]["pages"][page.Id.ToString()];
-                                page.LoadFromJson(jPage, options);
+                                MediaWikiHelper.PopulatePageFromJson(page, jPage, options);
                             }
                         }
                     }

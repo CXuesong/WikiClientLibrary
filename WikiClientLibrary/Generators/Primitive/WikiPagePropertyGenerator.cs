@@ -88,10 +88,9 @@ namespace WikiClientLibrary.Generators.Primitive
             foreach (var v in EnumGeneratorParameters())
                 queryParams[v.Key] = v.Value;
             return RequestHelper.QueryWithContinuation(Site, queryParams,
-                () => Site.BeginActionScope(this, options),
-                DistinctGeneratedPages)
-                .SelectMany(jquery => WikiPage.FromJsonQueryResult(Site, jquery, options).Cast<WikiPage>()
-                    .ToAsyncEnumerable());
+                    () => Site.BeginActionScope(this, options),
+                    DistinctGeneratedPages)
+                .SelectMany(jquery => WikiPage.FromJsonQueryResult(Site, jquery, options).ToAsyncEnumerable());
         }
     }
 

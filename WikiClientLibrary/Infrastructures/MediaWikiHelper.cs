@@ -213,5 +213,19 @@ namespace WikiClientLibrary.Infrastructures
             return queryProviderPresets.GetOrAdd(options,
                 k => new SealedWikiPageQueryProvider(WikiPageQueryProvider.FromOptions(options)));
         }
+
+        /// <summary>
+        /// Loads page information from JSON.
+        /// </summary>
+        /// <param name="page"></param>
+        /// <param name="json">query.pages.xxx property value.</param>
+        /// <param name="options"></param>
+        public static void PopulatePageFromJson(WikiPage page, JObject json, IWikiPageQueryProvider options)
+        {
+            if (page == null) throw new ArgumentNullException(nameof(page));
+            if (json == null) throw new ArgumentNullException(nameof(json));
+            if (options == null) throw new ArgumentNullException(nameof(options));
+            page.OnLoadPageInfo(json, options);
+        }
     }
 }
