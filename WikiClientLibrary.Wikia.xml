@@ -582,12 +582,12 @@
         </markup>
       </param>
     </member>
-    <member name="M:WikiClientLibrary.Wikia.WikiaSite.InvokeNirvanaAsync(System.Void,System.Object,WikiClientLibrary.Client.WikiRequestMessage)">
+    <member name="M:WikiClientLibrary.Wikia.WikiaSite.InvokeNirvanaAsync(System.Void,Newtonsoft.Json.Linq.JToken)">
       <summary>
         <markup>
           <include item="SMCMissingTag">
             <parameter>summary</parameter>
-            <parameter>M:WikiClientLibrary.Wikia.WikiaSite.InvokeNirvanaAsync(System.Void,System.Object,WikiClientLibrary.Client.WikiRequestMessage)</parameter>
+            <parameter>M:WikiClientLibrary.Wikia.WikiaSite.InvokeNirvanaAsync(System.Void,Newtonsoft.Json.Linq.JToken)</parameter>
           </include>
         </markup>
       </summary>
@@ -596,16 +596,7 @@
           <include item="SMCMissingParamTag">
             <parameter>param</parameter>
             <parameter>request</parameter>
-            <parameter>M:WikiClientLibrary.Wikia.WikiaSite.InvokeNirvanaAsync(System.Void,System.Object,WikiClientLibrary.Client.WikiRequestMessage)</parameter>
-          </include>
-        </markup>
-      </param>
-      <param name="responseParser">
-        <markup>
-          <include item="SMCMissingParamTag">
-            <parameter>param</parameter>
-            <parameter>responseParser</parameter>
-            <parameter>M:WikiClientLibrary.Wikia.WikiaSite.InvokeNirvanaAsync(System.Void,System.Object,WikiClientLibrary.Client.WikiRequestMessage)</parameter>
+            <parameter>M:WikiClientLibrary.Wikia.WikiaSite.InvokeNirvanaAsync(System.Void,Newtonsoft.Json.Linq.JToken)</parameter>
           </include>
         </markup>
       </param>
@@ -614,7 +605,7 @@
           <include item="SMCMissingParamTag">
             <parameter>param</parameter>
             <parameter>cancellationToken</parameter>
-            <parameter>M:WikiClientLibrary.Wikia.WikiaSite.InvokeNirvanaAsync(System.Void,System.Object,WikiClientLibrary.Client.WikiRequestMessage)</parameter>
+            <parameter>M:WikiClientLibrary.Wikia.WikiaSite.InvokeNirvanaAsync(System.Void,Newtonsoft.Json.Linq.JToken)</parameter>
           </include>
         </markup>
       </param>
@@ -665,12 +656,12 @@
         </markup>
       </typeparam>
     </member>
-    <member name="M:WikiClientLibrary.Wikia.WikiaSite.InvokeWikiaAjaxAsync(System.Void,System.Object,WikiClientLibrary.Client.WikiRequestMessage)">
+    <member name="M:WikiClientLibrary.Wikia.WikiaSite.InvokeWikiaAjaxAsync(System.Void,Newtonsoft.Json.Linq.JToken)">
       <summary>
         <markup>
           <include item="SMCMissingTag">
             <parameter>summary</parameter>
-            <parameter>M:WikiClientLibrary.Wikia.WikiaSite.InvokeWikiaAjaxAsync(System.Void,System.Object,WikiClientLibrary.Client.WikiRequestMessage)</parameter>
+            <parameter>M:WikiClientLibrary.Wikia.WikiaSite.InvokeWikiaAjaxAsync(System.Void,Newtonsoft.Json.Linq.JToken)</parameter>
           </include>
         </markup>
       </summary>
@@ -679,16 +670,7 @@
           <include item="SMCMissingParamTag">
             <parameter>param</parameter>
             <parameter>request</parameter>
-            <parameter>M:WikiClientLibrary.Wikia.WikiaSite.InvokeWikiaAjaxAsync(System.Void,System.Object,WikiClientLibrary.Client.WikiRequestMessage)</parameter>
-          </include>
-        </markup>
-      </param>
-      <param name="responseParser">
-        <markup>
-          <include item="SMCMissingParamTag">
-            <parameter>param</parameter>
-            <parameter>responseParser</parameter>
-            <parameter>M:WikiClientLibrary.Wikia.WikiaSite.InvokeWikiaAjaxAsync(System.Void,System.Object,WikiClientLibrary.Client.WikiRequestMessage)</parameter>
+            <parameter>M:WikiClientLibrary.Wikia.WikiaSite.InvokeWikiaAjaxAsync(System.Void,Newtonsoft.Json.Linq.JToken)</parameter>
           </include>
         </markup>
       </param>
@@ -697,7 +679,7 @@
           <include item="SMCMissingParamTag">
             <parameter>param</parameter>
             <parameter>cancellationToken</parameter>
-            <parameter>M:WikiClientLibrary.Wikia.WikiaSite.InvokeWikiaAjaxAsync(System.Void,System.Object,WikiClientLibrary.Client.WikiRequestMessage)</parameter>
+            <parameter>M:WikiClientLibrary.Wikia.WikiaSite.InvokeWikiaAjaxAsync(System.Void,Newtonsoft.Json.Linq.JToken)</parameter>
           </include>
         </markup>
       </param>
@@ -785,12 +767,12 @@
         </markup>
       </param>
     </member>
-    <member name="M:WikiClientLibrary.Wikia.WikiaSite.InvokeWikiaApiAsync(System.Void,Newtonsoft.Json.Linq.JToken,System.String,WikiClientLibrary.Client.WikiRequestMessage)">
+    <member name="M:WikiClientLibrary.Wikia.WikiaSite.InvokeWikiaApiAsync``1(System.Void,``0,System.String,WikiClientLibrary.Client.WikiRequestMessage)">
       <summary>
         <markup>
           <include item="SMCMissingTag">
             <parameter>summary</parameter>
-            <parameter>M:WikiClientLibrary.Wikia.WikiaSite.InvokeWikiaApiAsync(System.Void,Newtonsoft.Json.Linq.JToken,System.String,WikiClientLibrary.Client.WikiRequestMessage)</parameter>
+            <parameter>M:WikiClientLibrary.Wikia.WikiaSite.InvokeWikiaApiAsync``1(System.Void,``0,System.String,WikiClientLibrary.Client.WikiRequestMessage)</parameter>
           </include>
         </markup>
       </summary>
@@ -799,7 +781,7 @@
           <include item="SMCMissingParamTag">
             <parameter>param</parameter>
             <parameter>relativeUri</parameter>
-            <parameter>M:WikiClientLibrary.Wikia.WikiaSite.InvokeWikiaApiAsync(System.Void,Newtonsoft.Json.Linq.JToken,System.String,WikiClientLibrary.Client.WikiRequestMessage)</parameter>
+            <parameter>M:WikiClientLibrary.Wikia.WikiaSite.InvokeWikiaApiAsync``1(System.Void,``0,System.String,WikiClientLibrary.Client.WikiRequestMessage)</parameter>
           </include>
         </markup>
       </param>
@@ -808,7 +790,7 @@
           <include item="SMCMissingParamTag">
             <parameter>param</parameter>
             <parameter>request</parameter>
-            <parameter>M:WikiClientLibrary.Wikia.WikiaSite.InvokeWikiaApiAsync(System.Void,Newtonsoft.Json.Linq.JToken,System.String,WikiClientLibrary.Client.WikiRequestMessage)</parameter>
+            <parameter>M:WikiClientLibrary.Wikia.WikiaSite.InvokeWikiaApiAsync``1(System.Void,``0,System.String,WikiClientLibrary.Client.WikiRequestMessage)</parameter>
           </include>
         </markup>
       </param>
@@ -817,7 +799,7 @@
           <include item="SMCMissingParamTag">
             <parameter>param</parameter>
             <parameter>responseParser</parameter>
-            <parameter>M:WikiClientLibrary.Wikia.WikiaSite.InvokeWikiaApiAsync(System.Void,Newtonsoft.Json.Linq.JToken,System.String,WikiClientLibrary.Client.WikiRequestMessage)</parameter>
+            <parameter>M:WikiClientLibrary.Wikia.WikiaSite.InvokeWikiaApiAsync``1(System.Void,``0,System.String,WikiClientLibrary.Client.WikiRequestMessage)</parameter>
           </include>
         </markup>
       </param>
@@ -826,10 +808,19 @@
           <include item="SMCMissingParamTag">
             <parameter>param</parameter>
             <parameter>cancellationToken</parameter>
-            <parameter>M:WikiClientLibrary.Wikia.WikiaSite.InvokeWikiaApiAsync(System.Void,Newtonsoft.Json.Linq.JToken,System.String,WikiClientLibrary.Client.WikiRequestMessage)</parameter>
+            <parameter>M:WikiClientLibrary.Wikia.WikiaSite.InvokeWikiaApiAsync``1(System.Void,``0,System.String,WikiClientLibrary.Client.WikiRequestMessage)</parameter>
           </include>
         </markup>
       </param>
+      <typeparam name="T">
+        <markup>
+          <include item="SMCMissingParamTag">
+            <parameter>typeparam</parameter>
+            <parameter>T</parameter>
+            <parameter>M:WikiClientLibrary.Wikia.WikiaSite.InvokeWikiaApiAsync``1(System.Void,``0,System.String,WikiClientLibrary.Client.WikiRequestMessage)</parameter>
+          </include>
+        </markup>
+      </typeparam>
     </member>
     <member name="P:WikiClientLibrary.Wikia.WikiaSite.Options">
       <summary>

@@ -17,7 +17,7 @@
       <exception cref="T:System.ArgumentNullException">
         <paramref name="mainSnakPropertyId" /> is <c>null</c>.</exception>
     </member>
-    <member name="M:WikiClientLibrary.Wikibase.Claim.#ctor(WikiClientLibrary.Wikibase.WbSnak)">
+    <member name="M:WikiClientLibrary.Wikibase.Claim.#ctor(WikiClientLibrary.Wikibase.Snak)">
       <summary>
             Initializes a new <see cref="T:WikiClientLibrary.Wikibase.Claim" /> instance with the specified main snak.
             </summary>
@@ -46,8 +46,125 @@
             Gets/sets the collection of citations for the claim.
             </summary>
     </member>
+    <member name="M:WikiClientLibrary.Wikibase.Claim.ToString">
+      <summary>
+        <markup>
+          <include item="SMCMissingTag">
+            <parameter>summary</parameter>
+            <parameter>M:WikiClientLibrary.Wikibase.Claim.ToString</parameter>
+          </include>
+        </markup>
+      </summary>
+    </member>
     <member name="P:WikiClientLibrary.Wikibase.Claim.Type">
       <summary>The type of the claim.</summary>
+    </member>
+    <member name="T:WikiClientLibrary.Wikibase.ClaimCollection">
+      <summary>
+        <markup>
+          <include item="SMCMissingTag">
+            <parameter>summary</parameter>
+            <parameter>T:WikiClientLibrary.Wikibase.ClaimCollection</parameter>
+          </include>
+        </markup>
+      </summary>
+    </member>
+    <member name="M:WikiClientLibrary.Wikibase.ClaimCollection.#ctor">
+      <summary>
+        <markup>
+          <include item="SMCAutoDocConstructor">
+            <parameter>WikiClientLibrary.Wikibase.ClaimCollection</parameter>
+          </include>
+        </markup>
+      </summary>
+    </member>
+    <member name="M:WikiClientLibrary.Wikibase.ClaimCollection.#ctor(System.Collections.Generic.IEnumerable{WikiClientLibrary.Wikibase.Claim})">
+      <summary>
+        <markup>
+          <include item="SMCAutoDocConstructor">
+            <parameter>WikiClientLibrary.Wikibase.ClaimCollection</parameter>
+          </include>
+        </markup>
+      </summary>
+      <param name="items">
+        <markup>
+          <include item="SMCMissingParamTag">
+            <parameter>param</parameter>
+            <parameter>items</parameter>
+            <parameter>M:WikiClientLibrary.Wikibase.ClaimCollection.#ctor(System.Collections.Generic.IEnumerable{WikiClientLibrary.Wikibase.Claim})</parameter>
+          </include>
+        </markup>
+      </param>
+    </member>
+    <member name="T:WikiClientLibrary.Wikibase.ClaimReference">
+      <summary>
+            Represents the a reference (citation) item of a <see cref="T:WikiClientLibrary.Wikibase.Claim" />.
+            </summary>
+    </member>
+    <member name="M:WikiClientLibrary.Wikibase.ClaimReference.#ctor">
+      <summary>
+        <markup>
+          <include item="SMCAutoDocConstructor">
+            <parameter>WikiClientLibrary.Wikibase.ClaimReference</parameter>
+          </include>
+        </markup>
+      </summary>
+    </member>
+    <member name="M:WikiClientLibrary.Wikibase.ClaimReference.#ctor(System.Collections.Generic.IEnumerable{WikiClientLibrary.Wikibase.Snak})">
+      <summary>
+        <markup>
+          <include item="SMCAutoDocConstructor">
+            <parameter>WikiClientLibrary.Wikibase.ClaimReference</parameter>
+          </include>
+        </markup>
+      </summary>
+      <param name="snaks">
+        <markup>
+          <include item="SMCMissingParamTag">
+            <parameter>param</parameter>
+            <parameter>snaks</parameter>
+            <parameter>M:WikiClientLibrary.Wikibase.ClaimReference.#ctor(System.Collections.Generic.IEnumerable{WikiClientLibrary.Wikibase.Snak})</parameter>
+          </include>
+        </markup>
+      </param>
+    </member>
+    <member name="M:WikiClientLibrary.Wikibase.ClaimReference.#ctor(WikiClientLibrary.Wikibase.Snak[])">
+      <summary>
+        <markup>
+          <include item="SMCAutoDocConstructor">
+            <parameter>WikiClientLibrary.Wikibase.ClaimReference</parameter>
+          </include>
+        </markup>
+      </summary>
+      <param name="snaks">
+        <markup>
+          <include item="SMCMissingParamTag">
+            <parameter>param</parameter>
+            <parameter>snaks</parameter>
+            <parameter>M:WikiClientLibrary.Wikibase.ClaimReference.#ctor(WikiClientLibrary.Wikibase.Snak[])</parameter>
+          </include>
+        </markup>
+      </param>
+    </member>
+    <member name="P:WikiClientLibrary.Wikibase.ClaimReference.Hash">
+      <summary>
+        <markup>
+          <include item="SMCMissingTag">
+            <parameter>summary</parameter>
+            <parameter>P:WikiClientLibrary.Wikibase.ClaimReference.Hash</parameter>
+          </include>
+        </markup>
+      </summary>
+    </member>
+    <member name="P:WikiClientLibrary.Wikibase.ClaimReference.Snaks">
+      <summary>
+        <markup>
+          <include item="SMCMissingTag">
+            <parameter>summary</parameter>
+            <parameter>P:WikiClientLibrary.Wikibase.ClaimReference.Snaks</parameter>
+          </include>
+        </markup>
+      </summary>
     </member>
     <member name="T:WikiClientLibrary.Wikibase.Entity">
       <summary>
@@ -330,7 +447,7 @@
         </markup>
       </param>
     </member>
-    <member name="M:WikiClientLibrary.Wikibase.EntityEditEntry.#ctor(System.String,System.Object,WikiClientLibrary.Wikibase.WbEntityEditEntryState)">
+    <member name="M:WikiClientLibrary.Wikibase.EntityEditEntry.#ctor(System.String,System.Object,WikiClientLibrary.Wikibase.EntityEditEntryState)">
       <summary>
         <markup>
           <include item="SMCAutoDocConstructor">
@@ -343,7 +460,7 @@
           <include item="SMCMissingParamTag">
             <parameter>param</parameter>
             <parameter>propertyName</parameter>
-            <parameter>M:WikiClientLibrary.Wikibase.EntityEditEntry.#ctor(System.String,System.Object,WikiClientLibrary.Wikibase.WbEntityEditEntryState)</parameter>
+            <parameter>M:WikiClientLibrary.Wikibase.EntityEditEntry.#ctor(System.String,System.Object,WikiClientLibrary.Wikibase.EntityEditEntryState)</parameter>
           </include>
         </markup>
       </param>
@@ -352,7 +469,7 @@
           <include item="SMCMissingParamTag">
             <parameter>param</parameter>
             <parameter>value</parameter>
-            <parameter>M:WikiClientLibrary.Wikibase.EntityEditEntry.#ctor(System.String,System.Object,WikiClientLibrary.Wikibase.WbEntityEditEntryState)</parameter>
+            <parameter>M:WikiClientLibrary.Wikibase.EntityEditEntry.#ctor(System.String,System.Object,WikiClientLibrary.Wikibase.EntityEditEntryState)</parameter>
           </include>
         </markup>
       </param>
@@ -361,7 +478,7 @@
           <include item="SMCMissingParamTag">
             <parameter>param</parameter>
             <parameter>state</parameter>
-            <parameter>M:WikiClientLibrary.Wikibase.EntityEditEntry.#ctor(System.String,System.Object,WikiClientLibrary.Wikibase.WbEntityEditEntryState)</parameter>
+            <parameter>M:WikiClientLibrary.Wikibase.EntityEditEntry.#ctor(System.String,System.Object,WikiClientLibrary.Wikibase.EntityEditEntryState)</parameter>
           </include>
         </markup>
       </param>
@@ -380,6 +497,26 @@
       <summary>
             The new item, updated existing item, or for the deletion,
             the item that has enough information to determine the item to remove.
+            </summary>
+    </member>
+    <member name="T:WikiClientLibrary.Wikibase.EntityEditEntryState">
+      <summary>
+        <markup>
+          <include item="SMCMissingTag">
+            <parameter>summary</parameter>
+            <parameter>T:WikiClientLibrary.Wikibase.EntityEditEntryState</parameter>
+          </include>
+        </markup>
+      </summary>
+    </member>
+    <member name="F:WikiClientLibrary.Wikibase.EntityEditEntryState.Updated">
+      <summary>
+            Either the entry is a new item, or the value inside the item has been changed.
+            </summary>
+    </member>
+    <member name="F:WikiClientLibrary.Wikibase.EntityEditEntryState.Removed">
+      <summary>
+            The entry represents an item to be removed.
             </summary>
     </member>
     <member name="T:WikiClientLibrary.Wikibase.EntityExtensions">
@@ -571,6 +708,176 @@
             Do not resolve redirect. Treat them like deleted entities.
             </summary>
     </member>
+    <member name="T:WikiClientLibrary.Wikibase.EntitySiteLink">
+      <summary>
+            Represents a corresponding link for an entity to an external wiki site.
+            </summary>
+    </member>
+    <member name="M:WikiClientLibrary.Wikibase.EntitySiteLink.#ctor(System.String,System.String)">
+      <summary>
+        <markup>
+          <include item="SMCAutoDocConstructor">
+            <parameter>WikiClientLibrary.Wikibase.EntitySiteLink</parameter>
+          </include>
+        </markup>
+      </summary>
+      <param name="site">
+        <markup>
+          <include item="SMCMissingParamTag">
+            <parameter>param</parameter>
+            <parameter>site</parameter>
+            <parameter>M:WikiClientLibrary.Wikibase.EntitySiteLink.#ctor(System.String,System.String)</parameter>
+          </include>
+        </markup>
+      </param>
+      <param name="title">
+        <markup>
+          <include item="SMCMissingParamTag">
+            <parameter>param</parameter>
+            <parameter>title</parameter>
+            <parameter>M:WikiClientLibrary.Wikibase.EntitySiteLink.#ctor(System.String,System.String)</parameter>
+          </include>
+        </markup>
+      </param>
+    </member>
+    <member name="M:WikiClientLibrary.Wikibase.EntitySiteLink.#ctor(System.String,System.String,System.Collections.Generic.IList{System.String})">
+      <summary>
+        <markup>
+          <include item="SMCAutoDocConstructor">
+            <parameter>WikiClientLibrary.Wikibase.EntitySiteLink</parameter>
+          </include>
+        </markup>
+      </summary>
+      <param name="site">
+        <markup>
+          <include item="SMCMissingParamTag">
+            <parameter>param</parameter>
+            <parameter>site</parameter>
+            <parameter>M:WikiClientLibrary.Wikibase.EntitySiteLink.#ctor(System.String,System.String,System.Collections.Generic.IList{System.String})</parameter>
+          </include>
+        </markup>
+      </param>
+      <param name="title">
+        <markup>
+          <include item="SMCMissingParamTag">
+            <parameter>param</parameter>
+            <parameter>title</parameter>
+            <parameter>M:WikiClientLibrary.Wikibase.EntitySiteLink.#ctor(System.String,System.String,System.Collections.Generic.IList{System.String})</parameter>
+          </include>
+        </markup>
+      </param>
+      <param name="badges">
+        <markup>
+          <include item="SMCMissingParamTag">
+            <parameter>param</parameter>
+            <parameter>badges</parameter>
+            <parameter>M:WikiClientLibrary.Wikibase.EntitySiteLink.#ctor(System.String,System.String,System.Collections.Generic.IList{System.String})</parameter>
+          </include>
+        </markup>
+      </param>
+    </member>
+    <member name="M:WikiClientLibrary.Wikibase.EntitySiteLink.#ctor(System.String,System.String,System.Collections.Generic.IList{System.String},System.String)">
+      <summary>
+        <markup>
+          <include item="SMCAutoDocConstructor">
+            <parameter>WikiClientLibrary.Wikibase.EntitySiteLink</parameter>
+          </include>
+        </markup>
+      </summary>
+      <param name="site">
+        <markup>
+          <include item="SMCMissingParamTag">
+            <parameter>param</parameter>
+            <parameter>site</parameter>
+            <parameter>M:WikiClientLibrary.Wikibase.EntitySiteLink.#ctor(System.String,System.String,System.Collections.Generic.IList{System.String},System.String)</parameter>
+          </include>
+        </markup>
+      </param>
+      <param name="title">
+        <markup>
+          <include item="SMCMissingParamTag">
+            <parameter>param</parameter>
+            <parameter>title</parameter>
+            <parameter>M:WikiClientLibrary.Wikibase.EntitySiteLink.#ctor(System.String,System.String,System.Collections.Generic.IList{System.String},System.String)</parameter>
+          </include>
+        </markup>
+      </param>
+      <param name="badges">
+        <markup>
+          <include item="SMCMissingParamTag">
+            <parameter>param</parameter>
+            <parameter>badges</parameter>
+            <parameter>M:WikiClientLibrary.Wikibase.EntitySiteLink.#ctor(System.String,System.String,System.Collections.Generic.IList{System.String},System.String)</parameter>
+          </include>
+        </markup>
+      </param>
+      <param name="url">
+        <markup>
+          <include item="SMCMissingParamTag">
+            <parameter>param</parameter>
+            <parameter>url</parameter>
+            <parameter>M:WikiClientLibrary.Wikibase.EntitySiteLink.#ctor(System.String,System.String,System.Collections.Generic.IList{System.String},System.String)</parameter>
+          </include>
+        </markup>
+      </param>
+    </member>
+    <member name="P:WikiClientLibrary.Wikibase.EntitySiteLink.Badges">
+      <summary>
+            The badges for the title on the specified wiki site.
+            </summary>
+    </member>
+    <member name="P:WikiClientLibrary.Wikibase.EntitySiteLink.Site">
+      <summary>
+            The site name.
+            </summary>
+    </member>
+    <member name="P:WikiClientLibrary.Wikibase.EntitySiteLink.Title">
+      <summary>
+            The local title on the specified wiki site.
+            </summary>
+    </member>
+    <member name="P:WikiClientLibrary.Wikibase.EntitySiteLink.Url">
+      <summary>
+            The URL to the title on the specified wiki site.
+            </summary>
+    </member>
+    <member name="T:WikiClientLibrary.Wikibase.EntitySiteLinkCollection">
+      <summary>
+        <markup>
+          <include item="SMCMissingTag">
+            <parameter>summary</parameter>
+            <parameter>T:WikiClientLibrary.Wikibase.EntitySiteLinkCollection</parameter>
+          </include>
+        </markup>
+      </summary>
+    </member>
+    <member name="M:WikiClientLibrary.Wikibase.EntitySiteLinkCollection.#ctor">
+      <summary>
+        <markup>
+          <include item="SMCAutoDocConstructor">
+            <parameter>WikiClientLibrary.Wikibase.EntitySiteLinkCollection</parameter>
+          </include>
+        </markup>
+      </summary>
+    </member>
+    <member name="M:WikiClientLibrary.Wikibase.EntitySiteLinkCollection.#ctor(System.Collections.Generic.IEnumerable{WikiClientLibrary.Wikibase.EntitySiteLink})">
+      <summary>
+        <markup>
+          <include item="SMCAutoDocConstructor">
+            <parameter>WikiClientLibrary.Wikibase.EntitySiteLinkCollection</parameter>
+          </include>
+        </markup>
+      </summary>
+      <param name="items">
+        <markup>
+          <include item="SMCMissingParamTag">
+            <parameter>param</parameter>
+            <parameter>items</parameter>
+            <parameter>M:WikiClientLibrary.Wikibase.EntitySiteLinkCollection.#ctor(System.Collections.Generic.IEnumerable{WikiClientLibrary.Wikibase.EntitySiteLink})</parameter>
+          </include>
+        </markup>
+      </param>
+    </member>
     <member name="T:WikiClientLibrary.Wikibase.EntityType">
       <summary>
             Wikibase entity types.
@@ -591,6 +898,68 @@
             A Wikibase property, usually having the prefix P and in <c>Property</c> namespace.
             </summary>
     </member>
+    <member name="T:WikiClientLibrary.Wikibase.Snak">
+      <summary>
+            Represents a "snak", i.e. a pair of property and value.
+            </summary>
+    </member>
+    <member name="M:WikiClientLibrary.Wikibase.Snak.#ctor(System.String)">
+      <summary>
+            Initializes a snak with specified property ID and empty value.
+            </summary>
+      <param name="propertyId">The property id.</param>
+      <exception cref="T:System.ArgumentNullException">
+        <paramref name="propertyId" /> is <c>null</c>.</exception>
+    </member>
+    <member name="M:WikiClientLibrary.Wikibase.Snak.#ctor(System.String,System.Object,WikiClientLibrary.Wikibase.DataTypes.WikibaseDataType)">
+      <summary>
+            Initializes a snak with specified property ID and data value.
+            </summary>
+      <param name="propertyId">The property id.</param>
+      <param name="dataValue">The data value of the property.</param>
+      <param name="dataType">The data value type.</param>
+      <exception cref="T:System.ArgumentNullException">
+        <paramref name="propertyId" /> or <paramref name="dataType" /> is <c>null</c>.</exception>
+    </member>
+    <member name="M:WikiClientLibrary.Wikibase.Snak.#ctor(WikiClientLibrary.Wikibase.Entity,System.Object)">
+      <summary>
+            Initializes a snak with specified property and data value.
+            </summary>
+      <param name="property">The property. It should have valid <see cref="P:WikiClientLibrary.Wikibase.Entity.Id" /> and <see cref="P:WikiClientLibrary.Wikibase.Entity.DataType" />.</param>
+      <param name="dataValue">The data value of the property.</param>
+      <exception cref="T:System.ArgumentNullException">
+        <paramref name="property" /> is <c>null</c>.</exception>
+      <exception cref="T:System.ArgumentException">
+        <paramref name="property" /> is not Wikibase property, or does not contain required information.</exception>
+    </member>
+    <member name="P:WikiClientLibrary.Wikibase.Snak.DataType">
+      <summary>Data value type.</summary>
+    </member>
+    <member name="P:WikiClientLibrary.Wikibase.Snak.DataValue">
+      <summary>Parsed value of <c>datavalue</c> node.</summary>
+    </member>
+    <member name="P:WikiClientLibrary.Wikibase.Snak.Hash">
+      <summary>Snak hash.</summary>
+    </member>
+    <member name="P:WikiClientLibrary.Wikibase.Snak.PropertyId">
+      <summary>Property ID, with "P" prefix.</summary>
+    </member>
+    <member name="P:WikiClientLibrary.Wikibase.Snak.RawDataValue">
+      <summary>Raw JSON value of <c>datavalue</c> node.</summary>
+    </member>
+    <member name="P:WikiClientLibrary.Wikibase.Snak.SnakType">
+      <summary>Snak type.</summary>
+    </member>
+    <member name="M:WikiClientLibrary.Wikibase.Snak.ToString">
+      <summary>
+        <markup>
+          <include item="SMCMissingTag">
+            <parameter>summary</parameter>
+            <parameter>M:WikiClientLibrary.Wikibase.Snak.ToString</parameter>
+          </include>
+        </markup>
+      </summary>
+    </member>
     <member name="T:WikiClientLibrary.Wikibase.SnakType">
       <summary>
         <markup>
@@ -609,360 +978,6 @@
     </member>
     <member name="F:WikiClientLibrary.Wikibase.SnakType.NoValue">
       <summary>No value.</summary>
-    </member>
-    <member name="T:WikiClientLibrary.Wikibase.WbClaimCollection">
-      <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>T:WikiClientLibrary.Wikibase.WbClaimCollection</parameter>
-          </include>
-        </markup>
-      </summary>
-    </member>
-    <member name="M:WikiClientLibrary.Wikibase.WbClaimCollection.#ctor">
-      <summary>
-        <markup>
-          <include item="SMCAutoDocConstructor">
-            <parameter>WikiClientLibrary.Wikibase.WbClaimCollection</parameter>
-          </include>
-        </markup>
-      </summary>
-    </member>
-    <member name="M:WikiClientLibrary.Wikibase.WbClaimCollection.#ctor(System.Collections.Generic.IEnumerable{WikiClientLibrary.Wikibase.Claim})">
-      <summary>
-        <markup>
-          <include item="SMCAutoDocConstructor">
-            <parameter>WikiClientLibrary.Wikibase.WbClaimCollection</parameter>
-          </include>
-        </markup>
-      </summary>
-      <param name="items">
-        <markup>
-          <include item="SMCMissingParamTag">
-            <parameter>param</parameter>
-            <parameter>items</parameter>
-            <parameter>M:WikiClientLibrary.Wikibase.WbClaimCollection.#ctor(System.Collections.Generic.IEnumerable{WikiClientLibrary.Wikibase.Claim})</parameter>
-          </include>
-        </markup>
-      </param>
-    </member>
-    <member name="T:WikiClientLibrary.Wikibase.WbClaimReference">
-      <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>T:WikiClientLibrary.Wikibase.WbClaimReference</parameter>
-          </include>
-        </markup>
-      </summary>
-    </member>
-    <member name="M:WikiClientLibrary.Wikibase.WbClaimReference.#ctor">
-      <summary>
-        <markup>
-          <include item="SMCAutoDocConstructor">
-            <parameter>WikiClientLibrary.Wikibase.WbClaimReference</parameter>
-          </include>
-        </markup>
-      </summary>
-    </member>
-    <member name="M:WikiClientLibrary.Wikibase.WbClaimReference.#ctor(System.Collections.Generic.IEnumerable{WikiClientLibrary.Wikibase.WbSnak})">
-      <summary>
-        <markup>
-          <include item="SMCAutoDocConstructor">
-            <parameter>WikiClientLibrary.Wikibase.WbClaimReference</parameter>
-          </include>
-        </markup>
-      </summary>
-      <param name="snaks">
-        <markup>
-          <include item="SMCMissingParamTag">
-            <parameter>param</parameter>
-            <parameter>snaks</parameter>
-            <parameter>M:WikiClientLibrary.Wikibase.WbClaimReference.#ctor(System.Collections.Generic.IEnumerable{WikiClientLibrary.Wikibase.WbSnak})</parameter>
-          </include>
-        </markup>
-      </param>
-    </member>
-    <member name="M:WikiClientLibrary.Wikibase.WbClaimReference.#ctor(WikiClientLibrary.Wikibase.WbSnak[])">
-      <summary>
-        <markup>
-          <include item="SMCAutoDocConstructor">
-            <parameter>WikiClientLibrary.Wikibase.WbClaimReference</parameter>
-          </include>
-        </markup>
-      </summary>
-      <param name="snaks">
-        <markup>
-          <include item="SMCMissingParamTag">
-            <parameter>param</parameter>
-            <parameter>snaks</parameter>
-            <parameter>M:WikiClientLibrary.Wikibase.WbClaimReference.#ctor(WikiClientLibrary.Wikibase.WbSnak[])</parameter>
-          </include>
-        </markup>
-      </param>
-    </member>
-    <member name="P:WikiClientLibrary.Wikibase.WbClaimReference.Hash">
-      <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>P:WikiClientLibrary.Wikibase.WbClaimReference.Hash</parameter>
-          </include>
-        </markup>
-      </summary>
-    </member>
-    <member name="P:WikiClientLibrary.Wikibase.WbClaimReference.Snaks">
-      <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>P:WikiClientLibrary.Wikibase.WbClaimReference.Snaks</parameter>
-          </include>
-        </markup>
-      </summary>
-    </member>
-    <member name="T:WikiClientLibrary.Wikibase.WbEntityEditEntryState">
-      <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>T:WikiClientLibrary.Wikibase.WbEntityEditEntryState</parameter>
-          </include>
-        </markup>
-      </summary>
-    </member>
-    <member name="F:WikiClientLibrary.Wikibase.WbEntityEditEntryState.Updated">
-      <summary>
-            Either the entry is a new item, or the value inside the item has been changed.
-            </summary>
-    </member>
-    <member name="F:WikiClientLibrary.Wikibase.WbEntityEditEntryState.Removed">
-      <summary>
-            The entry represents an item to be removed.
-            </summary>
-    </member>
-    <member name="T:WikiClientLibrary.Wikibase.WbEntitySiteLink">
-      <summary>
-            Represents a corresponding link for an entity to an external wiki site.
-            </summary>
-    </member>
-    <member name="M:WikiClientLibrary.Wikibase.WbEntitySiteLink.#ctor(System.String,System.String)">
-      <summary>
-        <markup>
-          <include item="SMCAutoDocConstructor">
-            <parameter>WikiClientLibrary.Wikibase.WbEntitySiteLink</parameter>
-          </include>
-        </markup>
-      </summary>
-      <param name="site">
-        <markup>
-          <include item="SMCMissingParamTag">
-            <parameter>param</parameter>
-            <parameter>site</parameter>
-            <parameter>M:WikiClientLibrary.Wikibase.WbEntitySiteLink.#ctor(System.String,System.String)</parameter>
-          </include>
-        </markup>
-      </param>
-      <param name="title">
-        <markup>
-          <include item="SMCMissingParamTag">
-            <parameter>param</parameter>
-            <parameter>title</parameter>
-            <parameter>M:WikiClientLibrary.Wikibase.WbEntitySiteLink.#ctor(System.String,System.String)</parameter>
-          </include>
-        </markup>
-      </param>
-    </member>
-    <member name="M:WikiClientLibrary.Wikibase.WbEntitySiteLink.#ctor(System.String,System.String,System.Collections.Generic.IList{System.String})">
-      <summary>
-        <markup>
-          <include item="SMCAutoDocConstructor">
-            <parameter>WikiClientLibrary.Wikibase.WbEntitySiteLink</parameter>
-          </include>
-        </markup>
-      </summary>
-      <param name="site">
-        <markup>
-          <include item="SMCMissingParamTag">
-            <parameter>param</parameter>
-            <parameter>site</parameter>
-            <parameter>M:WikiClientLibrary.Wikibase.WbEntitySiteLink.#ctor(System.String,System.String,System.Collections.Generic.IList{System.String})</parameter>
-          </include>
-        </markup>
-      </param>
-      <param name="title">
-        <markup>
-          <include item="SMCMissingParamTag">
-            <parameter>param</parameter>
-            <parameter>title</parameter>
-            <parameter>M:WikiClientLibrary.Wikibase.WbEntitySiteLink.#ctor(System.String,System.String,System.Collections.Generic.IList{System.String})</parameter>
-          </include>
-        </markup>
-      </param>
-      <param name="badges">
-        <markup>
-          <include item="SMCMissingParamTag">
-            <parameter>param</parameter>
-            <parameter>badges</parameter>
-            <parameter>M:WikiClientLibrary.Wikibase.WbEntitySiteLink.#ctor(System.String,System.String,System.Collections.Generic.IList{System.String})</parameter>
-          </include>
-        </markup>
-      </param>
-    </member>
-    <member name="M:WikiClientLibrary.Wikibase.WbEntitySiteLink.#ctor(System.String,System.String,System.Collections.Generic.IList{System.String},System.String)">
-      <summary>
-        <markup>
-          <include item="SMCAutoDocConstructor">
-            <parameter>WikiClientLibrary.Wikibase.WbEntitySiteLink</parameter>
-          </include>
-        </markup>
-      </summary>
-      <param name="site">
-        <markup>
-          <include item="SMCMissingParamTag">
-            <parameter>param</parameter>
-            <parameter>site</parameter>
-            <parameter>M:WikiClientLibrary.Wikibase.WbEntitySiteLink.#ctor(System.String,System.String,System.Collections.Generic.IList{System.String},System.String)</parameter>
-          </include>
-        </markup>
-      </param>
-      <param name="title">
-        <markup>
-          <include item="SMCMissingParamTag">
-            <parameter>param</parameter>
-            <parameter>title</parameter>
-            <parameter>M:WikiClientLibrary.Wikibase.WbEntitySiteLink.#ctor(System.String,System.String,System.Collections.Generic.IList{System.String},System.String)</parameter>
-          </include>
-        </markup>
-      </param>
-      <param name="badges">
-        <markup>
-          <include item="SMCMissingParamTag">
-            <parameter>param</parameter>
-            <parameter>badges</parameter>
-            <parameter>M:WikiClientLibrary.Wikibase.WbEntitySiteLink.#ctor(System.String,System.String,System.Collections.Generic.IList{System.String},System.String)</parameter>
-          </include>
-        </markup>
-      </param>
-      <param name="url">
-        <markup>
-          <include item="SMCMissingParamTag">
-            <parameter>param</parameter>
-            <parameter>url</parameter>
-            <parameter>M:WikiClientLibrary.Wikibase.WbEntitySiteLink.#ctor(System.String,System.String,System.Collections.Generic.IList{System.String},System.String)</parameter>
-          </include>
-        </markup>
-      </param>
-    </member>
-    <member name="P:WikiClientLibrary.Wikibase.WbEntitySiteLink.Badges">
-      <summary>
-            The badges for the title on the specified wiki site.
-            </summary>
-    </member>
-    <member name="P:WikiClientLibrary.Wikibase.WbEntitySiteLink.Site">
-      <summary>
-            The site name.
-            </summary>
-    </member>
-    <member name="P:WikiClientLibrary.Wikibase.WbEntitySiteLink.Title">
-      <summary>
-            The local title on the specified wiki site.
-            </summary>
-    </member>
-    <member name="P:WikiClientLibrary.Wikibase.WbEntitySiteLink.Url">
-      <summary>
-            The URL to the title on the specified wiki site.
-            </summary>
-    </member>
-    <member name="T:WikiClientLibrary.Wikibase.WbEntitySiteLinkCollection">
-      <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>T:WikiClientLibrary.Wikibase.WbEntitySiteLinkCollection</parameter>
-          </include>
-        </markup>
-      </summary>
-    </member>
-    <member name="M:WikiClientLibrary.Wikibase.WbEntitySiteLinkCollection.#ctor">
-      <summary>
-        <markup>
-          <include item="SMCAutoDocConstructor">
-            <parameter>WikiClientLibrary.Wikibase.WbEntitySiteLinkCollection</parameter>
-          </include>
-        </markup>
-      </summary>
-    </member>
-    <member name="M:WikiClientLibrary.Wikibase.WbEntitySiteLinkCollection.#ctor(System.Collections.Generic.IEnumerable{WikiClientLibrary.Wikibase.WbEntitySiteLink})">
-      <summary>
-        <markup>
-          <include item="SMCAutoDocConstructor">
-            <parameter>WikiClientLibrary.Wikibase.WbEntitySiteLinkCollection</parameter>
-          </include>
-        </markup>
-      </summary>
-      <param name="items">
-        <markup>
-          <include item="SMCMissingParamTag">
-            <parameter>param</parameter>
-            <parameter>items</parameter>
-            <parameter>M:WikiClientLibrary.Wikibase.WbEntitySiteLinkCollection.#ctor(System.Collections.Generic.IEnumerable{WikiClientLibrary.Wikibase.WbEntitySiteLink})</parameter>
-          </include>
-        </markup>
-      </param>
-    </member>
-    <member name="T:WikiClientLibrary.Wikibase.WbSnak">
-      <summary>
-            Represents a "snak", i.e. a pair of property and value.
-            </summary>
-    </member>
-    <member name="M:WikiClientLibrary.Wikibase.WbSnak.#ctor(System.String)">
-      <summary>
-            Initializes a snak with specified property ID and empty value.
-            </summary>
-      <param name="propertyId">The property id.</param>
-      <exception cref="T:System.ArgumentNullException">
-        <paramref name="propertyId" /> is <c>null</c>.</exception>
-    </member>
-    <member name="M:WikiClientLibrary.Wikibase.WbSnak.#ctor(System.String,System.Object,WikiClientLibrary.Wikibase.DataTypes.WikibaseDataType)">
-      <summary>
-            Initializes a snak with specified property ID and data value.
-            </summary>
-      <param name="propertyId">The property id.</param>
-      <param name="dataValue">The data value of the property.</param>
-      <param name="dataType">The data value type.</param>
-      <exception cref="T:System.ArgumentNullException">
-        <paramref name="propertyId" /> or <paramref name="dataType" /> is <c>null</c>.</exception>
-    </member>
-    <member name="M:WikiClientLibrary.Wikibase.WbSnak.#ctor(WikiClientLibrary.Wikibase.Entity,System.Object)">
-      <summary>
-            Initializes a snak with specified property and data value.
-            </summary>
-      <param name="property">The property. It should have valid <see cref="P:WikiClientLibrary.Wikibase.Entity.Id" /> and <see cref="P:WikiClientLibrary.Wikibase.Entity.DataType" />.</param>
-      <param name="dataValue">The data value of the property.</param>
-      <exception cref="T:System.ArgumentNullException">
-        <paramref name="property" /> is <c>null</c>.</exception>
-      <exception cref="T:System.ArgumentException">
-        <paramref name="property" /> is not Wikibase property, or does not contain required information.</exception>
-    </member>
-    <member name="P:WikiClientLibrary.Wikibase.WbSnak.DataType">
-      <summary>Data value type.</summary>
-    </member>
-    <member name="P:WikiClientLibrary.Wikibase.WbSnak.DataValue">
-      <summary>Parsed value of <c>datavalue</c> node.</summary>
-    </member>
-    <member name="P:WikiClientLibrary.Wikibase.WbSnak.Hash">
-      <summary>Snak hash.</summary>
-    </member>
-    <member name="P:WikiClientLibrary.Wikibase.WbSnak.PropertyId">
-      <summary>Property ID, with "P" prefix.</summary>
-    </member>
-    <member name="P:WikiClientLibrary.Wikibase.WbSnak.RawDataValue">
-      <summary>Raw JSON value of <c>datavalue</c> node.</summary>
-    </member>
-    <member name="P:WikiClientLibrary.Wikibase.WbSnak.SnakType">
-      <summary>Snak type.</summary>
     </member>
     <member name="T:WikiClientLibrary.Wikibase.DataTypes.BuiltInDataTypes">
       <summary>
@@ -2371,22 +2386,9 @@
     </member>
     <member name="M:WikiClientLibrary.Wikibase.DataTypes.WbUri.Get(System.String)">
       <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>M:WikiClientLibrary.Wikibase.DataTypes.WbUri.Get(System.String)</parameter>
-          </include>
-        </markup>
-      </summary>
-      <param name="uri">
-        <markup>
-          <include item="SMCMissingParamTag">
-            <parameter>param</parameter>
-            <parameter>uri</parameter>
-            <parameter>M:WikiClientLibrary.Wikibase.DataTypes.WbUri.Get(System.String)</parameter>
-          </include>
-        </markup>
-      </param>
+            Gets an atomic instance of <see cref="T:WikiClientLibrary.Wikibase.DataTypes.WbUri" /> by URI.
+            </summary>
+      <param name="uri">URI of the entity.</param>
     </member>
     <member name="M:WikiClientLibrary.Wikibase.DataTypes.WbUri.GetHashCode">
       <summary>
