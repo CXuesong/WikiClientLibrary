@@ -225,7 +225,7 @@ namespace WikiClientLibrary.Pages
             // If the Disambiguator extension is loaded, use it
             if (Site.Extensions.Contains("Disambiguator"))
             {
-                var group = GetPropertyGroup<PagePropertyPropertyGroup>();
+                var group = GetPropertyGroup<PagePropertiesPropertyGroup>();
                 if (group != null)
                     return group.PageProperties.Disambiguation;
             }
@@ -294,7 +294,7 @@ namespace WikiClientLibrary.Pages
         /// </summary>
         /// <param name="jpage">query.pages.xxx property value.</param>
         /// <param name="options"></param>
-        internal void LoadFromJson(JObject jpage, IWikiPageQueryParameters options)
+        internal void LoadFromJson(JObject jpage, IWikiPageQueryProvider options)
         {
             Debug.Assert(jpage != null);
             Debug.Assert(options != null);
@@ -321,14 +321,14 @@ namespace WikiClientLibrary.Pages
         protected virtual void OnLoadPageInfo(JObject jpage)
         {
             // Check if the client has requested for revision content…
-            LastRevision = GetPropertyGroup<RevisionPropertyGroup>()?.LatestRevision;
+            LastRevision = GetPropertyGroup<RevisionsPropertyGroup>()?.LatestRevision;
             if (LastRevision?.Content != null) Content = LastRevision.Content;
             pageInfo = GetPropertyGroup<PageInfoPropertyGroup>();
             LastRevisionId = pageInfo?.LastRevisionId ?? 0;
             ContentModel = pageInfo?.ContentModel;
         }
 
-        /// <inheritdoc cref="RefreshAsync(IWikiPageQueryParameters, CancellationToken)"/>
+        /// <inheritdoc cref="RefreshAsync(IWikiPageQueryProvider, CancellationToken)"/>
         /// <summary>
         /// Fetch information for the page.
         /// This overload will not fetch content.
@@ -341,19 +341,19 @@ namespace WikiClientLibrary.Pages
             return RefreshAsync(PageQueryOptions.None, CancellationToken.None);
         }
 
-        /// <inheritdoc cref="RefreshAsync(IWikiPageQueryParameters, CancellationToken)"/>
-        public Task RefreshAsync(IWikiPageQueryParameters options)
+        /// <inheritdoc cref="RefreshAsync(IWikiPageQueryProvider, CancellationToken)"/>
+        public Task RefreshAsync(IWikiPageQueryProvider options)
         {
             return RefreshAsync(options, CancellationToken.None);
         }
 
-        /// <inheritdoc cref="RefreshAsync(IWikiPageQueryParameters, CancellationToken)"/>
+        /// <inheritdoc cref="RefreshAsync(IWikiPageQueryProvider, CancellationToken)"/>
         public Task RefreshAsync(PageQueryOptions options)
         {
             return RefreshAsync(options, CancellationToken.None);
         }
 
-        /// <inheritdoc cref="RefreshAsync(IWikiPageQueryParameters, CancellationToken)"/>
+        /// <inheritdoc cref="RefreshAsync(IWikiPageQueryProvider, CancellationToken)"/>
         public Task RefreshAsync(PageQueryOptions options, CancellationToken cancellationToken)
         {
             return RefreshAsync(MediaWikiHelper.GetQueryParams(options), cancellationToken);
@@ -368,7 +368,7 @@ namespace WikiClientLibrary.Pages
         /// For fetching multiple pages at one time, see <see cref="WikiPageExtensions.RefreshAsync(IEnumerable{WikiPage}, PageQueryOptions)"/>.
         /// </remarks>
         /// <exception cref="InvalidOperationException">Circular redirect detected when resolving redirects.</exception>
-        public Task RefreshAsync(IWikiPageQueryParameters options, CancellationToken cancellationToken)
+        public Task RefreshAsync(IWikiPageQueryProvider options, CancellationToken cancellationToken)
         {
             return RequestHelper.RefreshPagesAsync(new[] { this }, options, cancellationToken);
         }

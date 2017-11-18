@@ -11,7 +11,7 @@ namespace WikiClientLibrary.Pages.Queries.Properties
     /// <c>action=query&amp;prop=pageimages</c>
     /// (<a href="https://www.mediawiki.org/wiki/Special:MyLanguage/Extension:PageImages#API">mw:Extension:PageImages#API</a>)
     /// </summary>
-    public class PageImagePropertyProvider : WikiPagePropertyProvider<PageImagePropertyGroup>
+    public class PageImagesPropertyProvider : WikiPagePropertyProvider<PageImagesPropertyGroup>
     {
 
         /// <summary>
@@ -53,10 +53,10 @@ namespace WikiClientLibrary.Pages.Queries.Properties
         public override string PropertyName => "pageimages";
 
         /// <inheritdoc />
-        public override PageImagePropertyGroup ParsePropertyGroup(JObject json)
+        public override PageImagesPropertyGroup ParsePropertyGroup(JObject json)
         {
             if (json == null) throw new ArgumentNullException(nameof(json));
-            return PageImagePropertyGroup.Create(json);
+            return PageImagesPropertyGroup.Create(json);
         }
 
     }
@@ -115,26 +115,26 @@ namespace WikiClientLibrary.Pages.Queries.Properties
         }
     }
 
-    public class PageImagePropertyGroup : WikiPagePropertyGroup
+    public class PageImagesPropertyGroup : WikiPagePropertyGroup
     {
 
-        private static readonly PageImagePropertyGroup Empty = new PageImagePropertyGroup();
+        private static readonly PageImagesPropertyGroup Empty = new PageImagesPropertyGroup();
 
-        internal static PageImagePropertyGroup Create(JToken jpage)
+        internal static PageImagesPropertyGroup Create(JToken jpage)
         {
             if (jpage["original"] == null && jpage["thumbnail"] == null && jpage["pageimage"] == null)
                 return Empty;
-            return new PageImagePropertyGroup(jpage);
+            return new PageImagesPropertyGroup(jpage);
         }
 
-        private PageImagePropertyGroup()
+        private PageImagesPropertyGroup()
         {
             OriginalImage = PageImageInfo.Empty;
             ThumbnailImage = PageImageInfo.Empty;
             ImageTitle = null;
         }
 
-        private PageImagePropertyGroup(JToken jpage)
+        private PageImagesPropertyGroup(JToken jpage)
         {
             OriginalImage = jpage["original"] != null ? ParseImageInfo(jpage["original"]) : PageImageInfo.Empty;
             ThumbnailImage = jpage["thumbnail"] != null ? ParseImageInfo(jpage["thumbnail"]) : PageImageInfo.Empty;

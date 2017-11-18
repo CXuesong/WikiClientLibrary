@@ -10,7 +10,7 @@ namespace WikiClientLibrary.Pages.Queries.Properties
     /// <c>action=query&amp;prop=extracts</c>
     /// (<a href="https://www.mediawiki.org/wiki/Extension:TextExtracts#API">mw:Extension:TextExtracts#API</a>)
     /// </summary>
-    public class ExtractPropertyProvider : WikiPagePropertyProvider<ExtractPropertyGroup>
+    public class ExtractsPropertyProvider : WikiPagePropertyProvider<ExtractsPropertyGroup>
     {
 
         /// <summary>
@@ -68,28 +68,30 @@ namespace WikiClientLibrary.Pages.Queries.Properties
         public override string PropertyName => "extracts";
 
         /// <inheritdoc />
-        public override ExtractPropertyGroup ParsePropertyGroup(JObject json)
+        public override ExtractsPropertyGroup ParsePropertyGroup(JObject json)
         {
             if (json == null) throw new ArgumentNullException(nameof(json));
-            return ExtractPropertyGroup.Create((string)json["extract"]);
+            var jextract = json["extract"];
+            if (jextract == null) return null;
+            return ExtractsPropertyGroup.Create((string)jextract);
         }
 
     }
 
-    public class ExtractPropertyGroup : WikiPagePropertyGroup
+    public class ExtractsPropertyGroup : WikiPagePropertyGroup
     {
 
-        private static readonly ExtractPropertyGroup Null = new ExtractPropertyGroup(null);
-        private static readonly ExtractPropertyGroup Empty = new ExtractPropertyGroup("");
+        private static readonly ExtractsPropertyGroup Null = new ExtractsPropertyGroup(null);
+        private static readonly ExtractsPropertyGroup Empty = new ExtractsPropertyGroup("");
 
-        internal static ExtractPropertyGroup Create(string extract)
+        internal static ExtractsPropertyGroup Create(string extract)
         {
             if (extract == null) return Null;
             if (extract.Length == 0) return Empty;
-            return new ExtractPropertyGroup(extract);
+            return new ExtractsPropertyGroup(extract);
         }
 
-        private ExtractPropertyGroup(string extract)
+        private ExtractsPropertyGroup(string extract)
         {
             Extract = extract;
         }

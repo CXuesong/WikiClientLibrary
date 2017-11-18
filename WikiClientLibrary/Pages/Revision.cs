@@ -34,25 +34,25 @@ namespace WikiClientLibrary.Pages
             return FetchRevisionsAsync(site, new[] {revisionId}, PageQueryOptions.FetchContent).First();
         }
 
-        /// <inheritdoc cref="FetchRevisionsAsync(WikiSite,IEnumerable{int},IWikiPageQueryParameters,CancellationToken)"/>
+        /// <inheritdoc cref="FetchRevisionsAsync(WikiSite,IEnumerable{int},IWikiPageQueryProvider,CancellationToken)"/>
         public static IAsyncEnumerable<Revision> FetchRevisionsAsync(WikiSite site, params int[] revisionIds)
         {
             return FetchRevisionsAsync(site, revisionIds, PageQueryOptions.FetchContent, CancellationToken.None);
         }
 
-        /// <inheritdoc cref="FetchRevisionsAsync(WikiSite,IEnumerable{int},IWikiPageQueryParameters,CancellationToken)"/>
+        /// <inheritdoc cref="FetchRevisionsAsync(WikiSite,IEnumerable{int},IWikiPageQueryProvider,CancellationToken)"/>
         public static IAsyncEnumerable<Revision> FetchRevisionsAsync(WikiSite site, IEnumerable<int> revisionIds)
         {
             return FetchRevisionsAsync(site, revisionIds, PageQueryOptions.FetchContent, CancellationToken.None);
         }
 
-        /// <inheritdoc cref="FetchRevisionsAsync(WikiSite,IEnumerable{int},IWikiPageQueryParameters,CancellationToken)"/>
+        /// <inheritdoc cref="FetchRevisionsAsync(WikiSite,IEnumerable{int},IWikiPageQueryProvider,CancellationToken)"/>
         public static IAsyncEnumerable<Revision> FetchRevisionsAsync(WikiSite site, IEnumerable<int> revisionIds, PageQueryOptions options)
         {
             return FetchRevisionsAsync(site, revisionIds, options, CancellationToken.None);
         }
 
-        /// <inheritdoc cref="FetchRevisionsAsync(WikiSite,IEnumerable{int},IWikiPageQueryParameters,CancellationToken)"/>
+        /// <inheritdoc cref="FetchRevisionsAsync(WikiSite,IEnumerable{int},IWikiPageQueryProvider,CancellationToken)"/>
         public static IAsyncEnumerable<Revision> FetchRevisionsAsync(WikiSite site, IEnumerable<int> revisionIds, PageQueryOptions options, CancellationToken cancellationToken)
         {
             return FetchRevisionsAsync(site, revisionIds, MediaWikiHelper.GetQueryParams(options), cancellationToken);
@@ -76,7 +76,7 @@ namespace WikiClientLibrary.Pages
         /// <para>If there's invalid revision id in <paramref name="revisionIds"/>, an <see cref="ArgumentException"/>
         /// will be thrown while enumerating.</para>
         /// </remarks>
-        public static IAsyncEnumerable<Revision> FetchRevisionsAsync(WikiSite site, IEnumerable<int> revisionIds, IWikiPageQueryParameters options, CancellationToken cancellationToken)
+        public static IAsyncEnumerable<Revision> FetchRevisionsAsync(WikiSite site, IEnumerable<int> revisionIds, IWikiPageQueryProvider options, CancellationToken cancellationToken)
         {
             if (site == null) throw new ArgumentNullException(nameof(site));
             if (revisionIds == null) throw new ArgumentNullException(nameof(revisionIds));

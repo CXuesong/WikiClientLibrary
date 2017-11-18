@@ -90,7 +90,7 @@ namespace WikiClientLibrary.Wikia
             });
         }
 
-        private static readonly RevisionPropertyProvider postRevisionProvider = new RevisionPropertyProvider {FetchContent = true};
+        private static readonly RevisionsPropertyProvider postRevisionsProvider = new RevisionsPropertyProvider {FetchContent = true};
 
         public static async Task RefreshPostsAsync(IEnumerable<Post> posts,
             PostQueryOptions options, CancellationToken cancellationToken)
@@ -122,7 +122,7 @@ namespace WikiClientLibrary.Wikia
                             pageids = string.Join("|", partition.Select(p => p.Id)),
                             prop = "revisions",
                             rvlimit = partition.Count == 1 ? (int?)1 : null,
-                            rvprop = postRevisionProvider.EnumParameters().First().Value
+                            rvprop = postRevisionsProvider.EnumParameters().First().Value
                         }), cancellationToken);
                         // Fetch the first revisions, when needed, to determine author.
                         Dictionary<int, Revision> firstRevisionDict = null;
@@ -141,7 +141,7 @@ namespace WikiClientLibrary.Wikia
                                     prop = "revisions",
                                     rvdir = "newer",
                                     rvlimit = 1,
-                                    rvprop = postRevisionProvider.EnumParameters().First().Value
+                                    rvprop = postRevisionsProvider.EnumParameters().First().Value
                                 }), cancellationToken);
                                 var jpage = jresult["query"]["pages"][post.Id.ToString(CultureInfo.InvariantCulture)];
                                 if (jpage["missing"] != null)

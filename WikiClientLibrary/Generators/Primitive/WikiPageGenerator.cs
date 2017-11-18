@@ -25,7 +25,7 @@ namespace WikiClientLibrary.Generators.Primitive
         /// <remarks>In most cases, the whole sequence will be very long. To take only the top <c>n</c> results
         /// from the sequence, chain the returned <see cref="IAsyncEnumerable{T}"/> with <see cref="AsyncEnumerable.Take{TSource}"/>
         /// extension method.</remarks>
-        IAsyncEnumerable<T> EnumPagesAsync(IWikiPageQueryParameters options);
+        IAsyncEnumerable<T> EnumPagesAsync(IWikiPageQueryProvider options);
 
     }
 
@@ -65,10 +65,10 @@ namespace WikiClientLibrary.Generators.Primitive
         }
 
         /// <summary>
-        /// When using the default implementation of <see cref="EnumPagesAsync(WikiClientLibrary.Pages.Queries.IWikiPageQueryParameters)"/>,
+        /// When using the default implementation of <see cref="EnumPagesAsync(IWikiPageQueryProvider)"/>,
         /// determines whether to remove duplicate page results generated from generator results.
         /// </summary>
-        /// <remarks>If the derived class has overridden <see cref="EnumPagesAsync(WikiClientLibrary.Pages.Queries.IWikiPageQueryParameters)"/>,
+        /// <remarks>If the derived class has overridden <see cref="EnumPagesAsync(IWikiPageQueryProvider)"/>,
         /// the value of this property might be ignored.</remarks>
         protected virtual bool DistinctGeneratedPages => false;
 
@@ -92,7 +92,7 @@ namespace WikiClientLibrary.Generators.Primitive
         /// Asynchornously generates the sequence of pages.
         /// </summary>
         /// <param name="options">Options when querying for the pages.</param>
-        public virtual IAsyncEnumerable<TPage> EnumPagesAsync(IWikiPageQueryParameters options)
+        public virtual IAsyncEnumerable<TPage> EnumPagesAsync(IWikiPageQueryProvider options)
         {
             var queryParams = options.EnumParameters().ToDictionary();
             queryParams.Add("generator", GeneratorName);

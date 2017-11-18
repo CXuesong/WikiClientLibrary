@@ -86,15 +86,15 @@ namespace UnitTestProject1.Tests
         {
             var site = await WpTest2SiteAsync;
             var page = new WikiPage(site, "France");
-            await page.RefreshAsync(new WikiPageQueryParameters
+            await page.RefreshAsync(new WikiPageQueryProvider
             {
                 Properties =
                 {
-                    new GeoCoordinatePropertyProvider()
+                    new GeoCoordinatesPropertyProvider()
                 }
             });
             ShallowTrace(page);
-            var coordinate = page.GetPropertyGroup<GeoCoordinatePropertyGroup>();
+            var coordinate = page.GetPropertyGroup<GeoCoordinatesPropertyGroup>();
             Assert.False(coordinate.PrimaryCoordinate.IsEmpty);
             Assert.Equal(47, coordinate.PrimaryCoordinate.Latitude, 12);
             Assert.Equal(2, coordinate.PrimaryCoordinate.Longitude, 12);
@@ -106,11 +106,11 @@ namespace UnitTestProject1.Tests
         {
             var site = await WpLzhSiteAsync;
             var page = new WikiPage(site, "莎拉伯恩哈特");
-            await page.RefreshAsync(new WikiPageQueryParameters
+            await page.RefreshAsync(new WikiPageQueryProvider
             {
                 Properties =
                 {
-                    new ExtractPropertyProvider
+                    new ExtractsPropertyProvider
                     {
                         AsPlainText = true,
                         IntroductionOnly = true,
@@ -119,7 +119,7 @@ namespace UnitTestProject1.Tests
                 }
             });
             ShallowTrace(page);
-            Assert.Equal("莎拉·伯恩哈特，一八四四年生，法國巴黎人也。", page.GetPropertyGroup<ExtractPropertyGroup>().Extract);
+            Assert.Equal("莎拉·伯恩哈特，一八四四年生，法國巴黎人也。", page.GetPropertyGroup<ExtractsPropertyGroup>().Extract);
         }
 
         [Fact]

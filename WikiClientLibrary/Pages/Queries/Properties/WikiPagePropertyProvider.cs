@@ -5,6 +5,13 @@ using Newtonsoft.Json.Linq;
 namespace WikiClientLibrary.Pages.Queries.Properties
 {
 
+    /// <summary>
+    /// Used in client-side to implement different <a href="https://www.mediawiki.org/wiki/API:Query">query</a> modules
+    /// by providing extra parameters for <c>action=query</c> requests.
+    /// </summary>
+    /// <typeparam name="T">The type of property group that will be attached to every processed <see cref="WikiPage"/>.</typeparam>
+    /// <remarks>You can use <see cref="WikiPage.GetPropertyGroup{T}"/> to retrieve the property groups attached to a wiki page.</remarks>
+    /// <seealso cref="WikiPage.RefreshAsync(IWikiPageQueryProvider)"/>
     public interface IWikiPagePropertyProvider<out T> where T : IWikiPagePropertyGroup
     {
 
@@ -39,9 +46,14 @@ namespace WikiClientLibrary.Pages.Queries.Properties
         /// <exception cref="ArgumentNullException"><paramref name="json"/> is <c>null</c>.</exception>
         /// <returns>A property group instance, or <c>null</c> if no extra property group available.</returns>
         T ParsePropertyGroup(JObject json);
+
     }
 
-
+    /// <inheritdoc />
+    /// <summary>
+    /// Provides default implementation for <see cref="T:WikiClientLibrary.Pages.Queries.Properties.IWikiPagePropertyProvider`1" />.
+    /// </summary>
+    /// <typeparam name="T">The type of property group that will be attached to every processed <see cref="T:WikiClientLibrary.Pages.WikiPage" />.</typeparam>
     public abstract class WikiPagePropertyProvider<T> : IWikiPagePropertyProvider<T> where T : IWikiPagePropertyGroup
     {
         /// <inheritdoc />
@@ -54,8 +66,6 @@ namespace WikiClientLibrary.Pages.Queries.Properties
         }
 
         /// <inheritdoc />
-        /// <remarks>
-        /// </remarks>
         public abstract T ParsePropertyGroup(JObject json);
 
         /// <inheritdoc />

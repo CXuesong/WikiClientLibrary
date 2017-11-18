@@ -137,7 +137,7 @@ namespace WikiClientLibrary
         /// <summary>
         /// Refresh a sequence of pages.
         /// </summary>
-        public static async Task RefreshPagesAsync(IEnumerable<WikiPage> pages, IWikiPageQueryParameters options, CancellationToken cancellationToken)
+        public static async Task RefreshPagesAsync(IEnumerable<WikiPage> pages, IWikiPageQueryProvider options, CancellationToken cancellationToken)
         {
             if (pages == null) throw new ArgumentNullException(nameof(pages));
             // You can even fetch pages from different sites.
@@ -222,7 +222,7 @@ namespace WikiClientLibrary
         /// <remarks>
         /// <para>If there's invalid revision id in <paramref name="revIds"/>, an <see cref="ArgumentException"/> will be thrown while enumerating.</para>
         /// </remarks>
-        public static IAsyncEnumerable<Revision> FetchRevisionsAsync(WikiSite site, IEnumerable<int> revIds, IWikiPageQueryParameters options,
+        public static IAsyncEnumerable<Revision> FetchRevisionsAsync(WikiSite site, IEnumerable<int> revIds, IWikiPageQueryProvider options,
             CancellationToken cancellationToken)
         {
             if (revIds == null) throw new ArgumentNullException(nameof(revIds));

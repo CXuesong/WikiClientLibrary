@@ -10,9 +10,10 @@ using WikiClientLibrary.Sites;
 namespace WikiClientLibrary.Pages.Queries
 {
     /// <summary>
-    /// Provides basic MediaWiki API request parameters for <c>action=query</c> request.
+    /// Provides basic MediaWiki API request parameters for <c>action=query&amp;titles=</c>
+    /// or <c>action=query&amp;pageids=</c> requests.
     /// </summary>
-    public interface IWikiPageQueryParameters
+    public interface IWikiPageQueryProvider
     {
 
         /// <summary>
@@ -40,10 +41,13 @@ namespace WikiClientLibrary.Pages.Queries
         IEnumerable<IWikiPagePropertyGroup> ParsePropertyGroups(JObject json);
     }
 
+    /// <inheritdoc />
     /// <summary>
-    /// Provides basic MediaWiki API request parameters for <c>action=query</c> request.
+    /// The default implementation of <see cref="IWikiPageQueryProvider"/> that provides basic MediaWiki API
+    /// request parameters for <c>action=query&amp;titles=</c> or <c>action=query&amp;pageids=</c> requests
+    /// by a set of configurable properties.
     /// </summary>
-    public class WikiPageQueryParameters : IWikiPageQueryParameters
+    public class WikiPageQueryProvider : IWikiPageQueryProvider
     {
 
         private ICollection<IWikiPagePropertyProvider<IWikiPagePropertyGroup>> _Properties;

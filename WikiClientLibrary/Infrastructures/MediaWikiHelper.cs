@@ -197,49 +197,49 @@ namespace WikiClientLibrary.Infrastructures
             };
         }
 
-        private static readonly WikiPageQueryParameters
-            pageQueryNone = new WikiPageQueryParameters
+        private static readonly WikiPageQueryProvider
+            pageQueryNone = new WikiPageQueryProvider
             {
                 Properties =
                 {
                     new PageInfoPropertyProvider { },
-                    new RevisionPropertyProvider { },
+                    new RevisionsPropertyProvider { },
                     new CategoryInfoPropertyProvider { },
-                    new PagePropertyPropertyProvider { },
+                    new PagePropertiesPropertyProvider { },
                     new FileInfoPropertyProvider { },
                 }
             },
-            pageQueryContent = new WikiPageQueryParameters
+            pageQueryContent = new WikiPageQueryProvider
             {
                 Properties =
                 {
                     new PageInfoPropertyProvider { },
-                    new RevisionPropertyProvider {FetchContent = true},
+                    new RevisionsPropertyProvider {FetchContent = true},
                     new CategoryInfoPropertyProvider { },
-                    new PagePropertyPropertyProvider { },
+                    new PagePropertiesPropertyProvider { },
                     new FileInfoPropertyProvider { },
                 }
             },
-            pageQueryResolveRedirect = new WikiPageQueryParameters
+            pageQueryResolveRedirect = new WikiPageQueryProvider
             {
                 Properties =
                 {
                     new PageInfoPropertyProvider { },
-                    new RevisionPropertyProvider { },
+                    new RevisionsPropertyProvider { },
                     new CategoryInfoPropertyProvider { },
-                    new PagePropertyPropertyProvider { },
+                    new PagePropertiesPropertyProvider { },
                     new FileInfoPropertyProvider { },
                 },
                 ResolveRedirects = true,
             },
-            pageQueryContentResolveRedirect = new WikiPageQueryParameters
+            pageQueryContentResolveRedirect = new WikiPageQueryProvider
             {
                 Properties =
                 {
                     new PageInfoPropertyProvider { },
-                    new RevisionPropertyProvider {FetchContent = true},
+                    new RevisionsPropertyProvider {FetchContent = true},
                     new CategoryInfoPropertyProvider { },
-                    new PagePropertyPropertyProvider { },
+                    new PagePropertiesPropertyProvider { },
                     new FileInfoPropertyProvider { },
                 },
                 ResolveRedirects = true,
@@ -248,7 +248,7 @@ namespace WikiClientLibrary.Infrastructures
         /// <summary>
         /// Builds common parameters for fetching a page.
         /// </summary>
-        internal static IWikiPageQueryParameters GetQueryParams(PageQueryOptions options)
+        internal static IWikiPageQueryProvider GetQueryParams(PageQueryOptions options)
         {
             switch (options)
             {

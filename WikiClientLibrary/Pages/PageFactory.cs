@@ -71,7 +71,7 @@ namespace WikiClientLibrary.Pages
         /// <param name="queryNode">The <c>qurey</c> node value object of JSON result.</param>
         /// <param name="options"></param>
         /// <returns>Retrived pages.</returns>
-        internal static IList<WikiPage> FromJsonQueryResult(WikiSite site, JObject queryNode, IWikiPageQueryParameters options)
+        internal static IList<WikiPage> FromJsonQueryResult(WikiSite site, JObject queryNode, IWikiPageQueryProvider options)
         {
             if (site == null) throw new ArgumentNullException(nameof(site));
             if (queryNode == null) throw new ArgumentNullException(nameof(queryNode));

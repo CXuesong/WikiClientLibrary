@@ -29,7 +29,7 @@ namespace WikiClientLibrary.Generators.Primitive
     /// for <see cref="WikiList{T}.EnumItemsAsync"/> implementation.</para>
     /// <para>
     /// For <c>generator</c>s, it's not necessary for the sequence taken out
-    /// from <see cref="EnumPagesAsync(IWikiPageQueryParameters)"/> to be kept ordered.
+    /// from <see cref="EnumPagesAsync(IWikiPageQueryProvider)"/> to be kept ordered.
     /// If you need ordered sequence, for example,
     /// enumerating the links from the beginning of an article using <see cref="LinksGenerator"/>,
     /// use <see cref="WikiPagePropertyList{T}.EnumItemsAsync"/>.
@@ -56,10 +56,10 @@ namespace WikiClientLibrary.Generators.Primitive
         }
 
         /// <summary>
-        /// When using the default implementation of <see cref="EnumPagesAsync(WikiClientLibrary.Pages.Queries.IWikiPageQueryParameters)"/>,
+        /// When using the default implementation of <see cref="EnumPagesAsync(IWikiPageQueryProvider)"/>,
         /// determines whether to remove duplicate page results generated from generator results.
         /// </summary>
-        /// <remarks>If the derived class has overridden <see cref="EnumPagesAsync(WikiClientLibrary.Pages.Queries.IWikiPageQueryParameters)"/>,
+        /// <remarks>If the derived class has overridden <see cref="EnumPagesAsync(IWikiPageQueryProvider)"/>,
         /// the value of this property might be ignored.</remarks>
         protected virtual bool DistinctGeneratedPages => false;
 
@@ -83,7 +83,7 @@ namespace WikiClientLibrary.Generators.Primitive
         /// Asynchornously generates the sequence of pages.
         /// </summary>
         /// <param name="options">Options when querying for the pages.</param>
-        public virtual IAsyncEnumerable<TPage> EnumPagesAsync(IWikiPageQueryParameters options)
+        public virtual IAsyncEnumerable<TPage> EnumPagesAsync(IWikiPageQueryProvider options)
         {
             var queryParams = options.EnumParameters().ToDictionary();
             queryParams.Add("generator", GeneratorName);

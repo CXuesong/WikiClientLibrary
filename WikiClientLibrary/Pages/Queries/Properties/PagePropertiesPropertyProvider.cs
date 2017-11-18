@@ -8,7 +8,7 @@ using WikiClientLibrary.Infrastructures;
 
 namespace WikiClientLibrary.Pages.Queries.Properties
 {
-    public class PagePropertyPropertyProvider : WikiPagePropertyProvider<PagePropertyPropertyGroup>
+    public class PagePropertiesPropertyProvider : WikiPagePropertyProvider<PagePropertiesPropertyGroup>
     {
         /// <inheritdoc />
         public override IEnumerable<KeyValuePair<string, object>> EnumParameters()
@@ -20,9 +20,9 @@ namespace WikiClientLibrary.Pages.Queries.Properties
         }
 
         /// <inheritdoc />
-        public override PagePropertyPropertyGroup ParsePropertyGroup(JObject json)
+        public override PagePropertiesPropertyGroup ParsePropertyGroup(JObject json)
         {
-            return PagePropertyPropertyGroup.Create(json);
+            return PagePropertiesPropertyGroup.Create(json);
         }
 
         /// <summary>
@@ -36,25 +36,25 @@ namespace WikiClientLibrary.Pages.Queries.Properties
         public override string PropertyName => "pageprops";
     }
 
-    public class PagePropertyPropertyGroup : WikiPagePropertyGroup
+    public class PagePropertiesPropertyGroup : WikiPagePropertyGroup
     {
 
-        private static readonly PagePropertyPropertyGroup Empty = new PagePropertyPropertyGroup();
+        private static readonly PagePropertiesPropertyGroup Empty = new PagePropertiesPropertyGroup();
 
-        internal static PagePropertyPropertyGroup Create(JObject jpage)
+        internal static PagePropertiesPropertyGroup Create(JObject jpage)
         {
             var props = jpage["pageprops"];
             if (props == null) return null;
             if (!props.HasValues) return Empty;
-            return new PagePropertyPropertyGroup(jpage);
+            return new PagePropertiesPropertyGroup(jpage);
         }
 
-        private PagePropertyPropertyGroup()
+        private PagePropertiesPropertyGroup()
         {
             PageProperties = PagePropertyCollection.Empty;
         }
 
-        private PagePropertyPropertyGroup(JObject jPage)
+        private PagePropertiesPropertyGroup(JObject jPage)
         {
             PageProperties = jPage["pageprops"]?.ToObject<PagePropertyCollection>(Utility.WikiJsonSerializer);
         }

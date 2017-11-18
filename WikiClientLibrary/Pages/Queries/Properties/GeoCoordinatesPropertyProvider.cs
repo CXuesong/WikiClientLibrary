@@ -12,7 +12,7 @@ namespace WikiClientLibrary.Pages.Queries.Properties
     /// <c>action=query&amp;prop=extracts</c>
     /// (<a href="https://www.mediawiki.org/wiki/Extension:TextExtracts#API">mw:Extension:TextExtracts#API</a>)
     /// </summary>
-    public class GeoCoordinatePropertyProvider : WikiPagePropertyProvider<GeoCoordinatePropertyGroup>
+    public class GeoCoordinatesPropertyProvider : WikiPagePropertyProvider<GeoCoordinatesPropertyGroup>
     {
 
         public bool QueryPrimaryCoordinate { get; set; } = true;
@@ -51,36 +51,36 @@ namespace WikiClientLibrary.Pages.Queries.Properties
         public override string PropertyName => "coordinates";
 
         /// <inheritdoc />
-        public override GeoCoordinatePropertyGroup ParsePropertyGroup(JObject json)
+        public override GeoCoordinatesPropertyGroup ParsePropertyGroup(JObject json)
         {
             if (json == null) throw new ArgumentNullException(nameof(json));
-            return GeoCoordinatePropertyGroup.Create((JArray)json["coordinates"]);
+            return GeoCoordinatesPropertyGroup.Create((JArray)json["coordinates"]);
         }
 
     }
 
-    public class GeoCoordinatePropertyGroup : WikiPagePropertyGroup
+    public class GeoCoordinatesPropertyGroup : WikiPagePropertyGroup
     {
-        private static readonly GeoCoordinatePropertyGroup Empty = new GeoCoordinatePropertyGroup();
+        private static readonly GeoCoordinatesPropertyGroup Empty = new GeoCoordinatesPropertyGroup();
         private static readonly GeoCoordinate[] emptyCoordinates = { };
 
         private IReadOnlyCollection<GeoCoordinate> _Coordinates;
 
-        internal static GeoCoordinatePropertyGroup Create(JArray jcoordinates)
+        internal static GeoCoordinatesPropertyGroup Create(JArray jcoordinates)
         {
             if (jcoordinates == null) return Empty;
             if (!jcoordinates.HasValues) return Empty;
-            return new GeoCoordinatePropertyGroup(jcoordinates);
+            return new GeoCoordinatesPropertyGroup(jcoordinates);
         }
 
-        private GeoCoordinatePropertyGroup()
+        private GeoCoordinatesPropertyGroup()
         {
             PrimaryCoordinate = GeoCoordinate.Empty;
             PrimaryDistance = 0;
             _Coordinates = emptyCoordinates;
         }
 
-        private GeoCoordinatePropertyGroup(JArray jcoordinates)
+        private GeoCoordinatesPropertyGroup(JArray jcoordinates)
         {
             if (jcoordinates != null && jcoordinates.HasValues)
             {

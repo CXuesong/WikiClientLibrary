@@ -13,7 +13,7 @@ namespace WikiClientLibrary.Pages.Queries.Properties
     /// <c>action=query&amp;prop=coordinates</c>
     /// (<a href="https://www.mediawiki.org/wiki/Extension:GeoData#prop.3Dcoordinates">mw:Extension:GeoData#prop=coordinates</a>)
     /// </summary>
-    public class RevisionPropertyProvider : WikiPagePropertyProvider<RevisionPropertyGroup>
+    public class RevisionsPropertyProvider : WikiPagePropertyProvider<RevisionsPropertyGroup>
     {
 
         /// <summary>
@@ -44,35 +44,35 @@ namespace WikiClientLibrary.Pages.Queries.Properties
         public override string PropertyName => "revisions";
 
         /// <inheritdoc />
-        public override RevisionPropertyGroup ParsePropertyGroup(JObject json)
+        public override RevisionsPropertyGroup ParsePropertyGroup(JObject json)
         {
             if (json == null) throw new ArgumentNullException(nameof(json));
-            return RevisionPropertyGroup.Create(json);
+            return RevisionsPropertyGroup.Create(json);
         }
 
     }
 
-    public class RevisionPropertyGroup : WikiPagePropertyGroup
+    public class RevisionsPropertyGroup : WikiPagePropertyGroup
     {
-        private static readonly RevisionPropertyGroup Empty = new RevisionPropertyGroup();
+        private static readonly RevisionsPropertyGroup Empty = new RevisionsPropertyGroup();
 
         private object _Revisions;
 
-        internal static RevisionPropertyGroup Create(JObject jpage)
+        internal static RevisionsPropertyGroup Create(JObject jpage)
         {
             var jrevisions = jpage["revisions"];
             if (jrevisions == null) return null;
             if (!jrevisions.HasValues) return Empty;
             var stub = MediaWikiHelper.PageStubFromJson(jpage);
-            return new RevisionPropertyGroup(stub, (JArray)jrevisions);
+            return new RevisionsPropertyGroup(stub, (JArray)jrevisions);
         }
 
-        private RevisionPropertyGroup()
+        private RevisionsPropertyGroup()
         {
             _Revisions = new Revision[0];
         }
 
-        private RevisionPropertyGroup(WikiPageStub page, JArray jrevisions)
+        private RevisionsPropertyGroup(WikiPageStub page, JArray jrevisions)
         {
             if (jrevisions.Count == 1)
             {

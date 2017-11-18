@@ -23,7 +23,7 @@ namespace WikiClientLibrary.Generators
     public class RevisionsGenerator : WikiPagePropertyGenerator<Revision, WikiPage>
     {
 
-        private RevisionPropertyProvider _PropertyProvider = new RevisionPropertyProvider();
+        private RevisionsPropertyProvider _PropertyProvider = new RevisionsPropertyProvider();
 
         /// <inheritdoc />
         public RevisionsGenerator(WikiSite site) : base(site)
@@ -107,10 +107,10 @@ namespace WikiClientLibrary.Generators
         /// <summary>
         /// Gets/sets the page query options for <see cref="WikiPagePropertyList{T}.EnumItemsAsync"/>
         /// </summary>
-        public RevisionPropertyProvider PropertyProvider
+        public RevisionsPropertyProvider PropertyProvider
         {
             get { return _PropertyProvider; }
-            set { _PropertyProvider = value ?? new RevisionPropertyProvider(); }
+            set { _PropertyProvider = value ?? new RevisionsPropertyProvider(); }
         }
 
         /// <inheritdoc />
@@ -150,7 +150,7 @@ namespace WikiClientLibrary.Generators
         /// <see cref="WikiPagePropertyList{T}.PageTitle"/> or <see cref="WikiPagePropertyList{T}.PageId"/>.
         /// </remarks>
         [EditorBrowsable(EditorBrowsableState.Never)]
-        public override IAsyncEnumerable<WikiPage> EnumPagesAsync(IWikiPageQueryParameters options)
+        public override IAsyncEnumerable<WikiPage> EnumPagesAsync(IWikiPageQueryProvider options)
         {
             return base.EnumPagesAsync(options);
         }
