@@ -48,8 +48,10 @@ namespace WikiClientLibrary.Infrastructures
                 {
                     var p = Items[i];
                     if (KeyComparer.Equals(p.Key, key))
+                    {
                         Items[i] = new KeyValuePair<TKey, TValue>(key, value);
-                    return;
+                        return;
+                    }
                 }
                 Items.Add(new KeyValuePair<TKey, TValue>(key, value));
             }
