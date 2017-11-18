@@ -210,6 +210,12 @@ namespace WikiClientLibrary.Pages
         public Revision LastRevision { get; private set; }
 
         /// <summary>
+        /// Gets the latest file revision information, if applicable.
+        /// </summary>
+        /// <remarks>Make sure to invoke <see cref="RefreshAsync()"/> before getting the value.</remarks>
+        public FileRevision LastFileRevision { get; private set; }
+
+        /// <summary>
         /// Determines whether the existing page is a disambiguation page.
         /// </summary>
         /// <exception cref="InvalidOperationException">The page does not exist.</exception>
@@ -323,6 +329,7 @@ namespace WikiClientLibrary.Pages
             // Check if the client has requested for revision content…
             LastRevision = GetPropertyGroup<RevisionsPropertyGroup>()?.LatestRevision;
             if (LastRevision?.Content != null) Content = LastRevision.Content;
+            LastFileRevision = GetPropertyGroup<FileInfoPropertyGroup>()?.LatestRevision;
             pageInfo = GetPropertyGroup<PageInfoPropertyGroup>();
             LastRevisionId = pageInfo?.LastRevisionId ?? 0;
             ContentModel = pageInfo?.ContentModel;

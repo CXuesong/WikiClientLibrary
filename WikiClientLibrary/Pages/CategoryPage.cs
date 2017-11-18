@@ -1,7 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Newtonsoft.Json.Linq;
 using WikiClientLibrary.Generators;
+using WikiClientLibrary.Pages.Queries.Properties;
 using WikiClientLibrary.Sites;
 
 namespace WikiClientLibrary.Pages
@@ -9,6 +11,7 @@ namespace WikiClientLibrary.Pages
     /// <summary>
     /// Represents a category on MediaWiki site.
     /// </summary>
+    [Obsolete("Use WikiPage instead. To retrieve category statistics, use WikiPage.GetPropertyGroup<CategoryInfoPropertyGroup>().")]
     public class CategoryPage : WikiPage
     {
 
@@ -20,31 +23,13 @@ namespace WikiClientLibrary.Pages
         {
         }
 
-        protected override void OnLoadPageInfo(JObject jpage)
-        {
-            base.OnLoadPageInfo(jpage);
-            var cat = jpage["categoryinfo"];
-            if (cat != null)
-            {
-                MembersCount = (int) cat["size"];
-                PagesCount = (int) cat["pages"];
-                FilesCount = (int) cat["files"];
-                SubcategoriesCount = (int) cat["subcats"];
-            }
-            else
-            {
-                // Possibly not a valid category.
-                MembersCount = PagesCount = FilesCount = SubcategoriesCount = 0;
-            }
-        }
+        public int MembersCount => GetPropertyGroup<CategoryInfoPropertyGroup>()?.MembersCount ?? 0;
 
-        public int MembersCount { get; private set; }
+        public int PagesCount => GetPropertyGroup<CategoryInfoPropertyGroup>()?.PagesCount ?? 0;
 
-        public int PagesCount { get; private set; }
+        public int FilesCount => GetPropertyGroup<CategoryInfoPropertyGroup>()?.FilesCount ?? 0;
 
-        public int FilesCount { get; private set; }
-
-        public int SubcategoriesCount { get; private set; }
+        public int SubcategoriesCount => GetPropertyGroup<CategoryInfoPropertyGroup>()?.SubcategoriesCount ?? 0;
 
         public IAsyncEnumerable<WikiPage> EnumMembersAsync(PageQueryOptions options)
         {

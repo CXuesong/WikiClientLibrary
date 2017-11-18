@@ -12,6 +12,7 @@ using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using WikiClientLibrary.Client;
+using WikiClientLibrary.Files;
 using WikiClientLibrary.Infrastructures;
 using WikiClientLibrary.Infrastructures.Logging;
 using WikiClientLibrary.Sites;
@@ -21,6 +22,7 @@ namespace WikiClientLibrary.Pages
     /// <summary>
     /// Represents a file page on MediaWiki site.
     /// </summary>
+    [Obsolete("Use WikiPage instead.")]
     public class FilePage : WikiPage
     {
         // Use FilePage to distinguish from System.IO.File
@@ -65,7 +67,7 @@ namespace WikiClientLibrary.Pages
         /// Upload from external source may take a while, so be sure to set a long <see cref="WikiClient.Timeout"/>
         /// in case the response from the server is delayed.
         /// </remarks>
-        [Obsolete("Please use FilePage.UploadAsync instance methods instead.")]
+        [Obsolete("Please use WikiSiteExtensions.UploadAsync extension methods instead.")]
         public static Task<UploadResult> UploadAsync(WikiSite site, string url, string title,
             string comment, bool ignoreWarnings)
         {
@@ -94,7 +96,7 @@ namespace WikiClientLibrary.Pages
         /// Upload from external source may take a while, so be sure to set a long <see cref="WikiClient.Timeout"/>
         /// in case the response from the server is delayed.
         /// </remarks>
-        [Obsolete("Please use FilePage.UploadAsync instance methods instead.")]
+        [Obsolete("Please use WikiSiteExtensions.UploadAsync extension methods instead.")]
         public static Task<UploadResult> UploadAsync(WikiSite site, string url, string title, string comment,
             bool ignoreWarnings, CancellationToken cancellationToken)
         {
@@ -121,7 +123,7 @@ namespace WikiClientLibrary.Pages
         /// <remarks>
         /// You should have obtained the previous upload result via <see cref="UploadException.UploadResult"/>.
         /// </remarks>
-        [Obsolete("Please use FilePage.UploadAsync instance methods instead.")]
+        [Obsolete("Please use WikiSiteExtensions.UploadAsync extension methods instead.")]
         public static Task<UploadResult> UploadAsync(WikiSite site, UploadResult previousResult, string title,
             string comment, bool ignoreWarnings)
         {
@@ -145,7 +147,7 @@ namespace WikiClientLibrary.Pages
         /// <exception cref="OperationFailedException"> There's an error while uploading the file. </exception>
         /// <exception cref="TimeoutException">Timeout specified in <see cref="WikiClient.Timeout"/> has been reached.</exception>
         /// <returns>An <see cref="UploadResult"/>.</returns>
-        [Obsolete("Please use FilePage.UploadAsync instance methods instead.")]
+        [Obsolete("Please use WikiSiteExtensions.UploadAsync extension methods instead.")]
         public static Task<UploadResult> UploadAsync(WikiSite site, Stream content, string title,
             string comment, bool ignoreWarnings)
         {
@@ -171,7 +173,7 @@ namespace WikiClientLibrary.Pages
         /// <exception cref="OperationFailedException"> There's an general failure while uploading the file. </exception>
         /// <exception cref="TimeoutException">Timeout specified in <see cref="WikiClient.Timeout"/> has been reached.</exception>
         /// <returns>An <see cref="UploadResult"/>.</returns>
-        [Obsolete("Please use FilePage.UploadAsync instance methods instead.")]
+        [Obsolete("Please use WikiSiteExtensions.UploadAsync extension methods instead.")]
         public static Task<UploadResult> UploadAsync(WikiSite site, Stream content, string title,
             string comment, bool ignoreWarnings, AutoWatchBehavior watch, CancellationToken cancellationToken)
         {
@@ -180,12 +182,14 @@ namespace WikiClientLibrary.Pages
         }
 
         /// <inheritdoc cref="UploadAsync(WikiUploadSource,string,bool,AutoWatchBehavior,CancellationToken)"/>
+        [Obsolete("Please use WikiSiteExtensions.UploadAsync extension methods instead.")]
         public Task<UploadResult> UploadAsync(WikiUploadSource source, string comment, bool ignoreWarnings)
         {
             return UploadAsync(source, comment, ignoreWarnings, AutoWatchBehavior.Default, CancellationToken.None);
         }
 
         /// <inheritdoc cref="UploadAsync(WikiUploadSource,string,bool,AutoWatchBehavior,CancellationToken)"/>
+        [Obsolete("Please use WikiSiteExtensions.UploadAsync extension methods instead.")]
         public Task<UploadResult> UploadAsync(WikiUploadSource source, string comment, bool ignoreWarnings,
             AutoWatchBehavior watch)
         {
@@ -211,6 +215,7 @@ namespace WikiClientLibrary.Pages
         /// </exception>
         /// <exception cref="TimeoutException">Timeout specified in <see cref="WikiClient.Timeout"/> has been reached.</exception>
         /// <returns>An <see cref="UploadResult"/>. You need to check <see cref="UploadResult.ResultCode"/> for further action.</returns>
+        [Obsolete("Please use WikiSiteExtensions.UploadAsync extension methods instead.")]
         public async Task<UploadResult> UploadAsync(WikiUploadSource source, string comment, bool ignoreWarnings,
             AutoWatchBehavior watch, CancellationToken cancellationToken)
         {
@@ -239,28 +244,6 @@ namespace WikiClientLibrary.Pages
             }
         }
 
-        /// <inheritdoc/>
-        protected override void OnLoadPageInfo(JObject jpage)
-        {
-            base.OnLoadPageInfo(jpage);
-            // Can be null, if the page is missing.
-            var jfile = jpage["imageinfo"];
-            var lastRev = jfile?.LastOrDefault();
-            if (lastRev != null)
-            {
-                LastFileRevision = lastRev.ToObject<FileRevision>(Utility.WikiJsonSerializer);
-            }
-            else
-            {
-                // Possibly not a valid file.
-                LastFileRevision = null;
-            }
-        }
-
-        /// <summary>
-        /// Gets the latest file revision information.
-        /// </summary>
-        public FileRevision LastFileRevision { get; private set; }
     }
 
     /// <summary>

@@ -2,17 +2,16 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json.Linq;
 using WikiClientLibrary.Client;
 using WikiClientLibrary.Infrastructures.Logging;
+using WikiClientLibrary.Pages;
 using WikiClientLibrary.Sites;
 
-namespace WikiClientLibrary.Pages
+namespace WikiClientLibrary.Files
 {
     /// <summary>
     /// A <see cref="WikiUploadSource"/> that enables chunked stashing and performs final upload by <c>filekey</c>. (MW 1.19+)
