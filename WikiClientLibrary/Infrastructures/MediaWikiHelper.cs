@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -196,68 +197,21 @@ namespace WikiClientLibrary.Infrastructures
                 Globe = (string)jcoordinate["globe"],
             };
         }
-
-        private static readonly WikiPageQueryProvider
-            pageQueryNone = new WikiPageQueryProvider
-            {
-                Properties =
-                {
-                    new PageInfoPropertyProvider { },
-                    new RevisionsPropertyProvider { },
-                    new CategoryInfoPropertyProvider { },
-                    new PagePropertiesPropertyProvider { },
-                    new FileInfoPropertyProvider { },
-                }
-            },
-            pageQueryContent = new WikiPageQueryProvider
-            {
-                Properties =
-                {
-                    new PageInfoPropertyProvider { },
-                    new RevisionsPropertyProvider {FetchContent = true},
-                    new CategoryInfoPropertyProvider { },
-                    new PagePropertiesPropertyProvider { },
-                    new FileInfoPropertyProvider { },
-                }
-            },
-            pageQueryResolveRedirect = new WikiPageQueryProvider
-            {
-                Properties =
-                {
-                    new PageInfoPropertyProvider { },
-                    new RevisionsPropertyProvider { },
-                    new CategoryInfoPropertyProvider { },
-                    new PagePropertiesPropertyProvider { },
-                    new FileInfoPropertyProvider { },
-                },
-                ResolveRedirects = true,
-            },
-            pageQueryContentResolveRedirect = new WikiPageQueryProvider
-            {
-                Properties =
-                {
-                    new PageInfoPropertyProvider { },
-                    new RevisionsPropertyProvider {FetchContent = true},
-                    new CategoryInfoPropertyProvider { },
-                    new PagePropertiesPropertyProvider { },
-                    new FileInfoPropertyProvider { },
-                },
-                ResolveRedirects = true,
-            };
+        
+        private static readonly ConcurrentDictionary<PageQueryOptions, IWikiPageQueryProvider> queryProviderPresets
+            = new ConcurrentDictionary<PageQueryOptions, IWikiPageQueryProvider>();
 
         /// <summary>
-        /// Builds common parameters for fetching a page.
+        /// Gets a read-only implementation of <see cref="IWikiPageQueryProvider"/> for fetching a page.
         /// </summary>
-        internal static IWikiPageQueryProvider GetQueryParams(PageQueryOptions options)
+        /// <remarks>
+        /// This method returns a shared instance for a specific <see cref="PageQueryOptions"/> value to reduce memory consumption.
+        /// If you want to apply your customization based on the presets, use <see cref="WikiPageQueryProvider.FromOptions"/>.
+        /// </remarks>
+        public static IWikiPageQueryProvider QueryProviderFromOptions(PageQueryOptions options)
         {
-            switch (options)
-            {
-                case PageQueryOptions.None: return pageQueryNone;
-                case PageQueryOptions.FetchContent: return pageQueryContent;
-                case PageQueryOptions.ResolveRedirects: return pageQueryResolveRedirect;
-                case PageQueryOptions.FetchContent | PageQueryOptions.ResolveRedirects: return pageQueryContentResolveRedirect;
-            }
-            throw new ArgumentOutOfRangeException(nameof(options));
+            return queryProviderPresets.GetOrAdd(options,
+                k => new SealedWikiPageQueryProvider(WikiPageQueryProvider.FromOptions(options)));
         }
     }
 }

@@ -356,7 +356,7 @@ namespace WikiClientLibrary.Pages
         /// <inheritdoc cref="RefreshAsync(IWikiPageQueryProvider, CancellationToken)"/>
         public Task RefreshAsync(PageQueryOptions options, CancellationToken cancellationToken)
         {
-            return RefreshAsync(MediaWikiHelper.GetQueryParams(options), cancellationToken);
+            return RefreshAsync(MediaWikiHelper.QueryProviderFromOptions(options), cancellationToken);
         }
 
         /// <summary>

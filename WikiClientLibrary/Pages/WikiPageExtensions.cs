@@ -34,7 +34,7 @@ namespace WikiClientLibrary.Pages
         /// <inheritdoc cref="RefreshAsync(IEnumerable{WikiPage},IWikiPageQueryProvider,CancellationToken)"/>
         public static Task RefreshAsync(this IEnumerable<WikiPage> pages, PageQueryOptions options, CancellationToken cancellationToken)
         {
-            return RequestHelper.RefreshPagesAsync(pages, MediaWikiHelper.GetQueryParams(options), cancellationToken);
+            return RequestHelper.RefreshPagesAsync(pages, MediaWikiHelper.QueryProviderFromOptions(options), cancellationToken);
         }
 
         /// <summary>

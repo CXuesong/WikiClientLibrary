@@ -53,6 +53,31 @@ namespace WikiClientLibrary.Pages.Queries
         private ICollection<IWikiPagePropertyProvider<IWikiPagePropertyGroup>> _Properties;
 
         /// <summary>
+        /// Initializes a <see cref="WikiPageQueryProvider"/> from the given <see cref="PageQueryOptions"/> value.
+        /// </summary>
+        /// <param name="options">The page query options.</param>
+        /// <returns>The equavalent <see cref="WikiPageQueryProvider"/> that can be further modified by the caller.</returns>
+        /// <remarks>If you won't perform any customizations on the returned instance, consider using <see cref="MediaWikiHelper.QueryProviderFromOptions"/>.</remarks>
+        public static WikiPageQueryProvider FromOptions(PageQueryOptions options)
+        {
+            if ((options & (PageQueryOptions.FetchContent | PageQueryOptions.ResolveRedirects)) != options)
+                throw new ArgumentException("Invalid PageQueryOptions enumeration value.", nameof(options));
+            var provider = new WikiPageQueryProvider
+            {
+                Properties = new List<IWikiPagePropertyProvider<IWikiPagePropertyGroup>>
+                {
+                    new PageInfoPropertyProvider { },
+                    new RevisionsPropertyProvider {FetchContent = (options & PageQueryOptions.FetchContent) == PageQueryOptions.FetchContent},
+                    new CategoryInfoPropertyProvider { },
+                    new PagePropertiesPropertyProvider { },
+                    new FileInfoPropertyProvider { },
+                },
+                ResolveRedirects = (options & PageQueryOptions.ResolveRedirects) == PageQueryOptions.ResolveRedirects
+            };
+            return provider;
+        }
+
+        /// <summary>
         /// Resolves directs automatically. This may later change <see cref="WikiPage.Title"/>.
         /// This option cannot be used with generators.
         /// In the case of multiple redirects, all redirects will be resolved.
@@ -73,7 +98,7 @@ namespace WikiClientLibrary.Pages.Queries
         }
 
         /// <inheritdoc />
-        public IEnumerable<KeyValuePair<string, object>> EnumParameters()
+        public virtual IEnumerable<KeyValuePair<string, object>> EnumParameters()
         {
             var propBuilder = new StringBuilder();
             var p = new OrderedKeyValuePairs<string, object>
@@ -99,7 +124,7 @@ namespace WikiClientLibrary.Pages.Queries
         }
 
         /// <inheritdoc />
-        public int GetMaxPaginationSize(bool apiHighLimits)
+        public virtual int GetMaxPaginationSize(bool apiHighLimits)
         {
             int limit;
             limit = apiHighLimits ? 500 : 5000;
@@ -114,13 +139,41 @@ namespace WikiClientLibrary.Pages.Queries
         }
 
         /// <inheritdoc />
-        public IEnumerable<IWikiPagePropertyGroup> ParsePropertyGroups(JObject json)
+        public virtual IEnumerable<IWikiPagePropertyGroup> ParsePropertyGroups(JObject json)
         {
             foreach (var provider in _Properties)
             {
                 var group = provider.ParsePropertyGroup(json);
                 if (group != null) yield return group;
             }
+        }
+    }
+
+    internal class SealedWikiPageQueryProvider : IWikiPageQueryProvider
+    {
+        private readonly IWikiPageQueryProvider underlyingProvider;
+
+        public SealedWikiPageQueryProvider(IWikiPageQueryProvider underlyingProvider)
+        {
+            this.underlyingProvider = underlyingProvider ?? throw new ArgumentNullException(nameof(underlyingProvider));
+        }
+
+        /// <inheritdoc />
+        public IEnumerable<KeyValuePair<string, object>> EnumParameters()
+        {
+            return underlyingProvider.EnumParameters();
+        }
+
+        /// <inheritdoc />
+        public int GetMaxPaginationSize(bool apiHighLimits)
+        {
+            return underlyingProvider.GetMaxPaginationSize(apiHighLimits);
+        }
+
+        /// <inheritdoc />
+        public IEnumerable<IWikiPagePropertyGroup> ParsePropertyGroups(JObject json)
+        {
+            return underlyingProvider.ParsePropertyGroups(json);
         }
     }
 }

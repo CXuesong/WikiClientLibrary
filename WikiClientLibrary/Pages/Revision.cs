@@ -55,7 +55,7 @@ namespace WikiClientLibrary.Pages
         /// <inheritdoc cref="FetchRevisionsAsync(WikiSite,IEnumerable{int},IWikiPageQueryProvider,CancellationToken)"/>
         public static IAsyncEnumerable<Revision> FetchRevisionsAsync(WikiSite site, IEnumerable<int> revisionIds, PageQueryOptions options, CancellationToken cancellationToken)
         {
-            return FetchRevisionsAsync(site, revisionIds, MediaWikiHelper.GetQueryParams(options), cancellationToken);
+            return FetchRevisionsAsync(site, revisionIds, MediaWikiHelper.QueryProviderFromOptions(options), cancellationToken);
         }
 
         /// <summary>

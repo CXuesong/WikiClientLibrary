@@ -68,7 +68,7 @@ namespace WikiClientLibrary.Generators.Primitive
         /// </summary>
         public virtual IAsyncEnumerable<TPage> EnumPagesAsync()
         {
-            return EnumPagesAsync(MediaWikiHelper.GetQueryParams(PageQueryOptions.None));
+            return EnumPagesAsync(MediaWikiHelper.QueryProviderFromOptions(PageQueryOptions.None));
         }
 
         /// <summary>
@@ -76,7 +76,7 @@ namespace WikiClientLibrary.Generators.Primitive
         /// </summary>
         public virtual IAsyncEnumerable<TPage> EnumPagesAsync(PageQueryOptions options)
         {
-            return EnumPagesAsync(MediaWikiHelper.GetQueryParams(options));
+            return EnumPagesAsync(MediaWikiHelper.QueryProviderFromOptions(options));
         }
 
         /// <summary>
