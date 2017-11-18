@@ -123,6 +123,30 @@ namespace UnitTestProject1.Tests
         }
 
         [Fact]
+        public async Task WpLzhPageImagesTest()
+        {
+            var site = await WpLzhSiteAsync;
+            var page = new WikiPage(site, "挪威");
+            await page.RefreshAsync(new WikiPageQueryProvider
+            {
+                Properties =
+                {
+                    new PageImagesPropertyProvider
+                    {
+                        QueryOriginalImage = true,
+                        ThumbnailSize = 100
+                    }
+                }
+            });
+            var group = page.GetPropertyGroup<PageImagesPropertyGroup>();
+            ShallowTrace(group);
+            Assert.Equal("Flag_of_Norway.svg", group.ImageTitle);
+            Assert.Equal("https://upload.wikimedia.org/wikipedia/commons/d/d9/Flag_of_Norway.svg", group.OriginalImage.Url);
+            Assert.Equal("https://upload.wikimedia.org/wikipedia/commons/thumb/d/d9/Flag_of_Norway.svg/100px-Flag_of_Norway.svg.png", group.ThumbnailImage.Url);
+            Assert.Equal(100, Math.Min(group.ThumbnailImage.Width, group.ThumbnailImage.Height));
+        }
+
+        [Fact]
         public async Task WpLzhPageReadDisambigTest()
         {
             var site = await WpLzhSiteAsync;

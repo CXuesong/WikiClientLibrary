@@ -113,6 +113,12 @@ namespace WikiClientLibrary.Pages.Queries.Properties
         {
             return !left.Equals(right);
         }
+
+        /// <inheritdoc />
+        public override string ToString()
+        {
+            return Url;
+        }
     }
 
     public class PageImagesPropertyGroup : WikiPagePropertyGroup
