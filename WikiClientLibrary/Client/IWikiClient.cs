@@ -22,7 +22,7 @@ namespace WikiClientLibrary.Client
         /// <param name="cancellationToken">The cancellation token that will be checked prior to completing the returned task.</param>
         /// <returns>The parsed response value. The acutal object type depends on the <paramref name="responseParser"/>.</returns>
         /// <exception cref="ArgumentNullException">Either <paramref name="endPointUrl"/>, <paramref name="request"/>, or <paramref name="responseParser"/> is <c>null</c>.</exception>
-        /// <exception cref="Exception">Other <see cref="IWikiResponseMessageParser"/>-specified exceptions.</exception>
+        /// <exception cref="Exception">Other <see cref="IWikiResponseMessageParser{T}"/>-specified exceptions.</exception>
         /// <remarks>
         /// The implementation of this method involves
         /// <list type="bullet">
@@ -33,8 +33,8 @@ namespace WikiClientLibrary.Client
         /// <item><description>Returning the parsed result, or throwing an exception.</description></item>
         /// </list>
         /// </remarks>
-        Task<object> InvokeAsync(string endPointUrl, WikiRequestMessage request,
-            IWikiResponseMessageParser responseParser, CancellationToken cancellationToken);
+        Task<T> InvokeAsync<T>(string endPointUrl, WikiRequestMessage request,
+            IWikiResponseMessageParser<T> responseParser, CancellationToken cancellationToken);
 
     }
 

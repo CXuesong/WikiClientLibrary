@@ -47,7 +47,7 @@ namespace WikiClientLibrary.Infrastructures
         /// <param name="cancellationToken">The cancellation token that will be checked prior to completing the returned task.</param>
         private async Task<JObject> FetchTokensAsync2(string tokenTypeExpr, CancellationToken cancellationToken)
         {
-            var jobj = await site.GetJsonAsync(new MediaWikiFormRequestMessage(new
+            var jobj = await site.InvokeMediaWikiApiAsync(new MediaWikiFormRequestMessage(new
             {
                 action = "query",
                 meta = "tokens",
@@ -73,7 +73,7 @@ namespace WikiClientLibrary.Infrastructures
         private async Task<JObject> FetchTokensAsync(string tokenTypeExpr, CancellationToken cancellationToken)
         {
             Debug.Assert(!tokenTypeExpr.Contains("patrol"));
-            var jobj = await site.GetJsonAsync(new MediaWikiFormRequestMessage(new
+            var jobj = await site.InvokeMediaWikiApiAsync(new MediaWikiFormRequestMessage(new
             {
                 action = "query",
                 prop = "info",
@@ -191,7 +191,7 @@ namespace WikiClientLibrary.Infrastructures
                         {
                             // Until v1.16, the patrol token is same as the edit token.
                             Debug.Assert(site.SiteInfo.Version >= v117);
-                            var jobj = await site.GetJsonAsync(new MediaWikiFormRequestMessage(new
+                            var jobj = await site.InvokeMediaWikiApiAsync(new MediaWikiFormRequestMessage(new
                             {
                                 action = "query",
                                 list = "recentchanges",

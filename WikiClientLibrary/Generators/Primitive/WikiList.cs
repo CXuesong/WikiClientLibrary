@@ -109,7 +109,7 @@ namespace WikiClientLibrary.Generators.Primitive
                 using (Site.BeginActionScope(this))
                 {
                     NEXT_PAGE:
-                    var jresult = await Site.GetJsonAsync(new MediaWikiFormRequestMessage(queryParams), ct);
+                    var jresult = await Site.InvokeMediaWikiApiAsync(new MediaWikiFormRequestMessage(queryParams), ct);
                     // If there's no result, "query" node will not exist.
                     var queryNode = (JObject)jresult["query"];
                     if (queryNode == null || queryNode.Count == 0) goto END_OF_PARSING;

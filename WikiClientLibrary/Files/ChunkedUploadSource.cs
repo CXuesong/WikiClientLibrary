@@ -245,7 +245,7 @@ namespace WikiClientLibrary.Files
                             {"ignorewarnings", true},
                             {"chunk", chunkStream},
                         };
-                        var jresult = await Site.GetJsonAsync(new MediaWikiFormRequestMessage(jparams, true),
+                        var jresult = await Site.InvokeMediaWikiApiAsync(new MediaWikiFormRequestMessage(jparams, true),
                             ChunkedUploadResponseParser.Default, false, cancellationToken);
                         // Possible error: code=stashfailed, info=Invalid chunk offset
                         // We will retry from the server-expected offset.

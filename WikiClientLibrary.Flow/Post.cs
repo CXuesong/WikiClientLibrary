@@ -88,7 +88,7 @@ namespace WikiClientLibrary.Flow
         /// </remarks>
         public async Task RefreshAsync(CancellationToken cancellationToken)
         {
-            var jresult = await Site.GetJsonAsync(new MediaWikiFormRequestMessage(new
+            var jresult = await Site.InvokeMediaWikiApiAsync(new MediaWikiFormRequestMessage(new
             {
                 action = "flow",
                 submodule = "view-post",
@@ -121,7 +121,7 @@ namespace WikiClientLibrary.Flow
             JToken jresult;
             using (await Site.ModificationThrottler.QueueWorkAsync("Moderate: " + WorkflowId, cancellationToken))
             {
-                jresult = await Site.GetJsonAsync(new MediaWikiFormRequestMessage(new
+                jresult = await Site.InvokeMediaWikiApiAsync(new MediaWikiFormRequestMessage(new
                 {
                     action = "flow",
                     submodule = "moderate-post",

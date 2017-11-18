@@ -232,7 +232,7 @@ namespace WikiClientLibrary.Pages
                     requestFields[p.Key] = p.Value;
                 var request = new MediaWikiFormRequestMessage(requestFields, true);
                 Site.Logger.LogDebug("Start uploading.", this, source);
-                var jresult = await Site.GetJsonAsync(request, cancellationToken);
+                var jresult = await Site.InvokeMediaWikiApiAsync(request, cancellationToken);
                 var result = jresult["upload"].ToObject<UploadResult>(Utility.WikiJsonSerializer);
                 Site.Logger.LogInformation("Uploaded. Result={Result}.", result.ResultCode);
                 return result;

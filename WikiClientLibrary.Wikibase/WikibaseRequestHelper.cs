@@ -78,7 +78,7 @@ namespace WikiClientLibrary.Wikibase
                         //site.Logger.LogDebug("Fetching {Count} pages from {Site}.", partition.Count, site);
                         // We use ids to query pages.
                         req["ids"] = string.Join("|", partition.Select(p => p.Id));
-                        var jresult = await site.GetJsonAsync(new MediaWikiFormRequestMessage(req), cancellationToken);
+                        var jresult = await site.InvokeMediaWikiApiAsync(new MediaWikiFormRequestMessage(req), cancellationToken);
                         var jentities = (JObject)jresult["entities"];
                         foreach (var entity in partition)
                         {

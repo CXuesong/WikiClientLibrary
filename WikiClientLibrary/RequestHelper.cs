@@ -40,7 +40,7 @@ namespace WikiClientLibrary
                     var queryParams = parameters.ToDictionary(p => p.Key, p => p.Value);
                     Debug.Assert("query".Equals(queryParams["action"]));
                     NEXT_PAGE:
-                    var jresult = await site.GetJsonAsync(new MediaWikiFormRequestMessage(queryParams), ct);
+                    var jresult = await site.InvokeMediaWikiApiAsync(new MediaWikiFormRequestMessage(queryParams), ct);
                     // If there's no result, "query" node will not exist.
                     var queryNode = (JObject)jresult["query"];
                     if (queryNode != null)
@@ -168,7 +168,7 @@ namespace WikiClientLibrary
                             queryParams["rvlimit"] = 1;
                         else
                             queryParams.Remove("rvlimit");
-                        var jobj = await site.GetJsonAsync(new MediaWikiFormRequestMessage(queryParams), cancellationToken);
+                        var jobj = await site.InvokeMediaWikiApiAsync(new MediaWikiFormRequestMessage(queryParams), cancellationToken);
                         if (sitePages.Key.HasTitle)
                         {
                             // Process title normalization.
@@ -239,7 +239,7 @@ namespace WikiClientLibrary
                     {
                         site.Logger.LogDebug("Fetching {Count} revisions from {Site}.", partition.Count, site);
                         queryParams["revids"] = string.Join("|", partition);
-                        var jobj = await site.GetJsonAsync(new MediaWikiFormRequestMessage(queryParams), cancellationToken);
+                        var jobj = await site.InvokeMediaWikiApiAsync(new MediaWikiFormRequestMessage(queryParams), cancellationToken);
                         var jpages = (JObject)jobj["query"]["pages"];
                         // Generate stubs first
                         foreach (var p in jpages)
@@ -308,7 +308,7 @@ namespace WikiClientLibrary
                         }
                         try
                         {
-                            var jresult = await site.GetJsonAsync(new MediaWikiFormRequestMessage(new
+                            var jresult = await site.InvokeMediaWikiApiAsync(new MediaWikiFormRequestMessage(new
                             {
                                 action = "purge",
                                 titles = titles,
@@ -353,7 +353,7 @@ namespace WikiClientLibrary
             var token = await site.GetTokenAsync("patrol");
             try
             {
-                var jresult = await site.GetJsonAsync(new MediaWikiFormRequestMessage(new
+                var jresult = await site.InvokeMediaWikiApiAsync(new MediaWikiFormRequestMessage(new
                 {
                     action = "patrol",
                     rcid = recentChangeId,
@@ -415,7 +415,7 @@ namespace WikiClientLibrary
             {
                 pa["modules"] = moduleName;
             }
-            var jresult = await site.GetJsonAsync(new MediaWikiFormRequestMessage(pa), CancellationToken.None);
+            var jresult = await site.InvokeMediaWikiApiAsync(new MediaWikiFormRequestMessage(pa), CancellationToken.None);
             var jmodules =
                 ((JObject)jresult["paraminfo"]).Properties().FirstOrDefault(p => p.Name.EndsWith("modules"))?.Value;
             // For now we use the method internally.

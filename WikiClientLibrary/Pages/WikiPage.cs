@@ -506,7 +506,7 @@ namespace WikiClientLibrary.Pages
                 JToken jresult;
                 try
                 {
-                    jresult = await Site.GetJsonAsync(new MediaWikiFormRequestMessage(new
+                    jresult = await Site.InvokeMediaWikiApiAsync(new MediaWikiFormRequestMessage(new
                     {
                         action = "edit",
                         token = WikiSiteToken.Edit,
@@ -602,7 +602,7 @@ namespace WikiClientLibrary.Pages
                 JToken jresult;
                 try
                 {
-                    jresult = await Site.GetJsonAsync(new MediaWikiFormRequestMessage(new
+                    jresult = await Site.InvokeMediaWikiApiAsync(new MediaWikiFormRequestMessage(new
                     {
                         action = "move",
                         token = WikiSiteToken.Move,
@@ -668,7 +668,7 @@ namespace WikiClientLibrary.Pages
                 JToken jresult;
                 try
                 {
-                    jresult = await Site.GetJsonAsync(new MediaWikiFormRequestMessage(new
+                    jresult = await Site.InvokeMediaWikiApiAsync(new MediaWikiFormRequestMessage(new
                     {
                         action = "delete",
                         token = WikiSiteToken.Delete,

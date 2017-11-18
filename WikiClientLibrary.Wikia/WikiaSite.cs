@@ -40,11 +40,14 @@ namespace WikiClientLibrary.Wikia
         {
         }
 
-        /// <inheritdoc cref="InvokeWikiaAjaxAsync(WikiRequestMessage,IWikiResponseMessageParser,CancellationToken)"/>
-        public async Task<T> InvokeWikiaAjaxAsync<T>(WikiRequestMessage request,
-            WikiResponseMessageParser<T> responseParser, CancellationToken cancellationToken)
+        /// <inheritdoc cref="InvokeWikiaAjaxAsync{T}(WikiRequestMessage,IWikiResponseMessageParser{T},CancellationToken)"/>
+        /// <remarks>
+        /// <para>This overload uses <see cref="WikiaJsonResonseParser"/> to parse the response.</para>
+        /// <para>This method will automatically add <c>action=ajax</c> field in the request.</para>
+        /// </remarks>
+        public async Task<JToken> InvokeWikiaAjaxAsync(WikiRequestMessage request, CancellationToken cancellationToken)
         {
-            return (T)await InvokeWikiaAjaxAsync(request, (IWikiResponseMessageParser)responseParser, cancellationToken);
+            return await InvokeWikiaAjaxAsync(request, WikiaJsonResonseParser.Default, cancellationToken);
         }
 
         /// <summary>
@@ -56,8 +59,8 @@ namespace WikiClientLibrary.Wikia
         /// <returns>The parsed JSON root of response.</returns>
         /// <exception cref="ArgumentNullException">Either <paramref name="request"/> or <paramref name="responseParser"/> is <c>null</c>.</exception>
         /// <remarks>This method will automatically add <c>action=ajax</c> field in the request.</remarks>
-        public async Task<object> InvokeWikiaAjaxAsync(WikiRequestMessage request,
-            IWikiResponseMessageParser responseParser, CancellationToken cancellationToken)
+        public async Task<T> InvokeWikiaAjaxAsync<T>(WikiRequestMessage request,
+            IWikiResponseMessageParser<T> responseParser, CancellationToken cancellationToken)
         {
             if (request == null) throw new ArgumentNullException(nameof(request));
             if (responseParser == null) throw new ArgumentNullException(nameof(responseParser));
@@ -77,10 +80,11 @@ namespace WikiClientLibrary.Wikia
             return result;
         }
 
-        /// <inheritdoc cref="InvokeNirvanaAsync(WikiRequestMessage,IWikiResponseMessageParser,CancellationToken)"/>
-        public async Task<T> InvokeNirvanaAsync<T>(WikiRequestMessage request, WikiResponseMessageParser<T> responseParser, CancellationToken cancellationToken)
+        /// <inheritdoc cref="InvokeNirvanaAsync{T}(WikiRequestMessage,IWikiResponseMessageParser{T},CancellationToken)"/>
+        /// <remarks>This overload uses <see cref="WikiaJsonResonseParser"/> to parse the response.</remarks>
+        public Task<JToken> InvokeNirvanaAsync(WikiRequestMessage request, CancellationToken cancellationToken)
         {
-            return (T)await InvokeNirvanaAsync(request, (IWikiResponseMessageParser)responseParser, cancellationToken);
+            return InvokeNirvanaAsync(request, WikiaJsonResonseParser.Default, cancellationToken);
         }
 
         /// <summary>
@@ -92,14 +96,15 @@ namespace WikiClientLibrary.Wikia
         /// <exception cref="ArgumentNullException">Either <paramref name="request"/> or <paramref name="responseParser"/> is <c>null</c>.</exception>
         /// <returns>The parsed JSON root of response.</returns>
         /// <seealso cref="WikiaSiteOptions.NirvanaEndPointUrl"/>
-        public async Task<object> InvokeNirvanaAsync(WikiRequestMessage request, IWikiResponseMessageParser responseParser, CancellationToken cancellationToken)
+        public async Task<T> InvokeNirvanaAsync<T>(WikiRequestMessage request,
+            IWikiResponseMessageParser<T> responseParser, CancellationToken cancellationToken)
         {
             Logger.LogDebug("Invoking Nirvana API: {Request}", request);
             var result = await WikiClient.InvokeAsync(Options.NirvanaEndPointUrl, request, responseParser, cancellationToken);
             return result;
         }
 
-        /// <inheritdoc cref="InvokeWikiaApiAsync(string,WikiRequestMessage,IWikiResponseMessageParser,CancellationToken)"/>
+        /// <inheritdoc cref="InvokeWikiaApiAsync{T}(string,WikiRequestMessage,IWikiResponseMessageParser{T},CancellationToken)"/>
         /// <remarks>This overload uses <see cref="WikiaJsonResonseParser"/> to parse the response.</remarks>
         public Task<JToken> InvokeWikiaApiAsync(string relativeUri, WikiRequestMessage request, CancellationToken cancellationToken)
         {
@@ -115,12 +120,11 @@ namespace WikiClientLibrary.Wikia
         /// <param name="cancellationToken">The token used to cancel the operation.</param>
         /// <exception cref="ArgumentNullException">Either <paramref name="request"/> or <paramref name="responseParser"/> is <c>null</c>.</exception>
         /// <returns>The parsed JSON root of response.</returns>
-        public async Task<JToken> InvokeWikiaApiAsync(string relativeUri, WikiRequestMessage request, IWikiResponseMessageParser responseParser,
-            CancellationToken cancellationToken)
+        public async Task<T> InvokeWikiaApiAsync<T>(string relativeUri, WikiRequestMessage request,
+            IWikiResponseMessageParser<T> responseParser, CancellationToken cancellationToken)
         {
             Logger.LogDebug("Invoking Wikia API v1: {Request}", request);
-            var result = (JToken)await WikiClient.InvokeAsync(Options.WikiaApiRootUrl + relativeUri,
-                request, responseParser, cancellationToken);
+            var result = await WikiClient.InvokeAsync(Options.WikiaApiRootUrl + relativeUri, request, responseParser, cancellationToken);
             return result;
         }
 

@@ -55,7 +55,7 @@ namespace WikiClientLibrary.Client
     /// Other types of values are marshaled by calling <see cref="object.ToString"/> on them.
     /// </description></item>
     /// </list>
-    /// Note that the message sending methods (e.g. <see cref="WikiSite.GetJsonAsync(WikiRequestMessage,CancellationToken)"/>)
+    /// Note that the message sending methods (e.g. <see cref="WikiSite.InvokeMediaWikiApiAsync(WikiClientLibrary.Client.WikiRequestMessage,System.Threading.CancellationToken)"/>)
     /// may also change the way the message is marshaled. For the detailed information, please see the message sender's
     /// documentations respectively.
     /// </para>

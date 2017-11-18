@@ -141,8 +141,8 @@ namespace WikiClientLibrary.Client
         #endregion
 
         /// <inheritdoc />
-        public async Task<object> InvokeAsync(string endPointUrl, WikiRequestMessage message,
-            IWikiResponseMessageParser responseParser, CancellationToken cancellationToken)
+        public async Task<T> InvokeAsync<T>(string endPointUrl, WikiRequestMessage message,
+            IWikiResponseMessageParser<T> responseParser, CancellationToken cancellationToken)
         {
             if (endPointUrl == null) throw new ArgumentNullException(nameof(endPointUrl));
             if (message == null) throw new ArgumentNullException(nameof(message));
@@ -168,8 +168,8 @@ namespace WikiClientLibrary.Client
                 {Content = message.GetHttpContent()};
         }
 
-        private async Task<object> SendAsync(string endPointUrl, WikiRequestMessage message,
-            IWikiResponseMessageParser responseParser, CancellationToken cancellationToken)
+        private async Task<T> SendAsync<T>(string endPointUrl, WikiRequestMessage message,
+            IWikiResponseMessageParser<T> responseParser, CancellationToken cancellationToken)
         {
             Debug.Assert(endPointUrl != null);
             Debug.Assert(message != null);
@@ -254,7 +254,7 @@ namespace WikiClientLibrary.Client
                         if (await PrepareForRetry(localRetryDelay)) goto RETRY;
                         throw new InvalidOperationException("Reached maximum count of retries.");
                     }
-                    return parsed;
+                    return (T)parsed;
                 }
                 catch (Exception ex)
                 {

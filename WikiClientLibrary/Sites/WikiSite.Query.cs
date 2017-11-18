@@ -15,7 +15,7 @@ namespace WikiClientLibrary.Sites
 
         private async Task<JArray> FetchMessagesAsync(string messagesExpr, CancellationToken cancellationToken)
         {
-            var jresult = await GetJsonAsync(new MediaWikiFormRequestMessage(new
+            var jresult = await InvokeMediaWikiApiAsync(new MediaWikiFormRequestMessage(new
             {
                 action = "query",
                 meta = "allmessages",
@@ -143,7 +143,7 @@ namespace WikiClientLibrary.Sites
         /// </summary>
         public async Task<SiteStatistics> GetStatisticsAsync(CancellationToken cancellationToken)
         {
-            var jobj = await GetJsonAsync(new MediaWikiFormRequestMessage(new
+            var jobj = await InvokeMediaWikiApiAsync(new MediaWikiFormRequestMessage(new
             {
                 action = "query",
                 meta = "siteinfo",
@@ -272,7 +272,7 @@ namespace WikiClientLibrary.Sites
              */
             if (string.IsNullOrEmpty(searchExpression)) throw new ArgumentNullException(nameof(searchExpression));
             if (maxCount <= 0) throw new ArgumentOutOfRangeException(nameof(maxCount));
-            var jresult = await GetJsonAsync(new MediaWikiFormRequestMessage(new
+            var jresult = await InvokeMediaWikiApiAsync(new MediaWikiFormRequestMessage(new
             {
                 action = "opensearch",
                 @namespace = defaultNamespaceId,

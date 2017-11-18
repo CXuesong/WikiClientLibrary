@@ -202,7 +202,7 @@ namespace WikiClientLibrary.Sites
         {
             using (this.BeginActionScope(null))
             {
-                var jobj = await GetJsonAsync(new MediaWikiFormRequestMessage(new
+                var jobj = await InvokeMediaWikiApiAsync(new MediaWikiFormRequestMessage(new
                 {
                     action = "query",
                     meta = "siteinfo",
@@ -232,7 +232,7 @@ namespace WikiClientLibrary.Sites
             // Note: _SiteInfo can be null here.
             using (this.BeginActionScope(null))
             {
-                var jobj = await GetJsonAsync(new MediaWikiFormRequestMessage(new
+                var jobj = await InvokeMediaWikiApiAsync(new MediaWikiFormRequestMessage(new
                 {
                     action = "query",
                     meta = "userinfo",
@@ -332,19 +332,19 @@ namespace WikiClientLibrary.Sites
 
         #region Basic API
 
-        /// <inheritdoc cref="GetJsonAsync(WikiRequestMessage,IWikiResponseMessageParser,bool,CancellationToken)"/>
+        /// <inheritdoc cref="InvokeMediaWikiApiAsync{T}(WikiRequestMessage,IWikiResponseMessageParser{T},bool,CancellationToken)"/>
         /// <remarks>This overload uses <see cref="MediaWikiJsonResponseParser.Default"/> as response parser.</remarks>
-        public Task<JToken> GetJsonAsync(WikiRequestMessage message, CancellationToken cancellationToken)
+        public Task<JToken> InvokeMediaWikiApiAsync(WikiRequestMessage message, CancellationToken cancellationToken)
         {
-            return GetJsonAsync(message, MediaWikiJsonResponseParser.Default, false, cancellationToken);
+            return InvokeMediaWikiApiAsync(message, MediaWikiJsonResponseParser.Default, false, cancellationToken);
         }
 
-        /// <inheritdoc cref="GetJsonAsync(WikiRequestMessage,IWikiResponseMessageParser,bool,CancellationToken)"/>
+        /// <inheritdoc cref="InvokeMediaWikiApiAsync{T}(WikiRequestMessage,IWikiResponseMessageParser{T},bool,CancellationToken)"/>
         /// <remarks>This overload uses <see cref="MediaWikiJsonResponseParser.Default"/> as response parser.</remarks>
-        public Task<JToken> GetJsonAsync(WikiRequestMessage message,
+        public Task<JToken> InvokeMediaWikiApiAsync(WikiRequestMessage message,
             bool suppressAccountAssertion, CancellationToken cancellationToken)
         {
-            return GetJsonAsync(message, MediaWikiJsonResponseParser.Default, suppressAccountAssertion, cancellationToken);
+            return InvokeMediaWikiApiAsync(message, MediaWikiJsonResponseParser.Default, suppressAccountAssertion, cancellationToken);
         }
 
         /// <summary>
@@ -371,7 +371,7 @@ namespace WikiClientLibrary.Sites
         /// </description></item>
         /// </list>
         /// </remarks>
-        public async Task<JToken> GetJsonAsync(WikiRequestMessage message, IWikiResponseMessageParser responseParser,
+        public async Task<T> InvokeMediaWikiApiAsync<T>(WikiRequestMessage message, IWikiResponseMessageParser<T> responseParser,
             bool suppressAccountAssertion, CancellationToken cancellationToken)
         {
             if (message == null) throw new ArgumentNullException(nameof(message));
@@ -411,8 +411,7 @@ namespace WikiClientLibrary.Sites
                 localRequest, suppressAccountAssertion);
             try
             {
-                return (JToken)await WikiClient.InvokeAsync(options.ApiEndpoint, localRequest,
-                    MediaWikiJsonResponseParser.Default, cancellationToken);
+                return await WikiClient.InvokeAsync(options.ApiEndpoint, localRequest, responseParser, cancellationToken);
             }
             catch (AccountAssertionFailureException)
             {
@@ -462,7 +461,7 @@ namespace WikiClientLibrary.Sites
         [Obsolete("Please use WikiSite.GetJsonAsync method.")]
         public Task<JToken> PostValuesAsync(IEnumerable<KeyValuePair<string, string>> queryParams,
             CancellationToken cancellationToken)
-            => GetJsonAsync(new MediaWikiFormRequestMessage(queryParams), false, cancellationToken);
+            => InvokeMediaWikiApiAsync(new MediaWikiFormRequestMessage(queryParams), false, cancellationToken);
 
         /// <summary>
         /// Invokes API and get JSON result.
@@ -476,7 +475,7 @@ namespace WikiClientLibrary.Sites
         public Task<JToken> PostValuesAsync(IEnumerable<KeyValuePair<string, string>> queryParams,
             bool supressAccountAssertion, CancellationToken cancellationToken)
         {
-            return GetJsonAsync(new MediaWikiFormRequestMessage(new MediaWikiFormRequestMessage(queryParams)),
+            return InvokeMediaWikiApiAsync(new MediaWikiFormRequestMessage(new MediaWikiFormRequestMessage(queryParams)),
                 supressAccountAssertion, cancellationToken);
         }
 
@@ -490,7 +489,7 @@ namespace WikiClientLibrary.Sites
         /// <exception cref="OperationFailedException">There's "error" node in returned JSON.</exception>
         [Obsolete("Please use WikiSite.GetJsonAsync method.")]
         public Task<JToken> PostValuesAsync(object queryParams, CancellationToken cancellationToken)
-            => GetJsonAsync(new MediaWikiFormRequestMessage(queryParams), false, cancellationToken);
+            => InvokeMediaWikiApiAsync(new MediaWikiFormRequestMessage(queryParams), false, cancellationToken);
 
         /// <summary>
         /// Invoke API and get JSON result.
@@ -506,7 +505,7 @@ namespace WikiClientLibrary.Sites
             CancellationToken cancellationToken)
         {
             if (queryParams == null) throw new ArgumentNullException(nameof(queryParams));
-            return GetJsonAsync(new MediaWikiFormRequestMessage(Utility.ToWikiStringValuePairs(queryParams)),
+            return InvokeMediaWikiApiAsync(new MediaWikiFormRequestMessage(Utility.ToWikiStringValuePairs(queryParams)),
                 supressAccountAssertion,
                 cancellationToken);
         }
@@ -653,7 +652,7 @@ namespace WikiClientLibrary.Sites
                     //  because the client might be logging to a private wiki,
                     //  where any "query" operation before logging-in might raise readapidenied error.
                     RETRY:
-                    var jobj = await GetJsonAsync(new MediaWikiFormRequestMessage(new
+                    var jobj = await InvokeMediaWikiApiAsync(new MediaWikiFormRequestMessage(new
                     {
                         action = "login",
                         lgname = userName,
@@ -722,7 +721,7 @@ namespace WikiClientLibrary.Sites
             {
                 try
                 {
-                    var jobj = await GetJsonAsync(new MediaWikiFormRequestMessage(new
+                    var jobj = await InvokeMediaWikiApiAsync(new MediaWikiFormRequestMessage(new
                     {
                         action = "logout",
                     }), true, CancellationToken.None);

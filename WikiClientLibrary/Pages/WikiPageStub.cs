@@ -218,7 +218,7 @@ namespace WikiClientLibrary.Pages
                     : 50;
                 foreach (var partition in ids.Partition(titleLimit))
                 {
-                    var jresult = await site.GetJsonAsync(new MediaWikiFormRequestMessage(new
+                    var jresult = await site.InvokeMediaWikiApiAsync(new MediaWikiFormRequestMessage(new
                     {
                         action = "query",
                         pageids = string.Join("|", partition),
@@ -257,7 +257,7 @@ namespace WikiClientLibrary.Pages
                     : 50;
                 foreach (var partition in titles.Partition(titleLimit))
                 {
-                    var jresult = await site.GetJsonAsync(new MediaWikiFormRequestMessage(new
+                    var jresult = await site.InvokeMediaWikiApiAsync(new MediaWikiFormRequestMessage(new
                     {
                         action = "query",
                         titles = string.Join("|", partition),

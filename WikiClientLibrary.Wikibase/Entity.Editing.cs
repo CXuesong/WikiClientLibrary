@@ -159,7 +159,7 @@ namespace WikiClientLibrary.Wikibase
             using (Site.BeginActionScope(this))
             {
                 var jdata = EditEntriesToJObject(edits);
-                var jresult = await Site.GetJsonAsync(new MediaWikiFormRequestMessage(new
+                var jresult = await Site.InvokeMediaWikiApiAsync(new MediaWikiFormRequestMessage(new
                 {
                     action = "wbeditentity",
                     token = WikiSiteToken.Edit,
