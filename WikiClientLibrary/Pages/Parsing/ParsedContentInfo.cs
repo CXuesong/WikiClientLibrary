@@ -3,13 +3,14 @@ using System.Collections.ObjectModel;
 using System.Runtime.Serialization;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using WikiClientLibrary.Sites;
 
-namespace WikiClientLibrary.Sites
+namespace WikiClientLibrary.Pages.Parsing
 {
     /// <summary>
     /// Contains parsed content of specific page or wikitext.
     /// </summary>
-    /// <remarks>Use <see cref="WikiSite.ParsePageAsync(string)"/> or other related methods to get parsed content.</remarks>
+    /// <remarks>Use <see cref="WikiSiteExtensions.ParsePageAsync(WikiSite,string)"/> or other related methods to get parsed content.</remarks>
     [JsonObject(MemberSerialization.OptIn)]
     public class ParsedContentInfo
     {

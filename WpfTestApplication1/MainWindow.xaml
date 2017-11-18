@@ -5,6 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:WpfTestApplication1"
         xmlns:sites="clr-namespace:WikiClientLibrary.Sites;assembly=WikiClientLibrary"
+        xmlns:parsing="clr-namespace:WikiClientLibrary.Pages.Parsing;assembly=WikiClientLibrary"
         mc:Ignorable="d"
         Title="Test Wiki Browser" Height="350" Width="525" Loaded="Window_Loaded">
     <Grid>
@@ -19,7 +20,7 @@
         </Grid.ColumnDefinitions>
         <ListBox x:Name="TocListBox" SelectionChanged="TocListBox_SelectionChanged">
             <ListBox.ItemTemplate>
-                <DataTemplate DataType="{x:Type sites:ContentSectionInfo}">
+                <DataTemplate DataType="{x:Type parsing:ContentSectionInfo}">
                     <StackPanel Orientation="Vertical">
                         <TextBlock Text="{Binding Number}" FontSize="9pt"/>
                         <TextBlock Text="{Binding Heading}" FontSize="12pt" />

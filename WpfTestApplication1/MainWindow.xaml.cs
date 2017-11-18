@@ -20,6 +20,7 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using WikiClientLibrary;
 using WikiClientLibrary.Client;
+using WikiClientLibrary.Pages.Parsing;
 using WikiClientLibrary.Sites;
 
 namespace WpfTestApplication1

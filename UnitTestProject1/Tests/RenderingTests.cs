@@ -1,5 +1,6 @@
 ﻿using System.Linq;
 using System.Threading.Tasks;
+using WikiClientLibrary.Pages.Parsing;
 using WikiClientLibrary.Sites;
 using Xunit;
 using Xunit.Abstractions;

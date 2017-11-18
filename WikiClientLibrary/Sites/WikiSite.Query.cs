@@ -209,7 +209,6 @@ namespace WikiClientLibrary.Sites
             return OpenSearchAsync(searchExpression, maxCount, 0, options, CancellationToken.None);
         }
 
-
         /// <summary>
         /// Performs an opensearch and get results, often used for search box suggestions.
         /// (MediaWiki 1.25 or OpenSearch extension)
