@@ -44,7 +44,9 @@ namespace WikiClientLibrary.Pages.Queries.Properties
         internal static PagePropertiesPropertyGroup Create(JObject jpage)
         {
             var props = jpage["pageprops"];
-            if (props == null) return null;
+            // jpage["pageprops"] == null for pages with no pageprop item,
+            // even if client specified prop=pageprops
+            if (props == null) return Empty;
             if (!props.HasValues) return Empty;
             return new PagePropertiesPropertyGroup(jpage);
         }

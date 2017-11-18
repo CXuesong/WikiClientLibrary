@@ -39,6 +39,7 @@ namespace WikiClientLibrary.Pages.Queries.Properties
         public static FileInfoPropertyGroup Create(JObject jpage)
         {
             var jrevisions = jpage["imageinfo"];
+            // jpage["imageinfo"] == null indicates the page may not be a valid File.
             if (jrevisions == null) return null;
             if (!jrevisions.HasValues) return Empty;
             var stub = MediaWikiHelper.PageStubFromJson(jpage);

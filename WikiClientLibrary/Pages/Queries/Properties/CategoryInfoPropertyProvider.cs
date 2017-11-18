@@ -30,6 +30,7 @@ namespace WikiClientLibrary.Pages.Queries.Properties
         public static CategoryInfoPropertyGroup Create(JObject jPage)
         {
             var cat = jPage["categoryinfo"];
+            // jpage["imageinfo"] == null indicates the page may not be a valid Category.
             if (cat == null) return null;
             return new CategoryInfoPropertyGroup(cat);
         }
