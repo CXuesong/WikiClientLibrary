@@ -66,5 +66,10 @@ namespace WikiClientLibrary.Pages.Queries.Properties
         /// </summary>
         public PagePropertyCollection PageProperties { get; }
 
+        /// <inheritdoc />
+        public override string ToString()
+        {
+            return PageProperties.ToString();
+        }
     }
 }

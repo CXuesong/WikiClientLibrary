@@ -51,6 +51,11 @@ namespace WikiClientLibrary.Pages.Queries.Properties
 
         public int SubcategoriesCount { get;  }
 
+        /// <inheritdoc />
+        public override string ToString()
+        {
+            return $"M:{MembersCount}, P:{PagesCount}, S:{SubcategoriesCount}, F:{FilesCount}";
+        }
     }
 
 }
