@@ -105,7 +105,7 @@ The original title of the page is '''{title}'''.
                 Output.WriteLine(ex.Message);
             }
             ShallowTrace(result);
-            var page = new WikiPage(site, fileName);
+            var page = new WikiPage(site, fileName, BuiltInNamespaces.File);
             await page.RefreshAsync();
             ShallowTrace(page);
             Assert.True(page.Exists);

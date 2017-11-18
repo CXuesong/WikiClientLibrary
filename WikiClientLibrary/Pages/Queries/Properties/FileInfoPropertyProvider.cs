@@ -9,7 +9,7 @@ using WikiClientLibrary.Infrastructures;
 
 namespace WikiClientLibrary.Pages.Queries.Properties
 {
-    public class FileInfoPropertyProvider : WikiPagePropertyProvider<CategoryInfoPropertyGroup>
+    public class FileInfoPropertyProvider : WikiPagePropertyProvider<FileInfoPropertyGroup>
     {
         /// <inheritdoc />
         public override IEnumerable<KeyValuePair<string, object>> EnumParameters()
@@ -21,9 +21,9 @@ namespace WikiClientLibrary.Pages.Queries.Properties
         }
 
         /// <inheritdoc />
-        public override CategoryInfoPropertyGroup ParsePropertyGroup(JObject json)
+        public override FileInfoPropertyGroup ParsePropertyGroup(JObject json)
         {
-            return CategoryInfoPropertyGroup.Create(json);
+            return FileInfoPropertyGroup.Create(json);
         }
 
         /// <inheritdoc />
@@ -38,12 +38,12 @@ namespace WikiClientLibrary.Pages.Queries.Properties
 
         public static FileInfoPropertyGroup Create(JObject jpage)
         {
-            var jrevisions = jpage["imageinfo"];
+            var info = jpage["imageinfo"];
             // jpage["imageinfo"] == null indicates the page may not be a valid File.
-            if (jrevisions == null) return null;
-            if (!jrevisions.HasValues) return Empty;
+            if (info == null) return null;
+            if (!info.HasValues) return Empty;
             var stub = MediaWikiHelper.PageStubFromJson(jpage);
-            return new FileInfoPropertyGroup(stub, (JArray)jrevisions);
+            return new FileInfoPropertyGroup(stub, (JArray)info);
         }
 
         private FileInfoPropertyGroup()
@@ -55,7 +55,7 @@ namespace WikiClientLibrary.Pages.Queries.Properties
         {
             if (jrevisions.Count == 1)
             {
-                _Revisions = MediaWikiHelper.RevisionFromJson((JObject)jrevisions.First, page);
+                _Revisions = MediaWikiHelper.FileRevisionFromJson((JObject)jrevisions.First, page);
             }
             else
             {
