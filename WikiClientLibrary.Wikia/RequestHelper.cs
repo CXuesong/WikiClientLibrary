@@ -12,9 +12,11 @@ using HtmlAgilityPack;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json.Linq;
 using WikiClientLibrary.Client;
+using WikiClientLibrary.Generators;
 using WikiClientLibrary.Infrastructures;
 using WikiClientLibrary.Infrastructures.Logging;
 using WikiClientLibrary.Pages;
+using WikiClientLibrary.Pages.Queries;
 using WikiClientLibrary.Pages.Queries.Properties;
 using WikiClientLibrary.Sites;
 using WikiClientLibrary.Wikia.Discussions;
@@ -90,7 +92,16 @@ namespace WikiClientLibrary.Wikia
             });
         }
 
-        private static readonly RevisionsPropertyProvider postRevisionsProvider = new RevisionsPropertyProvider {FetchContent = true};
+        private static readonly WikiPageQueryProvider postLastRevisionQueryProvider = new WikiPageQueryProvider
+        {
+            Properties =
+            {
+                new RevisionsPropertyProvider {FetchContent = true}
+            },
+            ResolveRedirects = false
+        };
+
+        private static readonly RevisionsPropertyProvider postRevisionWithContentProvider = new RevisionsPropertyProvider {FetchContent = true};
 
         public static async Task RefreshPostsAsync(IEnumerable<Post> posts,
             PostQueryOptions options, CancellationToken cancellationToken)
@@ -115,52 +126,32 @@ namespace WikiClientLibrary.Wikia
 
                         }
                         // Fetch last revisions to determine content and last editor
-                        // TODO WikiPage should have methods to fetch from page id.
-                        var lastRevisionTask = site.GetJsonAsync(new MediaWikiFormRequestMessage(new
-                        {
-                            action = "query",
-                            pageids = string.Join("|", partition.Select(p => p.Id)),
-                            prop = "revisions",
-                            rvlimit = partition.Count == 1 ? (int?)1 : null,
-                            rvprop = postRevisionsProvider.EnumParameters().First().Value
-                        }), cancellationToken);
+                        var pages = partition.Select(p => new WikiPage(site, p.Id)).ToList();
+                        var lastRevisionTask = pages.RefreshAsync(postLastRevisionQueryProvider, cancellationToken);
                         // Fetch the first revisions, when needed, to determine author.
                         Dictionary<int, Revision> firstRevisionDict = null;
                         if (partition.Count == 1
                             || (options & PostQueryOptions.ExactAuthoringInformation) == PostQueryOptions.ExactAuthoringInformation)
                         {
+                            // We can only fetch for 1 page at a time, with rvdir = "newer"
                             firstRevisionDict = new Dictionary<int, Revision>();
                             foreach (var post in partition)
                             {
-                                // We can only fetch for 1 page at a time, with rvdir = "newer"
-                                // TODO WikiPage should have methods to fetch from page id.
-                                var jresult = await site.GetJsonAsync(new MediaWikiFormRequestMessage(new
+                                var generator = new RevisionsGenerator(site, post.Id)
                                 {
-                                    action = "query",
-                                    pageids = post.Id,
-                                    prop = "revisions",
-                                    rvdir = "newer",
-                                    rvlimit = 1,
-                                    rvprop = postRevisionsProvider.EnumParameters().First().Value
-                                }), cancellationToken);
-                                var jpage = jresult["query"]["pages"][post.Id.ToString(CultureInfo.InvariantCulture)];
-                                if (jpage["missing"] != null)
-                                {
-                                    post.Exists = false;
-                                    continue;
-                                }
-                                var pageStub = MediaWikiHelper.PageStubFromJson((JObject)jpage);
-                                var rev = MediaWikiHelper.RevisionFromJson((JObject)jpage["revisions"].First, pageStub);
+                                    TimeAscending = true,
+                                    PaginationSize = 1,
+                                    PropertyProvider = postRevisionWithContentProvider
+                                };
+                                var rev = await generator.EnumItemsAsync().First(cancellationToken);
                                 firstRevisionDict[post.Id] = rev;
                             }
-
                         }
-                        var jLastRevResult = await lastRevisionTask;
+                        await lastRevisionTask;
+                        var lastRevisions = pages.ToDictionary(p => p.Id, p => p.LastRevision);
                         foreach (var post in partition)
                         {
-                            var jpage = jLastRevResult["query"]["pages"][post.Id.ToString(CultureInfo.InvariantCulture)];
-                            var pageStub = MediaWikiHelper.PageStubFromJson((JObject)jpage);
-                            var lastRev = MediaWikiHelper.RevisionFromJson((JObject)jpage["revisions"].First, pageStub);
+                            var lastRev = lastRevisions[post.Id];
                             Revision firstRev = null;
                             firstRevisionDict?.TryGetValue(post.Id, out firstRev);
                             post.SetRevisions(firstRev, lastRev);

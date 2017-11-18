@@ -38,6 +38,13 @@ namespace WikiClientLibrary.Generators
         }
 
         /// <inheritdoc />
+        /// <param name="pageId">ID of the page from which to generate revisions.</param>
+        public RevisionsGenerator(WikiSite site, int pageId) : base(site)
+        {
+            PageId = pageId;
+        }
+
+        /// <inheritdoc />
         public override string PropertyName => "revisions";
 
         /// <inheritdoc />
