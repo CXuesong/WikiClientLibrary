@@ -18,7 +18,7 @@ namespace WikiClientLibrary.Generators
     /// <remarks>
     /// <para>For full-text search on Wikia, use <c>LocalWikiSearchList</c> in <c>WikiClientLibrary.Wikia.WikiaApi</c> namespace.</para>
     /// </remarks>
-    public class SearchGenerator : WikiPageGenerator<SearchResultItem, WikiPage>
+    public class SearchGenerator : WikiPageGenerator<SearchResultItem>
     {
         private SearchableField _MatchingField = SearchableField.Text;
 

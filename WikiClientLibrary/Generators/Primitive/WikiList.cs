@@ -33,7 +33,7 @@ namespace WikiClientLibrary.Generators.Primitive
     /// Represents a configured MediaWiki <c>list</c>. (<a href="https://www.mediawiki.org/wiki/API:Lists">mw:API:Lists</a>)
     /// </summary>
     /// <typeparam name="T">The type of listed items.</typeparam>
-    /// <seealso cref="WikiPageGenerator{TItem,TPage}"/>
+    /// <seealso cref="WikiPageGenerator{TItem}"/>
     /// <seealso cref="WikiPagePropertyList{T}"/>
     public abstract class WikiList<T> : IWikiList<T>
     {

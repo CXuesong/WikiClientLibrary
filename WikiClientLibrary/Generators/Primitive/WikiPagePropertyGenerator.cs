@@ -15,14 +15,12 @@ using WikiClientLibrary.Sites;
 
 namespace WikiClientLibrary.Generators.Primitive
 {
-
     /// <summary>
     /// Represents a page-property-based MediaWiki generator
     /// (or sequence, see <a href="https://www.mediawiki.org/wiki/API:Generator">mw:API:Generator</a>)
     /// of <see cref="WikiPage"/>.
     /// </summary>
     /// <typeparam name="TItem">The type of listed items.</typeparam>
-    /// <typeparam name="TPage">The type of listed <see cref="WikiPage"/>.</typeparam>
     /// <remarks>
     /// <para>For common implementations for MediaWiki generator, prefer inheriting from
     /// <see cref="WikiPagePropertyGenerator{TPage}"/>, which returns <see cref="WikiPageStub"/>
@@ -35,9 +33,8 @@ namespace WikiClientLibrary.Generators.Primitive
     /// use <see cref="WikiPagePropertyList{T}.EnumItemsAsync"/>.
     /// </para>
     /// </remarks>
-    /// <seealso cref="WikiPageGenerator{TItem,TPage}"/>
-    public abstract class WikiPagePropertyGenerator<TItem, TPage> : WikiPagePropertyList<TItem>, IWikiPageGenerator<TPage>
-        where TPage : WikiPage
+    /// <seealso cref="WikiPageGenerator{TItem}"/>
+    public abstract class WikiPagePropertyGenerator<TItem> : WikiPagePropertyList<TItem>, IWikiPageGenerator
     {
         /// <inheritdoc/>
         protected WikiPagePropertyGenerator(WikiSite site) : base(site)
@@ -66,7 +63,7 @@ namespace WikiClientLibrary.Generators.Primitive
         /// <summary>
         /// Asynchornously generate the sequence of pages.
         /// </summary>
-        public virtual IAsyncEnumerable<TPage> EnumPagesAsync()
+        public virtual IAsyncEnumerable<WikiPage> EnumPagesAsync()
         {
             return EnumPagesAsync(MediaWikiHelper.QueryProviderFromOptions(PageQueryOptions.None));
         }
@@ -74,7 +71,7 @@ namespace WikiClientLibrary.Generators.Primitive
         /// <summary>
         /// Asynchornously generates the sequence of pages.
         /// </summary>
-        public virtual IAsyncEnumerable<TPage> EnumPagesAsync(PageQueryOptions options)
+        public virtual IAsyncEnumerable<WikiPage> EnumPagesAsync(PageQueryOptions options)
         {
             return EnumPagesAsync(MediaWikiHelper.QueryProviderFromOptions(options));
         }
@@ -83,7 +80,7 @@ namespace WikiClientLibrary.Generators.Primitive
         /// Asynchornously generates the sequence of pages.
         /// </summary>
         /// <param name="options">Options when querying for the pages.</param>
-        public virtual IAsyncEnumerable<TPage> EnumPagesAsync(IWikiPageQueryProvider options)
+        public virtual IAsyncEnumerable<WikiPage> EnumPagesAsync(IWikiPageQueryProvider options)
         {
             var queryParams = options.EnumParameters().ToDictionary();
             queryParams.Add("generator", GeneratorName);
@@ -93,7 +90,7 @@ namespace WikiClientLibrary.Generators.Primitive
             return RequestHelper.QueryWithContinuation(Site, queryParams,
                 () => Site.BeginActionScope(this, options),
                 DistinctGeneratedPages)
-                .SelectMany(jquery => WikiPage.FromJsonQueryResult(Site, jquery, options).Cast<TPage>()
+                .SelectMany(jquery => WikiPage.FromJsonQueryResult(Site, jquery, options).Cast<WikiPage>()
                     .ToAsyncEnumerable());
         }
     }
@@ -101,15 +98,14 @@ namespace WikiClientLibrary.Generators.Primitive
 
     /// <summary>
     /// The base classes for commonly-used <see cref="WikiPage"/> generator that implements
-    /// <see cref="WikiPagePropertyGenerator{TItem,TPage}"/>, where <c>TItem</c> is <see cref="WikiPageStub"/>.
+    /// <see cref="WikiPagePropertyGenerator{TItem}"/>, where <c>TItem</c> is <see cref="WikiPageStub"/>.
     /// </summary>
     /// <remarks>
     /// <para>For a more generic implementations for page-property-based MediaWiki generator,
     /// or implementations returning a sequence where the item type is not <see cref="WikiPageStub"/>,
-    /// please derive your generator from <see cref="WikiPagePropertyGenerator{TItem,TPage}"/>.</para>
+    /// please derive your generator from <see cref="WikiPagePropertyGenerator{TItem}"/>.</para>
     /// </remarks>
-    public abstract class WikiPagePropertyGenerator<TPage> : WikiPagePropertyGenerator<WikiPageStub, TPage>
-        where TPage : WikiPage
+    public abstract class WikiPagePropertyGenerator : WikiPagePropertyGenerator<WikiPageStub>
     {
         /// <inheritdoc />
         protected WikiPagePropertyGenerator(WikiSite site) : base(site)

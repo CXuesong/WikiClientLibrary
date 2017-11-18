@@ -13,7 +13,7 @@ namespace WikiClientLibrary.Generators
     /// Searches for articles around the given point (determined either by coordinates or by article name).
     /// (<a href="https://www.mediawiki.org/wiki/Extension:GeoData#list%253Dgeosearch">mw:Extension:GeoData#list=geosearch</a>)
     /// </summary>
-    public class GeoSearchGenerator : WikiPageGenerator<GeoSearchResultItem, WikiPage>
+    public class GeoSearchGenerator : WikiPageGenerator<GeoSearchResultItem>
     {
 
         /// <inheritdoc />

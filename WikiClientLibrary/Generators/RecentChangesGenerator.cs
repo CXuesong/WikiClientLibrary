@@ -18,7 +18,7 @@ namespace WikiClientLibrary.Generators
     /// <summary>
     /// Generates all recent changes to the wiki, à la Special:Recentchanges.
     /// </summary>
-    public class RecentChangesGenerator : WikiPageGenerator<RecentChangeItem, WikiPage>
+    public class RecentChangesGenerator : WikiPageGenerator<RecentChangeItem>
     {
 
         /// <inheritdoc />

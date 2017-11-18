@@ -17,7 +17,7 @@ namespace WikiClientLibrary.Generators
     /// See <a href="https://www.mediawiki.org/wiki/API:Querypage">mw:API:Querypage</a>.
     /// You can also invoke <see cref="GetQueryPageNamesAsync()"/> to ask for the list in the runtime.
     /// </remarks>
-    public class QueryPageGenerator : WikiPageGenerator<WikiPage>
+    public class QueryPageGenerator : WikiPageGenerator
     {
         /// <inheritdoc />
         public QueryPageGenerator(WikiSite site) : base(site)

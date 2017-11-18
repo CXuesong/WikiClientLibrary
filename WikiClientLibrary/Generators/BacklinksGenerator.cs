@@ -11,7 +11,7 @@ namespace WikiClientLibrary.Generators
     /// Generates all the pages that links to the specified title (not transclusion). (aka. what-links-here)
     /// </summary>
     /// <seealso cref="TranscludedInGenerator"/>
-    public class BacklinksGenerator : WikiPageGenerator<WikiPage>
+    public class BacklinksGenerator : WikiPageGenerator
     {
         /// <inheritdoc />
         public BacklinksGenerator(WikiSite site) : base(site)

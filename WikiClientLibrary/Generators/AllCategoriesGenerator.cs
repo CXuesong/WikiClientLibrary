@@ -12,7 +12,7 @@ namespace WikiClientLibrary.Generators
     /// <summary>
     /// Generates all the categories with or without description pages.
     /// </summary>
-    public class AllCategoriesGenerator : WikiPageGenerator<CategoryPage>
+    public class AllCategoriesGenerator : WikiPageGenerator
     {
 
         /// <inheritdoc />

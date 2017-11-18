@@ -15,7 +15,7 @@ namespace WikiClientLibrary.Generators
     /// <summary>
     /// Generates all the pages in a specific namespace.
     /// </summary>
-    public class AllPagesGenerator : WikiPageGenerator<WikiPage>
+    public class AllPagesGenerator : WikiPageGenerator
     {
 
         /// <inheritdoc />

@@ -12,7 +12,7 @@ namespace WikiClientLibrary.Generators
     /// </summary>
     /// <seealso cref="BacklinksGenerator"/>
     /// <seealso cref="TransclusionsGenerator"/>
-    public class TranscludedInGenerator : WikiPageGenerator<WikiPage>
+    public class TranscludedInGenerator : WikiPageGenerator
     {
 
         /// <inheritdoc />

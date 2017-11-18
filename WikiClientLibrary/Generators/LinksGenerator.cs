@@ -13,7 +13,7 @@ namespace WikiClientLibrary.Generators
     /// </summary>
     /// <see cref="TransclusionsGenerator"/>
     /// <see cref="BacklinksGenerator"/>
-    public class LinksGenerator : WikiPagePropertyGenerator<WikiPage>
+    public class LinksGenerator : WikiPagePropertyGenerator
     {
         /// <inheritdoc />
         public LinksGenerator(WikiSite site) : base(site)

@@ -20,7 +20,7 @@ namespace WikiClientLibrary.Generators
     /// <summary>
     /// Represents a generator (or iterator) of <see cref="Revision"/>s on a specific page.
     /// </summary>
-    public class RevisionsGenerator : WikiPagePropertyGenerator<Revision, WikiPage>
+    public class RevisionsGenerator : WikiPagePropertyGenerator<Revision>
     {
 
         private RevisionsPropertyProvider _PropertyProvider = new RevisionsPropertyProvider();
