@@ -23,7 +23,7 @@ namespace WikiClientLibrary.Generators.Primitive
     /// <typeparam name="TItem">The type of listed items.</typeparam>
     /// <remarks>
     /// <para>For common implementations for MediaWiki generator, prefer inheriting from
-    /// <see cref="WikiPagePropertyGenerator{TPage}"/>, which returns <see cref="WikiPageStub"/>
+    /// <see cref="WikiPagePropertyGenerator"/>, which returns <see cref="WikiPageStub"/>
     /// for <see cref="WikiList{T}.EnumItemsAsync"/> implementation.</para>
     /// <para>
     /// For <c>generator</c>s, it's not necessary for the sequence taken out

@@ -43,9 +43,9 @@ namespace WikiClientLibrary.Pages.Queries
 
     /// <inheritdoc />
     /// <summary>
-    /// The default implementation of <see cref="IWikiPageQueryProvider"/> that provides basic MediaWiki API
-    /// request parameters for <c>action=query&amp;titles=</c> or <c>action=query&amp;pageids=</c> requests
-    /// by a set of configurable properties.
+    /// The default implementation of <see cref="IWikiPageQueryProvider"/> that generates parameters for
+    /// <c>action=query&amp;titles=</c> or <c>action=query&amp;pageids=</c> MediaWiki API requests
+    /// with a set of <see cref="IWikiPagePropertyProvider{T}"/>.
     /// </summary>
     public class WikiPageQueryProvider : IWikiPageQueryProvider
     {

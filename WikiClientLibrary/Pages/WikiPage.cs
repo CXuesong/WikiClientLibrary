@@ -85,6 +85,11 @@ namespace WikiClientLibrary.Pages
         private static readonly IWikiPagePropertyGroup[] emptyPropertyGroups = { };
         private PageInfoPropertyGroup pageInfo;
 
+        /// <summary>
+        /// Gets the property group of specified type that is attached to this page.
+        /// </summary>
+        /// <param name="propertyGroupType">Type of the desired property group. Must be a type implementing <see cref="IWikiPagePropertyGroup"/>.</param>
+        /// <returns>The property group instance of the specified type, or <c>default(T)</c> if no such item can be found.</returns>
         public IWikiPagePropertyGroup GetPropertyGroup(Type propertyGroupType)
         {
             var ti = propertyGroupType.GetTypeInfo();
@@ -98,6 +103,11 @@ namespace WikiClientLibrary.Pages
             return null;
         }
 
+        /// <summary>
+        /// Gets the property group of specified type that is attached to this page.
+        /// </summary>
+        /// <returns>The property group instance of the specified type, or <c>default(T)</c> if no such item can be found.</returns>
+        /// <typeparam name="T">The type of the desired property group.</typeparam>
         public T GetPropertyGroup<T>() where T : IWikiPagePropertyGroup
         {
             if (propertyGroups == null) return default(T);
@@ -108,6 +118,9 @@ namespace WikiClientLibrary.Pages
             return default(T);
         }
 
+        /// <summary>
+        /// Gets a read-only view of all the fetched property groups attached to this page.
+        /// </summary>
         public IReadOnlyCollection<IWikiPagePropertyGroup> PropertyGroups
         {
             get

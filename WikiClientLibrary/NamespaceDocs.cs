@@ -1,5 +1,10 @@
 ﻿using System.Collections.Generic;
 using System.Runtime.CompilerServices;
+using System.Threading;
+using WikiClientLibrary.Client;
+using WikiClientLibrary.Generators;
+using WikiClientLibrary.Generators.Primitive;
+using WikiClientLibrary.Sites;
 
 namespace WikiClientLibrary
 {
@@ -40,14 +45,80 @@ namespace WikiClientLibrary.Sites
 namespace WikiClientLibrary.Pages
 {
     /// <summary>
-    /// This namespace contains classes to perform operations on various MediaWiki pages.
-    /// It also contains classes for file management on MediaWiki sites.
+    /// This namespace contains classes to perform operations on MediaWiki pages.
     /// </summary>
     [CompilerGenerated]
     internal class NamespaceDoc
     {
     }
 }
+
+namespace WikiClientLibrary.Pages.Queries
+{
+    /// <summary>
+    /// This namespace contains configurable classes that can build parameters for MediaWiki API
+    /// requests, which later can be used for querying a sequence of MediaWiki pages
+    /// from the server.
+    /// </summary>
+    [CompilerGenerated]
+    internal class NamespaceDoc
+    {
+    }
+}
+
+namespace WikiClientLibrary.Pages.Queries.Properties
+{
+    /// <summary>
+    /// This namespace contains property groups along with their providers
+    /// for querying various page properties of MediaWiki pages. 
+    /// </summary>
+    /// <remarks>
+    /// <para>When querying for MediaWiki pages from server, the client can also ask for a subset of properties for the page
+    /// of interest. Depending on the installation of extensions, the server supports different set of property modules.
+    /// For a list of commonly-used property modules,
+    /// see <a href="https://www.mediawiki.org/wiki/API:Properties">mw:API:Properties</a>.</para>
+    /// <para>The classes in this namespace deal with property modules that applies to pages only.
+    /// For property modules that don't need to be associated with MediaWiki pages
+    /// (e.g. <a href="https://www.mediawiki.org/wiki/API:Stashimageinfo">prop=stashimageinfo</a>),
+    /// you might need to initiate the request via <see cref="WikiSite.InvokeMediaWikiApiAsync(WikiRequestMessage,CancellationToken)"/>.
+    /// For most of the properties that returns a sequence of values
+    /// (e.g. <a href="https://www.mediawiki.org/wiki/API:Revisions">prop=revisions</a>,
+    /// <a href="https://www.mediawiki.org/wiki/API:Links">prop=links</a>),
+    /// please refer to the derived classes of <see cref="WikiPagePropertyList{T}"/>,
+    /// which allows you to enumerate the items with automatic list-continuation support.
+    /// There is one special case, however, for <c>prop=revisions</c>, that it has been implemented as
+    /// <see cref="RevisionsPropertyProvider"/> and <see cref="RevisionsGenerator"/>. For the distinction
+    /// between these classes, see their respective documentations.
+    /// </para>
+    /// </remarks>
+    [CompilerGenerated]
+    internal class NamespaceDoc
+    {
+    }
+}
+
+namespace WikiClientLibrary.Pages.Parsing
+{
+    /// <summary>
+    /// This namespace contains classes for parsing wikitext into HTML on the server-side.
+    /// </summary>
+    [CompilerGenerated]
+    internal class NamespaceDoc
+    {
+    }
+}
+
+namespace WikiClientLibrary.Files
+{
+    /// <summary>
+    /// This namespace contains classes for file management on MediaWiki sites.
+    /// </summary>
+    [CompilerGenerated]
+    internal class NamespaceDoc
+    {
+    }
+}
+
 
 namespace WikiClientLibrary.Generators
 {

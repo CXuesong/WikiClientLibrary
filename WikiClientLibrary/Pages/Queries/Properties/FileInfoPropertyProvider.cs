@@ -9,6 +9,11 @@ using WikiClientLibrary.Infrastructures;
 
 namespace WikiClientLibrary.Pages.Queries.Properties
 {
+
+    /// <summary>
+    /// Provides information for MediaWiki files.
+    /// (<a href="https://www.mediawiki.org/wiki/API:Fileinfo">mw:API:Fileinfo</a>, MediaWiki 1.13+)
+    /// </summary>
     public class FileInfoPropertyProvider : WikiPagePropertyProvider<FileInfoPropertyGroup>
     {
         /// <inheritdoc />
@@ -30,13 +35,17 @@ namespace WikiClientLibrary.Pages.Queries.Properties
         public override string PropertyName => "imageinfo";
     }
 
+    /// <summary>
+    /// Contains properties for MediaWiki files.
+    /// (<a href="https://www.mediawiki.org/wiki/API:Fileinfo">mw:API:Fileinfo</a>, MediaWiki 1.13+)
+    /// </summary>
     public class FileInfoPropertyGroup : WikiPagePropertyGroup
     {
         private static readonly FileInfoPropertyGroup Empty = new FileInfoPropertyGroup();
 
         private object _Revisions;
 
-        public static FileInfoPropertyGroup Create(JObject jpage)
+        internal static FileInfoPropertyGroup Create(JObject jpage)
         {
             var info = jpage["imageinfo"];
             // jpage["imageinfo"] == null indicates the page may not be a valid File.

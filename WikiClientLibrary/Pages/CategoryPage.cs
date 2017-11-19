@@ -47,12 +47,7 @@ namespace WikiClientLibrary.Pages
             return EnumMembersAsync().ToEnumerable();
         }
 
-        /// <summary>
-        /// 返回表示当前对象的字符串。
-        /// </summary>
-        /// <returns>
-        /// 表示当前对象的字符串。
-        /// </returns>
+        /// <inheritdoc/>
         public override string ToString()
         {
             return $"{Title}, M:{MembersCount}, P:{PagesCount}, S:{SubcategoriesCount}, F:{FilesCount}";

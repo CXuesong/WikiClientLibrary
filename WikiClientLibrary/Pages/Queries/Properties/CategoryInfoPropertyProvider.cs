@@ -6,6 +6,11 @@ using Newtonsoft.Json.Linq;
 
 namespace WikiClientLibrary.Pages.Queries.Properties
 {
+
+    /// <summary>
+    /// Provides information for category pages.
+    /// (<a href="https://www.mediawiki.org/wiki/API:Categoryinfo">mw:API:Categoryinfo</a>, MediaWiki 1.13+)
+    /// </summary>
     public class CategoryInfoPropertyProvider : WikiPagePropertyProvider<CategoryInfoPropertyGroup>
     {
         /// <inheritdoc />
@@ -24,6 +29,12 @@ namespace WikiClientLibrary.Pages.Queries.Properties
         public override string PropertyName => "categoryinfo";
     }
 
+    /// <summary>
+    /// Property group for category page information.
+    /// </summary>
+    /// <remarks>
+    /// For the categories that has sub-items but without category page, this property group is still valid.
+    /// </remarks>
     public class CategoryInfoPropertyGroup : WikiPagePropertyGroup
     {
 
@@ -43,13 +54,17 @@ namespace WikiClientLibrary.Pages.Queries.Properties
             SubcategoriesCount = (int)jCategoryInfo["subcats"];
         }
 
-        public int MembersCount { get;  }
+        /// <summary>Count of members in this category.</summary>
+        public int MembersCount { get; }
 
-        public int PagesCount { get;  }
+        /// <summary>Count of pages in this category.</summary>
+        public int PagesCount { get; }
 
-        public int FilesCount { get;  }
+        /// <summary>Count of files in this category.</summary>
+        public int FilesCount { get; }
 
-        public int SubcategoriesCount { get;  }
+        /// <summary>Count of sub-categories in this category.</summary>
+        public int SubcategoriesCount { get; }
 
         /// <inheritdoc />
         public override string ToString()

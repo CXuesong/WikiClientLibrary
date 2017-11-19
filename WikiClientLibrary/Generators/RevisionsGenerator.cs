@@ -18,8 +18,15 @@ namespace WikiClientLibrary.Generators
 {
 
     /// <summary>
-    /// Represents a generator (or iterator) of <see cref="Revision"/>s on a specific page.
+    /// Enumerates the sequence of revisions on a specific MediaWiki page.
+    /// (<a href="https://www.mediawiki.org/wiki/API:Revisions">mw:API:Revisions</a>, MediaWiki 1.8+)
     /// </summary>
+    /// <remarks>
+    /// The <c>prop=revisions</c> module has been implemented as
+    /// <see cref="RevisionsPropertyProvider"/> and <see cref="RevisionsGenerator"/>.
+    /// The former allows you to fetch for the latest revisions for multiple pages,
+    /// while the latter allows you to enumerate the revisions of a single page.
+    /// </remarks>
     public class RevisionsGenerator : WikiPagePropertyGenerator<Revision>
     {
 

@@ -3,16 +3,22 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using Newtonsoft.Json.Linq;
+using WikiClientLibrary.Generators;
 using WikiClientLibrary.Infrastructures;
 
 namespace WikiClientLibrary.Pages.Queries.Properties
 {
 
     /// <summary>
-    /// Returns GeoLocation of the page.
-    /// <c>action=query&amp;prop=coordinates</c>
-    /// (<a href="https://www.mediawiki.org/wiki/Extension:GeoData#prop.3Dcoordinates">mw:Extension:GeoData#prop=coordinates</a>)
+    /// Returns the latest revision of the page.
+    /// (<a href="https://www.mediawiki.org/wiki/API:Revisions">mw:API:Revisions</a>, MediaWiki 1.8+)
     /// </summary>
+    /// <remarks>
+    /// The <c>prop=revisions</c> module has been implemented as
+    /// <see cref="RevisionsPropertyProvider"/> and <see cref="RevisionsGenerator"/>.
+    /// The former allows you to fetch for the latest revisions for multiple pages,
+    /// while the latter allows you to enumerate the revisions of a single page.
+    /// </remarks>
     public class RevisionsPropertyProvider : WikiPagePropertyProvider<RevisionsPropertyGroup>
     {
 

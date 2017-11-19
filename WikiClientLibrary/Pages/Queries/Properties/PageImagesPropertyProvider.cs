@@ -7,8 +7,7 @@ namespace WikiClientLibrary.Pages.Queries.Properties
 {
 
     /// <summary>
-    /// Returns information about images on the page, such as thumbnail and presence of photos.
-    /// <c>action=query&amp;prop=pageimages</c>
+    /// Provides information about images on the page, such as thumbnail and presence of photos.
     /// (<a href="https://www.mediawiki.org/wiki/Special:MyLanguage/Extension:PageImages#API">mw:Extension:PageImages#API</a>)
     /// </summary>
     public class PageImagesPropertyProvider : WikiPagePropertyProvider<PageImagesPropertyGroup>
@@ -61,6 +60,9 @@ namespace WikiClientLibrary.Pages.Queries.Properties
 
     }
 
+    /// <summary>
+    /// Contains information for page image URL along with image size.
+    /// </summary>
     public struct PageImageInfo : IEquatable<PageImageInfo>
     {
 
@@ -73,10 +75,13 @@ namespace WikiClientLibrary.Pages.Queries.Properties
             Height = height;
         }
 
+        /// <summary>Image URL.</summary>
         public string Url { get; }
 
+        /// <summary>Image width, in pixel.</summary>
         public int Width { get; }
 
+        /// <summary>Image height, in pixel.</summary>
         public int Height { get; }
 
         /// <inheritdoc />
@@ -121,6 +126,10 @@ namespace WikiClientLibrary.Pages.Queries.Properties
         }
     }
 
+    /// <summary>
+    /// Contains information about images on the page, such as thumbnail and presence of photos.
+    /// (<a href="https://www.mediawiki.org/wiki/Special:MyLanguage/Extension:PageImages#API">mw:Extension:PageImages#API</a>)
+    /// </summary>
     public class PageImagesPropertyGroup : WikiPagePropertyGroup
     {
 
@@ -152,12 +161,14 @@ namespace WikiClientLibrary.Pages.Queries.Properties
             return new PageImageInfo((string)root["source"], (int)root["width"], (int)root["height"]);
         }
 
+        /// <summary>Gets the original image for the page image.</summary>
         public PageImageInfo OriginalImage { get; }
 
+        /// <summary>Gets the thumbnail for the page image.</summary>
         public PageImageInfo ThumbnailImage { get; }
 
+        /// <summary>Gets the file title for the page image.</summary>
         public string ImageTitle { get; }
-
 
     }
 }

@@ -5,14 +5,16 @@ using Newtonsoft.Json.Linq;
 using WikiClientLibrary.Generators.Primitive;
 using WikiClientLibrary.Infrastructures;
 using WikiClientLibrary.Pages;
+using WikiClientLibrary.Pages.Queries.Properties;
 using WikiClientLibrary.Sites;
 
 namespace WikiClientLibrary.Generators
 {
     /// <summary>
     /// Searches for articles around the given point (determined either by coordinates or by article name).
-    /// (<a href="https://www.mediawiki.org/wiki/Extension:GeoData#list%253Dgeosearch">mw:Extension:GeoData#list=geosearch</a>)
+    /// (<a href="https://www.mediawiki.org/wiki/Extension:GeoData#prop=coordinates">mw:Extension:GeoData#prop=coordinates</a>)
     /// </summary>
+    /// <seealso cref="GeoCoordinatesPropertyProvider"/>
     public class GeoSearchGenerator : WikiPageGenerator<GeoSearchResultItem>
     {
 

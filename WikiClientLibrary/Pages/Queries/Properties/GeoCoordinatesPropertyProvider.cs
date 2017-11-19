@@ -8,19 +8,36 @@ using WikiClientLibrary.Infrastructures;
 namespace WikiClientLibrary.Pages.Queries.Properties
 {
     /// <summary>
-    /// Returns plain-text or limited HTML extracts of the given pages.
-    /// <c>action=query&amp;prop=extracts</c>
-    /// (<a href="https://www.mediawiki.org/wiki/Extension:TextExtracts#API">mw:Extension:TextExtracts#API</a>)
+    /// Returns the geogrpahical coordinates associated with the page.
+    /// (<a href="https://www.mediawiki.org/wiki/Extension:GeoData#prop=coordinates">mw:Extension:GeoData#prop=coordinates</a>)
     /// </summary>
     public class GeoCoordinatesPropertyProvider : WikiPagePropertyProvider<GeoCoordinatesPropertyGroup>
     {
 
+        /// <summary>
+        /// Whether to query for primary coordinate for the page.
+        /// </summary>
+        /// <remarks>The default value is <c>true</c>.</remarks>
         public bool QueryPrimaryCoordinate { get; set; } = true;
 
+        /// <summary>
+        /// Whether to query for the secondary coordinate for the page.
+        /// </summary>
+        /// <remarks>The default value is <c>false</c>.</remarks>
         public bool QuerySecondaryCoordinate { get; set; }
-        
+
+        /// <summary>
+        /// Also queries for the distance of each coordinate from the given point.
+        /// </summary>
+        /// <remarks>A valid coordinate, or <see cref="GeoCoordinate.Empty"/> if no distance querying is required.</remarks>
+        /// <seealso cref="QueryDistanceFromPage"/>
         public GeoCoordinate QueryDistanceFromPoint { get; set; }
 
+        /// <summary>
+        /// Also queries for the distance of each coordinate from the coordinate of the given page.
+        /// </summary>
+        /// <remarks>A page title, or <c>null</c> if no distance querying is required.</remarks>
+        /// <seealso cref="QueryDistanceFromPoint"/>
         public string QueryDistanceFromPage { get; set; }
 
         /// <inheritdoc />
