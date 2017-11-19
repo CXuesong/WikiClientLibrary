@@ -1,0 +1,53 @@
+---
+packages:
+- id: CXuesong.MW.WikiClientLibrary
+  version: 0.6.0-intX2a
+uti: com.xamarin.workbook
+id: 950c7695-3ac7-4e56-81cf-1863a2a1cdf8
+title: GeoSearch + PageImages
+platforms:
+- DotNetCore
+---
+
+## GeoSearch + PageImages
+
+This page demonstarates how to perform geological search on Wikipedia, and return the top 10 results with text abstracts and thumbnail images.
+
+```csharp
+#r "WikiClientLibrary"
+using WikiClientLibrary;
+using WikiClientLibrary.Client;
+using WikiClientLibrary.Sites;
+using WikiClientLibrary.Pages;
+using WikiClientLibrary.Pages.Queries;
+using WikiClientLibrary.Pages.Queries.Properties;
+using WikiClientLibrary.Generators;
+```
+
+```csharp
+var client = new WikiClient();
+```
+
+```csharp
+var site = new WikiSite(client, await WikiSite.SearchApiEndpointAsync(client, "en.wikipedia.org"));
+await site.Initialization;
+site
+```
+
+```csharp
+var generator = new GeoSearchGenerator(site) { TargetTitle = "London", Radius = 10000 };
+var items = await generator.EnumItemsAsync().Take(10).ToList();
+```
+
+```csharp
+var pages = await generator.EnumPagesAsync(new WikiPageQueryProvider {
+    Properties = {
+        new ExtractsPropertyProvider { AsPlainText = true, IntroductionOnly = true, MaxSentences = 1 },
+        new PageImagesPropertyProvider { QueryOriginalImage = false, ThumbnailSize = 100 }
+     }
+}).Take(10).ToList();
+```
+
+```csharp
+from p in pages select new { p.GetPropertyGroup<ExtractsPropertyGroup>().Extract, p.GetPropertyGroup<PageImagesPropertyGroup>().ThumbnailImage }
+```
