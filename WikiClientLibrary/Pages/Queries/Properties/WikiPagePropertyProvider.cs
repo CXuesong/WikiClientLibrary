@@ -14,7 +14,6 @@ namespace WikiClientLibrary.Pages.Queries.Properties
     /// <seealso cref="WikiPage.RefreshAsync(IWikiPageQueryProvider)"/>
     public interface IWikiPagePropertyProvider<out T> where T : IWikiPagePropertyGroup
     {
-
         /// <summary>
         /// Enumerates the MediaWiki API request parameters for <c>action=query</c> request.
         /// </summary>

@@ -22,6 +22,7 @@ namespace UnitTestProject1
         private static string DumpObject(object obj, int indention, int maxDepth)
         {
             if (obj == null) return "null";
+            if ("".Equals(obj)) return "<String.Empty>";
             var sb = new StringBuilder();
             if (obj.GetType().GetRuntimeMethod("ToString", Type.EmptyTypes).DeclaringType
                 == typeof(object))
@@ -34,7 +35,7 @@ namespace UnitTestProject1
             {
                 sb.Append(obj);
             }
-            if (maxDepth < 1 || obj is ValueType || obj is string || obj is Uri)
+            if (maxDepth < 1 || obj.GetType().IsPrimitive || obj is string || obj is Uri)
             {
                 var s = sb.ToString();
                 if (s.Length > 1024) s = s.Substring(0, 1024) + "...";

@@ -349,5 +349,18 @@ namespace UnitTestProject1.Tests
             Assert.True(result.IsPrimaryCoordinate);
         }
 
+        [Fact]
+        public async Task WpCategoriesGeneratorTest()
+        {
+            var site = await WpLzhSiteAsync;
+            var blg = new CategoriesGenerator(site, "莎拉伯恩哈特‏‎") { PaginationSize = 50 };
+            var cats = await blg.EnumItemsAsync().ToList();
+            ShallowTrace(cats);
+            var titles = cats.Select(c => c.Title).ToList();
+            Assert.Contains("分類:卓著", titles);
+            Assert.Contains("分類:基礎之文", titles);
+            Assert.Contains("分類:後波拿巴列傳", titles);
+        }
+
     }
 }
