@@ -20,7 +20,6 @@ namespace WikiClientLibrary.Wikibase.DataTypes
     /// <a href="https://www.wikidata.org/wiki/Special:ListDatatypes">d:Special:ListDatatypes</a>.
     /// For a list of predefined <see cref="WikibaseDataType"/>s, see <see cref="BuiltInDataTypes"/>.
     /// </remarks>
-    /// <see cref="BuiltInDataTypes"/>
     public abstract class WikibaseDataType
     {
 
@@ -35,9 +34,15 @@ namespace WikiClientLibrary.Wikibase.DataTypes
         public abstract string ValueTypeName { get; }
 
         /// <summary>
+        /// The mapped CLR type for the data type.
+        /// </summary>
+        public virtual Type MappedType => typeof(object);
+
+        /// <summary>
         /// Converts the JSON to the CLR value.
         /// </summary>
         public abstract object Parse(JToken expr);
+
 
         /// <summary>
         /// Converts the CLR value to JSON.
@@ -79,6 +84,9 @@ namespace WikiClientLibrary.Wikibase.DataTypes
         /// <inheritdoc />
         public override string ValueTypeName { get; }
 
+        /// <inheritdoc />
+        public override Type MappedType => typeof(T);
+
         public override object Parse(JToken expr)
         {
             return parseHandler(expr);
@@ -116,15 +124,18 @@ namespace WikiClientLibrary.Wikibase.DataTypes
         public override string ValueTypeName { get; }
 
         /// <inheritdoc />
+        public override Type MappedType => typeof(JToken);
+
+        /// <inheritdoc />
         public override object Parse(JToken expr)
         {
-            throw new NotSupportedException("Property type " + this + " is not supported.");
+            return expr;
         }
 
         /// <inheritdoc />
         public override JToken ToJson(object value)
         {
-            throw new NotSupportedException("Property type " + this + " is not supported.");
+            return JToken.FromObject(value);
         }
     }
 
