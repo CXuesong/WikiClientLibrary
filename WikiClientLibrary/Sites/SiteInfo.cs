@@ -143,7 +143,10 @@ namespace WikiClientLibrary.Sites
         public string[] MagicWords { get; private set; }
 
         [JsonProperty("magicwords")]
-        private JObject MagicWordsProxy {set { MagicWords = value.Properties().Select(p => p.Name).ToArray(); } }
+        private JObject MagicWordsProxy
+        {
+            set { MagicWords = value.Properties().Select(p => p.Name).ToArray(); }
+        }
 
         #endregion
 
@@ -197,10 +200,28 @@ namespace WikiClientLibrary.Sites
         /// <summary>
         /// The offset of the wiki's time zone, from UTC. See $wgLocalTZoffset. 1.13+
         /// </summary>
-        public TimeSpan TimeOffset {get; private set; }
+        public TimeSpan TimeOffset { get; private set; }
 
         [JsonProperty("timeoffset")]
-        private int TimeOffsetProxy { set { TimeOffset = TimeSpan.FromMinutes(value); } }
+        private int TimeOffsetProxy
+        {
+            set { TimeOffset = TimeSpan.FromMinutes(value); }
+        }
+
+        /// <summary>
+        /// Gets the other extensible site information.
+        /// </summary>
+        public IReadOnlyDictionary<string, JToken> ExtensionData { get; private set; }
+
+        [JsonExtensionData]
+        private IDictionary<string, JToken> ExtensionDataProxy { get; set; }
+
+        [OnDeserialized]
+        private void OnDeserialized(StreamingContext context)
+        {
+            ExtensionData = new ReadOnlyDictionary<string, JToken>(ExtensionDataProxy ?? new Dictionary<string, JToken>());
+        }
+
     }
 
     /// <summary>
@@ -344,8 +365,8 @@ namespace WikiClientLibrary.Sites
             {
                 foreach (var al in jaliases)
                 {
-                    var id = (int) al["id"];
-                    var name = (string) al["*"];
+                    var id = (int)al["id"];
+                    var name = (string)al["*"];
                     NamespaceInfo ns;
                     if (idNsDict.TryGetValue(id, out ns))
                     {

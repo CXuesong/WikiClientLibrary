@@ -31,6 +31,18 @@ namespace UnitTestProject1.Tests
         }
 
         [Fact]
+        public async Task SiteInfoTest()
+        {
+            var site = await WikidataSiteAsync;
+            var info = WikibaseSiteInfo.FromSiteInfo(site.SiteInfo);
+            Assert.Equal("http://www.wikidata.org/entity/", info.ConceptBaseUri);
+            Assert.Equal("https://commons.wikimedia.org/wiki/", info.GeoShapeStorageBaseUri);
+            Assert.Equal("https://commons.wikimedia.org/wiki/", info.TabularDataStorageBaseUri);
+            Assert.Equal("http://www.wikidata.org/entity/Q50", info.MakeEntityUri("Q50"));
+            Assert.Equal("Q123", info.ParseEntityId("http://www.wikidata.org/entity/Q123"));
+        }
+
+        [Fact]
         public async Task FetchEntityTest1()
         {
             var site = await WikidataSiteAsync;

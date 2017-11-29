@@ -198,7 +198,7 @@ namespace WikiClientLibrary.Sites
         /// <see cref="InterwikiMap"/>, and <see cref="Extensions"/> properties.
         /// </returns>
         /// <exception cref="UnauthorizedOperationException">Cannot access query API module due to target site permission settings. You may need to login first.</exception>
-        public async Task RefreshSiteInfoAsync()
+        public virtual async Task RefreshSiteInfoAsync()
         {
             using (this.BeginActionScope(null))
             {

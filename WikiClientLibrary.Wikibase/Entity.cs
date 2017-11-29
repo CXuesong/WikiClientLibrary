@@ -3,15 +3,12 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using WikiClientLibrary.Pages;
 using WikiClientLibrary.Sites;
 using System.Threading;
-using Microsoft.Extensions.Logging.Abstractions;
 using WikiClientLibrary.Wikibase.DataTypes;
 using WikiClientLibrary.Wikibase.Infrastructures;
 
@@ -294,7 +291,7 @@ namespace WikiClientLibrary.Wikibase
         /// <inheritdoc />
         public override string ToString()
         {
-            var en = Labels["en"];
+            var en = Labels?["en"];
             if (en != null) return en + "(" + Id + ")";
             return Id;
         }

@@ -203,6 +203,10 @@ namespace WikiClientLibrary.Wikibase
     /// <summary>
     /// Represents a "snak", i.e. a pair of property and value.
     /// </summary>
+    /// <remarks>
+    /// To compare the equality of two snaks' values, consider using
+    /// <see cref="JToken.DeepEquals(JToken,JToken)"/> on <see cref="RawDataValue"/>.
+    /// </remarks>
     public sealed class Snak
     {
 
@@ -233,6 +237,20 @@ namespace WikiClientLibrary.Wikibase
             PropertyId = propertyId ?? throw new ArgumentNullException(nameof(propertyId));
             DataType = dataType ?? throw new ArgumentNullException(nameof(dataType));
             DataValue = dataValue;
+        }
+
+        /// <summary>
+        /// Initializes a snak with specified property ID and data value.
+        /// </summary>
+        /// <param name="propertyId">The property id.</param>
+        /// <param name="rawDataValue">The raw JSON data value of the property.</param>
+        /// <param name="dataType">The data value type.</param>
+        /// <exception cref="ArgumentNullException"><paramref name="propertyId"/> or <paramref name="dataType"/> is <c>null</c>.</exception>
+        public Snak(string propertyId, JToken rawDataValue, WikibaseDataType dataType)
+        {
+            PropertyId = propertyId ?? throw new ArgumentNullException(nameof(propertyId));
+            DataType = dataType ?? throw new ArgumentNullException(nameof(dataType));
+            RawDataValue = rawDataValue;
         }
 
         /// <summary>
