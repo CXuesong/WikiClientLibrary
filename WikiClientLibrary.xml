@@ -535,23 +535,13 @@
     </member>
     <member name="T:WikiClientLibrary.IWikiClientAsyncInitialization">
       <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>T:WikiClientLibrary.IWikiClientAsyncInitialization</parameter>
-          </include>
-        </markup>
-      </summary>
+            Provides properties to expose the asynchronous initialization status of an instance.
+            </summary>
     </member>
     <member name="P:WikiClientLibrary.IWikiClientAsyncInitialization.Initialization">
       <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>P:WikiClientLibrary.IWikiClientAsyncInitialization.Initialization</parameter>
-          </include>
-        </markup>
-      </summary>
+            A task that indicates the asynchronous initialization status of this instance.
+            </summary>
     </member>
     <member name="T:WikiClientLibrary.IWikiClientLoggable">
       <summary>
@@ -2621,6 +2611,70 @@
             List pages linking to this title. The title does not need to exist.
             </summary>
     </member>
+    <member name="T:WikiClientLibrary.Generators.CategoriesGenerator">
+      <summary>
+            Gets a list of all categories used on the provided pages.
+            (<a href="https://www.mediawiki.org/wiki/API:Categories">mw:API:Categories</a>, MediaWiki 1.11+)
+            </summary>
+    </member>
+    <member name="M:WikiClientLibrary.Generators.CategoriesGenerator.#ctor(WikiClientLibrary.Sites.WikiSite)">
+      <summary>
+        <markup>
+          <include item="SMCAutoDocConstructor">
+            <parameter>WikiClientLibrary.Generators.CategoriesGenerator</parameter>
+          </include>
+        </markup>
+      </summary>
+      <param name="site">The MediaWiki site this instance applies to.</param>
+    </member>
+    <member name="M:WikiClientLibrary.Generators.CategoriesGenerator.#ctor(WikiClientLibrary.Sites.WikiSite,System.String)">
+      <summary>
+        <markup>
+          <include item="SMCAutoDocConstructor">
+            <parameter>WikiClientLibrary.Generators.CategoriesGenerator</parameter>
+          </include>
+        </markup>
+      </summary>
+      <param name="pageTitle">List the categories on this page.</param>
+      <param name="site">
+        <markup>
+          <include item="SMCMissingParamTag">
+            <parameter>param</parameter>
+            <parameter>site</parameter>
+            <parameter>M:WikiClientLibrary.Generators.CategoriesGenerator.#ctor(WikiClientLibrary.Sites.WikiSite,System.String)</parameter>
+          </include>
+        </markup>
+      </param>
+    </member>
+    <member name="P:WikiClientLibrary.Generators.CategoriesGenerator.CategorySelection">
+      <summary>
+            Only list these categories. Useful for checking whether a certain page is in a certain category.
+            </summary>
+    </member>
+    <member name="M:WikiClientLibrary.Generators.CategoriesGenerator.EnumListParameters">
+      <summary>
+            When overridden, fills generator parameters for <c>action=query&amp;prop={PropertyName}</c> request.
+            </summary>
+      <returns>A sequence of fields, which will override the basic query parameters.</returns>
+    </member>
+    <member name="P:WikiClientLibrary.Generators.CategoriesGenerator.HiddenCategoryFilter">
+      <summary>
+            Whether to include hidden categories in the returned list.
+            </summary>
+    </member>
+    <member name="M:WikiClientLibrary.Generators.CategoriesGenerator.ItemFromJson(Newtonsoft.Json.Linq.JToken,Newtonsoft.Json.Linq.JObject)">
+      <summary>
+            Parses an item contained in the <c>action=query&amp;prop={PropertyName}</c> JSON response.
+            </summary>
+      <param name="json">One of the item node under the JSON path <c>query.pages.{pageid}.{PropertyName}</c>.</param>
+      <param name="jpage">The corresponding JSON node for the wiki page, under the JSON path <c>query.pages.{pageid}</c>.</param>
+      <returns>The item that will be returned in the sequence from <see cref="M:WikiClientLibrary.Generators.Primitive.WikiPagePropertyList`1.EnumItemsAsync" />.</returns>
+    </member>
+    <member name="P:WikiClientLibrary.Generators.CategoriesGenerator.PropertyName">
+      <summary>
+            Gets the name of the property, used as the value of <c>prop</c> parameter in <c>action=query</c> request.
+            </summary>
+    </member>
     <member name="T:WikiClientLibrary.Generators.CategoryMembersGenerator">
       <summary>
             List of pages that belong to a given category, ordered by page sort title.
@@ -2709,7 +2763,7 @@
     <member name="T:WikiClientLibrary.Generators.GeoSearchGenerator">
       <summary>
             Searches for articles around the given point (determined either by coordinates or by article name).
-            (<a href="https://www.mediawiki.org/wiki/Extension:GeoData#list%253Dgeosearch">mw:Extension:GeoData#list=geosearch</a>)
+            (<a href="https://www.mediawiki.org/wiki/Extension:GeoData#prop=coordinates">mw:Extension:GeoData#prop=coordinates</a>)
             </summary>
     </member>
     <member name="M:WikiClientLibrary.Generators.GeoSearchGenerator.#ctor(WikiClientLibrary.Sites.WikiSite)">
@@ -3536,7 +3590,8 @@
     </member>
     <member name="T:WikiClientLibrary.Generators.RevisionsGenerator">
       <summary>
-            Represents a generator (or iterator) of <see cref="T:WikiClientLibrary.Pages.Revision" />s on a specific page.
+            Enumerates the sequence of revisions on a specific MediaWiki page.
+            (<a href="https://www.mediawiki.org/wiki/API:Revisions">mw:API:Revisions</a>, MediaWiki 1.8+)
             </summary>
     </member>
     <member name="M:WikiClientLibrary.Generators.RevisionsGenerator.#ctor(WikiClientLibrary.Sites.WikiSite)">
@@ -5703,11 +5758,13 @@
     </member>
     <member name="M:WikiClientLibrary.Pages.CategoryPage.ToString">
       <summary>
-            返回表示当前对象的字符串。
-            </summary>
-      <returns>
-            表示当前对象的字符串。
-            </returns>
+        <markup>
+          <include item="SMCMissingTag">
+            <parameter>summary</parameter>
+            <parameter>M:WikiClientLibrary.Pages.CategoryPage.ToString</parameter>
+          </include>
+        </markup>
+      </summary>
     </member>
     <member name="T:WikiClientLibrary.Pages.FilePage">
       <summary>
@@ -7006,41 +7063,17 @@
     </member>
     <member name="M:WikiClientLibrary.Pages.WikiPage.GetPropertyGroup``1">
       <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>M:WikiClientLibrary.Pages.WikiPage.GetPropertyGroup``1</parameter>
-          </include>
-        </markup>
-      </summary>
-      <typeparam name="T">
-        <markup>
-          <include item="SMCMissingParamTag">
-            <parameter>typeparam</parameter>
-            <parameter>T</parameter>
-            <parameter>M:WikiClientLibrary.Pages.WikiPage.GetPropertyGroup``1</parameter>
-          </include>
-        </markup>
-      </typeparam>
+            Gets the property group of specified type that is attached to this page.
+            </summary>
+      <typeparam name="T">The type of the desired property group.</typeparam>
+      <returns>The property group instance of the specified type, or <c>default(T)</c> if no such item can be found.</returns>
     </member>
     <member name="M:WikiClientLibrary.Pages.WikiPage.GetPropertyGroup(System.Type)">
       <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>M:WikiClientLibrary.Pages.WikiPage.GetPropertyGroup(System.Type)</parameter>
-          </include>
-        </markup>
-      </summary>
-      <param name="propertyGroupType">
-        <markup>
-          <include item="SMCMissingParamTag">
-            <parameter>param</parameter>
-            <parameter>propertyGroupType</parameter>
-            <parameter>M:WikiClientLibrary.Pages.WikiPage.GetPropertyGroup(System.Type)</parameter>
-          </include>
-        </markup>
-      </param>
+            Gets the property group of specified type that is attached to this page.
+            </summary>
+      <param name="propertyGroupType">Type of the desired property group. Must be a type implementing <see cref="T:WikiClientLibrary.Pages.Queries.Properties.IWikiPagePropertyGroup" />.</param>
+      <returns>The property group instance of the specified type, or <c>default(T)</c> if no such item can be found.</returns>
     </member>
     <member name="M:WikiClientLibrary.Pages.WikiPage.GetRedirectTargetAsync">
       <summary>
@@ -7258,13 +7291,8 @@
     </member>
     <member name="P:WikiClientLibrary.Pages.WikiPage.PropertyGroups">
       <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>P:WikiClientLibrary.Pages.WikiPage.PropertyGroups</parameter>
-          </include>
-        </markup>
-      </summary>
+            Gets a read-only view of all the fetched property groups attached to this page.
+            </summary>
     </member>
     <member name="P:WikiClientLibrary.Pages.WikiPage.Protections">
       <summary>
@@ -8788,9 +8816,9 @@
     </member>
     <member name="T:WikiClientLibrary.Pages.Queries.WikiPageQueryProvider">
       <summary>
-            The default implementation of <see cref="T:WikiClientLibrary.Pages.Queries.IWikiPageQueryProvider" /> that provides basic MediaWiki API
-            request parameters for <c>action=query&amp;titles=</c> or <c>action=query&amp;pageids=</c> requests
-            by a set of configurable properties.
+            The default implementation of <see cref="T:WikiClientLibrary.Pages.Queries.IWikiPageQueryProvider" /> that generates parameters for
+            <c>action=query&amp;titles=</c> or <c>action=query&amp;pageids=</c> MediaWiki API requests
+            with a set of <see cref="T:WikiClientLibrary.Pages.Queries.Properties.IWikiPagePropertyProvider`1" />.
             </summary>
     </member>
     <member name="M:WikiClientLibrary.Pages.Queries.WikiPageQueryProvider.#ctor">
@@ -8848,13 +8876,8 @@
     </member>
     <member name="T:WikiClientLibrary.Pages.Queries.Properties.CategoryInfoPropertyGroup">
       <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>T:WikiClientLibrary.Pages.Queries.Properties.CategoryInfoPropertyGroup</parameter>
-          </include>
-        </markup>
-      </summary>
+            Property group for category page information.
+            </summary>
     </member>
     <member name="M:WikiClientLibrary.Pages.Queries.Properties.CategoryInfoPropertyGroup.Create(Newtonsoft.Json.Linq.JObject)">
       <summary>
@@ -8876,44 +8899,16 @@
       </param>
     </member>
     <member name="P:WikiClientLibrary.Pages.Queries.Properties.CategoryInfoPropertyGroup.FilesCount">
-      <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>P:WikiClientLibrary.Pages.Queries.Properties.CategoryInfoPropertyGroup.FilesCount</parameter>
-          </include>
-        </markup>
-      </summary>
+      <summary>Count of files in this category.</summary>
     </member>
     <member name="P:WikiClientLibrary.Pages.Queries.Properties.CategoryInfoPropertyGroup.MembersCount">
-      <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>P:WikiClientLibrary.Pages.Queries.Properties.CategoryInfoPropertyGroup.MembersCount</parameter>
-          </include>
-        </markup>
-      </summary>
+      <summary>Count of members in this category.</summary>
     </member>
     <member name="P:WikiClientLibrary.Pages.Queries.Properties.CategoryInfoPropertyGroup.PagesCount">
-      <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>P:WikiClientLibrary.Pages.Queries.Properties.CategoryInfoPropertyGroup.PagesCount</parameter>
-          </include>
-        </markup>
-      </summary>
+      <summary>Count of pages in this category.</summary>
     </member>
     <member name="P:WikiClientLibrary.Pages.Queries.Properties.CategoryInfoPropertyGroup.SubcategoriesCount">
-      <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>P:WikiClientLibrary.Pages.Queries.Properties.CategoryInfoPropertyGroup.SubcategoriesCount</parameter>
-          </include>
-        </markup>
-      </summary>
+      <summary>Count of sub-categories in this category.</summary>
     </member>
     <member name="M:WikiClientLibrary.Pages.Queries.Properties.CategoryInfoPropertyGroup.ToString">
       <summary>
@@ -8927,13 +8922,9 @@
     </member>
     <member name="T:WikiClientLibrary.Pages.Queries.Properties.CategoryInfoPropertyProvider">
       <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>T:WikiClientLibrary.Pages.Queries.Properties.CategoryInfoPropertyProvider</parameter>
-          </include>
-        </markup>
-      </summary>
+            Provides information for category pages.
+            (<a href="https://www.mediawiki.org/wiki/API:Categoryinfo">mw:API:Categoryinfo</a>, MediaWiki 1.13+)
+            </summary>
     </member>
     <member name="M:WikiClientLibrary.Pages.Queries.Properties.CategoryInfoPropertyProvider.#ctor">
       <summary>
@@ -9046,32 +9037,9 @@
     </member>
     <member name="T:WikiClientLibrary.Pages.Queries.Properties.FileInfoPropertyGroup">
       <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>T:WikiClientLibrary.Pages.Queries.Properties.FileInfoPropertyGroup</parameter>
-          </include>
-        </markup>
-      </summary>
-    </member>
-    <member name="M:WikiClientLibrary.Pages.Queries.Properties.FileInfoPropertyGroup.Create(Newtonsoft.Json.Linq.JObject)">
-      <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>M:WikiClientLibrary.Pages.Queries.Properties.FileInfoPropertyGroup.Create(Newtonsoft.Json.Linq.JObject)</parameter>
-          </include>
-        </markup>
-      </summary>
-      <param name="jpage">
-        <markup>
-          <include item="SMCMissingParamTag">
-            <parameter>param</parameter>
-            <parameter>jpage</parameter>
-            <parameter>M:WikiClientLibrary.Pages.Queries.Properties.FileInfoPropertyGroup.Create(Newtonsoft.Json.Linq.JObject)</parameter>
-          </include>
-        </markup>
-      </param>
+            Contains properties for MediaWiki files.
+            (<a href="https://www.mediawiki.org/wiki/API:Fileinfo">mw:API:Fileinfo</a>, MediaWiki 1.13+)
+            </summary>
     </member>
     <member name="P:WikiClientLibrary.Pages.Queries.Properties.FileInfoPropertyGroup.LatestRevision">
       <summary>
@@ -9090,13 +9058,9 @@
     </member>
     <member name="T:WikiClientLibrary.Pages.Queries.Properties.FileInfoPropertyProvider">
       <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>T:WikiClientLibrary.Pages.Queries.Properties.FileInfoPropertyProvider</parameter>
-          </include>
-        </markup>
-      </summary>
+            Provides information for MediaWiki files.
+            (<a href="https://www.mediawiki.org/wiki/API:Fileinfo">mw:API:Fileinfo</a>, MediaWiki 1.13+)
+            </summary>
     </member>
     <member name="M:WikiClientLibrary.Pages.Queries.Properties.FileInfoPropertyProvider.#ctor">
       <summary>
@@ -9159,9 +9123,8 @@
     </member>
     <member name="T:WikiClientLibrary.Pages.Queries.Properties.GeoCoordinatesPropertyProvider">
       <summary>
-            Returns plain-text or limited HTML extracts of the given pages.
-            <c>action=query&amp;prop=extracts</c>
-            (<a href="https://www.mediawiki.org/wiki/Extension:TextExtracts#API">mw:Extension:TextExtracts#API</a>)
+            Returns the geogrpahical coordinates associated with the page.
+            (<a href="https://www.mediawiki.org/wiki/Extension:GeoData#prop=coordinates">mw:Extension:GeoData#prop=coordinates</a>)
             </summary>
     </member>
     <member name="M:WikiClientLibrary.Pages.Queries.Properties.GeoCoordinatesPropertyProvider.#ctor">
@@ -9195,53 +9158,30 @@
     </member>
     <member name="P:WikiClientLibrary.Pages.Queries.Properties.GeoCoordinatesPropertyProvider.QueryDistanceFromPage">
       <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>P:WikiClientLibrary.Pages.Queries.Properties.GeoCoordinatesPropertyProvider.QueryDistanceFromPage</parameter>
-          </include>
-        </markup>
-      </summary>
+            Also queries for the distance of each coordinate from the coordinate of the given page.
+            </summary>
     </member>
     <member name="P:WikiClientLibrary.Pages.Queries.Properties.GeoCoordinatesPropertyProvider.QueryDistanceFromPoint">
       <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>P:WikiClientLibrary.Pages.Queries.Properties.GeoCoordinatesPropertyProvider.QueryDistanceFromPoint</parameter>
-          </include>
-        </markup>
-      </summary>
+            Also queries for the distance of each coordinate from the given point.
+            </summary>
     </member>
     <member name="P:WikiClientLibrary.Pages.Queries.Properties.GeoCoordinatesPropertyProvider.QueryPrimaryCoordinate">
       <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>P:WikiClientLibrary.Pages.Queries.Properties.GeoCoordinatesPropertyProvider.QueryPrimaryCoordinate</parameter>
-          </include>
-        </markup>
-      </summary>
+            Whether to query for primary coordinate for the page.
+            </summary>
     </member>
     <member name="P:WikiClientLibrary.Pages.Queries.Properties.GeoCoordinatesPropertyProvider.QuerySecondaryCoordinate">
       <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>P:WikiClientLibrary.Pages.Queries.Properties.GeoCoordinatesPropertyProvider.QuerySecondaryCoordinate</parameter>
-          </include>
-        </markup>
-      </summary>
+            Whether to query for the secondary coordinate for the page.
+            </summary>
     </member>
     <member name="T:WikiClientLibrary.Pages.Queries.Properties.IWikiPagePropertyGroup">
       <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>T:WikiClientLibrary.Pages.Queries.Properties.IWikiPagePropertyGroup</parameter>
-          </include>
-        </markup>
-      </summary>
+            A marker interface which indicates the implementation type is an immutable group
+            of property values associated with <see cref="T:WikiClientLibrary.Pages.WikiPage" /> that can be fetched from
+            MediaWiki server.
+            </summary>
     </member>
     <member name="T:WikiClientLibrary.Pages.Queries.Properties.IWikiPagePropertyProvider`1">
       <summary>
@@ -9283,13 +9223,8 @@
     </member>
     <member name="T:WikiClientLibrary.Pages.Queries.Properties.PageImageInfo">
       <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>T:WikiClientLibrary.Pages.Queries.Properties.PageImageInfo</parameter>
-          </include>
-        </markup>
-      </summary>
+            Contains information for page image URL along with image size.
+            </summary>
     </member>
     <member name="M:WikiClientLibrary.Pages.Queries.Properties.PageImageInfo.#ctor(System.String,System.Int32,System.Int32)">
       <summary>
@@ -9386,14 +9321,7 @@
       </summary>
     </member>
     <member name="P:WikiClientLibrary.Pages.Queries.Properties.PageImageInfo.Height">
-      <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>P:WikiClientLibrary.Pages.Queries.Properties.PageImageInfo.Height</parameter>
-          </include>
-        </markup>
-      </summary>
+      <summary>Image height, in pixel.</summary>
     </member>
     <member name="M:WikiClientLibrary.Pages.Queries.Properties.PageImageInfo.op_Equality(WikiClientLibrary.Pages.Queries.Properties.PageImageInfo,WikiClientLibrary.Pages.Queries.Properties.PageImageInfo)">
       <summary>
@@ -9451,70 +9379,40 @@
         </markup>
       </param>
     </member>
-    <member name="P:WikiClientLibrary.Pages.Queries.Properties.PageImageInfo.Url">
+    <member name="M:WikiClientLibrary.Pages.Queries.Properties.PageImageInfo.ToString">
       <summary>
         <markup>
           <include item="SMCMissingTag">
             <parameter>summary</parameter>
-            <parameter>P:WikiClientLibrary.Pages.Queries.Properties.PageImageInfo.Url</parameter>
+            <parameter>M:WikiClientLibrary.Pages.Queries.Properties.PageImageInfo.ToString</parameter>
           </include>
         </markup>
       </summary>
     </member>
+    <member name="P:WikiClientLibrary.Pages.Queries.Properties.PageImageInfo.Url">
+      <summary>Image URL.</summary>
+    </member>
     <member name="P:WikiClientLibrary.Pages.Queries.Properties.PageImageInfo.Width">
-      <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>P:WikiClientLibrary.Pages.Queries.Properties.PageImageInfo.Width</parameter>
-          </include>
-        </markup>
-      </summary>
+      <summary>Image width, in pixel.</summary>
     </member>
     <member name="T:WikiClientLibrary.Pages.Queries.Properties.PageImagesPropertyGroup">
       <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>T:WikiClientLibrary.Pages.Queries.Properties.PageImagesPropertyGroup</parameter>
-          </include>
-        </markup>
-      </summary>
+            Contains information about images on the page, such as thumbnail and presence of photos.
+            (<a href="https://www.mediawiki.org/wiki/Special:MyLanguage/Extension:PageImages#API">mw:Extension:PageImages#API</a>)
+            </summary>
     </member>
     <member name="P:WikiClientLibrary.Pages.Queries.Properties.PageImagesPropertyGroup.ImageTitle">
-      <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>P:WikiClientLibrary.Pages.Queries.Properties.PageImagesPropertyGroup.ImageTitle</parameter>
-          </include>
-        </markup>
-      </summary>
+      <summary>Gets the file title for the page image.</summary>
     </member>
     <member name="P:WikiClientLibrary.Pages.Queries.Properties.PageImagesPropertyGroup.OriginalImage">
-      <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>P:WikiClientLibrary.Pages.Queries.Properties.PageImagesPropertyGroup.OriginalImage</parameter>
-          </include>
-        </markup>
-      </summary>
+      <summary>Gets the original image for the page image.</summary>
     </member>
     <member name="P:WikiClientLibrary.Pages.Queries.Properties.PageImagesPropertyGroup.ThumbnailImage">
-      <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>P:WikiClientLibrary.Pages.Queries.Properties.PageImagesPropertyGroup.ThumbnailImage</parameter>
-          </include>
-        </markup>
-      </summary>
+      <summary>Gets the thumbnail for the page image.</summary>
     </member>
     <member name="T:WikiClientLibrary.Pages.Queries.Properties.PageImagesPropertyProvider">
       <summary>
-            Returns information about images on the page, such as thumbnail and presence of photos.
-            <c>action=query&amp;prop=pageimages</c>
+            Provides information about images on the page, such as thumbnail and presence of photos.
             (<a href="https://www.mediawiki.org/wiki/Special:MyLanguage/Extension:PageImages#API">mw:Extension:PageImages#API</a>)
             </summary>
     </member>
@@ -9822,9 +9720,8 @@
     </member>
     <member name="T:WikiClientLibrary.Pages.Queries.Properties.RevisionsPropertyProvider">
       <summary>
-            Returns GeoLocation of the page.
-            <c>action=query&amp;prop=coordinates</c>
-            (<a href="https://www.mediawiki.org/wiki/Extension:GeoData#prop.3Dcoordinates">mw:Extension:GeoData#prop=coordinates</a>)
+            Returns the latest revision of the page.
+            (<a href="https://www.mediawiki.org/wiki/API:Revisions">mw:API:Revisions</a>, MediaWiki 1.8+)
             </summary>
     </member>
     <member name="M:WikiClientLibrary.Pages.Queries.Properties.RevisionsPropertyProvider.#ctor">
@@ -9874,9 +9771,101 @@
             in the MediaWiki API request.
             </summary>
     </member>
+    <member name="T:WikiClientLibrary.Pages.Queries.Properties.WikiPageCategoryInfo">
+      <summary>
+            Contains information about a page's belonging category.
+            </summary>
+    </member>
+    <member name="M:WikiClientLibrary.Pages.Queries.Properties.WikiPageCategoryInfo.#ctor(WikiClientLibrary.Pages.WikiPageStub,System.Boolean,System.String,System.String,System.DateTime)">
+      <summary>
+        <markup>
+          <include item="SMCAutoDocConstructor">
+            <parameter>WikiClientLibrary.Pages.Queries.Properties.WikiPageCategoryInfo</parameter>
+          </include>
+        </markup>
+      </summary>
+      <param name="page">
+        <markup>
+          <include item="SMCMissingParamTag">
+            <parameter>param</parameter>
+            <parameter>page</parameter>
+            <parameter>M:WikiClientLibrary.Pages.Queries.Properties.WikiPageCategoryInfo.#ctor(WikiClientLibrary.Pages.WikiPageStub,System.Boolean,System.String,System.String,System.DateTime)</parameter>
+          </include>
+        </markup>
+      </param>
+      <param name="isHidden">
+        <markup>
+          <include item="SMCMissingParamTag">
+            <parameter>param</parameter>
+            <parameter>isHidden</parameter>
+            <parameter>M:WikiClientLibrary.Pages.Queries.Properties.WikiPageCategoryInfo.#ctor(WikiClientLibrary.Pages.WikiPageStub,System.Boolean,System.String,System.String,System.DateTime)</parameter>
+          </include>
+        </markup>
+      </param>
+      <param name="sortKey">
+        <markup>
+          <include item="SMCMissingParamTag">
+            <parameter>param</parameter>
+            <parameter>sortKey</parameter>
+            <parameter>M:WikiClientLibrary.Pages.Queries.Properties.WikiPageCategoryInfo.#ctor(WikiClientLibrary.Pages.WikiPageStub,System.Boolean,System.String,System.String,System.DateTime)</parameter>
+          </include>
+        </markup>
+      </param>
+      <param name="fullSortKey">
+        <markup>
+          <include item="SMCMissingParamTag">
+            <parameter>param</parameter>
+            <parameter>fullSortKey</parameter>
+            <parameter>M:WikiClientLibrary.Pages.Queries.Properties.WikiPageCategoryInfo.#ctor(WikiClientLibrary.Pages.WikiPageStub,System.Boolean,System.String,System.String,System.DateTime)</parameter>
+          </include>
+        </markup>
+      </param>
+      <param name="timeStamp">
+        <markup>
+          <include item="SMCMissingParamTag">
+            <parameter>param</parameter>
+            <parameter>timeStamp</parameter>
+            <parameter>M:WikiClientLibrary.Pages.Queries.Properties.WikiPageCategoryInfo.#ctor(WikiClientLibrary.Pages.WikiPageStub,System.Boolean,System.String,System.String,System.DateTime)</parameter>
+          </include>
+        </markup>
+      </param>
+    </member>
+    <member name="P:WikiClientLibrary.Pages.Queries.Properties.WikiPageCategoryInfo.FullSortKey">
+      <summary>Gets the sortkey (hexadecimal string) of the current page in the category.</summary>
+    </member>
+    <member name="P:WikiClientLibrary.Pages.Queries.Properties.WikiPageCategoryInfo.IsHidden">
+      <summary>Gets a value that indicates whether the category is hidden.</summary>
+    </member>
+    <member name="P:WikiClientLibrary.Pages.Queries.Properties.WikiPageCategoryInfo.Page">
+      <summary>
+            Page information for the category.
+            </summary>
+    </member>
+    <member name="P:WikiClientLibrary.Pages.Queries.Properties.WikiPageCategoryInfo.SortKey">
+      <summary>Gets the sortkey prefix (human-readable part) of the current page in the category.</summary>
+    </member>
+    <member name="P:WikiClientLibrary.Pages.Queries.Properties.WikiPageCategoryInfo.TimeStamp">
+      <summary>Gets the timestamp of when the category was added.</summary>
+    </member>
+    <member name="P:WikiClientLibrary.Pages.Queries.Properties.WikiPageCategoryInfo.Title">
+      <summary>
+            Full name of the category.
+            </summary>
+    </member>
+    <member name="M:WikiClientLibrary.Pages.Queries.Properties.WikiPageCategoryInfo.ToString">
+      <summary>
+        <markup>
+          <include item="SMCMissingTag">
+            <parameter>summary</parameter>
+            <parameter>M:WikiClientLibrary.Pages.Queries.Properties.WikiPageCategoryInfo.ToString</parameter>
+          </include>
+        </markup>
+      </summary>
+    </member>
     <member name="T:WikiClientLibrary.Pages.Queries.Properties.WikiPagePropertyGroup">
       <summary>
-            Represents an immutable group of extendable <see cref="T:WikiClientLibrary.Pages.WikiPage" /> properties.
+            A base class for an immutable group of extendable <see cref="T:WikiClientLibrary.Pages.WikiPage" /> properties.
+            The default implementation for <see cref="T:WikiClientLibrary.Pages.Queries.Properties.IWikiPagePropertyGroup" />.
             </summary>
     </member>
     <member name="M:WikiClientLibrary.Pages.Queries.Properties.WikiPagePropertyGroup.#ctor">
@@ -10977,6 +10966,11 @@
             The absolute path to the main page. (MediaWiki 1.8+)
             </summary>
     </member>
+    <member name="P:WikiClientLibrary.Sites.SiteInfo.ExtensionData">
+      <summary>
+            Gets the other extensible site information.
+            </summary>
+    </member>
     <member name="P:WikiClientLibrary.Sites.SiteInfo.FavIconUrl">
       <summary>
         <markup>
@@ -11777,13 +11771,8 @@
     </member>
     <member name="P:WikiClientLibrary.Sites.WikiSite.Initialization">
       <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>P:WikiClientLibrary.Sites.WikiSite.Initialization</parameter>
-          </include>
-        </markup>
-      </summary>
+            A task that indicates the asynchronous initialization status of this instance.
+            </summary>
     </member>
     <member name="P:WikiClientLibrary.Sites.WikiSite.InterwikiMap">
       <summary>

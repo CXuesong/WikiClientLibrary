@@ -143,22 +143,22 @@
     <HelpKINode Title="WikiSite.ApiEndpoint Property " Url="html/c619748c-0840-a3b5-2125-24fe33468e98.htm" />
   </HelpKINode>
   <HelpKINode Title="ApiHighLimits field" Url="html/f9fd67eb-6b95-59e7-6e8d-d83940f24ad2.htm" />
-  <HelpKINode Title="AppleTouchIcon property" Url="html/091bcb32-4770-813f-56b7-512acea661ed.htm" />
+  <HelpKINode Title="AppleTouchIcon property" Url="html/9075f3fe-a2a6-e13e-7146-19a7ae98d362.htm" />
   <HelpKINode Title="AppleTouchIconInfo class">
-    <HelpKINode Title="AppleTouchIconInfo Class" Url="html/b105ad66-eca5-373a-0ea5-9b883e55602c.htm" />
-    <HelpKINode Title="about AppleTouchIconInfo class" Url="html/b105ad66-eca5-373a-0ea5-9b883e55602c.htm" />
-    <HelpKINode Title="constructor" Url="html/77ed2661-c66d-e6de-404a-d1c00bae4e0d.htm" />
-    <HelpKINode Title="methods" Url="html/ab457a80-49f6-e313-f00a-5600d1addf2b.htm" />
-    <HelpKINode Title="properties" Url="html/e8e80631-1b2f-d43f-99e3-c81b60c5bf37.htm" />
+    <HelpKINode Title="AppleTouchIconInfo Class" Url="html/10d191cc-16e6-13ae-34f9-91f1bb4d4b6d.htm" />
+    <HelpKINode Title="about AppleTouchIconInfo class" Url="html/10d191cc-16e6-13ae-34f9-91f1bb4d4b6d.htm" />
+    <HelpKINode Title="constructor" Url="html/890cb5cb-88c5-9271-55bd-907ef6310980.htm" />
+    <HelpKINode Title="methods" Url="html/7c764c45-a0a4-18f5-58ea-68d39bcd07db.htm" />
+    <HelpKINode Title="properties" Url="html/63749d3a-e2c7-e2af-dee4-a1467ae780dd.htm" />
   </HelpKINode>
-  <HelpKINode Title="AppleTouchIconInfo.AppleTouchIconInfo constructor" Url="html/77ed2661-c66d-e6de-404a-d1c00bae4e0d.htm" />
-  <HelpKINode Title="AppleTouchIconInfo.Height property" Url="html/abf09eb5-b2bd-c599-e408-71a9b483f838.htm" />
-  <HelpKINode Title="AppleTouchIconInfo.Size property" Url="html/743a479b-55f8-c69a-19d5-68d58b2b89b7.htm" />
-  <HelpKINode Title="AppleTouchIconInfo.Url property" Url="html/ee2a6d73-2dc9-6c08-ab63-3e8f2dfe0d02.htm" />
-  <HelpKINode Title="AppleTouchIconInfo.Width property" Url="html/0e57c639-0ea2-03d7-f61f-8cfc9f37384c.htm" />
+  <HelpKINode Title="AppleTouchIconInfo.AppleTouchIconInfo constructor" Url="html/890cb5cb-88c5-9271-55bd-907ef6310980.htm" />
+  <HelpKINode Title="AppleTouchIconInfo.Height property" Url="html/66824cb5-eeb7-f7d9-be01-61177431bea6.htm" />
+  <HelpKINode Title="AppleTouchIconInfo.Size property" Url="html/577f4fcb-a167-10cd-d3c3-14b0102b7b1e.htm" />
+  <HelpKINode Title="AppleTouchIconInfo.Url property" Url="html/cc79c149-51b7-22aa-6293-4b3299c1a50b.htm" />
+  <HelpKINode Title="AppleTouchIconInfo.Width property" Url="html/c7fea51d-7200-8729-d811-a3b972ab1b9f.htm" />
   <HelpKINode Title="ArticlePath property">
     <HelpKINode Title="SiteInfo.ArticlePath Property " Url="html/50596668-497d-aa4b-91e0-bf68ec097806.htm" />
-    <HelpKINode Title="SiteVariableData.ArticlePath Property " Url="html/a5ff878c-78aa-afeb-dde7-8ccfc8c6019c.htm" />
+    <HelpKINode Title="SiteVariableData.ArticlePath Property " Url="html/e1d4bcbe-f4d7-ab39-48e7-95329e188474.htm" />
   </HelpKINode>
   <HelpKINode Title="ArticlesCount property" Url="html/9d91ddfa-4f20-e8cf-800d-52347a614820.htm" />
   <HelpKINode Title="ArticleTitle property" Url="html/fc6cdf1a-5093-ece6-37cc-ea24fdc138bd.htm" />
@@ -193,9 +193,9 @@
   <HelpKINode Title="AutoWatchBehavior enumeration" Url="html/54c31a7d-14f5-087e-ccf4-1db12de581f5.htm" />
   <HelpKINode Title="AvatarUrl property" Url="html/00a7f9ce-b1a1-f5ae-e74a-d2b9e5fd7ff0.htm" />
   <HelpKINode Title="BackendName property" Url="html/62b09913-0ef5-ea39-2441-fb315ffa3464.htm" />
-  <HelpKINode Title="BackgroundImage property" Url="html/79e0d7f5-cf3d-382a-0ee1-1de98abb8c60.htm" />
-  <HelpKINode Title="BackgroundImageHeight property" Url="html/563c2afd-db89-230f-b8eb-60ef427f7425.htm" />
-  <HelpKINode Title="BackgroundImageWidth property" Url="html/371c9a1d-4254-8685-fdd7-8fd270bbb2ba.htm" />
+  <HelpKINode Title="BackgroundImage property" Url="html/b74b88cb-d401-ee4c-cfb2-1250b9b752f4.htm" />
+  <HelpKINode Title="BackgroundImageHeight property" Url="html/7a2956d1-dc9c-f979-5397-a8747e07ba18.htm" />
+  <HelpKINode Title="BackgroundImageWidth property" Url="html/f8909c50-3abe-7b85-881d-aeb9a178ea89.htm" />
   <HelpKINode Title="BacklinksGenerator class">
     <HelpKINode Title="BacklinksGenerator Class" Url="html/92c57249-27f9-d21a-cb2e-6adafaca1795.htm" />
     <HelpKINode Title="about BacklinksGenerator class" Url="html/92c57249-27f9-d21a-cb2e-6adafaca1795.htm" />
@@ -221,7 +221,7 @@
     <HelpKINode Title="properties" Url="html/5852c50a-d1e7-a4c3-e5af-87ff63233781.htm" />
   </HelpKINode>
   <HelpKINode Title="BadTokenException.BadTokenException constructor" Url="html/86c60fa9-b861-ec83-7ed0-e4e581af7376.htm" />
-  <HelpKINode Title="BasePath property" Url="html/ed432ea8-b0db-f66b-cac8-0d3465205acf.htm" />
+  <HelpKINode Title="BasePath property" Url="html/addcc309-9aa8-ab3b-7316-20fa3701e387.htm" />
   <HelpKINode Title="BaseUrl property" Url="html/497df266-2c13-5ed5-d0f1-658d02494d15.htm" />
   <HelpKINode Title="Before property" Url="html/df292304-8306-6541-5d11-85af8575e479.htm" />
   <HelpKINode Title="BeginActionScope method" Url="html/c77a5f19-7488-4779-8fa4-3a2adb029479.htm" />
@@ -234,21 +234,21 @@
   <HelpKINode Title="BlockId property" Url="html/dd2d60eb-24f9-ad4c-f51d-5a7a0c860f22.htm" />
   <HelpKINode Title="BlockReason property" Url="html/004c245e-d802-caee-2924-9a3f1a58dc48.htm" />
   <HelpKINode Title="Board class">
-    <HelpKINode Title="Board Class" Url="html/eb05c093-7e73-b5e5-53fe-d4864b545ee8.htm" />
     <HelpKINode Title="Board Class" Url="html/88ce6563-18e7-4c4a-b47e-5159f6c8376d.htm" />
-    <HelpKINode Title="about Board class" Url="html/88ce6563-18e7-4c4a-b47e-5159f6c8376d.htm" />
+    <HelpKINode Title="Board Class" Url="html/eb05c093-7e73-b5e5-53fe-d4864b545ee8.htm" />
     <HelpKINode Title="about Board class" Url="html/eb05c093-7e73-b5e5-53fe-d4864b545ee8.htm" />
-    <HelpKINode Title="constructor" Url="html/70605864-9045-8923-bb0d-675c889f9a25.htm" />
+    <HelpKINode Title="about Board class" Url="html/88ce6563-18e7-4c4a-b47e-5159f6c8376d.htm" />
     <HelpKINode Title="constructor" Url="html/31266511-b581-772c-8bc3-ad983af48d46.htm" />
+    <HelpKINode Title="constructor" Url="html/70605864-9045-8923-bb0d-675c889f9a25.htm" />
     <HelpKINode Title="methods" Url="html/a34291a7-1d2d-aa43-abd3-ce44c7713476.htm" />
     <HelpKINode Title="methods" Url="html/d4c14b9e-c9dd-a060-b997-4784ad6bbdc6.htm" />
-    <HelpKINode Title="properties" Url="html/308413a3-c997-07b9-a7bd-9b988798afc5.htm" />
     <HelpKINode Title="properties" Url="html/20b4f3c4-03c8-333a-dcd8-a48186529066.htm" />
+    <HelpKINode Title="properties" Url="html/308413a3-c997-07b9-a7bd-9b988798afc5.htm" />
   </HelpKINode>
   <HelpKINode Title="Board field" Url="html/2430696a-3095-f3eb-5afc-71e8ce6ee0b4.htm" />
   <HelpKINode Title="Board.Board constructor">
-    <HelpKINode Title="Board Constructor " Url="html/31266511-b581-772c-8bc3-ad983af48d46.htm" />
     <HelpKINode Title="Board Constructor " Url="html/70605864-9045-8923-bb0d-675c889f9a25.htm" />
+    <HelpKINode Title="Board Constructor " Url="html/31266511-b581-772c-8bc3-ad983af48d46.htm" />
   </HelpKINode>
   <HelpKINode Title="Board.EnumPostsAsync method" Url="html/94dfedf7-ca43-5bd3-46c1-45e60ac0ad86.htm" />
   <HelpKINode Title="Board.EnumTopicsAsync method" Url="html/fd959b99-1a84-a857-2d1f-56bbf547cb4a.htm" />
@@ -259,8 +259,8 @@
   <HelpKINode Title="Board.NewTopicAsync method" Url="html/9813ae40-39dc-114f-f0ac-b32115a21ecb.htm" />
   <HelpKINode Title="Board.Page property" Url="html/75a52d98-aecb-c46e-6018-eb84cf4bd350.htm" />
   <HelpKINode Title="Board.RefreshAsync method">
-    <HelpKINode Title="Board.RefreshAsync Method " Url="html/323db725-c375-847b-78fe-6716db565264.htm" />
     <HelpKINode Title="Board.RefreshAsync Method " Url="html/029e888f-f2f2-41c8-db34-d4e012735840.htm" />
+    <HelpKINode Title="Board.RefreshAsync Method " Url="html/323db725-c375-847b-78fe-6716db565264.htm" />
   </HelpKINode>
   <HelpKINode Title="Board.Site property">
     <HelpKINode Title="Board.Site Property " Url="html/aceb336e-5267-eeaa-f39e-441214ae3b3f.htm" />
@@ -271,8 +271,8 @@
     <HelpKINode Title="Board.ToString Method " Url="html/3c919292-7810-54b8-e558-43fd499e682a.htm" />
     <HelpKINode Title="Board.ToString Method " Url="html/973a775b-8f53-8f54-fe88-1e0badc971d5.htm" />
   </HelpKINode>
-  <HelpKINode Title="BodyColor property" Url="html/da5965ae-b58d-56a0-936d-51e50e304dbe.htm" />
-  <HelpKINode Title="BodyMiddleColor property" Url="html/d05a9a99-218a-afc7-f218-9dfe56c98017.htm" />
+  <HelpKINode Title="BodyColor property" Url="html/a13ef2c1-2068-eee1-393f-994fadea2622.htm" />
+  <HelpKINode Title="BodyMiddleColor property" Url="html/ccf89c4e-e9c3-18a8-ae8c-8db584e579a2.htm" />
   <HelpKINode Title="Bot enumeration member" Url="html/a7c16ab6-265e-eaaf-f7e5-a7e99c94e805.htm" />
   <HelpKINode Title="Bot field" Url="html/b14470a5-b51b-98e4-5eae-5004dd1734cf.htm" />
   <HelpKINode Title="BotFilter property" Url="html/02fed27d-33a5-09e7-a9c9-039858cb522b.htm" />
@@ -321,9 +321,9 @@
   <HelpKINode Title="BuiltInNamespaces.TemplateTalk field" Url="html/a0e57508-c6a5-0874-59c9-aeea295761d9.htm" />
   <HelpKINode Title="BuiltInNamespaces.User field" Url="html/6e6d314c-b69c-848f-a632-1c9d84d31d3e.htm" />
   <HelpKINode Title="BuiltInNamespaces.UserTalk field" Url="html/87eaacb7-8d1e-deed-572d-10f7ae4a86ea.htm" />
-  <HelpKINode Title="ButtonsColor property" Url="html/0694cec4-b718-ff88-284f-cdf8917986ae.htm" />
+  <HelpKINode Title="ButtonsColor property" Url="html/9342a513-8880-bf3e-0012-1777e930864a.htm" />
   <HelpKINode Title="ByteOffset property" Url="html/37c1cd71-bbde-75f1-69c5-83183a7e12f8.htm" />
-  <HelpKINode Title="CacheBuster property" Url="html/315468e7-bcdd-2677-4e14-ca4c9aeb61f1.htm" />
+  <HelpKINode Title="CacheBuster property" Url="html/7a510bef-83c6-23c4-f396-fc8846b38a6e.htm" />
   <HelpKINode Title="CalendarModel property" Url="html/f8eb0817-4e5f-1578-c9aa-35996a672c88.htm" />
   <HelpKINode Title="CancellationToken property" Url="html/58e295de-ba9d-feb6-60d4-c7ce15d92279.htm" />
   <HelpKINode Title="CanConvert method">
@@ -333,6 +333,19 @@
   <HelpKINode Title="CanonicalName property" Url="html/7781df10-7ea7-86c4-b748-47f619a143ac.htm" />
   <HelpKINode Title="Cascade property" Url="html/bdb7948b-f820-a136-5f35-90f8961fc8f0.htm" />
   <HelpKINode Title="Categories property" Url="html/4b23797f-8be0-1ec1-6ed1-9c543b306b28.htm" />
+  <HelpKINode Title="CategoriesGenerator class">
+    <HelpKINode Title="CategoriesGenerator Class" Url="html/cd8172b6-59b0-994c-49a7-9526835342ee.htm" />
+    <HelpKINode Title="about CategoriesGenerator class" Url="html/cd8172b6-59b0-994c-49a7-9526835342ee.htm" />
+    <HelpKINode Title="constructor" Url="html/5366e65f-d13a-c6b0-cb48-7652ea06883a.htm" />
+    <HelpKINode Title="methods" Url="html/e5dbf47b-6681-118a-8bd4-508b74a361e0.htm" />
+    <HelpKINode Title="properties" Url="html/38344ae2-c17f-2d2e-cc78-52f64e2c6f2c.htm" />
+  </HelpKINode>
+  <HelpKINode Title="CategoriesGenerator.CategoriesGenerator constructor" Url="html/5366e65f-d13a-c6b0-cb48-7652ea06883a.htm" />
+  <HelpKINode Title="CategoriesGenerator.CategorySelection property" Url="html/39ee0bb7-6ac3-0ea0-ce9d-57d631856a79.htm" />
+  <HelpKINode Title="CategoriesGenerator.EnumListParameters method" Url="html/d472a317-2a1d-a2cb-a640-6a9c0ee26a53.htm" />
+  <HelpKINode Title="CategoriesGenerator.HiddenCategoryFilter property" Url="html/d150612b-6d1d-01e1-3e93-a22425089671.htm" />
+  <HelpKINode Title="CategoriesGenerator.ItemFromJson method" Url="html/e7db333e-68fa-1d12-6e65-2e5b232759cc.htm" />
+  <HelpKINode Title="CategoriesGenerator.PropertyName property" Url="html/af93a6a8-2eb3-28d7-e316-caaa51d90dc7.htm" />
   <HelpKINode Title="Categorize enumeration member">
     <HelpKINode Title="RecentChangesFilterTypes Enumeration" Url="html/4ebf4b51-1ad9-4ba5-1ec5-0bc3e66581b4.htm" />
     <HelpKINode Title="RecentChangesType Enumeration" Url="html/45b0b6e2-9e0f-a86a-eb15-3aaaf156f613.htm" />
@@ -391,16 +404,17 @@
   <HelpKINode Title="CategoryPage.PagesCount property" Url="html/89feb63b-9ce8-a516-4d76-81a219ee37a7.htm" />
   <HelpKINode Title="CategoryPage.SubcategoriesCount property" Url="html/03a59eb5-23e8-3fc0-40da-e3c43403570f.htm" />
   <HelpKINode Title="CategoryPage.ToString method" Url="html/3037dba7-a2b9-322f-f858-9d950e5e8934.htm" />
+  <HelpKINode Title="CategorySelection property" Url="html/39ee0bb7-6ac3-0ea0-ce9d-57d631856a79.htm" />
   <HelpKINode Title="CategoryTalk field" Url="html/f5aaf129-f39a-05d7-0a07-45cd31f0969e.htm" />
   <HelpKINode Title="CategoryTitle property" Url="html/bf9ffad4-48a0-a621-dcff-dda6064a81f1.htm" />
-  <HelpKINode Title="CdnRootUrl property" Url="html/abf550bd-948a-6649-a779-03511421fda8.htm" />
+  <HelpKINode Title="CdnRootUrl property" Url="html/79f61d93-42d2-8cc3-d04f-e450aea56556.htm" />
   <HelpKINode Title="Century enumeration member" Url="html/47f1ea51-e5a3-894c-9615-e1af755804a5.htm" />
   <HelpKINode Title="ChangeItemKey method">
     <HelpKINode Title="UnorderedKeyedCollection(TKey, TItem).ChangeItemKey Method " Url="html/fb1bc725-9206-64f2-9b06-7d0a9ea5808c.htm" />
     <HelpKINode Title="UnorderedKeyedMultiCollection(TKey, TItem).ChangeItemKey Method " Url="html/0abfe2d5-efd2-bef9-6aa2-6732aade2219.htm" />
   </HelpKINode>
   <HelpKINode Title="ChangeType property" Url="html/342d4c5f-16ec-8c4a-17a9-0b4487d61763.htm" />
-  <HelpKINode Title="Children property" Url="html/56e3bf7d-19f4-3add-e82a-5577ee631797.htm" />
+  <HelpKINode Title="Children property" Url="html/cdc19863-15f0-48a1-1308-2e24eebec0f8.htm" />
   <HelpKINode Title="ChunkedUploadSource class">
     <HelpKINode Title="ChunkedUploadSource Class" Url="html/3796e043-3f85-2133-3611-11334bfa455c.htm" />
     <HelpKINode Title="about ChunkedUploadSource class" Url="html/3796e043-3f85-2133-3611-11334bfa455c.htm" />
@@ -470,8 +484,9 @@
   </HelpKINode>
   <HelpKINode Title="Comments property" Url="html/8f36c6a8-d69f-9047-f723-a381b52bdc00.htm" />
   <HelpKINode Title="CommonsMedia property" Url="html/dc26c507-ebf2-efe3-4ed2-29102b3fdcad.htm" />
-  <HelpKINode Title="CommunityHeaderColor property" Url="html/7782ba6c-55b7-b54d-6c14-975f15703da3.htm" />
+  <HelpKINode Title="CommunityHeaderColor property" Url="html/05e9758f-1a52-15f3-f92a-2ec7d2229f09.htm" />
   <HelpKINode Title="Completion property" Url="html/196c0119-ff0c-7b62-012c-1c341bcf278c.htm" />
+  <HelpKINode Title="ConceptBaseUri property" Url="html/3d14d1ba-5915-60aa-fce8-7749c1898224.htm" />
   <HelpKINode Title="Contains method">
     <HelpKINode Title="ExtensionCollection.Contains Method " Url="html/a360bda5-c2e1-7e08-d8a1-94d1f7ebe558.htm" />
     <HelpKINode Title="InterwikiMap.Contains Method " Url="html/b12d5844-9c68-11d7-fd43-4ba80e99b457.htm" />
@@ -491,10 +506,10 @@
   <HelpKINode Title="Content property">
     <HelpKINode Title="ParsedContentInfo.Content Property " Url="html/1e30af5e-e3cc-c79c-9e0c-cc655cea99d6.htm" />
     <HelpKINode Title="ParserLimitReport.Content Property " Url="html/8a9e2fd4-4105-c0c6-e8f0-1f02648a5673.htm" />
-    <HelpKINode Title="Post.Content Property " Url="html/ec969818-d159-d2b5-556b-644d2ba6035e.htm" />
     <HelpKINode Title="Post.Content Property " Url="html/a7ee7528-5573-ac6e-ef5d-d3ed25c877cb.htm" />
-    <HelpKINode Title="Revision.Content Property " Url="html/7e0f98f5-08fb-feab-9776-7ebe526dfeaa.htm" />
+    <HelpKINode Title="Post.Content Property " Url="html/ec969818-d159-d2b5-556b-644d2ba6035e.htm" />
     <HelpKINode Title="Revision.Content Property " Url="html/3cfd923d-e823-6a74-cdb5-d0bc813a563f.htm" />
+    <HelpKINode Title="Revision.Content Property " Url="html/7e0f98f5-08fb-feab-9776-7ebe526dfeaa.htm" />
     <HelpKINode Title="WikiPage.Content Property " Url="html/ef159b6c-f6e7-eaef-6c04-e3aacb2d5a58.htm" />
   </HelpKINode>
   <HelpKINode Title="ContentCategoryInfo class">
@@ -509,8 +524,8 @@
   <HelpKINode Title="ContentCategoryInfo.IsHidden property" Url="html/f2f00da4-fb97-2126-c575-927b09a5c9b8.htm" />
   <HelpKINode Title="ContentCategoryInfo.SortKey property" Url="html/e3b89b5a-a176-2245-6a78-34580b4d1b5f.htm" />
   <HelpKINode Title="ContentCategoryInfo.ToString method" Url="html/27109801-d3cf-fa8b-6385-165762c9324e.htm" />
-  <HelpKINode Title="ContentFlowDirection property" Url="html/cc6a57c8-6ca3-b350-8e35-3ab99878f30a.htm" />
-  <HelpKINode Title="ContentLanguage property" Url="html/c13648aa-c4b3-426c-3b9c-fca6c814ed70.htm" />
+  <HelpKINode Title="ContentFlowDirection property" Url="html/9a2a7f42-b0f9-7373-6d26-8d545443526e.htm" />
+  <HelpKINode Title="ContentLanguage property" Url="html/bb9a2f2a-b7f9-b1d4-5e73-da499f0d3d33.htm" />
   <HelpKINode Title="ContentLength property">
     <HelpKINode Title="PageInfoPropertyGroup.ContentLength Property " Url="html/27e672ff-41a0-89fa-b0dc-b2194cc40fb2.htm" />
     <HelpKINode Title="Revision.ContentLength Property " Url="html/adc46aaa-a1a5-c61b-bf9f-d2e1323ca965.htm" />
@@ -534,7 +549,7 @@
   <HelpKINode Title="ContentModels.Scribunto field" Url="html/bc305d71-febe-3b85-23c0-48b52595c4e9.htm" />
   <HelpKINode Title="ContentModels.WikibaseItem field" Url="html/c5d3ae16-c75e-11c8-e9b3-52f16a68c054.htm" />
   <HelpKINode Title="ContentModels.Wikitext field" Url="html/d3c616ed-5fe8-d0ea-243d-90df1211eea0.htm" />
-  <HelpKINode Title="ContentNamespaceIds property" Url="html/ee021338-443c-a622-f0a7-bd9fe4f7e3a6.htm" />
+  <HelpKINode Title="ContentNamespaceIds property" Url="html/78a10387-5cbc-bbee-480a-34758221f1fe.htm" />
   <HelpKINode Title="ContentPropertyInfo class">
     <HelpKINode Title="ContentPropertyInfo Class" Url="html/146fc189-9b6c-bf13-cbdc-44028ebde3ba.htm" />
     <HelpKINode Title="about ContentPropertyInfo class" Url="html/146fc189-9b6c-bf13-cbdc-44028ebde3ba.htm" />
@@ -612,10 +627,7 @@
     <HelpKINode Title="RecentChangesType Enumeration" Url="html/45b0b6e2-9e0f-a86a-eb15-3aaaf156f613.htm" />
     <HelpKINode Title="RevisionFlags Enumeration" Url="html/a7c16ab6-265e-eaaf-f7e5-a7e99c94e805.htm" />
   </HelpKINode>
-  <HelpKINode Title="Create method">
-    <HelpKINode Title="CategoryInfoPropertyGroup.Create Method " Url="html/657ad2b6-0f52-7905-d3b5-0f20b695ec4c.htm" />
-    <HelpKINode Title="FileInfoPropertyGroup.Create Method " Url="html/150decfa-0b0d-b8c5-8d3f-5605e5966f33.htm" />
-  </HelpKINode>
+  <HelpKINode Title="Create method" Url="html/657ad2b6-0f52-7905-d3b5-0f20b695ec4c.htm" />
   <HelpKINode Title="CreateAsync method" Url="html/ddf0d935-6c6b-892f-57ef-1102f0a6fa74.htm" />
   <HelpKINode Title="CreateHeader enumeration member" Url="html/58cb1ce4-4fc1-1786-46fc-6f6d2a18d73f.htm" />
   <HelpKINode Title="CreateHttpRequestMessage method" Url="html/6051d0e2-bb2b-1d44-8bd8-089f1f730275.htm" />
@@ -628,7 +640,7 @@
   <HelpKINode Title="Credits property" Url="html/5396c29e-ecc1-8bb4-b27d-37ce2c0c9bca.htm" />
   <HelpKINode Title="Css field" Url="html/5b2b6925-0b2e-c258-75a9-f3240da39a20.htm" />
   <HelpKINode Title="CustomName property" Url="html/d3456391-7b9a-3bbb-4cb0-d60ac9931dc8.htm" />
-  <HelpKINode Title="DatabaseName property" Url="html/977d56fa-7575-7b6a-79d9-eb3d2df25fef.htm" />
+  <HelpKINode Title="DatabaseName property" Url="html/5f6d0d03-bdff-1d00-06d1-711c7420c4f7.htm" />
   <HelpKINode Title="DataType property">
     <HelpKINode Title="Entity.DataType Property " Url="html/f25d64a8-16bb-7f7a-a3ed-8a4e17d5057c.htm" />
     <HelpKINode Title="Snak.DataType Property " Url="html/734f68c4-812c-5fd6-6969-b8919b3a806e.htm" />
@@ -647,7 +659,7 @@
   <HelpKINode Title="DefaultChunkSize property" Url="html/4922cfdd-f4c4-4424-e18d-b2cb629dbdbd.htm" />
   <HelpKINode Title="DefaultContentModel property" Url="html/62b73b5d-e34a-067f-5e65-d93c9bd70ff7.htm" />
   <HelpKINode Title="DefaultDisambiguationTemplate field" Url="html/fac5bfa6-f762-8612-c640-5349f76a5b25.htm" />
-  <HelpKINode Title="DefaultSkinName property" Url="html/046b622d-b114-31ab-2f97-37e32d71b6db.htm" />
+  <HelpKINode Title="DefaultSkinName property" Url="html/7f4391ca-eec9-b8ff-ef12-faf00950932a.htm" />
   <HelpKINode Title="Delete enumeration member" Url="html/c4f09be2-55a7-99ef-5280-cabdea351124.htm" />
   <HelpKINode Title="Delete field">
     <HelpKINode Title="LogActions.Delete Field" Url="html/3b8692ca-c37c-66ed-c7ab-dbddded13331.htm" />
@@ -672,7 +684,7 @@
   <HelpKINode Title="DisableToc enumeration member" Url="html/160458fa-bbc3-d4d4-b572-e9035af88dc7.htm" />
   <HelpKINode Title="Disambiguation property" Url="html/b5ec6436-e715-174d-d77e-b0095bec291a.htm" />
   <HelpKINode Title="DisambiguationTemplates property" Url="html/89b6cf38-7063-43f5-40d9-2ca5fc590e51.htm" />
-  <HelpKINode Title="DiscussionColorOverride property" Url="html/313825df-76e5-5574-9cc3-5cf8aa822c40.htm" />
+  <HelpKINode Title="DiscussionColorOverride property" Url="html/fbdeb328-3a72-9510-4209-0ab7f51e59f0.htm" />
   <HelpKINode Title="DiscussionsExtensions class">
     <HelpKINode Title="DiscussionsExtensions Class" Url="html/9d4cbf3e-0251-191f-91ef-a9450fc6cfbe.htm" />
     <HelpKINode Title="about DiscussionsExtensions class" Url="html/9d4cbf3e-0251-191f-91ef-a9450fc6cfbe.htm" />
@@ -814,6 +826,7 @@
     <HelpKINode Title="AllCategoriesGenerator.EnumListParameters Method " Url="html/0dc0daf6-400a-48e2-0b07-21ec7a94fadf.htm" />
     <HelpKINode Title="AllPagesGenerator.EnumListParameters Method " Url="html/7d91aaca-7f39-ffae-76c8-e58fac0bb71c.htm" />
     <HelpKINode Title="BacklinksGenerator.EnumListParameters Method " Url="html/9c33beb7-d156-9808-ecd6-f4193a1299fd.htm" />
+    <HelpKINode Title="CategoriesGenerator.EnumListParameters Method " Url="html/d472a317-2a1d-a2cb-a640-6a9c0ee26a53.htm" />
     <HelpKINode Title="CategoryMembersGenerator.EnumListParameters Method " Url="html/d838eaa0-26c8-dff8-3bb4-b078ce4cd3d4.htm" />
     <HelpKINode Title="GeoSearchGenerator.EnumListParameters Method " Url="html/d40c49d0-ab02-e38b-8e31-48f78b13ebbb.htm" />
     <HelpKINode Title="LinksGenerator.EnumListParameters Method " Url="html/81c9a296-e5bf-b301-122c-9162ef55960a.htm" />
@@ -919,6 +932,7 @@
   <HelpKINode Title="ExtensionCollection.ICollection&lt;ExtensionInfo&gt;.Remove explicitly implemented method" Url="html/e557b07f-8149-b6e2-ece4-e9b65978e88f.htm" />
   <HelpKINode Title="ExtensionCollection.IEnumerable.GetEnumerator explicitly implemented method" Url="html/f694dd8d-174f-bf28-518f-7337c48f9fbe.htm" />
   <HelpKINode Title="ExtensionCollection.Item property" Url="html/342cc5b3-6b53-a4e4-f795-b0758419ea02.htm" />
+  <HelpKINode Title="ExtensionData property" Url="html/f9a8089a-8cde-d682-189c-c9efa0f372a1.htm" />
   <HelpKINode Title="ExtensionInfo class">
     <HelpKINode Title="ExtensionInfo Class" Url="html/ca67c9dd-7774-8c1e-28c1-837349363b56.htm" />
     <HelpKINode Title="about ExtensionInfo class" Url="html/ca67c9dd-7774-8c1e-28c1-837349363b56.htm" />
@@ -986,7 +1000,7 @@
   <HelpKINode Title="ExtractsPropertyProvider.PropertyName property" Url="html/0f2c24ea-dad2-0e57-5e8c-4c2ce5af5463.htm" />
   <HelpKINode Title="FavIconUrl property">
     <HelpKINode Title="SiteInfo.FavIconUrl Property " Url="html/2a4e89d6-04be-89c1-fc07-b5503347df90.htm" />
-    <HelpKINode Title="SiteVariableData.FavIconUrl Property " Url="html/53018650-ca79-3095-749c-c3639c61953f.htm" />
+    <HelpKINode Title="SiteVariableData.FavIconUrl Property " Url="html/5dc72823-9744-5dac-4741-2207ac663a36.htm" />
   </HelpKINode>
   <HelpKINode Title="Female enumeration member" Url="html/b44d8d9e-e9e6-858d-3815-1bfbaf0b64d6.htm" />
   <HelpKINode Title="FetchAliases enumeration member" Url="html/8f5edae1-f1ea-4a88-09d7-24e4137a62c8.htm" />
@@ -1004,7 +1018,6 @@
   <HelpKINode Title="FetchSiteLinksUrl enumeration member" Url="html/8f5edae1-f1ea-4a88-09d7-24e4137a62c8.htm" />
   <HelpKINode Title="FetchUserAsync method" Url="html/dea5912c-38af-b41c-cf2e-1ff4248870e6.htm" />
   <HelpKINode Title="FetchUsersAsync method" Url="html/f20d062d-774b-d0ab-3004-0788aa25fa4e.htm" />
-  <HelpKINode Title="FetchWikiVariablesAsync method" Url="html/d7b27752-7b04-f384-e4dc-54b5784f29a1.htm" />
   <HelpKINode Title="Fields property">
     <HelpKINode Title="MediaWikiFormRequestMessage.Fields Property " Url="html/97b5fc27-d73c-bc71-b21d-8b392d1be194.htm" />
     <HelpKINode Title="WikiaQueryRequestMessage.Fields Property " Url="html/5179ea75-6034-a4d8-2d82-42337fb62d4e.htm" />
@@ -1017,7 +1030,6 @@
     <HelpKINode Title="methods" Url="html/9965765d-ffaa-7016-85de-b3cb97cc5c94.htm" />
     <HelpKINode Title="properties" Url="html/5849f131-0e6c-4454-58f3-1dee6ce9ed70.htm" />
   </HelpKINode>
-  <HelpKINode Title="FileInfoPropertyGroup.Create method" Url="html/150decfa-0b0d-b8c5-8d3f-5605e5966f33.htm" />
   <HelpKINode Title="FileInfoPropertyGroup.LatestRevision property" Url="html/2ceeb5c4-541d-152b-538f-426d36c33576.htm" />
   <HelpKINode Title="FileInfoPropertyGroup.Revisions property" Url="html/6a72df08-4775-e0ab-c6d4-ef7a7a8ded15.htm" />
   <HelpKINode Title="FileInfoPropertyProvider class">
@@ -1122,7 +1134,9 @@
   <HelpKINode Title="FromOptions method" Url="html/2f71e3b0-cdc9-764e-2f74-3f3265d4d200.htm" />
   <HelpKINode Title="FromPageIds method" Url="html/069b2273-fa62-6d0f-a9b9-7cd6e391cf04.htm" />
   <HelpKINode Title="FromPageTitles method" Url="html/835f82cb-857d-e55a-f94b-bda5eee30790.htm" />
+  <HelpKINode Title="FromSiteInfo method" Url="html/348515c7-7c09-7cdf-1324-e04372ef5de5.htm" />
   <HelpKINode Title="FromTitle method" Url="html/07ced4e7-a4f7-2442-c8b0-79c464328ce6.htm" />
+  <HelpKINode Title="FullSortKey property" Url="html/d65e48c2-1f93-890a-0abb-b139b2c79d37.htm" />
   <HelpKINode Title="FullTitle property" Url="html/dc712ba1-4113-340c-8712-0d6f65ce92d8.htm" />
   <HelpKINode Title="Gender enumeration" Url="html/b44d8d9e-e9e6-858d-3815-1bfbaf0b64d6.htm" />
   <HelpKINode Title="Gender property" Url="html/3e8628ba-2dc4-4f84-99dc-74e00bf9d0e9.htm" />
@@ -1206,6 +1220,7 @@
   <HelpKINode Title="GeoSearchResultItem.IsPrimaryCoordinate property" Url="html/835826df-3971-fbde-0b80-1c2b76ae6d93.htm" />
   <HelpKINode Title="GeoSearchResultItem.Page property" Url="html/e61c2202-e061-3959-fbdd-5a44bc3c02ac.htm" />
   <HelpKINode Title="GeoShape property" Url="html/636aee47-a351-c363-4a1c-3f452a065302.htm" />
+  <HelpKINode Title="GeoShapeStorageBaseUri property" Url="html/ffbf5c44-86de-e446-a2af-8ee1aa61bfe3.htm" />
   <HelpKINode Title="Get method">
     <HelpKINode Title="BuiltInDataTypes.Get Method " Url="html/497a9623-14a9-16f2-24c5-b418ed87f044.htm" />
     <HelpKINode Title="WbUri.Get Method " Url="html/460c31c6-9164-7e73-e682-4c98eda3d983.htm" />
@@ -1297,27 +1312,28 @@
   <HelpKINode Title="HasNamespaceId property" Url="html/00b55a77-3344-e6c6-8454-dbb006e59030.htm" />
   <HelpKINode Title="HasRight method" Url="html/81e65cac-5d4f-95c4-8e93-06252f53d606.htm" />
   <HelpKINode Title="HasTitle property" Url="html/8460a9fa-9674-a1fd-88ce-fff9aa9e0951.htm" />
-  <HelpKINode Title="HeaderColor property" Url="html/c35cd59b-bf12-b4fc-9370-5c5240ae1aa9.htm" />
+  <HelpKINode Title="HeaderColor property" Url="html/f611bd1e-3b1f-05a3-6fd9-d2a91a45663f.htm" />
   <HelpKINode Title="HeaderContent property" Url="html/10746341-0ee5-d9fb-d15f-ddb0de80f01d.htm" />
   <HelpKINode Title="HeaderRevision property" Url="html/cae51e5c-fbfc-02b5-518b-b32ad539e785.htm" />
   <HelpKINode Title="Heading property" Url="html/613848ba-4195-8469-f112-dfac4095b496.htm" />
   <HelpKINode Title="Height property">
-    <HelpKINode Title="AppleTouchIconInfo.Height Property " Url="html/abf09eb5-b2bd-c599-e408-71a9b483f838.htm" />
+    <HelpKINode Title="AppleTouchIconInfo.Height Property " Url="html/66824cb5-eeb7-f7d9-be01-61177431bea6.htm" />
     <HelpKINode Title="FileRevision.Height Property " Url="html/e6c42ce2-ddf4-0143-3223-fdac2e1a6080.htm" />
     <HelpKINode Title="PageImageInfo.Height Property " Url="html/7b39ce55-3b4e-0b83-39b2-c33484429291.htm" />
   </HelpKINode>
   <HelpKINode Title="Help field" Url="html/73dfc695-1476-0d14-aa77-acd77dcfbee3.htm" />
   <HelpKINode Title="HelpTalk field" Url="html/52132a06-ec43-085f-a04f-b9fc9c103602.htm" />
   <HelpKINode Title="Hidden enumeration member" Url="html/662a7912-491b-909d-eb89-8ebc6ce1a8de.htm" />
+  <HelpKINode Title="HiddenCategoryFilter property" Url="html/d150612b-6d1d-01e1-3e93-a22425089671.htm" />
   <HelpKINode Title="HiddenFields property" Url="html/80d9fe28-fdef-81cd-4355-e29a7a647390.htm" />
   <HelpKINode Title="Hide enumeration member" Url="html/c4f09be2-55a7-99ef-5280-cabdea351124.htm" />
   <HelpKINode Title="HidePost enumeration member" Url="html/58cb1ce4-4fc1-1786-46fc-6f6d2a18d73f.htm" />
   <HelpKINode Title="HideTopic enumeration member" Url="html/58cb1ce4-4fc1-1786-46fc-6f6d2a18d73f.htm" />
   <HelpKINode Title="Hits property" Url="html/2c3804c6-842b-c9d1-0657-9e670ea4af3c.htm" />
-  <HelpKINode Title="HomePageUrl property" Url="html/7a7a23d6-1aa5-7f22-2364-72512eb39daa.htm" />
+  <HelpKINode Title="HomePageUrl property" Url="html/867d0d27-23ac-9585-c5fe-4e538defef57.htm" />
   <HelpKINode Title="Hour enumeration member" Url="html/47f1ea51-e5a3-894c-9615-e1af755804a5.htm" />
   <HelpKINode Title="Hour property" Url="html/2a6bb40a-b31b-eb88-d1b0-c5144e56fe97.htm" />
-  <HelpKINode Title="HtmlTitle property" Url="html/fd67100d-e9da-57bb-689f-534231feeec6.htm" />
+  <HelpKINode Title="HtmlTitle property" Url="html/b49c637e-fd6e-cb51-4f04-eb445b7aad10.htm" />
   <HelpKINode Title="IAccountAssertionFailureHandler interface">
     <HelpKINode Title="IAccountAssertionFailureHandler Interface" Url="html/3a5e0ae3-5c38-8298-5392-867edc933fca.htm" />
     <HelpKINode Title="about IAccountAssertionFailureHandler interface" Url="html/3a5e0ae3-5c38-8298-5392-867edc933fca.htm" />
@@ -1406,7 +1422,7 @@
     <HelpKINode Title="RelatedPageItem.Id Property " Url="html/0b4d1dee-f05c-b0da-101f-ae3585d1efe1.htm" />
     <HelpKINode Title="Revision.Id Property " Url="html/26fa63d7-7a97-b748-14da-66a7d42069c1.htm" />
     <HelpKINode Title="SearchResultItem.Id Property " Url="html/99bf2408-9640-16e3-6fd2-c21cb266bc2b.htm" />
-    <HelpKINode Title="SiteVariableData.Id Property " Url="html/40b55348-d7fd-2b8a-c41f-725d7aff3ce1.htm" />
+    <HelpKINode Title="SiteVariableData.Id Property " Url="html/d372691a-befc-84b2-243e-cd1a129e0f4c.htm" />
     <HelpKINode Title="UserInfo.Id Property " Url="html/75af6e78-6a1f-8b1e-7bef-b299faaf38da.htm" />
     <HelpKINode Title="UserStub.Id Property " Url="html/a614b59b-93b9-1d1d-b10c-25c725c5894f.htm" />
     <HelpKINode Title="WikiPage.Id Property " Url="html/c056cc37-51eb-f651-6de2-7c6ee68f3b4d.htm" />
@@ -1432,7 +1448,7 @@
   <HelpKINode Title="IEnumerable&lt;KeyValuePair&lt;String, &gt;&gt;.GetEnumerator explicitly implemented method" Url="html/a33924fb-f844-d959-7347-e734d4cc97d3.htm" />
   <HelpKINode Title="IgnoreWarnings enumeration member" Url="html/22daeb37-1004-036d-c999-c0799e81171c.htm" />
   <HelpKINode Title="IllegalTitlesPattern field" Url="html/00794f20-a3e4-8997-1dd0-f450b84d8b27.htm" />
-  <HelpKINode Title="Image property" Url="html/1ff1ad3a-0a72-ea49-5e01-783b644c5b91.htm" />
+  <HelpKINode Title="Image property" Url="html/0ae1b54c-ae16-029a-36ee-68bd22160f50.htm" />
   <HelpKINode Title="ImageOriginalDimensions property" Url="html/515e1fd8-d56f-a1fd-dc24-acb15cda9ef3.htm" />
   <HelpKINode Title="ImageTitle property" Url="html/70bfe033-6d06-67b3-e63c-a86fb734d9de.htm" />
   <HelpKINode Title="ImageUrl property" Url="html/3e64f9f0-6e0d-4239-cd02-9cbdb92b3977.htm" />
@@ -1535,35 +1551,38 @@
     <HelpKINode Title="WikiClient.InvokeAsync(T) Method " Url="html/5f99f775-4f99-738d-acb6-b722dd80e808.htm" />
   </HelpKINode>
   <HelpKINode Title="InvokeMediaWikiApiAsync method" Url="html/4f608d66-067f-c187-ec35-e7a28a44c5d6.htm" />
-  <HelpKINode Title="InvokeNirvanaAsync method" Url="html/7731d4d6-ae8d-15d2-be98-006549b8590e.htm" />
-  <HelpKINode Title="InvokeWikiaAjaxAsync method" Url="html/1020f207-c3a8-3802-6e29-f8a37a54a837.htm" />
-  <HelpKINode Title="InvokeWikiaApiAsync method" Url="html/60bee7df-44c0-8c15-0d0a-b7d6b675a522.htm" />
+  <HelpKINode Title="InvokeNirvanaAsync method" Url="html/9950e993-9420-e8c3-bd1f-966f621f71ed.htm" />
+  <HelpKINode Title="InvokeWikiaAjaxAsync method" Url="html/33e60d44-a3b4-aeb0-51c4-e6221117191d.htm" />
+  <HelpKINode Title="InvokeWikiaApiAsync method" Url="html/aa9b44ae-ee22-293c-e952-57138b809b03.htm" />
   <HelpKINode Title="IsAnonymous property">
     <HelpKINode Title="AccountInfo.IsAnonymous Property " Url="html/0b1bd426-e658-c795-5390-64e9f1ca9839.htm" />
     <HelpKINode Title="FileRevision.IsAnonymous Property " Url="html/96d055a1-3f9d-4ffd-63c9-1d29691f6c2a.htm" />
   </HelpKINode>
-  <HelpKINode Title="IsAnonymousEditingDisabled property" Url="html/83fb2ddf-0f3c-f990-bb4b-63863554b53c.htm" />
-  <HelpKINode Title="IsBackgroundDynamic property" Url="html/abb8ac16-374d-a4bb-a7cd-9dfb3456c969.htm" />
+  <HelpKINode Title="IsAnonymousEditingDisabled property" Url="html/6373a52d-f280-72a5-b793-b11b0a039062.htm" />
+  <HelpKINode Title="IsBackgroundDynamic property" Url="html/32e4a0a1-463d-ac89-fcbb-e0909f103f0c.htm" />
   <HelpKINode Title="IsBadFileName property" Url="html/dabe149a-d97c-e2c8-e978-4556ff37a952.htm" />
   <HelpKINode Title="IsBlocked property" Url="html/9860378a-4f04-c542-ce85-4e10ec28faa8.htm" />
   <HelpKINode Title="IsBot property" Url="html/9510cbb0-7898-4e8b-195b-d1645703c302.htm" />
   <HelpKINode Title="IsCaseSensitive property" Url="html/c6d68e6b-a72a-7ee6-cd0f-e443a992c706.htm" />
-  <HelpKINode Title="IsCommunityDataEnabled property" Url="html/a18b472c-4f73-bcf4-292f-b7370690e7f9.htm" />
+  <HelpKINode Title="IsCommunityDataEnabled property" Url="html/658152ba-78fb-2866-e3de-82ac93d84400.htm" />
   <HelpKINode Title="IsContent property" Url="html/4dce89aa-cac9-ec07-6539-29fbc5882953.htm" />
-  <HelpKINode Title="IsCoppaWiki property" Url="html/d185e3ed-1a14-519b-3b48-32939a9aa5f8.htm" />
-  <HelpKINode Title="IsDarkTheme property" Url="html/4ec5dadd-9926-9384-224b-af4cbf7d4481.htm" />
+  <HelpKINode Title="IsCoppaWiki property" Url="html/7700cf50-a60f-bb14-f29b-0ccb4a9e4407.htm" />
+  <HelpKINode Title="IsDarkTheme property" Url="html/937a3075-f343-7be6-dc05-0a2cebd53126.htm" />
   <HelpKINode Title="IsDeleted property" Url="html/717fc7fd-c7ea-b634-33a6-f004534087b0.htm" />
   <HelpKINode Title="IsDisambiguationAsync method" Url="html/ac4c522b-faf1-1920-70ab-fed443026595.htm" />
-  <HelpKINode Title="IsDiscussionsEnabled property" Url="html/456f2c2b-ef0d-c61c-e3e1-39d9a79aba4e.htm" />
-  <HelpKINode Title="IsDiscussionsImageUploadEnabled property" Url="html/520afe61-9d41-962d-6085-8b5d289cead0.htm" />
+  <HelpKINode Title="IsDiscussionsEnabled property" Url="html/f4a11103-e794-1216-c153-f388bcaf6bda.htm" />
+  <HelpKINode Title="IsDiscussionsImageUploadEnabled property" Url="html/20541bad-439c-86bf-b43a-c3183b490a7d.htm" />
   <HelpKINode Title="IsEmpty property">
     <HelpKINode Title="GeoCoordinate.IsEmpty Property " Url="html/b7292d5d-39bf-5638-91a6-48db267d6075.htm" />
     <HelpKINode Title="WikiPageStub.IsEmpty Property " Url="html/8db46cd0-9eec-fa40-c7ba-fd63b67fbf40.htm" />
   </HelpKINode>
   <HelpKINode Title="IsEmptyFile property" Url="html/815e8175-44bf-791a-b1f7-1260c5650171.htm" />
   <HelpKINode Title="IsEnabled property" Url="html/e4874b96-b542-6b6f-4468-08ce32d56c25.htm" />
-  <HelpKINode Title="IsFandomAppSmartBannerEnabled property" Url="html/f24473ac-09d8-1a02-beca-12d8324e2a52.htm" />
-  <HelpKINode Title="IsHidden property" Url="html/f2f00da4-fb97-2126-c575-927b09a5c9b8.htm" />
+  <HelpKINode Title="IsFandomAppSmartBannerEnabled property" Url="html/95cc010a-1d16-568b-37a5-008cba816225.htm" />
+  <HelpKINode Title="IsHidden property">
+    <HelpKINode Title="ContentCategoryInfo.IsHidden Property " Url="html/f2f00da4-fb97-2126-c575-927b09a5c9b8.htm" />
+    <HelpKINode Title="WikiPageCategoryInfo.IsHidden Property " Url="html/974fb0b7-4457-bb55-9901-57181d047aac.htm" />
+  </HelpKINode>
   <HelpKINode Title="IsHiddenCategory property" Url="html/29cdf328-d09a-f513-bd02-6d8f4a00e8cf.htm" />
   <HelpKINode Title="IsInGroup method" Url="html/4688ff73-92d0-8cf2-100f-99816f33ce24.htm" />
   <HelpKINode Title="IsInvalid property">
@@ -1574,15 +1593,15 @@
   <HelpKINode Title="IsLocalInterwiki property" Url="html/303f6d9f-7114-5632-c653-798551b50c83.htm" />
   <HelpKINode Title="IsLocked property" Url="html/03c581d2-3770-ce79-2e6a-785c431c4804.htm" />
   <HelpKINode Title="IsMaxThreadingDepth property" Url="html/13d0d091-cd2f-16c6-dc8b-46a2b8b142bf.htm" />
-  <HelpKINode Title="IsMercuryAnonymousUploadDisabled property" Url="html/4afbe733-a91c-4d2c-f60f-088cc22358c9.htm" />
+  <HelpKINode Title="IsMercuryAnonymousUploadDisabled property" Url="html/00df33fc-5466-5b6a-26b7-0ef482251686.htm" />
   <HelpKINode Title="IsMissing property">
     <HelpKINode Title="PurgeFailureInfo.IsMissing Property " Url="html/bdb8d133-7601-997b-a18c-df36b6a1a6db.htm" />
     <HelpKINode Title="WikiPageStub.IsMissing Property " Url="html/a731f6ae-ff1e-9fba-ccd7-2f5bd8cb8193.htm" />
   </HelpKINode>
-  <HelpKINode Title="IsMobileSectionEditorDisabled property" Url="html/f6456c52-4dff-ade6-3ccd-eed2bb9da15c.htm" />
+  <HelpKINode Title="IsMobileSectionEditorDisabled property" Url="html/0171a377-3ecd-8430-909c-11607c00674d.htm" />
   <HelpKINode Title="IsModerated property" Url="html/a24cd36e-8b73-ec1b-5a21-467153bac62d.htm" />
   <HelpKINode Title="IsModeratedNotLocked property" Url="html/72585521-6f7b-e2ff-20b1-87515892979c.htm" />
-  <HelpKINode Title="IsNewAuthEnabled property" Url="html/5ec61945-a6bf-04c6-6325-1d2be4bf6b0b.htm" />
+  <HelpKINode Title="IsNewAuthEnabled property" Url="html/7620567b-9064-047d-b656-4938389f2252.htm" />
   <HelpKINode Title="IsNonIncludable property" Url="html/045fc0f5-f5ae-8fa5-fbbd-59246cbd1cf3.htm" />
   <HelpKINode Title="IsOriginalContent property" Url="html/ad88ebb7-12be-57ad-8210-e1968ace375f.htm" />
   <HelpKINode Title="IsPrimaryCoordinate property" Url="html/835826df-3971-fbde-0b80-1c2b76ae6d93.htm" />
@@ -1619,6 +1638,7 @@
   </HelpKINode>
   <HelpKINode Title="ItemFromJson method">
     <HelpKINode Title="AbuseFilterList.ItemFromJson Method " Url="html/3650494c-1239-4e25-7ef3-c9da7e8a11fa.htm" />
+    <HelpKINode Title="CategoriesGenerator.ItemFromJson Method " Url="html/e7db333e-68fa-1d12-6e65-2e5b232759cc.htm" />
     <HelpKINode Title="GeoSearchGenerator.ItemFromJson Method " Url="html/4065c6f4-7e25-4c6b-2279-0ecb84fe6df7.htm" />
     <HelpKINode Title="RecentChangesGenerator.ItemFromJson Method " Url="html/e7663314-d220-e9a7-4b95-ef59d072be67.htm" />
     <HelpKINode Title="RevisionsGenerator.ItemFromJson Method " Url="html/f3376184-c124-1830-4379-e511102c63d5.htm" />
@@ -1738,7 +1758,7 @@
     <HelpKINode Title="WbMonolingualText.Language Property " Url="html/884f4401-f6d6-4d74-92c6-41265487d8ed.htm" />
   </HelpKINode>
   <HelpKINode Title="LanguageAutonym property" Url="html/29a5b03c-5872-ddca-c776-999f67402516.htm" />
-  <HelpKINode Title="LanguageInfo property" Url="html/b32fbe85-acac-cdb0-4045-b0e445d4a780.htm" />
+  <HelpKINode Title="LanguageInfo property" Url="html/3779b354-8b6c-ebec-81f8-b6b5a501e64b.htm" />
   <HelpKINode Title="LanguageLinkFilter property" Url="html/9178e4fa-5983-c917-71f2-051e8520e32b.htm" />
   <HelpKINode Title="Languages property" Url="html/dc8f768b-d423-d379-6159-8664f342a9d4.htm" />
   <HelpKINode Title="LastEditId property" Url="html/46e18766-b55f-5be1-ff00-c309dc9f83bf.htm" />
@@ -1787,7 +1807,7 @@
   <HelpKINode Title="Limit property" Url="html/897aed0d-aac5-bd1a-255c-3e04a3fac2cf.htm" />
   <HelpKINode Title="LimitReport enumeration member" Url="html/160458fa-bbc3-d4d4-b572-e9035af88dc7.htm" />
   <HelpKINode Title="Links property" Url="html/3e235e38-2730-f21a-4563-48ee99fcf077.htm" />
-  <HelpKINode Title="LinksColor property" Url="html/27c6f5a5-eddb-f227-8846-a465a11171ae.htm" />
+  <HelpKINode Title="LinksColor property" Url="html/d275c215-0046-fbd7-796c-8aeab9467c91.htm" />
   <HelpKINode Title="LinksGenerator class">
     <HelpKINode Title="LinksGenerator Class" Url="html/32b7c3f0-35f1-2b15-3ccd-e2c9d2c40d12.htm" />
     <HelpKINode Title="about LinksGenerator class" Url="html/32b7c3f0-35f1-2b15-3ccd-e2c9d2c40d12.htm" />
@@ -1892,13 +1912,15 @@
   <HelpKINode Title="MagicWords property" Url="html/c6468ba4-11e1-5d59-874e-b29b2ac38ef3.htm" />
   <HelpKINode Title="Main field" Url="html/4c009542-cb36-9ab9-0c93-497b038a2689.htm" />
   <HelpKINode Title="MainPage property" Url="html/d18aef1e-475f-d729-b6af-77e9c5fa3064.htm" />
-  <HelpKINode Title="MainPageTitle property" Url="html/feae705d-7950-e144-cc41-028d3df9a886.htm" />
+  <HelpKINode Title="MainPageTitle property" Url="html/26d9f2b2-4f0a-0b82-2f26-0e55a5020421.htm" />
   <HelpKINode Title="MainSnak property" Url="html/e0578a2c-6b45-8bc0-f826-fb555e32a844.htm" />
   <HelpKINode Title="MakeAbsoluteProtocol method" Url="html/f642d7aa-6704-e129-f771-47dc43e8787c.htm" />
   <HelpKINode Title="MakeAbsoluteUrl method" Url="html/64fec5de-7daf-c823-8f8c-6435ea60fb36.htm" />
   <HelpKINode Title="MakeArticleUrl method" Url="html/96d729de-127b-a5e9-5106-43ee36eb28b9.htm" />
+  <HelpKINode Title="MakeEntityUri method" Url="html/adeca339-cdc2-463e-6d40-67e914a66af0.htm" />
   <HelpKINode Title="MakeReadonly method" Url="html/0bb1b817-dec0-e50d-8283-2640d444f350.htm" />
   <HelpKINode Title="Male enumeration member" Url="html/b44d8d9e-e9e6-858d-3815-1bfbaf0b64d6.htm" />
+  <HelpKINode Title="MappedType property" Url="html/dab9a2e0-7c8c-63da-9f78-a90756633b8b.htm" />
   <HelpKINode Title="MassMessageQueueLength property" Url="html/9b2287ac-4019-4fc2-cefe-ce29621af8e7.htm" />
   <HelpKINode Title="MatchingField property" Url="html/30214ccb-785a-75b4-6ee5-8a7716c466d8.htm" />
   <HelpKINode Title="MatchingTitles property">
@@ -2074,21 +2096,21 @@
   <HelpKINode Title="NamespaceInfo.SubPages property" Url="html/68b04a56-fbf5-95af-c466-bcdb48e4a19f.htm" />
   <HelpKINode Title="NamespaceInfo.ToString method" Url="html/23eb6f92-a5a6-bb83-e36c-d4ebe7729df5.htm" />
   <HelpKINode Title="NamespaceName property" Url="html/909c75a2-7220-095e-be43-e1a97034ea66.htm" />
-  <HelpKINode Title="NamespaceNames property" Url="html/11f2e96b-d95b-b4da-8bca-f971361ff7e1.htm" />
+  <HelpKINode Title="NamespaceNames property" Url="html/f99fc42c-bed4-3f94-40f0-f9285f4d1398.htm" />
   <HelpKINode Title="Namespaces property" Url="html/b2e1b8d3-51ad-3448-07cd-67c27dbe1ecc.htm" />
   <HelpKINode Title="NavigationItem class">
-    <HelpKINode Title="NavigationItem Class" Url="html/b7469ff2-c743-d560-cbe6-d62a22ecf6aa.htm" />
-    <HelpKINode Title="about NavigationItem class" Url="html/b7469ff2-c743-d560-cbe6-d62a22ecf6aa.htm" />
-    <HelpKINode Title="constructor" Url="html/3f3723a0-5997-37b3-a12c-fc02dbd857a7.htm" />
-    <HelpKINode Title="methods" Url="html/cf4e860c-2cec-65e1-d371-cb515245307a.htm" />
-    <HelpKINode Title="properties" Url="html/4cc2869d-989a-b3f7-c3e5-87aee31fdb89.htm" />
+    <HelpKINode Title="NavigationItem Class" Url="html/e2c449b9-0d70-c890-304f-8c7a596d7444.htm" />
+    <HelpKINode Title="about NavigationItem class" Url="html/e2c449b9-0d70-c890-304f-8c7a596d7444.htm" />
+    <HelpKINode Title="constructor" Url="html/1cdeb8dc-8032-c105-4c27-d8ac40804e32.htm" />
+    <HelpKINode Title="methods" Url="html/1e1c870d-fc39-4c4c-b6c2-d0f44788019e.htm" />
+    <HelpKINode Title="properties" Url="html/e97dbb69-3fb2-1c75-b329-4af69b5f221d.htm" />
   </HelpKINode>
-  <HelpKINode Title="NavigationItem.Children property" Url="html/56e3bf7d-19f4-3add-e82a-5577ee631797.htm" />
-  <HelpKINode Title="NavigationItem.NavigationItem constructor" Url="html/3f3723a0-5997-37b3-a12c-fc02dbd857a7.htm" />
-  <HelpKINode Title="NavigationItem.Text property" Url="html/0f9d4089-5572-8280-70be-ecec21201b22.htm" />
-  <HelpKINode Title="NavigationItem.ToString method" Url="html/38021dfa-a760-75fc-f7a7-d52cfd51fe28.htm" />
-  <HelpKINode Title="NavigationItem.Url property" Url="html/6a045ea3-c516-a5a5-af65-925f39339be8.htm" />
-  <HelpKINode Title="NavigationItems property" Url="html/b3c07261-16ab-e4fd-40ae-983c93e39957.htm" />
+  <HelpKINode Title="NavigationItem.Children property" Url="html/cdc19863-15f0-48a1-1308-2e24eebec0f8.htm" />
+  <HelpKINode Title="NavigationItem.NavigationItem constructor" Url="html/1cdeb8dc-8032-c105-4c27-d8ac40804e32.htm" />
+  <HelpKINode Title="NavigationItem.Text property" Url="html/926e5074-1638-4a03-4a4e-dd60bfa93054.htm" />
+  <HelpKINode Title="NavigationItem.ToString method" Url="html/8dfe23a8-fd74-71da-8117-1e53d02cb005.htm" />
+  <HelpKINode Title="NavigationItem.Url property" Url="html/241e12d9-71dc-28cd-b193-6376a653733d.htm" />
+  <HelpKINode Title="NavigationItems property" Url="html/d0f0b6cb-09fe-e691-8a30-f0160e5275ca.htm" />
   <HelpKINode Title="NearMatch enumeration member" Url="html/8cc6ccc6-b0d6-1cff-4ef6-4cdcffcd4234.htm" />
   <HelpKINode Title="NeedRetry property" Url="html/8b264f52-595a-4977-10af-cb04b54be12b.htm" />
   <HelpKINode Title="NewContentLength property" Url="html/82856c1d-43c1-c0b0-b806-f76e5b8c46d9.htm" />
@@ -2175,7 +2197,7 @@
   <HelpKINode Title="OperationFailedException.ErrorMessage property" Url="html/67967468-b6e7-107e-60ff-5fbdebdb0db8.htm" />
   <HelpKINode Title="OperationFailedException.OperationFailedException constructor" Url="html/363f5eeb-2f11-ed7c-e488-d3cd8a33c92e.htm" />
   <HelpKINode Title="Options property">
-    <HelpKINode Title="WikiaSite.Options Property " Url="html/c435d822-18e2-c4ef-cd4f-b8dd1e923548.htm" />
+    <HelpKINode Title="WikiaSite.Options Property " Url="html/e8b059f9-4af7-10eb-b12b-555db913fe5a.htm" />
     <HelpKINode Title="WikiSite.Options Property " Url="html/453e1bae-7ba9-1793-2224-2499b506c801.htm" />
   </HelpKINode>
   <HelpKINode Title="OrderByPosted enumeration member" Url="html/e0cfe6e7-e774-3584-f068-e7a819c106da.htm" />
@@ -2218,8 +2240,9 @@
     <HelpKINode Title="GeoSearchResultItem.Page Property " Url="html/e61c2202-e061-3959-fbdd-5a44bc3c02ac.htm" />
     <HelpKINode Title="PurgeFailureInfo.Page Property " Url="html/64393a50-655e-8f0f-b3ac-4c330a9f253f.htm" />
     <HelpKINode Title="Revision.Page Property " Url="html/0dacba48-368c-27ea-af30-aa7020b50eff.htm" />
+    <HelpKINode Title="WikiPageCategoryInfo.Page Property " Url="html/c3009bf6-13fe-65bc-db9b-8c451616de5a.htm" />
   </HelpKINode>
-  <HelpKINode Title="PageColor property" Url="html/85d1cfcb-9c38-d6ee-339c-a270f988db98.htm" />
+  <HelpKINode Title="PageColor property" Url="html/ec98084f-a8bf-aafe-88b3-d5a8e8c03930.htm" />
   <HelpKINode Title="PageId property">
     <HelpKINode Title="Entity.PageId Property " Url="html/b41c53c4-f4f6-abf4-c7c2-c303f4143927.htm" />
     <HelpKINode Title="ParsedContentInfo.PageId Property " Url="html/bdb879df-e045-6035-436a-02f31b317df7.htm" />
@@ -2243,6 +2266,7 @@
   <HelpKINode Title="PageImageInfo.Height property" Url="html/7b39ce55-3b4e-0b83-39b2-c33484429291.htm" />
   <HelpKINode Title="PageImageInfo.Inequality operator" Url="html/72c2957f-b239-696d-b61b-0ce7e4df7f66.htm" />
   <HelpKINode Title="PageImageInfo.PageImageInfo constructor" Url="html/34816192-94cb-6f71-d9ef-f91aa9f0aae9.htm" />
+  <HelpKINode Title="PageImageInfo.ToString method" Url="html/894b2d4b-52ce-3dc5-ed5f-7bd670796425.htm" />
   <HelpKINode Title="PageImageInfo.Url property" Url="html/441ec7a8-1576-a7a5-67b4-f6185328658a.htm" />
   <HelpKINode Title="PageImageInfo.Width property" Url="html/f84cdc4c-43b6-8455-f2e6-8989c002952d.htm" />
   <HelpKINode Title="PageImagesPropertyGroup class">
@@ -2303,7 +2327,7 @@
   </HelpKINode>
   <HelpKINode Title="PageLanguageDirection property" Url="html/57b8ba40-fb4f-ec36-af5b-6181ab9f4f3a.htm" />
   <HelpKINode Title="PageMovingOptions enumeration" Url="html/22daeb37-1004-036d-c999-c0799e81171c.htm" />
-  <HelpKINode Title="PageOpacity property" Url="html/36bdb741-3c14-3881-ea5f-455a977373e9.htm" />
+  <HelpKINode Title="PageOpacity property" Url="html/8efde4d1-6645-8c2c-7e04-0f2c6ce5bc10.htm" />
   <HelpKINode Title="PageProperties property" Url="html/5cb22303-c4ea-7b2a-b88a-6d7c45159e60.htm" />
   <HelpKINode Title="PagePropertiesPropertyGroup class">
     <HelpKINode Title="PagePropertiesPropertyGroup Class" Url="html/79d14cf5-7a73-d3bd-fccc-26c88bcfbe9b.htm" />
@@ -2386,6 +2410,7 @@
   <HelpKINode Title="ParsedContentInfo.Summary property" Url="html/a465e01e-7931-611a-950a-6abcde2c36e3.htm" />
   <HelpKINode Title="ParsedContentInfo.Title property" Url="html/29af1686-b4f5-f81d-570d-15e529d5d1b4.htm" />
   <HelpKINode Title="ParsedContentInfo.TranscludedPages property" Url="html/4640a294-bea5-dbce-287f-31b2c9f985d7.htm" />
+  <HelpKINode Title="ParseEntityId method" Url="html/436b0e86-42da-5931-15a6-ebdc9f092a4a.htm" />
   <HelpKINode Title="ParseJsonAsync method" Url="html/0f7bf36f-2c07-9d58-845b-f63b45a15bd6.htm" />
   <HelpKINode Title="ParsePageAsync method" Url="html/6e44a9c1-b6b9-c2d0-e33c-24792d36f9ff.htm" />
   <HelpKINode Title="ParsePropertyGroup method">
@@ -2427,7 +2452,7 @@
   <HelpKINode Title="ParserLimitReport.Value property" Url="html/7ad75e96-95b6-3395-aa06-936781e3924c.htm" />
   <HelpKINode Title="ParserLimitReports property" Url="html/ec696ee1-f788-4830-5540-de351001e779.htm" />
   <HelpKINode Title="ParsingOptions enumeration" Url="html/160458fa-bbc3-d4d4-b572-e9035af88dc7.htm" />
-  <HelpKINode Title="Parts property" Url="html/18f8039a-14cf-92d6-3b3d-a7cba1650d9a.htm" />
+  <HelpKINode Title="Parts property" Url="html/2eb2a597-be97-140f-903b-1dfdfb79cf4f.htm" />
   <HelpKINode Title="Patrol field">
     <HelpKINode Title="LogActions.Patrol Field" Url="html/eb1c93b6-dffd-72a0-08df-9c1711613bd8.htm" />
     <HelpKINode Title="UserRights.Patrol Field" Url="html/107a936a-48e8-4cbd-1701-9ad6fac70836.htm" />
@@ -2443,19 +2468,19 @@
   <HelpKINode Title="Post class">
     <HelpKINode Title="Post Class" Url="html/d09cb916-a3e3-e3cc-c5f7-8b465eec038d.htm" />
     <HelpKINode Title="Post Class" Url="html/2c003f3d-ff36-9981-3992-35b28e15ea10.htm" />
-    <HelpKINode Title="about Post class" Url="html/2c003f3d-ff36-9981-3992-35b28e15ea10.htm" />
     <HelpKINode Title="about Post class" Url="html/d09cb916-a3e3-e3cc-c5f7-8b465eec038d.htm" />
-    <HelpKINode Title="constructor" Url="html/e4113df6-0740-2105-4985-0f1f5c4168d4.htm" />
+    <HelpKINode Title="about Post class" Url="html/2c003f3d-ff36-9981-3992-35b28e15ea10.htm" />
     <HelpKINode Title="constructor" Url="html/16db15fa-b23e-b041-ded2-db05680e2dcf.htm" />
-    <HelpKINode Title="methods" Url="html/51ef3321-8b17-3e4f-1143-685127541ebc.htm" />
+    <HelpKINode Title="constructor" Url="html/bac2486e-5dfd-9c23-278d-95022f26cf2d.htm" />
     <HelpKINode Title="methods" Url="html/b9c9e508-fefb-0d68-cc2e-7b76eba88a5e.htm" />
-    <HelpKINode Title="properties" Url="html/a613c186-7dac-d3b4-fcdf-7b7ebf77fadd.htm" />
+    <HelpKINode Title="methods" Url="html/51ef3321-8b17-3e4f-1143-685127541ebc.htm" />
     <HelpKINode Title="properties" Url="html/d100c01c-f39c-2a57-d196-69e6167a0f19.htm" />
+    <HelpKINode Title="properties" Url="html/a613c186-7dac-d3b4-fcdf-7b7ebf77fadd.htm" />
   </HelpKINode>
   <HelpKINode Title="Post.Author property" Url="html/ae28c638-364f-693b-524f-3cfffd0d00a4.htm" />
   <HelpKINode Title="Post.Content property">
-    <HelpKINode Title="Post.Content Property " Url="html/ec969818-d159-d2b5-556b-644d2ba6035e.htm" />
     <HelpKINode Title="Post.Content Property " Url="html/a7ee7528-5573-ac6e-ef5d-d3ed25c877cb.htm" />
+    <HelpKINode Title="Post.Content Property " Url="html/ec969818-d159-d2b5-556b-644d2ba6035e.htm" />
   </HelpKINode>
   <HelpKINode Title="Post.Exists property" Url="html/181866c4-0d40-c4a5-d6c8-369eb096f18c.htm" />
   <HelpKINode Title="Post.Id property" Url="html/088886f2-ab82-37fd-76a8-19be327aa778.htm" />
@@ -2468,24 +2493,24 @@
   <HelpKINode Title="Post.ModerateAsync method" Url="html/9ac82390-2c19-2334-036a-7d5be5c3bc07.htm" />
   <HelpKINode Title="Post.OwnerPage property" Url="html/83725ad1-e163-e700-94de-08d796a7a083.htm" />
   <HelpKINode Title="Post.Post constructor">
-    <HelpKINode Title="Post Constructor " Url="html/e4113df6-0740-2105-4985-0f1f5c4168d4.htm" />
     <HelpKINode Title="Post Constructor " Url="html/16db15fa-b23e-b041-ded2-db05680e2dcf.htm" />
+    <HelpKINode Title="Post Constructor " Url="html/bac2486e-5dfd-9c23-278d-95022f26cf2d.htm" />
   </HelpKINode>
   <HelpKINode Title="Post.RefreshAsync method">
-    <HelpKINode Title="Post.RefreshAsync Method " Url="html/ebdf6be3-174c-d898-5a16-105c0ad9d756.htm" />
     <HelpKINode Title="Post.RefreshAsync Method " Url="html/d2267a5c-d97c-faba-85f4-21b307dd74ac.htm" />
+    <HelpKINode Title="Post.RefreshAsync Method " Url="html/ebdf6be3-174c-d898-5a16-105c0ad9d756.htm" />
   </HelpKINode>
   <HelpKINode Title="Post.Replies property">
     <HelpKINode Title="Post.Replies Property " Url="html/68caa221-33d3-5135-c374-792fe280c50f.htm" />
     <HelpKINode Title="Post.Replies Property " Url="html/d21f08a4-570f-b91d-42af-77deacefb492.htm" />
   </HelpKINode>
   <HelpKINode Title="Post.ReplyAsync method">
-    <HelpKINode Title="Post.ReplyAsync Method " Url="html/f1c5fb45-c0ea-ca3d-8b68-3c1579f75536.htm" />
     <HelpKINode Title="Post.ReplyAsync Method " Url="html/c368e346-f284-fe79-73ac-5feeff191241.htm" />
+    <HelpKINode Title="Post.ReplyAsync Method " Url="html/f1c5fb45-c0ea-ca3d-8b68-3c1579f75536.htm" />
   </HelpKINode>
   <HelpKINode Title="Post.Site property">
-    <HelpKINode Title="Post.Site Property " Url="html/cfe1f15d-1cde-a16b-08ba-47b74993d15e.htm" />
     <HelpKINode Title="Post.Site Property " Url="html/5aec9209-db08-99ac-bb67-4da1f7cb3871.htm" />
+    <HelpKINode Title="Post.Site Property " Url="html/cfe1f15d-1cde-a16b-08ba-47b74993d15e.htm" />
   </HelpKINode>
   <HelpKINode Title="Post.TimeStamp property" Url="html/6b5c6097-78de-97b2-89c2-5eaaedafe6f9.htm" />
   <HelpKINode Title="Post.TopicTitle property" Url="html/24324c8a-7b21-ae9e-846a-4c03fc38c1b8.htm" />
@@ -2522,6 +2547,7 @@
   <HelpKINode Title="PropertyGroups property" Url="html/ed3e442c-6095-8028-e59b-4fc3118c8f60.htm" />
   <HelpKINode Title="PropertyId property" Url="html/5a2df0ca-0bdc-8898-bb4d-a835eb342db0.htm" />
   <HelpKINode Title="PropertyName property">
+    <HelpKINode Title="CategoriesGenerator.PropertyName Property " Url="html/af93a6a8-2eb3-28d7-e316-caaa51d90dc7.htm" />
     <HelpKINode Title="CategoryInfoPropertyProvider.PropertyName Property " Url="html/d42e77dd-8ba1-cd61-18b9-a6707ce9b508.htm" />
     <HelpKINode Title="EntityEditEntry.PropertyName Property " Url="html/952bbf4c-483b-5f4a-3831-6e418def40bf.htm" />
     <HelpKINode Title="ExtractsPropertyProvider.PropertyName Property " Url="html/0f2c24ea-dad2-0e57-5e8c-4c2ce5af5463.htm" />
@@ -2688,13 +2714,16 @@
     <HelpKINode Title="DiscussionsExtensions.RefreshAsync Method " Url="html/01b2c452-bbf7-2a49-3c14-d87341f7fc76.htm" />
     <HelpKINode Title="Entity.RefreshAsync Method " Url="html/1e1d3b82-15a5-2aaf-4d82-2c9b21aec912.htm" />
     <HelpKINode Title="EntityExtensions.RefreshAsync Method " Url="html/b7f3702f-658a-bd74-9e01-3ddccced0581.htm" />
-    <HelpKINode Title="Post.RefreshAsync Method " Url="html/d2267a5c-d97c-faba-85f4-21b307dd74ac.htm" />
     <HelpKINode Title="Post.RefreshAsync Method " Url="html/ebdf6be3-174c-d898-5a16-105c0ad9d756.htm" />
+    <HelpKINode Title="Post.RefreshAsync Method " Url="html/d2267a5c-d97c-faba-85f4-21b307dd74ac.htm" />
     <HelpKINode Title="Topic.RefreshAsync Method " Url="html/7e0763e0-2efc-a986-3da4-9f3123a64606.htm" />
     <HelpKINode Title="WikiPage.RefreshAsync Method " Url="html/3c859fba-eb6a-5866-d78f-12d485de4a0a.htm" />
     <HelpKINode Title="WikiPageExtensions.RefreshAsync Method " Url="html/f161648c-00d5-05cf-42ae-723c98ea160f.htm" />
   </HelpKINode>
-  <HelpKINode Title="RefreshSiteInfoAsync method" Url="html/de694a64-3133-4c38-3910-897955f3925d.htm" />
+  <HelpKINode Title="RefreshSiteInfoAsync method">
+    <HelpKINode Title="WikiaSite.RefreshSiteInfoAsync Method " Url="html/d8c44d4d-56e9-a0d8-4187-0e89cf9a706d.htm" />
+    <HelpKINode Title="WikiSite.RefreshSiteInfoAsync Method " Url="html/de694a64-3133-4c38-3910-897955f3925d.htm" />
+  </HelpKINode>
   <HelpKINode Title="Register method" Url="html/8e0fc494-9d0b-4574-caa1-32157cac77c4.htm" />
   <HelpKINode Title="RelatedPageItem class">
     <HelpKINode Title="RelatedPageItem Class" Url="html/016f8e2c-b96b-cebe-284f-f47ed719da0b.htm" />
@@ -2724,8 +2753,8 @@
   </HelpKINode>
   <HelpKINode Title="Reply enumeration member" Url="html/58cb1ce4-4fc1-1786-46fc-6f6d2a18d73f.htm" />
   <HelpKINode Title="ReplyAsync method">
-    <HelpKINode Title="Post.ReplyAsync Method " Url="html/f1c5fb45-c0ea-ca3d-8b68-3c1579f75536.htm" />
     <HelpKINode Title="Post.ReplyAsync Method " Url="html/c368e346-f284-fe79-73ac-5feeff191241.htm" />
+    <HelpKINode Title="Post.ReplyAsync Method " Url="html/f1c5fb45-c0ea-ca3d-8b68-3c1579f75536.htm" />
     <HelpKINode Title="Topic.ReplyAsync Method " Url="html/3fd440a8-a9ea-d71f-1cc7-2b71065d1919.htm" />
   </HelpKINode>
   <HelpKINode Title="ReplyIds property" Url="html/cad3a1c7-1cca-ba41-7a20-3e46863079bb.htm" />
@@ -2747,14 +2776,14 @@
   <HelpKINode Title="ResultCode property" Url="html/8d9ff5bf-30c3-431d-1e8b-9611a75fc211.htm" />
   <HelpKINode Title="RetryDelay property" Url="html/ea6d4bcf-a881-8149-4e62-b5b65aa47adc.htm" />
   <HelpKINode Title="Revision class">
-    <HelpKINode Title="Revision Class" Url="html/378c50e0-3137-0c2a-0f9d-3ab10f97dd75.htm" />
     <HelpKINode Title="Revision Class" Url="html/6ff78e1f-4de4-5581-ceb5-3b3ec15a9313.htm" />
+    <HelpKINode Title="Revision Class" Url="html/378c50e0-3137-0c2a-0f9d-3ab10f97dd75.htm" />
     <HelpKINode Title="about Revision class" Url="html/6ff78e1f-4de4-5581-ceb5-3b3ec15a9313.htm" />
     <HelpKINode Title="about Revision class" Url="html/378c50e0-3137-0c2a-0f9d-3ab10f97dd75.htm" />
     <HelpKINode Title="constructor" Url="html/f3933df4-33bd-fa61-6f3b-55cad6047627.htm" />
     <HelpKINode Title="constructor" Url="html/812a4550-942d-7a5f-ee5e-068193d6f1c2.htm" />
-    <HelpKINode Title="methods" Url="html/2c87eb95-c903-095b-1cd3-88517a4fca5b.htm" />
     <HelpKINode Title="methods" Url="html/97b5bccf-e8eb-f736-feab-23f008c351b4.htm" />
+    <HelpKINode Title="methods" Url="html/2c87eb95-c903-095b-1cd3-88517a4fca5b.htm" />
     <HelpKINode Title="properties" Url="html/42728da8-d835-447f-5c2f-87501372d81f.htm" />
     <HelpKINode Title="properties" Url="html/f5abe5a1-54d0-133a-8c4d-6836411a0983.htm" />
   </HelpKINode>
@@ -2799,8 +2828,8 @@
   <HelpKINode Title="Revision.ReplyIds property" Url="html/cad3a1c7-1cca-ba41-7a20-3e46863079bb.htm" />
   <HelpKINode Title="Revision.ReplyToId property" Url="html/aac1d0a5-0dc8-7aa5-f338-80610172b1fa.htm" />
   <HelpKINode Title="Revision.Revision constructor">
-    <HelpKINode Title="Revision Constructor " Url="html/f3933df4-33bd-fa61-6f3b-55cad6047627.htm" />
     <HelpKINode Title="Revision Constructor " Url="html/812a4550-942d-7a5f-ee5e-068193d6f1c2.htm" />
+    <HelpKINode Title="Revision Constructor " Url="html/f3933df4-33bd-fa61-6f3b-55cad6047627.htm" />
   </HelpKINode>
   <HelpKINode Title="Revision.RevisionId property" Url="html/ddae693f-6d95-46c8-e950-9c7df81ec9be.htm" />
   <HelpKINode Title="Revision.Sha1 property" Url="html/f3a54e45-1384-efbc-64d5-ee4cb429ffd0.htm" />
@@ -2916,7 +2945,7 @@
   <HelpKINode Title="SectionPreview enumeration member" Url="html/160458fa-bbc3-d4d4-b572-e9035af88dc7.htm" />
   <HelpKINode Title="Sections property" Url="html/5645ba10-52e8-e820-3b8d-701ef3023061.htm" />
   <HelpKINode Title="SelectedProperties property" Url="html/b50fd0cd-4387-1e5c-2697-4aa95e7aeaf8.htm" />
-  <HelpKINode Title="Separator property" Url="html/7da295c0-db05-5e3e-4b41-1e48f4063889.htm" />
+  <HelpKINode Title="Separator property" Url="html/51de4f4f-38cc-c04b-b6d9-1923c69d0fd0.htm" />
   <HelpKINode Title="ServerUrl property" Url="html/42914106-327f-d701-607f-bd0a3f14e66b.htm" />
   <HelpKINode Title="Set method" Url="html/98aa2c89-612f-2dc3-849e-0837fc954dec.htm" />
   <HelpKINode Title="Sha1 property">
@@ -2925,14 +2954,14 @@
     <HelpKINode Title="Revision.Sha1 Property " Url="html/f3a54e45-1384-efbc-64d5-ee4cb429ffd0.htm" />
   </HelpKINode>
   <HelpKINode Title="Site property">
-    <HelpKINode Title="Board.Site Property " Url="html/786df777-18d5-f870-e757-36e58beb31f6.htm" />
     <HelpKINode Title="Board.Site Property " Url="html/aceb336e-5267-eeaa-f39e-441214ae3b3f.htm" />
+    <HelpKINode Title="Board.Site Property " Url="html/786df777-18d5-f870-e757-36e58beb31f6.htm" />
     <HelpKINode Title="ChunkedUploadSource.Site Property " Url="html/b9346be2-65b7-093c-b545-83809fa59e59.htm" />
     <HelpKINode Title="Entity.Site Property " Url="html/9a714aaa-f94b-4e22-dfa8-d2f91bd88dbd.htm" />
     <HelpKINode Title="EntitySiteLink.Site Property " Url="html/57f822d2-d210-1eac-0a21-c0b05aaf172c.htm" />
     <HelpKINode Title="LocalWikiSearchList.Site Property " Url="html/21106d39-1418-f6e8-b45b-0025c4505a59.htm" />
-    <HelpKINode Title="Post.Site Property " Url="html/cfe1f15d-1cde-a16b-08ba-47b74993d15e.htm" />
     <HelpKINode Title="Post.Site Property " Url="html/5aec9209-db08-99ac-bb67-4da1f7cb3871.htm" />
+    <HelpKINode Title="Post.Site Property " Url="html/cfe1f15d-1cde-a16b-08ba-47b74993d15e.htm" />
     <HelpKINode Title="RecentChangeItem.Site Property " Url="html/e0e83411-cc49-db5e-c029-5c8993409546.htm" />
     <HelpKINode Title="Topic.Site Property " Url="html/dcd528ea-1945-60e3-1c0e-9de99249f27c.htm" />
     <HelpKINode Title="WikiFamilySiteCreatedEventArgs.Site Property " Url="html/14138560-57ad-1e30-e464-27fa4b441185.htm" />
@@ -2943,16 +2972,16 @@
   </HelpKINode>
   <HelpKINode Title="SiteCreated event" Url="html/b791808f-6071-9388-0cb6-726259788f33.htm" />
   <HelpKINode Title="SiteHtmlTitleInfo class">
-    <HelpKINode Title="SiteHtmlTitleInfo Class" Url="html/d33c2257-af7d-ab57-f045-b0afad3d2e14.htm" />
-    <HelpKINode Title="about SiteHtmlTitleInfo class" Url="html/d33c2257-af7d-ab57-f045-b0afad3d2e14.htm" />
-    <HelpKINode Title="constructor" Url="html/10a5905f-a09f-46b3-2be7-00b02d5ad186.htm" />
-    <HelpKINode Title="methods" Url="html/876933c4-d6e0-c354-824e-da6e8ab878d0.htm" />
-    <HelpKINode Title="properties" Url="html/7553f486-27e1-6227-8604-4ad227bef6af.htm" />
+    <HelpKINode Title="SiteHtmlTitleInfo Class" Url="html/2c7f8290-464f-b804-7115-0802e7e0253b.htm" />
+    <HelpKINode Title="about SiteHtmlTitleInfo class" Url="html/2c7f8290-464f-b804-7115-0802e7e0253b.htm" />
+    <HelpKINode Title="constructor" Url="html/4e3750d8-d56f-1e5a-a173-6938c6c3ec4b.htm" />
+    <HelpKINode Title="methods" Url="html/6751de33-e30b-5fe4-0bb4-11014f923a46.htm" />
+    <HelpKINode Title="properties" Url="html/aa3c5300-90fb-5154-3934-64f7ee17c976.htm" />
   </HelpKINode>
-  <HelpKINode Title="SiteHtmlTitleInfo.Parts property" Url="html/18f8039a-14cf-92d6-3b3d-a7cba1650d9a.htm" />
-  <HelpKINode Title="SiteHtmlTitleInfo.Separator property" Url="html/7da295c0-db05-5e3e-4b41-1e48f4063889.htm" />
-  <HelpKINode Title="SiteHtmlTitleInfo.SiteHtmlTitleInfo constructor" Url="html/10a5905f-a09f-46b3-2be7-00b02d5ad186.htm" />
-  <HelpKINode Title="SiteHtmlTitleInfo.ToString method" Url="html/5574472c-430e-b5fd-a4f8-2e7bd3fdbb6f.htm" />
+  <HelpKINode Title="SiteHtmlTitleInfo.Parts property" Url="html/2eb2a597-be97-140f-903b-1dfdfb79cf4f.htm" />
+  <HelpKINode Title="SiteHtmlTitleInfo.Separator property" Url="html/51de4f4f-38cc-c04b-b6d9-1923c69d0fd0.htm" />
+  <HelpKINode Title="SiteHtmlTitleInfo.SiteHtmlTitleInfo constructor" Url="html/4e3750d8-d56f-1e5a-a173-6938c6c3ec4b.htm" />
+  <HelpKINode Title="SiteHtmlTitleInfo.ToString method" Url="html/c763fd20-efca-9248-9f9c-633803764aed.htm" />
   <HelpKINode Title="SiteInfo class">
     <HelpKINode Title="SiteInfo Class" Url="html/811befff-e68f-d0df-a167-f891739b7b1d.htm" />
     <HelpKINode Title="about SiteInfo class" Url="html/811befff-e68f-d0df-a167-f891739b7b1d.htm" />
@@ -2963,6 +2992,7 @@
   <HelpKINode Title="SiteInfo property" Url="html/83f301c1-65f7-37d9-ef8f-7f4674b492f7.htm" />
   <HelpKINode Title="SiteInfo.ArticlePath property" Url="html/50596668-497d-aa4b-91e0-bf68ec097806.htm" />
   <HelpKINode Title="SiteInfo.BaseUrl property" Url="html/497df266-2c13-5ed5-d0f1-658d02494d15.htm" />
+  <HelpKINode Title="SiteInfo.ExtensionData property" Url="html/f9a8089a-8cde-d682-189c-c9efa0f372a1.htm" />
   <HelpKINode Title="SiteInfo.FavIconUrl property" Url="html/2a4e89d6-04be-89c1-fc07-b5503347df90.htm" />
   <HelpKINode Title="SiteInfo.Generator property" Url="html/c015dff7-05d3-733d-42ff-d2aae8dfdf84.htm" />
   <HelpKINode Title="SiteInfo.IsTitleCaseSensitive property" Url="html/6c4d1410-f164-0a90-8816-0b54623c5b64.htm" />
@@ -2982,22 +3012,22 @@
   <HelpKINode Title="SiteInfo.TimeZoneName property" Url="html/db68ca51-fa21-d251-5bd2-4a66a5c4d294.htm" />
   <HelpKINode Title="SiteInfo.Version property" Url="html/507d7fdd-b979-d0cc-1e1a-bd194bff8d66.htm" />
   <HelpKINode Title="SiteLanguageInfo class">
-    <HelpKINode Title="SiteLanguageInfo Class" Url="html/ec807466-9c25-5680-a6f2-66db35f845d3.htm" />
-    <HelpKINode Title="about SiteLanguageInfo class" Url="html/ec807466-9c25-5680-a6f2-66db35f845d3.htm" />
-    <HelpKINode Title="constructor" Url="html/44ec01f5-e74a-dea6-dbee-18263ce8b8fb.htm" />
-    <HelpKINode Title="methods" Url="html/b5538f2b-7330-1db0-56e8-7f2f08560406.htm" />
-    <HelpKINode Title="properties" Url="html/84e5996c-1008-970d-5bec-537d2a8f84a7.htm" />
+    <HelpKINode Title="SiteLanguageInfo Class" Url="html/230f8019-2c84-4e2b-f5e9-08c228e04219.htm" />
+    <HelpKINode Title="about SiteLanguageInfo class" Url="html/230f8019-2c84-4e2b-f5e9-08c228e04219.htm" />
+    <HelpKINode Title="constructor" Url="html/147f8a16-aad1-d4f6-7e9d-a8eeecea6a34.htm" />
+    <HelpKINode Title="methods" Url="html/68ab53de-1b2f-4c9f-286c-9236b07f0be7.htm" />
+    <HelpKINode Title="properties" Url="html/521019c9-5dd1-a2e3-8c15-7db64ad4be66.htm" />
   </HelpKINode>
-  <HelpKINode Title="SiteLanguageInfo.ContentFlowDirection property" Url="html/cc6a57c8-6ca3-b350-8e35-3ab99878f30a.htm" />
-  <HelpKINode Title="SiteLanguageInfo.ContentLanguage property" Url="html/c13648aa-c4b3-426c-3b9c-fca6c814ed70.htm" />
-  <HelpKINode Title="SiteLanguageInfo.SiteLanguageInfo constructor" Url="html/44ec01f5-e74a-dea6-dbee-18263ce8b8fb.htm" />
-  <HelpKINode Title="SiteLanguageInfo.ToString method" Url="html/9dc55a7d-a98e-fbac-5107-248b0183986e.htm" />
+  <HelpKINode Title="SiteLanguageInfo.ContentFlowDirection property" Url="html/9a2a7f42-b0f9-7373-6d26-8d545443526e.htm" />
+  <HelpKINode Title="SiteLanguageInfo.ContentLanguage property" Url="html/bb9a2f2a-b7f9-b1d4-5e73-da499f0d3d33.htm" />
+  <HelpKINode Title="SiteLanguageInfo.SiteLanguageInfo constructor" Url="html/147f8a16-aad1-d4f6-7e9d-a8eeecea6a34.htm" />
+  <HelpKINode Title="SiteLanguageInfo.ToString method" Url="html/41934b49-ef4d-1aa2-be5b-a78ade08b499.htm" />
   <HelpKINode Title="SiteLinks property" Url="html/97efae16-cdf5-4372-e7c7-1630296f615f.htm" />
-  <HelpKINode Title="SiteMessage property" Url="html/bdc076d7-1088-b7e2-ad98-eae35cdebe41.htm" />
+  <HelpKINode Title="SiteMessage property" Url="html/607c1985-4a86-f6ed-9ba0-417eccbeaa81.htm" />
   <HelpKINode Title="SiteName property">
     <HelpKINode Title="InterwikiEntry.SiteName Property " Url="html/f3dcfe54-bdce-86ca-4eb6-bad9c2c928ff.htm" />
     <HelpKINode Title="SiteInfo.SiteName Property " Url="html/6bed9ebb-fcf5-76cb-92f0-9a163614aa1c.htm" />
-    <HelpKINode Title="SiteVariableData.SiteName Property " Url="html/d108fed4-d557-5df1-0969-3c7d350a36b3.htm" />
+    <HelpKINode Title="SiteVariableData.SiteName Property " Url="html/310b5f31-1ade-91c2-a922-dc214a0d222b.htm" />
     <HelpKINode Title="UserStub.SiteName Property " Url="html/5aefffc4-4bb3-eb59-eb96-ec02058728df.htm" />
   </HelpKINode>
   <HelpKINode Title="SiteOptions class">
@@ -3032,72 +3062,72 @@
   <HelpKINode Title="SiteStatistics.SiteStatistics constructor" Url="html/5f62b258-e5f0-b854-53de-e0e6b6c4e202.htm" />
   <HelpKINode Title="SiteStatistics.UsersCount property" Url="html/58c0c8e9-3cae-74eb-76bd-4eebd22313cd.htm" />
   <HelpKINode Title="SiteThemeInfo class">
-    <HelpKINode Title="SiteThemeInfo Class" Url="html/047b37cb-62da-a4e2-5cb3-f09a3d0d6ce7.htm" />
-    <HelpKINode Title="about SiteThemeInfo class" Url="html/047b37cb-62da-a4e2-5cb3-f09a3d0d6ce7.htm" />
-    <HelpKINode Title="constructor" Url="html/dccf1929-8efe-789a-188e-18a235c88e9c.htm" />
-    <HelpKINode Title="methods" Url="html/9453591b-8701-ba04-8cbc-684a2eccb709.htm" />
-    <HelpKINode Title="properties" Url="html/b82ed47f-e357-5d49-fb44-60d68cfa7867.htm" />
+    <HelpKINode Title="SiteThemeInfo Class" Url="html/76e98ae4-488b-0519-6238-7b7dca957d9e.htm" />
+    <HelpKINode Title="about SiteThemeInfo class" Url="html/76e98ae4-488b-0519-6238-7b7dca957d9e.htm" />
+    <HelpKINode Title="constructor" Url="html/c4d76360-14d2-f7af-86f3-9efbcb359ce3.htm" />
+    <HelpKINode Title="methods" Url="html/8c448298-6f6d-4af8-ab91-e2e352d3cb59.htm" />
+    <HelpKINode Title="properties" Url="html/a625a4c6-3c59-ac9d-a6bc-32b73b610021.htm" />
   </HelpKINode>
-  <HelpKINode Title="SiteThemeInfo.BackgroundImage property" Url="html/79e0d7f5-cf3d-382a-0ee1-1de98abb8c60.htm" />
-  <HelpKINode Title="SiteThemeInfo.BackgroundImageHeight property" Url="html/563c2afd-db89-230f-b8eb-60ef427f7425.htm" />
-  <HelpKINode Title="SiteThemeInfo.BackgroundImageWidth property" Url="html/371c9a1d-4254-8685-fdd7-8fd270bbb2ba.htm" />
-  <HelpKINode Title="SiteThemeInfo.BodyColor property" Url="html/da5965ae-b58d-56a0-936d-51e50e304dbe.htm" />
-  <HelpKINode Title="SiteThemeInfo.BodyMiddleColor property" Url="html/d05a9a99-218a-afc7-f218-9dfe56c98017.htm" />
-  <HelpKINode Title="SiteThemeInfo.ButtonsColor property" Url="html/0694cec4-b718-ff88-284f-cdf8917986ae.htm" />
-  <HelpKINode Title="SiteThemeInfo.CommunityHeaderColor property" Url="html/7782ba6c-55b7-b54d-6c14-975f15703da3.htm" />
-  <HelpKINode Title="SiteThemeInfo.HeaderColor property" Url="html/c35cd59b-bf12-b4fc-9370-5c5240ae1aa9.htm" />
-  <HelpKINode Title="SiteThemeInfo.IsBackgroundDynamic property" Url="html/abb8ac16-374d-a4bb-a7cd-9dfb3456c969.htm" />
-  <HelpKINode Title="SiteThemeInfo.LinksColor property" Url="html/27c6f5a5-eddb-f227-8846-a465a11171ae.htm" />
-  <HelpKINode Title="SiteThemeInfo.PageColor property" Url="html/85d1cfcb-9c38-d6ee-339c-a270f988db98.htm" />
-  <HelpKINode Title="SiteThemeInfo.PageOpacity property" Url="html/36bdb741-3c14-3881-ea5f-455a977373e9.htm" />
-  <HelpKINode Title="SiteThemeInfo.SiteThemeInfo constructor" Url="html/dccf1929-8efe-789a-188e-18a235c88e9c.htm" />
-  <HelpKINode Title="SiteThemeInfo.WordmarkFont property" Url="html/1a95924f-7cce-319a-e94a-4cf4f5a8d3c8.htm" />
+  <HelpKINode Title="SiteThemeInfo.BackgroundImage property" Url="html/b74b88cb-d401-ee4c-cfb2-1250b9b752f4.htm" />
+  <HelpKINode Title="SiteThemeInfo.BackgroundImageHeight property" Url="html/7a2956d1-dc9c-f979-5397-a8747e07ba18.htm" />
+  <HelpKINode Title="SiteThemeInfo.BackgroundImageWidth property" Url="html/f8909c50-3abe-7b85-881d-aeb9a178ea89.htm" />
+  <HelpKINode Title="SiteThemeInfo.BodyColor property" Url="html/a13ef2c1-2068-eee1-393f-994fadea2622.htm" />
+  <HelpKINode Title="SiteThemeInfo.BodyMiddleColor property" Url="html/ccf89c4e-e9c3-18a8-ae8c-8db584e579a2.htm" />
+  <HelpKINode Title="SiteThemeInfo.ButtonsColor property" Url="html/9342a513-8880-bf3e-0012-1777e930864a.htm" />
+  <HelpKINode Title="SiteThemeInfo.CommunityHeaderColor property" Url="html/05e9758f-1a52-15f3-f92a-2ec7d2229f09.htm" />
+  <HelpKINode Title="SiteThemeInfo.HeaderColor property" Url="html/f611bd1e-3b1f-05a3-6fd9-d2a91a45663f.htm" />
+  <HelpKINode Title="SiteThemeInfo.IsBackgroundDynamic property" Url="html/32e4a0a1-463d-ac89-fcbb-e0909f103f0c.htm" />
+  <HelpKINode Title="SiteThemeInfo.LinksColor property" Url="html/d275c215-0046-fbd7-796c-8aeab9467c91.htm" />
+  <HelpKINode Title="SiteThemeInfo.PageColor property" Url="html/ec98084f-a8bf-aafe-88b3-d5a8e8c03930.htm" />
+  <HelpKINode Title="SiteThemeInfo.PageOpacity property" Url="html/8efde4d1-6645-8c2c-7e04-0f2c6ce5bc10.htm" />
+  <HelpKINode Title="SiteThemeInfo.SiteThemeInfo constructor" Url="html/c4d76360-14d2-f7af-86f3-9efbcb359ce3.htm" />
+  <HelpKINode Title="SiteThemeInfo.WordmarkFont property" Url="html/3cc6c7f2-b570-af58-e61b-8ccbf59c6811.htm" />
   <HelpKINode Title="SiteVariableData class">
-    <HelpKINode Title="SiteVariableData Class" Url="html/81d4886a-ce26-8260-8528-af5747afa653.htm" />
-    <HelpKINode Title="about SiteVariableData class" Url="html/81d4886a-ce26-8260-8528-af5747afa653.htm" />
-    <HelpKINode Title="constructor" Url="html/1625b591-c0b6-8169-995b-b60cf0112e8d.htm" />
-    <HelpKINode Title="methods" Url="html/546abea8-9e92-4990-ac3b-02ac9c21024d.htm" />
-    <HelpKINode Title="properties" Url="html/058ab283-8e63-4288-c94b-55caee875cc1.htm" />
+    <HelpKINode Title="SiteVariableData Class" Url="html/5b65acdb-2a0e-6229-669c-8a7b88169cbe.htm" />
+    <HelpKINode Title="about SiteVariableData class" Url="html/5b65acdb-2a0e-6229-669c-8a7b88169cbe.htm" />
+    <HelpKINode Title="constructor" Url="html/52aae6ec-8b6d-eb36-62e6-e7716939fdcc.htm" />
+    <HelpKINode Title="methods" Url="html/3324fbb6-524f-01cf-e1c6-4ee68ce438ef.htm" />
+    <HelpKINode Title="properties" Url="html/c54afefc-678f-7d8c-dceb-35fa2a90d620.htm" />
   </HelpKINode>
-  <HelpKINode Title="SiteVariableData.AppleTouchIcon property" Url="html/091bcb32-4770-813f-56b7-512acea661ed.htm" />
-  <HelpKINode Title="SiteVariableData.ArticlePath property" Url="html/a5ff878c-78aa-afeb-dde7-8ccfc8c6019c.htm" />
-  <HelpKINode Title="SiteVariableData.BasePath property" Url="html/ed432ea8-b0db-f66b-cac8-0d3465205acf.htm" />
-  <HelpKINode Title="SiteVariableData.CacheBuster property" Url="html/315468e7-bcdd-2677-4e14-ca4c9aeb61f1.htm" />
-  <HelpKINode Title="SiteVariableData.CdnRootUrl property" Url="html/abf550bd-948a-6649-a779-03511421fda8.htm" />
-  <HelpKINode Title="SiteVariableData.ContentNamespaceIds property" Url="html/ee021338-443c-a622-f0a7-bd9fe4f7e3a6.htm" />
-  <HelpKINode Title="SiteVariableData.DatabaseName property" Url="html/977d56fa-7575-7b6a-79d9-eb3d2df25fef.htm" />
-  <HelpKINode Title="SiteVariableData.DefaultSkinName property" Url="html/046b622d-b114-31ab-2f97-37e32d71b6db.htm" />
-  <HelpKINode Title="SiteVariableData.DiscussionColorOverride property" Url="html/313825df-76e5-5574-9cc3-5cf8aa822c40.htm" />
-  <HelpKINode Title="SiteVariableData.FavIconUrl property" Url="html/53018650-ca79-3095-749c-c3639c61953f.htm" />
-  <HelpKINode Title="SiteVariableData.HomePageUrl property" Url="html/7a7a23d6-1aa5-7f22-2364-72512eb39daa.htm" />
-  <HelpKINode Title="SiteVariableData.HtmlTitle property" Url="html/fd67100d-e9da-57bb-689f-534231feeec6.htm" />
-  <HelpKINode Title="SiteVariableData.Id property" Url="html/40b55348-d7fd-2b8a-c41f-725d7aff3ce1.htm" />
-  <HelpKINode Title="SiteVariableData.Image property" Url="html/1ff1ad3a-0a72-ea49-5e01-783b644c5b91.htm" />
-  <HelpKINode Title="SiteVariableData.IsAnonymousEditingDisabled property" Url="html/83fb2ddf-0f3c-f990-bb4b-63863554b53c.htm" />
-  <HelpKINode Title="SiteVariableData.IsCommunityDataEnabled property" Url="html/a18b472c-4f73-bcf4-292f-b7370690e7f9.htm" />
-  <HelpKINode Title="SiteVariableData.IsCoppaWiki property" Url="html/d185e3ed-1a14-519b-3b48-32939a9aa5f8.htm" />
-  <HelpKINode Title="SiteVariableData.IsDarkTheme property" Url="html/4ec5dadd-9926-9384-224b-af4cbf7d4481.htm" />
-  <HelpKINode Title="SiteVariableData.IsDiscussionsEnabled property" Url="html/456f2c2b-ef0d-c61c-e3e1-39d9a79aba4e.htm" />
-  <HelpKINode Title="SiteVariableData.IsDiscussionsImageUploadEnabled property" Url="html/520afe61-9d41-962d-6085-8b5d289cead0.htm" />
-  <HelpKINode Title="SiteVariableData.IsFandomAppSmartBannerEnabled property" Url="html/f24473ac-09d8-1a02-beca-12d8324e2a52.htm" />
-  <HelpKINode Title="SiteVariableData.IsMercuryAnonymousUploadDisabled property" Url="html/4afbe733-a91c-4d2c-f60f-088cc22358c9.htm" />
-  <HelpKINode Title="SiteVariableData.IsMobileSectionEditorDisabled property" Url="html/f6456c52-4dff-ade6-3ccd-eed2bb9da15c.htm" />
-  <HelpKINode Title="SiteVariableData.IsNewAuthEnabled property" Url="html/5ec61945-a6bf-04c6-6325-1d2be4bf6b0b.htm" />
-  <HelpKINode Title="SiteVariableData.LanguageInfo property" Url="html/b32fbe85-acac-cdb0-4045-b0e445d4a780.htm" />
-  <HelpKINode Title="SiteVariableData.MainPageTitle property" Url="html/feae705d-7950-e144-cc41-028d3df9a886.htm" />
-  <HelpKINode Title="SiteVariableData.NamespaceNames property" Url="html/11f2e96b-d95b-b4da-8bca-f971361ff7e1.htm" />
-  <HelpKINode Title="SiteVariableData.NavigationItems property" Url="html/b3c07261-16ab-e4fd-40ae-983c93e39957.htm" />
-  <HelpKINode Title="SiteVariableData.SiteMessage property" Url="html/bdc076d7-1088-b7e2-ad98-eae35cdebe41.htm" />
-  <HelpKINode Title="SiteVariableData.SiteName property" Url="html/d108fed4-d557-5df1-0969-3c7d350a36b3.htm" />
-  <HelpKINode Title="SiteVariableData.SiteVariableData constructor" Url="html/1625b591-c0b6-8169-995b-b60cf0112e8d.htm" />
-  <HelpKINode Title="SiteVariableData.SpecialRobotPolicy property" Url="html/0dabf3fa-7629-8be7-c2ee-add092387e56.htm" />
-  <HelpKINode Title="SiteVariableData.ThemeInfo property" Url="html/9062d5cc-86a3-e25c-4ce1-a3a4c5614a7a.htm" />
-  <HelpKINode Title="SiteVariableData.ToString method" Url="html/78b1518d-48eb-b3fb-5b82-ba03b994d60d.htm" />
-  <HelpKINode Title="SiteVariableData.TrackingInfo property" Url="html/793fa61a-d6ee-4012-c56d-7422b6d33322.htm" />
-  <HelpKINode Title="SiteVariableData.Vertical property" Url="html/ec28774b-4432-c16d-8840-7dc38c057be3.htm" />
-  <HelpKINode Title="SiteVariableData.WikiCategories property" Url="html/cffce005-31dd-5835-725b-a12664a77df0.htm" />
+  <HelpKINode Title="SiteVariableData.AppleTouchIcon property" Url="html/9075f3fe-a2a6-e13e-7146-19a7ae98d362.htm" />
+  <HelpKINode Title="SiteVariableData.ArticlePath property" Url="html/e1d4bcbe-f4d7-ab39-48e7-95329e188474.htm" />
+  <HelpKINode Title="SiteVariableData.BasePath property" Url="html/addcc309-9aa8-ab3b-7316-20fa3701e387.htm" />
+  <HelpKINode Title="SiteVariableData.CacheBuster property" Url="html/7a510bef-83c6-23c4-f396-fc8846b38a6e.htm" />
+  <HelpKINode Title="SiteVariableData.CdnRootUrl property" Url="html/79f61d93-42d2-8cc3-d04f-e450aea56556.htm" />
+  <HelpKINode Title="SiteVariableData.ContentNamespaceIds property" Url="html/78a10387-5cbc-bbee-480a-34758221f1fe.htm" />
+  <HelpKINode Title="SiteVariableData.DatabaseName property" Url="html/5f6d0d03-bdff-1d00-06d1-711c7420c4f7.htm" />
+  <HelpKINode Title="SiteVariableData.DefaultSkinName property" Url="html/7f4391ca-eec9-b8ff-ef12-faf00950932a.htm" />
+  <HelpKINode Title="SiteVariableData.DiscussionColorOverride property" Url="html/fbdeb328-3a72-9510-4209-0ab7f51e59f0.htm" />
+  <HelpKINode Title="SiteVariableData.FavIconUrl property" Url="html/5dc72823-9744-5dac-4741-2207ac663a36.htm" />
+  <HelpKINode Title="SiteVariableData.HomePageUrl property" Url="html/867d0d27-23ac-9585-c5fe-4e538defef57.htm" />
+  <HelpKINode Title="SiteVariableData.HtmlTitle property" Url="html/b49c637e-fd6e-cb51-4f04-eb445b7aad10.htm" />
+  <HelpKINode Title="SiteVariableData.Id property" Url="html/d372691a-befc-84b2-243e-cd1a129e0f4c.htm" />
+  <HelpKINode Title="SiteVariableData.Image property" Url="html/0ae1b54c-ae16-029a-36ee-68bd22160f50.htm" />
+  <HelpKINode Title="SiteVariableData.IsAnonymousEditingDisabled property" Url="html/6373a52d-f280-72a5-b793-b11b0a039062.htm" />
+  <HelpKINode Title="SiteVariableData.IsCommunityDataEnabled property" Url="html/658152ba-78fb-2866-e3de-82ac93d84400.htm" />
+  <HelpKINode Title="SiteVariableData.IsCoppaWiki property" Url="html/7700cf50-a60f-bb14-f29b-0ccb4a9e4407.htm" />
+  <HelpKINode Title="SiteVariableData.IsDarkTheme property" Url="html/937a3075-f343-7be6-dc05-0a2cebd53126.htm" />
+  <HelpKINode Title="SiteVariableData.IsDiscussionsEnabled property" Url="html/f4a11103-e794-1216-c153-f388bcaf6bda.htm" />
+  <HelpKINode Title="SiteVariableData.IsDiscussionsImageUploadEnabled property" Url="html/20541bad-439c-86bf-b43a-c3183b490a7d.htm" />
+  <HelpKINode Title="SiteVariableData.IsFandomAppSmartBannerEnabled property" Url="html/95cc010a-1d16-568b-37a5-008cba816225.htm" />
+  <HelpKINode Title="SiteVariableData.IsMercuryAnonymousUploadDisabled property" Url="html/00df33fc-5466-5b6a-26b7-0ef482251686.htm" />
+  <HelpKINode Title="SiteVariableData.IsMobileSectionEditorDisabled property" Url="html/0171a377-3ecd-8430-909c-11607c00674d.htm" />
+  <HelpKINode Title="SiteVariableData.IsNewAuthEnabled property" Url="html/7620567b-9064-047d-b656-4938389f2252.htm" />
+  <HelpKINode Title="SiteVariableData.LanguageInfo property" Url="html/3779b354-8b6c-ebec-81f8-b6b5a501e64b.htm" />
+  <HelpKINode Title="SiteVariableData.MainPageTitle property" Url="html/26d9f2b2-4f0a-0b82-2f26-0e55a5020421.htm" />
+  <HelpKINode Title="SiteVariableData.NamespaceNames property" Url="html/f99fc42c-bed4-3f94-40f0-f9285f4d1398.htm" />
+  <HelpKINode Title="SiteVariableData.NavigationItems property" Url="html/d0f0b6cb-09fe-e691-8a30-f0160e5275ca.htm" />
+  <HelpKINode Title="SiteVariableData.SiteMessage property" Url="html/607c1985-4a86-f6ed-9ba0-417eccbeaa81.htm" />
+  <HelpKINode Title="SiteVariableData.SiteName property" Url="html/310b5f31-1ade-91c2-a922-dc214a0d222b.htm" />
+  <HelpKINode Title="SiteVariableData.SiteVariableData constructor" Url="html/52aae6ec-8b6d-eb36-62e6-e7716939fdcc.htm" />
+  <HelpKINode Title="SiteVariableData.SpecialRobotPolicy property" Url="html/5403dcc7-25fd-c105-cdac-5d2d6f8a2389.htm" />
+  <HelpKINode Title="SiteVariableData.ThemeInfo property" Url="html/4212aca6-9abd-f4ff-1d26-55b35a0edfa9.htm" />
+  <HelpKINode Title="SiteVariableData.ToString method" Url="html/5dcb864a-adf9-e9fa-0564-855b0c0cd1ba.htm" />
+  <HelpKINode Title="SiteVariableData.TrackingInfo property" Url="html/6a7abd4b-4aab-e180-a9f5-5d17e268a1b9.htm" />
+  <HelpKINode Title="SiteVariableData.Vertical property" Url="html/adc1b431-fe99-1ef0-e3c6-eb1a867b5aad.htm" />
+  <HelpKINode Title="SiteVariableData.WikiCategories property" Url="html/40d8af5c-a8ea-1c34-c75c-f3c91a122fb7.htm" />
   <HelpKINode Title="Size property">
-    <HelpKINode Title="AppleTouchIconInfo.Size Property " Url="html/743a479b-55f8-c69a-19d5-68d58b2b89b7.htm" />
+    <HelpKINode Title="AppleTouchIconInfo.Size Property " Url="html/577f4fcb-a167-10cd-d3c3-14b0102b7b1e.htm" />
     <HelpKINode Title="FileRevision.Size Property " Url="html/6c350078-fefa-9db5-11b8-a543e044d88e.htm" />
   </HelpKINode>
   <HelpKINode Title="Snak class">
@@ -3123,12 +3153,15 @@
     <HelpKINode Title="SearchResultItem.Snippet Property " Url="html/17b99244-bf7b-c3ad-3312-b625e79fe679.htm" />
   </HelpKINode>
   <HelpKINode Title="SomeValue enumeration member" Url="html/c9924641-ec7b-d915-22f8-93eb1eed5836.htm" />
-  <HelpKINode Title="SortKey property" Url="html/e3b89b5a-a176-2245-6a78-34580b4d1b5f.htm" />
+  <HelpKINode Title="SortKey property">
+    <HelpKINode Title="ContentCategoryInfo.SortKey Property " Url="html/e3b89b5a-a176-2245-6a78-34580b4d1b5f.htm" />
+    <HelpKINode Title="WikiPageCategoryInfo.SortKey Property " Url="html/7ed2ad7a-b038-fb7d-ebf8-dfb4c698be8c.htm" />
+  </HelpKINode>
   <HelpKINode Title="SourceStream property" Url="html/a60f3f25-d820-c487-8f5a-5203248bd469.htm" />
   <HelpKINode Title="SourceUrl property" Url="html/2c5f5cd5-955a-c41b-2f5e-931e275fe7be.htm" />
   <HelpKINode Title="Special field" Url="html/fc1e6bbc-ac41-b868-6b0b-39026f6dcd07.htm" />
   <HelpKINode Title="SpecialPageIdMask field" Url="html/d1b9aa4a-e34e-fc06-2980-444109c60e2a.htm" />
-  <HelpKINode Title="SpecialRobotPolicy property" Url="html/0dabf3fa-7629-8be7-c2ee-add092387e56.htm" />
+  <HelpKINode Title="SpecialRobotPolicy property" Url="html/5403dcc7-25fd-c105-cdac-5d2d6f8a2389.htm" />
   <HelpKINode Title="Stable enumeration member" Url="html/ed78d2f2-89fd-779a-111b-e89b9cca6e09.htm" />
   <HelpKINode Title="Stalest enumeration member" Url="html/ed78d2f2-89fd-779a-111b-e89b9cca6e09.htm" />
   <HelpKINode Title="StartId property" Url="html/1fd03f4b-3959-360a-570e-8099fd03259a.htm" />
@@ -3176,6 +3209,7 @@
   <HelpKINode Title="SupressRedirects enumeration member" Url="html/8f5edae1-f1ea-4a88-09d7-24e4137a62c8.htm" />
   <HelpKINode Title="SysOp field" Url="html/4daf00f7-cc88-b19e-9245-ebe277e5eb26.htm" />
   <HelpKINode Title="TabularData property" Url="html/dd0cf718-7f88-4142-b51f-1e5697ff12f8.htm" />
+  <HelpKINode Title="TabularDataStorageBaseUri property" Url="html/4d566e8d-78c7-a936-403d-47d5cad74de8.htm" />
   <HelpKINode Title="Tag property" Url="html/4dce78c4-1b03-58b7-f2fe-c8e62d0f99d7.htm" />
   <HelpKINode Title="Tags property">
     <HelpKINode Title="RecentChangeItem.Tags Property " Url="html/a3a10546-1b0b-b457-0ee9-d4c0f2c6cfb0.htm" />
@@ -3195,11 +3229,11 @@
   <HelpKINode Title="Text enumeration member" Url="html/8cc6ccc6-b0d6-1cff-4ef6-4cdcffcd4234.htm" />
   <HelpKINode Title="Text property">
     <HelpKINode Title="FlowLink.Text Property " Url="html/ec8a69f6-1de2-30aa-42b4-1b2ed239bb77.htm" />
-    <HelpKINode Title="NavigationItem.Text Property " Url="html/0f9d4089-5572-8280-70be-ecec21201b22.htm" />
+    <HelpKINode Title="NavigationItem.Text Property " Url="html/926e5074-1638-4a03-4a4e-dd60bfa93054.htm" />
     <HelpKINode Title="RelatedPageItem.Text Property " Url="html/0ff62045-1efe-3493-4796-432cf2f823d0.htm" />
     <HelpKINode Title="WbMonolingualText.Text Property " Url="html/b12ea3e3-bddc-ff57-2ef4-d7e8a5325545.htm" />
   </HelpKINode>
-  <HelpKINode Title="ThemeInfo property" Url="html/9062d5cc-86a3-e25c-4ce1-a3a4c5614a7a.htm" />
+  <HelpKINode Title="ThemeInfo property" Url="html/4212aca6-9abd-f4ff-1d26-55b35a0edfa9.htm" />
   <HelpKINode Title="Thread field" Url="html/4c8e5712-c5db-23e2-4d64-459fb5ac0725.htm" />
   <HelpKINode Title="Throttler class">
     <HelpKINode Title="Throttler Class" Url="html/e4e6ad8c-8fe2-4d43-7384-aad58065dcbe.htm" />
@@ -3231,9 +3265,10 @@
     <HelpKINode Title="FileRevision.TimeStamp Property " Url="html/f96c5eed-6745-5c1f-c2cd-69ea4e4431bf.htm" />
     <HelpKINode Title="Post.TimeStamp Property " Url="html/6b5c6097-78de-97b2-89c2-5eaaedafe6f9.htm" />
     <HelpKINode Title="RecentChangeItem.TimeStamp Property " Url="html/7affcde9-e10e-c62c-5580-2aba19349f53.htm" />
-    <HelpKINode Title="Revision.TimeStamp Property " Url="html/51f74e76-90ba-179d-0e12-f4ae27e75991.htm" />
     <HelpKINode Title="Revision.TimeStamp Property " Url="html/e8e0916e-de1f-f5d7-1cb0-72a046ea4689.htm" />
+    <HelpKINode Title="Revision.TimeStamp Property " Url="html/51f74e76-90ba-179d-0e12-f4ae27e75991.htm" />
     <HelpKINode Title="SearchResultItem.TimeStamp Property " Url="html/c8bb8728-c2aa-cdf0-fdaa-c3019deac87d.htm" />
+    <HelpKINode Title="WikiPageCategoryInfo.TimeStamp Property " Url="html/a313b906-cc1f-f575-59a6-4caeb5557c96.htm" />
   </HelpKINode>
   <HelpKINode Title="TimeZone property" Url="html/b20a9d6e-ceb3-ac89-6a6b-f4c0f1433c17.htm" />
   <HelpKINode Title="TimeZoneName property" Url="html/db68ca51-fa21-d251-5bd2-4a66a5c4d294.htm" />
@@ -3254,6 +3289,7 @@
     <HelpKINode Title="UserInfo.Title Property " Url="html/a1a53079-56bb-358b-3560-e5ed92998ab9.htm" />
     <HelpKINode Title="WikiLink.Title Property " Url="html/3321c280-55fb-8d35-9929-a0546192ce12.htm" />
     <HelpKINode Title="WikiPage.Title Property " Url="html/dd7c998a-620a-0415-0512-4c6201ea69e6.htm" />
+    <HelpKINode Title="WikiPageCategoryInfo.Title Property " Url="html/b16bed0e-30a2-289b-147d-79f1f6ec9125.htm" />
     <HelpKINode Title="WikiPageStub.Title Property " Url="html/8cc600b2-4762-352a-203c-f667db11648e.htm" />
   </HelpKINode>
   <HelpKINode Title="TitleExists property" Url="html/cbf55f11-a363-ed8f-0f57-aa61ab1f74cf.htm" />
@@ -3312,8 +3348,9 @@
     <HelpKINode Title="InterwikiEntry.ToString Method " Url="html/7fd265fe-50c7-d3e0-9503-d4ff71166ca0.htm" />
     <HelpKINode Title="LocalWikiSearchResultItem.ToString Method " Url="html/4cb4344e-bd0f-807e-fd0d-07f83fad24bf.htm" />
     <HelpKINode Title="NamespaceInfo.ToString Method " Url="html/23eb6f92-a5a6-bb83-e36c-d4ebe7729df5.htm" />
-    <HelpKINode Title="NavigationItem.ToString Method " Url="html/38021dfa-a760-75fc-f7a7-d52cfd51fe28.htm" />
+    <HelpKINode Title="NavigationItem.ToString Method " Url="html/8dfe23a8-fd74-71da-8117-1e53d02cb005.htm" />
     <HelpKINode Title="OpenSearchResultEntry.ToString Method " Url="html/38c2b18a-57a7-0be0-d2cf-1d36e28c068b.htm" />
+    <HelpKINode Title="PageImageInfo.ToString Method " Url="html/894b2d4b-52ce-3dc5-ed5f-7bd670796425.htm" />
     <HelpKINode Title="PagePropertiesPropertyGroup.ToString Method " Url="html/2a2ee1d0-644a-0de3-59c9-7b68f2bd3e48.htm" />
     <HelpKINode Title="ParserLimitReport.ToString Method " Url="html/b72e5893-e5a0-6fc8-734f-27c6cadd46fb.htm" />
     <HelpKINode Title="Post.ToString Method " Url="html/c9da4308-2bc6-b22e-997c-039b0b10fa57.htm" />
@@ -3324,9 +3361,9 @@
     <HelpKINode Title="RelatedPageItem.ToString Method " Url="html/c456deca-053f-6886-0202-4c3e5ade8c1e.htm" />
     <HelpKINode Title="Revision.ToString Method " Url="html/11965307-76e2-fafe-5359-5e2b57020987.htm" />
     <HelpKINode Title="SearchResultItem.ToString Method " Url="html/b203c6eb-e0ea-26e9-a73f-69e1061bb0cd.htm" />
-    <HelpKINode Title="SiteHtmlTitleInfo.ToString Method " Url="html/5574472c-430e-b5fd-a4f8-2e7bd3fdbb6f.htm" />
-    <HelpKINode Title="SiteLanguageInfo.ToString Method " Url="html/9dc55a7d-a98e-fbac-5107-248b0183986e.htm" />
-    <HelpKINode Title="SiteVariableData.ToString Method " Url="html/78b1518d-48eb-b3fb-5b82-ba03b994d60d.htm" />
+    <HelpKINode Title="SiteHtmlTitleInfo.ToString Method " Url="html/c763fd20-efca-9248-9f9c-633803764aed.htm" />
+    <HelpKINode Title="SiteLanguageInfo.ToString Method " Url="html/41934b49-ef4d-1aa2-be5b-a78ade08b499.htm" />
+    <HelpKINode Title="SiteVariableData.ToString Method " Url="html/5dcb864a-adf9-e9fa-0564-855b0c0cd1ba.htm" />
     <HelpKINode Title="Snak.ToString Method " Url="html/6a4653da-e963-181d-b336-4641ec7dc14a.htm" />
     <HelpKINode Title="StreamUploadSource.ToString Method " Url="html/9379ac8a-0473-9fdc-2e8d-45dd780b2ce5.htm" />
     <HelpKINode Title="Topic.ToString Method " Url="html/e31dbdff-00d0-7e21-5436-84795157ef9f.htm" />
@@ -3343,6 +3380,7 @@
     <HelpKINode Title="WikiClient.ToString Method " Url="html/59bb0559-8e32-809a-a4f5-0e521340abaf.htm" />
     <HelpKINode Title="WikiLink.ToString Method " Url="html/483ca99d-28e3-2b26-e180-e93694780b2d.htm" />
     <HelpKINode Title="WikiPage.ToString Method " Url="html/7deb120d-15ab-6f7b-4efb-9a9b3448fb86.htm" />
+    <HelpKINode Title="WikiPageCategoryInfo.ToString Method " Url="html/3c9c0461-ba8e-2e0e-50fe-0322ea4469d0.htm" />
     <HelpKINode Title="WikiPagePropertyList(T).ToString Method " Url="html/9f81b0f9-6c56-dfbe-a0ab-0b8b8ef17c33.htm" />
     <HelpKINode Title="WikiPageStub.ToString Method " Url="html/7c09907c-ef32-d044-a775-d66562e7edb5.htm" />
     <HelpKINode Title="WikiRequestMessage.ToString Method " Url="html/c2f876a2-d467-12cb-eae8-488371eee05b.htm" />
@@ -3355,15 +3393,15 @@
   </HelpKINode>
   <HelpKINode Title="TraceId property" Url="html/f70d5144-5fa9-c49c-a24f-006ec560a133.htm" />
   <HelpKINode Title="TrackingInfo class">
-    <HelpKINode Title="TrackingInfo Class" Url="html/3a1be318-6d25-7e33-c89a-350fb97067cb.htm" />
-    <HelpKINode Title="about TrackingInfo class" Url="html/3a1be318-6d25-7e33-c89a-350fb97067cb.htm" />
-    <HelpKINode Title="constructor" Url="html/8b228e88-2284-10d8-e4c8-0b6c15373306.htm" />
-    <HelpKINode Title="methods" Url="html/437e863e-d9d0-bbaa-ad4b-296cb4a389d7.htm" />
-    <HelpKINode Title="properties" Url="html/ba09eb10-e1b2-e2d0-e5e8-402bf0cd60a4.htm" />
+    <HelpKINode Title="TrackingInfo Class" Url="html/cf99e9b3-f8ea-af45-9862-45558c8b6ee9.htm" />
+    <HelpKINode Title="about TrackingInfo class" Url="html/cf99e9b3-f8ea-af45-9862-45558c8b6ee9.htm" />
+    <HelpKINode Title="constructor" Url="html/cf195b75-0ee1-f29c-865e-f54f557f1f6f.htm" />
+    <HelpKINode Title="methods" Url="html/2868ef3f-d341-4ec2-3c7b-ee067aea9830.htm" />
+    <HelpKINode Title="properties" Url="html/0dd93f35-fa62-4bff-5b62-1649a91eb988.htm" />
   </HelpKINode>
-  <HelpKINode Title="TrackingInfo property" Url="html/793fa61a-d6ee-4012-c56d-7422b6d33322.htm" />
-  <HelpKINode Title="TrackingInfo.TrackingInfo constructor" Url="html/8b228e88-2284-10d8-e4c8-0b6c15373306.htm" />
-  <HelpKINode Title="TrackingInfo.Vertical property" Url="html/09203e7a-70b4-c52f-f9fc-7dc404bde777.htm" />
+  <HelpKINode Title="TrackingInfo property" Url="html/6a7abd4b-4aab-e180-a9f5-5d17e268a1b9.htm" />
+  <HelpKINode Title="TrackingInfo.TrackingInfo constructor" Url="html/cf195b75-0ee1-f29c-865e-f54f557f1f6f.htm" />
+  <HelpKINode Title="TrackingInfo.Vertical property" Url="html/27b21f2e-9f4f-8aba-71aa-48e204fbb59e.htm" />
   <HelpKINode Title="TranscludedInGenerator class">
     <HelpKINode Title="TranscludedInGenerator Class" Url="html/ec1710a7-71a9-b0a9-b889-797f81978459.htm" />
     <HelpKINode Title="about TranscludedInGenerator class" Url="html/ec1710a7-71a9-b0a9-b889-797f81978459.htm" />
@@ -3606,7 +3644,7 @@
   <HelpKINode Title="UpperBound property" Url="html/516752a5-eafe-b2d6-a21a-f1e7662ade06.htm" />
   <HelpKINode Title="Uri property" Url="html/2cbaa868-1c55-a201-68ff-aae4549d7278.htm" />
   <HelpKINode Title="Url property">
-    <HelpKINode Title="AppleTouchIconInfo.Url Property " Url="html/ee2a6d73-2dc9-6c08-ab63-3e8f2dfe0d02.htm" />
+    <HelpKINode Title="AppleTouchIconInfo.Url Property " Url="html/cc79c149-51b7-22aa-6293-4b3299c1a50b.htm" />
     <HelpKINode Title="BuiltInDataTypes.Url Property " Url="html/bcf53010-a742-fe12-23b5-de938ed3587a.htm" />
     <HelpKINode Title="EntitySiteLink.Url Property " Url="html/a90a61dd-f033-cdcc-63d2-6518cda999be.htm" />
     <HelpKINode Title="ExtensionInfo.Url Property " Url="html/37cd8412-8cae-c4d4-34dd-8bd3efab9e8b.htm" />
@@ -3615,7 +3653,7 @@
     <HelpKINode Title="InterlanguageInfo.Url Property " Url="html/adb502b6-e53a-27cf-bc3f-6ead9b41dc8f.htm" />
     <HelpKINode Title="InterwikiEntry.Url Property " Url="html/d0f58bdf-d5f0-3604-32b9-4a90b7c5f06d.htm" />
     <HelpKINode Title="LocalWikiSearchResultItem.Url Property " Url="html/b56e4abc-a7f6-7f36-6c7b-481ea4d3e0f0.htm" />
-    <HelpKINode Title="NavigationItem.Url Property " Url="html/6a045ea3-c516-a5a5-af65-925f39339be8.htm" />
+    <HelpKINode Title="NavigationItem.Url Property " Url="html/241e12d9-71dc-28cd-b193-6376a653733d.htm" />
     <HelpKINode Title="OpenSearchResultEntry.Url Property " Url="html/ec3bfb44-e70b-ed52-36f6-8306d2b1993b.htm" />
     <HelpKINode Title="PageImageInfo.Url Property " Url="html/441ec7a8-1576-a7a5-67b4-f6185328658a.htm" />
     <HelpKINode Title="RelatedPageItem.Url Property " Url="html/1e843250-ec78-80c6-6353-02f4bfd55463.htm" />
@@ -3710,8 +3748,8 @@
     <HelpKINode Title="SiteInfo.Version Property " Url="html/507d7fdd-b979-d0cc-1e1a-bd194bff8d66.htm" />
   </HelpKINode>
   <HelpKINode Title="Vertical property">
-    <HelpKINode Title="SiteVariableData.Vertical Property " Url="html/ec28774b-4432-c16d-8840-7dc38c057be3.htm" />
-    <HelpKINode Title="TrackingInfo.Vertical Property " Url="html/09203e7a-70b4-c52f-f9fc-7dc404bde777.htm" />
+    <HelpKINode Title="SiteVariableData.Vertical Property " Url="html/adc1b431-fe99-1ef0-e3c6-eb1a867b5aad.htm" />
+    <HelpKINode Title="TrackingInfo.Vertical Property " Url="html/27b21f2e-9f4f-8aba-71aa-48e204fbb59e.htm" />
   </HelpKINode>
   <HelpKINode Title="Warning enumeration member" Url="html/dde95a44-fa48-9375-0551-4ed30593d06c.htm" />
   <HelpKINode Title="Warnings property" Url="html/95839bac-63d2-f7b2-1db6-2587f78ab2d0.htm" />
@@ -3864,7 +3902,7 @@
   <HelpKINode Title="WbUri.Uri property" Url="html/2cbaa868-1c55-a201-68ff-aae4549d7278.htm" />
   <HelpKINode Title="Welcome" Url="html/52302a23-6744-44bb-9808-770fac48aaba.htm" />
   <HelpKINode Title="Width property">
-    <HelpKINode Title="AppleTouchIconInfo.Width Property " Url="html/0e57c639-0ea2-03d7-f61f-8cfc9f37384c.htm" />
+    <HelpKINode Title="AppleTouchIconInfo.Width Property " Url="html/c7fea51d-7200-8729-d811-a3b972ab1b9f.htm" />
     <HelpKINode Title="FileRevision.Width Property " Url="html/f65eab9d-420b-30d0-4b78-f9768baaeb6a.htm" />
     <HelpKINode Title="PageImageInfo.Width Property " Url="html/f84cdc4c-43b6-8455-f2e6-8989c002952d.htm" />
   </HelpKINode>
@@ -3922,17 +3960,19 @@
   <HelpKINode Title="WikiaQueryRequestMessage.UseHttpPost property" Url="html/3de97da4-f7b2-50f4-9ef9-fa274c1a8ea0.htm" />
   <HelpKINode Title="WikiaQueryRequestMessage.WikiaQueryRequestMessage constructor" Url="html/4416b1eb-77b6-ecc8-bff3-de111fa9052c.htm" />
   <HelpKINode Title="WikiaSite class">
-    <HelpKINode Title="WikiaSite Class" Url="html/03ebd558-d7dc-5503-6e9c-d00738c85c0a.htm" />
-    <HelpKINode Title="about WikiaSite class" Url="html/03ebd558-d7dc-5503-6e9c-d00738c85c0a.htm" />
-    <HelpKINode Title="constructor" Url="html/00e917bb-68eb-2580-4b8e-916aa431b8f2.htm" />
-    <HelpKINode Title="methods" Url="html/e97bf9d2-5323-134e-49e2-9d72c6afdf16.htm" />
-    <HelpKINode Title="properties" Url="html/d7e87697-0991-c32a-a21b-46c41c705260.htm" />
+    <HelpKINode Title="WikiaSite Class" Url="html/5a08dbdf-003a-0446-a91e-cd249a450d28.htm" />
+    <HelpKINode Title="about WikiaSite class" Url="html/5a08dbdf-003a-0446-a91e-cd249a450d28.htm" />
+    <HelpKINode Title="constructor" Url="html/1fc93320-3420-31dd-3b8c-a4a507a0d39a.htm" />
+    <HelpKINode Title="methods" Url="html/d22214f9-11e2-8aaf-d2c6-9596c034bffe.htm" />
+    <HelpKINode Title="properties" Url="html/5afda9a4-10d5-ee6c-7130-1ddade2433bd.htm" />
   </HelpKINode>
-  <HelpKINode Title="WikiaSite.InvokeNirvanaAsync method" Url="html/7731d4d6-ae8d-15d2-be98-006549b8590e.htm" />
-  <HelpKINode Title="WikiaSite.InvokeWikiaAjaxAsync method" Url="html/1020f207-c3a8-3802-6e29-f8a37a54a837.htm" />
-  <HelpKINode Title="WikiaSite.InvokeWikiaApiAsync method" Url="html/60bee7df-44c0-8c15-0d0a-b7d6b675a522.htm" />
-  <HelpKINode Title="WikiaSite.Options property" Url="html/c435d822-18e2-c4ef-cd4f-b8dd1e923548.htm" />
-  <HelpKINode Title="WikiaSite.WikiaSite constructor" Url="html/00e917bb-68eb-2580-4b8e-916aa431b8f2.htm" />
+  <HelpKINode Title="WikiaSite.InvokeNirvanaAsync method" Url="html/9950e993-9420-e8c3-bd1f-966f621f71ed.htm" />
+  <HelpKINode Title="WikiaSite.InvokeWikiaAjaxAsync method" Url="html/33e60d44-a3b4-aeb0-51c4-e6221117191d.htm" />
+  <HelpKINode Title="WikiaSite.InvokeWikiaApiAsync method" Url="html/aa9b44ae-ee22-293c-e952-57138b809b03.htm" />
+  <HelpKINode Title="WikiaSite.Options property" Url="html/e8b059f9-4af7-10eb-b12b-555db913fe5a.htm" />
+  <HelpKINode Title="WikiaSite.RefreshSiteInfoAsync method" Url="html/d8c44d4d-56e9-a0d8-4187-0e89cf9a706d.htm" />
+  <HelpKINode Title="WikiaSite.WikiaSite constructor" Url="html/1fc93320-3420-31dd-3b8c-a4a507a0d39a.htm" />
+  <HelpKINode Title="WikiaSite.WikiVariables property" Url="html/987143a5-4e9c-847a-0f0e-686fa8869197.htm" />
   <HelpKINode Title="WikiaSiteOptions class">
     <HelpKINode Title="WikiaSiteOptions Class" Url="html/48ffee84-997a-fcee-47ab-c37889049801.htm" />
     <HelpKINode Title="about WikiaSiteOptions class" Url="html/48ffee84-997a-fcee-47ab-c37889049801.htm" />
@@ -3952,7 +3992,6 @@
   <HelpKINode Title="WikiaSiteWikiaApiExtensions.FetchRelatedPagesAsync method" Url="html/7e2c3b4d-be32-6b15-a8f9-2e293ed42c29.htm" />
   <HelpKINode Title="WikiaSiteWikiaApiExtensions.FetchUserAsync method" Url="html/dea5912c-38af-b41c-cf2e-1ff4248870e6.htm" />
   <HelpKINode Title="WikiaSiteWikiaApiExtensions.FetchUsersAsync method" Url="html/f20d062d-774b-d0ab-3004-0788aa25fa4e.htm" />
-  <HelpKINode Title="WikiaSiteWikiaApiExtensions.FetchWikiVariablesAsync method" Url="html/d7b27752-7b04-f384-e4dc-54b5784f29a1.htm" />
   <HelpKINode Title="WikibaseDataType class">
     <HelpKINode Title="WikibaseDataType Class" Url="html/5313fa46-32d0-a32e-aa11-dcab1af517e7.htm" />
     <HelpKINode Title="about WikibaseDataType class" Url="html/5313fa46-32d0-a32e-aa11-dcab1af517e7.htm" />
@@ -3960,6 +3999,7 @@
     <HelpKINode Title="methods" Url="html/b49fce08-b7c4-0256-e531-07f6b7cc46ba.htm" />
     <HelpKINode Title="properties" Url="html/79216c36-2031-9a1c-1015-536d846038b9.htm" />
   </HelpKINode>
+  <HelpKINode Title="WikibaseDataType.MappedType property" Url="html/dab9a2e0-7c8c-63da-9f78-a90756633b8b.htm" />
   <HelpKINode Title="WikibaseDataType.Name property" Url="html/5bef5e81-a23c-6769-cf6e-40ec99f79d17.htm" />
   <HelpKINode Title="WikibaseDataType.Parse method" Url="html/59198412-456d-7bf5-b09d-37f950217259.htm" />
   <HelpKINode Title="WikibaseDataType.ToJson method" Url="html/a9188f25-a522-cc63-73d8-075b41c39043.htm" />
@@ -3969,6 +4009,18 @@
   <HelpKINode Title="WikibaseItem field" Url="html/c5d3ae16-c75e-11c8-e9b3-52f16a68c054.htm" />
   <HelpKINode Title="WikibaseItem property" Url="html/a278be3e-fe16-48ec-4800-87d93983e49d.htm" />
   <HelpKINode Title="WikibaseProperty property" Url="html/36332f73-0855-5587-f172-4351fab1b746.htm" />
+  <HelpKINode Title="WikibaseSiteInfo class">
+    <HelpKINode Title="WikibaseSiteInfo Class" Url="html/4d993e84-b0aa-4567-22be-89a8519060e4.htm" />
+    <HelpKINode Title="about WikibaseSiteInfo class" Url="html/4d993e84-b0aa-4567-22be-89a8519060e4.htm" />
+    <HelpKINode Title="methods" Url="html/4e6d4728-ebd3-69aa-98a4-de9463c0989d.htm" />
+    <HelpKINode Title="properties" Url="html/081f4065-f746-23cb-65b8-078f6e73af96.htm" />
+  </HelpKINode>
+  <HelpKINode Title="WikibaseSiteInfo.ConceptBaseUri property" Url="html/3d14d1ba-5915-60aa-fce8-7749c1898224.htm" />
+  <HelpKINode Title="WikibaseSiteInfo.FromSiteInfo method" Url="html/348515c7-7c09-7cdf-1324-e04372ef5de5.htm" />
+  <HelpKINode Title="WikibaseSiteInfo.GeoShapeStorageBaseUri property" Url="html/ffbf5c44-86de-e446-a2af-8ee1aa61bfe3.htm" />
+  <HelpKINode Title="WikibaseSiteInfo.MakeEntityUri method" Url="html/adeca339-cdc2-463e-6d40-67e914a66af0.htm" />
+  <HelpKINode Title="WikibaseSiteInfo.ParseEntityId method" Url="html/436b0e86-42da-5931-15a6-ebdc9f092a4a.htm" />
+  <HelpKINode Title="WikibaseSiteInfo.TabularDataStorageBaseUri property" Url="html/4d566e8d-78c7-a936-403d-47d5cad74de8.htm" />
   <HelpKINode Title="WikibaseTimePrecision enumeration" Url="html/47f1ea51-e5a3-894c-9615-e1af755804a5.htm" />
   <HelpKINode Title="WikiBooleanJsonConverter class">
     <HelpKINode Title="WikiBooleanJsonConverter Class" Url="html/c86b0ec0-9ea8-02dd-4320-09e53c8bda81.htm" />
@@ -3980,7 +4032,7 @@
   <HelpKINode Title="WikiBooleanJsonConverter.ReadJson method" Url="html/144d28b2-a22b-7352-1175-9b77924839b2.htm" />
   <HelpKINode Title="WikiBooleanJsonConverter.WikiBooleanJsonConverter constructor" Url="html/517fea84-79bd-e668-58b4-c5b7557afd0b.htm" />
   <HelpKINode Title="WikiBooleanJsonConverter.WriteJson method" Url="html/02fa2606-aea5-0150-bcc2-b8885d3f4cd9.htm" />
-  <HelpKINode Title="WikiCategories property" Url="html/cffce005-31dd-5835-725b-a12664a77df0.htm" />
+  <HelpKINode Title="WikiCategories property" Url="html/40d8af5c-a8ea-1c34-c75c-f3c91a122fb7.htm" />
   <HelpKINode Title="WikiClient class">
     <HelpKINode Title="WikiClient Class" Url="html/05eda04e-3c44-3958-59a6-7a274585288b.htm" />
     <HelpKINode Title="about WikiClient class" Url="html/05eda04e-3c44-3958-59a6-7a274585288b.htm" />
@@ -4059,6 +4111,7 @@
   <HelpKINode Title="WikiClientLibrary.Generators.AllCategoriesGenerator class" Url="html/30ca171b-3479-1527-f5fa-d524c688eed8.htm" />
   <HelpKINode Title="WikiClientLibrary.Generators.AllPagesGenerator class" Url="html/d2c6ffa1-e1e8-70eb-92e5-2e6aab0988c1.htm" />
   <HelpKINode Title="WikiClientLibrary.Generators.BacklinksGenerator class" Url="html/92c57249-27f9-d21a-cb2e-6adafaca1795.htm" />
+  <HelpKINode Title="WikiClientLibrary.Generators.CategoriesGenerator class" Url="html/cd8172b6-59b0-994c-49a7-9526835342ee.htm" />
   <HelpKINode Title="WikiClientLibrary.Generators.CategoryMembersGenerator class" Url="html/481346ec-7e33-568c-4a60-092793e48c3e.htm" />
   <HelpKINode Title="WikiClientLibrary.Generators.CategoryMemberTypes enumeration" Url="html/e45b6a17-c6ec-9a6f-1498-4989db952cbf.htm" />
   <HelpKINode Title="WikiClientLibrary.Generators.GeoSearchGenerator class" Url="html/700e3a02-a3bf-2c3e-12e7-dfe9486d333c.htm" />
@@ -4156,6 +4209,7 @@
   <HelpKINode Title="WikiClientLibrary.Pages.Queries.Properties.PagePropertiesPropertyProvider class" Url="html/4c115625-2641-4d39-7ac7-b5c0fcda197f.htm" />
   <HelpKINode Title="WikiClientLibrary.Pages.Queries.Properties.RevisionsPropertyGroup class" Url="html/e2ed4ca9-1165-cf6b-8d05-133f9c099400.htm" />
   <HelpKINode Title="WikiClientLibrary.Pages.Queries.Properties.RevisionsPropertyProvider class" Url="html/ccc1689f-45a3-43ec-94ce-c45ac9584725.htm" />
+  <HelpKINode Title="WikiClientLibrary.Pages.Queries.Properties.WikiPageCategoryInfo structure" Url="html/018c346c-9551-9f15-3865-b00d57972d3b.htm" />
   <HelpKINode Title="WikiClientLibrary.Pages.Queries.Properties.WikiPagePropertyGroup class" Url="html/729b5243-9659-9c00-e992-f8258e043d2d.htm" />
   <HelpKINode Title="WikiClientLibrary.Pages.Queries.Properties.WikiPagePropertyProvider(Of T) class" Url="html/64647974-2e8a-b9b5-cfa7-4820d1163ad3.htm" />
   <HelpKINode Title="WikiClientLibrary.Pages.Queries.Properties.WikiPagePropertyProvider&lt;T&gt; class" Url="html/64647974-2e8a-b9b5-cfa7-4820d1163ad3.htm" />
@@ -4203,18 +4257,20 @@
   <HelpKINode Title="WikiClientLibrary.Wikia.Discussions.PostCreationOptions enumeration" Url="html/6ae015ff-7593-5836-9c8b-40c8858fd7ec.htm" />
   <HelpKINode Title="WikiClientLibrary.Wikia.Discussions.PostQueryOptions enumeration" Url="html/a3ec94f8-90da-1ece-bf8d-1a314f5ca21b.htm" />
   <HelpKINode Title="WikiClientLibrary.Wikia.NotFoundApiException class" Url="html/c6be1a18-14ac-94ae-eba0-ec3c2f0e034e.htm" />
+  <HelpKINode Title="WikiClientLibrary.Wikia.Sites namespace" Url="html/33699954-9f3e-82bf-5337-f4639ffa1cc8.htm" />
+  <HelpKINode Title="WikiClientLibrary.Wikia.Sites.AppleTouchIconInfo class" Url="html/10d191cc-16e6-13ae-34f9-91f1bb4d4b6d.htm" />
+  <HelpKINode Title="WikiClientLibrary.Wikia.Sites.NavigationItem class" Url="html/e2c449b9-0d70-c890-304f-8c7a596d7444.htm" />
+  <HelpKINode Title="WikiClientLibrary.Wikia.Sites.SiteHtmlTitleInfo class" Url="html/2c7f8290-464f-b804-7115-0802e7e0253b.htm" />
+  <HelpKINode Title="WikiClientLibrary.Wikia.Sites.SiteLanguageInfo class" Url="html/230f8019-2c84-4e2b-f5e9-08c228e04219.htm" />
+  <HelpKINode Title="WikiClientLibrary.Wikia.Sites.SiteThemeInfo class" Url="html/76e98ae4-488b-0519-6238-7b7dca957d9e.htm" />
+  <HelpKINode Title="WikiClientLibrary.Wikia.Sites.SiteVariableData class" Url="html/5b65acdb-2a0e-6229-669c-8a7b88169cbe.htm" />
+  <HelpKINode Title="WikiClientLibrary.Wikia.Sites.TrackingInfo class" Url="html/cf99e9b3-f8ea-af45-9862-45558c8b6ee9.htm" />
+  <HelpKINode Title="WikiClientLibrary.Wikia.Sites.WikiaSite class" Url="html/5a08dbdf-003a-0446-a91e-cd249a450d28.htm" />
   <HelpKINode Title="WikiClientLibrary.Wikia.WikiaApi namespace" Url="html/bf538e5f-aeee-45d0-10a6-72579a4faf4d.htm" />
-  <HelpKINode Title="WikiClientLibrary.Wikia.WikiaApi.AppleTouchIconInfo class" Url="html/b105ad66-eca5-373a-0ea5-9b883e55602c.htm" />
   <HelpKINode Title="WikiClientLibrary.Wikia.WikiaApi.LocalWikiSearchList class" Url="html/645f951d-8632-121b-6814-004512dd4997.htm" />
   <HelpKINode Title="WikiClientLibrary.Wikia.WikiaApi.LocalWikiSearchResultItem class" Url="html/286d77aa-e773-21d5-4f69-4c0cba045b56.htm" />
-  <HelpKINode Title="WikiClientLibrary.Wikia.WikiaApi.NavigationItem class" Url="html/b7469ff2-c743-d560-cbe6-d62a22ecf6aa.htm" />
   <HelpKINode Title="WikiClientLibrary.Wikia.WikiaApi.RelatedPageItem class" Url="html/016f8e2c-b96b-cebe-284f-f47ed719da0b.htm" />
   <HelpKINode Title="WikiClientLibrary.Wikia.WikiaApi.SearchRankingType enumeration" Url="html/ed78d2f2-89fd-779a-111b-e89b9cca6e09.htm" />
-  <HelpKINode Title="WikiClientLibrary.Wikia.WikiaApi.SiteHtmlTitleInfo class" Url="html/d33c2257-af7d-ab57-f045-b0afad3d2e14.htm" />
-  <HelpKINode Title="WikiClientLibrary.Wikia.WikiaApi.SiteLanguageInfo class" Url="html/ec807466-9c25-5680-a6f2-66db35f845d3.htm" />
-  <HelpKINode Title="WikiClientLibrary.Wikia.WikiaApi.SiteThemeInfo class" Url="html/047b37cb-62da-a4e2-5cb3-f09a3d0d6ce7.htm" />
-  <HelpKINode Title="WikiClientLibrary.Wikia.WikiaApi.SiteVariableData class" Url="html/81d4886a-ce26-8260-8528-af5747afa653.htm" />
-  <HelpKINode Title="WikiClientLibrary.Wikia.WikiaApi.TrackingInfo class" Url="html/3a1be318-6d25-7e33-c89a-350fb97067cb.htm" />
   <HelpKINode Title="WikiClientLibrary.Wikia.WikiaApi.UserInfo class" Url="html/38972411-fab2-e8ec-f385-3ac50a3c5f4a.htm" />
   <HelpKINode Title="WikiClientLibrary.Wikia.WikiaApi.WikiaSiteWikiaApiExtensions class" Url="html/dbfee113-73d2-988d-cc45-cbaa38f8ce4d.htm" />
   <HelpKINode Title="WikiClientLibrary.Wikia.WikiaApiException class" Url="html/2e5b993d-daf6-0ebb-5749-e20b7f172119.htm" />
@@ -4222,7 +4278,6 @@
   <HelpKINode Title="WikiClientLibrary.Wikia.WikiaJsonResonseParser class" Url="html/bec7a752-857f-4649-77a7-8898b790f564.htm" />
   <HelpKINode Title="WikiClientLibrary.Wikia.WikiaNamespaces class" Url="html/29a0ffcd-521f-1588-7fc1-9eb356581a3f.htm" />
   <HelpKINode Title="WikiClientLibrary.Wikia.WikiaQueryRequestMessage class" Url="html/f2cdf38c-5738-2fe4-c5da-da92fce3ce2c.htm" />
-  <HelpKINode Title="WikiClientLibrary.Wikia.WikiaSite class" Url="html/03ebd558-d7dc-5503-6e9c-d00738c85c0a.htm" />
   <HelpKINode Title="WikiClientLibrary.Wikia.WikiaSiteOptions class" Url="html/48ffee84-997a-fcee-47ab-c37889049801.htm" />
   <HelpKINode Title="WikiClientLibrary.Wikibase namespace" Url="html/3f584f14-5cfc-f95f-3502-e2d209701d93.htm" />
   <HelpKINode Title="WikiClientLibrary.Wikibase.Claim class" Url="html/923cb655-af69-6214-180b-17397e150fb2.htm" />
@@ -4254,6 +4309,7 @@
   <HelpKINode Title="WikiClientLibrary.Wikibase.Infrastructures.UnorderedKeyedMultiCollection&lt;TKey, TItem&gt; class" Url="html/fe7b0671-05b3-864c-baf9-1a5fa43c40b2.htm" />
   <HelpKINode Title="WikiClientLibrary.Wikibase.Snak class" Url="html/dd0a165f-e323-38c0-b56a-b8ef24263eb7.htm" />
   <HelpKINode Title="WikiClientLibrary.Wikibase.SnakType enumeration" Url="html/c9924641-ec7b-d915-22f8-93eb1eed5836.htm" />
+  <HelpKINode Title="WikiClientLibrary.Wikibase.WikibaseSiteInfo class" Url="html/4d993e84-b0aa-4567-22be-89a8519060e4.htm" />
   <HelpKINode Title="WikiClientLibrary.WikiClientException class" Url="html/38dc4a17-90e7-cdd2-faad-9c830d887ab9.htm" />
   <HelpKINode Title="WikiClientLibrary.WikiLink class" Url="html/780bab28-5fe4-953f-92e7-29fa7f764471.htm" />
   <HelpKINode Title="WikiClientUserAgent field" Url="html/7ca21f3d-b9eb-2d29-9b55-cd2bb01cb689.htm" />
@@ -4398,13 +4454,28 @@
   <HelpKINode Title="WikiPage.ToString method" Url="html/7deb120d-15ab-6f7b-4efb-9a9b3448fb86.htm" />
   <HelpKINode Title="WikiPage.UpdateContentAsync method" Url="html/21da628f-67fe-88ca-3f3b-3775d3baaf48.htm" />
   <HelpKINode Title="WikiPage.WikiPage constructor" Url="html/756593ef-8233-f5b5-1121-03086023437e.htm" />
+  <HelpKINode Title="WikiPageCategoryInfo structure">
+    <HelpKINode Title="WikiPageCategoryInfo Structure" Url="html/018c346c-9551-9f15-3865-b00d57972d3b.htm" />
+    <HelpKINode Title="about WikiPageCategoryInfo structure" Url="html/018c346c-9551-9f15-3865-b00d57972d3b.htm" />
+    <HelpKINode Title="constructor" Url="html/77214842-c4af-d057-88c6-1dbb9f91be06.htm" />
+    <HelpKINode Title="methods" Url="html/1ea9118d-c27c-dc69-1d25-620f66bbd745.htm" />
+    <HelpKINode Title="properties" Url="html/988376da-39de-7d0e-a1f9-43e5a3add445.htm" />
+  </HelpKINode>
+  <HelpKINode Title="WikiPageCategoryInfo.FullSortKey property" Url="html/d65e48c2-1f93-890a-0abb-b139b2c79d37.htm" />
+  <HelpKINode Title="WikiPageCategoryInfo.IsHidden property" Url="html/974fb0b7-4457-bb55-9901-57181d047aac.htm" />
+  <HelpKINode Title="WikiPageCategoryInfo.Page property" Url="html/c3009bf6-13fe-65bc-db9b-8c451616de5a.htm" />
+  <HelpKINode Title="WikiPageCategoryInfo.SortKey property" Url="html/7ed2ad7a-b038-fb7d-ebf8-dfb4c698be8c.htm" />
+  <HelpKINode Title="WikiPageCategoryInfo.TimeStamp property" Url="html/a313b906-cc1f-f575-59a6-4caeb5557c96.htm" />
+  <HelpKINode Title="WikiPageCategoryInfo.Title property" Url="html/b16bed0e-30a2-289b-147d-79f1f6ec9125.htm" />
+  <HelpKINode Title="WikiPageCategoryInfo.ToString method" Url="html/3c9c0461-ba8e-2e0e-50fe-0322ea4469d0.htm" />
+  <HelpKINode Title="WikiPageCategoryInfo.WikiPageCategoryInfo constructor" Url="html/77214842-c4af-d057-88c6-1dbb9f91be06.htm" />
   <HelpKINode Title="WikiPageExtensions class">
     <HelpKINode Title="WikiPageExtensions Class" Url="html/e4d0192d-fd85-d667-b29f-d2ae1204ffbd.htm" />
     <HelpKINode Title="WikiPageExtensions Class" Url="html/519a0734-3def-bc86-99ff-ec3a082d2229.htm" />
-    <HelpKINode Title="about WikiPageExtensions class" Url="html/519a0734-3def-bc86-99ff-ec3a082d2229.htm" />
     <HelpKINode Title="about WikiPageExtensions class" Url="html/e4d0192d-fd85-d667-b29f-d2ae1204ffbd.htm" />
-    <HelpKINode Title="methods" Url="html/fe2a93db-c70e-56eb-d9aa-d51e68635aa9.htm" />
+    <HelpKINode Title="about WikiPageExtensions class" Url="html/519a0734-3def-bc86-99ff-ec3a082d2229.htm" />
     <HelpKINode Title="methods" Url="html/f0044a54-613e-d4d5-9ec0-339c9551b755.htm" />
+    <HelpKINode Title="methods" Url="html/fe2a93db-c70e-56eb-d9aa-d51e68635aa9.htm" />
   </HelpKINode>
   <HelpKINode Title="WikiPageExtensions.CreateLinksGenerator method" Url="html/a1906efc-7da5-b823-b03b-d585e57145c3.htm" />
   <HelpKINode Title="WikiPageExtensions.CreateRevisionsGenerator method" Url="html/26fe9e6c-4258-aff9-ea74-0511dd23c23c.htm" />
@@ -4707,8 +4778,8 @@
   <HelpKINode Title="WikiSiteExtensions class">
     <HelpKINode Title="WikiSiteExtensions Class" Url="html/c05e1ab3-b4c6-862f-fd48-bef38aff957d.htm" />
     <HelpKINode Title="WikiSiteExtensions Class" Url="html/775bde37-6d4a-3803-c4d0-051dbeefb148.htm" />
-    <HelpKINode Title="about WikiSiteExtensions class" Url="html/775bde37-6d4a-3803-c4d0-051dbeefb148.htm" />
     <HelpKINode Title="about WikiSiteExtensions class" Url="html/c05e1ab3-b4c6-862f-fd48-bef38aff957d.htm" />
+    <HelpKINode Title="about WikiSiteExtensions class" Url="html/775bde37-6d4a-3803-c4d0-051dbeefb148.htm" />
     <HelpKINode Title="methods" Url="html/f97f3a57-0844-70f1-5d8e-82f264cab1b9.htm" />
     <HelpKINode Title="methods" Url="html/722f86fb-14a2-68d3-fbba-250160ac6131.htm" />
   </HelpKINode>
@@ -4749,10 +4820,11 @@
   </HelpKINode>
   <HelpKINode Title="WikiUploadSource.GetUploadParameters method" Url="html/ddc4adf3-7c41-2d8d-044d-2382a53e9efd.htm" />
   <HelpKINode Title="WikiUploadSource.WikiUploadSource constructor" Url="html/63833bd0-4bdb-e1ee-a9df-5fcec8d9d52b.htm" />
+  <HelpKINode Title="WikiVariables property" Url="html/987143a5-4e9c-847a-0f0e-686fa8869197.htm" />
   <HelpKINode Title="WithoutProperty enumeration member" Url="html/cdc3aaca-a8a4-9889-e2d6-58094c943b29.htm" />
   <HelpKINode Title="WithProperty enumeration member" Url="html/cdc3aaca-a8a4-9889-e2d6-58094c943b29.htm" />
   <HelpKINode Title="WordCount property" Url="html/94801f65-efb0-d399-254f-9d7689301a69.htm" />
-  <HelpKINode Title="WordmarkFont property" Url="html/1a95924f-7cce-319a-e94a-4cf4f5a8d3c8.htm" />
+  <HelpKINode Title="WordmarkFont property" Url="html/3cc6c7f2-b570-af58-e61b-8ccbf59c6811.htm" />
   <HelpKINode Title="WorkflowId property">
     <HelpKINode Title="Post.WorkflowId Property " Url="html/68d454f3-0f39-3add-21d3-916c676e67ce.htm" />
     <HelpKINode Title="Revision.WorkflowId Property " Url="html/ff51b98b-66ef-116b-42ad-aea9c6e88cf1.htm" />

@@ -911,6 +911,16 @@
       <exception cref="T:System.ArgumentNullException">
         <paramref name="propertyId" /> is <c>null</c>.</exception>
     </member>
+    <member name="M:WikiClientLibrary.Wikibase.Snak.#ctor(System.String,Newtonsoft.Json.Linq.JToken,WikiClientLibrary.Wikibase.DataTypes.WikibaseDataType)">
+      <summary>
+            Initializes a snak with specified property ID and data value.
+            </summary>
+      <param name="propertyId">The property id.</param>
+      <param name="rawDataValue">The raw JSON data value of the property.</param>
+      <param name="dataType">The data value type.</param>
+      <exception cref="T:System.ArgumentNullException">
+        <paramref name="propertyId" /> or <paramref name="dataType" /> is <c>null</c>.</exception>
+    </member>
     <member name="M:WikiClientLibrary.Wikibase.Snak.#ctor(System.String,System.Object,WikiClientLibrary.Wikibase.DataTypes.WikibaseDataType)">
       <summary>
             Initializes a snak with specified property ID and data value.
@@ -978,6 +988,98 @@
     </member>
     <member name="F:WikiClientLibrary.Wikibase.SnakType.NoValue">
       <summary>No value.</summary>
+    </member>
+    <member name="T:WikiClientLibrary.Wikibase.WikibaseSiteInfo">
+      <summary>
+            Contains read-only data about a Wikibase-enabled site.
+            </summary>
+    </member>
+    <member name="P:WikiClientLibrary.Wikibase.WikibaseSiteInfo.ConceptBaseUri">
+      <summary>
+        <markup>
+          <include item="SMCMissingTag">
+            <parameter>summary</parameter>
+            <parameter>P:WikiClientLibrary.Wikibase.WikibaseSiteInfo.ConceptBaseUri</parameter>
+          </include>
+        </markup>
+      </summary>
+    </member>
+    <member name="M:WikiClientLibrary.Wikibase.WikibaseSiteInfo.FromSiteInfo(WikiClientLibrary.Sites.SiteInfo)">
+      <summary>
+        <markup>
+          <include item="SMCMissingTag">
+            <parameter>summary</parameter>
+            <parameter>M:WikiClientLibrary.Wikibase.WikibaseSiteInfo.FromSiteInfo(WikiClientLibrary.Sites.SiteInfo)</parameter>
+          </include>
+        </markup>
+      </summary>
+      <param name="siteInfo">
+        <markup>
+          <include item="SMCMissingParamTag">
+            <parameter>param</parameter>
+            <parameter>siteInfo</parameter>
+            <parameter>M:WikiClientLibrary.Wikibase.WikibaseSiteInfo.FromSiteInfo(WikiClientLibrary.Sites.SiteInfo)</parameter>
+          </include>
+        </markup>
+      </param>
+    </member>
+    <member name="P:WikiClientLibrary.Wikibase.WikibaseSiteInfo.GeoShapeStorageBaseUri">
+      <summary>
+        <markup>
+          <include item="SMCMissingTag">
+            <parameter>summary</parameter>
+            <parameter>P:WikiClientLibrary.Wikibase.WikibaseSiteInfo.GeoShapeStorageBaseUri</parameter>
+          </include>
+        </markup>
+      </summary>
+    </member>
+    <member name="M:WikiClientLibrary.Wikibase.WikibaseSiteInfo.MakeEntityUri(System.String)">
+      <summary>
+        <markup>
+          <include item="SMCMissingTag">
+            <parameter>summary</parameter>
+            <parameter>M:WikiClientLibrary.Wikibase.WikibaseSiteInfo.MakeEntityUri(System.String)</parameter>
+          </include>
+        </markup>
+      </summary>
+      <param name="entityId">
+        <markup>
+          <include item="SMCMissingParamTag">
+            <parameter>param</parameter>
+            <parameter>entityId</parameter>
+            <parameter>M:WikiClientLibrary.Wikibase.WikibaseSiteInfo.MakeEntityUri(System.String)</parameter>
+          </include>
+        </markup>
+      </param>
+    </member>
+    <member name="M:WikiClientLibrary.Wikibase.WikibaseSiteInfo.ParseEntityId(System.String)">
+      <summary>
+        <markup>
+          <include item="SMCMissingTag">
+            <parameter>summary</parameter>
+            <parameter>M:WikiClientLibrary.Wikibase.WikibaseSiteInfo.ParseEntityId(System.String)</parameter>
+          </include>
+        </markup>
+      </summary>
+      <param name="entityUri">
+        <markup>
+          <include item="SMCMissingParamTag">
+            <parameter>param</parameter>
+            <parameter>entityUri</parameter>
+            <parameter>M:WikiClientLibrary.Wikibase.WikibaseSiteInfo.ParseEntityId(System.String)</parameter>
+          </include>
+        </markup>
+      </param>
+    </member>
+    <member name="P:WikiClientLibrary.Wikibase.WikibaseSiteInfo.TabularDataStorageBaseUri">
+      <summary>
+        <markup>
+          <include item="SMCMissingTag">
+            <parameter>summary</parameter>
+            <parameter>P:WikiClientLibrary.Wikibase.WikibaseSiteInfo.TabularDataStorageBaseUri</parameter>
+          </include>
+        </markup>
+      </summary>
     </member>
     <member name="T:WikiClientLibrary.Wikibase.DataTypes.BuiltInDataTypes">
       <summary>
@@ -2494,6 +2596,11 @@
           </include>
         </markup>
       </summary>
+    </member>
+    <member name="P:WikiClientLibrary.Wikibase.DataTypes.WikibaseDataType.MappedType">
+      <summary>
+            The mapped CLR type for the data type.
+            </summary>
     </member>
     <member name="P:WikiClientLibrary.Wikibase.DataTypes.WikibaseDataType.Name">
       <summary>

@@ -491,350 +491,9 @@
             Gets a value that indicates whether the message should be sent via HTTP POST instead of HTTP GET.
             </summary>
     </member>
-    <member name="T:WikiClientLibrary.Wikia.WikiaSite">
-      <summary>
-            The encapsulated Wikia site endpoint.
-            </summary>
-    </member>
-    <member name="M:WikiClientLibrary.Wikia.WikiaSite.#ctor(WikiClientLibrary.Client.IWikiClient,System.String)">
-      <summary>
-            Initializes a new <see cref="T:WikiClientLibrary.Wikia.WikiaSite" /> instance from the Wikia site root URL.
-            </summary>
-      <param name="siteRootUrl">Wikia site root URL, with the ending slash. e.g. <c>http://community.wikia.com/</c>.</param>
-      <param name="wikiClient">WikiClient instance.</param>
-      <param name="options">Site options.</param>
-      <param name="userName">The user name used to login before fetching for site information. Pass <c>null</c> to fetch site information without login first.</param>
-      <param name="password">The password used to login before fetching for site information.</param>
-      <exception cref="T:System.ArgumentNullException">
-        <paramref name="wikiClient" /> or <paramref name="options" /> is <c>null</c>.</exception>
-      <exception cref="T:System.ArgumentException">One or more settings in <paramref name="options" /> is invalid.</exception>
-      <exception cref="T:WikiClientLibrary.UnauthorizedOperationException">Cannot access query API module due to target site permission settings. You may take a look at <see cref="!:SiteOptions.ExplicitInfoRefresh" />.</exception>
-    </member>
-    <member name="M:WikiClientLibrary.Wikia.WikiaSite.#ctor(WikiClientLibrary.Client.IWikiClient,WikiClientLibrary.Wikia.WikiaSiteOptions)">
-      <summary>
-        <markup>
-          <include item="SMCAutoDocConstructor">
-            <parameter>WikiClientLibrary.Wikia.WikiaSite</parameter>
-          </include>
-        </markup>
-      </summary>
-      <param name="wikiClient">
-        <markup>
-          <include item="SMCMissingParamTag">
-            <parameter>param</parameter>
-            <parameter>wikiClient</parameter>
-            <parameter>M:WikiClientLibrary.Wikia.WikiaSite.#ctor(WikiClientLibrary.Client.IWikiClient,WikiClientLibrary.Wikia.WikiaSiteOptions)</parameter>
-          </include>
-        </markup>
-      </param>
-      <param name="options">
-        <markup>
-          <include item="SMCMissingParamTag">
-            <parameter>param</parameter>
-            <parameter>options</parameter>
-            <parameter>M:WikiClientLibrary.Wikia.WikiaSite.#ctor(WikiClientLibrary.Client.IWikiClient,WikiClientLibrary.Wikia.WikiaSiteOptions)</parameter>
-          </include>
-        </markup>
-      </param>
-    </member>
-    <member name="M:WikiClientLibrary.Wikia.WikiaSite.#ctor(WikiClientLibrary.Client.IWikiClient,WikiClientLibrary.Wikia.WikiaSiteOptions,System.String,System.String)">
-      <summary>
-        <markup>
-          <include item="SMCAutoDocConstructor">
-            <parameter>WikiClientLibrary.Wikia.WikiaSite</parameter>
-          </include>
-        </markup>
-      </summary>
-      <param name="wikiClient">
-        <markup>
-          <include item="SMCMissingParamTag">
-            <parameter>param</parameter>
-            <parameter>wikiClient</parameter>
-            <parameter>M:WikiClientLibrary.Wikia.WikiaSite.#ctor(WikiClientLibrary.Client.IWikiClient,WikiClientLibrary.Wikia.WikiaSiteOptions,System.String,System.String)</parameter>
-          </include>
-        </markup>
-      </param>
-      <param name="options">
-        <markup>
-          <include item="SMCMissingParamTag">
-            <parameter>param</parameter>
-            <parameter>options</parameter>
-            <parameter>M:WikiClientLibrary.Wikia.WikiaSite.#ctor(WikiClientLibrary.Client.IWikiClient,WikiClientLibrary.Wikia.WikiaSiteOptions,System.String,System.String)</parameter>
-          </include>
-        </markup>
-      </param>
-      <param name="userName">
-        <markup>
-          <include item="SMCMissingParamTag">
-            <parameter>param</parameter>
-            <parameter>userName</parameter>
-            <parameter>M:WikiClientLibrary.Wikia.WikiaSite.#ctor(WikiClientLibrary.Client.IWikiClient,WikiClientLibrary.Wikia.WikiaSiteOptions,System.String,System.String)</parameter>
-          </include>
-        </markup>
-      </param>
-      <param name="password">
-        <markup>
-          <include item="SMCMissingParamTag">
-            <parameter>param</parameter>
-            <parameter>password</parameter>
-            <parameter>M:WikiClientLibrary.Wikia.WikiaSite.#ctor(WikiClientLibrary.Client.IWikiClient,WikiClientLibrary.Wikia.WikiaSiteOptions,System.String,System.String)</parameter>
-          </include>
-        </markup>
-      </param>
-    </member>
-    <member name="M:WikiClientLibrary.Wikia.WikiaSite.InvokeNirvanaAsync(System.Void,Newtonsoft.Json.Linq.JToken)">
-      <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>M:WikiClientLibrary.Wikia.WikiaSite.InvokeNirvanaAsync(System.Void,Newtonsoft.Json.Linq.JToken)</parameter>
-          </include>
-        </markup>
-      </summary>
-      <param name="request">
-        <markup>
-          <include item="SMCMissingParamTag">
-            <parameter>param</parameter>
-            <parameter>request</parameter>
-            <parameter>M:WikiClientLibrary.Wikia.WikiaSite.InvokeNirvanaAsync(System.Void,Newtonsoft.Json.Linq.JToken)</parameter>
-          </include>
-        </markup>
-      </param>
-      <param name="cancellationToken">
-        <markup>
-          <include item="SMCMissingParamTag">
-            <parameter>param</parameter>
-            <parameter>cancellationToken</parameter>
-            <parameter>M:WikiClientLibrary.Wikia.WikiaSite.InvokeNirvanaAsync(System.Void,Newtonsoft.Json.Linq.JToken)</parameter>
-          </include>
-        </markup>
-      </param>
-    </member>
-    <member name="M:WikiClientLibrary.Wikia.WikiaSite.InvokeNirvanaAsync``1(System.Void,``0,WikiClientLibrary.Client.WikiRequestMessage)">
-      <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>M:WikiClientLibrary.Wikia.WikiaSite.InvokeNirvanaAsync``1(System.Void,``0,WikiClientLibrary.Client.WikiRequestMessage)</parameter>
-          </include>
-        </markup>
-      </summary>
-      <param name="request">
-        <markup>
-          <include item="SMCMissingParamTag">
-            <parameter>param</parameter>
-            <parameter>request</parameter>
-            <parameter>M:WikiClientLibrary.Wikia.WikiaSite.InvokeNirvanaAsync``1(System.Void,``0,WikiClientLibrary.Client.WikiRequestMessage)</parameter>
-          </include>
-        </markup>
-      </param>
-      <param name="responseParser">
-        <markup>
-          <include item="SMCMissingParamTag">
-            <parameter>param</parameter>
-            <parameter>responseParser</parameter>
-            <parameter>M:WikiClientLibrary.Wikia.WikiaSite.InvokeNirvanaAsync``1(System.Void,``0,WikiClientLibrary.Client.WikiRequestMessage)</parameter>
-          </include>
-        </markup>
-      </param>
-      <param name="cancellationToken">
-        <markup>
-          <include item="SMCMissingParamTag">
-            <parameter>param</parameter>
-            <parameter>cancellationToken</parameter>
-            <parameter>M:WikiClientLibrary.Wikia.WikiaSite.InvokeNirvanaAsync``1(System.Void,``0,WikiClientLibrary.Client.WikiRequestMessage)</parameter>
-          </include>
-        </markup>
-      </param>
-      <typeparam name="T">
-        <markup>
-          <include item="SMCMissingParamTag">
-            <parameter>typeparam</parameter>
-            <parameter>T</parameter>
-            <parameter>M:WikiClientLibrary.Wikia.WikiaSite.InvokeNirvanaAsync``1(System.Void,``0,WikiClientLibrary.Client.WikiRequestMessage)</parameter>
-          </include>
-        </markup>
-      </typeparam>
-    </member>
-    <member name="M:WikiClientLibrary.Wikia.WikiaSite.InvokeWikiaAjaxAsync(System.Void,Newtonsoft.Json.Linq.JToken)">
-      <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>M:WikiClientLibrary.Wikia.WikiaSite.InvokeWikiaAjaxAsync(System.Void,Newtonsoft.Json.Linq.JToken)</parameter>
-          </include>
-        </markup>
-      </summary>
-      <param name="request">
-        <markup>
-          <include item="SMCMissingParamTag">
-            <parameter>param</parameter>
-            <parameter>request</parameter>
-            <parameter>M:WikiClientLibrary.Wikia.WikiaSite.InvokeWikiaAjaxAsync(System.Void,Newtonsoft.Json.Linq.JToken)</parameter>
-          </include>
-        </markup>
-      </param>
-      <param name="cancellationToken">
-        <markup>
-          <include item="SMCMissingParamTag">
-            <parameter>param</parameter>
-            <parameter>cancellationToken</parameter>
-            <parameter>M:WikiClientLibrary.Wikia.WikiaSite.InvokeWikiaAjaxAsync(System.Void,Newtonsoft.Json.Linq.JToken)</parameter>
-          </include>
-        </markup>
-      </param>
-    </member>
-    <member name="M:WikiClientLibrary.Wikia.WikiaSite.InvokeWikiaAjaxAsync``1(System.Void,``0,WikiClientLibrary.Client.WikiRequestMessage)">
-      <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>M:WikiClientLibrary.Wikia.WikiaSite.InvokeWikiaAjaxAsync``1(System.Void,``0,WikiClientLibrary.Client.WikiRequestMessage)</parameter>
-          </include>
-        </markup>
-      </summary>
-      <param name="request">
-        <markup>
-          <include item="SMCMissingParamTag">
-            <parameter>param</parameter>
-            <parameter>request</parameter>
-            <parameter>M:WikiClientLibrary.Wikia.WikiaSite.InvokeWikiaAjaxAsync``1(System.Void,``0,WikiClientLibrary.Client.WikiRequestMessage)</parameter>
-          </include>
-        </markup>
-      </param>
-      <param name="responseParser">
-        <markup>
-          <include item="SMCMissingParamTag">
-            <parameter>param</parameter>
-            <parameter>responseParser</parameter>
-            <parameter>M:WikiClientLibrary.Wikia.WikiaSite.InvokeWikiaAjaxAsync``1(System.Void,``0,WikiClientLibrary.Client.WikiRequestMessage)</parameter>
-          </include>
-        </markup>
-      </param>
-      <param name="cancellationToken">
-        <markup>
-          <include item="SMCMissingParamTag">
-            <parameter>param</parameter>
-            <parameter>cancellationToken</parameter>
-            <parameter>M:WikiClientLibrary.Wikia.WikiaSite.InvokeWikiaAjaxAsync``1(System.Void,``0,WikiClientLibrary.Client.WikiRequestMessage)</parameter>
-          </include>
-        </markup>
-      </param>
-      <typeparam name="T">
-        <markup>
-          <include item="SMCMissingParamTag">
-            <parameter>typeparam</parameter>
-            <parameter>T</parameter>
-            <parameter>M:WikiClientLibrary.Wikia.WikiaSite.InvokeWikiaAjaxAsync``1(System.Void,``0,WikiClientLibrary.Client.WikiRequestMessage)</parameter>
-          </include>
-        </markup>
-      </typeparam>
-    </member>
-    <member name="M:WikiClientLibrary.Wikia.WikiaSite.InvokeWikiaApiAsync(System.Void,Newtonsoft.Json.Linq.JToken,System.String)">
-      <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>M:WikiClientLibrary.Wikia.WikiaSite.InvokeWikiaApiAsync(System.Void,Newtonsoft.Json.Linq.JToken,System.String)</parameter>
-          </include>
-        </markup>
-      </summary>
-      <param name="relativeUri">
-        <markup>
-          <include item="SMCMissingParamTag">
-            <parameter>param</parameter>
-            <parameter>relativeUri</parameter>
-            <parameter>M:WikiClientLibrary.Wikia.WikiaSite.InvokeWikiaApiAsync(System.Void,Newtonsoft.Json.Linq.JToken,System.String)</parameter>
-          </include>
-        </markup>
-      </param>
-      <param name="request">
-        <markup>
-          <include item="SMCMissingParamTag">
-            <parameter>param</parameter>
-            <parameter>request</parameter>
-            <parameter>M:WikiClientLibrary.Wikia.WikiaSite.InvokeWikiaApiAsync(System.Void,Newtonsoft.Json.Linq.JToken,System.String)</parameter>
-          </include>
-        </markup>
-      </param>
-      <param name="cancellationToken">
-        <markup>
-          <include item="SMCMissingParamTag">
-            <parameter>param</parameter>
-            <parameter>cancellationToken</parameter>
-            <parameter>M:WikiClientLibrary.Wikia.WikiaSite.InvokeWikiaApiAsync(System.Void,Newtonsoft.Json.Linq.JToken,System.String)</parameter>
-          </include>
-        </markup>
-      </param>
-    </member>
-    <member name="M:WikiClientLibrary.Wikia.WikiaSite.InvokeWikiaApiAsync``1(System.Void,``0,System.String,WikiClientLibrary.Client.WikiRequestMessage)">
-      <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>M:WikiClientLibrary.Wikia.WikiaSite.InvokeWikiaApiAsync``1(System.Void,``0,System.String,WikiClientLibrary.Client.WikiRequestMessage)</parameter>
-          </include>
-        </markup>
-      </summary>
-      <param name="relativeUri">
-        <markup>
-          <include item="SMCMissingParamTag">
-            <parameter>param</parameter>
-            <parameter>relativeUri</parameter>
-            <parameter>M:WikiClientLibrary.Wikia.WikiaSite.InvokeWikiaApiAsync``1(System.Void,``0,System.String,WikiClientLibrary.Client.WikiRequestMessage)</parameter>
-          </include>
-        </markup>
-      </param>
-      <param name="request">
-        <markup>
-          <include item="SMCMissingParamTag">
-            <parameter>param</parameter>
-            <parameter>request</parameter>
-            <parameter>M:WikiClientLibrary.Wikia.WikiaSite.InvokeWikiaApiAsync``1(System.Void,``0,System.String,WikiClientLibrary.Client.WikiRequestMessage)</parameter>
-          </include>
-        </markup>
-      </param>
-      <param name="responseParser">
-        <markup>
-          <include item="SMCMissingParamTag">
-            <parameter>param</parameter>
-            <parameter>responseParser</parameter>
-            <parameter>M:WikiClientLibrary.Wikia.WikiaSite.InvokeWikiaApiAsync``1(System.Void,``0,System.String,WikiClientLibrary.Client.WikiRequestMessage)</parameter>
-          </include>
-        </markup>
-      </param>
-      <param name="cancellationToken">
-        <markup>
-          <include item="SMCMissingParamTag">
-            <parameter>param</parameter>
-            <parameter>cancellationToken</parameter>
-            <parameter>M:WikiClientLibrary.Wikia.WikiaSite.InvokeWikiaApiAsync``1(System.Void,``0,System.String,WikiClientLibrary.Client.WikiRequestMessage)</parameter>
-          </include>
-        </markup>
-      </param>
-      <typeparam name="T">
-        <markup>
-          <include item="SMCMissingParamTag">
-            <parameter>typeparam</parameter>
-            <parameter>T</parameter>
-            <parameter>M:WikiClientLibrary.Wikia.WikiaSite.InvokeWikiaApiAsync``1(System.Void,``0,System.String,WikiClientLibrary.Client.WikiRequestMessage)</parameter>
-          </include>
-        </markup>
-      </typeparam>
-    </member>
-    <member name="P:WikiClientLibrary.Wikia.WikiaSite.Options">
-      <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>P:WikiClientLibrary.Wikia.WikiaSite.Options</parameter>
-          </include>
-        </markup>
-      </summary>
-    </member>
     <member name="T:WikiClientLibrary.Wikia.WikiaSiteOptions">
       <summary>
-            Contains configuration for <see cref="T:WikiClientLibrary.Wikia.WikiaSite" />.
+            Contains configuration for <see cref="T:WikiClientLibrary.Wikia.Sites.WikiaSite" />.
             </summary>
     </member>
     <member name="M:WikiClientLibrary.Wikia.WikiaSiteOptions.#ctor">
@@ -881,7 +540,7 @@
       <exception cref="T:System.ArgumentNullException">
         <paramref name="page" /> is <c>null</c>.</exception>
     </member>
-    <member name="M:WikiClientLibrary.Wikia.Discussions.Board.#ctor(WikiClientLibrary.Wikia.WikiaSite,System.Int32)">
+    <member name="M:WikiClientLibrary.Wikia.Discussions.Board.#ctor(WikiClientLibrary.Wikia.Sites.WikiaSite,System.Int32)">
       <summary>
             Initializes a new instance of <see cref="T:WikiClientLibrary.Wikia.Discussions.Board" /> from site and page ID.
             </summary>
@@ -890,7 +549,7 @@
       <exception cref="T:System.ArgumentNullException">
         <paramref name="site" /> is <c>null</c>.</exception>
     </member>
-    <member name="M:WikiClientLibrary.Wikia.Discussions.Board.#ctor(WikiClientLibrary.Wikia.WikiaSite,System.String)">
+    <member name="M:WikiClientLibrary.Wikia.Discussions.Board.#ctor(WikiClientLibrary.Wikia.Sites.WikiaSite,System.String)">
       <summary>
             Initializes a new instance of <see cref="T:WikiClientLibrary.Wikia.Discussions.Board" /> from site and page title.
             </summary>
@@ -900,7 +559,7 @@
       <exception cref="T:System.ArgumentNullException">
         <paramref name="site" /> or <paramref name="title" /> is <c>null</c>.</exception>
     </member>
-    <member name="M:WikiClientLibrary.Wikia.Discussions.Board.#ctor(WikiClientLibrary.Wikia.WikiaSite,System.String,System.Int32)">
+    <member name="M:WikiClientLibrary.Wikia.Discussions.Board.#ctor(WikiClientLibrary.Wikia.Sites.WikiaSite,System.String,System.Int32)">
       <summary>
             Initializes a new instance of <see cref="T:WikiClientLibrary.Wikia.Discussions.Board" /> from site and page title.
             </summary>
@@ -1232,7 +891,7 @@
             or a thread in a board on the Wikia forum (<c>Special:Forum</c>).
             </summary>
     </member>
-    <member name="M:WikiClientLibrary.Wikia.Discussions.Post.#ctor(WikiClientLibrary.Wikia.WikiaSite,WikiClientLibrary.Pages.WikiPageStub,System.Int32)">
+    <member name="M:WikiClientLibrary.Wikia.Discussions.Post.#ctor(WikiClientLibrary.Wikia.Sites.WikiaSite,WikiClientLibrary.Pages.WikiPageStub,System.Int32)">
       <summary>
             Initializes a new instance of <see cref="T:WikiClientLibrary.Wikia.Discussions.Post" />.
             </summary>
@@ -1418,56 +1077,1079 @@
             comments at one time.
             </summary>
     </member>
-    <member name="T:WikiClientLibrary.Wikia.WikiaApi.AppleTouchIconInfo">
+    <member name="T:WikiClientLibrary.Wikia.Sites.AppleTouchIconInfo">
       <summary>
             Represents a node in the WikiVariable API response.
             </summary>
     </member>
-    <member name="M:WikiClientLibrary.Wikia.WikiaApi.AppleTouchIconInfo.#ctor">
+    <member name="M:WikiClientLibrary.Wikia.Sites.AppleTouchIconInfo.#ctor">
       <summary>
         <markup>
           <include item="SMCAutoDocConstructor">
-            <parameter>WikiClientLibrary.Wikia.WikiaApi.AppleTouchIconInfo</parameter>
+            <parameter>WikiClientLibrary.Wikia.Sites.AppleTouchIconInfo</parameter>
           </include>
         </markup>
       </summary>
     </member>
-    <member name="P:WikiClientLibrary.Wikia.WikiaApi.AppleTouchIconInfo.Height">
+    <member name="P:WikiClientLibrary.Wikia.Sites.AppleTouchIconInfo.Height">
       <summary>
         <markup>
           <include item="SMCMissingTag">
             <parameter>summary</parameter>
-            <parameter>P:WikiClientLibrary.Wikia.WikiaApi.AppleTouchIconInfo.Height</parameter>
+            <parameter>P:WikiClientLibrary.Wikia.Sites.AppleTouchIconInfo.Height</parameter>
           </include>
         </markup>
       </summary>
     </member>
-    <member name="P:WikiClientLibrary.Wikia.WikiaApi.AppleTouchIconInfo.Size">
+    <member name="P:WikiClientLibrary.Wikia.Sites.AppleTouchIconInfo.Size">
       <summary>
         <markup>
           <include item="SMCMissingTag">
             <parameter>summary</parameter>
-            <parameter>P:WikiClientLibrary.Wikia.WikiaApi.AppleTouchIconInfo.Size</parameter>
+            <parameter>P:WikiClientLibrary.Wikia.Sites.AppleTouchIconInfo.Size</parameter>
           </include>
         </markup>
       </summary>
     </member>
-    <member name="P:WikiClientLibrary.Wikia.WikiaApi.AppleTouchIconInfo.Url">
+    <member name="P:WikiClientLibrary.Wikia.Sites.AppleTouchIconInfo.Url">
       <summary>
         <markup>
           <include item="SMCMissingTag">
             <parameter>summary</parameter>
-            <parameter>P:WikiClientLibrary.Wikia.WikiaApi.AppleTouchIconInfo.Url</parameter>
+            <parameter>P:WikiClientLibrary.Wikia.Sites.AppleTouchIconInfo.Url</parameter>
           </include>
         </markup>
       </summary>
     </member>
-    <member name="P:WikiClientLibrary.Wikia.WikiaApi.AppleTouchIconInfo.Width">
+    <member name="P:WikiClientLibrary.Wikia.Sites.AppleTouchIconInfo.Width">
       <summary>
         <markup>
           <include item="SMCMissingTag">
             <parameter>summary</parameter>
-            <parameter>P:WikiClientLibrary.Wikia.WikiaApi.AppleTouchIconInfo.Width</parameter>
+            <parameter>P:WikiClientLibrary.Wikia.Sites.AppleTouchIconInfo.Width</parameter>
+          </include>
+        </markup>
+      </summary>
+    </member>
+    <member name="T:WikiClientLibrary.Wikia.Sites.NavigationItem">
+      <summary>
+            Represents a node in the WikiVariable API response.
+            </summary>
+    </member>
+    <member name="M:WikiClientLibrary.Wikia.Sites.NavigationItem.#ctor">
+      <summary>
+        <markup>
+          <include item="SMCAutoDocConstructor">
+            <parameter>WikiClientLibrary.Wikia.Sites.NavigationItem</parameter>
+          </include>
+        </markup>
+      </summary>
+    </member>
+    <member name="P:WikiClientLibrary.Wikia.Sites.NavigationItem.Children">
+      <summary>
+            Children collection containing article or special pages data.
+            </summary>
+    </member>
+    <member name="P:WikiClientLibrary.Wikia.Sites.NavigationItem.Text">
+      <summary>
+        <markup>
+          <include item="SMCMissingTag">
+            <parameter>summary</parameter>
+            <parameter>P:WikiClientLibrary.Wikia.Sites.NavigationItem.Text</parameter>
+          </include>
+        </markup>
+      </summary>
+    </member>
+    <member name="M:WikiClientLibrary.Wikia.Sites.NavigationItem.ToString">
+      <summary>
+        <markup>
+          <include item="SMCMissingTag">
+            <parameter>summary</parameter>
+            <parameter>M:WikiClientLibrary.Wikia.Sites.NavigationItem.ToString</parameter>
+          </include>
+        </markup>
+      </summary>
+    </member>
+    <member name="P:WikiClientLibrary.Wikia.Sites.NavigationItem.Url">
+      <summary>
+            The relative URL of the Page.
+            </summary>
+    </member>
+    <member name="T:WikiClientLibrary.Wikia.Sites.SiteHtmlTitleInfo">
+      <summary>
+            Represents a node in the WikiVariable API response.
+            </summary>
+    </member>
+    <member name="M:WikiClientLibrary.Wikia.Sites.SiteHtmlTitleInfo.#ctor">
+      <summary>
+        <markup>
+          <include item="SMCAutoDocConstructor">
+            <parameter>WikiClientLibrary.Wikia.Sites.SiteHtmlTitleInfo</parameter>
+          </include>
+        </markup>
+      </summary>
+    </member>
+    <member name="P:WikiClientLibrary.Wikia.Sites.SiteHtmlTitleInfo.Parts">
+      <summary>
+        <markup>
+          <include item="SMCMissingTag">
+            <parameter>summary</parameter>
+            <parameter>P:WikiClientLibrary.Wikia.Sites.SiteHtmlTitleInfo.Parts</parameter>
+          </include>
+        </markup>
+      </summary>
+    </member>
+    <member name="P:WikiClientLibrary.Wikia.Sites.SiteHtmlTitleInfo.Separator">
+      <summary>
+        <markup>
+          <include item="SMCMissingTag">
+            <parameter>summary</parameter>
+            <parameter>P:WikiClientLibrary.Wikia.Sites.SiteHtmlTitleInfo.Separator</parameter>
+          </include>
+        </markup>
+      </summary>
+    </member>
+    <member name="M:WikiClientLibrary.Wikia.Sites.SiteHtmlTitleInfo.ToString">
+      <summary>
+        <markup>
+          <include item="SMCMissingTag">
+            <parameter>summary</parameter>
+            <parameter>M:WikiClientLibrary.Wikia.Sites.SiteHtmlTitleInfo.ToString</parameter>
+          </include>
+        </markup>
+      </summary>
+    </member>
+    <member name="T:WikiClientLibrary.Wikia.Sites.SiteLanguageInfo">
+      <summary>
+            Represents a node in the WikiVariable API response.
+            </summary>
+    </member>
+    <member name="M:WikiClientLibrary.Wikia.Sites.SiteLanguageInfo.#ctor">
+      <summary>
+        <markup>
+          <include item="SMCAutoDocConstructor">
+            <parameter>WikiClientLibrary.Wikia.Sites.SiteLanguageInfo</parameter>
+          </include>
+        </markup>
+      </summary>
+    </member>
+    <member name="P:WikiClientLibrary.Wikia.Sites.SiteLanguageInfo.ContentFlowDirection">
+      <summary>
+        <markup>
+          <include item="SMCMissingTag">
+            <parameter>summary</parameter>
+            <parameter>P:WikiClientLibrary.Wikia.Sites.SiteLanguageInfo.ContentFlowDirection</parameter>
+          </include>
+        </markup>
+      </summary>
+    </member>
+    <member name="P:WikiClientLibrary.Wikia.Sites.SiteLanguageInfo.ContentLanguage">
+      <summary>
+        <markup>
+          <include item="SMCMissingTag">
+            <parameter>summary</parameter>
+            <parameter>P:WikiClientLibrary.Wikia.Sites.SiteLanguageInfo.ContentLanguage</parameter>
+          </include>
+        </markup>
+      </summary>
+    </member>
+    <member name="M:WikiClientLibrary.Wikia.Sites.SiteLanguageInfo.ToString">
+      <summary>
+        <markup>
+          <include item="SMCMissingTag">
+            <parameter>summary</parameter>
+            <parameter>M:WikiClientLibrary.Wikia.Sites.SiteLanguageInfo.ToString</parameter>
+          </include>
+        </markup>
+      </summary>
+    </member>
+    <member name="T:WikiClientLibrary.Wikia.Sites.SiteThemeInfo">
+      <summary>
+            Represents a node in the WikiVariable API response.
+            </summary>
+    </member>
+    <member name="M:WikiClientLibrary.Wikia.Sites.SiteThemeInfo.#ctor">
+      <summary>
+        <markup>
+          <include item="SMCAutoDocConstructor">
+            <parameter>WikiClientLibrary.Wikia.Sites.SiteThemeInfo</parameter>
+          </include>
+        </markup>
+      </summary>
+    </member>
+    <member name="P:WikiClientLibrary.Wikia.Sites.SiteThemeInfo.BackgroundImage">
+      <summary>
+        <markup>
+          <include item="SMCMissingTag">
+            <parameter>summary</parameter>
+            <parameter>P:WikiClientLibrary.Wikia.Sites.SiteThemeInfo.BackgroundImage</parameter>
+          </include>
+        </markup>
+      </summary>
+    </member>
+    <member name="P:WikiClientLibrary.Wikia.Sites.SiteThemeInfo.BackgroundImageHeight">
+      <summary>
+        <markup>
+          <include item="SMCMissingTag">
+            <parameter>summary</parameter>
+            <parameter>P:WikiClientLibrary.Wikia.Sites.SiteThemeInfo.BackgroundImageHeight</parameter>
+          </include>
+        </markup>
+      </summary>
+    </member>
+    <member name="P:WikiClientLibrary.Wikia.Sites.SiteThemeInfo.BackgroundImageWidth">
+      <summary>
+        <markup>
+          <include item="SMCMissingTag">
+            <parameter>summary</parameter>
+            <parameter>P:WikiClientLibrary.Wikia.Sites.SiteThemeInfo.BackgroundImageWidth</parameter>
+          </include>
+        </markup>
+      </summary>
+    </member>
+    <member name="P:WikiClientLibrary.Wikia.Sites.SiteThemeInfo.BodyColor">
+      <summary>
+        <markup>
+          <include item="SMCMissingTag">
+            <parameter>summary</parameter>
+            <parameter>P:WikiClientLibrary.Wikia.Sites.SiteThemeInfo.BodyColor</parameter>
+          </include>
+        </markup>
+      </summary>
+    </member>
+    <member name="P:WikiClientLibrary.Wikia.Sites.SiteThemeInfo.BodyMiddleColor">
+      <summary>
+        <markup>
+          <include item="SMCMissingTag">
+            <parameter>summary</parameter>
+            <parameter>P:WikiClientLibrary.Wikia.Sites.SiteThemeInfo.BodyMiddleColor</parameter>
+          </include>
+        </markup>
+      </summary>
+    </member>
+    <member name="P:WikiClientLibrary.Wikia.Sites.SiteThemeInfo.ButtonsColor">
+      <summary>
+        <markup>
+          <include item="SMCMissingTag">
+            <parameter>summary</parameter>
+            <parameter>P:WikiClientLibrary.Wikia.Sites.SiteThemeInfo.ButtonsColor</parameter>
+          </include>
+        </markup>
+      </summary>
+    </member>
+    <member name="P:WikiClientLibrary.Wikia.Sites.SiteThemeInfo.CommunityHeaderColor">
+      <summary>
+        <markup>
+          <include item="SMCMissingTag">
+            <parameter>summary</parameter>
+            <parameter>P:WikiClientLibrary.Wikia.Sites.SiteThemeInfo.CommunityHeaderColor</parameter>
+          </include>
+        </markup>
+      </summary>
+    </member>
+    <member name="P:WikiClientLibrary.Wikia.Sites.SiteThemeInfo.HeaderColor">
+      <summary>
+        <markup>
+          <include item="SMCMissingTag">
+            <parameter>summary</parameter>
+            <parameter>P:WikiClientLibrary.Wikia.Sites.SiteThemeInfo.HeaderColor</parameter>
+          </include>
+        </markup>
+      </summary>
+    </member>
+    <member name="P:WikiClientLibrary.Wikia.Sites.SiteThemeInfo.IsBackgroundDynamic">
+      <summary>
+        <markup>
+          <include item="SMCMissingTag">
+            <parameter>summary</parameter>
+            <parameter>P:WikiClientLibrary.Wikia.Sites.SiteThemeInfo.IsBackgroundDynamic</parameter>
+          </include>
+        </markup>
+      </summary>
+    </member>
+    <member name="P:WikiClientLibrary.Wikia.Sites.SiteThemeInfo.LinksColor">
+      <summary>
+        <markup>
+          <include item="SMCMissingTag">
+            <parameter>summary</parameter>
+            <parameter>P:WikiClientLibrary.Wikia.Sites.SiteThemeInfo.LinksColor</parameter>
+          </include>
+        </markup>
+      </summary>
+    </member>
+    <member name="P:WikiClientLibrary.Wikia.Sites.SiteThemeInfo.PageColor">
+      <summary>
+        <markup>
+          <include item="SMCMissingTag">
+            <parameter>summary</parameter>
+            <parameter>P:WikiClientLibrary.Wikia.Sites.SiteThemeInfo.PageColor</parameter>
+          </include>
+        </markup>
+      </summary>
+    </member>
+    <member name="P:WikiClientLibrary.Wikia.Sites.SiteThemeInfo.PageOpacity">
+      <summary>
+        <markup>
+          <include item="SMCMissingTag">
+            <parameter>summary</parameter>
+            <parameter>P:WikiClientLibrary.Wikia.Sites.SiteThemeInfo.PageOpacity</parameter>
+          </include>
+        </markup>
+      </summary>
+    </member>
+    <member name="P:WikiClientLibrary.Wikia.Sites.SiteThemeInfo.WordmarkFont">
+      <summary>
+        <markup>
+          <include item="SMCMissingTag">
+            <parameter>summary</parameter>
+            <parameter>P:WikiClientLibrary.Wikia.Sites.SiteThemeInfo.WordmarkFont</parameter>
+          </include>
+        </markup>
+      </summary>
+    </member>
+    <member name="T:WikiClientLibrary.Wikia.Sites.SiteVariableData">
+      <summary>
+            Represents a node in the WikiVariable API response.
+            </summary>
+    </member>
+    <member name="M:WikiClientLibrary.Wikia.Sites.SiteVariableData.#ctor">
+      <summary>
+        <markup>
+          <include item="SMCAutoDocConstructor">
+            <parameter>WikiClientLibrary.Wikia.Sites.SiteVariableData</parameter>
+          </include>
+        </markup>
+      </summary>
+    </member>
+    <member name="P:WikiClientLibrary.Wikia.Sites.SiteVariableData.AppleTouchIcon">
+      <summary>
+        <markup>
+          <include item="SMCMissingTag">
+            <parameter>summary</parameter>
+            <parameter>P:WikiClientLibrary.Wikia.Sites.SiteVariableData.AppleTouchIcon</parameter>
+          </include>
+        </markup>
+      </summary>
+    </member>
+    <member name="P:WikiClientLibrary.Wikia.Sites.SiteVariableData.ArticlePath">
+      <summary>
+        <markup>
+          <include item="SMCMissingTag">
+            <parameter>summary</parameter>
+            <parameter>P:WikiClientLibrary.Wikia.Sites.SiteVariableData.ArticlePath</parameter>
+          </include>
+        </markup>
+      </summary>
+    </member>
+    <member name="P:WikiClientLibrary.Wikia.Sites.SiteVariableData.BasePath">
+      <summary>
+        <markup>
+          <include item="SMCMissingTag">
+            <parameter>summary</parameter>
+            <parameter>P:WikiClientLibrary.Wikia.Sites.SiteVariableData.BasePath</parameter>
+          </include>
+        </markup>
+      </summary>
+    </member>
+    <member name="P:WikiClientLibrary.Wikia.Sites.SiteVariableData.CacheBuster">
+      <summary>
+        <markup>
+          <include item="SMCMissingTag">
+            <parameter>summary</parameter>
+            <parameter>P:WikiClientLibrary.Wikia.Sites.SiteVariableData.CacheBuster</parameter>
+          </include>
+        </markup>
+      </summary>
+    </member>
+    <member name="P:WikiClientLibrary.Wikia.Sites.SiteVariableData.CdnRootUrl">
+      <summary>
+        <markup>
+          <include item="SMCMissingTag">
+            <parameter>summary</parameter>
+            <parameter>P:WikiClientLibrary.Wikia.Sites.SiteVariableData.CdnRootUrl</parameter>
+          </include>
+        </markup>
+      </summary>
+    </member>
+    <member name="P:WikiClientLibrary.Wikia.Sites.SiteVariableData.ContentNamespaceIds">
+      <summary>
+        <markup>
+          <include item="SMCMissingTag">
+            <parameter>summary</parameter>
+            <parameter>P:WikiClientLibrary.Wikia.Sites.SiteVariableData.ContentNamespaceIds</parameter>
+          </include>
+        </markup>
+      </summary>
+    </member>
+    <member name="P:WikiClientLibrary.Wikia.Sites.SiteVariableData.DatabaseName">
+      <summary>
+        <markup>
+          <include item="SMCMissingTag">
+            <parameter>summary</parameter>
+            <parameter>P:WikiClientLibrary.Wikia.Sites.SiteVariableData.DatabaseName</parameter>
+          </include>
+        </markup>
+      </summary>
+    </member>
+    <member name="P:WikiClientLibrary.Wikia.Sites.SiteVariableData.DefaultSkinName">
+      <summary>
+        <markup>
+          <include item="SMCMissingTag">
+            <parameter>summary</parameter>
+            <parameter>P:WikiClientLibrary.Wikia.Sites.SiteVariableData.DefaultSkinName</parameter>
+          </include>
+        </markup>
+      </summary>
+    </member>
+    <member name="P:WikiClientLibrary.Wikia.Sites.SiteVariableData.DiscussionColorOverride">
+      <summary>
+        <markup>
+          <include item="SMCMissingTag">
+            <parameter>summary</parameter>
+            <parameter>P:WikiClientLibrary.Wikia.Sites.SiteVariableData.DiscussionColorOverride</parameter>
+          </include>
+        </markup>
+      </summary>
+    </member>
+    <member name="P:WikiClientLibrary.Wikia.Sites.SiteVariableData.FavIconUrl">
+      <summary>
+        <markup>
+          <include item="SMCMissingTag">
+            <parameter>summary</parameter>
+            <parameter>P:WikiClientLibrary.Wikia.Sites.SiteVariableData.FavIconUrl</parameter>
+          </include>
+        </markup>
+      </summary>
+    </member>
+    <member name="P:WikiClientLibrary.Wikia.Sites.SiteVariableData.HomePageUrl">
+      <summary>Home page URL of FANDOM.</summary>
+    </member>
+    <member name="P:WikiClientLibrary.Wikia.Sites.SiteVariableData.HtmlTitle">
+      <summary>
+        <markup>
+          <include item="SMCMissingTag">
+            <parameter>summary</parameter>
+            <parameter>P:WikiClientLibrary.Wikia.Sites.SiteVariableData.HtmlTitle</parameter>
+          </include>
+        </markup>
+      </summary>
+    </member>
+    <member name="P:WikiClientLibrary.Wikia.Sites.SiteVariableData.Id">
+      <summary>
+        <markup>
+          <include item="SMCMissingTag">
+            <parameter>summary</parameter>
+            <parameter>P:WikiClientLibrary.Wikia.Sites.SiteVariableData.Id</parameter>
+          </include>
+        </markup>
+      </summary>
+    </member>
+    <member name="P:WikiClientLibrary.Wikia.Sites.SiteVariableData.Image">
+      <summary>
+        <markup>
+          <include item="SMCMissingTag">
+            <parameter>summary</parameter>
+            <parameter>P:WikiClientLibrary.Wikia.Sites.SiteVariableData.Image</parameter>
+          </include>
+        </markup>
+      </summary>
+    </member>
+    <member name="P:WikiClientLibrary.Wikia.Sites.SiteVariableData.IsAnonymousEditingDisabled">
+      <summary>
+        <markup>
+          <include item="SMCMissingTag">
+            <parameter>summary</parameter>
+            <parameter>P:WikiClientLibrary.Wikia.Sites.SiteVariableData.IsAnonymousEditingDisabled</parameter>
+          </include>
+        </markup>
+      </summary>
+    </member>
+    <member name="P:WikiClientLibrary.Wikia.Sites.SiteVariableData.IsCommunityDataEnabled">
+      <summary>
+        <markup>
+          <include item="SMCMissingTag">
+            <parameter>summary</parameter>
+            <parameter>P:WikiClientLibrary.Wikia.Sites.SiteVariableData.IsCommunityDataEnabled</parameter>
+          </include>
+        </markup>
+      </summary>
+    </member>
+    <member name="P:WikiClientLibrary.Wikia.Sites.SiteVariableData.IsCoppaWiki">
+      <summary>
+        <markup>
+          <include item="SMCMissingTag">
+            <parameter>summary</parameter>
+            <parameter>P:WikiClientLibrary.Wikia.Sites.SiteVariableData.IsCoppaWiki</parameter>
+          </include>
+        </markup>
+      </summary>
+    </member>
+    <member name="P:WikiClientLibrary.Wikia.Sites.SiteVariableData.IsDarkTheme">
+      <summary>
+        <markup>
+          <include item="SMCMissingTag">
+            <parameter>summary</parameter>
+            <parameter>P:WikiClientLibrary.Wikia.Sites.SiteVariableData.IsDarkTheme</parameter>
+          </include>
+        </markup>
+      </summary>
+    </member>
+    <member name="P:WikiClientLibrary.Wikia.Sites.SiteVariableData.IsDiscussionsEnabled">
+      <summary>
+        <markup>
+          <include item="SMCMissingTag">
+            <parameter>summary</parameter>
+            <parameter>P:WikiClientLibrary.Wikia.Sites.SiteVariableData.IsDiscussionsEnabled</parameter>
+          </include>
+        </markup>
+      </summary>
+    </member>
+    <member name="P:WikiClientLibrary.Wikia.Sites.SiteVariableData.IsDiscussionsImageUploadEnabled">
+      <summary>
+        <markup>
+          <include item="SMCMissingTag">
+            <parameter>summary</parameter>
+            <parameter>P:WikiClientLibrary.Wikia.Sites.SiteVariableData.IsDiscussionsImageUploadEnabled</parameter>
+          </include>
+        </markup>
+      </summary>
+    </member>
+    <member name="P:WikiClientLibrary.Wikia.Sites.SiteVariableData.IsFandomAppSmartBannerEnabled">
+      <summary>
+        <markup>
+          <include item="SMCMissingTag">
+            <parameter>summary</parameter>
+            <parameter>P:WikiClientLibrary.Wikia.Sites.SiteVariableData.IsFandomAppSmartBannerEnabled</parameter>
+          </include>
+        </markup>
+      </summary>
+    </member>
+    <member name="P:WikiClientLibrary.Wikia.Sites.SiteVariableData.IsMercuryAnonymousUploadDisabled">
+      <summary>
+        <markup>
+          <include item="SMCMissingTag">
+            <parameter>summary</parameter>
+            <parameter>P:WikiClientLibrary.Wikia.Sites.SiteVariableData.IsMercuryAnonymousUploadDisabled</parameter>
+          </include>
+        </markup>
+      </summary>
+    </member>
+    <member name="P:WikiClientLibrary.Wikia.Sites.SiteVariableData.IsMobileSectionEditorDisabled">
+      <summary>
+        <markup>
+          <include item="SMCMissingTag">
+            <parameter>summary</parameter>
+            <parameter>P:WikiClientLibrary.Wikia.Sites.SiteVariableData.IsMobileSectionEditorDisabled</parameter>
+          </include>
+        </markup>
+      </summary>
+    </member>
+    <member name="P:WikiClientLibrary.Wikia.Sites.SiteVariableData.IsNewAuthEnabled">
+      <summary>
+        <markup>
+          <include item="SMCMissingTag">
+            <parameter>summary</parameter>
+            <parameter>P:WikiClientLibrary.Wikia.Sites.SiteVariableData.IsNewAuthEnabled</parameter>
+          </include>
+        </markup>
+      </summary>
+    </member>
+    <member name="P:WikiClientLibrary.Wikia.Sites.SiteVariableData.LanguageInfo">
+      <summary>
+        <markup>
+          <include item="SMCMissingTag">
+            <parameter>summary</parameter>
+            <parameter>P:WikiClientLibrary.Wikia.Sites.SiteVariableData.LanguageInfo</parameter>
+          </include>
+        </markup>
+      </summary>
+    </member>
+    <member name="P:WikiClientLibrary.Wikia.Sites.SiteVariableData.MainPageTitle">
+      <summary>
+        <markup>
+          <include item="SMCMissingTag">
+            <parameter>summary</parameter>
+            <parameter>P:WikiClientLibrary.Wikia.Sites.SiteVariableData.MainPageTitle</parameter>
+          </include>
+        </markup>
+      </summary>
+    </member>
+    <member name="P:WikiClientLibrary.Wikia.Sites.SiteVariableData.NamespaceNames">
+      <summary>
+        <markup>
+          <include item="SMCMissingTag">
+            <parameter>summary</parameter>
+            <parameter>P:WikiClientLibrary.Wikia.Sites.SiteVariableData.NamespaceNames</parameter>
+          </include>
+        </markup>
+      </summary>
+    </member>
+    <member name="P:WikiClientLibrary.Wikia.Sites.SiteVariableData.NavigationItems">
+      <summary>
+        <markup>
+          <include item="SMCMissingTag">
+            <parameter>summary</parameter>
+            <parameter>P:WikiClientLibrary.Wikia.Sites.SiteVariableData.NavigationItems</parameter>
+          </include>
+        </markup>
+      </summary>
+    </member>
+    <member name="P:WikiClientLibrary.Wikia.Sites.SiteVariableData.SiteMessage">
+      <summary>
+        <markup>
+          <include item="SMCMissingTag">
+            <parameter>summary</parameter>
+            <parameter>P:WikiClientLibrary.Wikia.Sites.SiteVariableData.SiteMessage</parameter>
+          </include>
+        </markup>
+      </summary>
+    </member>
+    <member name="P:WikiClientLibrary.Wikia.Sites.SiteVariableData.SiteName">
+      <summary>
+        <markup>
+          <include item="SMCMissingTag">
+            <parameter>summary</parameter>
+            <parameter>P:WikiClientLibrary.Wikia.Sites.SiteVariableData.SiteName</parameter>
+          </include>
+        </markup>
+      </summary>
+    </member>
+    <member name="P:WikiClientLibrary.Wikia.Sites.SiteVariableData.SpecialRobotPolicy">
+      <summary>
+        <markup>
+          <include item="SMCMissingTag">
+            <parameter>summary</parameter>
+            <parameter>P:WikiClientLibrary.Wikia.Sites.SiteVariableData.SpecialRobotPolicy</parameter>
+          </include>
+        </markup>
+      </summary>
+    </member>
+    <member name="P:WikiClientLibrary.Wikia.Sites.SiteVariableData.ThemeInfo">
+      <summary>
+        <markup>
+          <include item="SMCMissingTag">
+            <parameter>summary</parameter>
+            <parameter>P:WikiClientLibrary.Wikia.Sites.SiteVariableData.ThemeInfo</parameter>
+          </include>
+        </markup>
+      </summary>
+    </member>
+    <member name="M:WikiClientLibrary.Wikia.Sites.SiteVariableData.ToString">
+      <summary>
+        <markup>
+          <include item="SMCMissingTag">
+            <parameter>summary</parameter>
+            <parameter>M:WikiClientLibrary.Wikia.Sites.SiteVariableData.ToString</parameter>
+          </include>
+        </markup>
+      </summary>
+    </member>
+    <member name="P:WikiClientLibrary.Wikia.Sites.SiteVariableData.TrackingInfo">
+      <summary>
+        <markup>
+          <include item="SMCMissingTag">
+            <parameter>summary</parameter>
+            <parameter>P:WikiClientLibrary.Wikia.Sites.SiteVariableData.TrackingInfo</parameter>
+          </include>
+        </markup>
+      </summary>
+    </member>
+    <member name="P:WikiClientLibrary.Wikia.Sites.SiteVariableData.Vertical">
+      <summary>
+            Gets the site's Wikia hub name (e.g. Gaming, Entertainment, Lifestyle).
+            </summary>
+    </member>
+    <member name="P:WikiClientLibrary.Wikia.Sites.SiteVariableData.WikiCategories">
+      <summary>
+        <markup>
+          <include item="SMCMissingTag">
+            <parameter>summary</parameter>
+            <parameter>P:WikiClientLibrary.Wikia.Sites.SiteVariableData.WikiCategories</parameter>
+          </include>
+        </markup>
+      </summary>
+    </member>
+    <member name="T:WikiClientLibrary.Wikia.Sites.TrackingInfo">
+      <summary>
+            Represents a node in the WikiVariable API response.
+            </summary>
+    </member>
+    <member name="M:WikiClientLibrary.Wikia.Sites.TrackingInfo.#ctor">
+      <summary>
+        <markup>
+          <include item="SMCAutoDocConstructor">
+            <parameter>WikiClientLibrary.Wikia.Sites.TrackingInfo</parameter>
+          </include>
+        </markup>
+      </summary>
+    </member>
+    <member name="P:WikiClientLibrary.Wikia.Sites.TrackingInfo.Vertical">
+      <summary>
+        <markup>
+          <include item="SMCMissingTag">
+            <parameter>summary</parameter>
+            <parameter>P:WikiClientLibrary.Wikia.Sites.TrackingInfo.Vertical</parameter>
+          </include>
+        </markup>
+      </summary>
+    </member>
+    <member name="T:WikiClientLibrary.Wikia.Sites.WikiaSite">
+      <summary>
+            The encapsulated Wikia site endpoint.
+            </summary>
+    </member>
+    <member name="M:WikiClientLibrary.Wikia.Sites.WikiaSite.#ctor(WikiClientLibrary.Client.IWikiClient,System.String)">
+      <summary>
+            Initializes a new <see cref="T:WikiClientLibrary.Wikia.Sites.WikiaSite" /> instance from the Wikia site root URL.
+            </summary>
+      <param name="siteRootUrl">Wikia site root URL, with the ending slash. e.g. <c>http://community.wikia.com/</c>.</param>
+      <param name="wikiClient">WikiClient instance.</param>
+      <param name="options">Site options.</param>
+      <param name="userName">The user name used to login before fetching for site information. Pass <c>null</c> to fetch site information without login first.</param>
+      <param name="password">The password used to login before fetching for site information.</param>
+      <exception cref="T:System.ArgumentNullException">
+        <paramref name="wikiClient" /> or <paramref name="options" /> is <c>null</c>.</exception>
+      <exception cref="T:System.ArgumentException">One or more settings in <paramref name="options" /> is invalid.</exception>
+      <exception cref="T:WikiClientLibrary.UnauthorizedOperationException">Cannot access query API module due to target site permission settings. You may take a look at <see cref="!:SiteOptions.ExplicitInfoRefresh" />.</exception>
+    </member>
+    <member name="M:WikiClientLibrary.Wikia.Sites.WikiaSite.#ctor(WikiClientLibrary.Client.IWikiClient,WikiClientLibrary.Wikia.WikiaSiteOptions)">
+      <summary>
+        <markup>
+          <include item="SMCAutoDocConstructor">
+            <parameter>WikiClientLibrary.Wikia.Sites.WikiaSite</parameter>
+          </include>
+        </markup>
+      </summary>
+      <param name="wikiClient">
+        <markup>
+          <include item="SMCMissingParamTag">
+            <parameter>param</parameter>
+            <parameter>wikiClient</parameter>
+            <parameter>M:WikiClientLibrary.Wikia.Sites.WikiaSite.#ctor(WikiClientLibrary.Client.IWikiClient,WikiClientLibrary.Wikia.WikiaSiteOptions)</parameter>
+          </include>
+        </markup>
+      </param>
+      <param name="options">
+        <markup>
+          <include item="SMCMissingParamTag">
+            <parameter>param</parameter>
+            <parameter>options</parameter>
+            <parameter>M:WikiClientLibrary.Wikia.Sites.WikiaSite.#ctor(WikiClientLibrary.Client.IWikiClient,WikiClientLibrary.Wikia.WikiaSiteOptions)</parameter>
+          </include>
+        </markup>
+      </param>
+    </member>
+    <member name="M:WikiClientLibrary.Wikia.Sites.WikiaSite.#ctor(WikiClientLibrary.Client.IWikiClient,WikiClientLibrary.Wikia.WikiaSiteOptions,System.String,System.String)">
+      <summary>
+        <markup>
+          <include item="SMCAutoDocConstructor">
+            <parameter>WikiClientLibrary.Wikia.Sites.WikiaSite</parameter>
+          </include>
+        </markup>
+      </summary>
+      <param name="wikiClient">
+        <markup>
+          <include item="SMCMissingParamTag">
+            <parameter>param</parameter>
+            <parameter>wikiClient</parameter>
+            <parameter>M:WikiClientLibrary.Wikia.Sites.WikiaSite.#ctor(WikiClientLibrary.Client.IWikiClient,WikiClientLibrary.Wikia.WikiaSiteOptions,System.String,System.String)</parameter>
+          </include>
+        </markup>
+      </param>
+      <param name="options">
+        <markup>
+          <include item="SMCMissingParamTag">
+            <parameter>param</parameter>
+            <parameter>options</parameter>
+            <parameter>M:WikiClientLibrary.Wikia.Sites.WikiaSite.#ctor(WikiClientLibrary.Client.IWikiClient,WikiClientLibrary.Wikia.WikiaSiteOptions,System.String,System.String)</parameter>
+          </include>
+        </markup>
+      </param>
+      <param name="userName">
+        <markup>
+          <include item="SMCMissingParamTag">
+            <parameter>param</parameter>
+            <parameter>userName</parameter>
+            <parameter>M:WikiClientLibrary.Wikia.Sites.WikiaSite.#ctor(WikiClientLibrary.Client.IWikiClient,WikiClientLibrary.Wikia.WikiaSiteOptions,System.String,System.String)</parameter>
+          </include>
+        </markup>
+      </param>
+      <param name="password">
+        <markup>
+          <include item="SMCMissingParamTag">
+            <parameter>param</parameter>
+            <parameter>password</parameter>
+            <parameter>M:WikiClientLibrary.Wikia.Sites.WikiaSite.#ctor(WikiClientLibrary.Client.IWikiClient,WikiClientLibrary.Wikia.WikiaSiteOptions,System.String,System.String)</parameter>
+          </include>
+        </markup>
+      </param>
+    </member>
+    <member name="M:WikiClientLibrary.Wikia.Sites.WikiaSite.InvokeNirvanaAsync(System.Void,Newtonsoft.Json.Linq.JToken)">
+      <summary>
+        <markup>
+          <include item="SMCMissingTag">
+            <parameter>summary</parameter>
+            <parameter>M:WikiClientLibrary.Wikia.Sites.WikiaSite.InvokeNirvanaAsync(System.Void,Newtonsoft.Json.Linq.JToken)</parameter>
+          </include>
+        </markup>
+      </summary>
+      <param name="request">
+        <markup>
+          <include item="SMCMissingParamTag">
+            <parameter>param</parameter>
+            <parameter>request</parameter>
+            <parameter>M:WikiClientLibrary.Wikia.Sites.WikiaSite.InvokeNirvanaAsync(System.Void,Newtonsoft.Json.Linq.JToken)</parameter>
+          </include>
+        </markup>
+      </param>
+      <param name="cancellationToken">
+        <markup>
+          <include item="SMCMissingParamTag">
+            <parameter>param</parameter>
+            <parameter>cancellationToken</parameter>
+            <parameter>M:WikiClientLibrary.Wikia.Sites.WikiaSite.InvokeNirvanaAsync(System.Void,Newtonsoft.Json.Linq.JToken)</parameter>
+          </include>
+        </markup>
+      </param>
+    </member>
+    <member name="M:WikiClientLibrary.Wikia.Sites.WikiaSite.InvokeNirvanaAsync``1(System.Void,``0,WikiClientLibrary.Client.WikiRequestMessage)">
+      <summary>
+        <markup>
+          <include item="SMCMissingTag">
+            <parameter>summary</parameter>
+            <parameter>M:WikiClientLibrary.Wikia.Sites.WikiaSite.InvokeNirvanaAsync``1(System.Void,``0,WikiClientLibrary.Client.WikiRequestMessage)</parameter>
+          </include>
+        </markup>
+      </summary>
+      <param name="request">
+        <markup>
+          <include item="SMCMissingParamTag">
+            <parameter>param</parameter>
+            <parameter>request</parameter>
+            <parameter>M:WikiClientLibrary.Wikia.Sites.WikiaSite.InvokeNirvanaAsync``1(System.Void,``0,WikiClientLibrary.Client.WikiRequestMessage)</parameter>
+          </include>
+        </markup>
+      </param>
+      <param name="responseParser">
+        <markup>
+          <include item="SMCMissingParamTag">
+            <parameter>param</parameter>
+            <parameter>responseParser</parameter>
+            <parameter>M:WikiClientLibrary.Wikia.Sites.WikiaSite.InvokeNirvanaAsync``1(System.Void,``0,WikiClientLibrary.Client.WikiRequestMessage)</parameter>
+          </include>
+        </markup>
+      </param>
+      <param name="cancellationToken">
+        <markup>
+          <include item="SMCMissingParamTag">
+            <parameter>param</parameter>
+            <parameter>cancellationToken</parameter>
+            <parameter>M:WikiClientLibrary.Wikia.Sites.WikiaSite.InvokeNirvanaAsync``1(System.Void,``0,WikiClientLibrary.Client.WikiRequestMessage)</parameter>
+          </include>
+        </markup>
+      </param>
+      <typeparam name="T">
+        <markup>
+          <include item="SMCMissingParamTag">
+            <parameter>typeparam</parameter>
+            <parameter>T</parameter>
+            <parameter>M:WikiClientLibrary.Wikia.Sites.WikiaSite.InvokeNirvanaAsync``1(System.Void,``0,WikiClientLibrary.Client.WikiRequestMessage)</parameter>
+          </include>
+        </markup>
+      </typeparam>
+    </member>
+    <member name="M:WikiClientLibrary.Wikia.Sites.WikiaSite.InvokeWikiaAjaxAsync(System.Void,Newtonsoft.Json.Linq.JToken)">
+      <summary>
+        <markup>
+          <include item="SMCMissingTag">
+            <parameter>summary</parameter>
+            <parameter>M:WikiClientLibrary.Wikia.Sites.WikiaSite.InvokeWikiaAjaxAsync(System.Void,Newtonsoft.Json.Linq.JToken)</parameter>
+          </include>
+        </markup>
+      </summary>
+      <param name="request">
+        <markup>
+          <include item="SMCMissingParamTag">
+            <parameter>param</parameter>
+            <parameter>request</parameter>
+            <parameter>M:WikiClientLibrary.Wikia.Sites.WikiaSite.InvokeWikiaAjaxAsync(System.Void,Newtonsoft.Json.Linq.JToken)</parameter>
+          </include>
+        </markup>
+      </param>
+      <param name="cancellationToken">
+        <markup>
+          <include item="SMCMissingParamTag">
+            <parameter>param</parameter>
+            <parameter>cancellationToken</parameter>
+            <parameter>M:WikiClientLibrary.Wikia.Sites.WikiaSite.InvokeWikiaAjaxAsync(System.Void,Newtonsoft.Json.Linq.JToken)</parameter>
+          </include>
+        </markup>
+      </param>
+    </member>
+    <member name="M:WikiClientLibrary.Wikia.Sites.WikiaSite.InvokeWikiaAjaxAsync``1(System.Void,``0,WikiClientLibrary.Client.WikiRequestMessage)">
+      <summary>
+        <markup>
+          <include item="SMCMissingTag">
+            <parameter>summary</parameter>
+            <parameter>M:WikiClientLibrary.Wikia.Sites.WikiaSite.InvokeWikiaAjaxAsync``1(System.Void,``0,WikiClientLibrary.Client.WikiRequestMessage)</parameter>
+          </include>
+        </markup>
+      </summary>
+      <param name="request">
+        <markup>
+          <include item="SMCMissingParamTag">
+            <parameter>param</parameter>
+            <parameter>request</parameter>
+            <parameter>M:WikiClientLibrary.Wikia.Sites.WikiaSite.InvokeWikiaAjaxAsync``1(System.Void,``0,WikiClientLibrary.Client.WikiRequestMessage)</parameter>
+          </include>
+        </markup>
+      </param>
+      <param name="responseParser">
+        <markup>
+          <include item="SMCMissingParamTag">
+            <parameter>param</parameter>
+            <parameter>responseParser</parameter>
+            <parameter>M:WikiClientLibrary.Wikia.Sites.WikiaSite.InvokeWikiaAjaxAsync``1(System.Void,``0,WikiClientLibrary.Client.WikiRequestMessage)</parameter>
+          </include>
+        </markup>
+      </param>
+      <param name="cancellationToken">
+        <markup>
+          <include item="SMCMissingParamTag">
+            <parameter>param</parameter>
+            <parameter>cancellationToken</parameter>
+            <parameter>M:WikiClientLibrary.Wikia.Sites.WikiaSite.InvokeWikiaAjaxAsync``1(System.Void,``0,WikiClientLibrary.Client.WikiRequestMessage)</parameter>
+          </include>
+        </markup>
+      </param>
+      <typeparam name="T">
+        <markup>
+          <include item="SMCMissingParamTag">
+            <parameter>typeparam</parameter>
+            <parameter>T</parameter>
+            <parameter>M:WikiClientLibrary.Wikia.Sites.WikiaSite.InvokeWikiaAjaxAsync``1(System.Void,``0,WikiClientLibrary.Client.WikiRequestMessage)</parameter>
+          </include>
+        </markup>
+      </typeparam>
+    </member>
+    <member name="M:WikiClientLibrary.Wikia.Sites.WikiaSite.InvokeWikiaApiAsync(System.Void,Newtonsoft.Json.Linq.JToken,System.String)">
+      <summary>
+        <markup>
+          <include item="SMCMissingTag">
+            <parameter>summary</parameter>
+            <parameter>M:WikiClientLibrary.Wikia.Sites.WikiaSite.InvokeWikiaApiAsync(System.Void,Newtonsoft.Json.Linq.JToken,System.String)</parameter>
+          </include>
+        </markup>
+      </summary>
+      <param name="relativeUri">
+        <markup>
+          <include item="SMCMissingParamTag">
+            <parameter>param</parameter>
+            <parameter>relativeUri</parameter>
+            <parameter>M:WikiClientLibrary.Wikia.Sites.WikiaSite.InvokeWikiaApiAsync(System.Void,Newtonsoft.Json.Linq.JToken,System.String)</parameter>
+          </include>
+        </markup>
+      </param>
+      <param name="request">
+        <markup>
+          <include item="SMCMissingParamTag">
+            <parameter>param</parameter>
+            <parameter>request</parameter>
+            <parameter>M:WikiClientLibrary.Wikia.Sites.WikiaSite.InvokeWikiaApiAsync(System.Void,Newtonsoft.Json.Linq.JToken,System.String)</parameter>
+          </include>
+        </markup>
+      </param>
+      <param name="cancellationToken">
+        <markup>
+          <include item="SMCMissingParamTag">
+            <parameter>param</parameter>
+            <parameter>cancellationToken</parameter>
+            <parameter>M:WikiClientLibrary.Wikia.Sites.WikiaSite.InvokeWikiaApiAsync(System.Void,Newtonsoft.Json.Linq.JToken,System.String)</parameter>
+          </include>
+        </markup>
+      </param>
+    </member>
+    <member name="M:WikiClientLibrary.Wikia.Sites.WikiaSite.InvokeWikiaApiAsync``1(System.Void,``0,System.String,WikiClientLibrary.Client.WikiRequestMessage)">
+      <summary>
+        <markup>
+          <include item="SMCMissingTag">
+            <parameter>summary</parameter>
+            <parameter>M:WikiClientLibrary.Wikia.Sites.WikiaSite.InvokeWikiaApiAsync``1(System.Void,``0,System.String,WikiClientLibrary.Client.WikiRequestMessage)</parameter>
+          </include>
+        </markup>
+      </summary>
+      <param name="relativeUri">
+        <markup>
+          <include item="SMCMissingParamTag">
+            <parameter>param</parameter>
+            <parameter>relativeUri</parameter>
+            <parameter>M:WikiClientLibrary.Wikia.Sites.WikiaSite.InvokeWikiaApiAsync``1(System.Void,``0,System.String,WikiClientLibrary.Client.WikiRequestMessage)</parameter>
+          </include>
+        </markup>
+      </param>
+      <param name="request">
+        <markup>
+          <include item="SMCMissingParamTag">
+            <parameter>param</parameter>
+            <parameter>request</parameter>
+            <parameter>M:WikiClientLibrary.Wikia.Sites.WikiaSite.InvokeWikiaApiAsync``1(System.Void,``0,System.String,WikiClientLibrary.Client.WikiRequestMessage)</parameter>
+          </include>
+        </markup>
+      </param>
+      <param name="responseParser">
+        <markup>
+          <include item="SMCMissingParamTag">
+            <parameter>param</parameter>
+            <parameter>responseParser</parameter>
+            <parameter>M:WikiClientLibrary.Wikia.Sites.WikiaSite.InvokeWikiaApiAsync``1(System.Void,``0,System.String,WikiClientLibrary.Client.WikiRequestMessage)</parameter>
+          </include>
+        </markup>
+      </param>
+      <param name="cancellationToken">
+        <markup>
+          <include item="SMCMissingParamTag">
+            <parameter>param</parameter>
+            <parameter>cancellationToken</parameter>
+            <parameter>M:WikiClientLibrary.Wikia.Sites.WikiaSite.InvokeWikiaApiAsync``1(System.Void,``0,System.String,WikiClientLibrary.Client.WikiRequestMessage)</parameter>
+          </include>
+        </markup>
+      </param>
+      <typeparam name="T">
+        <markup>
+          <include item="SMCMissingParamTag">
+            <parameter>typeparam</parameter>
+            <parameter>T</parameter>
+            <parameter>M:WikiClientLibrary.Wikia.Sites.WikiaSite.InvokeWikiaApiAsync``1(System.Void,``0,System.String,WikiClientLibrary.Client.WikiRequestMessage)</parameter>
+          </include>
+        </markup>
+      </typeparam>
+    </member>
+    <member name="P:WikiClientLibrary.Wikia.Sites.WikiaSite.Options">
+      <summary>
+        <markup>
+          <include item="SMCMissingTag">
+            <parameter>summary</parameter>
+            <parameter>P:WikiClientLibrary.Wikia.Sites.WikiaSite.Options</parameter>
+          </include>
+        </markup>
+      </summary>
+    </member>
+    <member name="M:WikiClientLibrary.Wikia.Sites.WikiaSite.RefreshSiteInfoAsync">
+      <summary>
+            Refreshes site information.
+            </summary>
+      <returns>
+            This method affects <see cref="P:WikiClientLibrary.Sites.WikiSite.SiteInfo" />, <see cref="P:WikiClientLibrary.Sites.WikiSite.Namespaces" />,
+            <see cref="P:WikiClientLibrary.Sites.WikiSite.InterwikiMap" />, and <see cref="P:WikiClientLibrary.Sites.WikiSite.Extensions" /> properties.
+            </returns>
+      <exception cref="T:WikiClientLibrary.UnauthorizedOperationException">Cannot access query API module due to target site permission settings. You may need to login first.</exception>
+    </member>
+    <member name="P:WikiClientLibrary.Wikia.Sites.WikiaSite.WikiVariables">
+      <summary>
+        <markup>
+          <include item="SMCMissingTag">
+            <parameter>summary</parameter>
+            <parameter>P:WikiClientLibrary.Wikia.Sites.WikiaSite.WikiVariables</parameter>
           </include>
         </markup>
       </summary>
@@ -1477,7 +2159,7 @@
             A MediaWiki-<c>list</c>-like object that can enumerate the search results.
             </summary>
     </member>
-    <member name="M:WikiClientLibrary.Wikia.WikiaApi.LocalWikiSearchList.#ctor(WikiClientLibrary.Wikia.WikiaSite)">
+    <member name="M:WikiClientLibrary.Wikia.WikiaApi.LocalWikiSearchList.#ctor(WikiClientLibrary.Wikia.Sites.WikiaSite)">
       <summary>
             Initializes a new instance of <see cref="T:WikiClientLibrary.Wikia.WikiaApi.LocalWikiSearchList" /> using the target
             Wikia site.
@@ -1485,7 +2167,7 @@
       <param name="site">The Wikia site this list-like object is applied to.</param>
       <param name="keyword">Search for all page titles (or content) that have this value.</param>
     </member>
-    <member name="M:WikiClientLibrary.Wikia.WikiaApi.LocalWikiSearchList.#ctor(WikiClientLibrary.Wikia.WikiaSite,System.String)">
+    <member name="M:WikiClientLibrary.Wikia.WikiaApi.LocalWikiSearchList.#ctor(WikiClientLibrary.Wikia.Sites.WikiaSite,System.String)">
       <summary>
             Initializes a new instance of <see cref="T:WikiClientLibrary.Wikia.WikiaApi.LocalWikiSearchList" /> using the target
             Wikia site and search keyword.
@@ -1582,50 +2264,6 @@
             Absolute URL of the page.
             </summary>
     </member>
-    <member name="T:WikiClientLibrary.Wikia.WikiaApi.NavigationItem">
-      <summary>
-            Represents a node in the WikiVariable API response.
-            </summary>
-    </member>
-    <member name="M:WikiClientLibrary.Wikia.WikiaApi.NavigationItem.#ctor">
-      <summary>
-        <markup>
-          <include item="SMCAutoDocConstructor">
-            <parameter>WikiClientLibrary.Wikia.WikiaApi.NavigationItem</parameter>
-          </include>
-        </markup>
-      </summary>
-    </member>
-    <member name="P:WikiClientLibrary.Wikia.WikiaApi.NavigationItem.Children">
-      <summary>
-            Children collection containing article or special pages data.
-            </summary>
-    </member>
-    <member name="P:WikiClientLibrary.Wikia.WikiaApi.NavigationItem.Text">
-      <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>P:WikiClientLibrary.Wikia.WikiaApi.NavigationItem.Text</parameter>
-          </include>
-        </markup>
-      </summary>
-    </member>
-    <member name="M:WikiClientLibrary.Wikia.WikiaApi.NavigationItem.ToString">
-      <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>M:WikiClientLibrary.Wikia.WikiaApi.NavigationItem.ToString</parameter>
-          </include>
-        </markup>
-      </summary>
-    </member>
-    <member name="P:WikiClientLibrary.Wikia.WikiaApi.NavigationItem.Url">
-      <summary>
-            The relative URL of the Page.
-            </summary>
-    </member>
     <member name="T:WikiClientLibrary.Wikia.WikiaApi.RelatedPageItem">
       <summary>
         <markup>
@@ -1693,624 +2331,6 @@
           <include item="SMCMissingTag">
             <parameter>summary</parameter>
             <parameter>T:WikiClientLibrary.Wikia.WikiaApi.SearchRankingType</parameter>
-          </include>
-        </markup>
-      </summary>
-    </member>
-    <member name="T:WikiClientLibrary.Wikia.WikiaApi.SiteHtmlTitleInfo">
-      <summary>
-            Represents a node in the WikiVariable API response.
-            </summary>
-    </member>
-    <member name="M:WikiClientLibrary.Wikia.WikiaApi.SiteHtmlTitleInfo.#ctor">
-      <summary>
-        <markup>
-          <include item="SMCAutoDocConstructor">
-            <parameter>WikiClientLibrary.Wikia.WikiaApi.SiteHtmlTitleInfo</parameter>
-          </include>
-        </markup>
-      </summary>
-    </member>
-    <member name="P:WikiClientLibrary.Wikia.WikiaApi.SiteHtmlTitleInfo.Parts">
-      <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>P:WikiClientLibrary.Wikia.WikiaApi.SiteHtmlTitleInfo.Parts</parameter>
-          </include>
-        </markup>
-      </summary>
-    </member>
-    <member name="P:WikiClientLibrary.Wikia.WikiaApi.SiteHtmlTitleInfo.Separator">
-      <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>P:WikiClientLibrary.Wikia.WikiaApi.SiteHtmlTitleInfo.Separator</parameter>
-          </include>
-        </markup>
-      </summary>
-    </member>
-    <member name="M:WikiClientLibrary.Wikia.WikiaApi.SiteHtmlTitleInfo.ToString">
-      <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>M:WikiClientLibrary.Wikia.WikiaApi.SiteHtmlTitleInfo.ToString</parameter>
-          </include>
-        </markup>
-      </summary>
-    </member>
-    <member name="T:WikiClientLibrary.Wikia.WikiaApi.SiteLanguageInfo">
-      <summary>
-            Represents a node in the WikiVariable API response.
-            </summary>
-    </member>
-    <member name="M:WikiClientLibrary.Wikia.WikiaApi.SiteLanguageInfo.#ctor">
-      <summary>
-        <markup>
-          <include item="SMCAutoDocConstructor">
-            <parameter>WikiClientLibrary.Wikia.WikiaApi.SiteLanguageInfo</parameter>
-          </include>
-        </markup>
-      </summary>
-    </member>
-    <member name="P:WikiClientLibrary.Wikia.WikiaApi.SiteLanguageInfo.ContentFlowDirection">
-      <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>P:WikiClientLibrary.Wikia.WikiaApi.SiteLanguageInfo.ContentFlowDirection</parameter>
-          </include>
-        </markup>
-      </summary>
-    </member>
-    <member name="P:WikiClientLibrary.Wikia.WikiaApi.SiteLanguageInfo.ContentLanguage">
-      <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>P:WikiClientLibrary.Wikia.WikiaApi.SiteLanguageInfo.ContentLanguage</parameter>
-          </include>
-        </markup>
-      </summary>
-    </member>
-    <member name="M:WikiClientLibrary.Wikia.WikiaApi.SiteLanguageInfo.ToString">
-      <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>M:WikiClientLibrary.Wikia.WikiaApi.SiteLanguageInfo.ToString</parameter>
-          </include>
-        </markup>
-      </summary>
-    </member>
-    <member name="T:WikiClientLibrary.Wikia.WikiaApi.SiteThemeInfo">
-      <summary>
-            Represents a node in the WikiVariable API response.
-            </summary>
-    </member>
-    <member name="M:WikiClientLibrary.Wikia.WikiaApi.SiteThemeInfo.#ctor">
-      <summary>
-        <markup>
-          <include item="SMCAutoDocConstructor">
-            <parameter>WikiClientLibrary.Wikia.WikiaApi.SiteThemeInfo</parameter>
-          </include>
-        </markup>
-      </summary>
-    </member>
-    <member name="P:WikiClientLibrary.Wikia.WikiaApi.SiteThemeInfo.BackgroundImage">
-      <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>P:WikiClientLibrary.Wikia.WikiaApi.SiteThemeInfo.BackgroundImage</parameter>
-          </include>
-        </markup>
-      </summary>
-    </member>
-    <member name="P:WikiClientLibrary.Wikia.WikiaApi.SiteThemeInfo.BackgroundImageHeight">
-      <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>P:WikiClientLibrary.Wikia.WikiaApi.SiteThemeInfo.BackgroundImageHeight</parameter>
-          </include>
-        </markup>
-      </summary>
-    </member>
-    <member name="P:WikiClientLibrary.Wikia.WikiaApi.SiteThemeInfo.BackgroundImageWidth">
-      <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>P:WikiClientLibrary.Wikia.WikiaApi.SiteThemeInfo.BackgroundImageWidth</parameter>
-          </include>
-        </markup>
-      </summary>
-    </member>
-    <member name="P:WikiClientLibrary.Wikia.WikiaApi.SiteThemeInfo.BodyColor">
-      <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>P:WikiClientLibrary.Wikia.WikiaApi.SiteThemeInfo.BodyColor</parameter>
-          </include>
-        </markup>
-      </summary>
-    </member>
-    <member name="P:WikiClientLibrary.Wikia.WikiaApi.SiteThemeInfo.BodyMiddleColor">
-      <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>P:WikiClientLibrary.Wikia.WikiaApi.SiteThemeInfo.BodyMiddleColor</parameter>
-          </include>
-        </markup>
-      </summary>
-    </member>
-    <member name="P:WikiClientLibrary.Wikia.WikiaApi.SiteThemeInfo.ButtonsColor">
-      <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>P:WikiClientLibrary.Wikia.WikiaApi.SiteThemeInfo.ButtonsColor</parameter>
-          </include>
-        </markup>
-      </summary>
-    </member>
-    <member name="P:WikiClientLibrary.Wikia.WikiaApi.SiteThemeInfo.CommunityHeaderColor">
-      <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>P:WikiClientLibrary.Wikia.WikiaApi.SiteThemeInfo.CommunityHeaderColor</parameter>
-          </include>
-        </markup>
-      </summary>
-    </member>
-    <member name="P:WikiClientLibrary.Wikia.WikiaApi.SiteThemeInfo.HeaderColor">
-      <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>P:WikiClientLibrary.Wikia.WikiaApi.SiteThemeInfo.HeaderColor</parameter>
-          </include>
-        </markup>
-      </summary>
-    </member>
-    <member name="P:WikiClientLibrary.Wikia.WikiaApi.SiteThemeInfo.IsBackgroundDynamic">
-      <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>P:WikiClientLibrary.Wikia.WikiaApi.SiteThemeInfo.IsBackgroundDynamic</parameter>
-          </include>
-        </markup>
-      </summary>
-    </member>
-    <member name="P:WikiClientLibrary.Wikia.WikiaApi.SiteThemeInfo.LinksColor">
-      <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>P:WikiClientLibrary.Wikia.WikiaApi.SiteThemeInfo.LinksColor</parameter>
-          </include>
-        </markup>
-      </summary>
-    </member>
-    <member name="P:WikiClientLibrary.Wikia.WikiaApi.SiteThemeInfo.PageColor">
-      <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>P:WikiClientLibrary.Wikia.WikiaApi.SiteThemeInfo.PageColor</parameter>
-          </include>
-        </markup>
-      </summary>
-    </member>
-    <member name="P:WikiClientLibrary.Wikia.WikiaApi.SiteThemeInfo.PageOpacity">
-      <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>P:WikiClientLibrary.Wikia.WikiaApi.SiteThemeInfo.PageOpacity</parameter>
-          </include>
-        </markup>
-      </summary>
-    </member>
-    <member name="P:WikiClientLibrary.Wikia.WikiaApi.SiteThemeInfo.WordmarkFont">
-      <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>P:WikiClientLibrary.Wikia.WikiaApi.SiteThemeInfo.WordmarkFont</parameter>
-          </include>
-        </markup>
-      </summary>
-    </member>
-    <member name="T:WikiClientLibrary.Wikia.WikiaApi.SiteVariableData">
-      <summary>
-            Represents a node in the WikiVariable API response.
-            </summary>
-    </member>
-    <member name="M:WikiClientLibrary.Wikia.WikiaApi.SiteVariableData.#ctor">
-      <summary>
-        <markup>
-          <include item="SMCAutoDocConstructor">
-            <parameter>WikiClientLibrary.Wikia.WikiaApi.SiteVariableData</parameter>
-          </include>
-        </markup>
-      </summary>
-    </member>
-    <member name="P:WikiClientLibrary.Wikia.WikiaApi.SiteVariableData.AppleTouchIcon">
-      <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>P:WikiClientLibrary.Wikia.WikiaApi.SiteVariableData.AppleTouchIcon</parameter>
-          </include>
-        </markup>
-      </summary>
-    </member>
-    <member name="P:WikiClientLibrary.Wikia.WikiaApi.SiteVariableData.ArticlePath">
-      <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>P:WikiClientLibrary.Wikia.WikiaApi.SiteVariableData.ArticlePath</parameter>
-          </include>
-        </markup>
-      </summary>
-    </member>
-    <member name="P:WikiClientLibrary.Wikia.WikiaApi.SiteVariableData.BasePath">
-      <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>P:WikiClientLibrary.Wikia.WikiaApi.SiteVariableData.BasePath</parameter>
-          </include>
-        </markup>
-      </summary>
-    </member>
-    <member name="P:WikiClientLibrary.Wikia.WikiaApi.SiteVariableData.CacheBuster">
-      <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>P:WikiClientLibrary.Wikia.WikiaApi.SiteVariableData.CacheBuster</parameter>
-          </include>
-        </markup>
-      </summary>
-    </member>
-    <member name="P:WikiClientLibrary.Wikia.WikiaApi.SiteVariableData.CdnRootUrl">
-      <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>P:WikiClientLibrary.Wikia.WikiaApi.SiteVariableData.CdnRootUrl</parameter>
-          </include>
-        </markup>
-      </summary>
-    </member>
-    <member name="P:WikiClientLibrary.Wikia.WikiaApi.SiteVariableData.ContentNamespaceIds">
-      <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>P:WikiClientLibrary.Wikia.WikiaApi.SiteVariableData.ContentNamespaceIds</parameter>
-          </include>
-        </markup>
-      </summary>
-    </member>
-    <member name="P:WikiClientLibrary.Wikia.WikiaApi.SiteVariableData.DatabaseName">
-      <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>P:WikiClientLibrary.Wikia.WikiaApi.SiteVariableData.DatabaseName</parameter>
-          </include>
-        </markup>
-      </summary>
-    </member>
-    <member name="P:WikiClientLibrary.Wikia.WikiaApi.SiteVariableData.DefaultSkinName">
-      <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>P:WikiClientLibrary.Wikia.WikiaApi.SiteVariableData.DefaultSkinName</parameter>
-          </include>
-        </markup>
-      </summary>
-    </member>
-    <member name="P:WikiClientLibrary.Wikia.WikiaApi.SiteVariableData.DiscussionColorOverride">
-      <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>P:WikiClientLibrary.Wikia.WikiaApi.SiteVariableData.DiscussionColorOverride</parameter>
-          </include>
-        </markup>
-      </summary>
-    </member>
-    <member name="P:WikiClientLibrary.Wikia.WikiaApi.SiteVariableData.FavIconUrl">
-      <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>P:WikiClientLibrary.Wikia.WikiaApi.SiteVariableData.FavIconUrl</parameter>
-          </include>
-        </markup>
-      </summary>
-    </member>
-    <member name="P:WikiClientLibrary.Wikia.WikiaApi.SiteVariableData.HomePageUrl">
-      <summary>Home page URL of FANDOM.</summary>
-    </member>
-    <member name="P:WikiClientLibrary.Wikia.WikiaApi.SiteVariableData.HtmlTitle">
-      <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>P:WikiClientLibrary.Wikia.WikiaApi.SiteVariableData.HtmlTitle</parameter>
-          </include>
-        </markup>
-      </summary>
-    </member>
-    <member name="P:WikiClientLibrary.Wikia.WikiaApi.SiteVariableData.Id">
-      <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>P:WikiClientLibrary.Wikia.WikiaApi.SiteVariableData.Id</parameter>
-          </include>
-        </markup>
-      </summary>
-    </member>
-    <member name="P:WikiClientLibrary.Wikia.WikiaApi.SiteVariableData.Image">
-      <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>P:WikiClientLibrary.Wikia.WikiaApi.SiteVariableData.Image</parameter>
-          </include>
-        </markup>
-      </summary>
-    </member>
-    <member name="P:WikiClientLibrary.Wikia.WikiaApi.SiteVariableData.IsAnonymousEditingDisabled">
-      <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>P:WikiClientLibrary.Wikia.WikiaApi.SiteVariableData.IsAnonymousEditingDisabled</parameter>
-          </include>
-        </markup>
-      </summary>
-    </member>
-    <member name="P:WikiClientLibrary.Wikia.WikiaApi.SiteVariableData.IsCommunityDataEnabled">
-      <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>P:WikiClientLibrary.Wikia.WikiaApi.SiteVariableData.IsCommunityDataEnabled</parameter>
-          </include>
-        </markup>
-      </summary>
-    </member>
-    <member name="P:WikiClientLibrary.Wikia.WikiaApi.SiteVariableData.IsCoppaWiki">
-      <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>P:WikiClientLibrary.Wikia.WikiaApi.SiteVariableData.IsCoppaWiki</parameter>
-          </include>
-        </markup>
-      </summary>
-    </member>
-    <member name="P:WikiClientLibrary.Wikia.WikiaApi.SiteVariableData.IsDarkTheme">
-      <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>P:WikiClientLibrary.Wikia.WikiaApi.SiteVariableData.IsDarkTheme</parameter>
-          </include>
-        </markup>
-      </summary>
-    </member>
-    <member name="P:WikiClientLibrary.Wikia.WikiaApi.SiteVariableData.IsDiscussionsEnabled">
-      <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>P:WikiClientLibrary.Wikia.WikiaApi.SiteVariableData.IsDiscussionsEnabled</parameter>
-          </include>
-        </markup>
-      </summary>
-    </member>
-    <member name="P:WikiClientLibrary.Wikia.WikiaApi.SiteVariableData.IsDiscussionsImageUploadEnabled">
-      <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>P:WikiClientLibrary.Wikia.WikiaApi.SiteVariableData.IsDiscussionsImageUploadEnabled</parameter>
-          </include>
-        </markup>
-      </summary>
-    </member>
-    <member name="P:WikiClientLibrary.Wikia.WikiaApi.SiteVariableData.IsFandomAppSmartBannerEnabled">
-      <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>P:WikiClientLibrary.Wikia.WikiaApi.SiteVariableData.IsFandomAppSmartBannerEnabled</parameter>
-          </include>
-        </markup>
-      </summary>
-    </member>
-    <member name="P:WikiClientLibrary.Wikia.WikiaApi.SiteVariableData.IsMercuryAnonymousUploadDisabled">
-      <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>P:WikiClientLibrary.Wikia.WikiaApi.SiteVariableData.IsMercuryAnonymousUploadDisabled</parameter>
-          </include>
-        </markup>
-      </summary>
-    </member>
-    <member name="P:WikiClientLibrary.Wikia.WikiaApi.SiteVariableData.IsMobileSectionEditorDisabled">
-      <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>P:WikiClientLibrary.Wikia.WikiaApi.SiteVariableData.IsMobileSectionEditorDisabled</parameter>
-          </include>
-        </markup>
-      </summary>
-    </member>
-    <member name="P:WikiClientLibrary.Wikia.WikiaApi.SiteVariableData.IsNewAuthEnabled">
-      <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>P:WikiClientLibrary.Wikia.WikiaApi.SiteVariableData.IsNewAuthEnabled</parameter>
-          </include>
-        </markup>
-      </summary>
-    </member>
-    <member name="P:WikiClientLibrary.Wikia.WikiaApi.SiteVariableData.LanguageInfo">
-      <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>P:WikiClientLibrary.Wikia.WikiaApi.SiteVariableData.LanguageInfo</parameter>
-          </include>
-        </markup>
-      </summary>
-    </member>
-    <member name="P:WikiClientLibrary.Wikia.WikiaApi.SiteVariableData.MainPageTitle">
-      <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>P:WikiClientLibrary.Wikia.WikiaApi.SiteVariableData.MainPageTitle</parameter>
-          </include>
-        </markup>
-      </summary>
-    </member>
-    <member name="P:WikiClientLibrary.Wikia.WikiaApi.SiteVariableData.NamespaceNames">
-      <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>P:WikiClientLibrary.Wikia.WikiaApi.SiteVariableData.NamespaceNames</parameter>
-          </include>
-        </markup>
-      </summary>
-    </member>
-    <member name="P:WikiClientLibrary.Wikia.WikiaApi.SiteVariableData.NavigationItems">
-      <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>P:WikiClientLibrary.Wikia.WikiaApi.SiteVariableData.NavigationItems</parameter>
-          </include>
-        </markup>
-      </summary>
-    </member>
-    <member name="P:WikiClientLibrary.Wikia.WikiaApi.SiteVariableData.SiteMessage">
-      <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>P:WikiClientLibrary.Wikia.WikiaApi.SiteVariableData.SiteMessage</parameter>
-          </include>
-        </markup>
-      </summary>
-    </member>
-    <member name="P:WikiClientLibrary.Wikia.WikiaApi.SiteVariableData.SiteName">
-      <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>P:WikiClientLibrary.Wikia.WikiaApi.SiteVariableData.SiteName</parameter>
-          </include>
-        </markup>
-      </summary>
-    </member>
-    <member name="P:WikiClientLibrary.Wikia.WikiaApi.SiteVariableData.SpecialRobotPolicy">
-      <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>P:WikiClientLibrary.Wikia.WikiaApi.SiteVariableData.SpecialRobotPolicy</parameter>
-          </include>
-        </markup>
-      </summary>
-    </member>
-    <member name="P:WikiClientLibrary.Wikia.WikiaApi.SiteVariableData.ThemeInfo">
-      <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>P:WikiClientLibrary.Wikia.WikiaApi.SiteVariableData.ThemeInfo</parameter>
-          </include>
-        </markup>
-      </summary>
-    </member>
-    <member name="M:WikiClientLibrary.Wikia.WikiaApi.SiteVariableData.ToString">
-      <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>M:WikiClientLibrary.Wikia.WikiaApi.SiteVariableData.ToString</parameter>
-          </include>
-        </markup>
-      </summary>
-    </member>
-    <member name="P:WikiClientLibrary.Wikia.WikiaApi.SiteVariableData.TrackingInfo">
-      <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>P:WikiClientLibrary.Wikia.WikiaApi.SiteVariableData.TrackingInfo</parameter>
-          </include>
-        </markup>
-      </summary>
-    </member>
-    <member name="P:WikiClientLibrary.Wikia.WikiaApi.SiteVariableData.Vertical">
-      <summary>
-            Gets the site's Wikia hub name (e.g. Gaming, Entertainment, Lifestyle).
-            </summary>
-    </member>
-    <member name="P:WikiClientLibrary.Wikia.WikiaApi.SiteVariableData.WikiCategories">
-      <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>P:WikiClientLibrary.Wikia.WikiaApi.SiteVariableData.WikiCategories</parameter>
-          </include>
-        </markup>
-      </summary>
-    </member>
-    <member name="T:WikiClientLibrary.Wikia.WikiaApi.TrackingInfo">
-      <summary>
-            Represents a node in the WikiVariable API response.
-            </summary>
-    </member>
-    <member name="M:WikiClientLibrary.Wikia.WikiaApi.TrackingInfo.#ctor">
-      <summary>
-        <markup>
-          <include item="SMCAutoDocConstructor">
-            <parameter>WikiClientLibrary.Wikia.WikiaApi.TrackingInfo</parameter>
-          </include>
-        </markup>
-      </summary>
-    </member>
-    <member name="P:WikiClientLibrary.Wikia.WikiaApi.TrackingInfo.Vertical">
-      <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>P:WikiClientLibrary.Wikia.WikiaApi.TrackingInfo.Vertical</parameter>
           </include>
         </markup>
       </summary>
@@ -2406,12 +2426,12 @@
         </markup>
       </param>
     </member>
-    <member name="M:WikiClientLibrary.Wikia.WikiaApi.WikiaSiteWikiaApiExtensions.FetchRelatedPagesAsync(System.Void,System.Collections.Generic.IList{WikiClientLibrary.Wikia.WikiaApi.RelatedPageItem},WikiClientLibrary.Wikia.WikiaSite)">
+    <member name="M:WikiClientLibrary.Wikia.WikiaApi.WikiaSiteWikiaApiExtensions.FetchRelatedPagesAsync(System.Void,System.Collections.Generic.IList{WikiClientLibrary.Wikia.WikiaApi.RelatedPageItem},WikiClientLibrary.Wikia.Sites.WikiaSite)">
       <summary>
         <markup>
           <include item="SMCMissingTag">
             <parameter>summary</parameter>
-            <parameter>M:WikiClientLibrary.Wikia.WikiaApi.WikiaSiteWikiaApiExtensions.FetchRelatedPagesAsync(System.Void,System.Collections.Generic.IList{WikiClientLibrary.Wikia.WikiaApi.RelatedPageItem},WikiClientLibrary.Wikia.WikiaSite)</parameter>
+            <parameter>M:WikiClientLibrary.Wikia.WikiaApi.WikiaSiteWikiaApiExtensions.FetchRelatedPagesAsync(System.Void,System.Collections.Generic.IList{WikiClientLibrary.Wikia.WikiaApi.RelatedPageItem},WikiClientLibrary.Wikia.Sites.WikiaSite)</parameter>
           </include>
         </markup>
       </summary>
@@ -2420,7 +2440,7 @@
           <include item="SMCMissingParamTag">
             <parameter>param</parameter>
             <parameter>site</parameter>
-            <parameter>M:WikiClientLibrary.Wikia.WikiaApi.WikiaSiteWikiaApiExtensions.FetchRelatedPagesAsync(System.Void,System.Collections.Generic.IList{WikiClientLibrary.Wikia.WikiaApi.RelatedPageItem},WikiClientLibrary.Wikia.WikiaSite)</parameter>
+            <parameter>M:WikiClientLibrary.Wikia.WikiaApi.WikiaSiteWikiaApiExtensions.FetchRelatedPagesAsync(System.Void,System.Collections.Generic.IList{WikiClientLibrary.Wikia.WikiaApi.RelatedPageItem},WikiClientLibrary.Wikia.Sites.WikiaSite)</parameter>
           </include>
         </markup>
       </param>
@@ -2429,7 +2449,7 @@
           <include item="SMCMissingParamTag">
             <parameter>param</parameter>
             <parameter>pageId</parameter>
-            <parameter>M:WikiClientLibrary.Wikia.WikiaApi.WikiaSiteWikiaApiExtensions.FetchRelatedPagesAsync(System.Void,System.Collections.Generic.IList{WikiClientLibrary.Wikia.WikiaApi.RelatedPageItem},WikiClientLibrary.Wikia.WikiaSite)</parameter>
+            <parameter>M:WikiClientLibrary.Wikia.WikiaApi.WikiaSiteWikiaApiExtensions.FetchRelatedPagesAsync(System.Void,System.Collections.Generic.IList{WikiClientLibrary.Wikia.WikiaApi.RelatedPageItem},WikiClientLibrary.Wikia.Sites.WikiaSite)</parameter>
           </include>
         </markup>
       </param>
@@ -2438,17 +2458,17 @@
           <include item="SMCMissingParamTag">
             <parameter>param</parameter>
             <parameter>maxCount</parameter>
-            <parameter>M:WikiClientLibrary.Wikia.WikiaApi.WikiaSiteWikiaApiExtensions.FetchRelatedPagesAsync(System.Void,System.Collections.Generic.IList{WikiClientLibrary.Wikia.WikiaApi.RelatedPageItem},WikiClientLibrary.Wikia.WikiaSite)</parameter>
+            <parameter>M:WikiClientLibrary.Wikia.WikiaApi.WikiaSiteWikiaApiExtensions.FetchRelatedPagesAsync(System.Void,System.Collections.Generic.IList{WikiClientLibrary.Wikia.WikiaApi.RelatedPageItem},WikiClientLibrary.Wikia.Sites.WikiaSite)</parameter>
           </include>
         </markup>
       </param>
     </member>
-    <member name="M:WikiClientLibrary.Wikia.WikiaApi.WikiaSiteWikiaApiExtensions.FetchRelatedPagesAsync(System.Void,System.Collections.Generic.IList{WikiClientLibrary.Wikia.WikiaApi.RelatedPageItem},WikiClientLibrary.Wikia.WikiaSite,System.Int32)">
+    <member name="M:WikiClientLibrary.Wikia.WikiaApi.WikiaSiteWikiaApiExtensions.FetchRelatedPagesAsync(System.Void,System.Collections.Generic.IList{WikiClientLibrary.Wikia.WikiaApi.RelatedPageItem},WikiClientLibrary.Wikia.Sites.WikiaSite,System.Int32)">
       <summary>
         <markup>
           <include item="SMCMissingTag">
             <parameter>summary</parameter>
-            <parameter>M:WikiClientLibrary.Wikia.WikiaApi.WikiaSiteWikiaApiExtensions.FetchRelatedPagesAsync(System.Void,System.Collections.Generic.IList{WikiClientLibrary.Wikia.WikiaApi.RelatedPageItem},WikiClientLibrary.Wikia.WikiaSite,System.Int32)</parameter>
+            <parameter>M:WikiClientLibrary.Wikia.WikiaApi.WikiaSiteWikiaApiExtensions.FetchRelatedPagesAsync(System.Void,System.Collections.Generic.IList{WikiClientLibrary.Wikia.WikiaApi.RelatedPageItem},WikiClientLibrary.Wikia.Sites.WikiaSite,System.Int32)</parameter>
           </include>
         </markup>
       </summary>
@@ -2457,7 +2477,7 @@
           <include item="SMCMissingParamTag">
             <parameter>param</parameter>
             <parameter>site</parameter>
-            <parameter>M:WikiClientLibrary.Wikia.WikiaApi.WikiaSiteWikiaApiExtensions.FetchRelatedPagesAsync(System.Void,System.Collections.Generic.IList{WikiClientLibrary.Wikia.WikiaApi.RelatedPageItem},WikiClientLibrary.Wikia.WikiaSite,System.Int32)</parameter>
+            <parameter>M:WikiClientLibrary.Wikia.WikiaApi.WikiaSiteWikiaApiExtensions.FetchRelatedPagesAsync(System.Void,System.Collections.Generic.IList{WikiClientLibrary.Wikia.WikiaApi.RelatedPageItem},WikiClientLibrary.Wikia.Sites.WikiaSite,System.Int32)</parameter>
           </include>
         </markup>
       </param>
@@ -2466,7 +2486,7 @@
           <include item="SMCMissingParamTag">
             <parameter>param</parameter>
             <parameter>pageId</parameter>
-            <parameter>M:WikiClientLibrary.Wikia.WikiaApi.WikiaSiteWikiaApiExtensions.FetchRelatedPagesAsync(System.Void,System.Collections.Generic.IList{WikiClientLibrary.Wikia.WikiaApi.RelatedPageItem},WikiClientLibrary.Wikia.WikiaSite,System.Int32)</parameter>
+            <parameter>M:WikiClientLibrary.Wikia.WikiaApi.WikiaSiteWikiaApiExtensions.FetchRelatedPagesAsync(System.Void,System.Collections.Generic.IList{WikiClientLibrary.Wikia.WikiaApi.RelatedPageItem},WikiClientLibrary.Wikia.Sites.WikiaSite,System.Int32)</parameter>
           </include>
         </markup>
       </param>
@@ -2475,7 +2495,7 @@
           <include item="SMCMissingParamTag">
             <parameter>param</parameter>
             <parameter>maxCount</parameter>
-            <parameter>M:WikiClientLibrary.Wikia.WikiaApi.WikiaSiteWikiaApiExtensions.FetchRelatedPagesAsync(System.Void,System.Collections.Generic.IList{WikiClientLibrary.Wikia.WikiaApi.RelatedPageItem},WikiClientLibrary.Wikia.WikiaSite,System.Int32)</parameter>
+            <parameter>M:WikiClientLibrary.Wikia.WikiaApi.WikiaSiteWikiaApiExtensions.FetchRelatedPagesAsync(System.Void,System.Collections.Generic.IList{WikiClientLibrary.Wikia.WikiaApi.RelatedPageItem},WikiClientLibrary.Wikia.Sites.WikiaSite,System.Int32)</parameter>
           </include>
         </markup>
       </param>
@@ -2484,7 +2504,7 @@
           <include item="SMCMissingParamTag">
             <parameter>param</parameter>
             <parameter>cancellationToken</parameter>
-            <parameter>M:WikiClientLibrary.Wikia.WikiaApi.WikiaSiteWikiaApiExtensions.FetchRelatedPagesAsync(System.Void,System.Collections.Generic.IList{WikiClientLibrary.Wikia.WikiaApi.RelatedPageItem},WikiClientLibrary.Wikia.WikiaSite,System.Int32)</parameter>
+            <parameter>M:WikiClientLibrary.Wikia.WikiaApi.WikiaSiteWikiaApiExtensions.FetchRelatedPagesAsync(System.Void,System.Collections.Generic.IList{WikiClientLibrary.Wikia.WikiaApi.RelatedPageItem},WikiClientLibrary.Wikia.Sites.WikiaSite,System.Int32)</parameter>
           </include>
         </markup>
       </param>
@@ -2517,12 +2537,12 @@
         </markup>
       </param>
     </member>
-    <member name="M:WikiClientLibrary.Wikia.WikiaApi.WikiaSiteWikiaApiExtensions.FetchUserAsync(System.Void,WikiClientLibrary.Wikia.WikiaApi.UserInfo,WikiClientLibrary.Wikia.WikiaSite)">
+    <member name="M:WikiClientLibrary.Wikia.WikiaApi.WikiaSiteWikiaApiExtensions.FetchUserAsync(System.Void,WikiClientLibrary.Wikia.WikiaApi.UserInfo,WikiClientLibrary.Wikia.Sites.WikiaSite)">
       <summary>
         <markup>
           <include item="SMCMissingTag">
             <parameter>summary</parameter>
-            <parameter>M:WikiClientLibrary.Wikia.WikiaApi.WikiaSiteWikiaApiExtensions.FetchUserAsync(System.Void,WikiClientLibrary.Wikia.WikiaApi.UserInfo,WikiClientLibrary.Wikia.WikiaSite)</parameter>
+            <parameter>M:WikiClientLibrary.Wikia.WikiaApi.WikiaSiteWikiaApiExtensions.FetchUserAsync(System.Void,WikiClientLibrary.Wikia.WikiaApi.UserInfo,WikiClientLibrary.Wikia.Sites.WikiaSite)</parameter>
           </include>
         </markup>
       </summary>
@@ -2531,7 +2551,7 @@
           <include item="SMCMissingParamTag">
             <parameter>param</parameter>
             <parameter>site</parameter>
-            <parameter>M:WikiClientLibrary.Wikia.WikiaApi.WikiaSiteWikiaApiExtensions.FetchUserAsync(System.Void,WikiClientLibrary.Wikia.WikiaApi.UserInfo,WikiClientLibrary.Wikia.WikiaSite)</parameter>
+            <parameter>M:WikiClientLibrary.Wikia.WikiaApi.WikiaSiteWikiaApiExtensions.FetchUserAsync(System.Void,WikiClientLibrary.Wikia.WikiaApi.UserInfo,WikiClientLibrary.Wikia.Sites.WikiaSite)</parameter>
           </include>
         </markup>
       </param>
@@ -2540,7 +2560,7 @@
           <include item="SMCMissingParamTag">
             <parameter>param</parameter>
             <parameter>userName</parameter>
-            <parameter>M:WikiClientLibrary.Wikia.WikiaApi.WikiaSiteWikiaApiExtensions.FetchUserAsync(System.Void,WikiClientLibrary.Wikia.WikiaApi.UserInfo,WikiClientLibrary.Wikia.WikiaSite)</parameter>
+            <parameter>M:WikiClientLibrary.Wikia.WikiaApi.WikiaSiteWikiaApiExtensions.FetchUserAsync(System.Void,WikiClientLibrary.Wikia.WikiaApi.UserInfo,WikiClientLibrary.Wikia.Sites.WikiaSite)</parameter>
           </include>
         </markup>
       </param>
@@ -2549,7 +2569,7 @@
           <include item="SMCMissingParamTag">
             <parameter>param</parameter>
             <parameter>cancellationToken</parameter>
-            <parameter>M:WikiClientLibrary.Wikia.WikiaApi.WikiaSiteWikiaApiExtensions.FetchUserAsync(System.Void,WikiClientLibrary.Wikia.WikiaApi.UserInfo,WikiClientLibrary.Wikia.WikiaSite)</parameter>
+            <parameter>M:WikiClientLibrary.Wikia.WikiaApi.WikiaSiteWikiaApiExtensions.FetchUserAsync(System.Void,WikiClientLibrary.Wikia.WikiaApi.UserInfo,WikiClientLibrary.Wikia.Sites.WikiaSite)</parameter>
           </include>
         </markup>
       </param>
@@ -2578,53 +2598,6 @@
             <parameter>param</parameter>
             <parameter>userNames</parameter>
             <parameter>M:WikiClientLibrary.Wikia.WikiaApi.WikiaSiteWikiaApiExtensions.FetchUsersAsync(System.Void,WikiClientLibrary.Wikia.WikiaApi.UserInfo)</parameter>
-          </include>
-        </markup>
-      </param>
-    </member>
-    <member name="M:WikiClientLibrary.Wikia.WikiaApi.WikiaSiteWikiaApiExtensions.FetchWikiVariablesAsync(System.Void)">
-      <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>M:WikiClientLibrary.Wikia.WikiaApi.WikiaSiteWikiaApiExtensions.FetchWikiVariablesAsync(System.Void)</parameter>
-          </include>
-        </markup>
-      </summary>
-      <param name="site">
-        <markup>
-          <include item="SMCMissingParamTag">
-            <parameter>param</parameter>
-            <parameter>site</parameter>
-            <parameter>M:WikiClientLibrary.Wikia.WikiaApi.WikiaSiteWikiaApiExtensions.FetchWikiVariablesAsync(System.Void)</parameter>
-          </include>
-        </markup>
-      </param>
-    </member>
-    <member name="M:WikiClientLibrary.Wikia.WikiaApi.WikiaSiteWikiaApiExtensions.FetchWikiVariablesAsync(System.Void,WikiClientLibrary.Wikia.WikiaApi.SiteVariableData)">
-      <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>M:WikiClientLibrary.Wikia.WikiaApi.WikiaSiteWikiaApiExtensions.FetchWikiVariablesAsync(System.Void,WikiClientLibrary.Wikia.WikiaApi.SiteVariableData)</parameter>
-          </include>
-        </markup>
-      </summary>
-      <param name="site">
-        <markup>
-          <include item="SMCMissingParamTag">
-            <parameter>param</parameter>
-            <parameter>site</parameter>
-            <parameter>M:WikiClientLibrary.Wikia.WikiaApi.WikiaSiteWikiaApiExtensions.FetchWikiVariablesAsync(System.Void,WikiClientLibrary.Wikia.WikiaApi.SiteVariableData)</parameter>
-          </include>
-        </markup>
-      </param>
-      <param name="cancellationToken">
-        <markup>
-          <include item="SMCMissingParamTag">
-            <parameter>param</parameter>
-            <parameter>cancellationToken</parameter>
-            <parameter>M:WikiClientLibrary.Wikia.WikiaApi.WikiaSiteWikiaApiExtensions.FetchWikiVariablesAsync(System.Void,WikiClientLibrary.Wikia.WikiaApi.SiteVariableData)</parameter>
           </include>
         </markup>
       </param>
