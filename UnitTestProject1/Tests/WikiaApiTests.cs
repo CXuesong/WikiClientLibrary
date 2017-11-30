@@ -50,7 +50,7 @@ namespace UnitTestProject1.Tests
         public async Task FetchSiteVariablesTest()
         {
             var site = await WikiaTestSiteAsync;
-            var data = await site.FetchWikiVariablesAsync();
+            var data = site.WikiVariables;
             ShallowTrace(data);
             Assert.Equal(203236, data.Id);
             Assert.Equal("Mediawiki 1.19 test Wiki", data.SiteName);

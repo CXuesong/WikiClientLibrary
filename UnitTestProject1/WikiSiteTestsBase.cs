@@ -13,6 +13,7 @@ using Microsoft.Extensions.Logging;
 using WikiClientLibrary.Client;
 using WikiClientLibrary.Sites;
 using WikiClientLibrary.Wikia;
+using WikiClientLibrary.Wikia.Sites;
 using Xunit;
 using Xunit.Abstractions;
 

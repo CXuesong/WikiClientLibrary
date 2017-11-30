@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using WikiClientLibrary.Infrastructures;
 using WikiClientLibrary.Sites;
+using WikiClientLibrary.Wikia.Sites;
 
 namespace WikiClientLibrary.Wikia
 {

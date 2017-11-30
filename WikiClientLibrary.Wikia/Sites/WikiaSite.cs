@@ -1,16 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Logging.Abstractions;
 using Newtonsoft.Json.Linq;
 using WikiClientLibrary.Client;
+using WikiClientLibrary.Infrastructures.Logging;
 using WikiClientLibrary.Sites;
 
-namespace WikiClientLibrary.Wikia
+namespace WikiClientLibrary.Wikia.Sites
 {
     /// <summary>
     /// The encapsulated Wikia site endpoint.
@@ -39,6 +37,8 @@ namespace WikiClientLibrary.Wikia
             : base(wikiClient, options, userName, password)
         {
         }
+
+        public SiteVariableData WikiVariables { get; private set; }
 
         /// <inheritdoc cref="InvokeWikiaAjaxAsync{T}(WikiRequestMessage,IWikiResponseMessageParser{T},CancellationToken)"/>
         /// <remarks>
@@ -128,5 +128,17 @@ namespace WikiClientLibrary.Wikia
             return result;
         }
 
+        /// <inheritdoc />
+        public override async Task RefreshSiteInfoAsync()
+        {
+            await base.RefreshSiteInfoAsync();
+            using (this.BeginActionScope(null))
+            {
+                var jresult = await InvokeWikiaApiAsync("/Mercury/WikiVariables", new WikiaQueryRequestMessage(), CancellationToken.None);
+                var jdata = jresult["data"];
+                if (jdata == null) throw new UnexpectedDataException("Missing data node in the JSON response.");
+                WikiVariables = jdata.ToObject<SiteVariableData>();
+            }
+        }
     }
 }

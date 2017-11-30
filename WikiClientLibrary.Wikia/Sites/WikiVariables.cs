@@ -1,11 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using Newtonsoft.Json;
 using WikiClientLibrary.Infrastructures;
 
-namespace WikiClientLibrary.Wikia.WikiaApi
+namespace WikiClientLibrary.Wikia.Sites
 {
     /// <summary>
     /// Represents a node in the WikiVariable API response.

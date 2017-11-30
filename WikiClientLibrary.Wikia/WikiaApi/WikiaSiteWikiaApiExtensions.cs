@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using AsyncEnumerableExtensions;
 using Newtonsoft.Json.Linq;
 using WikiClientLibrary.Infrastructures.Logging;
+using WikiClientLibrary.Wikia.Sites;
 
 namespace WikiClientLibrary.Wikia.WikiaApi
 {
@@ -101,29 +102,6 @@ namespace WikiClientLibrary.Wikia.WikiaApi
                     }
                 }
             });
-        }
-
-        /// <inheritdoc cref="FetchWikiVariablesAsync(WikiaSite,CancellationToken)"/>
-        public static Task<SiteVariableData> FetchWikiVariablesAsync(this WikiaSite site)
-        {
-            return FetchWikiVariablesAsync(site, CancellationToken.None);
-        }
-
-        /// <summary>
-        /// Asynchronously fetches the site information.
-        /// </summary>
-        /// <param name="site">The site to issue the request.</param>
-        /// <param name="cancellationToken">A token used to cancel the operation.</param>
-        /// <returns></returns>
-        public static async Task<SiteVariableData> FetchWikiVariablesAsync(this WikiaSite site, CancellationToken cancellationToken)
-        {
-            using (site.BeginActionScope(null))
-            {
-                var jresult = await site.InvokeWikiaApiAsync("/Mercury/WikiVariables", new WikiaQueryRequestMessage(), cancellationToken);
-                var jdata = jresult["data"];
-                if (jdata == null) throw new UnexpectedDataException("Missing data node in the JSON response.");
-                return jdata.ToObject<SiteVariableData>();
-            }
         }
 
         /// <inheritdoc cref="FetchRelatedPagesAsync(WikiaSite,int,int,CancellationToken)"/>

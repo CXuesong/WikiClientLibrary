@@ -12,6 +12,7 @@ using WikiClientLibrary.Generators;
 using WikiClientLibrary.Generators.Primitive;
 using WikiClientLibrary.Pages;
 using WikiClientLibrary.Sites;
+using WikiClientLibrary.Wikia.Sites;
 
 namespace WikiClientLibrary.Wikia.WikiaApi
 {

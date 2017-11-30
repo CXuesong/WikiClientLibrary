@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
 using WikiClientLibrary.Client;
 using WikiClientLibrary.Pages;
+using WikiClientLibrary.Wikia.Sites;
 
 namespace WikiClientLibrary.Wikia.Discussions
 {

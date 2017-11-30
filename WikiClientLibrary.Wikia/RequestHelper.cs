@@ -20,6 +20,7 @@ using WikiClientLibrary.Pages.Queries;
 using WikiClientLibrary.Pages.Queries.Properties;
 using WikiClientLibrary.Sites;
 using WikiClientLibrary.Wikia.Discussions;
+using WikiClientLibrary.Wikia.Sites;
 
 namespace WikiClientLibrary.Wikia
 {

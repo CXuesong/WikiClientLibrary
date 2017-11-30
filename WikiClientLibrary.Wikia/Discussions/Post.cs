@@ -12,6 +12,7 @@ using HtmlAgilityPack;
 using Microsoft.Extensions.Logging;
 using WikiClientLibrary.Pages;
 using WikiClientLibrary.Sites;
+using WikiClientLibrary.Wikia.Sites;
 
 namespace WikiClientLibrary.Wikia.Discussions
 {
