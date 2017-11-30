@@ -64,9 +64,10 @@ namespace UnitTestProject1.Tests
             Assert.Equal(SnakType.Value, claim.MainSnak.SnakType);
             Assert.Equal("Mount Everest", claim.MainSnak.DataValue);
 
-            var parts = entity.Claims[WikidataProperties.PartOf].Select(c => c.MainSnak.DataValue).ToArray();
-            Assert.Contains(WikidataItems.Earth, parts);
-            Assert.Contains(WikidataItems.Asia, parts);
+            // Now it belongs to "Seven Summits"
+            //var parts = entity.Claims[WikidataProperties.PartOf].Select(c => c.MainSnak.DataValue).ToArray();
+            //Assert.Contains(WikidataItems.Earth, parts);
+            //Assert.Contains(WikidataItems.Asia, parts);
 
             claim = entity.Claims[WikidataProperties.CoordinateLocation].First();
             var location = (WbGlobeCoordinate) claim.MainSnak.DataValue;

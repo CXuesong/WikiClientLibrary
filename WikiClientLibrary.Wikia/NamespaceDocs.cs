@@ -35,3 +35,14 @@ namespace WikiClientLibrary.Wikia
     {
     }
 }
+
+namespace WikiClientLibrary.Wikia.Discussions
+{
+    /// <summary>
+    /// Contains classes for retrieving and creating comments on Wikia Message Wall and forums.
+    /// </summary>
+    [CompilerGenerated]
+    internal class NamespaceDoc
+    {
+    }
+}
