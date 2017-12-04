@@ -63,9 +63,18 @@ namespace WikiClientLibrary.Wikibase
                     case nameof(SiteLinks):
                         jdata.Add("sitelinks",
                             prop.GroupBy(e => ((EntitySiteLink)e.Value).Site)
-                                .ToJObject(g => g.Key, g => g.Select(item =>
+                                .ToJObject(g => g.Key, g =>
                                 {
-                                    var obj = new JObject { { "site", g.Key } };
+                                    EntityEditEntry item;
+                                    try
+                                    {
+                                        item = g.Single();
+                                    }
+                                    catch (InvalidOperationException)
+                                    {
+                                        throw new ArgumentException("One site can own at most one site link.", nameof(edits));
+                                    }
+                                    var obj = new JObject {{"site", g.Key}};
                                     if (item.State == EntityEditEntryState.Updated)
                                     {
                                         obj.Add("title", ((EntitySiteLink)item.Value).Title);
@@ -76,7 +85,7 @@ namespace WikiClientLibrary.Wikibase
                                         obj.Add("remove", "");
                                     }
                                     return obj;
-                                }).ToJArray()));
+                                }));
                         break;
                     case nameof(Claims):
                         jdata.Add("claims",

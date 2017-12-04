@@ -369,21 +369,25 @@ namespace WikiClientLibrary.Wikibase
     public sealed class EntitySiteLink
     {
 
+        private static readonly IReadOnlyList<string> emptyBadges = new ReadOnlyCollection<string>(new string[0]);
+
         public EntitySiteLink(string site, string title) : this(site, title, null, null)
         {
         }
 
-        public EntitySiteLink(string site, string title, IList<string> badges) : this(site, title, badges, null)
+        public EntitySiteLink(string site, string title, IReadOnlyList<string> badges) : this(site, title, badges, null)
         {
         }
 
         [JsonConstructor]
-        public EntitySiteLink(string site, string title, IList<string> badges, string url)
+        public EntitySiteLink(string site, string title, IReadOnlyList<string> badges, string url)
         {
             Site = site;
             Title = title;
-            Badges = badges;
-            if (!badges.IsReadOnly) Badges = new ReadOnlyCollection<string>(badges);
+            if (badges is IList<string> lb && !lb.IsReadOnly)
+                Badges = new ReadOnlyCollection<string>(lb);
+            else
+                Badges = badges ?? emptyBadges;
             Url = url;
         }
 
@@ -402,7 +406,7 @@ namespace WikiClientLibrary.Wikibase
         /// <summary>
         /// The badges for the title on the specified wiki site.
         /// </summary>
-        public IList<string> Badges { get; }
+        public IReadOnlyList<string> Badges { get; }
 
         /// <summary>
         /// The URL to the title on the specified wiki site.
