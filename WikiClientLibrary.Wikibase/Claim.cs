@@ -210,10 +210,10 @@ namespace WikiClientLibrary.Wikibase
     public sealed class Snak
     {
 
-        private static readonly JToken DirtyDataValuePlaceholder = JValue.CreateNull();
+        private static readonly JObject DirtyDataValuePlaceholder = new JObject();
 
         private object _DataValue;
-        private JToken _RawDataValue;
+        private JObject _RawDataValue;
 
         /// <summary>
         /// Initializes a snak with specified property ID and empty value.
@@ -246,7 +246,7 @@ namespace WikiClientLibrary.Wikibase
         /// <param name="rawDataValue">The raw JSON data value of the property.</param>
         /// <param name="dataType">The data value type.</param>
         /// <exception cref="ArgumentNullException"><paramref name="propertyId"/> or <paramref name="dataType"/> is <c>null</c>.</exception>
-        public Snak(string propertyId, JToken rawDataValue, WikibaseDataType dataType)
+        public Snak(string propertyId, JObject rawDataValue, WikibaseDataType dataType)
         {
             PropertyId = propertyId ?? throw new ArgumentNullException(nameof(propertyId));
             DataType = dataType ?? throw new ArgumentNullException(nameof(dataType));
@@ -284,7 +284,7 @@ namespace WikiClientLibrary.Wikibase
         public string Hash { get; set; }
 
         /// <summary>Raw JSON value of <c>datavalue</c> node.</summary>
-        public JToken RawDataValue
+        public JObject RawDataValue
         {
             get
             {
@@ -398,7 +398,7 @@ namespace WikiClientLibrary.Wikibase
             Debug.Assert(snak != null);
             SnakType = ParseSnakType((string)snak["snaktype"]);
             Hash = (string)snak["hash"];
-            RawDataValue = snak["datavalue"];
+            RawDataValue = (JObject)snak["datavalue"];
             DataType = BuiltInDataTypes.Get((string)snak["datatype"])
                        ?? MissingPropertyType.Get((string)snak["datatype"], (string)snak["value"]?["type"]);
         }
