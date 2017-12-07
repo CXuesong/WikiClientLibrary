@@ -79,7 +79,7 @@ namespace UnitTestProject1.Tests
             var topiso = (WbQuantity) entity.Claims[WikidataProperties.TopographicIsolation]
                 .First().MainSnak.DataValue;
             Assert.Equal(40008, topiso.Amount, 12);
-            Assert.Equal(WbUri.Get(WikidataEntityUriPrefix + WikidataItems.Meter), topiso.Unit);
+            Assert.Equal(WikibaseUriFactory.Get(WikidataEntityUriPrefix + WikidataItems.Meter), topiso.Unit);
         }
 
         [Fact]

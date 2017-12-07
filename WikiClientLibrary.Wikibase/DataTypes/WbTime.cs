@@ -10,6 +10,9 @@ namespace WikiClientLibrary.Wikibase.DataTypes
     /// </summary>
     public struct WbTime : IEquatable<WbTime>
     {
+
+        //public Uri JulianCalendar = new Uri();
+
         /// <summary>Initialize a new instance of <see cref="WbTime"/> with the specified time point, time zone,
         /// precision and calendar model.</summary>
         /// <param name="year">The year (-999999999 through 999999999).</param>
@@ -27,7 +30,7 @@ namespace WikiClientLibrary.Wikibase.DataTypes
         /// <exception cref="ArgumentOutOfRangeException">One or more numeric parameters are out of range.</exception>
         public WbTime(int year, int month, int day, int hour, int minute, int second,
             int before, int after, int timeZone,
-            WikibaseTimePrecision precision, WbUri calendarModel)
+            WikibaseTimePrecision precision, Uri calendarModel)
         {
             if (calendarModel == null) throw new ArgumentNullException(nameof(calendarModel));
             if (precision < WikibaseTimePrecision.YearE9 || precision > WikibaseTimePrecision.Second)
@@ -60,11 +63,11 @@ namespace WikiClientLibrary.Wikibase.DataTypes
             new Regex(@"^\s*(?<Y>[\+-]?\d{1,9})-(?<M>\d\d?)-(?<D>\d\d?)T(?<H>\d\d?):(?<m>\d\d?):(?<S>\d\d?)(?<K>Z|[\+-]\d\d?:\d\d?)?\s*$");
 
 
-        /// <inheritdoc cref="FromDateTime(DateTime,int,int,int,WikibaseTimePrecision,WbUri)"/>
+        /// <inheritdoc cref="FromDateTime(DateTime,int,int,int,WikibaseTimePrecision,Uri)"/>
         /// <remarks>This overload uses 0 as <see cref="TimeZone"/> if <see cref="DateTime.Kind"/>
         /// is <see cref="DateTimeKind.Utc"/>, and uses local time zone otherwise.</remarks>
         public static WbTime FromDateTime(DateTime dateTime, int before, int after,
-            WikibaseTimePrecision precision, WbUri calendarModel)
+            WikibaseTimePrecision precision, Uri calendarModel)
         {
             if (calendarModel == null) throw new ArgumentNullException(nameof(calendarModel));
             var timeZone = dateTime.Kind == DateTimeKind.Utc ? 0 : (int)TimeZoneInfo.Local.BaseUtcOffset.TotalMinutes;
@@ -72,11 +75,11 @@ namespace WikiClientLibrary.Wikibase.DataTypes
         }
 
         /// <summary>Constructs a <see cref="WbTime"/> instance from <see cref="DateTime"/>.</summary>
-        /// <inheritdoc cref="WbTime(int,int,int,int,int,int,int,int,int,WikibaseTimePrecision,WbUri)"/>
+        /// <inheritdoc cref="WbTime(int,int,int,int,int,int,int,int,int,WikibaseTimePrecision,Uri)"/>
         /// <param name="dateTime">The date and time.</param>
         /// <param name="timeZone">The time zone to use.</param>
         public static WbTime FromDateTime(DateTime dateTime, int before, int after, int timeZone,
-            WikibaseTimePrecision precision, WbUri calendarModel)
+            WikibaseTimePrecision precision, Uri calendarModel)
         {
             if (calendarModel == null) throw new ArgumentNullException(nameof(calendarModel));
             return new WbTime(dateTime.Year, dateTime.Month, dateTime.Day,
@@ -85,11 +88,11 @@ namespace WikiClientLibrary.Wikibase.DataTypes
                 precision, calendarModel);
         }
 
-        /// <inheritdoc cref="FromDateTime(DateTime,int,int,int,WikibaseTimePrecision,WbUri)"/>
+        /// <inheritdoc cref="FromDateTime(DateTime,int,int,int,WikibaseTimePrecision,Uri)"/>
         /// <summary>Constructs a <see cref="WbTime"/> instance from <see cref="DateTimeOffset"/>.</summary>
         /// <param name="dateTime">The date, time, and time zone.</param>
         public static WbTime FromDateTimeOffset(DateTimeOffset dateTime, int before, int after, int timeZone,
-            WikibaseTimePrecision precision, WbUri calendarModel)
+            WikibaseTimePrecision precision, Uri calendarModel)
         {
             return new WbTime(dateTime.Year, dateTime.Month, dateTime.Day,
                 dateTime.Hour, dateTime.Minute, dateTime.Minute,
@@ -98,10 +101,10 @@ namespace WikiClientLibrary.Wikibase.DataTypes
         }
 
         /// <summary>Parses <see cref="WbTime"/> from its string representation.</summary>
-        /// <inheritdoc cref="WbTime(int,int,int,int,int,int,int,int,int,WikibaseTimePrecision,WbUri)"/>
+        /// <inheritdoc cref="WbTime(int,int,int,int,int,int,int,int,int,WikibaseTimePrecision,Uri)"/>
         /// <param name="dateTime">The string representation of the date and time. Currently only ISO-8601 format is supported.</param>
         public static WbTime Parse(string dateTime, int before, int after, int timeZone,
-            WikibaseTimePrecision precision, WbUri calendarModel)
+            WikibaseTimePrecision precision, Uri calendarModel)
         {
             if (dateTime == null) throw new ArgumentNullException(nameof(dateTime));
             if (calendarModel == null) throw new ArgumentNullException(nameof(calendarModel));
@@ -161,7 +164,7 @@ namespace WikiClientLibrary.Wikibase.DataTypes
         /// <summary>
         /// The entity URI of the calendar model.
         /// </summary>
-        public WbUri CalendarModel { get; }
+        public Uri CalendarModel { get; }
 
         /// <inheritdoc />
         public override string ToString()

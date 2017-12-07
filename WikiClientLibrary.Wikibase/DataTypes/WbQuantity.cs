@@ -9,18 +9,18 @@ namespace WikiClientLibrary.Wikibase.DataTypes
     public struct WbQuantity
     {
 
-        /// <inheritdoc cref="WbQuantity(double,double,double,WbUri)"/>
+        /// <inheritdoc cref="WbQuantity(double,double,double,Uri)"/>
         /// <summary>
         /// Initializes a new <see cref="WbQuantity"/> with the accurate amount, and entity URI of the unit.
         /// </summary>
-        public WbQuantity(double amount, WbUri unit) : this(amount, amount, amount, unit)
+        public WbQuantity(double amount, Uri unit) : this(amount, amount, amount, unit)
         {
             
         }
 
-        /// <inheritdoc cref="WbQuantity(double,double,double,WbUri)"/>
+        /// <inheritdoc cref="WbQuantity(double,double,double,Uri)"/>
         /// <param name="error">The numberic error of the <paramref name="amount"/>.</param>
-        public WbQuantity(double amount, double error, WbUri unit) : this(amount, amount - error, amount + error, unit)
+        public WbQuantity(double amount, double error, Uri unit) : this(amount, amount - error, amount + error, unit)
         {
 
         }
@@ -34,7 +34,7 @@ namespace WikiClientLibrary.Wikibase.DataTypes
         /// <param name="unit">Entity URI of the unit.</param>
         /// <exception cref="ArgumentException"><paramref name="amount"/> is not in the range of <paramref name="lowerBound"/> and <paramref name="upperBound"/>.</exception>
         /// <exception cref="ArgumentNullException"><paramref name="unit"/> is <c>null</c>.</exception>
-        public WbQuantity(double amount, double lowerBound, double upperBound, WbUri unit)
+        public WbQuantity(double amount, double lowerBound, double upperBound, Uri unit)
         {
             if (amount < lowerBound || amount > upperBound) throw new ArgumentException("amount should be between lowerBound and upperBound.");
             Amount = amount;
@@ -62,7 +62,7 @@ namespace WikiClientLibrary.Wikibase.DataTypes
         /// <summary>
         /// Entity URI of the unit.
         /// </summary>
-        public WbUri Unit { get; }
+        public Uri Unit { get; }
 
         /// <summary>
         /// Determines whether the <see cref="Amount"/> has error.
@@ -82,7 +82,7 @@ namespace WikiClientLibrary.Wikibase.DataTypes
                 else
                     s += "+" + upper + "/-" + lower;
             }
-            if (Unit != null) s += "(" + Unit + ")";
+            if (Unit != null) s += "(" + Unit.LocalPath + ")";
             return s;
         }
     }

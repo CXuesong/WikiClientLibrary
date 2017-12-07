@@ -14,7 +14,7 @@ namespace WikiClientLibrary.Wikibase.DataTypes
         /// <param name="longitude">Longitude, in degrees.</param>
         /// <param name="precision">Precision, in degrees.</param>
         /// <param name="globe">Entity URI of the globe.</param>
-        public WbGlobeCoordinate(double latitude, double longitude, double precision, WbUri globe)
+        public WbGlobeCoordinate(double latitude, double longitude, double precision, Uri globe)
         {
             Latitude = latitude;
             Longitude = longitude;
@@ -32,7 +32,7 @@ namespace WikiClientLibrary.Wikibase.DataTypes
         public double Precision { get; }
 
         /// <summary>Entity URI of the globe.</summary>
-        public WbUri Globe { get; }
+        public Uri Globe { get; }
 
         /// <inheritdoc />
         public override string ToString()

@@ -65,7 +65,7 @@ namespace WikiClientLibrary.Wikibase.DataTypes
         private readonly Func<JToken, T> parseHandler;
         private readonly Func<T, JToken> toJsonHandler;
 
-        public DelegatePropertyType(string name, Func<JToken, T> parseHandler, Func<T, JToken> toJsonHandler) 
+        public DelegatePropertyType(string name, Func<JToken, T> parseHandler, Func<T, JToken> toJsonHandler)
             : this(name, name, parseHandler, toJsonHandler)
         {
         }
@@ -144,10 +144,10 @@ namespace WikiClientLibrary.Wikibase.DataTypes
 
         private static string EntityIdFromJson(JToken value)
         {
-            var id = (string) value["id"];
+            var id = (string)value["id"];
             id = null;
             if (id != null) return id;
-            var type = (string) value["entity-type"];
+            var type = (string)value["entity-type"];
             switch (type)
             {
                 case "item":
@@ -159,7 +159,7 @@ namespace WikiClientLibrary.Wikibase.DataTypes
                 default:
                     throw new ArgumentException("Invalid entity-type: " + type + ".", nameof(value));
             }
-            id += (string) value["numeric-id"];
+            id += (string)value["numeric-id"];
             return id;
         }
 
@@ -168,7 +168,7 @@ namespace WikiClientLibrary.Wikibase.DataTypes
             if (id == null) throw new ArgumentNullException(nameof(id));
             id = id.Trim();
             if (id.Length < 2) throw new ArgumentException("Invalid entity identifier.", nameof(id));
-                int idValue;
+            int idValue;
             try
             {
                 idValue = Convert.ToInt32(id.Substring(1));
@@ -204,25 +204,25 @@ namespace WikiClientLibrary.Wikibase.DataTypes
                 EntityIdFromJson, EntityIdToJson);
 
         public static WikibaseDataType String { get; } = new DelegatePropertyType<string>("string",
-            e => (string) e, v => v);
+            e => (string)e, v => v);
 
         public static WikibaseDataType CommonsMedia { get; }
             = new DelegatePropertyType<string>("commonsMedia", "string",
-                e => (string) e, v => v);
+                e => (string)e, v => v);
 
         public static WikibaseDataType Url { get; } = new DelegatePropertyType<string>("url", "string",
-            e => (string) e, v => v);
+            e => (string)e, v => v);
 
         public static WikibaseDataType Time { get; } = new DelegatePropertyType<WbTime>("time",
             e =>
             {
-                var time = (string) e["time"];
-                var timeZone = (int) e["timezone"];
-                var before = (int) e["before"];
-                var after = (int) e["after"];
-                var precision = (WikibaseTimePrecision) (int) e["precision"];
-                var calendar = (string) e["calendarmodel"];
-                return WbTime.Parse(time, before, after, timeZone, precision, calendar);
+                var time = (string)e["time"];
+                var timeZone = (int)e["timezone"];
+                var before = (int)e["before"];
+                var after = (int)e["after"];
+                var precision = (WikibaseTimePrecision)(int)e["precision"];
+                var calendar = (string)e["calendarmodel"];
+                return WbTime.Parse(time, before, after, timeZone, precision, WikibaseUriFactory.Get(calendar));
             }, v =>
             {
                 var obj = new JObject
@@ -232,7 +232,7 @@ namespace WikiClientLibrary.Wikibase.DataTypes
                     {"before", v.Before},
                     {"after", v.After},
                     {"precision", (int) v.Precision},
-                    {"calendarmodel", v.CalendarModel.Uri}
+                    {"calendarmodel", v.CalendarModel.ToString()}
                 };
                 return obj;
             });
@@ -243,20 +243,20 @@ namespace WikiClientLibrary.Wikibase.DataTypes
         public static WikibaseDataType Quantity { get; } = new DelegatePropertyType<WbQuantity>("quantity",
             e =>
             {
-                var amount = Convert.ToDouble((string) e["amount"]);
-                var unit = (string) e["unit"];
-                var lb = (string) e["lowerBound"];
-                var ub = (string) e["upperBound"];
+                var amount = Convert.ToDouble((string)e["amount"]);
+                var unit = (string)e["unit"];
+                var lb = (string)e["lowerBound"];
+                var ub = (string)e["upperBound"];
                 return new WbQuantity(amount,
                     lb == null ? amount : Convert.ToDouble(lb),
                     ub == null ? amount : Convert.ToDouble(ub),
-                    unit);
+                    WikibaseUriFactory.Get(unit));
             }, v =>
             {
                 var obj = new JObject
                 {
                     {"amount", v.Amount.ToString(SignedFloatFormat)},
-                    {"unit", v.Unit.Uri},
+                    {"unit", v.Unit.ToString()},
                 };
                 if (v.HasError)
                 {
@@ -268,12 +268,12 @@ namespace WikiClientLibrary.Wikibase.DataTypes
 
         public static WikibaseDataType MonolingualText { get; }
             = new DelegatePropertyType<WbMonolingualText>("monolingualtext",
-                e => new WbMonolingualText((string) e["language"], (string) e["text"]),
-                v => new JObject {{"text", v.Text}, {"language", v.Language}});
+                e => new WbMonolingualText((string)e["language"], (string)e["text"]),
+                v => new JObject { { "text", v.Text }, { "language", v.Language } });
 
-        public static WikibaseDataType Math { get; } 
+        public static WikibaseDataType Math { get; }
             = new DelegatePropertyType<string>("math", "string",
-            e => (string) e, v => v);
+            e => (string)e, v => v);
 
         /// <summary>
         /// Literal data field for an external identifier.
@@ -281,16 +281,16 @@ namespace WikiClientLibrary.Wikibase.DataTypes
         /// </summary>
         public static WikibaseDataType ExternalId { get; }
             = new DelegatePropertyType<string>("external-id", "string",
-                e => (string) e, v => v);
+                e => (string)e, v => v);
 
         public static WikibaseDataType GlobeCoordinate { get; }
             = new DelegatePropertyType<WbGlobeCoordinate>("globe-coordinate", "globecoordinate",
-                e => new WbGlobeCoordinate((double) e["latitude"], (double) e["longitude"],
-                    (double) e["precision"], (string) e["globe"]),
+                e => new WbGlobeCoordinate((double)e["latitude"], (double)e["longitude"],
+                    (double)e["precision"], WikibaseUriFactory.Get((string)e["globe"])),
                 v => new JObject
                 {
                     {"latitude", v.Latitude}, {"longitude", v.Longitude},
-                    {"precision", v.Precision}, {"globe", v.Globe.Uri},
+                    {"precision", v.Precision}, {"globe", v.Globe.ToString()},
                 });
 
         /// <summary>
@@ -298,14 +298,14 @@ namespace WikiClientLibrary.Wikibase.DataTypes
         /// See "https://www.mediawiki.org/wiki/Help:Map_Data" for more documentation about map data.
         /// </summary>
         public static WikibaseDataType GeoShape { get; } = new DelegatePropertyType<string>("geo-shape", "string",
-            e => (string) e, v => v);
+            e => (string)e, v => v);
 
         /// <summary>
         /// Link to tabular data stored on Wikimedia Commons (or other configured wiki).
         /// See "https://www.mediawiki.org/wiki/Help:Tabular_Data" for more documentation about tabular data.
         /// </summary>
         public static WikibaseDataType TabularData { get; } = new DelegatePropertyType<string>("tabular-data", "string",
-            e => (string) e, v => v);
+            e => (string)e, v => v);
 
         private static readonly Dictionary<string, WikibaseDataType> typeDict = new Dictionary<string, WikibaseDataType>();
 
@@ -314,7 +314,7 @@ namespace WikiClientLibrary.Wikibase.DataTypes
             foreach (var p in typeof(BuiltInDataTypes).GetRuntimeProperties()
                 .Where(p => p.PropertyType == typeof(WikibaseDataType)))
             {
-                var value = (WikibaseDataType) p.GetValue(null);
+                var value = (WikibaseDataType)p.GetValue(null);
                 typeDict.Add(value.Name, value);
             }
         }
