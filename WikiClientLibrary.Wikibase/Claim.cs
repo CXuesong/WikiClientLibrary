@@ -30,7 +30,7 @@ namespace WikiClientLibrary.Wikibase
         }
         
         /// <summary>
-        /// Initializes a new <see cref="Claim"/> instance with the specified main snak.
+        /// Initializes a new <see cref="Claim"/> instance with the main snak set to property id.
         /// </summary>
         /// <param name="mainSnakPropertyId">The property ID of the auto-constructed main snak.</param>
         /// <exception cref="ArgumentNullException"><paramref name="mainSnakPropertyId"/> is <c>null</c>.</exception>
@@ -39,7 +39,19 @@ namespace WikiClientLibrary.Wikibase
             if (mainSnakPropertyId == null) throw new ArgumentNullException(nameof(mainSnakPropertyId));
             MainSnak = new Snak(mainSnakPropertyId);
         }
-        
+
+        /// <summary>
+        /// Initializes a new <see cref="Claim"/> instance with the main snak set to property id and value.
+        /// </summary>
+        /// <param name="propertyId">The property ID of the auto-constructed main snak.</param>
+        /// <param name="dataValue">The data value of the main snak.</param>
+        /// <param name="dataType">The data type of the main snak.</param>
+        /// <exception cref="ArgumentNullException"><paramref name="propertyId"/> or <paramref name="dataType"/> is <c>null</c>.</exception>
+        public Claim(string propertyId, object dataValue, WikibaseDataType dataType)
+        {
+            MainSnak = new Snak(propertyId, dataValue, dataType);
+        }
+
         /// <summary>
         /// Gets the main snak of the claim.
         /// </summary>
@@ -240,7 +252,7 @@ namespace WikiClientLibrary.Wikibase
         }
 
         /// <summary>
-        /// Initializes a snak with specified property ID and data value.
+        /// Initializes a snak with specified property ID and raw data value.
         /// </summary>
         /// <param name="propertyId">The property id.</param>
         /// <param name="rawDataValue">The raw JSON data value of the property.</param>
@@ -251,6 +263,21 @@ namespace WikiClientLibrary.Wikibase
             PropertyId = propertyId ?? throw new ArgumentNullException(nameof(propertyId));
             DataType = dataType ?? throw new ArgumentNullException(nameof(dataType));
             RawDataValue = rawDataValue;
+        }
+
+        /// <summary>
+        /// Initializes a snak with specified property ID and snak type.
+        /// </summary>
+        /// <param name="propertyId">The property id.</param>
+        /// <param name="snakType">Snak type.</param>
+        /// <remarks>
+        /// If you set <paramref name="snakType"/> to <see cref="SnakType.Value"/>, remember to set
+        /// <see cref="DataType"/> and <see cref="DataValue"/> to valid values afterwards.
+        /// </remarks>
+        public Snak(string propertyId, SnakType snakType)
+        {
+            PropertyId = propertyId ?? throw new ArgumentNullException(nameof(propertyId));
+            SnakType = snakType;
         }
 
         /// <summary>
