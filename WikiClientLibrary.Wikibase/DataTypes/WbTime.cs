@@ -11,7 +11,17 @@ namespace WikiClientLibrary.Wikibase.DataTypes
     public struct WbTime : IEquatable<WbTime>
     {
 
-        //public Uri JulianCalendar = new Uri();
+        /// <summary>
+        /// The URI for Gregorian calendar.
+        /// </summary>
+        /// <remarks>The URI value is <a herf="http://www.wikidata.org/entity/Q1985727">http://www.wikidata.org/entity/Q1985727</a>.</remarks>
+        public static Uri GregorianCalendar { get; } = new Uri("http://www.wikidata.org/entity/Q1985727");
+
+        /// <summary>
+        /// The URI for Julian calendar.
+        /// </summary>
+        /// <remarks>The URI value is <a herf="http://www.wikidata.org/entity/Q1985786">http://www.wikidata.org/entity/Q1985786</a>.</remarks>
+        public static Uri JulianCalendar { get; } = new Uri("http://www.wikidata.org/entity/Q1985786");
 
         /// <summary>Initialize a new instance of <see cref="WbTime"/> with the specified time point, time zone,
         /// precision and calendar model.</summary>
@@ -62,36 +72,57 @@ namespace WikiClientLibrary.Wikibase.DataTypes
         private static readonly Regex ISO8601Matcher =
             new Regex(@"^\s*(?<Y>[\+-]?\d{1,9})-(?<M>\d\d?)-(?<D>\d\d?)T(?<H>\d\d?):(?<m>\d\d?):(?<S>\d\d?)(?<K>Z|[\+-]\d\d?:\d\d?)?\s*$");
 
+        private static Uri GetCalendarModel(int year, int month)
+        {
+            if (year > 1582) return GregorianCalendar;
+            if (year == 1582 && month >= 10) return GregorianCalendar;
+            return JulianCalendar;
+        }
 
-        /// <inheritdoc cref="FromDateTime(DateTime,int,int,int,WikibaseTimePrecision,Uri)"/>
+        /// <summary>Constructs a <see cref="WbTime"/> instance from <see cref="DateTime"/>, using the appropriate calendar model.</summary>
+        /// <inheritdoc cref="FromDateTime(DateTime,int,int,WikibaseTimePrecision,Uri)"/>
         /// <remarks>This overload uses 0 as <see cref="TimeZone"/> if <see cref="DateTime.Kind"/>
         /// is <see cref="DateTimeKind.Utc"/>, and uses local time zone otherwise.</remarks>
-        public static WbTime FromDateTime(DateTime dateTime, int before, int after,
-            WikibaseTimePrecision precision, Uri calendarModel)
+        public static WbTime FromDateTime(DateTime dateTime, WikibaseTimePrecision precision)
+        {
+            return FromDateTime(dateTime, 0, 0, precision, GetCalendarModel(dateTime.Year, dateTime.Month));
+        }
+
+        /// <inheritdoc cref="FromDateTime(DateTime,int,int,WikibaseTimePrecision,Uri)"/>
+        /// <remarks>This overload uses 0 as <see cref="TimeZone"/> if <see cref="DateTime.Kind"/>
+        /// is <see cref="DateTimeKind.Utc"/>, and uses local time zone otherwise.</remarks>
+        public static WbTime FromDateTime(DateTime dateTime, int before, int after, WikibaseTimePrecision precision)
+        {
+            return FromDateTime(dateTime, before, after, precision, null);
+        }
+        /// <summary>Constructs a <see cref="WbTime"/> instance from <see cref="DateTime"/>.</summary>
+        /// <inheritdoc cref="WbTime(int,int,int,int,int,int,int,int,int,WikibaseTimePrecision,Uri)"/>
+        /// <remarks>This overload uses 0 as <see cref="TimeZone"/> if <see cref="DateTime.Kind"/>
+        /// is <see cref="DateTimeKind.Utc"/>, and uses local time zone otherwise.</remarks>
+        public static WbTime FromDateTime(DateTime dateTime, int before, int after, WikibaseTimePrecision precision,
+            Uri calendarModel)
         {
             if (calendarModel == null) throw new ArgumentNullException(nameof(calendarModel));
             var timeZone = dateTime.Kind == DateTimeKind.Utc ? 0 : (int)TimeZoneInfo.Local.BaseUtcOffset.TotalMinutes;
-            return FromDateTime(dateTime, before, after, timeZone, precision, calendarModel);
-        }
-
-        /// <summary>Constructs a <see cref="WbTime"/> instance from <see cref="DateTime"/>.</summary>
-        /// <inheritdoc cref="WbTime(int,int,int,int,int,int,int,int,int,WikibaseTimePrecision,Uri)"/>
-        /// <param name="dateTime">The date and time.</param>
-        /// <param name="timeZone">The time zone to use.</param>
-        public static WbTime FromDateTime(DateTime dateTime, int before, int after, int timeZone,
-            WikibaseTimePrecision precision, Uri calendarModel)
-        {
-            if (calendarModel == null) throw new ArgumentNullException(nameof(calendarModel));
             return new WbTime(dateTime.Year, dateTime.Month, dateTime.Day,
                 dateTime.Hour, dateTime.Minute, dateTime.Minute,
                 before, after, timeZone,
                 precision, calendarModel);
         }
 
-        /// <inheritdoc cref="FromDateTime(DateTime,int,int,int,WikibaseTimePrecision,Uri)"/>
+        /// <inheritdoc cref="FromDateTimeOffset(DateTimeOffset,int,int,WikibaseTimePrecision,Uri)"/>
+        /// <summary>Constructs a <see cref="WbTime"/> instance from <see cref="DateTimeOffset"/>, using the appropriate calendar model.</summary>
+        /// <param name="dateTime">The date, time, and time zone.</param>
+        public static WbTime FromDateTimeOffset(DateTimeOffset dateTime, int before, int after,
+            WikibaseTimePrecision precision)
+        {
+            return FromDateTimeOffset(dateTime, before, after, precision, GetCalendarModel(dateTime.Year, dateTime.Month));
+        }
+
+        /// <inheritdoc cref="WbTime(int,int,int,int,int,int,int,int,int,WikibaseTimePrecision,Uri)"/>
         /// <summary>Constructs a <see cref="WbTime"/> instance from <see cref="DateTimeOffset"/>.</summary>
         /// <param name="dateTime">The date, time, and time zone.</param>
-        public static WbTime FromDateTimeOffset(DateTimeOffset dateTime, int before, int after, int timeZone,
+        public static WbTime FromDateTimeOffset(DateTimeOffset dateTime, int before, int after,
             WikibaseTimePrecision precision, Uri calendarModel)
         {
             return new WbTime(dateTime.Year, dateTime.Month, dateTime.Day,
@@ -256,7 +287,7 @@ namespace WikiClientLibrary.Wikibase.DataTypes
                 hashCode = (hashCode * 397) ^ Before;
                 hashCode = (hashCode * 397) ^ After;
                 hashCode = (hashCode * 397) ^ TimeZone;
-                hashCode = (hashCode * 397) ^ (int) Precision;
+                hashCode = (hashCode * 397) ^ (int)Precision;
                 hashCode = (hashCode * 397) ^ CalendarModel.GetHashCode();
                 return hashCode;
             }

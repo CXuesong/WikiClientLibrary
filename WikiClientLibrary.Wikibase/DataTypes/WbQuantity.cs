@@ -9,6 +9,11 @@ namespace WikiClientLibrary.Wikibase.DataTypes
     public struct WbQuantity
     {
 
+        /// <summary>
+        /// The URI indicating the quantity has no unit (unity unit).
+        /// </summary>
+        public static Uri Unity { get; } = new Uri("1", UriKind.Relative);
+
         /// <inheritdoc cref="WbQuantity(double,double,double,Uri)"/>
         /// <summary>
         /// Initializes a new <see cref="WbQuantity"/> with the accurate amount, and entity URI of the unit.
@@ -31,7 +36,7 @@ namespace WikiClientLibrary.Wikibase.DataTypes
         /// <param name="amount">The numeric value of the amount.</param>
         /// <param name="lowerBound">The lower-bound of the <paramref name="amount"/> caused by error.</param>
         /// <param name="upperBound">The upper-bound of the <paramref name="amount"/> caused by error.</param>
-        /// <param name="unit">Entity URI of the unit.</param>
+        /// <param name="unit">Entity URI of the unit. Use <see cref="Unity"/> for quantities that have no explict units.</param>
         /// <exception cref="ArgumentException"><paramref name="amount"/> is not in the range of <paramref name="lowerBound"/> and <paramref name="upperBound"/>.</exception>
         /// <exception cref="ArgumentNullException"><paramref name="unit"/> is <c>null</c>.</exception>
         public WbQuantity(double amount, double lowerBound, double upperBound, Uri unit)
