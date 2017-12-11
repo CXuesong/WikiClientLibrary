@@ -72,6 +72,7 @@ namespace WikiClientLibrary.Wikibase
         /// <summary>
         /// Id of the entity.
         /// </summary>
+        /// <value>Item or Property ID, OR <c>null</c> if this is a new entity that has not made any changes.</value>
         public string Id { get; private set; }
 
         /// <summary>
@@ -292,8 +293,9 @@ namespace WikiClientLibrary.Wikibase
         public override string ToString()
         {
             var en = Labels?["en"];
-            if (en != null) return en + "(" + Id + ")";
-            return Id;
+            var id = Id ?? ("<New " + Type + ">");
+            if (en != null) return en + "(" + id + ")";
+            return id;
         }
 
     }

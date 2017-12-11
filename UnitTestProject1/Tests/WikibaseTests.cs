@@ -98,12 +98,15 @@ namespace UnitTestProject1.Tests
             Assert.Equal(EntityType.Property, entity4.Type);
         }
 
-        [Fact]
-        public async Task EditEntityTest1()
+        [Theory]
+        [InlineData(EntityEditOptions.None)]
+        [InlineData(EntityEditOptions.Bulk)]
+        public async Task EditEntityTest1(EntityEditOptions options)
         {
 
             const string ArbitaryItemEntityId = "Q487"; // An item ID that exists on test wiki site.
 
+            options |= EntityEditOptions.Bot;
             var site = await WikidataTestSiteAsync;
             var rand = Convert.ToBase64String(Guid.NewGuid().ToByteArray());
             // Create
@@ -118,7 +121,7 @@ namespace UnitTestProject1.Tests
                         "This is a test entity for unit test. If you see this entity outside the test site, please check the revision history and notify the editor.")),
                 new EntityEditEntry(nameof(Entity.Descriptions), new WbMonolingualText("zh", "此实体仅用于测试之用。如果你在非测试维基见到此实体，请检查修订历史并告知编辑者。")),
             };
-            await entity.EditAsync(changelist, "Create test entity.", true);
+            await entity.EditAsync(changelist, "Create test entity.", options);
             ShallowTrace(entity);
             Assert.Equal("test entity " + rand, entity.Labels["en"]);
             Assert.Contains("test", entity.Aliases["en"]);
@@ -134,7 +137,9 @@ namespace UnitTestProject1.Tests
                 new EntityEditEntry(nameof(Entity.Aliases), new WbMonolingualText("en", "Test"), EntityEditEntryState.Removed),
                 new EntityEditEntry(nameof(Entity.Descriptions), new WbMonolingualText("zh", "dummy"), EntityEditEntryState.Removed),
             };
-            await entity.EditAsync(changelist, "Edit test entity.", true);
+            await entity.EditAsync(changelist, "Edit test entity.", options);
+            if ((options & EntityEditOptions.Bulk) != EntityEditOptions.Bulk)
+                await entity.RefreshAsync(EntityQueryOptions.FetchLabels | EntityQueryOptions.FetchDescriptions | EntityQueryOptions.FetchAliases);
             ShallowTrace(entity);
             Assert.Null(entity.Descriptions["zh"]);
             Assert.Equal("测试实体" + rand, entity.Labels["zh-hans"]);
@@ -149,7 +154,7 @@ namespace UnitTestProject1.Tests
                 new EntityEditEntry(nameof(Entity.Labels), new WbMonolingualText("en", "test property " + rand)),
                 new EntityEditEntry(nameof(Entity.DataType), BuiltInDataTypes.WikibaseItem),
             };
-            await prop.EditAsync(changelist, "Create a property for test.", true);
+            await prop.EditAsync(changelist, "Create a property for test.", options);
             // Refill basic information, esp. WbEntity.DataType
             await prop.RefreshAsync(EntityQueryOptions.FetchInfo);
 
@@ -162,7 +167,9 @@ namespace UnitTestProject1.Tests
                     References = {new ClaimReference(new Snak(prop, entity.Id))}
                 }),
             };
-            await entity.EditAsync(changelist, "Edit test entity. Add claims.", true);
+            await entity.EditAsync(changelist, "Edit test entity. Add claims.", options);
+            if ((options & EntityEditOptions.Bulk) != EntityEditOptions.Bulk)
+                await entity.RefreshAsync(EntityQueryOptions.FetchClaims);
             Assert.Equal(2, entity.Claims.Count);
             Assert.Equal(2, entity.Claims[prop.Id].Count);
             Assert.Contains(entity.Claims[prop.Id], c => entity.Id.Equals(c.MainSnak.DataValue));
@@ -176,7 +183,9 @@ namespace UnitTestProject1.Tests
             {
                 new EntityEditEntry(nameof(Entity.Claims), claim2, EntityEditEntryState.Removed),
             };
-            await entity.EditAsync(changelist, "Edit test entity. Remove a claim.", true);
+            await entity.EditAsync(changelist, "Edit test entity. Remove a claim.", options);
+            if ((options & EntityEditOptions.Bulk) != EntityEditOptions.Bulk)
+                await entity.RefreshAsync(EntityQueryOptions.FetchClaims);
             Assert.Single(entity.Claims);
             Assert.Contains(entity.Claims[prop.Id], c => entity.Id.Equals(c.MainSnak.DataValue));
         }

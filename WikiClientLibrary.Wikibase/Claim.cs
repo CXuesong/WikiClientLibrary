@@ -59,6 +59,7 @@ namespace WikiClientLibrary.Wikibase
         public Snak MainSnak { get; }
 
         /// <summary>Claim ID.</summary>
+        /// <value>Claim GUID, or <c>null</c> for a newly-created claim yet to be submitted.</value>
         public string Id { get; set; }
 
         /// <summary>The type of the claim.</summary>
@@ -311,6 +312,7 @@ namespace WikiClientLibrary.Wikibase
         public string Hash { get; set; }
 
         /// <summary>Raw JSON value of <c>datavalue</c> node.</summary>
+        /// <remarks>For the cases when <see cref="SnakType"/> is not <see cref="SnakType.Value"/>, this property should be <c>null</c>.</remarks>
         public JObject RawDataValue
         {
             get
@@ -340,6 +342,7 @@ namespace WikiClientLibrary.Wikibase
         }
 
         /// <summary>Parsed value of <c>datavalue</c> node.</summary>
+        /// <remarks>For the cases when <see cref="SnakType"/> is not <see cref="SnakType.Value"/>, this property should be <c>null</c>.</remarks>
         public object DataValue
         {
             get
@@ -389,7 +392,7 @@ namespace WikiClientLibrary.Wikibase
             return $"{PropertyId} = {valueExpr}";
         }
 
-        private static SnakType ParseSnakType(string expr)
+        internal static SnakType ParseSnakType(string expr)
         {
             if (expr == null) throw new ArgumentNullException(nameof(expr));
             switch (expr)
@@ -401,7 +404,7 @@ namespace WikiClientLibrary.Wikibase
             }
         }
 
-        private static string ParseSnakType(SnakType value)
+        internal static string ParseSnakType(SnakType value)
         {
             switch (value)
             {
