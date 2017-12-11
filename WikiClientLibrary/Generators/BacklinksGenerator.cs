@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using WikiClientLibrary.Generators.Primitive;
+using WikiClientLibrary.Infrastructures;
 using WikiClientLibrary.Pages;
 using WikiClientLibrary.Sites;
 
@@ -73,7 +74,7 @@ namespace WikiClientLibrary.Generators
             {
                 {"bltitle", TargetTitle},
                 {"blpageid", TargetPageId},
-                {"blnamespace", NamespaceIds == null ? null : string.Join("|", NamespaceIds)},
+                {"blnamespace", NamespaceIds == null ? null : MediaWikiHelper.JoinValues(NamespaceIds)},
                 {"blfilterredir", RedirectsFilter.ToString("redirects", "nonredirects")},
                 {"bllimit", actualPaginationSize},
                 {"blredirect", AllowRedirectedLinks}

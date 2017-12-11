@@ -15,7 +15,7 @@ namespace WikiClientLibrary.Pages.Queries.Properties
         {
             return new OrderedKeyValuePairs<string, object>
             {
-                {"ppprop", SelectedProperties == null ? null : string.Join("|", SelectedProperties)}
+                {"ppprop", SelectedProperties == null ? null : MediaWikiHelper.JoinValues(SelectedProperties)}
             };
         }
 

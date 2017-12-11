@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using WikiClientLibrary.Generators.Primitive;
+using WikiClientLibrary.Infrastructures;
 using WikiClientLibrary.Pages;
 using WikiClientLibrary.Sites;
 
@@ -52,7 +53,7 @@ namespace WikiClientLibrary.Generators
             return new Dictionary<string, object>
             {
                 {"eititle", TargetTitle},
-                {"einamespace", NamespaceIds == null ? null : string.Join("|", NamespaceIds)},
+                {"einamespace", NamespaceIds == null ? null : MediaWikiHelper.JoinValues(NamespaceIds)},
                 {"eifilterredir", RedirectsFilter.ToString("redirects", "nonredirects")},
                 {"eilimit", PaginationSize}
             };

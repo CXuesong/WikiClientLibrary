@@ -30,7 +30,7 @@ namespace WikiClientLibrary.Pages.Queries.Properties
                 {"clprop", "sortkey|timestamp|hidden"},
                 {"clshow", HiddenCategoryFilter.ToString("hidden", "!hidden", null)}
             };
-            if (CategorySelection != null) p.Add("clcategories", string.Join("|", CategorySelection));
+            if (CategorySelection != null) p.Add("clcategories", MediaWikiHelper.JoinValues(CategorySelection));
             return p;
         }
 

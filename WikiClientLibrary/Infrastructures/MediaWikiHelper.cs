@@ -227,5 +227,41 @@ namespace WikiClientLibrary.Infrastructures
             if (options == null) throw new ArgumentNullException(nameof(options));
             page.OnLoadPageInfo(json, options);
         }
+
+        /// <summary>
+        /// Joins multiple values that will be used as parameter value in MediaWiki API request.
+        /// </summary>
+        /// <param name="values">The values to be joined. <see cref="object.ToString"/> will be invoked before concatenating the sequence.</param>
+        /// <exception cref="ArgumentException">The values contain pipe character '|' and Unit Separator '\u001F' at the same time.</exception>
+        /// <returns>A string of values joined by pipe character or alternative multiple-value separator (U+001F),
+        /// or <see cref="string.Empty"/> if <paramref name="values"/> is empty sequence.</returns>
+        public static string JoinValues<T>(IEnumerable<T> values)
+        {
+            if (values == null) throw new ArgumentNullException(nameof(values));
+            var sb = new StringBuilder();
+            var delimiter = '|';
+            foreach (var v in values)
+            {
+                if (sb.Length > 0) sb.Append(delimiter);
+                string str = v == null ? null : v.ToString();
+                if (str != null)
+                {
+                    if (delimiter == '|')
+                    {
+                        if (str.IndexOf('|') >= 0)
+                        {
+                            sb.Replace('|', '\u001F');
+                            sb.Insert(0, '\u001F');
+                        }
+                    } else if (/* delimiter == '\u001F' && */ str.IndexOf('\u001F') >= 0)
+                    {
+                        throw new ArgumentException("values cannot contain pipe character '|' and Unit Separator '\\u001F' at the same time.");
+                    }
+                    sb.Append(str);
+                }
+            }
+            return sb.ToString();
+        }
+
     }
 }

@@ -155,13 +155,13 @@ namespace WikiClientLibrary
                             // If a page has both title and ID information,
                             // we will use title anyway.
                             site.Logger.LogDebug("Fetching {Count} pages by title.", partition.Count);
-                            queryParams["titles"] = string.Join("|", partition.Select(p => p.Title));
+                            queryParams["titles"] = MediaWikiHelper.JoinValues(partition.Select(p => p.Title));
                         }
                         else
                         {
                             site.Logger.LogDebug("Fetching {Count} pages by ID.", partition.Count);
                             Debug.Assert(sitePages.All(p => p.PageStub.HasId));
-                            queryParams["pageids"] = string.Join("|", partition.Select(p => p.Id));
+                            queryParams["pageids"] = MediaWikiHelper.JoinValues(partition.Select(p => p.Id));
                         }
                         // For single-page fetching, force fetching 1 revision only.
                         if (partition.Count == 1)
@@ -172,11 +172,9 @@ namespace WikiClientLibrary
                         if (sitePages.Key.HasTitle)
                         {
                             // Process title normalization.
-                            var normalized = jobj["query"]["normalized"]?.ToDictionary(n => (string)n["from"],
-                                n => (string)n["to"]);
+                            var normalized = jobj["query"]["normalized"]?.ToDictionary(n => (string)n["from"], n => (string)n["to"]);
                             // Process redirects.
-                            var redirects = jobj["query"]["redirects"]?.ToDictionary(n => (string)n["from"],
-                                n => (string)n["to"]);
+                            var redirects = jobj["query"]["redirects"]?.ToDictionary(n => (string)n["from"], n => (string)n["to"]);
                             var pageInfoDict = ((JObject)jobj["query"]["pages"]).Properties()
                                 .ToDictionary(p => (string)p.Value["title"]);
                             foreach (var page in partition)
@@ -192,8 +190,7 @@ namespace WikiClientLibrary
                                     redirectTrace.Add(title); // Adds the last title
                                     var next = redirects[title];
                                     if (redirectTrace.Contains(next))
-                                        throw new InvalidOperationException(
-                                            $"Cannot resolve circular redirect: {string.Join("->", redirectTrace)}.");
+                                        throw new InvalidOperationException($"Cannot resolve circular redirect: {string.Join("->", redirectTrace)}.");
                                     title = next;
                                 }
                                 // Finally, get the page.
@@ -222,8 +219,7 @@ namespace WikiClientLibrary
         /// <remarks>
         /// <para>If there's invalid revision id in <paramref name="revIds"/>, an <see cref="ArgumentException"/> will be thrown while enumerating.</para>
         /// </remarks>
-        public static IAsyncEnumerable<Revision> FetchRevisionsAsync(WikiSite site, IEnumerable<int> revIds, IWikiPageQueryProvider options,
-            CancellationToken cancellationToken)
+        public static IAsyncEnumerable<Revision> FetchRevisionsAsync(WikiSite site, IEnumerable<int> revIds, IWikiPageQueryProvider options, CancellationToken cancellationToken)
         {
             if (revIds == null) throw new ArgumentNullException(nameof(revIds));
             var queryParams = options.EnumParameters().ToDictionary();
@@ -238,7 +234,7 @@ namespace WikiClientLibrary
                     foreach (var partition in revIds.Partition(titleLimit))
                     {
                         site.Logger.LogDebug("Fetching {Count} revisions from {Site}.", partition.Count, site);
-                        queryParams["revids"] = string.Join("|", partition);
+                        queryParams["revids"] = MediaWikiHelper.JoinValues(partition);
                         var jobj = await site.InvokeMediaWikiApiAsync(new MediaWikiFormRequestMessage(queryParams), cancellationToken);
                         var jpages = (JObject)jobj["query"]["pages"];
                         // Generate stubs first
@@ -273,8 +269,7 @@ namespace WikiClientLibrary
         /// Asynchronously purges the pages.
         /// </summary>
         /// <returns>A collection of pages that haven't been successfully purged, because of either missing or invalid titles.</returns>
-        public static async Task<IReadOnlyCollection<PurgeFailureInfo>> PurgePagesAsync(IEnumerable<WikiPage> pages,
-            PagePurgeOptions options, CancellationToken cancellationToken)
+        public static async Task<IReadOnlyCollection<PurgeFailureInfo>> PurgePagesAsync(IEnumerable<WikiPage> pages, PagePurgeOptions options, CancellationToken cancellationToken)
         {
             if (pages == null) throw new ArgumentNullException(nameof(pages));
             List<PurgeFailureInfo> failedPages = null;
@@ -296,7 +291,7 @@ namespace WikiClientLibrary
                             // If a page has both title and ID information,
                             // we will use title anyway.
                             site.Logger.LogDebug("Purging {Count} pages by title.", partition.Count);
-                            titles = string.Join("|", partition.Select(p => p.Title));
+                            titles = MediaWikiHelper.JoinValues(partition.Select(p => p.Title));
                             ids = null;
                         }
                         else
@@ -304,20 +299,13 @@ namespace WikiClientLibrary
                             site.Logger.LogDebug("Purging {Count} pages by ID.", partition.Count);
                             Debug.Assert(sitePages.All(p => p.PageStub.HasId));
                             titles = null;
-                            ids = string.Join("|", partition.Select(p => p.Id));
+                            ids = MediaWikiHelper.JoinValues(partition.Select(p => p.Id));
                         }
                         try
                         {
                             var jresult = await site.InvokeMediaWikiApiAsync(new MediaWikiFormRequestMessage(new
                             {
-                                action = "purge",
-                                titles = titles,
-                                pageids = ids,
-                                forcelinkupdate =
-                                (options & PagePurgeOptions.ForceLinkUpdate) == PagePurgeOptions.ForceLinkUpdate,
-                                forcerecursivelinkupdate =
-                                (options & PagePurgeOptions.ForceRecursiveLinkUpdate) ==
-                                PagePurgeOptions.ForceRecursiveLinkUpdate,
+                                action = "purge", titles = titles, pageids = ids, forcelinkupdate = (options & PagePurgeOptions.ForceLinkUpdate) == PagePurgeOptions.ForceLinkUpdate, forcerecursivelinkupdate = (options & PagePurgeOptions.ForceRecursiveLinkUpdate) == PagePurgeOptions.ForceRecursiveLinkUpdate,
                             }), cancellationToken);
                             // Now check whether the pages have been purged successfully.
                             foreach (var jitem in jresult["purge"])
@@ -344,8 +332,7 @@ namespace WikiClientLibrary
         {
             if (site == null) throw new ArgumentNullException(nameof(site));
             if (recentChangeId == null && revisionId == null)
-                throw new ArgumentNullException(nameof(recentChangeId),
-                    "Either recentChangeId or revisionId should be set.");
+                throw new ArgumentNullException(nameof(recentChangeId), "Either recentChangeId or revisionId should be set.");
             //if (recentChangeId != null && revisionId != null)
             //    throw new ArgumentException("Either recentChangeId or revisionId should be set, not both.");
             if (revisionId != null && site.SiteInfo.Version < new Version("1.22"))
@@ -355,10 +342,7 @@ namespace WikiClientLibrary
             {
                 var jresult = await site.InvokeMediaWikiApiAsync(new MediaWikiFormRequestMessage(new
                 {
-                    action = "patrol",
-                    rcid = recentChangeId,
-                    revid = revisionId,
-                    token = token,
+                    action = "patrol", rcid = recentChangeId, revid = revisionId, token = token,
                 }), cancellationToken);
                 if (recentChangeId != null) Debug.Assert((int)jresult["patrol"]["rcid"] == recentChangeId.Value);
             }
@@ -371,9 +355,7 @@ namespace WikiClientLibrary
                     case "patroldisabled":
                         throw new NotSupportedException("Patrolling is disabled on this wiki.", ex);
                     case "noautopatrol":
-                        throw new UnauthorizedOperationException(
-                            "You don't have permission to patrol your own changes. Only users with the autopatrol right can do this.",
-                            ex);
+                        throw new UnauthorizedOperationException("You don't have permission to patrol your own changes. Only users with the autopatrol right can do this.", ex);
                 }
                 throw;
             }
@@ -388,7 +370,7 @@ namespace WikiClientLibrary
         public static async Task<JObject> QueryParameterInformationAsync(WikiSite site, string moduleName)
         {
             if (site == null) throw new ArgumentNullException(nameof(site));
-            var pa = new Dictionary<string, object> { { "action", "paraminfo" } };
+            var pa = new Dictionary<string, object> {{"action", "paraminfo"}};
             if (site.SiteInfo.Version < new Version("1.25"))
             {
                 var parts = moduleName.Split('+');
@@ -416,8 +398,7 @@ namespace WikiClientLibrary
                 pa["modules"] = moduleName;
             }
             var jresult = await site.InvokeMediaWikiApiAsync(new MediaWikiFormRequestMessage(pa), CancellationToken.None);
-            var jmodules =
-                ((JObject)jresult["paraminfo"]).Properties().FirstOrDefault(p => p.Name.EndsWith("modules"))?.Value;
+            var jmodules = ((JObject)jresult["paraminfo"]).Properties().FirstOrDefault(p => p.Name.EndsWith("modules"))?.Value;
             // For now we use the method internally.
             Debug.Assert(jmodules != null);
             return (JObject)jmodules.First;
@@ -426,15 +407,11 @@ namespace WikiClientLibrary
         /// <summary>
         /// Enumerate links from the page.
         /// </summary>
-        public static IAsyncEnumerable<string> EnumLinksAsync(WikiSite site, string titlesExpr, /* optional */
-            IEnumerable<int> namespaces)
+        public static IAsyncEnumerable<string> EnumLinksAsync(WikiSite site, string titlesExpr, /* optional */ IEnumerable<int> namespaces)
         {
             var pa = new Dictionary<string, object>
             {
-                {"action", "query"},
-                {"prop", "links"},
-                {"pllimit", site.ListingPagingSize},
-                {"plnamespace", namespaces == null ? null : string.Join("|", namespaces)},
+                {"action", "query"}, {"prop", "links"}, {"pllimit", site.ListingPagingSize}, {"plnamespace", namespaces == null ? null : MediaWikiHelper.JoinValues(namespaces)},
             };
             pa["titles"] = titlesExpr;
             var resultCounter = 0;
@@ -446,8 +423,7 @@ namespace WikiClientLibrary
                     if (links != null)
                     {
                         resultCounter += links.Count;
-                        site.Logger.LogDebug("Loaded {Count} items linking to [[{Title}]] on {Site}.",
-                            resultCounter, titlesExpr, site);
+                        site.Logger.LogDebug("Loaded {Count} items linking to [[{Title}]] on {Site}.", resultCounter, titlesExpr, site);
                         return links.Select(l => (string)l["title"]).ToAsyncEnumerable();
                     }
                     return AsyncEnumerable.Empty<string>();
@@ -457,17 +433,12 @@ namespace WikiClientLibrary
         /// <summary>
         /// Enumerate transcluded pages trans from the page.
         /// </summary>
-        public static IAsyncEnumerable<string> EnumTransclusionsAsync(WikiSite site, string titlesExpr,
-            IEnumerable<int> namespaces = null, IEnumerable<string> transcludedTitlesExpr = null, int limit = -1)
+        public static IAsyncEnumerable<string> EnumTransclusionsAsync(WikiSite site, string titlesExpr, IEnumerable<int> namespaces = null, IEnumerable<string> transcludedTitlesExpr = null, int limit = -1)
         {
             // transcludedTitlesExpr should be full titles with ns prefix.
             var pa = new Dictionary<string, object>
             {
-                {"action", "query"},
-                {"prop", "templates"},
-                {"tllimit", limit > 0 ? limit : site.ListingPagingSize},
-                {"tlnamespace", namespaces == null ? null : string.Join("|", namespaces)},
-                {"tltemplates", transcludedTitlesExpr == null ? null : string.Join("|", transcludedTitlesExpr)}
+                {"action", "query"}, {"prop", "templates"}, {"tllimit", limit > 0 ? limit : site.ListingPagingSize}, {"tlnamespace", namespaces == null ? null : MediaWikiHelper.JoinValues(namespaces)}, {"tltemplates", transcludedTitlesExpr == null ? null : MediaWikiHelper.JoinValues(transcludedTitlesExpr)}
             };
             pa["titles"] = titlesExpr;
             var resultCounter = 0;

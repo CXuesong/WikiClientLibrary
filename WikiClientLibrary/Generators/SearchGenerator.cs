@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
 using WikiClientLibrary.Generators.Primitive;
+using WikiClientLibrary.Infrastructures;
 using WikiClientLibrary.Pages;
 using WikiClientLibrary.Sites;
 
@@ -82,7 +83,7 @@ namespace WikiClientLibrary.Generators
             var dict = new Dictionary<string, object>
             {
                 {"srsearch", Keyword},
-                {"srnamespace", NamespaceIds == null ? "*" : string.Join("|", NamespaceIds)},
+                {"srnamespace", NamespaceIds == null ? "*" : MediaWikiHelper.JoinValues(NamespaceIds)},
                 {"srwhat", MatchingField},
                 {"srlimit", PaginationSize},
             };

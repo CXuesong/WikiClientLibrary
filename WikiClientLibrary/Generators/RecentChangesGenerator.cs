@@ -127,7 +127,7 @@ namespace WikiClientLibrary.Generators
                 {prefix + "rcdir", TimeAscending ? "newer" : "older"},
                 {prefix + "rcstart", StartTime},
                 {prefix + "rcend", EndTime},
-                {prefix + "rcnamespace", NamespaceIds == null ? null : string.Join("|", NamespaceIds)},
+                {prefix + "rcnamespace", NamespaceIds == null ? null : MediaWikiHelper.JoinValues(NamespaceIds)},
                 {prefix + "rcuser", UserName},
                 {prefix + "rcexcludeuser", ExcludedUserName},
                 {prefix + "rctag", Tag},

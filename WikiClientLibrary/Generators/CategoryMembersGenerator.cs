@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using WikiClientLibrary.Generators.Primitive;
+using WikiClientLibrary.Infrastructures;
 using WikiClientLibrary.Pages;
 using WikiClientLibrary.Sites;
 
@@ -77,7 +78,7 @@ namespace WikiClientLibrary.Generators
             {
                 {"cmtitle", CategoryTitle},
                 {"cmlimit", PaginationSize},
-                {"cmnamespace", NamespaceIds == null ? null : string.Join("|", NamespaceIds)},
+                {"cmnamespace", NamespaceIds == null ? null : MediaWikiHelper.JoinValues(NamespaceIds)},
                 {"cmtype", ParseMemberTypes(MemberTypes)}
             };
         }

@@ -7,6 +7,7 @@ using System.Text;
 using AsyncEnumerableExtensions;
 using Newtonsoft.Json.Linq;
 using WikiClientLibrary.Client;
+using WikiClientLibrary.Infrastructures;
 using WikiClientLibrary.Sites;
 
 namespace WikiClientLibrary.Pages
@@ -221,7 +222,7 @@ namespace WikiClientLibrary.Pages
                     var jresult = await site.InvokeMediaWikiApiAsync(new MediaWikiFormRequestMessage(new
                     {
                         action = "query",
-                        pageids = string.Join("|", partition),
+                        pageids = MediaWikiHelper.JoinValues(partition),
                     }), ct);
                     Debug.Assert(jresult["query"] != null);
                     var jpages = jresult["query"]["pages"];
@@ -259,8 +260,7 @@ namespace WikiClientLibrary.Pages
                 {
                     var jresult = await site.InvokeMediaWikiApiAsync(new MediaWikiFormRequestMessage(new
                     {
-                        action = "query",
-                        titles = string.Join("|", partition),
+                        action = "query", titles = MediaWikiHelper.JoinValues(partition),
                     }), ct);
                     Debug.Assert(jresult["query"] != null);
                     // Process title normalization.

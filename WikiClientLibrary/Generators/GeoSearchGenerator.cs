@@ -61,7 +61,7 @@ namespace WikiClientLibrary.Generators
             var prop = new Dictionary<string, object>
             {
                 {"gsradius", Radius},
-                {"gsnamespace", NamespaceIds == null ? null : string.Join("|", NamespaceIds)},
+                {"gsnamespace", NamespaceIds == null ? null : MediaWikiHelper.JoinValues(NamespaceIds)},
                 {"gsprimary", IncludesSecondaryCoordinates ? "all" : "primary"},
                 {"gsglobe", TargetCoordinate.Globe},
                 {"gslimit", PaginationSize},

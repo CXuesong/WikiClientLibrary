@@ -167,7 +167,7 @@ namespace WikiClientLibrary.Pages
         /// </returns>
         public override string ToString()
         {
-            var tags = Tags == null ? null : string.Join("|", Tags);
+            var tags = Tags == null ? null : MediaWikiHelper.JoinValues(Tags);
             return $"Revision#{Id}, {Flags}, {tags}, SHA1={Sha1}";
         }
     }

@@ -7,6 +7,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
 using WikiClientLibrary.Client;
+using WikiClientLibrary.Infrastructures;
 using WikiClientLibrary.Infrastructures.Logging;
 using WikiClientLibrary.Sites;
 
@@ -62,7 +63,7 @@ namespace WikiClientLibrary.Wikibase
             IEnumerable<string> languages, CancellationToken cancellationToken)
         {
             if (entities == null) throw new ArgumentNullException(nameof(entities));
-            var langs = languages == null ? null : string.Join("|", languages);
+            var langs = languages == null ? null : MediaWikiHelper.JoinValues(languages);
             if (string.IsNullOrEmpty(langs)) langs = null;
             // You can even fetch pages from different sites.
             foreach (var siteEntities in entities.GroupBy(p => p.Site))
@@ -77,7 +78,7 @@ namespace WikiClientLibrary.Wikibase
                     {
                         //site.Logger.LogDebug("Fetching {Count} pages from {Site}.", partition.Count, site);
                         // We use ids to query pages.
-                        req["ids"] = string.Join("|", partition.Select(p => p.Id));
+                        req["ids"] = MediaWikiHelper.JoinValues(partition.Select(p => p.Id));
                         var jresult = await site.InvokeMediaWikiApiAsync(new MediaWikiFormRequestMessage(req), cancellationToken);
                         var jentities = (JObject)jresult["entities"];
                         foreach (var entity in partition)

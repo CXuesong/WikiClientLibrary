@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using WikiClientLibrary.Generators.Primitive;
+using WikiClientLibrary.Infrastructures;
 using WikiClientLibrary.Pages;
 using WikiClientLibrary.Sites;
 
@@ -54,9 +55,7 @@ namespace WikiClientLibrary.Generators
         {
             return new Dictionary<string, object>
             {
-                {"plnamespace", NamespaceIds == null ? null : string.Join("|", NamespaceIds)},
-                {"pllimit", PaginationSize},
-                {"pltitles", MatchingTitles == null ? null : string.Join("|", MatchingTitles)},
+                {"plnamespace", NamespaceIds == null ? null : MediaWikiHelper.JoinValues(NamespaceIds)}, {"pllimit", PaginationSize}, {"pltitles", MatchingTitles == null ? null : MediaWikiHelper.JoinValues(MatchingTitles)},
                 {"pldir", OrderDescending ? "descending" : "ascending"}
             };
         }

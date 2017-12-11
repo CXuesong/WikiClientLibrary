@@ -49,7 +49,7 @@ namespace WikiClientLibrary.Generators
                 {"clshow", HiddenCategoryFilter.ToString("hidden", "!hidden", null)},
                 {"cllimit", PaginationSize},
             };
-            if (CategorySelection != null) p.Add("clcategories", string.Join("|", CategorySelection));
+            if (CategorySelection != null) p.Add("clcategories", MediaWikiHelper.JoinValues(CategorySelection));
             return p;
         }
 
