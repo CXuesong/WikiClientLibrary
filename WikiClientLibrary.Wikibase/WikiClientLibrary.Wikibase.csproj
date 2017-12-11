@@ -4,9 +4,9 @@
     <TargetFramework>netstandard1.1</TargetFramework>
     <AssemblyName>WikiClientLibrary.Wikibase</AssemblyName>
     <PackageId>CXuesong.MW.WikiClientLibrary.Wikibase</PackageId>
-    <Version>0.6.0-intX3c</Version>
-    <AssemblyVersion>0.6.0.13</AssemblyVersion>
-    <FileVersion>0.6.0.13</FileVersion>
+    <Version>0.6.0-intX4</Version>
+    <AssemblyVersion>0.6.0.14</AssemblyVersion>
+    <FileVersion>0.6.0.14</FileVersion>
     <Copyright>Copyright (C) CXuesong 2017</Copyright>
     <Description>
       WikiClientLibrary.Wikibase is a .NET Standard &amp; asynchronous client library for MediaWiki sites with Wikibase support, e.g. Wikidata.
