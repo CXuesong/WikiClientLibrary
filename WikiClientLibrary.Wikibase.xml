@@ -11,11 +11,21 @@
     </member>
     <member name="M:WikiClientLibrary.Wikibase.Claim.#ctor(System.String)">
       <summary>
-            Initializes a new <see cref="T:WikiClientLibrary.Wikibase.Claim" /> instance with the specified main snak.
+            Initializes a new <see cref="T:WikiClientLibrary.Wikibase.Claim" /> instance with the main snak set to property id.
             </summary>
       <param name="mainSnakPropertyId">The property ID of the auto-constructed main snak.</param>
       <exception cref="T:System.ArgumentNullException">
         <paramref name="mainSnakPropertyId" /> is <c>null</c>.</exception>
+    </member>
+    <member name="M:WikiClientLibrary.Wikibase.Claim.#ctor(System.String,System.Object,WikiClientLibrary.Wikibase.DataTypes.WikibaseDataType)">
+      <summary>
+            Initializes a new <see cref="T:WikiClientLibrary.Wikibase.Claim" /> instance with the main snak set to property id and value.
+            </summary>
+      <param name="propertyId">The property ID of the auto-constructed main snak.</param>
+      <param name="dataValue">The data value of the main snak.</param>
+      <param name="dataType">The data type of the main snak.</param>
+      <exception cref="T:System.ArgumentNullException">
+        <paramref name="propertyId" /> or <paramref name="dataType" /> is <c>null</c>.</exception>
     </member>
     <member name="M:WikiClientLibrary.Wikibase.Claim.#ctor(WikiClientLibrary.Wikibase.Snak)">
       <summary>
@@ -233,49 +243,39 @@
             </summary>
       <param name="edits">The changes to be made.</param>
       <param name="summary">The edit summary.</param>
-      <param name="isBot">Whether to mark the edit as bot edit.</param>
-      <param name="clearData">Whether to clear all the existing data of the entity before making the changes.</param>
+      <param name="options">Edit options.</param>
       <param name="cancellationToken">A token used to cancel the operation.</param>
-      <exception cref="T:System.ArgumentNullException">Either <paramref name="edits" /> or <paramref name="summary" /> is <c>null</c>.</exception>
+      <exception cref="T:System.ArgumentNullException">Either <paramref name="edits" /> is <c>null</c>.</exception>
+      <exception cref="T:System.ArgumentException">
+        <paramref name="options" /> is invalid.</exception>
       <exception cref="T:WikiClientLibrary.OperationConflictException">Edit conflict detected.</exception>
       <exception cref="T:WikiClientLibrary.UnauthorizedOperationException">You have no rights to edit the page.</exception>
     </member>
-    <member name="M:WikiClientLibrary.Wikibase.Entity.EditAsync(System.Collections.Generic.IEnumerable{WikiClientLibrary.Wikibase.EntityEditEntry},System.String,System.Boolean)">
+    <member name="M:WikiClientLibrary.Wikibase.Entity.EditAsync(System.Collections.Generic.IEnumerable{WikiClientLibrary.Wikibase.EntityEditEntry},System.String,WikiClientLibrary.Wikibase.EntityEditOptions)">
       <summary>
             Makes the specified changes to the current entity on the Wikibase site.
             </summary>
       <param name="edits">The changes to be made.</param>
       <param name="summary">The edit summary.</param>
-      <param name="isBot">Whether to mark the edit as bot edit.</param>
-      <param name="clearData">Whether to clear all the existing data of the entity before making the changes.</param>
+      <param name="options">Edit options.</param>
       <param name="cancellationToken">A token used to cancel the operation.</param>
-      <exception cref="T:System.ArgumentNullException">Either <paramref name="edits" /> or <paramref name="summary" /> is <c>null</c>.</exception>
+      <exception cref="T:System.ArgumentNullException">Either <paramref name="edits" /> is <c>null</c>.</exception>
+      <exception cref="T:System.ArgumentException">
+        <paramref name="options" /> is invalid.</exception>
       <exception cref="T:WikiClientLibrary.OperationConflictException">Edit conflict detected.</exception>
       <exception cref="T:WikiClientLibrary.UnauthorizedOperationException">You have no rights to edit the page.</exception>
     </member>
-    <member name="M:WikiClientLibrary.Wikibase.Entity.EditAsync(System.Collections.Generic.IEnumerable{WikiClientLibrary.Wikibase.EntityEditEntry},System.String,System.Boolean,System.Boolean)">
+    <member name="M:WikiClientLibrary.Wikibase.Entity.EditAsync(System.Collections.Generic.IEnumerable{WikiClientLibrary.Wikibase.EntityEditEntry},System.String,WikiClientLibrary.Wikibase.EntityEditOptions,System.Threading.CancellationToken)">
       <summary>
             Makes the specified changes to the current entity on the Wikibase site.
             </summary>
       <param name="edits">The changes to be made.</param>
       <param name="summary">The edit summary.</param>
-      <param name="isBot">Whether to mark the edit as bot edit.</param>
-      <param name="clearData">Whether to clear all the existing data of the entity before making the changes.</param>
+      <param name="options">Edit options.</param>
       <param name="cancellationToken">A token used to cancel the operation.</param>
-      <exception cref="T:System.ArgumentNullException">Either <paramref name="edits" /> or <paramref name="summary" /> is <c>null</c>.</exception>
-      <exception cref="T:WikiClientLibrary.OperationConflictException">Edit conflict detected.</exception>
-      <exception cref="T:WikiClientLibrary.UnauthorizedOperationException">You have no rights to edit the page.</exception>
-    </member>
-    <member name="M:WikiClientLibrary.Wikibase.Entity.EditAsync(System.Collections.Generic.IEnumerable{WikiClientLibrary.Wikibase.EntityEditEntry},System.String,System.Boolean,System.Boolean,System.Threading.CancellationToken)">
-      <summary>
-            Makes the specified changes to the current entity on the Wikibase site.
-            </summary>
-      <param name="edits">The changes to be made.</param>
-      <param name="summary">The edit summary.</param>
-      <param name="isBot">Whether to mark the edit as bot edit.</param>
-      <param name="clearData">Whether to clear all the existing data of the entity before making the changes.</param>
-      <param name="cancellationToken">A token used to cancel the operation.</param>
-      <exception cref="T:System.ArgumentNullException">Either <paramref name="edits" /> or <paramref name="summary" /> is <c>null</c>.</exception>
+      <exception cref="T:System.ArgumentNullException">Either <paramref name="edits" /> is <c>null</c>.</exception>
+      <exception cref="T:System.ArgumentException">
+        <paramref name="options" /> is invalid.</exception>
       <exception cref="T:WikiClientLibrary.OperationConflictException">Edit conflict detected.</exception>
       <exception cref="T:WikiClientLibrary.UnauthorizedOperationException">You have no rights to edit the page.</exception>
     </member>
@@ -501,13 +501,8 @@
     </member>
     <member name="T:WikiClientLibrary.Wikibase.EntityEditEntryState">
       <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>T:WikiClientLibrary.Wikibase.EntityEditEntryState</parameter>
-          </include>
-        </markup>
-      </summary>
+            Used to mark how an item changes in <see cref="T:WikiClientLibrary.Wikibase.EntityEditEntry" />.
+            </summary>
     </member>
     <member name="F:WikiClientLibrary.Wikibase.EntityEditEntryState.Updated">
       <summary>
@@ -518,6 +513,32 @@
       <summary>
             The entry represents an item to be removed.
             </summary>
+    </member>
+    <member name="T:WikiClientLibrary.Wikibase.EntityEditOptions">
+      <summary>
+            Provides options for editing a Wikibase entity.
+            </summary>
+    </member>
+    <member name="F:WikiClientLibrary.Wikibase.EntityEditOptions.None">
+      <summary>No special options.</summary>
+    </member>
+    <member name="F:WikiClientLibrary.Wikibase.EntityEditOptions.Bot">
+      <summary>Mark the edit as bot edit.</summary>
+    </member>
+    <member name="F:WikiClientLibrary.Wikibase.EntityEditOptions.Progressive">
+      <summary>Forces progressive edit, even if the client is creating a new item.
+            This option cannot be used with <see cref="F:WikiClientLibrary.Wikibase.EntityEditOptions.Bulk" /> and <see cref="F:WikiClientLibrary.Wikibase.EntityEditOptions.ClearData" />.</summary>
+    </member>
+    <member name="F:WikiClientLibrary.Wikibase.EntityEditOptions.Bulk">
+      <summary>Forces bulk edit, even if the client is creating a new item.</summary>
+    </member>
+    <member name="F:WikiClientLibrary.Wikibase.EntityEditOptions.ClearData">
+      <summary>Clears all the existing data of the entity before making the changes.
+            This option implies <see cref="F:WikiClientLibrary.Wikibase.EntityEditOptions.Bulk" /> flag.</summary>
+    </member>
+    <member name="F:WikiClientLibrary.Wikibase.EntityEditOptions.StrictEditConflictDetection">
+      <summary>When performing progressive edit, check for edit conflicts on every MediaWiki API request,
+            instead of only checking for conflict before sending the first API request.</summary>
     </member>
     <member name="T:WikiClientLibrary.Wikibase.EntityExtensions">
       <summary>
@@ -661,13 +682,8 @@
     </member>
     <member name="T:WikiClientLibrary.Wikibase.EntityQueryOptions">
       <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>T:WikiClientLibrary.Wikibase.EntityQueryOptions</parameter>
-          </include>
-        </markup>
-      </summary>
+            Provides options for fetching entity information from server.
+            </summary>
     </member>
     <member name="F:WikiClientLibrary.Wikibase.EntityQueryOptions.None">
       <summary>No options.</summary>
@@ -740,7 +756,7 @@
         </markup>
       </param>
     </member>
-    <member name="M:WikiClientLibrary.Wikibase.EntitySiteLink.#ctor(System.String,System.String,System.Collections.Generic.IList{System.String})">
+    <member name="M:WikiClientLibrary.Wikibase.EntitySiteLink.#ctor(System.String,System.String,System.Collections.Generic.IReadOnlyList{System.String})">
       <summary>
         <markup>
           <include item="SMCAutoDocConstructor">
@@ -753,7 +769,7 @@
           <include item="SMCMissingParamTag">
             <parameter>param</parameter>
             <parameter>site</parameter>
-            <parameter>M:WikiClientLibrary.Wikibase.EntitySiteLink.#ctor(System.String,System.String,System.Collections.Generic.IList{System.String})</parameter>
+            <parameter>M:WikiClientLibrary.Wikibase.EntitySiteLink.#ctor(System.String,System.String,System.Collections.Generic.IReadOnlyList{System.String})</parameter>
           </include>
         </markup>
       </param>
@@ -762,7 +778,7 @@
           <include item="SMCMissingParamTag">
             <parameter>param</parameter>
             <parameter>title</parameter>
-            <parameter>M:WikiClientLibrary.Wikibase.EntitySiteLink.#ctor(System.String,System.String,System.Collections.Generic.IList{System.String})</parameter>
+            <parameter>M:WikiClientLibrary.Wikibase.EntitySiteLink.#ctor(System.String,System.String,System.Collections.Generic.IReadOnlyList{System.String})</parameter>
           </include>
         </markup>
       </param>
@@ -771,12 +787,12 @@
           <include item="SMCMissingParamTag">
             <parameter>param</parameter>
             <parameter>badges</parameter>
-            <parameter>M:WikiClientLibrary.Wikibase.EntitySiteLink.#ctor(System.String,System.String,System.Collections.Generic.IList{System.String})</parameter>
+            <parameter>M:WikiClientLibrary.Wikibase.EntitySiteLink.#ctor(System.String,System.String,System.Collections.Generic.IReadOnlyList{System.String})</parameter>
           </include>
         </markup>
       </param>
     </member>
-    <member name="M:WikiClientLibrary.Wikibase.EntitySiteLink.#ctor(System.String,System.String,System.Collections.Generic.IList{System.String},System.String)">
+    <member name="M:WikiClientLibrary.Wikibase.EntitySiteLink.#ctor(System.String,System.String,System.Collections.Generic.IReadOnlyList{System.String},System.String)">
       <summary>
         <markup>
           <include item="SMCAutoDocConstructor">
@@ -789,7 +805,7 @@
           <include item="SMCMissingParamTag">
             <parameter>param</parameter>
             <parameter>site</parameter>
-            <parameter>M:WikiClientLibrary.Wikibase.EntitySiteLink.#ctor(System.String,System.String,System.Collections.Generic.IList{System.String},System.String)</parameter>
+            <parameter>M:WikiClientLibrary.Wikibase.EntitySiteLink.#ctor(System.String,System.String,System.Collections.Generic.IReadOnlyList{System.String},System.String)</parameter>
           </include>
         </markup>
       </param>
@@ -798,7 +814,7 @@
           <include item="SMCMissingParamTag">
             <parameter>param</parameter>
             <parameter>title</parameter>
-            <parameter>M:WikiClientLibrary.Wikibase.EntitySiteLink.#ctor(System.String,System.String,System.Collections.Generic.IList{System.String},System.String)</parameter>
+            <parameter>M:WikiClientLibrary.Wikibase.EntitySiteLink.#ctor(System.String,System.String,System.Collections.Generic.IReadOnlyList{System.String},System.String)</parameter>
           </include>
         </markup>
       </param>
@@ -807,7 +823,7 @@
           <include item="SMCMissingParamTag">
             <parameter>param</parameter>
             <parameter>badges</parameter>
-            <parameter>M:WikiClientLibrary.Wikibase.EntitySiteLink.#ctor(System.String,System.String,System.Collections.Generic.IList{System.String},System.String)</parameter>
+            <parameter>M:WikiClientLibrary.Wikibase.EntitySiteLink.#ctor(System.String,System.String,System.Collections.Generic.IReadOnlyList{System.String},System.String)</parameter>
           </include>
         </markup>
       </param>
@@ -816,7 +832,7 @@
           <include item="SMCMissingParamTag">
             <parameter>param</parameter>
             <parameter>url</parameter>
-            <parameter>M:WikiClientLibrary.Wikibase.EntitySiteLink.#ctor(System.String,System.String,System.Collections.Generic.IList{System.String},System.String)</parameter>
+            <parameter>M:WikiClientLibrary.Wikibase.EntitySiteLink.#ctor(System.String,System.String,System.Collections.Generic.IReadOnlyList{System.String},System.String)</parameter>
           </include>
         </markup>
       </param>
@@ -911,9 +927,9 @@
       <exception cref="T:System.ArgumentNullException">
         <paramref name="propertyId" /> is <c>null</c>.</exception>
     </member>
-    <member name="M:WikiClientLibrary.Wikibase.Snak.#ctor(System.String,Newtonsoft.Json.Linq.JToken,WikiClientLibrary.Wikibase.DataTypes.WikibaseDataType)">
+    <member name="M:WikiClientLibrary.Wikibase.Snak.#ctor(System.String,Newtonsoft.Json.Linq.JObject,WikiClientLibrary.Wikibase.DataTypes.WikibaseDataType)">
       <summary>
-            Initializes a snak with specified property ID and data value.
+            Initializes a snak with specified property ID and raw data value.
             </summary>
       <param name="propertyId">The property id.</param>
       <param name="rawDataValue">The raw JSON data value of the property.</param>
@@ -930,6 +946,13 @@
       <param name="dataType">The data value type.</param>
       <exception cref="T:System.ArgumentNullException">
         <paramref name="propertyId" /> or <paramref name="dataType" /> is <c>null</c>.</exception>
+    </member>
+    <member name="M:WikiClientLibrary.Wikibase.Snak.#ctor(System.String,WikiClientLibrary.Wikibase.SnakType)">
+      <summary>
+            Initializes a snak with specified property ID and snak type.
+            </summary>
+      <param name="propertyId">The property id.</param>
+      <param name="snakType">Snak type.</param>
     </member>
     <member name="M:WikiClientLibrary.Wikibase.Snak.#ctor(WikiClientLibrary.Wikibase.Entity,System.Object)">
       <summary>
@@ -972,13 +995,8 @@
     </member>
     <member name="T:WikiClientLibrary.Wikibase.SnakType">
       <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>T:WikiClientLibrary.Wikibase.SnakType</parameter>
-          </include>
-        </markup>
-      </summary>
+            Indicates the presence of value in a snak.
+            </summary>
     </member>
     <member name="F:WikiClientLibrary.Wikibase.SnakType.Value">
       <summary>Custom value.</summary>
@@ -1080,6 +1098,25 @@
           </include>
         </markup>
       </summary>
+    </member>
+    <member name="T:WikiClientLibrary.Wikibase.WikibaseUriFactory">
+      <summary>
+            A static class provides functionality for caching <see cref="T:System.Uri" /> instances.
+            </summary>
+    </member>
+    <member name="M:WikiClientLibrary.Wikibase.WikibaseUriFactory.ClearCache">
+      <summary>
+            Clears all the cached <see cref="T:System.Uri" /> instances.
+            </summary>
+    </member>
+    <member name="M:WikiClientLibrary.Wikibase.WikibaseUriFactory.Get(System.String)">
+      <summary>
+            Gets an instance of <see cref="T:System.Uri" /> by absolute URI string.
+            </summary>
+      <param name="uri">absolute URI of the entity.</param>
+      <exception cref="T:System.ArgumentNullException">
+        <paramref name="uri" /> is <c>null</c>.</exception>
+      <exception cref="T:System.FormatException">The provided URI string is not a valid absolute URI.</exception>
     </member>
     <member name="T:WikiClientLibrary.Wikibase.DataTypes.BuiltInDataTypes">
       <summary>
@@ -1221,7 +1258,7 @@
     <member name="T:WikiClientLibrary.Wikibase.DataTypes.WbGlobeCoordinate">
       <summary>In Wikibase, represents a point on the globe.</summary>
     </member>
-    <member name="M:WikiClientLibrary.Wikibase.DataTypes.WbGlobeCoordinate.#ctor(System.Double,System.Double,System.Double,WikiClientLibrary.Wikibase.DataTypes.WbUri)">
+    <member name="M:WikiClientLibrary.Wikibase.DataTypes.WbGlobeCoordinate.#ctor(System.Double,System.Double,System.Double,System.Uri)">
       <summary>
             Initialize a new <see cref="T:WikiClientLibrary.Wikibase.DataTypes.WbGlobeCoordinate" /> instance with coordinate, precision, and globe entity URI.
             </summary>
@@ -2064,20 +2101,20 @@
             Represents an amount with arbitary precision, combined with a unit.
             </summary>
     </member>
-    <member name="M:WikiClientLibrary.Wikibase.DataTypes.WbQuantity.#ctor(System.Double,System.Double,System.Double,WikiClientLibrary.Wikibase.DataTypes.WbUri)">
+    <member name="M:WikiClientLibrary.Wikibase.DataTypes.WbQuantity.#ctor(System.Double,System.Double,System.Double,System.Uri)">
       <summary>
             Initializes a new <see cref="T:WikiClientLibrary.Wikibase.DataTypes.WbQuantity" /> with the amount, error, and entity URI of the unit.
             </summary>
       <param name="amount">The numeric value of the amount.</param>
       <param name="lowerBound">The lower-bound of the <paramref name="amount" /> caused by error.</param>
       <param name="upperBound">The upper-bound of the <paramref name="amount" /> caused by error.</param>
-      <param name="unit">Entity URI of the unit.</param>
+      <param name="unit">Entity URI of the unit. Use <see cref="P:WikiClientLibrary.Wikibase.DataTypes.WbQuantity.Unity" /> for quantities that have no explict units.</param>
       <exception cref="T:System.ArgumentException">
         <paramref name="amount" /> is not in the range of <paramref name="lowerBound" /> and <paramref name="upperBound" />.</exception>
       <exception cref="T:System.ArgumentNullException">
         <paramref name="unit" /> is <c>null</c>.</exception>
     </member>
-    <member name="M:WikiClientLibrary.Wikibase.DataTypes.WbQuantity.#ctor(System.Double,System.Double,WikiClientLibrary.Wikibase.DataTypes.WbUri)">
+    <member name="M:WikiClientLibrary.Wikibase.DataTypes.WbQuantity.#ctor(System.Double,System.Double,System.Uri)">
       <summary>
             Initializes a new <see cref="T:WikiClientLibrary.Wikibase.DataTypes.WbQuantity" /> with the amount, error, and entity URI of the unit.
             </summary>
@@ -2085,20 +2122,20 @@
       <param name="amount">The numeric value of the amount.</param>
       <param name="lowerBound">The lower-bound of the <paramref name="amount" /> caused by error.</param>
       <param name="upperBound">The upper-bound of the <paramref name="amount" /> caused by error.</param>
-      <param name="unit">Entity URI of the unit.</param>
+      <param name="unit">Entity URI of the unit. Use <see cref="P:WikiClientLibrary.Wikibase.DataTypes.WbQuantity.Unity" /> for quantities that have no explict units.</param>
       <exception cref="T:System.ArgumentException">
         <paramref name="amount" /> is not in the range of <paramref name="lowerBound" /> and <paramref name="upperBound" />.</exception>
       <exception cref="T:System.ArgumentNullException">
         <paramref name="unit" /> is <c>null</c>.</exception>
     </member>
-    <member name="M:WikiClientLibrary.Wikibase.DataTypes.WbQuantity.#ctor(System.Double,WikiClientLibrary.Wikibase.DataTypes.WbUri)">
+    <member name="M:WikiClientLibrary.Wikibase.DataTypes.WbQuantity.#ctor(System.Double,System.Uri)">
       <summary>
             Initializes a new <see cref="T:WikiClientLibrary.Wikibase.DataTypes.WbQuantity" /> with the accurate amount, and entity URI of the unit.
             </summary>
       <param name="amount">The numeric value of the amount.</param>
       <param name="lowerBound">The lower-bound of the <paramref name="amount" /> caused by error.</param>
       <param name="upperBound">The upper-bound of the <paramref name="amount" /> caused by error.</param>
-      <param name="unit">Entity URI of the unit.</param>
+      <param name="unit">Entity URI of the unit. Use <see cref="P:WikiClientLibrary.Wikibase.DataTypes.WbQuantity.Unity" /> for quantities that have no explict units.</param>
       <exception cref="T:System.ArgumentException">
         <paramref name="amount" /> is not in the range of <paramref name="lowerBound" /> and <paramref name="upperBound" />.</exception>
       <exception cref="T:System.ArgumentNullException">
@@ -2134,6 +2171,11 @@
             Entity URI of the unit.
             </summary>
     </member>
+    <member name="P:WikiClientLibrary.Wikibase.DataTypes.WbQuantity.Unity">
+      <summary>
+            The URI indicating the quantity has no unit (unity unit).
+            </summary>
+    </member>
     <member name="P:WikiClientLibrary.Wikibase.DataTypes.WbQuantity.UpperBound">
       <summary>
             The upper-bound of the <see cref="P:WikiClientLibrary.Wikibase.DataTypes.WbQuantity.Amount" /> caused by error.
@@ -2144,7 +2186,7 @@
             The date-time point value used in Wikibase.
             </summary>
     </member>
-    <member name="M:WikiClientLibrary.Wikibase.DataTypes.WbTime.#ctor(System.Int32,System.Int32,System.Int32,System.Int32,System.Int32,System.Int32,System.Int32,System.Int32,System.Int32,WikiClientLibrary.Wikibase.DataTypes.WikibaseTimePrecision,WikiClientLibrary.Wikibase.DataTypes.WbUri)">
+    <member name="M:WikiClientLibrary.Wikibase.DataTypes.WbTime.#ctor(System.Int32,System.Int32,System.Int32,System.Int32,System.Int32,System.Int32,System.Int32,System.Int32,System.Int32,WikiClientLibrary.Wikibase.DataTypes.WikibaseTimePrecision,System.Uri)">
       <summary>Initialize a new instance of <see cref="T:WikiClientLibrary.Wikibase.DataTypes.WbTime" /> with the specified time point, time zone,
             precision and calendar model.</summary>
       <param name="year">The year (-999999999 through 999999999).</param>
@@ -2225,10 +2267,8 @@
         </markup>
       </param>
     </member>
-    <member name="M:WikiClientLibrary.Wikibase.DataTypes.WbTime.FromDateTime(System.DateTime,System.Int32,System.Int32,System.Int32,WikiClientLibrary.Wikibase.DataTypes.WikibaseTimePrecision,WikiClientLibrary.Wikibase.DataTypes.WbUri)">
+    <member name="M:WikiClientLibrary.Wikibase.DataTypes.WbTime.FromDateTime(System.DateTime,System.Int32,System.Int32,WikiClientLibrary.Wikibase.DataTypes.WikibaseTimePrecision)">
       <summary>Constructs a <see cref="T:WikiClientLibrary.Wikibase.DataTypes.WbTime" /> instance from <see cref="T:System.DateTime" />.</summary>
-      <param name="dateTime">The date and time.</param>
-      <param name="timeZone">The time zone to use.</param>
       <param name="year">The year (-999999999 through 999999999).</param>
       <param name="month">The month (positive integer).</param>
       <param name="day">The day (positive integer).</param>
@@ -2237,16 +2277,24 @@
       <param name="second">The hour (0 through 59).</param>
       <param name="before">Number of units before the given time it could be, if uncertain. The unit is given by <paramref name="precision" />.</param>
       <param name="after">Number of units after the given time it could be, if uncertain. The unit is given by <paramref name="precision" />.</param>
+      <param name="timeZone">Time zone offset in minutes. See <see cref="P:WikiClientLibrary.Wikibase.DataTypes.WbTime.TimeZone" /> for more information.</param>
       <param name="precision">The unit of the precision of the time.</param>
       <param name="calendarModel">The entity URI of the calendar model.</param>
+      <param name="dateTime">
+        <markup>
+          <include item="SMCMissingParamTag">
+            <parameter>param</parameter>
+            <parameter>dateTime</parameter>
+            <parameter>M:WikiClientLibrary.Wikibase.DataTypes.WbTime.FromDateTime(System.DateTime,System.Int32,System.Int32,WikiClientLibrary.Wikibase.DataTypes.WikibaseTimePrecision)</parameter>
+          </include>
+        </markup>
+      </param>
       <exception cref="T:System.ArgumentNullException">
         <paramref name="calendarModel" /> is <c>null</c>.</exception>
       <exception cref="T:System.ArgumentOutOfRangeException">One or more numeric parameters are out of range.</exception>
     </member>
-    <member name="M:WikiClientLibrary.Wikibase.DataTypes.WbTime.FromDateTime(System.DateTime,System.Int32,System.Int32,WikiClientLibrary.Wikibase.DataTypes.WikibaseTimePrecision,WikiClientLibrary.Wikibase.DataTypes.WbUri)">
+    <member name="M:WikiClientLibrary.Wikibase.DataTypes.WbTime.FromDateTime(System.DateTime,System.Int32,System.Int32,WikiClientLibrary.Wikibase.DataTypes.WikibaseTimePrecision,System.Uri)">
       <summary>Constructs a <see cref="T:WikiClientLibrary.Wikibase.DataTypes.WbTime" /> instance from <see cref="T:System.DateTime" />.</summary>
-      <param name="dateTime">The date and time.</param>
-      <param name="timeZone">The time zone to use.</param>
       <param name="year">The year (-999999999 through 999999999).</param>
       <param name="month">The month (positive integer).</param>
       <param name="day">The day (positive integer).</param>
@@ -2255,16 +2303,69 @@
       <param name="second">The hour (0 through 59).</param>
       <param name="before">Number of units before the given time it could be, if uncertain. The unit is given by <paramref name="precision" />.</param>
       <param name="after">Number of units after the given time it could be, if uncertain. The unit is given by <paramref name="precision" />.</param>
+      <param name="timeZone">Time zone offset in minutes. See <see cref="P:WikiClientLibrary.Wikibase.DataTypes.WbTime.TimeZone" /> for more information.</param>
+      <param name="precision">The unit of the precision of the time.</param>
+      <param name="calendarModel">The entity URI of the calendar model.</param>
+      <param name="dateTime">
+        <markup>
+          <include item="SMCMissingParamTag">
+            <parameter>param</parameter>
+            <parameter>dateTime</parameter>
+            <parameter>M:WikiClientLibrary.Wikibase.DataTypes.WbTime.FromDateTime(System.DateTime,System.Int32,System.Int32,WikiClientLibrary.Wikibase.DataTypes.WikibaseTimePrecision,System.Uri)</parameter>
+          </include>
+        </markup>
+      </param>
+      <exception cref="T:System.ArgumentNullException">
+        <paramref name="calendarModel" /> is <c>null</c>.</exception>
+      <exception cref="T:System.ArgumentOutOfRangeException">One or more numeric parameters are out of range.</exception>
+    </member>
+    <member name="M:WikiClientLibrary.Wikibase.DataTypes.WbTime.FromDateTime(System.DateTime,WikiClientLibrary.Wikibase.DataTypes.WikibaseTimePrecision)">
+      <summary>Constructs a <see cref="T:WikiClientLibrary.Wikibase.DataTypes.WbTime" /> instance from <see cref="T:System.DateTime" />, using the appropriate calendar model.</summary>
+      <param name="year">The year (-999999999 through 999999999).</param>
+      <param name="month">The month (positive integer).</param>
+      <param name="day">The day (positive integer).</param>
+      <param name="hour">The hour (0 through 23).</param>
+      <param name="minute">The hour (0 through 59).</param>
+      <param name="second">The hour (0 through 59).</param>
+      <param name="before">Number of units before the given time it could be, if uncertain. The unit is given by <paramref name="precision" />.</param>
+      <param name="after">Number of units after the given time it could be, if uncertain. The unit is given by <paramref name="precision" />.</param>
+      <param name="timeZone">Time zone offset in minutes. See <see cref="P:WikiClientLibrary.Wikibase.DataTypes.WbTime.TimeZone" /> for more information.</param>
+      <param name="precision">The unit of the precision of the time.</param>
+      <param name="calendarModel">The entity URI of the calendar model.</param>
+      <param name="dateTime">
+        <markup>
+          <include item="SMCMissingParamTag">
+            <parameter>param</parameter>
+            <parameter>dateTime</parameter>
+            <parameter>M:WikiClientLibrary.Wikibase.DataTypes.WbTime.FromDateTime(System.DateTime,WikiClientLibrary.Wikibase.DataTypes.WikibaseTimePrecision)</parameter>
+          </include>
+        </markup>
+      </param>
+      <exception cref="T:System.ArgumentNullException">
+        <paramref name="calendarModel" /> is <c>null</c>.</exception>
+      <exception cref="T:System.ArgumentOutOfRangeException">One or more numeric parameters are out of range.</exception>
+    </member>
+    <member name="M:WikiClientLibrary.Wikibase.DataTypes.WbTime.FromDateTimeOffset(System.DateTimeOffset,System.Int32,System.Int32,WikiClientLibrary.Wikibase.DataTypes.WikibaseTimePrecision)">
+      <summary>Constructs a <see cref="T:WikiClientLibrary.Wikibase.DataTypes.WbTime" /> instance from <see cref="T:System.DateTimeOffset" />, using the appropriate calendar model.</summary>
+      <param name="dateTime">The date, time, and time zone.</param>
+      <param name="year">The year (-999999999 through 999999999).</param>
+      <param name="month">The month (positive integer).</param>
+      <param name="day">The day (positive integer).</param>
+      <param name="hour">The hour (0 through 23).</param>
+      <param name="minute">The hour (0 through 59).</param>
+      <param name="second">The hour (0 through 59).</param>
+      <param name="before">Number of units before the given time it could be, if uncertain. The unit is given by <paramref name="precision" />.</param>
+      <param name="after">Number of units after the given time it could be, if uncertain. The unit is given by <paramref name="precision" />.</param>
+      <param name="timeZone">Time zone offset in minutes. See <see cref="P:WikiClientLibrary.Wikibase.DataTypes.WbTime.TimeZone" /> for more information.</param>
       <param name="precision">The unit of the precision of the time.</param>
       <param name="calendarModel">The entity URI of the calendar model.</param>
       <exception cref="T:System.ArgumentNullException">
         <paramref name="calendarModel" /> is <c>null</c>.</exception>
       <exception cref="T:System.ArgumentOutOfRangeException">One or more numeric parameters are out of range.</exception>
     </member>
-    <member name="M:WikiClientLibrary.Wikibase.DataTypes.WbTime.FromDateTimeOffset(System.DateTimeOffset,System.Int32,System.Int32,System.Int32,WikiClientLibrary.Wikibase.DataTypes.WikibaseTimePrecision,WikiClientLibrary.Wikibase.DataTypes.WbUri)">
+    <member name="M:WikiClientLibrary.Wikibase.DataTypes.WbTime.FromDateTimeOffset(System.DateTimeOffset,System.Int32,System.Int32,WikiClientLibrary.Wikibase.DataTypes.WikibaseTimePrecision,System.Uri)">
       <summary>Constructs a <see cref="T:WikiClientLibrary.Wikibase.DataTypes.WbTime" /> instance from <see cref="T:System.DateTimeOffset" />.</summary>
       <param name="dateTime">The date, time, and time zone.</param>
-      <param name="timeZone">The time zone to use.</param>
       <param name="year">The year (-999999999 through 999999999).</param>
       <param name="month">The month (positive integer).</param>
       <param name="day">The day (positive integer).</param>
@@ -2273,6 +2374,7 @@
       <param name="second">The hour (0 through 59).</param>
       <param name="before">Number of units before the given time it could be, if uncertain. The unit is given by <paramref name="precision" />.</param>
       <param name="after">Number of units after the given time it could be, if uncertain. The unit is given by <paramref name="precision" />.</param>
+      <param name="timeZone">Time zone offset in minutes. See <see cref="P:WikiClientLibrary.Wikibase.DataTypes.WbTime.TimeZone" /> for more information.</param>
       <param name="precision">The unit of the precision of the time.</param>
       <param name="calendarModel">The entity URI of the calendar model.</param>
       <exception cref="T:System.ArgumentNullException">
@@ -2289,6 +2391,11 @@
         </markup>
       </summary>
     </member>
+    <member name="P:WikiClientLibrary.Wikibase.DataTypes.WbTime.GregorianCalendar">
+      <summary>
+            The URI for Gregorian calendar.
+            </summary>
+    </member>
     <member name="P:WikiClientLibrary.Wikibase.DataTypes.WbTime.Hour">
       <summary>
         <markup>
@@ -2298,6 +2405,11 @@
           </include>
         </markup>
       </summary>
+    </member>
+    <member name="P:WikiClientLibrary.Wikibase.DataTypes.WbTime.JulianCalendar">
+      <summary>
+            The URI for Julian calendar.
+            </summary>
     </member>
     <member name="P:WikiClientLibrary.Wikibase.DataTypes.WbTime.Minute">
       <summary>
@@ -2375,7 +2487,7 @@
         </markup>
       </param>
     </member>
-    <member name="M:WikiClientLibrary.Wikibase.DataTypes.WbTime.Parse(System.String,System.Int32,System.Int32,System.Int32,WikiClientLibrary.Wikibase.DataTypes.WikibaseTimePrecision,WikiClientLibrary.Wikibase.DataTypes.WbUri)">
+    <member name="M:WikiClientLibrary.Wikibase.DataTypes.WbTime.Parse(System.String,System.Int32,System.Int32,System.Int32,WikiClientLibrary.Wikibase.DataTypes.WikibaseTimePrecision,System.Uri)">
       <summary>Parses <see cref="T:WikiClientLibrary.Wikibase.DataTypes.WbTime" /> from its string representation.</summary>
       <param name="dateTime">The string representation of the date and time. Currently only ISO-8601 format is supported.</param>
       <param name="year">The year (-999999999 through 999999999).</param>
@@ -2442,146 +2554,6 @@
           </include>
         </markup>
       </summary>
-    </member>
-    <member name="T:WikiClientLibrary.Wikibase.DataTypes.WbUri">
-      <summary>
-            An atomic instance of URI used in Wikibase.
-            </summary>
-    </member>
-    <member name="M:WikiClientLibrary.Wikibase.DataTypes.WbUri.Equals(System.Object)">
-      <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>M:WikiClientLibrary.Wikibase.DataTypes.WbUri.Equals(System.Object)</parameter>
-          </include>
-        </markup>
-      </summary>
-      <param name="obj">
-        <markup>
-          <include item="SMCMissingParamTag">
-            <parameter>param</parameter>
-            <parameter>obj</parameter>
-            <parameter>M:WikiClientLibrary.Wikibase.DataTypes.WbUri.Equals(System.Object)</parameter>
-          </include>
-        </markup>
-      </param>
-    </member>
-    <member name="M:WikiClientLibrary.Wikibase.DataTypes.WbUri.Equals(WikiClientLibrary.Wikibase.DataTypes.WbUri)">
-      <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>M:WikiClientLibrary.Wikibase.DataTypes.WbUri.Equals(WikiClientLibrary.Wikibase.DataTypes.WbUri)</parameter>
-          </include>
-        </markup>
-      </summary>
-      <param name="other">
-        <markup>
-          <include item="SMCMissingParamTag">
-            <parameter>param</parameter>
-            <parameter>other</parameter>
-            <parameter>M:WikiClientLibrary.Wikibase.DataTypes.WbUri.Equals(WikiClientLibrary.Wikibase.DataTypes.WbUri)</parameter>
-          </include>
-        </markup>
-      </param>
-    </member>
-    <member name="M:WikiClientLibrary.Wikibase.DataTypes.WbUri.Get(System.String)">
-      <summary>
-            Gets an atomic instance of <see cref="T:WikiClientLibrary.Wikibase.DataTypes.WbUri" /> by URI.
-            </summary>
-      <param name="uri">URI of the entity.</param>
-    </member>
-    <member name="M:WikiClientLibrary.Wikibase.DataTypes.WbUri.GetHashCode">
-      <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>M:WikiClientLibrary.Wikibase.DataTypes.WbUri.GetHashCode</parameter>
-          </include>
-        </markup>
-      </summary>
-    </member>
-    <member name="M:WikiClientLibrary.Wikibase.DataTypes.WbUri.op_Equality(WikiClientLibrary.Wikibase.DataTypes.WbUri,WikiClientLibrary.Wikibase.DataTypes.WbUri)">
-      <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>M:WikiClientLibrary.Wikibase.DataTypes.WbUri.op_Equality(WikiClientLibrary.Wikibase.DataTypes.WbUri,WikiClientLibrary.Wikibase.DataTypes.WbUri)</parameter>
-          </include>
-        </markup>
-      </summary>
-      <param name="left">
-        <markup>
-          <include item="SMCMissingParamTag">
-            <parameter>param</parameter>
-            <parameter>left</parameter>
-            <parameter>M:WikiClientLibrary.Wikibase.DataTypes.WbUri.op_Equality(WikiClientLibrary.Wikibase.DataTypes.WbUri,WikiClientLibrary.Wikibase.DataTypes.WbUri)</parameter>
-          </include>
-        </markup>
-      </param>
-      <param name="right">
-        <markup>
-          <include item="SMCMissingParamTag">
-            <parameter>param</parameter>
-            <parameter>right</parameter>
-            <parameter>M:WikiClientLibrary.Wikibase.DataTypes.WbUri.op_Equality(WikiClientLibrary.Wikibase.DataTypes.WbUri,WikiClientLibrary.Wikibase.DataTypes.WbUri)</parameter>
-          </include>
-        </markup>
-      </param>
-    </member>
-    <member name="M:WikiClientLibrary.Wikibase.DataTypes.WbUri.op_Implicit(System.String)~WikiClientLibrary.Wikibase.DataTypes.WbUri">
-      <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>M:WikiClientLibrary.Wikibase.DataTypes.WbUri.op_Implicit(System.String)~WikiClientLibrary.Wikibase.DataTypes.WbUri</parameter>
-          </include>
-        </markup>
-      </summary>
-      <param name="s">
-        <markup>
-          <include item="SMCMissingParamTag">
-            <parameter>param</parameter>
-            <parameter>s</parameter>
-            <parameter>M:WikiClientLibrary.Wikibase.DataTypes.WbUri.op_Implicit(System.String)~WikiClientLibrary.Wikibase.DataTypes.WbUri</parameter>
-          </include>
-        </markup>
-      </param>
-    </member>
-    <member name="M:WikiClientLibrary.Wikibase.DataTypes.WbUri.op_Inequality(WikiClientLibrary.Wikibase.DataTypes.WbUri,WikiClientLibrary.Wikibase.DataTypes.WbUri)">
-      <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>M:WikiClientLibrary.Wikibase.DataTypes.WbUri.op_Inequality(WikiClientLibrary.Wikibase.DataTypes.WbUri,WikiClientLibrary.Wikibase.DataTypes.WbUri)</parameter>
-          </include>
-        </markup>
-      </summary>
-      <param name="left">
-        <markup>
-          <include item="SMCMissingParamTag">
-            <parameter>param</parameter>
-            <parameter>left</parameter>
-            <parameter>M:WikiClientLibrary.Wikibase.DataTypes.WbUri.op_Inequality(WikiClientLibrary.Wikibase.DataTypes.WbUri,WikiClientLibrary.Wikibase.DataTypes.WbUri)</parameter>
-          </include>
-        </markup>
-      </param>
-      <param name="right">
-        <markup>
-          <include item="SMCMissingParamTag">
-            <parameter>param</parameter>
-            <parameter>right</parameter>
-            <parameter>M:WikiClientLibrary.Wikibase.DataTypes.WbUri.op_Inequality(WikiClientLibrary.Wikibase.DataTypes.WbUri,WikiClientLibrary.Wikibase.DataTypes.WbUri)</parameter>
-          </include>
-        </markup>
-      </param>
-    </member>
-    <member name="M:WikiClientLibrary.Wikibase.DataTypes.WbUri.ToString">
-      <summary>Gets the referenced URI.</summary>
-    </member>
-    <member name="P:WikiClientLibrary.Wikibase.DataTypes.WbUri.Uri">
-      <summary>Gets the string of referenced URI.</summary>
     </member>
     <member name="T:WikiClientLibrary.Wikibase.DataTypes.WikibaseDataType">
       <summary>

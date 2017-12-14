@@ -4558,6 +4558,24 @@
         </markup>
       </param>
     </member>
+    <member name="M:WikiClientLibrary.Infrastructures.MediaWikiHelper.JoinValues``1(System.Collections.Generic.IEnumerable{``0})">
+      <summary>
+            Joins multiple values that will be used as parameter value in MediaWiki API request.
+            </summary>
+      <param name="values">The values to be joined. <see cref="M:System.Object.ToString" /> will be invoked before concatenating the sequence.</param>
+      <typeparam name="T">
+        <markup>
+          <include item="SMCMissingParamTag">
+            <parameter>typeparam</parameter>
+            <parameter>T</parameter>
+            <parameter>M:WikiClientLibrary.Infrastructures.MediaWikiHelper.JoinValues``1(System.Collections.Generic.IEnumerable{``0})</parameter>
+          </include>
+        </markup>
+      </typeparam>
+      <returns>A string of values joined by pipe character or alternative multiple-value separator (U+001F),
+            or <see cref="F:System.String.Empty" /> if <paramref name="values" /> is empty sequence.</returns>
+      <exception cref="T:System.ArgumentException">The values contain pipe character '|' and Unit Separator '\u001F' at the same time.</exception>
+    </member>
     <member name="M:WikiClientLibrary.Infrastructures.MediaWikiHelper.MakeAbsoluteProtocol(System.String,System.String)">
       <summary>
             Converts the specified relative protocol URL (starting with <c>//</c>) to absolute protocol URL.
