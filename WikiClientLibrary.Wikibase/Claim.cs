@@ -448,6 +448,9 @@ namespace WikiClientLibrary.Wikibase
 
     }
 
+    /// <summary>
+    /// Indicates the presence of value in a snak.
+    /// </summary>
     public enum SnakType
     {
         /// <summary>Custom value.</summary>

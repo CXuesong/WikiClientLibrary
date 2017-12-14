@@ -57,6 +57,9 @@ namespace WikiClientLibrary.Wikibase
         }
     }
 
+    /// <summary>
+    /// Used to mark how an item changes in <see cref="EntityEditEntry"/>.
+    /// </summary>
     public enum EntityEditEntryState
     {
         /// <summary>

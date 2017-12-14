@@ -166,7 +166,7 @@ namespace WikiClientLibrary.Wikibase
         /// affected by the edit operation, see the "remarks" section of the properties, respectively.</para>
         /// <para>If the edit operation is progressive edit, only the <see cref="LastRevisionId"/> is valid, after the edit operation.</para>
         /// <para>For more information about bulk edit and progressive edit, see the "remarks" section
-        /// of <see cref="EntityEditOptions.Progressive"/> and <see cref="EntityEditOptions.Bulk"/>.</para>
+        /// of <see cref="EntityEditOptions"/>.</para>
         /// <para>If you need more information about the entity after the edit, consider invoking <see cref="RefreshAsync()"/> again.</para>
         /// </remarks>
         public async Task EditAsync(IEnumerable<EntityEditEntry> edits, string summary, EntityEditOptions options, CancellationToken cancellationToken)
@@ -419,6 +419,13 @@ namespace WikiClientLibrary.Wikibase
     /// <summary>
     /// Provides options for editing a Wikibase entity.
     /// </summary>
+    /// <remarks>
+    /// <para>Progressive edit makes one change per MediaWiki API request, and will leave
+    /// more detailed edit summary on the Wiki. If one of the requests fails,
+    /// previously made changes will still be kept anyway.</para>
+    /// <para>By default, if you are editing an existing item, with less than 5 items of changes,
+    /// WikiClientLibrary will choose progressive edit rather than bulk one.</para>
+    /// </remarks>
     [Flags]
     public enum EntityEditOptions
     {
@@ -428,22 +435,8 @@ namespace WikiClientLibrary.Wikibase
         Bot = 1,
         /// <summary>Forces progressive edit, even if the client is creating a new item.
         /// This option cannot be used with <see cref="Bulk"/> and <see cref="ClearData"/>.</summary>
-        /// <remarks>
-        /// <para>Progressive edit makes one change per MediaWiki API request, and will leave
-        /// more detailed edit summary on the Wiki. If one of the requests fails,
-        /// previously made changes will still be kept anyway.</para>
-        /// <para>By default, if you are editing an existing item, with less than 5 items of changes,
-        /// WikiClientLibrary will choose progressive edit rather than bulk one.</para>
-        /// </remarks>
         Progressive = 2,
         /// <summary>Forces bulk edit, even if the client is creating a new item.</summary>
-        /// <remarks>
-        /// <para>Bulk edit makes all of the changes in one MediaWiki API request, and by default
-        /// it will leave a vague edit summary such as "edited item Q1234". If the request fails,
-        /// no changes will be made on the Wiki site.</para>
-        /// <para>By default, if you are creating an item, or editing with or with more than 5 items of changes,
-        /// WikiClientLibrary will choose bulk edit rather than progressive one.</para>
-        /// </remarks>
         Bulk = 4,
         /// <summary>Clears all the existing data of the entity before making the changes.
         /// This option implies <see cref="Bulk"/> flag.</summary>

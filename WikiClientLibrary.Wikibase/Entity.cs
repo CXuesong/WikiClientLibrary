@@ -321,6 +321,9 @@ namespace WikiClientLibrary.Wikibase
         Property = 1,
     }
 
+    /// <summary>
+    /// Provides options for fetching entity information from server.
+    /// </summary>
     [Flags]
     public enum EntityQueryOptions
     {
