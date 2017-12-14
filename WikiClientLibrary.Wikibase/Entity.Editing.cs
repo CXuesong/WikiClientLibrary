@@ -212,7 +212,7 @@ namespace WikiClientLibrary.Wikibase
                         var jentity = jresult["entity"];
                         if (jentity == null)
                             throw new UnexpectedDataException("Missing \"entity\" node in the JSON response.");
-                        LoadFromJson(jresult["entity"], EntityQueryOptions.FetchAllProperties, true);
+                        LoadFromJson(jentity, EntityQueryOptions.FetchAllProperties, true);
                     }
                 }
                 else
@@ -244,7 +244,6 @@ namespace WikiClientLibrary.Wikibase
                     case nameof(DataType):
                         throw new NotSupportedException("Setting data type is not possible in progrssive mode.");
                     case nameof(Labels):
-                    {
                         foreach (var p in prop)
                         {
                             var value = (WbMonolingualText)p.Value;
@@ -264,9 +263,7 @@ namespace WikiClientLibrary.Wikibase
                             if (!strict) checkbaseRev = false;
                         }
                         break;
-                    }
                     case nameof(Descriptions):
-                    {
                         foreach (var p in prop)
                         {
                             var value = (WbMonolingualText)p.Value;
@@ -286,144 +283,113 @@ namespace WikiClientLibrary.Wikibase
                             if (!strict) checkbaseRev = false;
                         }
                         break;
-                    }
                     case nameof(Aliases):
-                    {
-                        var entries = prop.GroupBy(t => ((WbMonolingualText)t.Value).Language);
-                        foreach (var langGroup in entries)
                         {
-                            var addExpr = MediaWikiHelper.JoinValues(langGroup
-                                .Where(e => e.State == EntityEditEntryState.Updated)
-                                .Select(e => ((WbMonolingualText)e.Value).Text));
-                            var removeExpr = MediaWikiHelper.JoinValues(langGroup
-                                .Where(e => e.State == EntityEditEntryState.Removed)
-                                .Select(e => ((WbMonolingualText)e.Value).Text));
-                            var jresult = await Site.InvokeMediaWikiApiAsync(new MediaWikiFormRequestMessage(new
+                            var entries = prop.GroupBy(t => ((WbMonolingualText)t.Value).Language);
+                            foreach (var langGroup in entries)
                             {
-                                action = "wbsetaliases",
-                                token = WikiSiteToken.Edit,
-                                id = Id,
-                                @new = Id == null ? FormatEntityType(Type) : null,
-                                baserevid = checkbaseRev && LastRevisionId > 0 ? (int?)LastRevisionId : null,
-                                bot = isBot,
-                                summary = summary,
-                                language = langGroup.Key,
-                                add = addExpr.Length == 0 ? null : addExpr,
-                                remove = removeExpr.Length == 0 ? null : removeExpr,
-                            }), cancellationToken);
-                            LoadFromJson(jresult["entity"], EntityQueryOptions.None, true);
-                            if (!strict) checkbaseRev = false;
-                        }
-                        break;
-                    }
-                    case nameof(SiteLinks):
-                    {
-                        var entries = prop.GroupBy(t => ((EntitySiteLink)t.Value).Site);
-                        foreach (var siteGroup in entries)
-                        {
-                            string link = null, badges = null;
-                            try
-                            {
-                                var item = (EntityEditEntry)siteGroup.Single().Value;
-                                if (item.State == EntityEditEntryState.Updated)
-                                {
-                                    var value = (EntitySiteLink)item.Value;
-                                    link = value.Title;
-                                    badges = MediaWikiHelper.JoinValues(value.Badges);
-                                }
-                            }
-                            catch (InvalidOperationException)
-                            {
-                                throw new ArgumentException("One site can own at most one site link.", nameof(edits));
-                            }
-                            var jresult = await Site.InvokeMediaWikiApiAsync(new MediaWikiFormRequestMessage(new
-                            {
-                                action = "wbsetsitelink",
-                                token = WikiSiteToken.Edit,
-                                id = Id,
-                                @new = Id == null ? FormatEntityType(Type) : null,
-                                baserevid = checkbaseRev && LastRevisionId > 0 ? (int?)LastRevisionId : null,
-                                bot = isBot,
-                                summary = summary,
-                                linksite = siteGroup.Key,
-                                linktitle = link,
-                                badges = badges,
-                            }), cancellationToken);
-                            LoadFromJson(jresult["entity"], EntityQueryOptions.None, true);
-                            if (!strict) checkbaseRev = false;
-                        }
-                        break;
-                    }
-                    case nameof(Claims):
-                    {
-                        foreach (var entry in prop.Where(e => e.State == EntityEditEntryState.Updated))
-                        {
-                            var value = (Claim)entry.Value;
-                            if (value.Id == null)
-                            {
-                                Debug.Assert(Id != null);
+                                var addExpr = MediaWikiHelper.JoinValues(langGroup
+                                    .Where(e => e.State == EntityEditEntryState.Updated)
+                                    .Select(e => ((WbMonolingualText)e.Value).Text));
+                                var removeExpr = MediaWikiHelper.JoinValues(langGroup
+                                    .Where(e => e.State == EntityEditEntryState.Removed)
+                                    .Select(e => ((WbMonolingualText)e.Value).Text));
                                 var jresult = await Site.InvokeMediaWikiApiAsync(new MediaWikiFormRequestMessage(new
                                 {
-                                    action = "wbcreateclaim",
-                                    token = WikiSiteToken.Edit,
-                                    entity = Id,
-                                    snaktype = Snak.ParseSnakType(value.MainSnak.SnakType),
-                                    property = value.MainSnak.PropertyId,
-                                    value = value.MainSnak.RawDataValue?["value"].ToString(Formatting.None),
-                                    baserevid = checkbaseRev && LastRevisionId > 0 ? (int?)LastRevisionId : null,
-                                    bot = isBot,
-                                    summary = summary,
-                                }), cancellationToken);
-                                LastRevisionId = (int)jresult["pageinfo"]["lastrevid"];
-                                if (!strict) checkbaseRev = false;
-                                var claimId = (string)jresult["claim"]["id"];
-                                foreach (var q in value.Qualifiers)
-                                {
-                                    jresult = await Site.InvokeMediaWikiApiAsync(new MediaWikiFormRequestMessage(new
-                                    {
-                                        action = "wbsetqualifier",
-                                        token = WikiSiteToken.Edit,
-                                        claim = claimId,
-                                        snaktype = Snak.ParseSnakType(q.SnakType),
-                                        property = q.PropertyId,
-                                        value = q.RawDataValue?["value"].ToString(Formatting.None),
-                                        baserevid = LastRevisionId > 0 ? (int?)LastRevisionId : null,
-                                        bot = isBot,
-                                        summary = summary,
-                                    }), cancellationToken);
-                                    LastRevisionId = (int)jresult["pageinfo"]["lastrevid"];
-                                }
-                                foreach (var r in value.References)
-                                {
-                                    jresult = await Site.InvokeMediaWikiApiAsync(new MediaWikiFormRequestMessage(new
-                                    {
-                                        action = "wbsetreference",
-                                        token = WikiSiteToken.Edit,
-                                        statement = claimId,
-                                        snaks = r.ToJson()["snaks"]?.ToString(Formatting.None),
-                                        baserevid = LastRevisionId > 0 ? (int?)LastRevisionId : null,
-                                        bot = isBot,
-                                        summary = summary,
-                                    }), cancellationToken);
-                                    LastRevisionId = (int)jresult["pageinfo"]["lastrevid"];
-                                }
-                            }
-                            else
-                            {
-                                var jresult = await Site.InvokeMediaWikiApiAsync(new MediaWikiFormRequestMessage(new
-                                {
-                                    action = "wbsetclaim",
+                                    action = "wbsetaliases",
                                     token = WikiSiteToken.Edit,
                                     id = Id,
                                     @new = Id == null ? FormatEntityType(Type) : null,
                                     baserevid = checkbaseRev && LastRevisionId > 0 ? (int?)LastRevisionId : null,
                                     bot = isBot,
                                     summary = summary,
-                                    claim = value.ToJson(false).ToString(Formatting.None),
+                                    language = langGroup.Key,
+                                    add = addExpr.Length == 0 ? null : addExpr,
+                                    remove = removeExpr.Length == 0 ? null : removeExpr,
                                 }), cancellationToken);
                                 LoadFromJson(jresult["entity"], EntityQueryOptions.None, true);
                                 if (!strict) checkbaseRev = false;
                             }
+                            break;
+                        }
+                    case nameof(SiteLinks):
+                        {
+                            var entries = prop.GroupBy(t => ((EntitySiteLink)t.Value).Site);
+                            foreach (var siteGroup in entries)
+                            {
+                                string link = null, badges = null;
+                                try
+                                {
+                                    var item = (EntityEditEntry)siteGroup.Single().Value;
+                                    if (item.State == EntityEditEntryState.Updated)
+                                    {
+                                        var value = (EntitySiteLink)item.Value;
+                                        link = value.Title;
+                                        badges = MediaWikiHelper.JoinValues(value.Badges);
+                                    }
+                                }
+                                catch (InvalidOperationException)
+                                {
+                                    throw new ArgumentException("One site can own at most one site link.", nameof(edits));
+                                }
+                                var jresult = await Site.InvokeMediaWikiApiAsync(new MediaWikiFormRequestMessage(new
+                                {
+                                    action = "wbsetsitelink",
+                                    token = WikiSiteToken.Edit,
+                                    id = Id,
+                                    @new = Id == null ? FormatEntityType(Type) : null,
+                                    baserevid = checkbaseRev && LastRevisionId > 0 ? (int?)LastRevisionId : null,
+                                    bot = isBot,
+                                    summary = summary,
+                                    linksite = siteGroup.Key,
+                                    linktitle = link,
+                                    badges = badges,
+                                }), cancellationToken);
+                                LoadFromJson(jresult["entity"], EntityQueryOptions.None, true);
+                                if (!strict) checkbaseRev = false;
+                            }
+                            break;
+                        }
+                    case nameof(Claims):
+                        foreach (var entry in prop.Where(e => e.State == EntityEditEntryState.Updated))
+                        {
+                            var value = (Claim)entry.Value;
+                            var jclaim = value.ToJson(false);
+                            if (value.Id == null)
+                            {
+                                // New claim. We need to assign an ID manually.
+                                // https://phabricator.wikimedia.org/T182573#3828344
+                                if (Id == null)
+                                {
+                                    // This is a new entity, so we need to create it first.
+                                    var jresult1 = await Site.InvokeMediaWikiApiAsync(new MediaWikiFormRequestMessage(new
+                                    {
+                                        action = "wbeditentity",
+                                        token = WikiSiteToken.Edit,
+                                        @new = FormatEntityType(Type),
+                                        bot = isBot,
+                                        summary = (string)null,
+                                        data = "{}"
+                                    }), cancellationToken);
+                                    if (!strict) checkbaseRev = false;
+                                    LoadFromJson(jresult1["entity"], EntityQueryOptions.FetchAllProperties, true);
+                                }
+                                jclaim.Add("id", Utility.NewClaimGuid(Id));
+                            }
+                            var jresult = await Site.InvokeMediaWikiApiAsync(new MediaWikiFormRequestMessage(new
+                            {
+                                action = "wbsetclaim",
+                                token = WikiSiteToken.Edit,
+                                id = Id,
+                                @new = Id == null ? FormatEntityType(Type) : null,
+                                baserevid = checkbaseRev && LastRevisionId > 0 ? (int?)LastRevisionId : null,
+                                bot = isBot,
+                                summary = summary,
+                                claim = jclaim.ToString(Formatting.None),
+                            }), cancellationToken);
+                            // jresult["claim"] != null
+                            LastRevisionId = (int)jresult["pageinfo"]["lastrevid"];
+                            if (!strict) checkbaseRev = false;
                         }
                         foreach (var batch in prop.Where(e => e.State == EntityEditEntryState.Removed)
                             .Select(e => ((Claim)e.Value).Id).Partition(50))
@@ -443,7 +409,6 @@ namespace WikiClientLibrary.Wikibase
                             if (!strict) checkbaseRev = false;
                         }
                         break;
-                    }
                     default:
                         throw new ArgumentException($"Unrecognized {nameof(Entity)} property name: {prop.Key}.");
                 }

@@ -34,7 +34,6 @@ namespace WikiClientLibrary.Wikibase
             if (list.Count > 0) yield return list;
         }
 
-
         public static JObject ToJObject<TSource>(this IEnumerable<TSource> source,
             Func<TSource, string> propertyNameSelector, Func<TSource, JToken> valueSelector)
         {
@@ -52,15 +51,9 @@ namespace WikiClientLibrary.Wikibase
             return arr;
         }
 
-        public static ILogger SetLoggerFactory<TOwner>(ref ILoggerFactory loggerFactoryField, ILoggerFactory value)
+        public static string NewClaimGuid(string entityId)
         {
-            return SetLoggerFactory(ref loggerFactoryField, value, typeof(TOwner));
-        }
-
-        public static ILogger SetLoggerFactory(ref ILoggerFactory loggerFactoryField, ILoggerFactory value, Type ownerType)
-        {
-            loggerFactoryField = value;
-            return value == null ? (ILogger)NullLogger.Instance : value.CreateLogger(ownerType);
+            return entityId + "$" + Guid.NewGuid().ToString("D");
         }
 
     }
