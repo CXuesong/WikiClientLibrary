@@ -21,7 +21,7 @@ namespace WikiClientLibrary.Wikia.WikiaApi
     /// </summary>
     /// <remarks>To take a sequence of <see cref="WikiPage"/> instances from this object,
     /// you can use LINQ <see cref="Enumerable.Select{TSource,TResult}(IEnumerable{TSource},Func{TSource,TResult})"/> method
-    /// with <see cref="WikiPage.FromTitle(WikiSite,string)"/>; then call <see cref="Pages.WikiPageExtensions.RefreshAsync(IEnumerable{WikiPage})"/>
+    /// with <see cref="WikiClientLibrary.Pages.WikiPage.WikiPage(WikiSite,string)"/>; then call <see cref="Pages.WikiPageExtensions.RefreshAsync(IEnumerable{WikiPage})"/>
     /// to fetch page information or content.</remarks>
     /// <seealso cref="SearchGenerator"/>
     public class LocalWikiSearchList : IWikiList<LocalWikiSearchResultItem>
@@ -91,7 +91,7 @@ namespace WikiClientLibrary.Wikia.WikiaApi
             set
             {
                 if (value < 0 || value > 99)
-                    throw new ArgumentOutOfRangeException("Article quality should be in the range of 0~99.", nameof(value));
+                    throw new ArgumentOutOfRangeException(nameof(value), "Article quality should be in the range of 0~99.");
                 _MinimumArticleQuality = value;
             }
         }
