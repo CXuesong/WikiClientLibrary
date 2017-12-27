@@ -10,6 +10,9 @@ namespace WikiClientLibrary.Wikibase.Contracts
     internal class Entity
     {
 
+        [JsonExtensionData]
+        public IDictionary<string, JToken> ExtensionData { get; set; }
+
         [JsonProperty]
         public string Type { get; set; }
 
@@ -93,7 +96,7 @@ namespace WikiClientLibrary.Wikibase.Contracts
         public string Hash { get; set; }
 
         [JsonProperty]
-        public JToken DataValue { get; set; }
+        public JObject DataValue { get; set; }
 
         [JsonProperty]
         public string DataType { get; set; }
@@ -106,7 +109,7 @@ namespace WikiClientLibrary.Wikibase.Contracts
         public string Hash { get; set; }
 
         [JsonProperty]
-        public ICollection<Snak> Snaks { get; set; }
+        public IDictionary<string, ICollection<Snak>> Snaks { get; set; }
 
         [JsonProperty("snaks-order")]
         public IList<string> SnaksOrder { get; set; }
@@ -122,7 +125,7 @@ namespace WikiClientLibrary.Wikibase.Contracts
         public string Title { get; set; }
 
         [JsonProperty]
-        public ICollection<string> Badges { get; set; }
+        public IList<string> Badges { get; set; }
 
         [JsonProperty]
         public bool Remove { get; set; }

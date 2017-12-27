@@ -61,6 +61,22 @@ namespace WikiClientLibrary.Wikibase
             }
         }
 
+        public static T Deserialize<T>(this JsonSerializer serializer, TextReader reader)
+        {
+            using (var jreader = new JsonTextReader(reader))
+            {
+                return serializer.Deserialize<T>(jreader);
+            }
+        }
+
+        public static T Deserialize<T>(this JsonSerializer serializer, string json)
+        {
+            using (var reader = new StringReader(json))
+            {
+                return serializer.Deserialize<T>(reader);
+            }
+        }
+
         public static string NewClaimGuid(string entityId)
         {
             return entityId + "$" + Guid.NewGuid().ToString("D");

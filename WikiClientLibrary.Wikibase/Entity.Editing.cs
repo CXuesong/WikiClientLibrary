@@ -258,7 +258,7 @@ namespace WikiClientLibrary.Wikibase
                                 language = value.Language,
                                 value = p.State == EntityEditEntryState.Updated ? value.Text : null,
                             }), cancellationToken);
-                            LoadFromJson(jresult["entity"], EntityQueryOptions.None, true);
+                            LoadEntityMinimal(jresult["entity"]);
                             if (!strict) checkbaseRev = false;
                         }
                         break;
@@ -278,7 +278,7 @@ namespace WikiClientLibrary.Wikibase
                                 language = value.Language,
                                 value = p.State == EntityEditEntryState.Updated ? value.Text : null,
                             }), cancellationToken);
-                            LoadFromJson(jresult["entity"], EntityQueryOptions.None, true);
+                            LoadEntityMinimal(jresult["entity"]);
                             if (!strict) checkbaseRev = false;
                         }
                         break;
@@ -306,7 +306,7 @@ namespace WikiClientLibrary.Wikibase
                                     add = addExpr.Length == 0 ? null : addExpr,
                                     remove = removeExpr.Length == 0 ? null : removeExpr,
                                 }), cancellationToken);
-                                LoadFromJson(jresult["entity"], EntityQueryOptions.None, true);
+                                LoadEntityMinimal(jresult["entity"]);
                                 if (!strict) checkbaseRev = false;
                             }
                             break;
@@ -344,7 +344,7 @@ namespace WikiClientLibrary.Wikibase
                                     linktitle = link,
                                     badges = badges,
                                 }), cancellationToken);
-                                LoadFromJson(jresult["entity"], EntityQueryOptions.None, true);
+                                LoadEntityMinimal(jresult["entity"]);
                                 if (!strict) checkbaseRev = false;
                             }
                             break;
@@ -371,7 +371,7 @@ namespace WikiClientLibrary.Wikibase
                                         data = "{}"
                                     }), cancellationToken);
                                     if (!strict) checkbaseRev = false;
-                                    LoadFromJson(jresult1["entity"], EntityQueryOptions.FetchAllProperties, true);
+                                    LoadEntityMinimal(jresult1["entity"]);
                                 }
                                 claimContract.Id = Utility.NewClaimGuid(Id);
                             }
@@ -410,6 +410,14 @@ namespace WikiClientLibrary.Wikibase
                     default:
                         throw new ArgumentException($"Unrecognized {nameof(Entity)} property name: {prop.Key}.");
                 }
+            }
+
+            void LoadEntityMinimal(JToken jentity)
+            {
+                Debug.Assert(jentity != null);
+                Id = (string)jentity["id"];
+                Type = SerializableEntity.ParseEntityType((string)jentity["type"]);
+                LastRevisionId = (int)jentity["lastrevid"];
             }
         }
     }

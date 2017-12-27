@@ -1,0 +1,3108 @@
+﻿{
+  "type": "property",
+  "datatype": "wikibase-item",
+  "id": "P3",
+  "labels": {
+    "en": {
+      "language": "en",
+      "value": "instance of"
+    },
+    "fr": {
+      "language": "fr",
+      "value": "nature de l'élément"
+    },
+    "de": {
+      "language": "de",
+      "value": "ist ein(e)"
+    },
+    "it": {
+      "language": "it",
+      "value": "istanza di"
+    },
+    "pt-br": {
+      "language": "pt-br",
+      "value": "instância de"
+    },
+    "eo": {
+      "language": "eo",
+      "value": "estas"
+    },
+    "he": {
+      "language": "he",
+      "value": "הוא"
+    },
+    "es": {
+      "language": "es",
+      "value": "instancia de"
+    },
+    "fi": {
+      "language": "fi",
+      "value": "esiintymä kohteesta"
+    },
+    "hu": {
+      "language": "hu",
+      "value": "ez egy"
+    },
+    "ru": {
+      "language": "ru",
+      "value": "это частный случай понятия"
+    },
+    "hr": {
+      "language": "hr",
+      "value": "je"
+    },
+    "nl": {
+      "language": "nl",
+      "value": "is een"
+    },
+    "el": {
+      "language": "el",
+      "value": "είναι"
+    },
+    "pl": {
+      "language": "pl",
+      "value": "jest to"
+    },
+    "sr": {
+      "language": "sr",
+      "value": "је"
+    },
+    "ca": {
+      "language": "ca",
+      "value": "instància de"
+    },
+    "cs": {
+      "language": "cs",
+      "value": "instance (čeho)"
+    },
+    "nb": {
+      "language": "nb",
+      "value": "forekomst av"
+    },
+    "pt": {
+      "language": "pt",
+      "value": "instância de"
+    },
+    "ilo": {
+      "language": "ilo",
+      "value": "pagarigan iti"
+    },
+    "sl": {
+      "language": "sl",
+      "value": "primerek od"
+    },
+    "be": {
+      "language": "be",
+      "value": "гэта"
+    },
+    "ko": {
+      "language": "ko",
+      "value": "다음 종류에 속함"
+    },
+    "nn": {
+      "language": "nn",
+      "value": "førekomst av"
+    },
+    "vi": {
+      "language": "vi",
+      "value": "là một"
+    },
+    "be-tarask": {
+      "language": "be-tarask",
+      "value": "асобны выпадак панятку"
+    },
+    "bs": {
+      "language": "bs",
+      "value": "je"
+    },
+    "th": {
+      "language": "th",
+      "value": "เป็น"
+    },
+    "uk": {
+      "language": "uk",
+      "value": "є одним із"
+    },
+    "en-gb": {
+      "language": "en-gb",
+      "value": "instance of"
+    },
+    "en-ca": {
+      "language": "en-ca",
+      "value": "instance of"
+    },
+    "ja": {
+      "language": "ja",
+      "value": "分類"
+    },
+    "uz": {
+      "language": "uz",
+      "value": "bu"
+    },
+    "lv": {
+      "language": "lv",
+      "value": "ir"
+    },
+    "la": {
+      "language": "la",
+      "value": "est"
+    },
+    "fa": {
+      "language": "fa",
+      "value": "یک نمونه از"
+    },
+    "sv": {
+      "language": "sv",
+      "value": "instans av"
+    },
+    "nds": {
+      "language": "nds",
+      "value": "is en"
+    },
+    "ro": {
+      "language": "ro",
+      "value": "este un/o"
+    },
+    "ta": {
+      "language": "ta",
+      "value": "வகை"
+    },
+    "min": {
+      "language": "min",
+      "value": "adolah"
+    },
+    "id": {
+      "language": "id",
+      "value": "adalah"
+    },
+    "gl": {
+      "language": "gl",
+      "value": "é un/unha"
+    },
+    "is": {
+      "language": "is",
+      "value": "er"
+    },
+    "af": {
+      "language": "af",
+      "value": "is 'n"
+    },
+    "ka": {
+      "language": "ka",
+      "value": "არის"
+    },
+    "de-at": {
+      "language": "de-at",
+      "value": "ist eine Instanz von"
+    },
+    "da": {
+      "language": "da",
+      "value": "tilfælde af"
+    },
+    "sco": {
+      "language": "sco",
+      "value": "instance o"
+    },
+    "sk": {
+      "language": "sk",
+      "value": "je"
+    },
+    "de-ch": {
+      "language": "de-ch",
+      "value": "ist eine Instanz von"
+    },
+    "bar": {
+      "language": "bar",
+      "value": "is a Instanz vo"
+    },
+    "bn": {
+      "language": "bn",
+      "value": "নিদর্শন"
+    },
+    "lmo": {
+      "language": "lmo",
+      "value": "l'è un(a)"
+    },
+    "nds-nl": {
+      "language": "nds-nl",
+      "value": "is n"
+    },
+    "sh": {
+      "language": "sh",
+      "value": "je(su)"
+    },
+    "br": {
+      "language": "br",
+      "value": "doare an elfenn"
+    },
+    "bg": {
+      "language": "bg",
+      "value": "инстанция на"
+    },
+    "mr": {
+      "language": "mr",
+      "value": "प्रकार"
+    },
+    "ckb": {
+      "language": "ckb",
+      "value": "نموونەیەک لە"
+    },
+    "ar": {
+      "language": "ar",
+      "value": "حالة خاصة من"
+    },
+    "et": {
+      "language": "et",
+      "value": "üksikjuht nähtusest"
+    },
+    "pcd": {
+      "language": "pcd",
+      "value": "est un"
+    },
+    "tr": {
+      "language": "tr",
+      "value": "nedir"
+    },
+    "hi": {
+      "language": "hi",
+      "value": "उदहारण है"
+    },
+    "sr-ec": {
+      "language": "sr-ec",
+      "value": "је"
+    },
+    "co": {
+      "language": "co",
+      "value": "istanza di"
+    },
+    "oc": {
+      "language": "oc",
+      "value": "natura de l'element"
+    },
+    "mk": {
+      "language": "mk",
+      "value": "е"
+    },
+    "yi": {
+      "language": "yi",
+      "value": "פֿאַל"
+    },
+    "zh": {
+      "language": "zh",
+      "value": "性質"
+    },
+    "jbo": {
+      "language": "jbo",
+      "value": "serese mupli"
+    },
+    "gu": {
+      "language": "gu",
+      "value": "ઉદાહરણ"
+    },
+    "ms": {
+      "language": "ms",
+      "value": "contoh"
+    },
+    "tl": {
+      "language": "tl",
+      "value": "ay halimbawa ng"
+    },
+    "rm": {
+      "language": "rm",
+      "value": "è in(a)"
+    },
+    "ksh": {
+      "language": "ksh",
+      "value": "es e Beischpell för e(n(e))"
+    },
+    "lb": {
+      "language": "lb",
+      "value": "ass eng/e(e)(n)"
+    },
+    "csb": {
+      "language": "csb",
+      "value": "to je"
+    },
+    "ts": {
+      "language": "ts",
+      "value": "Nchumu"
+    },
+    "gsw": {
+      "language": "gsw",
+      "value": "isch e"
+    },
+    "mzn": {
+      "language": "mzn",
+      "value": "دِلِوس"
+    },
+    "te": {
+      "language": "te",
+      "value": "దీనియొక్క ఒక అవతారం"
+    },
+    "or": {
+      "language": "or",
+      "value": "ଦୃଷ୍ଟାନ୍ତ"
+    },
+    "sr-el": {
+      "language": "sr-el",
+      "value": "je"
+    },
+    "stq": {
+      "language": "stq",
+      "value": "is n(e)"
+    },
+    "ia": {
+      "language": "ia",
+      "value": "instantia de"
+    },
+    "nap": {
+      "language": "nap",
+      "value": "no tipo 'e"
+    },
+    "yue": {
+      "language": "yue",
+      "value": "係一個"
+    },
+    "mg": {
+      "language": "mg",
+      "value": "karazana"
+    },
+    "scn": {
+      "language": "scn",
+      "value": "esimplari di"
+    },
+    "eu": {
+      "language": "eu",
+      "value": "honako hau da"
+    },
+    "fy": {
+      "language": "fy",
+      "value": "is in"
+    },
+    "ml": {
+      "language": "ml",
+      "value": "പ്രത്യേകമായ ഉദാഹരണം"
+    },
+    "tt": {
+      "language": "tt",
+      "value": "төшенчәнең аерым очрагы"
+    },
+    "ce": {
+      "language": "ce",
+      "value": "хӀара долара кхетам бу"
+    },
+    "ne": {
+      "language": "ne",
+      "value": "उदाहरण"
+    },
+    "ast": {
+      "language": "ast",
+      "value": "instancia de"
+    },
+    "cy": {
+      "language": "cy",
+      "value": "enghraifft o'r canlynol"
+    },
+    "lt": {
+      "language": "lt",
+      "value": "yra"
+    },
+    "hy": {
+      "language": "hy",
+      "value": "հասկացության մասնավոր դեպք"
+    },
+    "mai": {
+      "language": "mai",
+      "value": "उदाहरण"
+    },
+    "frr": {
+      "language": "frr",
+      "value": "As en"
+    },
+    "fo": {
+      "language": "fo",
+      "value": "er eitt"
+    },
+    "kn": {
+      "language": "kn",
+      "value": "ಉದಾಹರಣೆಗೆ"
+    },
+    "ga": {
+      "language": "ga",
+      "value": "shampla de"
+    },
+    "ht": {
+      "language": "ht",
+      "value": "egzanp nan"
+    },
+    "io": {
+      "language": "io",
+      "value": "esas"
+    },
+    "vo": {
+      "language": "vo",
+      "value": "binon"
+    },
+    "zh-hant": {
+      "language": "zh-hant",
+      "value": "性質"
+    },
+    "zh-hans": {
+      "language": "zh-hans",
+      "value": "性质"
+    },
+    "zh-hk": {
+      "language": "zh-hk",
+      "value": "性質"
+    },
+    "zh-cn": {
+      "language": "zh-cn",
+      "value": "性质"
+    },
+    "zh-mo": {
+      "language": "zh-mo",
+      "value": "性質"
+    },
+    "zh-sg": {
+      "language": "zh-sg",
+      "value": "性质"
+    },
+    "zh-tw": {
+      "language": "zh-tw",
+      "value": "性質"
+    },
+    "pa": {
+      "language": "pa",
+      "value": "ਨਮੂਨਾ ਹੈ"
+    },
+    "ku-latn": {
+      "language": "ku-latn",
+      "value": "mînakek ji bo"
+    },
+    "sq": {
+      "language": "sq",
+      "value": "instancë e"
+    },
+    "pam": {
+      "language": "pam",
+      "value": "alimbawa ning"
+    },
+    "hsb": {
+      "language": "hsb",
+      "value": "je"
+    },
+    "an": {
+      "language": "an",
+      "value": "instancia de"
+    },
+    "tg": {
+      "language": "tg",
+      "value": "як намуна аз"
+    },
+    "ky": {
+      "language": "ky",
+      "value": "классы"
+    },
+    "ba": {
+      "language": "ba",
+      "value": "төшөнсәнең шәхсән осрағы"
+    },
+    "yo": {
+      "language": "yo",
+      "value": "àkórí"
+    },
+    "tcy": {
+      "language": "tcy",
+      "value": "ಉದಾರ್ಮೆಗ್"
+    },
+    "tg-cyrl": {
+      "language": "tg-cyrl",
+      "value": "як намуна аз"
+    },
+    "tg-latn": {
+      "language": "tg-latn",
+      "value": "yak namuna az"
+    },
+    "tt-latn": {
+      "language": "tt-latn",
+      "value": "töşençäneñ ayırım oçrağı"
+    },
+    "tt-cyrl": {
+      "language": "tt-cyrl",
+      "value": "төшенчәнең аерым очрагы"
+    },
+    "az": {
+      "language": "az",
+      "value": "anlayışın xüsusi halıdır"
+    },
+    "ur": {
+      "language": "ur",
+      "value": "مثال بہ"
+    },
+    "arz": {
+      "language": "arz",
+      "value": "واحد من"
+    }
+  },
+  "descriptions": {
+    "en": {
+      "language": "en",
+      "value": "that class of which this subject is a particular example and member. (Subject typically an individual member with Proper Name label.) Different from P279 (subclass of)"
+    },
+    "it": {
+      "language": "it",
+      "value": "questo elemento è un'istanza di questa classe, categoria o gruppo di oggetti"
+    },
+    "fr": {
+      "language": "fr",
+      "value": "Cet élément est un exemple spécifique de cette classe qui en précise la nature. Ne pas confondre avec la propriété P279 (sous-classe de)."
+    },
+    "pt-br": {
+      "language": "pt-br",
+      "value": "aquela classe a qual este sujeito é um membro e exemplo particular. (O sujeito é tipicamente um membro individual com um Nome Próprio). Diferente da P279 (subclasse de)"
+    },
+    "hu": {
+      "language": "hu",
+      "value": "az elem a másik elem példánya"
+    },
+    "hr": {
+      "language": "hr",
+      "value": "ova stavka je primjer ove druge stavke"
+    },
+    "de": {
+      "language": "de",
+      "value": "Ausprägung oder Exemplar einer Sache, Mitglied einer Klasse. Unterscheide von P279 (Unterklasse von)."
+    },
+    "el": {
+      "language": "el",
+      "value": "αυτό το αντικείμενο είναι εξειδικευμένο παράδειγμα και μέλος αυτής της τάξης. Δεν θα πρέπει να συγχέεται με την Ιδιότητα:P279"
+    },
+    "fi": {
+      "language": "fi",
+      "value": "kohde, johon ominaisuus liitetään, on esiintymä ominaisuuden arvoksi asetettavasta kohteesta"
+    },
+    "ilo": {
+      "language": "ilo",
+      "value": "daytoy a banag ket maysa a pagarigan iti daytoy a sabali a banag"
+    },
+    "nb": {
+      "language": "nb",
+      "value": "dette elementet er et konkret objekt/eksemplar (instans) av denne klassen, kategorien eller objektgruppen"
+    },
+    "es": {
+      "language": "es",
+      "value": "este elemento es un ejemplar del otro elemento"
+    },
+    "vi": {
+      "language": "vi",
+      "value": "khoản mục này là một thực thể của khoản mục kia"
+    },
+    "be-tarask": {
+      "language": "be-tarask",
+      "value": "агульнае азначэньне, чым зьяўляецца аб’ект"
+    },
+    "ja": {
+      "language": "ja",
+      "value": "この項目をインスタンスとする種類・概念"
+    },
+    "en-gb": {
+      "language": "en-gb",
+      "value": "this item is an instance of this other item"
+    },
+    "en-ca": {
+      "language": "en-ca",
+      "value": "the subject is an instance of the object"
+    },
+    "pl": {
+      "language": "pl",
+      "value": "stanowi przykład (jest elementem) danej klasy"
+    },
+    "lv": {
+      "language": "lv",
+      "value": "šī vienība ir šīs citas vienības instance"
+    },
+    "ca": {
+      "language": "ca",
+      "value": "aquest element és un objecte concret (instància) d'aquesta classe, categoria o grup d'objectes"
+    },
+    "sv": {
+      "language": "sv",
+      "value": "är ett konkret objekt (instans) av denna klass, kategori eller objektgrupp"
+    },
+    "fa": {
+      "language": "fa",
+      "value": "آیتم مورد نظر یک نوع ... است"
+    },
+    "gl": {
+      "language": "gl",
+      "value": "o elemento é unha instancia doutro elemento"
+    },
+    "is": {
+      "language": "is",
+      "value": "Þessi hlutur er dæmi um annan hlut"
+    },
+    "nl": {
+      "language": "nl",
+      "value": "dit item is een exemplaar (instantie) van deze groep elementen"
+    },
+    "ru": {
+      "language": "ru",
+      "value": "данный элемент представляет собой конкретный объект (экземпляр / частный случай) класса, категории. Не путать с Property:P279 (\"подкласс от\")."
+    },
+    "uk": {
+      "language": "uk",
+      "value": "цей елемент є конкретним прикладом об'єкта (окремий випадок) такого класу, категоріі чи групи об'єктів"
+    },
+    "de-at": {
+      "language": "de-at",
+      "value": "Ausprägung oder Exemplar einer Sache"
+    },
+    "da": {
+      "language": "da",
+      "value": "dette emne er et konkret objekt af denne kategori, klasse eller objektgruppe."
+    },
+    "ro": {
+      "language": "ro",
+      "value": "acest element este un exemplar din clasa definită de acel element"
+    },
+    "de-ch": {
+      "language": "de-ch",
+      "value": "Ausprägung oder Exemplar einer Sache"
+    },
+    "nds-nl": {
+      "language": "nds-nl",
+      "value": "dit item is n eksemplaor/instansie van t tweede item (Veurbeeld: \"Mark Rutte\" is nen \"politieker\")"
+    },
+    "he": {
+      "language": "he",
+      "value": "הנדון הוא מקרה של"
+    },
+    "bg": {
+      "language": "bg",
+      "value": "обектът е инстанция на даден клас"
+    },
+    "hi": {
+      "language": "hi",
+      "value": "यह आइटम इस अन्य आइटम का उदहारण है"
+    },
+    "sr": {
+      "language": "sr",
+      "value": "ова ставка је конкретан објекат (инстанца) класе, категорије или групе објеката"
+    },
+    "sr-ec": {
+      "language": "sr-ec",
+      "value": "ова ставка је конкретан објекат (инстанца) класе, категорије или групе објеката"
+    },
+    "mk": {
+      "language": "mk",
+      "value": "предметот е примерок/случај на друг предмет"
+    },
+    "cs": {
+      "language": "cs",
+      "value": "tato položka je jedna konkrétní věc (exemplář, příklad) patřící do této třídy, kategorie nebo skupiny předmětů"
+    },
+    "gu": {
+      "language": "gu",
+      "value": "આ લેખ આ પ્રકાર અથવા શ્રેણીના અન્ય લેખોનું સચોટ ઉદાહરણ છે."
+    },
+    "ksh": {
+      "language": "ksh",
+      "value": "di Saach es ene beschtemmpte, konkrete Jääjeschtand vun dä Zoot, udder Jropp, udder dä Aat"
+    },
+    "eo": {
+      "language": "eo",
+      "value": "tiu ĉi ero estas konkreta aĵo (instanco) de tiu ĉi klaso, kategorio aŭ objektogrupo"
+    },
+    "ko": {
+      "language": "ko",
+      "value": "항목 주제는 다음 종류에 속함 (해당 종류에 속하는 것 중 하나를 고르라고 했을 때 이 항목도 고를 수 있어야 함)"
+    },
+    "oc": {
+      "language": "oc",
+      "value": "natura de, expression de o exemplar de"
+    },
+    "mzn": {
+      "language": "mzn",
+      "value": "آیتم جور"
+    },
+    "zh": {
+      "language": "zh",
+      "value": "本項目所屬的性質，本以項目為實例的類別"
+    },
+    "pt": {
+      "language": "pt",
+      "value": "este item é uma instância deste outro item"
+    },
+    "id": {
+      "language": "id",
+      "value": "Butir ini adalah contoh spesifik dan anggota dari sebuah kelas tertentu. Jangan bingung dengan atribut Property:P279 (subkelas dari)."
+    },
+    "sr-el": {
+      "language": "sr-el",
+      "value": "ova stavka je konkretan objekat (instanca) klase, kategorije ili grupe objekata"
+    },
+    "br": {
+      "language": "br",
+      "value": "bez' ez eo an elfenn-mañ lodek eus ar rummad pe renkad-mañ, pe un elfenn eus ur strollad"
+    },
+    "sl": {
+      "language": "sl",
+      "value": "je konkretna izvedba objekta v razredu, kategoriji ali skupini objektov"
+    },
+    "nap": {
+      "language": "nap",
+      "value": "sto fatto o sta cosa è no tipo 'e nato elemento"
+    },
+    "rif": {
+      "language": "rif",
+      "value": "حجيج"
+    },
+    "yue": {
+      "language": "yue",
+      "value": "呢件嘢係以下概念嘅一個實例"
+    },
+    "scn": {
+      "language": "scn",
+      "value": "sta cosa è n'esimplari cuncretu di sta classi, di sta catigurìa, o di stu cuncettu"
+    },
+    "eu": {
+      "language": "eu",
+      "value": "elementu hau mota, kategoria edo ale talde honen ale (adibide) konkretu bat da"
+    },
+    "my": {
+      "language": "my",
+      "value": "ျမန္မာဘာသာ"
+    },
+    "ne": {
+      "language": "ne",
+      "value": "कुनै पनि वस्तुको एक स्थिती जनाउँछ र कुनै पनि समूहको सदस्य रहेको जनाउँछ"
+    },
+    "ast": {
+      "language": "ast",
+      "value": "esti elementu ye un casu concretu d'esta categoría o grupu"
+    },
+    "ta": {
+      "language": "ta",
+      "value": "இவ்வுருப்படியானது, குறிப்பிடப்படுகின்ற வகுப்பைச் சேர்ந்ததும் அவ்வகுப்புக்கான ஒரு திட்டவட்டமான எடுத்துக்காட்டும் ஆகும்."
+    },
+    "zh-hant": {
+      "language": "zh-hant",
+      "value": "本項目所屬的性質，本以項目為實例的類別"
+    },
+    "zh-hans": {
+      "language": "zh-hans",
+      "value": "本项目所属的性质，本以项目为实例的类别"
+    },
+    "zh-hk": {
+      "language": "zh-hk",
+      "value": "本項目所屬的性質，本以項目為實例的類別"
+    },
+    "zh-cn": {
+      "language": "zh-cn",
+      "value": "本项目所属的性质，本以项目为实例的类别"
+    },
+    "zh-mo": {
+      "language": "zh-mo",
+      "value": "本項目所屬的性質，本以項目為實例的類別"
+    },
+    "zh-sg": {
+      "language": "zh-sg",
+      "value": "本项目所属的性质，本以项目为实例的类别"
+    },
+    "zh-tw": {
+      "language": "zh-tw",
+      "value": "本項目所屬的性質，本以項目為實例的類別"
+    },
+    "ka": {
+      "language": "ka",
+      "value": "აღნიშნული ელემენტი წარმოადგენს კონკრეტული ობიექტის კლასს, კატეგორიას ან ობიექტთა ჯგუფს"
+    },
+    "sq": {
+      "language": "sq",
+      "value": "ky artikull është një shembull specifik dhe një anëtar i asaj klase. Për të mos ngatërrohet me tiparin Property:P279 (nënklasën e)"
+    },
+    "sk": {
+      "language": "sk",
+      "value": "táto položka je jedna konkrétna vec (exemplár, príklad) patriaci do tejto triedy, kategórie alebo skupiny predmetov"
+    },
+    "tr": {
+      "language": "tr",
+      "value": "Bu madde belirli bir örnektir ve o sınıfın bir üyesidir. Özellikle karıştırılmamalıdır:P279 (alt sınıfı)"
+    },
+    "hsb": {
+      "language": "hsb",
+      "value": "što je objekt?"
+    },
+    "ar": {
+      "language": "ar",
+      "value": "صنف من الأشياء يوجد شيء واحد منه ولا يتكرر. ويجب أن لا يتم الخلط بينه وبين الخاصية: P279 (نوع فرعي من)."
+    },
+    "th": {
+      "language": "th",
+      "value": "คุณลักษณะที่บ่งบอกถึงสิ่งๆ นั้นว่าเป็นตัวอย่างและเป็นสมาชิกของกลุ่มใด (โดยปกติทุกรายการมีป้ายชื่อที่ถูกต้อง) แตกต่างจาก P279 (กลุ่มย่อยของ)"
+    },
+    "lb": {
+      "language": "lb",
+      "value": "Element vun enger Grupp, Kategorie oder Klass"
+    },
+    "tcy": {
+      "language": "tcy",
+      "value": "ಈ ವಿಸಯೊ ಒಂಜಿ ನಿರ್ದಿಸ್ಟೊ ಉದಾರ್ಮೆ ಬುಕ್ಕೊ ಸದಸ್ಯೆ ಆದಿಪ್ಪುನ ಹ್ಯಾಟ್ ವರ್ಗೊ."
+    },
+    "sco": {
+      "language": "sco",
+      "value": "that cless o that this subject is a particular exemple an member. (Subject teepically an individual member wi Proper Name label.) Different frae P279 (subcless o)."
+    },
+    "az": {
+      "language": "az",
+      "value": "bu element müəyyən anlayışın xüsusi halını təsvir edir. P279 (yarımsinif) ilə səhv salmayın."
+    }
+  },
+  "aliases": {
+    "fr": [
+      {
+        "language": "fr",
+        "value": "est un"
+      },
+      {
+        "language": "fr",
+        "value": "est une"
+      },
+      {
+        "language": "fr",
+        "value": "instance de"
+      },
+      {
+        "language": "fr",
+        "value": "∈"
+      },
+      {
+        "language": "fr",
+        "value": "a pour classe"
+      },
+      {
+        "language": "fr",
+        "value": "est un exemple de"
+      }
+    ],
+    "de": [
+      {
+        "language": "de",
+        "value": "ist Instanz von"
+      },
+      {
+        "language": "de",
+        "value": "war ein(e)"
+      },
+      {
+        "language": "de",
+        "value": "∈"
+      },
+      {
+        "language": "de",
+        "value": "Beispiel von"
+      },
+      {
+        "language": "de",
+        "value": "Exemplar von"
+      },
+      {
+        "language": "de",
+        "value": "Einzelfall von"
+      },
+      {
+        "language": "de",
+        "value": "Mitglied von"
+      },
+      {
+        "language": "de",
+        "value": "ist eine"
+      },
+      {
+        "language": "de",
+        "value": "war eine"
+      }
+    ],
+    "he": [
+      {
+        "language": "he",
+        "value": "היא"
+      },
+      {
+        "language": "he",
+        "value": "דוגמה של"
+      },
+      {
+        "language": "he",
+        "value": "מקרה של"
+      },
+      {
+        "language": "he",
+        "value": "∈"
+      }
+    ],
+    "en": [
+      {
+        "language": "en",
+        "value": "is a"
+      },
+      {
+        "language": "en",
+        "value": "is an"
+      },
+      {
+        "language": "en",
+        "value": "has class"
+      },
+      {
+        "language": "en",
+        "value": "has type"
+      },
+      {
+        "language": "en",
+        "value": "is a particular"
+      },
+      {
+        "language": "en",
+        "value": "is a specific"
+      },
+      {
+        "language": "en",
+        "value": "is an individual"
+      },
+      {
+        "language": "en",
+        "value": "is a unique"
+      },
+      {
+        "language": "en",
+        "value": "is an example of"
+      },
+      {
+        "language": "en",
+        "value": "member of"
+      },
+      {
+        "language": "en",
+        "value": "unique individual of"
+      },
+      {
+        "language": "en",
+        "value": "distinct member of"
+      },
+      {
+        "language": "en",
+        "value": "non-type member of"
+      },
+      {
+        "language": "en",
+        "value": "unsubclassable example of"
+      },
+      {
+        "language": "en",
+        "value": "uninstantiable instance of"
+      },
+      {
+        "language": "en",
+        "value": "unsubclassifiable member of"
+      },
+      {
+        "language": "en",
+        "value": "not a type but is instance of"
+      },
+      {
+        "language": "en",
+        "value": "unsubtypable particular"
+      },
+      {
+        "language": "en",
+        "value": "unitary element of class"
+      },
+      {
+        "language": "en",
+        "value": "distinct element of"
+      },
+      {
+        "language": "en",
+        "value": "distinct individual member of"
+      },
+      {
+        "language": "en",
+        "value": "occurrence of"
+      },
+      {
+        "language": "en",
+        "value": "rdf:type"
+      },
+      {
+        "language": "en",
+        "value": "type"
+      }
+    ],
+    "nb": [
+      {
+        "language": "nb",
+        "value": "element av"
+      },
+      {
+        "language": "nb",
+        "value": "eksempel på"
+      },
+      {
+        "language": "nb",
+        "value": "utgave av"
+      },
+      {
+        "language": "nb",
+        "value": "eksemplar av"
+      },
+      {
+        "language": "nb",
+        "value": "instans av"
+      },
+      {
+        "language": "nb",
+        "value": "er"
+      },
+      {
+        "language": "nb",
+        "value": "∈"
+      }
+    ],
+    "ru": [
+      {
+        "language": "ru",
+        "value": "представляет собой"
+      },
+      {
+        "language": "ru",
+        "value": "является"
+      },
+      {
+        "language": "ru",
+        "value": "частный случай для"
+      },
+      {
+        "language": "ru",
+        "value": "является одним из экземпляров"
+      },
+      {
+        "language": "ru",
+        "value": "принадлежит классу"
+      },
+      {
+        "language": "ru",
+        "value": "является одним из"
+      },
+      {
+        "language": "ru",
+        "value": "экземпляр от"
+      },
+      {
+        "language": "ru",
+        "value": "класс объекта:"
+      },
+      {
+        "language": "ru",
+        "value": "вид сущности"
+      },
+      {
+        "language": "ru",
+        "value": "это"
+      },
+      {
+        "language": "ru",
+        "value": "один из"
+      },
+      {
+        "language": "ru",
+        "value": "это пример"
+      },
+      {
+        "language": "ru",
+        "value": "пример"
+      },
+      {
+        "language": "ru",
+        "value": "∈"
+      }
+    ],
+    "vi": [
+      {
+        "language": "vi",
+        "value": "là cái"
+      },
+      {
+        "language": "vi",
+        "value": "∈"
+      },
+      {
+        "language": "vi",
+        "value": "là một thực thể của"
+      },
+      {
+        "language": "vi",
+        "value": "là một trong những"
+      },
+      {
+        "language": "vi",
+        "value": "là ví dụ"
+      },
+      {
+        "language": "vi",
+        "value": "là thí dụ"
+      }
+    ],
+    "ca": [
+      {
+        "language": "ca",
+        "value": "és un"
+      },
+      {
+        "language": "ca",
+        "value": "és una"
+      },
+      {
+        "language": "ca",
+        "value": "instància de"
+      },
+      {
+        "language": "ca",
+        "value": "és instància de"
+      },
+      {
+        "language": "ca",
+        "value": "∈"
+      }
+    ],
+    "th": [
+      {
+        "language": "th",
+        "value": "คือ"
+      },
+      {
+        "language": "th",
+        "value": "∈"
+      },
+      {
+        "language": "th",
+        "value": "อยู่ในกลุ่มของ"
+      },
+      {
+        "language": "th",
+        "value": "อยู่ในกลุ่ม"
+      },
+      {
+        "language": "th",
+        "value": "เป็นสมาชิกของ"
+      },
+      {
+        "language": "th",
+        "value": "เป็นสมาชิก"
+      },
+      {
+        "language": "th",
+        "value": "อยู่ในประเภท"
+      },
+      {
+        "language": "th",
+        "value": "จัดว่าเป็น"
+      }
+    ],
+    "uk": [
+      {
+        "language": "uk",
+        "value": "є"
+      },
+      {
+        "language": "uk",
+        "value": "це"
+      },
+      {
+        "language": "uk",
+        "value": "належить до"
+      },
+      {
+        "language": "uk",
+        "value": "приклад"
+      },
+      {
+        "language": "uk",
+        "value": "випадок"
+      },
+      {
+        "language": "uk",
+        "value": "являє собою"
+      },
+      {
+        "language": "uk",
+        "value": "окремий приклад"
+      },
+      {
+        "language": "uk",
+        "value": "екземпляр"
+      },
+      {
+        "language": "uk",
+        "value": "один з"
+      },
+      {
+        "language": "uk",
+        "value": "∈"
+      }
+    ],
+    "ilo": [
+      {
+        "language": "ilo",
+        "value": "ket maysa a"
+      },
+      {
+        "language": "ilo",
+        "value": "ket maysa nga"
+      },
+      {
+        "language": "ilo",
+        "value": "∈"
+      }
+    ],
+    "fa": [
+      {
+        "language": "fa",
+        "value": "هست یک"
+      },
+      {
+        "language": "fa",
+        "value": "است یک:"
+      },
+      {
+        "language": "fa",
+        "value": "یک مثال از"
+      },
+      {
+        "language": "fa",
+        "value": "نمونه ای از"
+      },
+      {
+        "language": "fa",
+        "value": "مثالی از"
+      },
+      {
+        "language": "fa",
+        "value": "است یک"
+      },
+      {
+        "language": "fa",
+        "value": "زیرمجموعهٔ"
+      },
+      {
+        "language": "fa",
+        "value": "∈"
+      }
+    ],
+    "ro": [
+      {
+        "language": "ro",
+        "value": "este o"
+      },
+      {
+        "language": "ro",
+        "value": "este un"
+      },
+      {
+        "language": "ro",
+        "value": "este o/un"
+      },
+      {
+        "language": "ro",
+        "value": "∈"
+      },
+      {
+        "language": "ro",
+        "value": "reprezintă"
+      }
+    ],
+    "es": [
+      {
+        "language": "es",
+        "value": "es una"
+      },
+      {
+        "language": "es",
+        "value": "es un"
+      },
+      {
+        "language": "es",
+        "value": "∈"
+      },
+      {
+        "language": "es",
+        "value": "ejemplar de"
+      },
+      {
+        "language": "es",
+        "value": "ejemplo de"
+      }
+    ],
+    "it": [
+      {
+        "language": "it",
+        "value": "è un"
+      },
+      {
+        "language": "it",
+        "value": "è una"
+      },
+      {
+        "language": "it",
+        "value": "è uno"
+      },
+      {
+        "language": "it",
+        "value": "∈"
+      }
+    ],
+    "en-ca": [
+      {
+        "language": "en-ca",
+        "value": "is a"
+      },
+      {
+        "language": "en-ca",
+        "value": "is an"
+      },
+      {
+        "language": "en-ca",
+        "value": "∈"
+      }
+    ],
+    "en-gb": [
+      {
+        "language": "en-gb",
+        "value": "is a"
+      },
+      {
+        "language": "en-gb",
+        "value": "is an"
+      },
+      {
+        "language": "en-gb",
+        "value": "∈"
+      }
+    ],
+    "ja": [
+      {
+        "language": "ja",
+        "value": "種類"
+      },
+      {
+        "language": "ja",
+        "value": "インスタンスの元"
+      },
+      {
+        "language": "ja",
+        "value": "実体の元"
+      },
+      {
+        "language": "ja",
+        "value": "is a"
+      },
+      {
+        "language": "ja",
+        "value": "is-a"
+      },
+      {
+        "language": "ja",
+        "value": "クラス"
+      },
+      {
+        "language": "ja",
+        "value": "以下の実体"
+      },
+      {
+        "language": "ja",
+        "value": "∈"
+      }
+    ],
+    "de-at": [
+      {
+        "language": "de-at",
+        "value": "ist ein"
+      },
+      {
+        "language": "de-at",
+        "value": "ist eine"
+      },
+      {
+        "language": "de-at",
+        "value": "ist Instanz von"
+      },
+      {
+        "language": "de-at",
+        "value": "Instanz von"
+      },
+      {
+        "language": "de-at",
+        "value": "∈"
+      }
+    ],
+    "nl": [
+      {
+        "language": "nl",
+        "value": "instantie van"
+      },
+      {
+        "language": "nl",
+        "value": "was een"
+      },
+      {
+        "language": "nl",
+        "value": "is"
+      },
+      {
+        "language": "nl",
+        "value": "exemplaar van (algemeen)"
+      },
+      {
+        "language": "nl",
+        "value": "∈"
+      }
+    ],
+    "de-ch": [
+      {
+        "language": "de-ch",
+        "value": "ist ein"
+      },
+      {
+        "language": "de-ch",
+        "value": "ist eine"
+      },
+      {
+        "language": "de-ch",
+        "value": "ist Instanz von"
+      },
+      {
+        "language": "de-ch",
+        "value": "Instanz von"
+      },
+      {
+        "language": "de-ch",
+        "value": "∈"
+      }
+    ],
+    "bar": [
+      {
+        "language": "bar",
+        "value": "is a"
+      },
+      {
+        "language": "bar",
+        "value": "is a Instanz vo"
+      },
+      {
+        "language": "bar",
+        "value": "Instanz vo"
+      },
+      {
+        "language": "bar",
+        "value": "∈"
+      }
+    ],
+    "sh": [
+      {
+        "language": "sh",
+        "value": "je"
+      },
+      {
+        "language": "sh",
+        "value": "su"
+      },
+      {
+        "language": "sh",
+        "value": "jest"
+      },
+      {
+        "language": "sh",
+        "value": "∈"
+      }
+    ],
+    "bg": [
+      {
+        "language": "bg",
+        "value": "e"
+      },
+      {
+        "language": "bg",
+        "value": "∈"
+      }
+    ],
+    "zh": [
+      {
+        "language": "zh",
+        "value": "是一個"
+      },
+      {
+        "language": "zh",
+        "value": "屬於"
+      },
+      {
+        "language": "zh",
+        "value": "屬性"
+      },
+      {
+        "language": "zh",
+        "value": "∈"
+      },
+      {
+        "language": "zh",
+        "value": "性质"
+      },
+      {
+        "language": "zh",
+        "value": "属性"
+      },
+      {
+        "language": "zh",
+        "value": "是一个"
+      }
+    ],
+    "yi": [
+      {
+        "language": "yi",
+        "value": "איז א"
+      },
+      {
+        "language": "yi",
+        "value": "איז אן"
+      },
+      {
+        "language": "yi",
+        "value": "∈"
+      }
+    ],
+    "cs": [
+      {
+        "language": "cs",
+        "value": "je"
+      },
+      {
+        "language": "cs",
+        "value": "∈"
+      }
+    ],
+    "fi": [
+      {
+        "language": "fi",
+        "value": "on"
+      },
+      {
+        "language": "fi",
+        "value": "kuuluu ryhmään"
+      },
+      {
+        "language": "fi",
+        "value": "∈"
+      }
+    ],
+    "be-tarask": [
+      {
+        "language": "be-tarask",
+        "value": "выключны выпадак панятку"
+      },
+      {
+        "language": "be-tarask",
+        "value": "∈"
+      }
+    ],
+    "pt": [
+      {
+        "language": "pt",
+        "value": "é um"
+      },
+      {
+        "language": "pt",
+        "value": "é uma"
+      },
+      {
+        "language": "pt",
+        "value": "natureza do elemento"
+      },
+      {
+        "language": "pt",
+        "value": "∈"
+      }
+    ],
+    "te": [
+      {
+        "language": "te",
+        "value": "రకం"
+      },
+      {
+        "language": "te",
+        "value": "ఇది ఒక"
+      },
+      {
+        "language": "te",
+        "value": "అంశ"
+      },
+      {
+        "language": "te",
+        "value": "ఉదాహరణ"
+      }
+    ],
+    "or": [
+      {
+        "language": "or",
+        "value": "ଉଦାହରଣ"
+      },
+      {
+        "language": "or",
+        "value": "∈"
+      }
+    ],
+    "hu": [
+      {
+        "language": "hu",
+        "value": "kategória"
+      },
+      {
+        "language": "hu",
+        "value": "példánya ennek"
+      },
+      {
+        "language": "hu",
+        "value": "példa erre"
+      },
+      {
+        "language": "hu",
+        "value": "∈"
+      }
+    ],
+    "scn": [
+      {
+        "language": "scn",
+        "value": "è nu"
+      },
+      {
+        "language": "scn",
+        "value": "è na"
+      },
+      {
+        "language": "scn",
+        "value": "è un"
+      },
+      {
+        "language": "scn",
+        "value": "∈"
+      }
+    ],
+    "da": [
+      {
+        "language": "da",
+        "value": "er en"
+      },
+      {
+        "language": "da",
+        "value": "er et"
+      },
+      {
+        "language": "da",
+        "value": "∈"
+      },
+      {
+        "language": "da",
+        "value": "type"
+      },
+      {
+        "language": "da",
+        "value": "eksemplar af"
+      }
+    ],
+    "nn": [
+      {
+        "language": "nn",
+        "value": "er ein"
+      },
+      {
+        "language": "nn",
+        "value": "er ei"
+      },
+      {
+        "language": "nn",
+        "value": "er eit"
+      },
+      {
+        "language": "nn",
+        "value": "∈"
+      },
+      {
+        "language": "nn",
+        "value": "er ein førekomst av"
+      },
+      {
+        "language": "nn",
+        "value": "instans av"
+      },
+      {
+        "language": "nn",
+        "value": "er ein instans av"
+      }
+    ],
+    "sv": [
+      {
+        "language": "sv",
+        "value": "är en"
+      },
+      {
+        "language": "sv",
+        "value": "är ett"
+      },
+      {
+        "language": "sv",
+        "value": "∈"
+      }
+    ],
+    "ast": [
+      {
+        "language": "ast",
+        "value": "ye un"
+      },
+      {
+        "language": "ast",
+        "value": "ye una"
+      },
+      {
+        "language": "ast",
+        "value": "∈"
+      }
+    ],
+    "lt": [
+      {
+        "language": "lt",
+        "value": "instancija"
+      },
+      {
+        "language": "lt",
+        "value": "∈"
+      }
+    ],
+    "cy": [
+      {
+        "language": "cy",
+        "value": "enghraifft o"
+      },
+      {
+        "language": "cy",
+        "value": "∈"
+      }
+    ],
+    "pt-br": [
+      {
+        "language": "pt-br",
+        "value": "é um"
+      },
+      {
+        "language": "pt-br",
+        "value": "é uma"
+      },
+      {
+        "language": "pt-br",
+        "value": "natureza do elemento"
+      },
+      {
+        "language": "pt-br",
+        "value": "∈"
+      },
+      {
+        "language": "pt-br",
+        "value": "é membro de"
+      },
+      {
+        "language": "pt-br",
+        "value": "possui classe"
+      },
+      {
+        "language": "pt-br",
+        "value": "é do tipo"
+      },
+      {
+        "language": "pt-br",
+        "value": "é um indivíduo"
+      },
+      {
+        "language": "pt-br",
+        "value": "é um exemplo de"
+      },
+      {
+        "language": "pt-br",
+        "value": "rdf:type"
+      }
+    ],
+    "ko": [
+      {
+        "language": "ko",
+        "value": "은"
+      },
+      {
+        "language": "ko",
+        "value": "는"
+      },
+      {
+        "language": "ko",
+        "value": "속한 종류"
+      },
+      {
+        "language": "ko",
+        "value": "다음에 속해 있음"
+      },
+      {
+        "language": "ko",
+        "value": "속한 범주"
+      },
+      {
+        "language": "ko",
+        "value": "다음의 범주에 속함"
+      },
+      {
+        "language": "ko",
+        "value": "타입"
+      },
+      {
+        "language": "ko",
+        "value": "종류"
+      },
+      {
+        "language": "ko",
+        "value": "부류"
+      },
+      {
+        "language": "ko",
+        "value": "분류"
+      },
+      {
+        "language": "ko",
+        "value": "이것의 종류"
+      },
+      {
+        "language": "ko",
+        "value": "이것의 범주"
+      },
+      {
+        "language": "ko",
+        "value": "다음 부류에 속함"
+      },
+      {
+        "language": "ko",
+        "value": "다음 분류에 속함"
+      },
+      {
+        "language": "ko",
+        "value": "범주"
+      },
+      {
+        "language": "ko",
+        "value": "다음의 종류에 속함"
+      },
+      {
+        "language": "ko",
+        "value": "∈"
+      },
+      {
+        "language": "ko",
+        "value": "다음에 속함"
+      },
+      {
+        "language": "ko",
+        "value": "다음 중 하나로 볼 수 있음"
+      }
+    ],
+    "id": [
+      {
+        "language": "id",
+        "value": "merupakan"
+      },
+      {
+        "language": "id",
+        "value": "∈"
+      }
+    ],
+    "eu": [
+      {
+        "language": "eu",
+        "value": "zer da?"
+      },
+      {
+        "language": "eu",
+        "value": "∈"
+      }
+    ],
+    "fo": [
+      {
+        "language": "fo",
+        "value": "er ein"
+      },
+      {
+        "language": "fo",
+        "value": "∈"
+      }
+    ],
+    "gu": [
+      {
+        "language": "gu",
+        "value": "આ શું છે તે"
+      },
+      {
+        "language": "gu",
+        "value": "∈"
+      }
+    ],
+    "io": [
+      {
+        "language": "io",
+        "value": "es"
+      },
+      {
+        "language": "io",
+        "value": "∈"
+      }
+    ],
+    "sq": [
+      {
+        "language": "sq",
+        "value": "natyra e elmentit"
+      },
+      {
+        "language": "sq",
+        "value": "shembull i"
+      },
+      {
+        "language": "sq",
+        "value": "është një shembull i"
+      },
+      {
+        "language": "sq",
+        "value": "lloj i"
+      },
+      {
+        "language": "sq",
+        "value": "∈"
+      }
+    ],
+    "pam": [
+      {
+        "language": "pam",
+        "value": "metung yang"
+      },
+      {
+        "language": "pam",
+        "value": "∈"
+      }
+    ],
+    "sk": [
+      {
+        "language": "sk",
+        "value": "inštancie (čoho)"
+      },
+      {
+        "language": "sk",
+        "value": "∈"
+      }
+    ],
+    "el": [
+      {
+        "language": "el",
+        "value": "είναι ένας"
+      },
+      {
+        "language": "el",
+        "value": "είναι μία"
+      },
+      {
+        "language": "el",
+        "value": "είναι ένα"
+      },
+      {
+        "language": "el",
+        "value": "∈"
+      }
+    ],
+    "la": [
+      {
+        "language": "la",
+        "value": "∈"
+      }
+    ],
+    "af": [
+      {
+        "language": "af",
+        "value": "∈"
+      }
+    ],
+    "an": [
+      {
+        "language": "an",
+        "value": "∈"
+      }
+    ],
+    "ar": [
+      {
+        "language": "ar",
+        "value": "∈"
+      },
+      {
+        "language": "ar",
+        "value": "يكون"
+      },
+      {
+        "language": "ar",
+        "value": "نوع معين من"
+      },
+      {
+        "language": "ar",
+        "value": "فرد من"
+      },
+      {
+        "language": "ar",
+        "value": "نوع من"
+      }
+    ],
+    "be": [
+      {
+        "language": "be",
+        "value": "∈"
+      }
+    ],
+    "bn": [
+      {
+        "language": "bn",
+        "value": "∈"
+      }
+    ],
+    "br": [
+      {
+        "language": "br",
+        "value": "∈"
+      }
+    ],
+    "bs": [
+      {
+        "language": "bs",
+        "value": "∈"
+      }
+    ],
+    "ce": [
+      {
+        "language": "ce",
+        "value": "∈"
+      }
+    ],
+    "ckb": [
+      {
+        "language": "ckb",
+        "value": "∈"
+      }
+    ],
+    "co": [
+      {
+        "language": "co",
+        "value": "∈"
+      }
+    ],
+    "csb": [
+      {
+        "language": "csb",
+        "value": "∈"
+      }
+    ],
+    "eo": [
+      {
+        "language": "eo",
+        "value": "∈"
+      }
+    ],
+    "et": [
+      {
+        "language": "et",
+        "value": "∈"
+      }
+    ],
+    "frr": [
+      {
+        "language": "frr",
+        "value": "∈"
+      }
+    ],
+    "fy": [
+      {
+        "language": "fy",
+        "value": "∈"
+      }
+    ],
+    "ga": [
+      {
+        "language": "ga",
+        "value": "∈"
+      }
+    ],
+    "gl": [
+      {
+        "language": "gl",
+        "value": "∈"
+      }
+    ],
+    "gsw": [
+      {
+        "language": "gsw",
+        "value": "∈"
+      }
+    ],
+    "hr": [
+      {
+        "language": "hr",
+        "value": "∈"
+      }
+    ],
+    "hsb": [
+      {
+        "language": "hsb",
+        "value": "∈"
+      }
+    ],
+    "ht": [
+      {
+        "language": "ht",
+        "value": "∈"
+      }
+    ],
+    "hy": [
+      {
+        "language": "hy",
+        "value": "∈"
+      }
+    ],
+    "ia": [
+      {
+        "language": "ia",
+        "value": "∈"
+      },
+      {
+        "language": "ia",
+        "value": "instantia"
+      },
+      {
+        "language": "ia",
+        "value": "es un"
+      },
+      {
+        "language": "ia",
+        "value": "es"
+      }
+    ],
+    "is": [
+      {
+        "language": "is",
+        "value": "∈"
+      }
+    ],
+    "jbo": [
+      {
+        "language": "jbo",
+        "value": "∈"
+      }
+    ],
+    "ka": [
+      {
+        "language": "ka",
+        "value": "∈"
+      }
+    ],
+    "kn": [
+      {
+        "language": "kn",
+        "value": "∈"
+      }
+    ],
+    "ksh": [
+      {
+        "language": "ksh",
+        "value": "∈"
+      }
+    ],
+    "ku-latn": [
+      {
+        "language": "ku-latn",
+        "value": "∈"
+      }
+    ],
+    "lb": [
+      {
+        "language": "lb",
+        "value": "∈"
+      }
+    ],
+    "lmo": [
+      {
+        "language": "lmo",
+        "value": "∈"
+      }
+    ],
+    "lv": [
+      {
+        "language": "lv",
+        "value": "∈"
+      }
+    ],
+    "mai": [
+      {
+        "language": "mai",
+        "value": "∈"
+      }
+    ],
+    "mg": [
+      {
+        "language": "mg",
+        "value": "∈"
+      }
+    ],
+    "min": [
+      {
+        "language": "min",
+        "value": "∈"
+      }
+    ],
+    "mk": [
+      {
+        "language": "mk",
+        "value": "∈"
+      }
+    ],
+    "ml": [
+      {
+        "language": "ml",
+        "value": "∈"
+      }
+    ],
+    "mr": [
+      {
+        "language": "mr",
+        "value": "∈"
+      }
+    ],
+    "ms": [
+      {
+        "language": "ms",
+        "value": "∈"
+      }
+    ],
+    "my": [
+      {
+        "language": "my",
+        "value": "∈"
+      }
+    ],
+    "mzn": [
+      {
+        "language": "mzn",
+        "value": "∈"
+      }
+    ],
+    "nap": [
+      {
+        "language": "nap",
+        "value": "∈"
+      }
+    ],
+    "nds": [
+      {
+        "language": "nds",
+        "value": "∈"
+      }
+    ],
+    "nds-nl": [
+      {
+        "language": "nds-nl",
+        "value": "∈"
+      }
+    ],
+    "ne": [
+      {
+        "language": "ne",
+        "value": "∈"
+      }
+    ],
+    "oc": [
+      {
+        "language": "oc",
+        "value": "∈"
+      },
+      {
+        "language": "oc",
+        "value": "es un"
+      },
+      {
+        "language": "oc",
+        "value": "es una"
+      }
+    ],
+    "pa": [
+      {
+        "language": "pa",
+        "value": "∈"
+      }
+    ],
+    "pcd": [
+      {
+        "language": "pcd",
+        "value": "∈"
+      }
+    ],
+    "pl": [
+      {
+        "language": "pl",
+        "value": "∈"
+      }
+    ],
+    "rif": [
+      {
+        "language": "rif",
+        "value": "∈"
+      }
+    ],
+    "rm": [
+      {
+        "language": "rm",
+        "value": "∈"
+      }
+    ],
+    "sco": [
+      {
+        "language": "sco",
+        "value": "∈"
+      },
+      {
+        "language": "sco",
+        "value": "is a"
+      }
+    ],
+    "sl": [
+      {
+        "language": "sl",
+        "value": "∈"
+      }
+    ],
+    "sr": [
+      {
+        "language": "sr",
+        "value": "∈"
+      }
+    ],
+    "sr-ec": [
+      {
+        "language": "sr-ec",
+        "value": "∈"
+      }
+    ],
+    "sr-el": [
+      {
+        "language": "sr-el",
+        "value": "∈"
+      }
+    ],
+    "stq": [
+      {
+        "language": "stq",
+        "value": "∈"
+      }
+    ],
+    "ta": [
+      {
+        "language": "ta",
+        "value": "∈"
+      }
+    ],
+    "tl": [
+      {
+        "language": "tl",
+        "value": "∈"
+      }
+    ],
+    "tr": [
+      {
+        "language": "tr",
+        "value": "∈"
+      },
+      {
+        "language": "tr",
+        "value": "ne olduğu"
+      },
+      {
+        "language": "tr",
+        "value": "ana konusu"
+      },
+      {
+        "language": "tr",
+        "value": "neyin örneği olduğu"
+      },
+      {
+        "language": "tr",
+        "value": "sınıfı"
+      },
+      {
+        "language": "tr",
+        "value": "sınıflandırması"
+      },
+      {
+        "language": "tr",
+        "value": "sınıflandırılması"
+      },
+      {
+        "language": "tr",
+        "value": "türü"
+      },
+      {
+        "language": "tr",
+        "value": "türleri"
+      },
+      {
+        "language": "tr",
+        "value": "içinde yer aldığı tür"
+      }
+    ],
+    "ts": [
+      {
+        "language": "ts",
+        "value": "∈"
+      }
+    ],
+    "tt": [
+      {
+        "language": "tt",
+        "value": "∈"
+      }
+    ],
+    "uz": [
+      {
+        "language": "uz",
+        "value": "∈"
+      }
+    ],
+    "vo": [
+      {
+        "language": "vo",
+        "value": "∈"
+      }
+    ],
+    "yue": [
+      {
+        "language": "yue",
+        "value": "∈"
+      },
+      {
+        "language": "yue",
+        "value": "性質"
+      }
+    ],
+    "zh-cn": [
+      {
+        "language": "zh-cn",
+        "value": "∈"
+      }
+    ],
+    "zh-hans": [
+      {
+        "language": "zh-hans",
+        "value": "∈"
+      }
+    ],
+    "zh-hant": [
+      {
+        "language": "zh-hant",
+        "value": "∈"
+      }
+    ],
+    "zh-hk": [
+      {
+        "language": "zh-hk",
+        "value": "∈"
+      }
+    ],
+    "zh-mo": [
+      {
+        "language": "zh-mo",
+        "value": "∈"
+      }
+    ],
+    "zh-sg": [
+      {
+        "language": "zh-sg",
+        "value": "∈"
+      }
+    ],
+    "zh-tw": [
+      {
+        "language": "zh-tw",
+        "value": "∈"
+      }
+    ],
+    "tcy": [
+      {
+        "language": "tcy",
+        "value": "ಒಂಜಿ"
+      },
+      {
+        "language": "tcy",
+        "value": "ಒಂಜಿ ವರ್ಗೊ"
+      },
+      {
+        "language": "tcy",
+        "value": "ಒರಿ ವ್ಯಕ್ತಿ"
+      },
+      {
+        "language": "tcy",
+        "value": "ಒಂಜಿ ಉದ್ಆರ್ಮೆ"
+      },
+      {
+        "language": "tcy",
+        "value": "ಸಮಾನೊ ವ್ಯಕ್ತಿ"
+      }
+    ],
+    "tt-latn": [
+      {
+        "language": "tt-latn",
+        "value": "∈"
+      }
+    ],
+    "tt-cyrl": [
+      {
+        "language": "tt-cyrl",
+        "value": "∈"
+      }
+    ],
+    "az": [
+      {
+        "language": "az",
+        "value": "nümunəsidir"
+      }
+    ]
+  },
+  "claims": {
+    "P2": [
+      {
+        "mainsnak": {
+          "snaktype": "value",
+          "property": "P2",
+          "datavalue": {
+            "value": "P31",
+            "type": "string"
+          },
+          "datatype": "external-id"
+        },
+        "type": "statement",
+        "id": "P3$22A8B7AC-F8A8-4AE9-A6B1-D7B14C2B5084",
+        "rank": "normal"
+      }
+    ],
+    "P5": [
+      {
+        "mainsnak": {
+          "snaktype": "value",
+          "property": "P5",
+          "datavalue": {
+            "value": {
+              "entity-type": "item",
+              "numeric-id": 20,
+              "id": "Q20"
+            },
+            "type": "wikibase-entityid"
+          },
+          "datatype": "wikibase-item"
+        },
+        "type": "statement",
+        "qualifiers": {
+          "P10": [
+            {
+              "snaktype": "value",
+              "property": "P10",
+              "hash": "ceab48e0b57e8269693deeacf58da0e3587e50e4",
+              "datavalue": {
+                "value": {
+                  "entity-type": "property",
+                  "numeric-id": 4,
+                  "id": "P4"
+                },
+                "type": "wikibase-entityid"
+              },
+              "datatype": "wikibase-property"
+            }
+          ],
+          "P6": [
+            {
+              "snaktype": "somevalue",
+              "property": "P6",
+              "hash": "828e1e0afc66c57e104d7141137aac888e8aeebb",
+              "datatype": "wikibase-item"
+            }
+          ]
+        },
+        "qualifiers-order": [ "P10", "P6" ],
+        "id": "P3$27325971-34B1-4496-B65A-05B37584DADB",
+        "rank": "normal",
+        "references": [
+          {
+            "hash": "19f2f017955dfce5479fafa024fd226920846d5d",
+            "snaks": {
+              "P2": [
+                {
+                  "snaktype": "value",
+                  "property": "P2",
+                  "datavalue": {
+                    "value": "P31$BBCF739D-1197-4F08-B1F9-7F76D0CA4445",
+                    "type": "string"
+                  },
+                  "datatype": "external-id"
+                }
+              ]
+            },
+            "snaks-order": [ "P2" ]
+          }
+        ]
+      },
+      {
+        "mainsnak": {
+          "snaktype": "value",
+          "property": "P5",
+          "datavalue": {
+            "value": {
+              "entity-type": "item",
+              "numeric-id": 21,
+              "id": "Q21"
+            },
+            "type": "wikibase-entityid"
+          },
+          "datatype": "wikibase-item"
+        },
+        "type": "statement",
+        "qualifiers": {
+          "P10": [
+            {
+              "snaktype": "somevalue",
+              "property": "P10",
+              "hash": "ad23bfa7c0b35954df0dc78769476d462a80de6d",
+              "datatype": "wikibase-property"
+            }
+          ]
+        },
+        "qualifiers-order": [ "P10" ],
+        "id": "P3$CBAD0BCF-B5F8-4FB8-88B9-625B214AB8E3",
+        "rank": "normal",
+        "references": [
+          {
+            "hash": "4e05434196c4dabc614ee87ce4b3157eeda61d65",
+            "snaks": {
+              "P2": [
+                {
+                  "snaktype": "value",
+                  "property": "P2",
+                  "datavalue": {
+                    "value": "P31$33E45554-9B58-42FF-AF4F-35784658D0D7",
+                    "type": "string"
+                  },
+                  "datatype": "external-id"
+                }
+              ]
+            },
+            "snaks-order": [ "P2" ]
+          }
+        ]
+      },
+      {
+        "mainsnak": {
+          "snaktype": "value",
+          "property": "P5",
+          "datavalue": {
+            "value": {
+              "entity-type": "item",
+              "numeric-id": 21,
+              "id": "Q21"
+            },
+            "type": "wikibase-entityid"
+          },
+          "datatype": "wikibase-item"
+        },
+        "type": "statement",
+        "qualifiers": {
+          "P10": [
+            {
+              "snaktype": "value",
+              "property": "P10",
+              "hash": "fe8a3825420b394bed2948da600cb8aa5efc7249",
+              "datavalue": {
+                "value": {
+                  "entity-type": "property",
+                  "numeric-id": 3,
+                  "id": "P3"
+                },
+                "type": "wikibase-entityid"
+              },
+              "datatype": "wikibase-property"
+            }
+          ],
+          "P11": [
+            {
+              "snaktype": "somevalue",
+              "property": "P11",
+              "hash": "de02a46e1e0afe9551f667a72f59101650a2f80e",
+              "datatype": "wikibase-item"
+            }
+          ],
+          "P7": [
+            {
+              "snaktype": "value",
+              "property": "P7",
+              "hash": "96405b2faa53d04d3b8b8ac6807f38442c78931b",
+              "datavalue": {
+                "value": {
+                  "entity-type": "item",
+                  "numeric-id": 10,
+                  "id": "Q10"
+                },
+                "type": "wikibase-entityid"
+              },
+              "datatype": "wikibase-item"
+            }
+          ]
+        },
+        "qualifiers-order": [ "P10", "P11", "P7" ],
+        "id": "P3$8E9DC131-F8D9-4880-ABD7-4691A75D7063",
+        "rank": "normal",
+        "references": [
+          {
+            "hash": "e092f0c46c111df4d175e4885085ac67cda7579a",
+            "snaks": {
+              "P2": [
+                {
+                  "snaktype": "value",
+                  "property": "P2",
+                  "datavalue": {
+                    "value": "P31$82ADD2D3-B226-465F-9F6C-EAE946E193F0",
+                    "type": "string"
+                  },
+                  "datatype": "external-id"
+                }
+              ]
+            },
+            "snaks-order": [ "P2" ]
+          }
+        ]
+      },
+      {
+        "mainsnak": {
+          "snaktype": "value",
+          "property": "P5",
+          "datavalue": {
+            "value": {
+              "entity-type": "item",
+              "numeric-id": 21,
+              "id": "Q21"
+            },
+            "type": "wikibase-entityid"
+          },
+          "datatype": "wikibase-item"
+        },
+        "type": "statement",
+        "qualifiers": {
+          "P10": [
+            {
+              "snaktype": "value",
+              "property": "P10",
+              "hash": "fe8a3825420b394bed2948da600cb8aa5efc7249",
+              "datavalue": {
+                "value": {
+                  "entity-type": "property",
+                  "numeric-id": 3,
+                  "id": "P3"
+                },
+                "type": "wikibase-entityid"
+              },
+              "datatype": "wikibase-property"
+            }
+          ],
+          "P11": [
+            {
+              "snaktype": "somevalue",
+              "property": "P11",
+              "hash": "de02a46e1e0afe9551f667a72f59101650a2f80e",
+              "datatype": "wikibase-item"
+            }
+          ],
+          "P7": [
+            {
+              "snaktype": "value",
+              "property": "P7",
+              "hash": "96405b2faa53d04d3b8b8ac6807f38442c78931b",
+              "datavalue": {
+                "value": {
+                  "entity-type": "item",
+                  "numeric-id": 10,
+                  "id": "Q10"
+                },
+                "type": "wikibase-entityid"
+              },
+              "datatype": "wikibase-item"
+            }
+          ]
+        },
+        "qualifiers-order": [ "P10", "P11", "P7" ],
+        "id": "P3$C09157D3-25B2-48F3-8C95-FCD54B20547F",
+        "rank": "normal",
+        "references": [
+          {
+            "hash": "fe79039f95deb637ca2226c1ef643cf13d11e17c",
+            "snaks": {
+              "P2": [
+                {
+                  "snaktype": "value",
+                  "property": "P2",
+                  "datavalue": {
+                    "value": "P31$FB2C298B-5C28-40D0-A5C8-10656FA1DC57",
+                    "type": "string"
+                  },
+                  "datatype": "external-id"
+                }
+              ]
+            },
+            "snaks-order": [ "P2" ]
+          }
+        ]
+      },
+      {
+        "mainsnak": {
+          "snaktype": "value",
+          "property": "P5",
+          "datavalue": {
+            "value": {
+              "entity-type": "item",
+              "numeric-id": 25,
+              "id": "Q25"
+            },
+            "type": "wikibase-entityid"
+          },
+          "datatype": "wikibase-item"
+        },
+        "type": "statement",
+        "qualifiers": {
+          "P10": [
+            {
+              "snaktype": "somevalue",
+              "property": "P10",
+              "hash": "ad23bfa7c0b35954df0dc78769476d462a80de6d",
+              "datatype": "wikibase-property"
+            },
+            {
+              "snaktype": "value",
+              "property": "P10",
+              "hash": "79be0c31a3f551762b270bc351122c056fa95539",
+              "datavalue": {
+                "value": {
+                  "entity-type": "property",
+                  "numeric-id": 21,
+                  "id": "P21"
+                },
+                "type": "wikibase-entityid"
+              },
+              "datatype": "wikibase-property"
+            },
+            {
+              "snaktype": "value",
+              "property": "P10",
+              "hash": "3d5fbd6e4d6f7051f2bd11a8ebce9681443ae59c",
+              "datavalue": {
+                "value": {
+                  "entity-type": "property",
+                  "numeric-id": 24,
+                  "id": "P24"
+                },
+                "type": "wikibase-entityid"
+              },
+              "datatype": "wikibase-property"
+            },
+            {
+              "snaktype": "value",
+              "property": "P10",
+              "hash": "be5db9761de26f4b88d2a3004170e5d449ffe838",
+              "datavalue": {
+                "value": {
+                  "entity-type": "property",
+                  "numeric-id": 48,
+                  "id": "P48"
+                },
+                "type": "wikibase-entityid"
+              },
+              "datatype": "wikibase-property"
+            },
+            {
+              "snaktype": "value",
+              "property": "P10",
+              "hash": "667d383774d02cf3ea2c7711aed02fff999cf347",
+              "datavalue": {
+                "value": {
+                  "entity-type": "property",
+                  "numeric-id": 53,
+                  "id": "P53"
+                },
+                "type": "wikibase-entityid"
+              },
+              "datatype": "wikibase-property"
+            },
+            {
+              "snaktype": "value",
+              "property": "P10",
+              "hash": "26fd6c29fca855ae1c5ef6fe790ad70fab4b9b84",
+              "datavalue": {
+                "value": {
+                  "entity-type": "property",
+                  "numeric-id": 70,
+                  "id": "P70"
+                },
+                "type": "wikibase-entityid"
+              },
+              "datatype": "wikibase-property"
+            }
+          ]
+        },
+        "qualifiers-order": [ "P10" ],
+        "id": "P3$7E395A0F-C82E-4116-A94C-B7FAA00EA516",
+        "rank": "normal",
+        "references": [
+          {
+            "hash": "418d552a74c50f268fbc97ec3434a7d6742d4f8e",
+            "snaks": {
+              "P2": [
+                {
+                  "snaktype": "value",
+                  "property": "P2",
+                  "datavalue": {
+                    "value": "P31$A89E967D-82B7-4081-BAE3-BADF28B4E7E3",
+                    "type": "string"
+                  },
+                  "datatype": "external-id"
+                }
+              ]
+            },
+            "snaks-order": [ "P2" ]
+          },
+          {
+            "hash": "418d552a74c50f268fbc97ec3434a7d6742d4f8e",
+            "snaks": {
+              "P2": [
+                {
+                  "snaktype": "value",
+                  "property": "P2",
+                  "datavalue": {
+                    "value": "P31$A89E967D-82B7-4081-BAE3-BADF28B4E7E3",
+                    "type": "string"
+                  },
+                  "datatype": "external-id"
+                }
+              ]
+            },
+            "snaks-order": [ "P2" ]
+          },
+          {
+            "hash": "418d552a74c50f268fbc97ec3434a7d6742d4f8e",
+            "snaks": {
+              "P2": [
+                {
+                  "snaktype": "value",
+                  "property": "P2",
+                  "datavalue": {
+                    "value": "P31$A89E967D-82B7-4081-BAE3-BADF28B4E7E3",
+                    "type": "string"
+                  },
+                  "datatype": "external-id"
+                }
+              ]
+            },
+            "snaks-order": [ "P2" ]
+          },
+          {
+            "hash": "418d552a74c50f268fbc97ec3434a7d6742d4f8e",
+            "snaks": {
+              "P2": [
+                {
+                  "snaktype": "value",
+                  "property": "P2",
+                  "datavalue": {
+                    "value": "P31$A89E967D-82B7-4081-BAE3-BADF28B4E7E3",
+                    "type": "string"
+                  },
+                  "datatype": "external-id"
+                }
+              ]
+            },
+            "snaks-order": [ "P2" ]
+          }
+        ]
+      }
+    ],
+    "P3": [
+      {
+        "mainsnak": {
+          "snaktype": "somevalue",
+          "property": "P3",
+          "datatype": "wikibase-item"
+        },
+        "type": "statement",
+        "id": "P3$DD1E97E4-018D-4570-A72C-8111C0549D3D",
+        "rank": "normal",
+        "references": [
+          {
+            "hash": "1fd2271dcb2fee0ad36a0f6d1dd404391915e497",
+            "snaks": {
+              "P2": [
+                {
+                  "snaktype": "value",
+                  "property": "P2",
+                  "datavalue": {
+                    "value": "P31$9d042001-4a7e-2432-a7e1-233360062379",
+                    "type": "string"
+                  },
+                  "datatype": "external-id"
+                }
+              ]
+            },
+            "snaks-order": [ "P2" ]
+          }
+        ]
+      },
+      {
+        "mainsnak": {
+          "snaktype": "somevalue",
+          "property": "P3",
+          "datatype": "wikibase-item"
+        },
+        "type": "statement",
+        "id": "P3$72EEAC7E-4C3B-4A03-9A9F-1B79E98F40E5",
+        "rank": "normal",
+        "references": [
+          {
+            "hash": "3523cbae05676a5fa02f3a931f4bde42844e7b3b",
+            "snaks": {
+              "P2": [
+                {
+                  "snaktype": "value",
+                  "property": "P2",
+                  "datavalue": {
+                    "value": "P31$69a194b3-40e4-fce6-881a-f2028f61a8d6",
+                    "type": "string"
+                  },
+                  "datatype": "external-id"
+                }
+              ]
+            },
+            "snaks-order": [ "P2" ]
+          }
+        ]
+      }
+    ]
+  }
+},

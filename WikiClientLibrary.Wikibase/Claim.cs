@@ -86,42 +86,66 @@ namespace WikiClientLibrary.Wikibase
             return MainSnak.ToString();
         }
 
-        internal static IEnumerable<T> ToOrderedList<T>(JObject dict, JArray order, Func<JToken, IEnumerable<T>> valueSelector)
+        internal static IEnumerable<TValue> EnumWithOrder<TValue>(IDictionary<string, ICollection<TValue>> dict, IList<string> order)
         {
             // Before #84516 Wikibase did not implement snaks-order.
             // https://gerrit.wikimedia.org/r/#/c/84516/
+            // Note: after a while wmf decided to obsolete statement order,
+            // while to keep the qualifier order functionality as-is.
+            // https://phabricator.wikimedia.org/T99243
+            // https://lists.wikimedia.org/pipermail/wikidata-tech/2017-November/001207.html
             Debug.Assert(dict != null);
             if (order == null)
-                return dict.Values().SelectMany(valueSelector).ToList();
-            Debug.Assert(order.Count == dict.Count);
-            return order.Select(key => dict[(string)key]).SelectMany(valueSelector);
+                return dict.Values.SelectMany(c => c).ToList();
+            try
+            {
+                if (order.Count == dict.Count)
+                    return order.Select(key => dict[key]).SelectMany(c => c);
+            }
+            catch (KeyNotFoundException)
+            {
+            }
+            // Ill-formed dict-order arguments
+            throw new ArgumentException("The ordered list and keys in the dictionary does not correspond.");
         }
 
-        internal static Claim FromJson(JToken claim)
+        internal static Dictionary<string, ICollection<TValue>> GroupIntoDictionary<TValue>(IEnumerable<TValue> items, Func<TValue, string> keySelector)
+        {
+            var dict = new Dictionary<string, ICollection<TValue>>();
+            foreach (var i in items)
+            {
+                var key = keySelector(i);
+                if (!dict.TryGetValue(key, out var g))
+                {
+                    g = new List<TValue>();
+                    dict.Add(key, g);
+                }
+                g.Add(i);
+            }
+            return dict;
+        }
+
+        internal static Claim FromContract(Contracts.Claim claim)
         {
             Debug.Assert(claim != null);
-            var inst = new Claim(Snak.FromJson(claim["mainsnak"]));
-            inst.LoadFromJson(claim);
+            if (claim.MainSnak == null) throw new ArgumentException("Invalid claim. MainSnak is null.", nameof(claim));
+            var inst = new Claim(Snak.FromContract(claim.MainSnak));
+            inst.LoadFromContract(claim);
             return inst;
         }
 
-        private void LoadFromJson(JToken claim)
+        private void LoadFromContract(Contracts.Claim claim)
         {
             Debug.Assert(claim != null);
-            Id = (string)claim["id"];
-            Type = (string)claim["type"];
-            Rank = (string)claim["rank"];
+            Id = claim.Id;
+            Type = claim.Type;
+            Rank = claim.Rank;
             _Qualifiers.Clear();
+            if (claim.Qualifiers != null)
+                _Qualifiers.AddRange(EnumWithOrder(claim.Qualifiers, claim.QualifiersOrder).Select(Snak.FromContract));
             _References.Clear();
-            if (claim["qualifiers"] != null)
-            {
-                _Qualifiers.AddRange(ToOrderedList((JObject)claim["qualifiers"], (JArray)claim["qualifiers-order"],
-                    jsnaks => jsnaks.Select(Snak.FromJson)));
-            }
-            if (claim["references"] != null)
-            {
-                _References.AddRange(claim["references"]?.Select(ClaimReference.FromJson));
-            }
+            if (claim.References != null)
+                _References.AddRange(claim.References.Select(ClaimReference.FromContract));
         }
 
         internal Contracts.Claim ToContract(bool identifierOnly)
@@ -163,24 +187,23 @@ namespace WikiClientLibrary.Wikibase
 
         public string Hash { get; set; }
 
-        internal static ClaimReference FromJson(JToken claim)
+        internal static ClaimReference FromContract(Contracts.Reference reference)
         {
-            Debug.Assert(claim != null);
+            Debug.Assert(reference != null);
             var inst = new ClaimReference();
-            inst.LoadFromJson(claim);
+            inst.LoadFromContract(reference);
             return inst;
         }
 
-        internal void LoadFromJson(JToken reference)
+        internal void LoadFromContract(Contracts.Reference reference)
         {
             Debug.Assert(reference != null);
             _Snaks.Clear();
-            if (reference["snaks"] != null)
+            if (reference.Snaks != null)
             {
-                _Snaks.AddRange(Claim.ToOrderedList((JObject)reference["snaks"], (JArray)reference["snaks-order"],
-                    jsnaks => jsnaks.Select(Snak.FromJson)));
+                _Snaks.AddRange(Claim.EnumWithOrder(reference.Snaks, reference.SnaksOrder).Select(Snak.FromContract));
             }
-            Hash = (string)reference["hash"];
+            Hash = reference.Hash;
         }
 
         internal Contracts.Reference ToContract()
@@ -188,7 +211,7 @@ namespace WikiClientLibrary.Wikibase
             return new Contracts.Reference
             {
                 Hash = Hash,
-                Snaks = Snaks?.Select(s => s.ToContract()).ToList(),
+                Snaks = Snaks == null ? null : Claim.GroupIntoDictionary(Snaks.Select(s => s.ToContract()), s => s.Property),
                 SnaksOrder = Snaks?.Select(s => s.PropertyId).Distinct().ToList()
             };
         }
@@ -397,22 +420,22 @@ namespace WikiClientLibrary.Wikibase
             }
         }
 
-        internal static Snak FromJson(JToken snak)
+        internal static Snak FromContract(Contracts.Snak snak)
         {
             Debug.Assert(snak != null);
-            var inst = new Snak((string)snak["property"]);
-            inst.LoadFromJson(snak);
+            var inst = new Snak(snak.Property);
+            inst.LoadFromContract(snak);
             return inst;
         }
 
-        private void LoadFromJson(JToken snak)
+        private void LoadFromContract(Contracts.Snak snak)
         {
             Debug.Assert(snak != null);
-            SnakType = ParseSnakType((string)snak["snaktype"]);
-            Hash = (string)snak["hash"];
-            RawDataValue = (JObject)snak["datavalue"];
-            DataType = BuiltInDataTypes.Get((string)snak["datatype"])
-                       ?? MissingPropertyType.Get((string)snak["datatype"], (string)snak["value"]?["type"]);
+            SnakType = ParseSnakType(snak.SnakType);
+            Hash = snak.Hash;
+            RawDataValue = snak.DataValue;
+            DataType = BuiltInDataTypes.Get(snak.DataType)
+                       ?? MissingPropertyType.Get(snak.DataType, (string)snak.DataValue?["type"]);
         }
 
         internal Contracts.Snak ToContract()

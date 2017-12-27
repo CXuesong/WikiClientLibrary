@@ -4,7 +4,6 @@ using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using WikiClientLibrary.Sites;
@@ -184,27 +183,19 @@ namespace WikiClientLibrary.Wikibase
             return WikibaseRequestHelper.RefreshEntitiesAsync(new[] {this}, options, languages, cancellationToken);
         }
 
-        private static WbMonolingualTextCollection ParseMultiLanguageValues(JObject jdict)
-        {
-            if (jdict == null || !jdict.HasValues) return emptyStringDict;
-            return new WbMonolingualTextCollection(jdict.PropertyValues()
-                    .Select(t => new WbMonolingualText((string)t["language"], (string)t["value"])))
-                {IsReadOnly = true};
-        }
+        private static readonly IDictionary<string, JToken> emptyExtensionData = new Dictionary<string, JToken>();
 
-        private static WbMonolingualTextsCollection ParseMultiLanguageMultiValues(JObject jdict)
+        internal void LoadFromJson(JToken jentity, EntityQueryOptions options, bool isPostEditing)
         {
-            if (jdict == null || !jdict.HasValues) return emptyStringsDict;
-            return new WbMonolingualTextsCollection(jdict.Properties()
-                    .Select(p => new KeyValuePair<string, IEnumerable<string>>(
-                        p.Name, p.Value.Select(t => (string)t["value"]))))
-                {IsReadOnly = true};
+            var contract = jentity.ToObject<Contracts.Entity>(Utility.WikiJsonSerializer);
+            LoadFromContract(contract, options, isPostEditing);
         }
 
         // postEditing: Is the entity param from the response of wbeditentity API call?
-        internal void LoadFromJson(JToken entity, EntityQueryOptions options, bool isPostEditing)
+        internal void LoadFromContract(Contracts.Entity entity, EntityQueryOptions options, bool isPostEditing)
         {
-            var id = (string)entity["id"];
+            var extensionData = entity.ExtensionData ?? emptyExtensionData;
+            var id = entity.Id;
             Debug.Assert(id != null);
             if ((options & EntityQueryOptions.SupressRedirects) != EntityQueryOptions.SupressRedirects
                 && Id != null && Id != id)
@@ -212,8 +203,11 @@ namespace WikiClientLibrary.Wikibase
                 // The page has been overwritten, or deleted.
                 //logger.LogWarning("Detected change of page id for [[{Title}]]: {Id1} -> {Id2}.", Title, Id, id);
             }
+            var serializable = extensionData.ContainsKey("missing")
+                ? null
+                : SerializableEntity.Load(entity);
             Id = id;
-            Exists = entity["missing"] == null;
+            Exists = serializable != null;
             Type = EntityType.Unknown;
             PageId = -1;
             NamespaceId = -1;
@@ -224,73 +218,63 @@ namespace WikiClientLibrary.Wikibase
             Aliases = null;
             Descriptions = null;
             SiteLinks = null;
-            if (Exists)
-            {
-                switch ((string)entity["type"])
-                {
-                    case "item":
-                        Type = EntityType.Item;
-                        break;
-                    case "property":
-                        Type = EntityType.Property;
-                        break;
-                    default:
-                        Site.Logger.LogWarning("Unrecognized entity type: {Type} for {Entity} on {Site}.",
-                            (string)entity["type"], this, Site);
-                        break;
-                }
-                var dataType = (string)entity["datatype"];
-                if (dataType != null)
-                    DataType = BuiltInDataTypes.Get(dataType) ?? MissingPropertyType.Get(dataType, dataType);
-                if ((options & EntityQueryOptions.FetchInfo) == EntityQueryOptions.FetchInfo)
-                {
-                    if (!isPostEditing)
-                    {
-                        // wbeditentity response does not have these properties.
-                        PageId = (int)entity["pageid"];
-                        NamespaceId = (int)entity["ns"];
-                        Title = (string)entity["title"];
-                        LastModified = (DateTime)entity["modified"];
-                    }
-                    LastRevisionId = (int)entity["lastrevid"];
-                }
-                if ((options & EntityQueryOptions.FetchLabels) == EntityQueryOptions.FetchLabels)
-                    Labels = ParseMultiLanguageValues((JObject)entity["labels"]);
-                if ((options & EntityQueryOptions.FetchAliases) == EntityQueryOptions.FetchAliases)
-                    Aliases = ParseMultiLanguageMultiValues((JObject)entity["aliases"]);
-                if ((options & EntityQueryOptions.FetchDescriptions) == EntityQueryOptions.FetchDescriptions)
-                    Descriptions = ParseMultiLanguageValues((JObject)entity["descriptions"]);
-                if ((options & EntityQueryOptions.FetchSiteLinks) == EntityQueryOptions.FetchSiteLinks)
-                {
-                    var jlinks = (JObject)entity["sitelinks"];
-                    if (jlinks == null || !jlinks.HasValues)
-                    {
-                        SiteLinks = emptySiteLinks;
-                    }
-                    else
-                    {
-                        SiteLinks = new EntitySiteLinkCollection(
-                            jlinks.Values().Select(t => t.ToObject<EntitySiteLink>(Utility.WikiJsonSerializer)));
-                        SiteLinks.IsReadOnly = true;
-                    }
-                }
-                if ((options & EntityQueryOptions.FetchClaims) == EntityQueryOptions.FetchClaims)
-                {
-                    var jclaims = (JObject)entity["claims"];
-                    if (jclaims == null || !jclaims.HasValues)
-                    {
-                        Claims = emptyClaims;
-                    }
-                    else
-                    {
-                        // { claims : { P47 : [ {}, {}, ... ], P105 : ... } }
-                        Claims = new ClaimCollection(jclaims.Values()
-                                .SelectMany(jarray => jarray.Select(Claim.FromJson)))
-                            {IsReadOnly = true};
-                    }
-                }
-            }
             QueryOptions = options;
+            if (serializable == null) return;
+            serializable = SerializableEntity.Load(entity);
+            Type = serializable.Type;
+            DataType = serializable.DataType;
+            if ((options & EntityQueryOptions.FetchInfo) == EntityQueryOptions.FetchInfo)
+            {
+                if (!isPostEditing)
+                {
+                    // wbeditentity response does not have these properties.
+                    PageId = (int)extensionData["pageid"];
+                    NamespaceId = (int)extensionData["ns"];
+                    Title = (string)extensionData["title"];
+                    LastModified = (DateTime)extensionData["modified"];
+                }
+                LastRevisionId = (int)extensionData["lastrevid"];
+            }
+            if ((options & EntityQueryOptions.FetchLabels) == EntityQueryOptions.FetchLabels)
+            {
+                Labels = serializable.Labels;
+                if (Labels.Count == 0)
+                    Labels = emptyStringDict;
+                else
+                    Labels.IsReadOnly = true;
+            }
+            if ((options & EntityQueryOptions.FetchAliases) == EntityQueryOptions.FetchAliases)
+            {
+                Aliases = serializable.Aliases;
+                if (Aliases.Count == 0)
+                    Aliases = emptyStringsDict;
+                else
+                    Aliases.IsReadOnly = true;
+            }
+            if ((options & EntityQueryOptions.FetchDescriptions) == EntityQueryOptions.FetchDescriptions)
+            {
+                Descriptions = serializable.Descriptions;
+                if (Descriptions.Count == 0)
+                    Descriptions = emptyStringDict;
+                else
+                    Descriptions.IsReadOnly = true;
+            }
+            if ((options & EntityQueryOptions.FetchSiteLinks) == EntityQueryOptions.FetchSiteLinks)
+            {
+                SiteLinks = serializable.SiteLinks;
+                if (SiteLinks.Count == 0)
+                    SiteLinks = emptySiteLinks;
+                else
+                    SiteLinks.IsReadOnly = true;
+            }
+            if ((options & EntityQueryOptions.FetchClaims) == EntityQueryOptions.FetchClaims)
+            {
+                Claims = serializable.Claims;
+                if (Claims.Count == 0)
+                    Claims = emptyClaims;
+                else
+                    Claims.IsReadOnly = true;
+            }
         }
 
         /// <inheritdoc />
@@ -393,8 +377,8 @@ namespace WikiClientLibrary.Wikibase
         {
             Site = site;
             Title = title;
-            if (badges is IList<string> lb && !lb.IsReadOnly)
-                Badges = new ReadOnlyCollection<string>(lb);
+            if (badges is ICollection<string> cb && !cb.IsReadOnly)
+                Badges = new ReadOnlyCollection<string>(badges as IList<string> ?? badges.ToList());
             else
                 Badges = badges ?? emptyBadges;
             Url = url;

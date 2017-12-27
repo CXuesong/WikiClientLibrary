@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using UnitTestProject1.Properties;
 using WikiClientLibrary.Wikibase;
 using WikiClientLibrary.Wikibase.DataTypes;
 using Xunit;
@@ -188,6 +189,15 @@ namespace UnitTestProject1.Tests
                 await entity.RefreshAsync(EntityQueryOptions.FetchClaims);
             Assert.Single(entity.Claims);
             Assert.Contains(entity.Claims[prop.Id], c => entity.Id.Equals(c.MainSnak.DataValue));
+        }
+
+        [Fact]
+        public void SerializableEntityTest()
+        {
+            var entity = SerializableEntity.Load(Resources.WikibaseP3);
+            Assert.Equal("P3", entity.Id);
+            Assert.Equal("instance of", entity.Labels["en"]);
+            Assert.Contains(entity.Claims["P5"], c => (string)c.MainSnak.DataValue == "Q25");
         }
 
         public static class WikidataItems

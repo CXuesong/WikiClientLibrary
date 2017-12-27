@@ -88,7 +88,7 @@ namespace WikiClientLibrary.Wikibase.DataTypes
                 if (language == null) throw new ArgumentNullException(nameof(language));
                 AssertMutable();
                 if (value == null) dict.Remove(language);
-                else dict[language] = value;
+                else dict[language.ToLowerInvariant()] = value;
             }
         }
 
