@@ -22,18 +22,18 @@ namespace WikiClientLibrary.Wikibase
     /// The object represents a readonly snapshot of the Wikibase entity.
     /// To edit the entity, use <see cref="EditAsync(IEnumerable{EntityEditEntry},string)"/> method.
     /// </remarks>
-    public sealed partial class Entity
+    public sealed partial class Entity : IEntity
     {
-        private static readonly WbMonolingualTextCollection emptyStringDict
+        internal static readonly WbMonolingualTextCollection emptyStringDict
             = new WbMonolingualTextCollection {IsReadOnly = true};
 
-        private static readonly WbMonolingualTextsCollection emptyStringsDict
+        internal static readonly WbMonolingualTextsCollection emptyStringsDict
             = new WbMonolingualTextsCollection {IsReadOnly = true};
 
-        private static readonly EntitySiteLinkCollection emptySiteLinks
+        internal static readonly EntitySiteLinkCollection emptySiteLinks
             = new EntitySiteLinkCollection {IsReadOnly = true};
 
-        private static readonly ClaimCollection emptyClaims
+        internal static readonly ClaimCollection emptyClaims
             = new ClaimCollection {IsReadOnly = true};
         
         /// <summary>
@@ -99,9 +99,7 @@ namespace WikiClientLibrary.Wikibase
         /// </remarks>
         public string Title { get; private set; }
 
-        /// <summary>
-        /// Wikibase entity type.
-        /// </summary>
+        /// <inheritdoc />
         public EntityType Type { get; private set; }
 
         /// <summary>
@@ -126,14 +124,19 @@ namespace WikiClientLibrary.Wikibase
         /// </summary>
         public int LastRevisionId { get; private set; }
 
+        /// <inheritdoc />
         public WbMonolingualTextCollection Labels { get; private set; } = emptyStringDict;
 
+        /// <inheritdoc />
         public WbMonolingualTextCollection Descriptions { get; private set; } = emptyStringDict;
 
+        /// <inheritdoc />
         public WbMonolingualTextsCollection Aliases { get; private set; } = emptyStringsDict;
 
+        /// <inheritdoc />
         public EntitySiteLinkCollection SiteLinks { get; private set; } = emptySiteLinks;
 
+        /// <inheritdoc />
         public ClaimCollection Claims { get; private set; } = emptyClaims;
 
         /// <summary>
@@ -282,7 +285,8 @@ namespace WikiClientLibrary.Wikibase
                     {
                         // { claims : { P47 : [ {}, {}, ... ], P105 : ... } }
                         Claims = new ClaimCollection(jclaims.Values()
-                            .SelectMany(jarray => jarray.Select(Claim.FromJson)));
+                                .SelectMany(jarray => jarray.Select(Claim.FromJson)))
+                            {IsReadOnly = true};
                     }
                 }
             }

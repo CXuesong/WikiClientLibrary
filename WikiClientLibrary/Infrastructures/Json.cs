@@ -94,10 +94,10 @@ namespace WikiClientLibrary.Infrastructures
             return name.ToLowerInvariant();
         }
     }
-
-    [Obsolete]
-    internal class WikiJsonContractResolver : DefaultContractResolver
+    
+    public class WikiJsonContractResolver : DefaultContractResolver
     {
+
         /// <summary>
         /// Resolves the name of the property.
         /// </summary>
@@ -107,6 +107,7 @@ namespace WikiClientLibrary.Infrastructures
         /// </returns>
         protected override string ResolvePropertyName(string propertyName)
         {
+            if (NamingStrategy != null) return NamingStrategy.GetPropertyName(propertyName, false);
             return propertyName.ToLowerInvariant();
         }
 
@@ -119,16 +120,11 @@ namespace WikiClientLibrary.Infrastructures
         /// </returns>
         protected override JsonProperty CreateProperty(MemberInfo member, MemberSerialization memberSerialization)
         {
-            //TODO: Maybe cache
             var prop = base.CreateProperty(member, memberSerialization);
-            if (!prop.Writable)
+            // For boolean values, omit the default value at all. (no "boolvalue": null in this case)
+            if (prop.PropertyType == typeof(bool))
             {
-                var property = member as PropertyInfo;
-                if (property != null)
-                {
-                    var hasPrivateSetter = property.SetMethod != null;
-                    prop.Writable = hasPrivateSetter;
-                }
+                prop.DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate;
             }
             return prop;
         }

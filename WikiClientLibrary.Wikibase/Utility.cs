@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Text;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
@@ -49,6 +50,15 @@ namespace WikiClientLibrary.Wikibase
         {
             var arr = new JArray(source);
             return arr;
+        }
+
+        public static string Serialize(this JsonSerializer serializer, object value)
+        {
+            using (var writer = new StringWriter())
+            {
+                serializer.Serialize(writer, value);
+                return writer.ToString();
+            }
         }
 
         public static string NewClaimGuid(string entityId)

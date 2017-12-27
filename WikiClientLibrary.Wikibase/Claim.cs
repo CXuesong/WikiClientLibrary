@@ -124,28 +124,14 @@ namespace WikiClientLibrary.Wikibase
             }
         }
 
-        internal JObject ToJson(bool identifierOnly)
+        internal Contracts.Claim ToContract(bool identifierOnly)
         {
-            var obj = new JObject
-            {
-                {"type", Type},
-                {"rank", Rank}
-            };
-            if (Id != null) obj.Add("id", Id);
+            var obj = new Contracts.Claim {Id = Id, Type = Type, Rank = Rank};
             if (identifierOnly) return obj;
-            if (MainSnak == null) throw new InvalidOperationException("MainSnak should not be null.");
-            obj.Add("mainsnak", MainSnak.ToJson());
-            if (Qualifiers != null)
-            {
-                obj.Add("qualifiers",
-                    Qualifiers.GroupBy(s => s.PropertyId).ToJObject(g => g.Key, g => g.Select(s => s.ToJson()).ToJArray())
-                );
-                obj.Add("qualifiers-order", Qualifiers.Select(s => s.PropertyId).Distinct().ToJArray());
-            }
-            if (References != null)
-            {
-                obj.Add("references", References.Select(r => r.ToJson()).ToJArray());
-            }
+            obj.MainSnak = MainSnak.ToContract();
+            obj.Qualifiers = Qualifiers.Select(q => q.ToContract())
+                .GroupBy(q => q.Property).ToDictionary(g => g.Key, g => (ICollection<Contracts.Snak>)g.ToList());
+            obj.References = References.Select(r => r.ToContract()).ToList();
             return obj;
         }
 
@@ -197,18 +183,14 @@ namespace WikiClientLibrary.Wikibase
             Hash = (string)reference["hash"];
         }
 
-        internal JObject ToJson()
+        internal Contracts.Reference ToContract()
         {
-            var obj = new JObject();
-            if (Hash != null) obj.Add("hash", Hash);
-            if (Snaks != null)
+            return new Contracts.Reference
             {
-                obj.Add("snaks",
-                    Snaks.GroupBy(s => s.PropertyId).ToJObject(g => g.Key, g => g.Select(s => s.ToJson()).ToJArray())
-                );
-                obj.Add("snaks-order", Snaks.Select(s => s.PropertyId).Distinct().ToJArray());
-            }
-            return obj;
+                Hash = Hash,
+                Snaks = Snaks?.Select(s => s.ToContract()).ToList(),
+                SnaksOrder = Snaks?.Select(s => s.PropertyId).Distinct().ToList()
+            };
         }
 
     }
@@ -433,17 +415,18 @@ namespace WikiClientLibrary.Wikibase
                        ?? MissingPropertyType.Get((string)snak["datatype"], (string)snak["value"]?["type"]);
         }
 
-        internal JObject ToJson()
+        internal Contracts.Snak ToContract()
         {
-            var obj = new JObject
+            if (DataType == null)
+                throw new InvalidOperationException("DataType is required on serialization.");
+            return new Contracts.Snak
             {
-                {"snaktype", ParseSnakType(SnakType)},
-                {"property", PropertyId},
-                {"hash", Hash},
-                {"datatype", DataType?.Name},
-                {"datavalue", RawDataValue}
+                SnakType = ParseSnakType(SnakType),
+                Property = PropertyId,
+                Hash = Hash,
+                DataType = DataType.Name,
+                DataValue = RawDataValue,
             };
-            return obj;
         }
 
     }

@@ -12,6 +12,7 @@ using WikiClientLibrary.Client;
 using WikiClientLibrary.Infrastructures;
 using WikiClientLibrary.Infrastructures.Logging;
 using WikiClientLibrary.Sites;
+using WikiClientLibrary.Wikibase.Contracts;
 using WikiClientLibrary.Wikibase.DataTypes;
 
 namespace WikiClientLibrary.Wikibase
@@ -19,10 +20,10 @@ namespace WikiClientLibrary.Wikibase
     partial class Entity
     {
 
-        private JObject EditEntriesToJObject(IEnumerable<EntityEditEntry> edits)
+        private Contracts.Entity SerializeEditEntries(IEnumerable<EntityEditEntry> edits)
         {
             if (edits == null) throw new ArgumentNullException(nameof(edits));
-            var jdata = new JObject();
+            var contract = new Contracts.Entity();
             foreach (var prop in edits.GroupBy(e => e.PropertyName))
             {
                 if (prop.Any(p => p.Value == null))
@@ -30,87 +31,85 @@ namespace WikiClientLibrary.Wikibase
                 switch (prop.Key)
                 {
                     case nameof(DataType):
-                        jdata.Add("datatype", ((WikibaseDataType)prop.Last().Value).Name);
+                        contract.DataType = ((WikibaseDataType)prop.Last().Value).Name;
                         break;
                     case nameof(Labels):
+                        contract.Labels = new Dictionary<string, Contracts.MonolingualText>();
+                        foreach (var entry in prop)
+                        {
+                            var value = (WbMonolingualText)entry.Value;
+                            var item = entry.State == EntityEditEntryState.Removed
+                                ? new Contracts.MonolingualText {Language = value.Language, Remove = true}
+                                : new Contracts.MonolingualText {Language = value.Language, Value = value.Text};
+                            contract.Labels.Add(value.Language, item);
+                        }
+                        break;
                     case nameof(Descriptions):
-                        jdata.Add(prop.Key.ToLowerInvariant(),
-                            prop.GroupBy(e => ((WbMonolingualText)e.Value).Language)
-                                .ToJObject(g => g.Key, g =>
-                                {
-                                    var obj = new JObject { { "language", g.Key } };
-                                    var item = g.Single();
-                                    if (item.State == EntityEditEntryState.Updated)
-                                        obj.Add("value", ((WbMonolingualText)item.Value).Text);
-                                    else
-                                        obj.Add("remove", "");
-                                    return obj;
-                                }));
+                        contract.Descriptions = new Dictionary<string, Contracts.MonolingualText>();
+                        foreach (var entry in prop)
+                        {
+                            var value = (WbMonolingualText)entry.Value;
+                            var item = entry.State == EntityEditEntryState.Removed
+                                ? new Contracts.MonolingualText { Language = value.Language, Remove = true }
+                                : new Contracts.MonolingualText { Language = value.Language, Value = value.Text };
+                            contract.Descriptions.Add(value.Language, item);
+                        }
                         break;
                     case nameof(Aliases):
-                        jdata.Add("aliases",
-                            prop.GroupBy(e => ((WbMonolingualText)e.Value).Language)
-                                .ToJObject(g => g.Key, g => g.Select(item =>
-                                {
-                                    var obj = new JObject
-                                    {
-                                        {"language", g.Key},
-                                        {"value", ((WbMonolingualText)item.Value).Text}
-                                    };
-                                    if (item.State == EntityEditEntryState.Removed)
-                                        obj.Add("remove", "");
-                                    return obj;
-                                }).ToJArray()));
+                        contract.Aliases = new Dictionary<string, ICollection<MonolingualText>>();
+                        foreach (var entry in prop)
+                        {
+                            var value = (WbMonolingualText)entry.Value;
+                            var item = entry.State == EntityEditEntryState.Removed
+                                ? new Contracts.MonolingualText { Language = value.Language, Remove = true }
+                                : new Contracts.MonolingualText { Language = value.Language, Value = value.Text };
+                            if (!contract.Aliases.TryGetValue(item.Language, out var items))
+                            {
+                                items = new List<MonolingualText>();
+                                contract.Aliases.Add(item.Language, items);
+                            }
+                            items.Add(item);
+                        }
                         break;
                     case nameof(SiteLinks):
-                        jdata.Add("sitelinks",
-                            prop.GroupBy(e => ((EntitySiteLink)e.Value).Site)
-                                .ToJObject(g => g.Key, g =>
-                                {
-                                    EntityEditEntry item;
-                                    try
-                                    {
-                                        item = g.Single();
-                                    }
-                                    catch (InvalidOperationException)
-                                    {
-                                        throw new ArgumentException("One site can own at most one site link.", nameof(edits));
-                                    }
-                                    var obj = new JObject { { "site", g.Key } };
-                                    if (item.State == EntityEditEntryState.Updated)
-                                    {
-                                        obj.Add("title", ((EntitySiteLink)item.Value).Title);
-                                        obj.Add("badges", ((EntitySiteLink)item.Value).Badges.ToJArray());
-                                    }
-                                    else
-                                    {
-                                        obj.Add("remove", "");
-                                    }
-                                    return obj;
-                                }));
+                        contract.Sitelinks = new Dictionary<string, SiteLink>();
+                        foreach (var entry in prop)
+                        {
+                            var value = (EntitySiteLink)entry.Value;
+                            var item = entry.State == EntityEditEntryState.Removed
+                                ? new Contracts.SiteLink {Site = value.Site, Remove = true}
+                                : new Contracts.SiteLink {Site = value.Site, Title = value.Title, Badges = value.Badges.ToList()};
+                            contract.Sitelinks.Add(value.Site, item);
+                        }
                         break;
                     case nameof(Claims):
-                        jdata.Add("claims",
-                            prop.GroupBy(e =>
+                        contract.Claims = new Dictionary<string, ICollection<Contracts.Claim>>();
+                        foreach (var entry in prop)
+                        {
+                            var value = (Claim)entry.Value;
+                            Contracts.Claim item;
+                            if (entry.State == EntityEditEntryState.Removed)
                             {
-                                var pid = ((Claim)e.Value).MainSnak?.PropertyId;
-                                if (pid == null)
-                                    throw new ArgumentException("Detected null PropertyId in WbClaim values.", nameof(edits));
-                                return pid;
-                            }).ToJObject(g => g.Key, g => g.Select(item =>
+                                item = value.ToContract(true);
+                                item.Remove = true;
+                            }
+                            else
                             {
-                                if (item.State == EntityEditEntryState.Updated)
-                                    return ((Claim)item.Value).ToJson(false);
-                                var obj = ((Claim)item.Value).ToJson(true);
-                                obj.Add("remove", "");
-                                return obj;
-                            }).ToJArray()));
+                                item = value.ToContract(false);
+                            }
+                            if (!contract.Claims.TryGetValue(value.MainSnak.PropertyId, out var items))
+                            {
+                                items = new List<Contracts.Claim>();
+                                contract.Claims.Add(value.MainSnak.PropertyId, items);
+                            }
+                            items.Add(item);
+                        }
                         break;
                     default:
                         throw new ArgumentException($"Unrecognized {nameof(Entity)} property name: {prop.Key}.");
                 }
             }
-            return jdata;
+            return contract;
         }
 
         /// <inheritdoc cref="EditAsync(IEnumerable{EntityEditEntry},string,EntityEditOptions,CancellationToken)"/>
@@ -194,7 +193,7 @@ namespace WikiClientLibrary.Wikibase
                 Site.Logger.LogInformation("Editing entity. Bulk={Bulk}.", bulk);
                 if (bulk)
                 {
-                    var jdata = EditEntriesToJObject(edits);
+                    var contract = SerializeEditEntries(edits);
                     using (await Site.ModificationThrottler.QueueWorkAsync("Edit: " + this, cancellationToken))
                     {
                         var jresult = await Site.InvokeMediaWikiApiAsync(new MediaWikiFormRequestMessage(new
@@ -207,7 +206,7 @@ namespace WikiClientLibrary.Wikibase
                             bot = (options & EntityEditOptions.Bot) == EntityEditOptions.Bot,
                             summary = summary,
                             clear = (options & EntityEditOptions.ClearData) == EntityEditOptions.ClearData,
-                            data = jdata.ToString(Formatting.None)
+                            data = Utility.WikiJsonSerializer.Serialize(contract)
                         }), cancellationToken);
                         var jentity = jresult["entity"];
                         if (jentity == null)
@@ -354,7 +353,7 @@ namespace WikiClientLibrary.Wikibase
                         foreach (var entry in prop.Where(e => e.State == EntityEditEntryState.Updated))
                         {
                             var value = (Claim)entry.Value;
-                            var jclaim = value.ToJson(false);
+                            var claimContract = value.ToContract(false);
                             if (value.Id == null)
                             {
                                 // New claim. We need to assign an ID manually.
@@ -374,7 +373,7 @@ namespace WikiClientLibrary.Wikibase
                                     if (!strict) checkbaseRev = false;
                                     LoadFromJson(jresult1["entity"], EntityQueryOptions.FetchAllProperties, true);
                                 }
-                                jclaim.Add("id", Utility.NewClaimGuid(Id));
+                                claimContract.Id = Utility.NewClaimGuid(Id);
                             }
                             var jresult = await Site.InvokeMediaWikiApiAsync(new MediaWikiFormRequestMessage(new
                             {
@@ -384,7 +383,7 @@ namespace WikiClientLibrary.Wikibase
                                 baserevid = checkbaseRev && LastRevisionId > 0 ? (int?)LastRevisionId : null,
                                 bot = isBot,
                                 summary = summary,
-                                claim = jclaim.ToString(Formatting.None),
+                                claim = Utility.WikiJsonSerializer.Serialize(claimContract),
                             }), cancellationToken);
                             // jresult["claim"] != null
                             LastRevisionId = (int)jresult["pageinfo"]["lastrevid"];

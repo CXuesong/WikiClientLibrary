@@ -36,8 +36,9 @@ namespace WikiClientLibrary
                 new JsonSerializerSettings
                 {
                     DateFormatHandling = DateFormatHandling.IsoDateFormat,
-                    NullValueHandling = NullValueHandling.Include,
-                    ContractResolver = new DefaultContractResolver {NamingStrategy = new WikiJsonNamingStrategy()},
+                    NullValueHandling = NullValueHandling.Ignore,
+                    ContractResolver = new WikiJsonContractResolver(),
+                    Formatting = Formatting.None,
                     Converters =
                     {
                         new WikiBooleanJsonConverter(),
