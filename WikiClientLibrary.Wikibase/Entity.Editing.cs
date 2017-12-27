@@ -380,7 +380,6 @@ namespace WikiClientLibrary.Wikibase
                             {
                                 action = "wbsetclaim",
                                 token = WikiSiteToken.Edit,
-                                id = Id,
                                 @new = Id == null ? FormatEntityType(Type) : null,
                                 baserevid = checkbaseRev && LastRevisionId > 0 ? (int?)LastRevisionId : null,
                                 bot = isBot,
