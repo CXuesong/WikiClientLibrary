@@ -203,24 +203,10 @@
       <exception cref="T:System.ArgumentNullException">Either <paramref name="site" /> is <c>null</c>.</exception>
     </member>
     <member name="P:WikiClientLibrary.Wikibase.Entity.Aliases">
-      <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>P:WikiClientLibrary.Wikibase.Entity.Aliases</parameter>
-          </include>
-        </markup>
-      </summary>
+      <summary>Gets the aliases of the entity.</summary>
     </member>
     <member name="P:WikiClientLibrary.Wikibase.Entity.Claims">
-      <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>P:WikiClientLibrary.Wikibase.Entity.Claims</parameter>
-          </include>
-        </markup>
-      </summary>
+      <summary>Gets the claims of the entity.</summary>
     </member>
     <member name="P:WikiClientLibrary.Wikibase.Entity.DataType">
       <summary>
@@ -228,14 +214,7 @@
             </summary>
     </member>
     <member name="P:WikiClientLibrary.Wikibase.Entity.Descriptions">
-      <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>P:WikiClientLibrary.Wikibase.Entity.Descriptions</parameter>
-          </include>
-        </markup>
-      </summary>
+      <summary>Gets the descriptions of the entity.</summary>
     </member>
     <member name="M:WikiClientLibrary.Wikibase.Entity.EditAsync(System.Collections.Generic.IEnumerable{WikiClientLibrary.Wikibase.EntityEditEntry},System.String)">
       <summary>
@@ -290,14 +269,7 @@
             </summary>
     </member>
     <member name="P:WikiClientLibrary.Wikibase.Entity.Labels">
-      <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>P:WikiClientLibrary.Wikibase.Entity.Labels</parameter>
-          </include>
-        </markup>
-      </summary>
+      <summary>Gets the labels (aka. names) of the entity.</summary>
     </member>
     <member name="P:WikiClientLibrary.Wikibase.Entity.LastModified">
       <summary>Time of the last revision.</summary>
@@ -377,14 +349,7 @@
       </summary>
     </member>
     <member name="P:WikiClientLibrary.Wikibase.Entity.SiteLinks">
-      <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>P:WikiClientLibrary.Wikibase.Entity.SiteLinks</parameter>
-          </include>
-        </markup>
-      </summary>
+      <summary>Gets the sitelinks of the entity.</summary>
     </member>
     <member name="P:WikiClientLibrary.Wikibase.Entity.Title">
       <summary>
@@ -402,9 +367,7 @@
       </summary>
     </member>
     <member name="P:WikiClientLibrary.Wikibase.Entity.Type">
-      <summary>
-            Wikibase entity type.
-            </summary>
+      <summary>Wikibase entity type.</summary>
     </member>
     <member name="T:WikiClientLibrary.Wikibase.EntityEditEntry">
       <summary>
@@ -913,6 +876,150 @@
       <summary>
             A Wikibase property, usually having the prefix P and in <c>Property</c> namespace.
             </summary>
+    </member>
+    <member name="T:WikiClientLibrary.Wikibase.IEntity">
+      <summary>
+            Provides basic access to Wikibase entities.
+            </summary>
+    </member>
+    <member name="P:WikiClientLibrary.Wikibase.IEntity.Aliases">
+      <summary>Gets the aliases of the entity.</summary>
+    </member>
+    <member name="P:WikiClientLibrary.Wikibase.IEntity.Claims">
+      <summary>Gets the claims of the entity.</summary>
+    </member>
+    <member name="P:WikiClientLibrary.Wikibase.IEntity.DataType">
+      <summary>
+            For property entity, gets the data type of the property.
+            </summary>
+    </member>
+    <member name="P:WikiClientLibrary.Wikibase.IEntity.Descriptions">
+      <summary>Gets the descriptions of the entity.</summary>
+    </member>
+    <member name="P:WikiClientLibrary.Wikibase.IEntity.Id">
+      <summary>
+            Id of the entity.
+            </summary>
+    </member>
+    <member name="P:WikiClientLibrary.Wikibase.IEntity.Labels">
+      <summary>Gets the labels (aka. names) of the entity.</summary>
+    </member>
+    <member name="P:WikiClientLibrary.Wikibase.IEntity.SiteLinks">
+      <summary>Gets the sitelinks of the entity.</summary>
+    </member>
+    <member name="P:WikiClientLibrary.Wikibase.IEntity.Type">
+      <summary>Wikibase entity type.</summary>
+    </member>
+    <member name="T:WikiClientLibrary.Wikibase.SerializableEntity">
+      <summary>
+            Represents a entity that can be loaded from or serialized into JSON.
+            </summary>
+    </member>
+    <member name="M:WikiClientLibrary.Wikibase.SerializableEntity.#ctor">
+      <summary>
+        <markup>
+          <include item="SMCAutoDocConstructor">
+            <parameter>WikiClientLibrary.Wikibase.SerializableEntity</parameter>
+          </include>
+        </markup>
+      </summary>
+    </member>
+    <member name="P:WikiClientLibrary.Wikibase.SerializableEntity.Aliases">
+      <summary>Gets the aliases of the entity.</summary>
+    </member>
+    <member name="P:WikiClientLibrary.Wikibase.SerializableEntity.Claims">
+      <summary>Gets the claims of the entity.</summary>
+    </member>
+    <member name="P:WikiClientLibrary.Wikibase.SerializableEntity.DataType">
+      <summary>
+            For property entity, gets the data type of the property.
+            </summary>
+    </member>
+    <member name="P:WikiClientLibrary.Wikibase.SerializableEntity.Descriptions">
+      <summary>Gets the descriptions of the entity.</summary>
+    </member>
+    <member name="P:WikiClientLibrary.Wikibase.SerializableEntity.Id">
+      <summary>
+            Id of the entity.
+            </summary>
+    </member>
+    <member name="P:WikiClientLibrary.Wikibase.SerializableEntity.Labels">
+      <summary>Gets the labels (aka. names) of the entity.</summary>
+    </member>
+    <member name="M:WikiClientLibrary.Wikibase.SerializableEntity.Load(Newtonsoft.Json.JsonReader)">
+      <summary>
+            Populates the current entity from <see cref="T:Newtonsoft.Json.JsonReader" />.
+            </summary>
+      <param name="reader">The reader from which to read serialized entity JSON.</param>
+    </member>
+    <member name="M:WikiClientLibrary.Wikibase.SerializableEntity.Load(Newtonsoft.Json.Linq.JObject)">
+      <summary>
+            Creates a new instance of <see cref="T:WikiClientLibrary.Wikibase.SerializableEntity" /> from JSON.
+            </summary>
+      <param name="entity">The serialized entity JSON.</param>
+    </member>
+    <member name="M:WikiClientLibrary.Wikibase.SerializableEntity.Load(System.IO.TextReader)">
+      <summary>
+            Populates the current entity from <see cref="T:System.IO.TextReader" />.
+            </summary>
+      <param name="reader">The reader from which to read serialized entity JSON.</param>
+    </member>
+    <member name="M:WikiClientLibrary.Wikibase.SerializableEntity.Load(System.String)">
+      <summary>
+            Populates the current entity from JSON string.
+            </summary>
+      <param name="entityJson">The serialized entity JSON string.</param>
+    </member>
+    <member name="M:WikiClientLibrary.Wikibase.SerializableEntity.Load(WikiClientLibrary.Wikibase.IEntity)">
+      <summary>
+            Creates a new instance of <see cref="T:WikiClientLibrary.Wikibase.SerializableEntity" /> from an existing
+            <see cref="T:WikiClientLibrary.Wikibase.IEntity" /> instance.
+            </summary>
+      <param name="entity">The existing entity. A shallow copy of values will be made from it.</param>
+    </member>
+    <member name="P:WikiClientLibrary.Wikibase.SerializableEntity.SiteLinks">
+      <summary>Gets the sitelinks of the entity.</summary>
+    </member>
+    <member name="M:WikiClientLibrary.Wikibase.SerializableEntity.ToJObject">
+      <summary>
+            Serializes the entity into JSON.
+            </summary>
+    </member>
+    <member name="M:WikiClientLibrary.Wikibase.SerializableEntity.ToJsonString">
+      <summary>
+            Serializes the entity into compact JSON string.
+            </summary>
+    </member>
+    <member name="P:WikiClientLibrary.Wikibase.SerializableEntity.Type">
+      <summary>Wikibase entity type.</summary>
+    </member>
+    <member name="M:WikiClientLibrary.Wikibase.SerializableEntity.WriteTo(Newtonsoft.Json.JsonWriter)">
+      <summary>
+            Writes the serialized entity into <see cref="T:Newtonsoft.Json.JsonWriter" />.
+            </summary>
+      <param name="writer">
+        <markup>
+          <include item="SMCMissingParamTag">
+            <parameter>param</parameter>
+            <parameter>writer</parameter>
+            <parameter>M:WikiClientLibrary.Wikibase.SerializableEntity.WriteTo(Newtonsoft.Json.JsonWriter)</parameter>
+          </include>
+        </markup>
+      </param>
+    </member>
+    <member name="M:WikiClientLibrary.Wikibase.SerializableEntity.WriteTo(System.IO.TextWriter)">
+      <summary>
+            Writes the serialized entity into <see cref="T:System.IO.TextWriter" />.
+            </summary>
+      <param name="writer">
+        <markup>
+          <include item="SMCMissingParamTag">
+            <parameter>param</parameter>
+            <parameter>writer</parameter>
+            <parameter>M:WikiClientLibrary.Wikibase.SerializableEntity.WriteTo(System.IO.TextWriter)</parameter>
+          </include>
+        </markup>
+      </param>
     </member>
     <member name="T:WikiClientLibrary.Wikibase.Snak">
       <summary>

@@ -4919,6 +4919,44 @@
       <param name="value">The value.</param>
       <param name="serializer">The calling serializer.</param>
     </member>
+    <member name="T:WikiClientLibrary.Infrastructures.WikiJsonContractResolver">
+      <summary>
+        <markup>
+          <include item="SMCMissingTag">
+            <parameter>summary</parameter>
+            <parameter>T:WikiClientLibrary.Infrastructures.WikiJsonContractResolver</parameter>
+          </include>
+        </markup>
+      </summary>
+    </member>
+    <member name="M:WikiClientLibrary.Infrastructures.WikiJsonContractResolver.#ctor">
+      <summary>
+        <markup>
+          <include item="SMCAutoDocConstructor">
+            <parameter>WikiClientLibrary.Infrastructures.WikiJsonContractResolver</parameter>
+          </include>
+        </markup>
+      </summary>
+    </member>
+    <member name="M:WikiClientLibrary.Infrastructures.WikiJsonContractResolver.CreateProperty(System.Reflection.MemberInfo,Newtonsoft.Json.MemberSerialization)">
+      <summary>
+            Creates a <see cref="T:Newtonsoft.Json.Serialization.JsonProperty" /> for the given <see cref="T:System.Reflection.MemberInfo" />.
+            </summary>
+      <param name="memberSerialization">The member's parent <see cref="T:Newtonsoft.Json.MemberSerialization" />.</param>
+      <param name="member">The member to create a <see cref="T:Newtonsoft.Json.Serialization.JsonProperty" /> for.</param>
+      <returns>
+            A created <see cref="T:Newtonsoft.Json.Serialization.JsonProperty" /> for the given <see cref="T:System.Reflection.MemberInfo" />.
+            </returns>
+    </member>
+    <member name="M:WikiClientLibrary.Infrastructures.WikiJsonContractResolver.ResolvePropertyName(System.String)">
+      <summary>
+            Resolves the name of the property.
+            </summary>
+      <param name="propertyName">Name of the property.</param>
+      <returns>
+            Resolved name of the property.
+            </returns>
+    </member>
     <member name="T:WikiClientLibrary.Infrastructures.WikiJsonNamingStrategy">
       <summary>
             All-lower-case property naming strategy as used in MediaWiki API response.
