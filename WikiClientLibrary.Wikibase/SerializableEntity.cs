@@ -147,7 +147,8 @@ namespace WikiClientLibrary.Wikibase
 
         internal static SerializableEntity Load(Contracts.Entity entity)
         {
-            Debug.Assert(entity != null);
+            // If caller deserializes entity from EOF-ed stream, the caller can get null.
+            if (entity == null) return null;
             var inst = new SerializableEntity(false)
             {
                 Id = entity.Id,
@@ -205,6 +206,7 @@ namespace WikiClientLibrary.Wikibase
         /// Populates the current entity from <see cref="TextReader"/>.
         /// </summary>
         /// <param name="reader">The reader from which to read serialized entity JSON.</param>
+        /// <returns>The deserialized entity, or <c>null</c> if EOF has been reached.</returns>
         public static SerializableEntity Load(TextReader reader)
         {
             if (reader == null) throw new ArgumentNullException(nameof(reader));
@@ -215,6 +217,7 @@ namespace WikiClientLibrary.Wikibase
         /// Populates the current entity from <see cref="JsonReader"/>.
         /// </summary>
         /// <param name="reader">The reader from which to read serialized entity JSON.</param>
+        /// <returns>The deserialized entity, or <c>null</c> if EOF has been reached.</returns>
         public static SerializableEntity Load(JsonReader reader)
         {
             if (reader == null) throw new ArgumentNullException(nameof(reader));

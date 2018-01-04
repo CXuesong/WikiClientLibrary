@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -198,6 +199,13 @@ namespace UnitTestProject1.Tests
             Assert.Equal("P3", entity.Id);
             Assert.Equal("instance of", entity.Labels["en"]);
             Assert.Contains(entity.Claims["P5"], c => (string)c.MainSnak.DataValue == "Q25");
+        }
+
+        [Fact]
+        public void SerializableEntityEofTest()
+        {
+            Assert.Null(SerializableEntity.Load(""));
+            Assert.Null(SerializableEntity.Load(TextReader.Null));
         }
 
         public static class WikidataItems
