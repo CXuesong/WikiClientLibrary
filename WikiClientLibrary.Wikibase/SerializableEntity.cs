@@ -233,7 +233,7 @@ namespace WikiClientLibrary.Wikibase
         {
             return value?.Languages.ToDictionary(lang => lang,
                 lang => (ICollection<Contracts.MonolingualText>)value[lang]
-                    .Select(t => new Contracts.MonolingualText { Language = lang, Value = t}).ToList());
+                    .Select(t => new Contracts.MonolingualText {Language = lang, Value = t}).ToList());
         }
 
         private Contracts.Entity ToContract()
@@ -245,12 +245,11 @@ namespace WikiClientLibrary.Wikibase
                 Labels = ToContract(_Labels),
                 Aliases = ToContract(_Aliases),
                 Descriptions = ToContract(_Descriptions),
+                Sitelinks = SiteLinks.ToDictionary(link => link.Site,
+                    link => new Contracts.SiteLink {Site = link.Site, Title = link.Title, Badges = link.Badges.ToList()}),
+                Claims = Claims.GroupBy(c => c.MainSnak.PropertyId).ToDictionary(g => g.Key,
+                    g => (ICollection<Contracts.Claim>)g.Select(c => c.ToContract(false)).ToList())
             };
-            if (_SiteLinks != null)
-            {
-                obj.Sitelinks = SiteLinks.ToDictionary(link => link.Site,
-                    link => new Contracts.SiteLink { Site = link.Site, Title = link.Title, Badges = link.Badges.ToList() });
-            }
             return obj;
         }
 

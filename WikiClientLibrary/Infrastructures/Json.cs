@@ -98,26 +98,22 @@ namespace WikiClientLibrary.Infrastructures
     public class WikiJsonContractResolver : DefaultContractResolver
     {
 
-        /// <summary>
-        /// Resolves the name of the property.
-        /// </summary>
-        /// <param name="propertyName">Name of the property.</param>
-        /// <returns>
-        /// Resolved name of the property.
-        /// </returns>
+        /// <inheritdoc />
         protected override string ResolvePropertyName(string propertyName)
         {
             if (NamingStrategy != null) return NamingStrategy.GetPropertyName(propertyName, false);
             return propertyName.ToLowerInvariant();
         }
 
-        /// <summary>
-        /// Creates a <see cref="T:Newtonsoft.Json.Serialization.JsonProperty"/> for the given <see cref="T:System.Reflection.MemberInfo"/>.
-        /// </summary>
-        /// <param name="memberSerialization">The member's parent <see cref="T:Newtonsoft.Json.MemberSerialization"/>.</param><param name="member">The member to create a <see cref="T:Newtonsoft.Json.Serialization.JsonProperty"/> for.</param>
-        /// <returns>
-        /// A created <see cref="T:Newtonsoft.Json.Serialization.JsonProperty"/> for the given <see cref="T:System.Reflection.MemberInfo"/>.
-        /// </returns>
+        /// <inheritdoc />
+        protected override string ResolveDictionaryKey(string dictionaryKey)
+        {
+            if (NamingStrategy != null) return NamingStrategy.GetDictionaryKey(dictionaryKey);
+            // We keep the case of dictionary keys intact.
+            return dictionaryKey;
+        }
+
+        /// <inheritdoc />
         protected override JsonProperty CreateProperty(MemberInfo member, MemberSerialization memberSerialization)
         {
             var prop = base.CreateProperty(member, memberSerialization);

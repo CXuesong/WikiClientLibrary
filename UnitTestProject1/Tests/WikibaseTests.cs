@@ -199,6 +199,10 @@ namespace UnitTestProject1.Tests
             Assert.Equal("P3", entity.Id);
             Assert.Equal("instance of", entity.Labels["en"]);
             Assert.Contains(entity.Claims["P5"], c => (string)c.MainSnak.DataValue == "Q25");
+            entity = SerializableEntity.Load(entity.ToJsonString());
+            Assert.Equal("P3", entity.Id);
+            Assert.Equal("instance of", entity.Labels["en"]);
+            Assert.Contains(entity.Claims["P5"], c => (string)c.MainSnak.DataValue == "Q25");
         }
 
         [Fact]
