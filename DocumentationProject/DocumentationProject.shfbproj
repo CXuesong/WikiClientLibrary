@@ -41,8 +41,10 @@
     <CleanIntermediates>True</CleanIntermediates>
     <ComponentConfigurations>
       <ComponentConfig id="API Token Resolution" enabled="True">
-        <component id="API Token Resolution">{@TokenFiles}
-<replace elements="/*//token" item="string(.)" /></component>
+        <component id="API Token Resolution">
+          {@TokenFiles}
+          <replace elements="/*//token" item="string(.)" />
+        </component>
       </ComponentConfig>
       <ComponentConfig id="Code Block Component" enabled="True">
         <component id="Code Block Component">
@@ -57,8 +59,8 @@
         <component id="Syntax Component">
           <syntax input="/document/reference" output="/document/syntax" renderReferenceLinks="false" />
           <generators>
-    {@SyntaxFilters}
-</generators>
+            {@SyntaxFilters}
+          </generators>
           <containerElement name="codeSnippetGroup" addNoExampleTabs="true" includeOnSingleSnippets="false" groupingEnabled="{@CodeSnippetGrouping}" />
           <configurations>
             <generator id="C#" />
@@ -103,7 +105,7 @@
     <NamingMethod>Guid</NamingMethod>
     <HelpTitle>Wiki Client Library</HelpTitle>
     <ContentPlacement>AboveNamespaces</ContentPlacement>
-    <CopyrightText>Copyright %28C%29 CXuesong 2017</CopyrightText>
+    <CopyrightText>Copyright %28C%29 CXuesong 2018</CopyrightText>
     <VisibleItems>Attributes, ExplicitInterfaceImplementations, InheritedMembers, InheritedFrameworkMembers, Protected, ProtectedInternalAsProtected, EditorBrowsableNever, NonBrowsable</VisibleItems>
     <HeaderText>
     </HeaderText>

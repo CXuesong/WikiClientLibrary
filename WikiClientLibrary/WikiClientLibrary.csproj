@@ -4,9 +4,9 @@
     <TargetFramework>netstandard1.1</TargetFramework>
     <AssemblyName>WikiClientLibrary</AssemblyName>
     <PackageId>CXuesong.MW.WikiClientLibrary</PackageId>
-    <Version>0.6.0-intX6</Version>
-    <AssemblyVersion>0.6.0.16</AssemblyVersion>
-    <FileVersion>0.6.0.16</FileVersion>
+    <Version>0.6.0-intX7</Version>
+    <AssemblyVersion>0.6.0.17</AssemblyVersion>
+    <FileVersion>0.6.0.17</FileVersion>
     <Copyright>Copyright (C) CXuesong 2017</Copyright>
     <Description>Wiki Client Library is a .NET Standard &amp; asynchronous client library for MediaWiki sites.
 
