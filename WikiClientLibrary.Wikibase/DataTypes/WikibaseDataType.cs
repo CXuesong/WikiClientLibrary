@@ -13,7 +13,7 @@ namespace WikiClientLibrary.Wikibase.DataTypes
     /// <remarks>
     /// In Wikibase, there are two different notion of types: one is property type,
     /// the other is value type. They follow n:1 relation, i.e. one property type corresponds to
-    /// one value type, but the same value type can represent different proeprty types.
+    /// one value type, but the same value type can represent different property types.
     /// For example, <c>wikibase-item</c> property type corresponds to <c>wikibase-entityid</c> value type,
     /// while <c>wikibase-property</c> property type also corresponds to <c>wikibase-entityid</c> value type.
     /// For a list of Wikibase built-in data types, see

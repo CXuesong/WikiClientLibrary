@@ -45,7 +45,7 @@ namespace WikiClientLibrary.Infrastructures
             }
             set
             {
-                if (_IsReadOnly) throw new NotSupportedException("Collection is readonly.");
+                if (_IsReadOnly) throw new NotSupportedException("Collection is read-only.");
                 myDict[key] = value;
             }
         }
@@ -89,7 +89,7 @@ namespace WikiClientLibrary.Infrastructures
             MakeReadonly();
         }
 
-        #region Explict Interface Implementations
+        #region Explicit Interface Implementations
 
         /// <inheritdoc />
         IEnumerator<KeyValuePair<string, JToken>> IEnumerable<KeyValuePair<string, JToken>>.GetEnumerator()

@@ -37,12 +37,12 @@ This portable & asynchronous MediaWiki API client provides an easy and asynchron
     *   Page parsing
     *   Patrol
 *   StructuredDiscussions (aka. Flow) support
-*   Basic Wikibase (Wikidata's backend) support
+*   Basic Wikibase (Wikidata's back-end) support
 *   Basic Wikia API (Nirvana, Wikia AJAX, and Wikia REST-ful API v1) support
 
 
 ## See also
 
 *   [Repository Wiki](https://github.com/CXuesong/WikiClientLibrary/wiki)
-*   [Library References](https://cxuesong.github.io/WikiClientLibrary) (latest prerelease)
+*   [Library References](https://cxuesong.github.io/WikiClientLibrary) (latest pre-release)
 *   [Releases](https://github.com/CXuesong/WikiClientLibrary/releases)

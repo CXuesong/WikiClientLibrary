@@ -77,7 +77,7 @@ namespace ConsoleTestApplication1
             // Page Operations
             // Fetch information and content
             var page = new WikiPage(site, site.SiteInfo.MainPage);
-            Console.WriteLine("Retriving {0}...", page);
+            Console.WriteLine("Retrieving {0}...", page);
             await page.RefreshAsync(PageQueryOptions.FetchContent);
 
             Console.WriteLine("Last touched at {0}.", page.LastTouched);
@@ -163,7 +163,7 @@ namespace ConsoleTestApplication1
         static async Task InteractivePatrol()
         {
             // Patrol the last unpatrolled change.
-            // Ususally a user should have the patrol right to perform such operation.
+            // Usually a user should have the patrol right to perform such operation.
 
             // Create a MediaWiki API client.
             var wikiClient = new WikiClient();

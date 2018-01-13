@@ -394,7 +394,7 @@ namespace WikiClientLibrary.Pages
         /// Gets a collection of warnings resulted from this upload.
         /// </summary>
         /// <value>
-        /// A readonly dictionary of warning code - context pairs.
+        /// A read-only dictionary of warning code - context pairs.
         /// The list is guaranteed not to be <c>null</c>,
         /// but it can be empty.
         /// </value>

@@ -482,7 +482,7 @@ namespace WikiClientLibrary.Sites
         /// <summary>
         /// Invoke API and get JSON result.
         /// </summary>
-        /// <param name="queryParams">An object whose proeprty-value pairs will be converted into key-value pairs and sent.</param>
+        /// <param name="queryParams">An object whose property-value pairs will be converted into key-value pairs and sent.</param>
         /// <param name="cancellationToken">The cancellation token that will be checked prior to completing the returned task.</param>
         /// <exception cref="InvalidActionException">Specified action is not supported.</exception>
         /// <exception cref="OperationCanceledException">The operation has been cancelled via <paramref name="cancellationToken"/>.</exception>
@@ -494,7 +494,7 @@ namespace WikiClientLibrary.Sites
         /// <summary>
         /// Invoke API and get JSON result.
         /// </summary>
-        /// <param name="queryParams">An object whose proeprty-value pairs will be converted into key-value pairs and sent.</param>
+        /// <param name="queryParams">An object whose property-value pairs will be converted into key-value pairs and sent.</param>
         /// <param name="supressAccountAssertion">Whether to temporarily disable account assertion as set in <see cref="SiteOptions.AccountAssertion"/>.</param>
         /// <param name="cancellationToken">The cancellation token that will be checked prior to completing the returned task.</param>
         /// <exception cref="InvalidActionException">Specified action is not supported.</exception>

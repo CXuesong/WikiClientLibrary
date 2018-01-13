@@ -18,7 +18,7 @@ namespace WikiClientLibrary.Wikibase
     /// Provides information on a Wikibase item or property.
     /// </summary>
     /// <remarks>
-    /// The object represents a readonly snapshot of the Wikibase entity.
+    /// The object represents a read-only snapshot of the Wikibase entity.
     /// To edit the entity, use <see cref="EditAsync(IEnumerable{EntityEditEntry},string)"/> method.
     /// </remarks>
     public sealed partial class Entity : IEntity

@@ -70,7 +70,7 @@ namespace UnitTestProject1.Tests
             // assuming there's no other users posting too many new topics concurrently.
             Assert.True(await board.EnumTopicsAsync(TopicListingOptions.OrderByPosted, 4).Take(32)
                 .Any(t => t.WorkflowId == topic1.WorkflowId));
-            // Refetch the topic. Keep topic1 intact, as reference.
+            // Re-fetch the topic. Keep topic1 intact, as reference.
             var topic = new Topic(topic1.Site, topic1.Title);
             await topic.RefreshAsync();
             ShallowTrace(topic);

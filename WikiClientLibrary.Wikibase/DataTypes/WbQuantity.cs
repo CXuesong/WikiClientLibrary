@@ -4,7 +4,7 @@ namespace WikiClientLibrary.Wikibase.DataTypes
 {
 
     /// <summary>
-    /// Represents an amount with arbitary precision, combined with a unit.
+    /// Represents an amount with arbitrary precision, combined with a unit.
     /// </summary>
     public struct WbQuantity
     {
@@ -24,7 +24,7 @@ namespace WikiClientLibrary.Wikibase.DataTypes
         }
 
         /// <inheritdoc cref="WbQuantity(double,double,double,Uri)"/>
-        /// <param name="error">The numberic error of the <paramref name="amount"/>.</param>
+        /// <param name="error">The numeric error of the <paramref name="amount"/>.</param>
         public WbQuantity(double amount, double error, Uri unit) : this(amount, amount - error, amount + error, unit)
         {
 
@@ -36,7 +36,7 @@ namespace WikiClientLibrary.Wikibase.DataTypes
         /// <param name="amount">The numeric value of the amount.</param>
         /// <param name="lowerBound">The lower-bound of the <paramref name="amount"/> caused by error.</param>
         /// <param name="upperBound">The upper-bound of the <paramref name="amount"/> caused by error.</param>
-        /// <param name="unit">Entity URI of the unit. Use <see cref="Unity"/> for quantities that have no explict units.</param>
+        /// <param name="unit">Entity URI of the unit. Use <see cref="Unity"/> for quantities that have no explicit units.</param>
         /// <exception cref="ArgumentException"><paramref name="amount"/> is not in the range of <paramref name="lowerBound"/> and <paramref name="upperBound"/>.</exception>
         /// <exception cref="ArgumentNullException"><paramref name="unit"/> is <c>null</c>.</exception>
         public WbQuantity(double amount, double lowerBound, double upperBound, Uri unit)

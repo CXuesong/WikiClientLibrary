@@ -105,7 +105,7 @@ namespace WikiClientLibrary.Wikia
         }
 
         /// <summary>
-        /// Gets a readonly list of all the fields in the form.
+        /// Gets a read-only list of all the fields in the form.
         /// </summary>
         public IList<KeyValuePair<string, object>> Fields
         {

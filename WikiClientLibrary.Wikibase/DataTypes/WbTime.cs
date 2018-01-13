@@ -226,7 +226,7 @@ namespace WikiClientLibrary.Wikibase.DataTypes
         }
 
         /// <summary>
-        /// Converts to <see cref="DateTimeOffset"/>, using appropriate rouding specified by <see cref="Precision"/>.
+        /// Converts to <see cref="DateTimeOffset"/>, using appropriate rounding specified by <see cref="Precision"/>.
         /// </summary>
         public DateTimeOffset ToDateTimeOffset()
         {

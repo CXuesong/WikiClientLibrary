@@ -70,7 +70,7 @@ namespace WikiClientLibrary.Generators
         public bool IncludesInterwiki { get; set; }
 
         /// <summary>
-        /// Class name of search backend to use (Default: $wgSearchType, MediaWiki 1.22+)
+        /// Class name of search back-end to use (Default: $wgSearchType, MediaWiki 1.22+)
         /// </summary>
         public string BackendName { get; set; }
 

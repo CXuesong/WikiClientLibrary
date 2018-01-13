@@ -29,7 +29,7 @@ namespace WikiClientLibrary.Sites
         [JsonProperty] // This should be kept or private setter will be ignored by Newtonsoft.JSON.
         public string MainPage { get; private set; }
 
-        #region Url & Path
+        #region URL & Path
 
         /// <summary>
         /// The absolute path to the main page. (MediaWiki 1.8+)
@@ -548,7 +548,7 @@ namespace WikiClientLibrary.Sites
     }
 
     /// <summary>
-    /// An item of iterwiki map.
+    /// An item of interwiki map.
     /// </summary>
     [JsonObject(MemberSerialization.OptIn)]
     public class InterwikiEntry
@@ -599,7 +599,7 @@ namespace WikiClientLibrary.Sites
         public string Url { get; private set; }
 
         /// <summary>
-        /// Whether the value of url can be treated as protocol-relative. (MediaWiki 1.24+)
+        /// Whether the value of URL can be treated as protocol-relative. (MediaWiki 1.24+)
         /// Note, however, that the <see cref="Url"/> actually returned will always include the current protocol.
         /// </summary>
         [JsonProperty("protorel")]

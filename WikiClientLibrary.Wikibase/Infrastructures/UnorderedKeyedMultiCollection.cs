@@ -60,12 +60,12 @@ namespace WikiClientLibrary.Wikibase.Infrastructures
         }
 
         /// <summary>
-        /// Gets a readonly view of the key collection.
+        /// Gets a read-only view of the key collection.
         /// </summary>
         public ICollection<TKey> Keys => dict.Keys;
 
         /// <summary>
-        /// Gets a readonly view of the items with the specified key.
+        /// Gets a read-only view of the items with the specified key.
         /// </summary>
         /// <returns>The items with specified key, or empty collection if no such item exists.
         /// The view is guaranteed to be valid until any modifications to the collection.</returns>
