@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using UnitTestProject1.Properties;
@@ -195,21 +196,45 @@ namespace UnitTestProject1.Tests
         [Fact]
         public void SerializableEntityTest()
         {
-            var entity = SerializableEntity.Load(Resources.WikibaseP3);
+            var entity = SerializableEntity.Parse(Resources.WikibaseP3);
             Assert.Equal("P3", entity.Id);
             Assert.Equal("instance of", entity.Labels["en"]);
             Assert.Contains(entity.Claims["P5"], c => (string)c.MainSnak.DataValue == "Q25");
-            entity = SerializableEntity.Load(entity.ToJsonString());
+            entity = SerializableEntity.Parse(entity.ToJsonString());
             Assert.Equal("P3", entity.Id);
             Assert.Equal("instance of", entity.Labels["en"]);
             Assert.Contains(entity.Claims["P5"], c => (string)c.MainSnak.DataValue == "Q25");
         }
 
+
+        [Fact]
+        public void SerializableEntitiesTest()
+        {
+            var sb = new StringBuilder(Resources.WikibaseP3.Length * 2 + 20);
+            sb.Append("/* */ [");
+            sb.Append(Resources.WikibaseP3);
+            sb.Append(", /* a */");
+            sb.Append(Resources.WikibaseP3);
+            sb.Append(", null");
+            sb.Append("/* */ ]");
+            var entities = SerializableEntity.ParseAll(sb.ToString()).ToList();
+            Assert.Equal(3, entities.Count);
+            Assert.NotNull(entities[0]);
+            Assert.NotNull(entities[1]);
+            Assert.Null(entities[2]);
+            Assert.Equal("P3", entities[0].Id);
+            Assert.Equal(entities[0].Id, entities[1].Id);
+            Assert.Equal(entities[0].Labels.ToHashSet(), entities[1].Labels.ToHashSet());
+            Assert.Equal(entities[0].Descriptions.ToHashSet(), entities[1].Descriptions.ToHashSet());
+        }
+
         [Fact]
         public void SerializableEntityEofTest()
         {
-            Assert.Null(SerializableEntity.Load(""));
+            Assert.Null(SerializableEntity.Parse(""));
             Assert.Null(SerializableEntity.Load(TextReader.Null));
+            Assert.Empty(SerializableEntity.ParseAll(""));
+            Assert.Empty(SerializableEntity.LoadAll(TextReader.Null));
         }
 
         public static class WikidataItems

@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netstandard1.1</TargetFramework>
+    <TargetFrameworks>netstandard1.1;netstandard1.3</TargetFrameworks>
     <AssemblyName>WikiClientLibrary.Wikibase</AssemblyName>
     <PackageId>CXuesong.MW.WikiClientLibrary.Wikibase</PackageId>
     <Version>0.6.0-intX6</Version>

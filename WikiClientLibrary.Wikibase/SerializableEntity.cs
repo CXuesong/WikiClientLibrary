@@ -182,7 +182,7 @@ namespace WikiClientLibrary.Wikibase
         }
 
         /// <summary>
-        /// Creates a new instance of <see cref="SerializableEntity"/> from JSON.
+        /// Creates a new instance of <see cref="SerializableEntity"/> from <see cref="JObject"/>.
         /// </summary>
         /// <param name="entity">The serialized entity JSON.</param>
         public static SerializableEntity Load(JObject entity)
@@ -190,17 +190,6 @@ namespace WikiClientLibrary.Wikibase
             if (entity == null) throw new ArgumentNullException(nameof(entity));
             return Load(entity.ToObject<Contracts.Entity>(Utility.WikiJsonSerializer));
         }
-
-        /// <summary>
-        /// Populates the current entity from JSON string.
-        /// </summary>
-        /// <param name="entityJson">The serialized entity JSON string.</param>
-        public static SerializableEntity Load(string entityJson)
-        {
-            if (entityJson == null) throw new ArgumentNullException(nameof(entityJson));
-            return Load(Utility.WikiJsonSerializer.Deserialize<Contracts.Entity>(entityJson));
-        }
-
 
         /// <summary>
         /// Populates the current entity from <see cref="TextReader"/>.
@@ -222,6 +211,135 @@ namespace WikiClientLibrary.Wikibase
         {
             if (reader == null) throw new ArgumentNullException(nameof(reader));
             return Load(Utility.WikiJsonSerializer.Deserialize<Contracts.Entity>(reader));
+        }
+
+        /// <inheritdoc cref="LoadAll(JsonReader)"/>
+        /// <summary>
+        /// Enumerates all the entities from JSON array of serialized entities contained in the string.
+        /// </summary>
+        /// <param name="entitiesJson">The serialized entities JSON string.</param>
+        /// <remarks></remarks>
+        public static IEnumerable<SerializableEntity> ParseAll(string entitiesJson)
+        {
+            if (entitiesJson == null) throw new ArgumentNullException(nameof(entitiesJson));
+            using (var sr = new StringReader(entitiesJson))
+            using (var jr = new JsonTextReader(sr))
+            {
+                foreach (var i in LoadAll(jr)) yield return i;
+            }
+        }
+
+        /// <inheritdoc cref="LoadAll(JsonReader)"/>
+        public static IEnumerable<SerializableEntity> LoadAll(TextReader reader)
+        {
+            using (var jr = new JsonTextReader(reader) {CloseInput = false})
+            {
+                foreach (var i in LoadAll(jr)) yield return i;
+            }
+        }
+
+        /// <summary>
+        /// Enumerates all the entities from JSON array of serialized contained in the JSON reader.
+        /// </summary>
+        /// <param name="reader">The reader from which to read serialized entity JSON.</param>
+        /// <exception cref="JsonException">The JSON is invalid.</exception>
+        /// <returns>
+        /// A sequence that, when enumerated, will read a JSON array from reader, and parses it
+        /// into a sequence of <see cref="SerializableEntity"/>s.
+        /// </returns>
+        /// <remarks>
+        /// <para>This method is recommended when you are working with a large JSON dump of Wikibase entities,
+        /// because it only put the current enumerated entity in the memory. Still, you can use
+        /// <see cref="Enumerable.ToList{TSource}"/> to get all the entities at one time.</para>
+        /// <para>If you stopped enumerating the returned sequence, the <paramref name="reader"/> will stop
+        /// in the middle of array, at the end of current enumerated entity.</para>
+        /// </remarks>
+        public static IEnumerable<SerializableEntity> LoadAll(JsonReader reader)
+        {
+            // Skip comments
+            while (reader.TokenType == JsonToken.None || reader.TokenType == JsonToken.Comment)
+            {
+                if (!reader.Read()) yield break;
+            }
+
+            if (reader.TokenType != JsonToken.StartArray) throw new JsonException("Expect StartArray token.");
+            //var startOfArrayDepth = reader.Depth;
+            //try
+            //{
+            while (reader.Read())
+            {
+                // Skip comments
+                while (reader.TokenType == JsonToken.None || reader.TokenType == JsonToken.Comment)
+                {
+                    if (!reader.Read()) yield break;
+                }
+                switch (reader.TokenType)
+                {
+                    case JsonToken.StartObject:
+                        var entity = Load(reader);
+                        yield return entity;
+                        break;
+                    case JsonToken.EndArray:
+                        yield break;
+                    case JsonToken.Null:
+                    case JsonToken.Undefined:
+                        yield return null;
+                        break;
+                    default:
+                        throw new JsonException($"Unexpected Json token: {reader.TokenType} at path: {reader.Path} .");
+                }
+            }
+
+            //}
+            //finally
+            //{
+            //    while (reader.TokenType != JsonToken.EndArray || reader.Depth > startOfArrayDepth)
+            //    {
+            //        // Fast forward to the end of array
+            //        if (!reader.Read()) break;
+            //    }
+            //}
+        }
+
+#if !NETSTANDARD1_1
+
+        /// <inheritdoc cref="Load(JsonReader)"/>
+        /// <summary>
+        /// Enumerates all the entities from JSON array contained in the file.
+        /// </summary>
+        /// <param name="fileName">The path of file containing the serialized JSON of a single entity.</param>
+        /// <seealso cref="LoadAll(string)"/>
+        public static SerializableEntity Load(string fileName)
+        {
+            if (fileName == null) throw new ArgumentNullException(nameof(fileName));
+            using (var reader = File.OpenText(fileName))
+                return Load(Utility.WikiJsonSerializer.Deserialize<Contracts.Entity>(reader));
+        }
+
+        /// <inheritdoc cref="LoadAll(JsonReader)"/>
+        /// <summary>
+        /// Creates a new instance of <see cref="SerializableEntity"/> from JSON contained in the file.
+        /// </summary>
+        /// <param name="fileName">The path of file containing the serialized JSON of a single entity.</param>
+        /// <remarks></remarks>
+        /// <seealso cref="Load(string)"/>
+        public static SerializableEntity LoadAll(string fileName)
+        {
+            if (fileName == null) throw new ArgumentNullException(nameof(fileName));
+            using (var reader = File.OpenText(fileName))
+                return Load(Utility.WikiJsonSerializer.Deserialize<Contracts.Entity>(reader));
+        }
+
+#endif
+
+        /// <summary>
+        /// Creates a new instance of <see cref="SerializableEntity"/> from JSON string.
+        /// </summary>
+        /// <param name="entityJson">The serialized entity JSON string.</param>
+        public static SerializableEntity Parse(string entityJson)
+        {
+            if (entityJson == null) throw new ArgumentNullException(nameof(entityJson));
+            return Load(Utility.WikiJsonSerializer.Deserialize<Contracts.Entity>(entityJson));
         }
 
         private static IDictionary<string, Contracts.MonolingualText> ToContract(WbMonolingualTextCollection value)
