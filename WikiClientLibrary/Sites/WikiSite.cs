@@ -64,35 +64,6 @@ namespace WikiClientLibrary.Sites
         #endregion
 
         /// <summary>
-        /// Initialize a <see cref="WikiSite"/> instance with the given API Endpoint URL.
-        /// </summary>
-        /// <exception cref="ArgumentNullException"><paramref name="wikiClient"/> or <paramref name="apiEndpoint"/> is <c>null</c>.</exception>
-        /// <exception cref="ArgumentException"><paramref name="apiEndpoint"/> is invalid.</exception>
-        /// <exception cref="UnauthorizedOperationException">Cannot access query API module due to target site permission settings. You may take a look at <see cref="SiteOptions.ExplicitInfoRefresh"/>.</exception>
-        [Obsolete("Use var x = new WikiSite(...) in combination with await x.Initialization instead.")]
-        public static Task<WikiSite> CreateAsync(IWikiClient wikiClient, string apiEndpoint)
-        {
-            if (wikiClient == null) throw new ArgumentNullException(nameof(wikiClient));
-            if (apiEndpoint == null) throw new ArgumentNullException(nameof(apiEndpoint));
-            return CreateAsync(wikiClient, new SiteOptions(apiEndpoint));
-        }
-
-        /// <summary>
-        /// Initialize a <see cref="WikiSite"/> instance with the given options.
-        /// </summary>
-        /// <exception cref="ArgumentNullException"><paramref name="wikiClient"/> or <paramref name="options"/> is <c>null</c>.</exception>
-        /// <exception cref="UnauthorizedOperationException">Cannot access query API module due to target site permission settings. You may take a look at <see cref="SiteOptions.ExplicitInfoRefresh"/>.</exception>
-        [Obsolete("Use var x = new WikiSite(...) in combination with await x.Initialization instead.")]
-        public static async Task<WikiSite> CreateAsync(IWikiClient wikiClient, SiteOptions options)
-        {
-            if (wikiClient == null) throw new ArgumentNullException(nameof(wikiClient));
-            if (options == null) throw new ArgumentNullException(nameof(options));
-            var site = new WikiSite(wikiClient, options);
-            await site.Initialization;
-            return site;
-        }
-
-        /// <summary>
         /// Given a site or page URL of a MediaWiki site, try to look for the Api Endpoint URL of it.
         /// </summary>
         /// <param name="client">WikiClient instance.</param>
@@ -109,6 +80,7 @@ namespace WikiClientLibrary.Sites
         /// <summary>
         /// Initializes a <see cref="WikiSite"/> instance with the specified API endpoint.
         /// </summary>
+        /// <exception cref="UnauthorizedOperationException">Cannot access query API module due to target site permission settings. You may need to use <see cref="WikiSite(IWikiClient,SiteOptions,string, string)"/> to login before any other API requests.</exception>
         /// <remarks></remarks>
         public WikiSite(IWikiClient wikiClient, string apiEndpoint)
           : this(wikiClient, new SiteOptions(apiEndpoint), null, null)
@@ -120,6 +92,7 @@ namespace WikiClientLibrary.Sites
         /// <summary>
         /// Initializes a <see cref="WikiSite"/> instance with the specified settings.
         /// </summary>
+        /// <exception cref="UnauthorizedOperationException">Cannot access query API module due to target site permission settings. You may need to use <see cref="WikiSite(IWikiClient,SiteOptions,string, string)"/> to login before any other API requests.</exception>
         /// <remarks></remarks>
         public WikiSite(IWikiClient wikiClient, SiteOptions options)
             : this(wikiClient, options, null, null)
@@ -137,9 +110,8 @@ namespace WikiClientLibrary.Sites
         /// <param name="password">The password used to login before fetching for site information.</param>
         /// <exception cref="ArgumentNullException"><paramref name="wikiClient"/> or <paramref name="options"/> is <c>null</c>.</exception>
         /// <exception cref="ArgumentException">One or more settings in <paramref name="options"/> is invalid.</exception>
-        /// <exception cref="UnauthorizedOperationException">Cannot access query API module due to target site permission settings. You may take a look at <see cref="SiteOptions.ExplicitInfoRefresh"/>.</exception>
         /// <remarks>
-        /// <para>For the priviate wiki where anonymous users cannot access query API, you can use this
+        /// <para>For the private wiki where anonymous users cannot access query API, you can use this
         /// overload to login to the site before any querying API invocations are issued.</para>
         /// </remarks>
         public WikiSite(IWikiClient wikiClient, SiteOptions options, string userName, string password)
@@ -450,93 +422,9 @@ namespace WikiClientLibrary.Sites
             }
         }
 
-        /// <summary>
-        /// Invokes API and get JSON result.
-        /// </summary>
-        /// <exception cref="InvalidActionException">Specified action is not supported.</exception>
-        /// <exception cref="OperationCanceledException">The operation has been cancelled via <paramref name="cancellationToken"/>.</exception>
-        /// <exception cref="UnauthorizedOperationException">Permission denied.</exception>
-        /// <exception cref="OperationFailedException">There's "error" node in returned JSON.</exception>
-        /// <remarks>The request is sent via HTTP POST.</remarks>
-        [Obsolete("Please use WikiSite.GetJsonAsync method.")]
-        public Task<JToken> PostValuesAsync(IEnumerable<KeyValuePair<string, string>> queryParams,
-            CancellationToken cancellationToken)
-            => InvokeMediaWikiApiAsync(new MediaWikiFormRequestMessage(queryParams), false, cancellationToken);
-
-        /// <summary>
-        /// Invokes API and get JSON result.
-        /// </summary>
-        /// <exception cref="InvalidActionException">Specified action is not supported.</exception>
-        /// <exception cref="OperationCanceledException">The operation has been cancelled via <paramref name="cancellationToken"/>.</exception>
-        /// <exception cref="UnauthorizedOperationException">Permission denied.</exception>
-        /// <exception cref="OperationFailedException">There's "error" node in returned JSON.</exception>
-        /// <remarks>The request is sent via HTTP POST.</remarks>
-        [Obsolete("Please use WikiSite.GetJsonAsync method.")]
-        public Task<JToken> PostValuesAsync(IEnumerable<KeyValuePair<string, string>> queryParams,
-            bool supressAccountAssertion, CancellationToken cancellationToken)
-        {
-            return InvokeMediaWikiApiAsync(new MediaWikiFormRequestMessage(new MediaWikiFormRequestMessage(queryParams)),
-                supressAccountAssertion, cancellationToken);
-        }
-
-        /// <summary>
-        /// Invoke API and get JSON result.
-        /// </summary>
-        /// <param name="queryParams">An object whose property-value pairs will be converted into key-value pairs and sent.</param>
-        /// <param name="cancellationToken">The cancellation token that will be checked prior to completing the returned task.</param>
-        /// <exception cref="InvalidActionException">Specified action is not supported.</exception>
-        /// <exception cref="OperationCanceledException">The operation has been cancelled via <paramref name="cancellationToken"/>.</exception>
-        /// <exception cref="OperationFailedException">There's "error" node in returned JSON.</exception>
-        [Obsolete("Please use WikiSite.GetJsonAsync method.")]
-        public Task<JToken> PostValuesAsync(object queryParams, CancellationToken cancellationToken)
-            => InvokeMediaWikiApiAsync(new MediaWikiFormRequestMessage(queryParams), false, cancellationToken);
-
-        /// <summary>
-        /// Invoke API and get JSON result.
-        /// </summary>
-        /// <param name="queryParams">An object whose property-value pairs will be converted into key-value pairs and sent.</param>
-        /// <param name="supressAccountAssertion">Whether to temporarily disable account assertion as set in <see cref="SiteOptions.AccountAssertion"/>.</param>
-        /// <param name="cancellationToken">The cancellation token that will be checked prior to completing the returned task.</param>
-        /// <exception cref="InvalidActionException">Specified action is not supported.</exception>
-        /// <exception cref="OperationCanceledException">The operation has been cancelled via <paramref name="cancellationToken"/>.</exception>
-        /// <exception cref="OperationFailedException">There's "error" node in returned JSON.</exception>
-        [Obsolete("Please use WikiSite.GetJsonAsync method.")]
-        public Task<JToken> PostValuesAsync(object queryParams, bool supressAccountAssertion,
-            CancellationToken cancellationToken)
-        {
-            if (queryParams == null) throw new ArgumentNullException(nameof(queryParams));
-            return InvokeMediaWikiApiAsync(new MediaWikiFormRequestMessage(Utility.ToWikiStringValuePairs(queryParams)),
-                supressAccountAssertion,
-                cancellationToken);
-        }
-
         #endregion
 
         #region Tokens
-
-        /// <summary>
-        /// Request tokens for operations.
-        /// </summary>
-        /// <param name="tokenTypes">The names of token. Names should be as accurate as possible (E.g. use "edit" instead of "csrf").</param>
-        /// <param name="forceRefetch">Whether to fetch token from server, regardless of the cache.</param>
-        /// <param name="cancellationToken">The cancellation token that will be checked prior to completing the returned task.</param>
-        /// <exception cref="InvalidOperationException">One or more specified token types cannot be recognized.</exception>
-        /// <remarks>
-        /// <para>This method is thread-safe.</para>
-        /// <para>See https://www.mediawiki.org/wiki/API:Tokens .</para>
-        /// </remarks>
-        [Obsolete("This method will be removed in the future. If you want to retrieve multiple tokens, please call WikiSite.GetTokenAsync multiple times.")]
-        public async Task<IDictionary<string, string>> GetTokensAsync(IEnumerable<string> tokenTypes, bool forceRefetch,
-            CancellationToken cancellationToken)
-        {
-            var dict = new Dictionary<string, string>();
-            foreach (var tt in tokenTypes)
-            {
-                var tokenValue = await tokensManager.GetTokenAsync(tt, forceRefetch, cancellationToken);
-                dict.Add(tt, tokenValue);
-            }
-            return dict;
-        }
 
         /// <summary>
         /// Request a token for operation.

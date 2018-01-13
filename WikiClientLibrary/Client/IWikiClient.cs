@@ -28,7 +28,7 @@ namespace WikiClientLibrary.Client
         /// <list type="bullet">
         /// <item><description>Generating <see cref="HttpRequestMessage"/> from <paramref name="request"/>;</description></item>
         /// <item><description>Transmitting <see cref="HttpRequestMessage"/>, and gets the <see cref="HttpResponseMessage"/>;</description></item>
-        /// <item><description>Parsing the <see cref="HttpResponseMessage"/> using <paramref name="responseParser"/> (see <see cref="IWikiResponseMessageParser.ParseResponseAsync"/>);</description></item>
+        /// <item><description>Parsing the <see cref="HttpResponseMessage"/> using <paramref name="responseParser"/> (see <see cref="IWikiResponseMessageParser{T}.ParseResponseAsync"/>);</description></item>
         /// <item><description>Retrying if possible;</description></item>
         /// <item><description>Returning the parsed result, or throwing an exception.</description></item>
         /// </list>

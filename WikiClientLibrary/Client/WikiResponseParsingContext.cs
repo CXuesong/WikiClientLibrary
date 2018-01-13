@@ -7,7 +7,7 @@ using Microsoft.Extensions.Logging;
 namespace WikiClientLibrary.Client
 {
     /// <summary>
-    /// Provides parsing context for <see cref="IWikiResponseMessageParser.ParseResponseAsync"/>.
+    /// Provides parsing context for <see cref="IWikiResponseMessageParser{T}.ParseResponseAsync"/>.
     /// </summary>
     public class WikiResponseParsingContext
     {
@@ -32,12 +32,12 @@ namespace WikiClientLibrary.Client
         public CancellationToken CancellationToken { get; }
 
         /// <summary>
-        /// When set in <see cref="IWikiResponseMessageParser.ParseResponseAsync"/> implementation,
+        /// When set in <see cref="IWikiResponseMessageParser{T}.ParseResponseAsync"/> implementation,
         /// requests for retrying the request.
         /// </summary>
         /// <remarks>
         /// Normally after setting this property to <c>true</c>, a <c>return</c> or <c>throw</c> statement will follow.
-        /// See <see cref="IWikiResponseMessageParser.ParseResponseAsync"/> for the detailed usage of this property.
+        /// See <see cref="IWikiResponseMessageParser{T}.ParseResponseAsync"/> for the detailed usage of this property.
         /// </remarks>
         public bool NeedRetry { get; set; }
 

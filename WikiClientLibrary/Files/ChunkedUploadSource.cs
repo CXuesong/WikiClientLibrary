@@ -27,7 +27,7 @@ namespace WikiClientLibrary.Files
     /// <para>See https://www.mediawiki.org/wiki/API:Upload#Chunked_uploading .</para>
     /// <para>
     /// Before you can use this class with
-    /// <see cref="FilePage.UploadAsync(WikiUploadSource,string,bool,AutoWatchBehavior,CancellationToken)"/>,
+    /// <see cref="WikiSiteExtensions.UploadAsync(WikiSite,string,WikiUploadSource,string,bool,AutoWatchBehavior,CancellationToken)"/>,
     /// you need to stash the whole stream in chunks to the server with <see cref="StashNextChunkAsync()"/>
     /// or its overloads.
     /// </para>
@@ -130,7 +130,7 @@ namespace WikiClientLibrary.Files
         public bool IsStashing => state == STATE_CHUNK_STASHING;
 
         /// <summary>
-        /// Determins whether the file has been stashed completely.
+        /// Determines whether the file has been stashed completely.
         /// </summary>
         public bool IsStashed => state == STATE_ALL_STASHED;
 

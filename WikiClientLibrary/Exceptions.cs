@@ -148,35 +148,6 @@ namespace WikiClientLibrary
     }
 
     /// <summary>
-    /// An exception indicating the upload operation has at least one warning.
-    /// </summary>
-    [Obsolete]
-    public class UploadException : WikiClientException
-    {
-        /// <summary>
-        /// The upload result that caused the exception.
-        /// </summary>
-        public UploadResult UploadResult { get; }
-
-        private static string FormatMessage(UploadResult result)
-        {
-            if (result == null) throw new ArgumentNullException(nameof(result));
-            if (result.Warnings.Count == 0)
-                return $"An exception occured when trying to upload. Result code is {result.ResultCode}.";
-            return string.Join(" ", result.Warnings.Select(p => UploadResult.FormatWarning(p.Key, (string) p.Value)));
-        }
-
-        public UploadException(string message, Exception innerException) : base(message, innerException)
-        { }
-
-        public UploadException(UploadResult uploadResult) : base(FormatMessage(uploadResult))
-        {
-            UploadResult = uploadResult;
-            if (uploadResult == null) throw new ArgumentNullException(nameof(uploadResult));
-        }
-    }
-
-    /// <summary>
     /// Raises when the received network data is out of expectation.
     /// This may indicate the client library code is out of date.
     /// </summary>
