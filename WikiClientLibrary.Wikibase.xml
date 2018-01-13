@@ -951,10 +951,11 @@
             Populates the current entity from <see cref="T:Newtonsoft.Json.JsonReader" />.
             </summary>
       <param name="reader">The reader from which to read serialized entity JSON.</param>
+      <returns>The deserialized entity, or <c>null</c> if EOF has been reached.</returns>
     </member>
     <member name="M:WikiClientLibrary.Wikibase.SerializableEntity.Load(Newtonsoft.Json.Linq.JObject)">
       <summary>
-            Creates a new instance of <see cref="T:WikiClientLibrary.Wikibase.SerializableEntity" /> from JSON.
+            Creates a new instance of <see cref="T:WikiClientLibrary.Wikibase.SerializableEntity" /> from <see cref="T:Newtonsoft.Json.Linq.JObject" />.
             </summary>
       <param name="entity">The serialized entity JSON.</param>
     </member>
@@ -963,12 +964,7 @@
             Populates the current entity from <see cref="T:System.IO.TextReader" />.
             </summary>
       <param name="reader">The reader from which to read serialized entity JSON.</param>
-    </member>
-    <member name="M:WikiClientLibrary.Wikibase.SerializableEntity.Load(System.String)">
-      <summary>
-            Populates the current entity from JSON string.
-            </summary>
-      <param name="entityJson">The serialized entity JSON string.</param>
+      <returns>The deserialized entity, or <c>null</c> if EOF has been reached.</returns>
     </member>
     <member name="M:WikiClientLibrary.Wikibase.SerializableEntity.Load(WikiClientLibrary.Wikibase.IEntity)">
       <summary>
@@ -976,6 +972,46 @@
             <see cref="T:WikiClientLibrary.Wikibase.IEntity" /> instance.
             </summary>
       <param name="entity">The existing entity. A shallow copy of values will be made from it.</param>
+    </member>
+    <member name="M:WikiClientLibrary.Wikibase.SerializableEntity.LoadAll(Newtonsoft.Json.JsonReader)">
+      <summary>
+            Enumerates all the entities from JSON array of serialized contained in the JSON reader.
+            </summary>
+      <param name="reader">The reader from which to read serialized entity JSON.</param>
+      <returns>
+            A sequence that, when enumerated, will read a JSON array from reader, and parses it
+            into a sequence of <see cref="T:WikiClientLibrary.Wikibase.SerializableEntity" />s.
+            </returns>
+      <exception cref="T:Newtonsoft.Json.JsonException">The JSON is invalid.</exception>
+    </member>
+    <member name="M:WikiClientLibrary.Wikibase.SerializableEntity.LoadAll(System.IO.TextReader)">
+      <summary>
+            Enumerates all the entities from JSON array of serialized contained in the JSON reader.
+            </summary>
+      <param name="reader">The reader from which to read serialized entity JSON.</param>
+      <returns>
+            A sequence that, when enumerated, will read a JSON array from reader, and parses it
+            into a sequence of <see cref="T:WikiClientLibrary.Wikibase.SerializableEntity" />s.
+            </returns>
+      <exception cref="T:Newtonsoft.Json.JsonException">The JSON is invalid.</exception>
+    </member>
+    <member name="M:WikiClientLibrary.Wikibase.SerializableEntity.Parse(System.String)">
+      <summary>
+            Creates a new instance of <see cref="T:WikiClientLibrary.Wikibase.SerializableEntity" /> from JSON string.
+            </summary>
+      <param name="entityJson">The serialized entity JSON string.</param>
+    </member>
+    <member name="M:WikiClientLibrary.Wikibase.SerializableEntity.ParseAll(System.String)">
+      <summary>
+            Enumerates all the entities from JSON array of serialized entities contained in the string.
+            </summary>
+      <param name="entitiesJson">The serialized entities JSON string.</param>
+      <param name="reader">The reader from which to read serialized entity JSON.</param>
+      <returns>
+            A sequence that, when enumerated, will read a JSON array from reader, and parses it
+            into a sequence of <see cref="T:WikiClientLibrary.Wikibase.SerializableEntity" />s.
+            </returns>
+      <exception cref="T:Newtonsoft.Json.JsonException">The JSON is invalid.</exception>
     </member>
     <member name="P:WikiClientLibrary.Wikibase.SerializableEntity.SiteLinks">
       <summary>Gets the sitelinks of the entity.</summary>

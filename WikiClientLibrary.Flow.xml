@@ -22,52 +22,25 @@
             Asynchronously enumerates the topics in the order of time posted in this board.
             </summary>
     </member>
-    <member name="M:WikiClientLibrary.Flow.Board.EnumTopicsAsync(System.Void)">
+    <member name="M:WikiClientLibrary.Flow.Board.EnumTopicsAsync(WikiClientLibrary.Flow.TopicListingOptions)">
       <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>M:WikiClientLibrary.Flow.Board.EnumTopicsAsync(System.Void)</parameter>
-          </include>
-        </markup>
-      </summary>
-      <param name="options">
-        <markup>
-          <include item="SMCMissingParamTag">
-            <parameter>param</parameter>
-            <parameter>options</parameter>
-            <parameter>M:WikiClientLibrary.Flow.Board.EnumTopicsAsync(System.Void)</parameter>
-          </include>
-        </markup>
-      </param>
-    </member>
-    <member name="M:WikiClientLibrary.Flow.Board.EnumTopicsAsync(System.Void,WikiClientLibrary.Flow.Topic)">
-      <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>M:WikiClientLibrary.Flow.Board.EnumTopicsAsync(System.Void,WikiClientLibrary.Flow.Topic)</parameter>
-          </include>
-        </markup>
-      </summary>
-      <param name="options">
-        <markup>
-          <include item="SMCMissingParamTag">
-            <parameter>param</parameter>
-            <parameter>options</parameter>
-            <parameter>M:WikiClientLibrary.Flow.Board.EnumTopicsAsync(System.Void,WikiClientLibrary.Flow.Topic)</parameter>
-          </include>
-        </markup>
-      </param>
+            Asynchronously enumerates the topics in this board.
+            </summary>
+      <param name="options">Enumeration options.</param>
       <param name="pageSize">
-        <markup>
-          <include item="SMCMissingParamTag">
-            <parameter>param</parameter>
-            <parameter>pageSize</parameter>
-            <parameter>M:WikiClientLibrary.Flow.Board.EnumTopicsAsync(System.Void,WikiClientLibrary.Flow.Topic)</parameter>
-          </include>
-        </markup>
-      </param>
+            How many topics should be fetched in batch per MediaWiki API request.
+            No more than 100 (100 for bots) is allowed.
+            </param>
+    </member>
+    <member name="M:WikiClientLibrary.Flow.Board.EnumTopicsAsync(WikiClientLibrary.Flow.TopicListingOptions,System.Int32)">
+      <summary>
+            Asynchronously enumerates the topics in this board.
+            </summary>
+      <param name="options">Enumeration options.</param>
+      <param name="pageSize">
+            How many topics should be fetched in batch per MediaWiki API request.
+            No more than 100 (100 for bots) is allowed.
+            </param>
     </member>
     <member name="P:WikiClientLibrary.Flow.Board.HeaderContent">
       <summary>Header content.</summary>

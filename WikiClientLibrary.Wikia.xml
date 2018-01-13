@@ -266,12 +266,12 @@
         </markup>
       </summary>
     </member>
-    <member name="M:WikiClientLibrary.Wikia.WikiaHtmlResponseParser.ParseResponseAsync(System.Void,HtmlAgilityPack.HtmlDocument)">
+    <member name="M:WikiClientLibrary.Wikia.WikiaHtmlResponseParser.ParseResponseAsync(System.Net.Http.HttpResponseMessage,WikiClientLibrary.Client.WikiResponseParsingContext)">
       <summary>
         <markup>
           <include item="SMCMissingTag">
             <parameter>summary</parameter>
-            <parameter>M:WikiClientLibrary.Wikia.WikiaHtmlResponseParser.ParseResponseAsync(System.Void,HtmlAgilityPack.HtmlDocument)</parameter>
+            <parameter>M:WikiClientLibrary.Wikia.WikiaHtmlResponseParser.ParseResponseAsync(System.Net.Http.HttpResponseMessage,WikiClientLibrary.Client.WikiResponseParsingContext)</parameter>
           </include>
         </markup>
       </summary>
@@ -280,7 +280,7 @@
           <include item="SMCMissingParamTag">
             <parameter>param</parameter>
             <parameter>response</parameter>
-            <parameter>M:WikiClientLibrary.Wikia.WikiaHtmlResponseParser.ParseResponseAsync(System.Void,HtmlAgilityPack.HtmlDocument)</parameter>
+            <parameter>M:WikiClientLibrary.Wikia.WikiaHtmlResponseParser.ParseResponseAsync(System.Net.Http.HttpResponseMessage,WikiClientLibrary.Client.WikiResponseParsingContext)</parameter>
           </include>
         </markup>
       </param>
@@ -289,7 +289,7 @@
           <include item="SMCMissingParamTag">
             <parameter>param</parameter>
             <parameter>context</parameter>
-            <parameter>M:WikiClientLibrary.Wikia.WikiaHtmlResponseParser.ParseResponseAsync(System.Void,HtmlAgilityPack.HtmlDocument)</parameter>
+            <parameter>M:WikiClientLibrary.Wikia.WikiaHtmlResponseParser.ParseResponseAsync(System.Net.Http.HttpResponseMessage,WikiClientLibrary.Client.WikiResponseParsingContext)</parameter>
           </include>
         </markup>
       </param>
@@ -308,12 +308,12 @@
         </markup>
       </summary>
     </member>
-    <member name="M:WikiClientLibrary.Wikia.WikiaJsonResonseParser.ParseResponseAsync(System.Void,Newtonsoft.Json.Linq.JToken)">
+    <member name="M:WikiClientLibrary.Wikia.WikiaJsonResonseParser.ParseResponseAsync(System.Net.Http.HttpResponseMessage,WikiClientLibrary.Client.WikiResponseParsingContext)">
       <summary>
         <markup>
           <include item="SMCMissingTag">
             <parameter>summary</parameter>
-            <parameter>M:WikiClientLibrary.Wikia.WikiaJsonResonseParser.ParseResponseAsync(System.Void,Newtonsoft.Json.Linq.JToken)</parameter>
+            <parameter>M:WikiClientLibrary.Wikia.WikiaJsonResonseParser.ParseResponseAsync(System.Net.Http.HttpResponseMessage,WikiClientLibrary.Client.WikiResponseParsingContext)</parameter>
           </include>
         </markup>
       </summary>
@@ -322,7 +322,7 @@
           <include item="SMCMissingParamTag">
             <parameter>param</parameter>
             <parameter>response</parameter>
-            <parameter>M:WikiClientLibrary.Wikia.WikiaJsonResonseParser.ParseResponseAsync(System.Void,Newtonsoft.Json.Linq.JToken)</parameter>
+            <parameter>M:WikiClientLibrary.Wikia.WikiaJsonResonseParser.ParseResponseAsync(System.Net.Http.HttpResponseMessage,WikiClientLibrary.Client.WikiResponseParsingContext)</parameter>
           </include>
         </markup>
       </param>
@@ -331,7 +331,7 @@
           <include item="SMCMissingParamTag">
             <parameter>param</parameter>
             <parameter>context</parameter>
-            <parameter>M:WikiClientLibrary.Wikia.WikiaJsonResonseParser.ParseResponseAsync(System.Void,Newtonsoft.Json.Linq.JToken)</parameter>
+            <parameter>M:WikiClientLibrary.Wikia.WikiaJsonResonseParser.ParseResponseAsync(System.Net.Http.HttpResponseMessage,WikiClientLibrary.Client.WikiResponseParsingContext)</parameter>
           </include>
         </markup>
       </param>
@@ -575,249 +575,80 @@
             </summary>
       <param name="options">The options used to fetch the post.</param>
     </member>
-    <member name="M:WikiClientLibrary.Wikia.Discussions.Board.EnumPostsAsync(System.Void)">
+    <member name="M:WikiClientLibrary.Wikia.Discussions.Board.EnumPostsAsync(WikiClientLibrary.Wikia.Discussions.PostQueryOptions)">
       <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>M:WikiClientLibrary.Wikia.Discussions.Board.EnumPostsAsync(System.Void)</parameter>
-          </include>
-        </markup>
-      </summary>
-      <param name="options">
-        <markup>
-          <include item="SMCMissingParamTag">
-            <parameter>param</parameter>
-            <parameter>options</parameter>
-            <parameter>M:WikiClientLibrary.Wikia.Discussions.Board.EnumPostsAsync(System.Void)</parameter>
-          </include>
-        </markup>
-      </param>
+            Asynchronously enumerates all the comments on the specified page.
+            </summary>
+      <param name="options">The options used to fetch the post.</param>
     </member>
     <member name="P:WikiClientLibrary.Wikia.Discussions.Board.Exists">
       <summary>Gets a value, determining whether the page exists.</summary>
     </member>
-    <member name="M:WikiClientLibrary.Wikia.Discussions.Board.NewPostAsync(System.Void)">
+    <member name="M:WikiClientLibrary.Wikia.Discussions.Board.NewPostAsync(System.String)">
       <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>M:WikiClientLibrary.Wikia.Discussions.Board.NewPostAsync(System.Void)</parameter>
-          </include>
-        </markup>
-      </summary>
-      <param name="postContent">
-        <markup>
-          <include item="SMCMissingParamTag">
-            <parameter>param</parameter>
-            <parameter>postContent</parameter>
-            <parameter>M:WikiClientLibrary.Wikia.Discussions.Board.NewPostAsync(System.Void)</parameter>
-          </include>
-        </markup>
-      </param>
+            Asynchronously adds a new reply to the post.
+            </summary>
+      <param name="postTitle">Title of the new post, in wikitext format.</param>
+      <param name="postContent">The content in reply.</param>
+      <param name="relatedPages">When posting in the Forum, specifies titles of related pages (aka. topics). Can be <c>null</c>.</param>
+      <param name="options">The options for creating the post.</param>
+      <param name="cancellationToken">A token used to cancel the operation.</param>
+      <returns>A new post containing the ID of the new post.</returns>
     </member>
-    <member name="M:WikiClientLibrary.Wikia.Discussions.Board.NewPostAsync(System.Void,WikiClientLibrary.Wikia.Discussions.Post)">
+    <member name="M:WikiClientLibrary.Wikia.Discussions.Board.NewPostAsync(System.String,System.String)">
       <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>M:WikiClientLibrary.Wikia.Discussions.Board.NewPostAsync(System.Void,WikiClientLibrary.Wikia.Discussions.Post)</parameter>
-          </include>
-        </markup>
-      </summary>
-      <param name="postTitle">
-        <markup>
-          <include item="SMCMissingParamTag">
-            <parameter>param</parameter>
-            <parameter>postTitle</parameter>
-            <parameter>M:WikiClientLibrary.Wikia.Discussions.Board.NewPostAsync(System.Void,WikiClientLibrary.Wikia.Discussions.Post)</parameter>
-          </include>
-        </markup>
-      </param>
-      <param name="postContent">
-        <markup>
-          <include item="SMCMissingParamTag">
-            <parameter>param</parameter>
-            <parameter>postContent</parameter>
-            <parameter>M:WikiClientLibrary.Wikia.Discussions.Board.NewPostAsync(System.Void,WikiClientLibrary.Wikia.Discussions.Post)</parameter>
-          </include>
-        </markup>
-      </param>
+            Asynchronously adds a new reply to the post.
+            </summary>
+      <param name="postTitle">Title of the new post, in wikitext format.</param>
+      <param name="postContent">The content in reply.</param>
+      <param name="relatedPages">When posting in the Forum, specifies titles of related pages (aka. topics). Can be <c>null</c>.</param>
+      <param name="options">The options for creating the post.</param>
+      <param name="cancellationToken">A token used to cancel the operation.</param>
+      <returns>A new post containing the ID of the new post.</returns>
     </member>
-    <member name="M:WikiClientLibrary.Wikia.Discussions.Board.NewPostAsync(System.Void,WikiClientLibrary.Wikia.Discussions.Post,System.String)">
+    <member name="M:WikiClientLibrary.Wikia.Discussions.Board.NewPostAsync(System.String,System.String,System.Collections.Generic.IEnumerable{System.String})">
       <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>M:WikiClientLibrary.Wikia.Discussions.Board.NewPostAsync(System.Void,WikiClientLibrary.Wikia.Discussions.Post,System.String)</parameter>
-          </include>
-        </markup>
-      </summary>
-      <param name="postTitle">
-        <markup>
-          <include item="SMCMissingParamTag">
-            <parameter>param</parameter>
-            <parameter>postTitle</parameter>
-            <parameter>M:WikiClientLibrary.Wikia.Discussions.Board.NewPostAsync(System.Void,WikiClientLibrary.Wikia.Discussions.Post,System.String)</parameter>
-          </include>
-        </markup>
-      </param>
-      <param name="postContent">
-        <markup>
-          <include item="SMCMissingParamTag">
-            <parameter>param</parameter>
-            <parameter>postContent</parameter>
-            <parameter>M:WikiClientLibrary.Wikia.Discussions.Board.NewPostAsync(System.Void,WikiClientLibrary.Wikia.Discussions.Post,System.String)</parameter>
-          </include>
-        </markup>
-      </param>
-      <param name="relatedPages">
-        <markup>
-          <include item="SMCMissingParamTag">
-            <parameter>param</parameter>
-            <parameter>relatedPages</parameter>
-            <parameter>M:WikiClientLibrary.Wikia.Discussions.Board.NewPostAsync(System.Void,WikiClientLibrary.Wikia.Discussions.Post,System.String)</parameter>
-          </include>
-        </markup>
-      </param>
+            Asynchronously adds a new reply to the post.
+            </summary>
+      <param name="postTitle">Title of the new post, in wikitext format.</param>
+      <param name="postContent">The content in reply.</param>
+      <param name="relatedPages">When posting in the Forum, specifies titles of related pages (aka. topics). Can be <c>null</c>.</param>
+      <param name="options">The options for creating the post.</param>
+      <param name="cancellationToken">A token used to cancel the operation.</param>
+      <returns>A new post containing the ID of the new post.</returns>
     </member>
-    <member name="M:WikiClientLibrary.Wikia.Discussions.Board.NewPostAsync(System.Void,WikiClientLibrary.Wikia.Discussions.Post,System.String)">
+    <member name="M:WikiClientLibrary.Wikia.Discussions.Board.NewPostAsync(System.String,System.String,System.Collections.Generic.IEnumerable{System.String},WikiClientLibrary.Wikia.Discussions.PostCreationOptions)">
       <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>M:WikiClientLibrary.Wikia.Discussions.Board.NewPostAsync(System.Void,WikiClientLibrary.Wikia.Discussions.Post,System.String)</parameter>
-          </include>
-        </markup>
-      </summary>
-      <param name="postTitle">
-        <markup>
-          <include item="SMCMissingParamTag">
-            <parameter>param</parameter>
-            <parameter>postTitle</parameter>
-            <parameter>M:WikiClientLibrary.Wikia.Discussions.Board.NewPostAsync(System.Void,WikiClientLibrary.Wikia.Discussions.Post,System.String)</parameter>
-          </include>
-        </markup>
-      </param>
-      <param name="postContent">
-        <markup>
-          <include item="SMCMissingParamTag">
-            <parameter>param</parameter>
-            <parameter>postContent</parameter>
-            <parameter>M:WikiClientLibrary.Wikia.Discussions.Board.NewPostAsync(System.Void,WikiClientLibrary.Wikia.Discussions.Post,System.String)</parameter>
-          </include>
-        </markup>
-      </param>
-      <param name="relatedPages">
-        <markup>
-          <include item="SMCMissingParamTag">
-            <parameter>param</parameter>
-            <parameter>relatedPages</parameter>
-            <parameter>M:WikiClientLibrary.Wikia.Discussions.Board.NewPostAsync(System.Void,WikiClientLibrary.Wikia.Discussions.Post,System.String)</parameter>
-          </include>
-        </markup>
-      </param>
+            Asynchronously adds a new reply to the post.
+            </summary>
+      <param name="postTitle">Title of the new post, in wikitext format.</param>
+      <param name="postContent">The content in reply.</param>
+      <param name="relatedPages">When posting in the Forum, specifies titles of related pages (aka. topics). Can be <c>null</c>.</param>
+      <param name="options">The options for creating the post.</param>
+      <param name="cancellationToken">A token used to cancel the operation.</param>
+      <returns>A new post containing the ID of the new post.</returns>
     </member>
-    <member name="M:WikiClientLibrary.Wikia.Discussions.Board.NewPostAsync(System.Void,WikiClientLibrary.Wikia.Discussions.Post,System.String,System.String)">
+    <member name="M:WikiClientLibrary.Wikia.Discussions.Board.NewPostAsync(System.String,System.String,System.Collections.Generic.IEnumerable{System.String},WikiClientLibrary.Wikia.Discussions.PostCreationOptions,System.Threading.CancellationToken)">
       <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>M:WikiClientLibrary.Wikia.Discussions.Board.NewPostAsync(System.Void,WikiClientLibrary.Wikia.Discussions.Post,System.String,System.String)</parameter>
-          </include>
-        </markup>
-      </summary>
-      <param name="postTitle">
-        <markup>
-          <include item="SMCMissingParamTag">
-            <parameter>param</parameter>
-            <parameter>postTitle</parameter>
-            <parameter>M:WikiClientLibrary.Wikia.Discussions.Board.NewPostAsync(System.Void,WikiClientLibrary.Wikia.Discussions.Post,System.String,System.String)</parameter>
-          </include>
-        </markup>
-      </param>
-      <param name="postContent">
-        <markup>
-          <include item="SMCMissingParamTag">
-            <parameter>param</parameter>
-            <parameter>postContent</parameter>
-            <parameter>M:WikiClientLibrary.Wikia.Discussions.Board.NewPostAsync(System.Void,WikiClientLibrary.Wikia.Discussions.Post,System.String,System.String)</parameter>
-          </include>
-        </markup>
-      </param>
-      <param name="relatedPages">
-        <markup>
-          <include item="SMCMissingParamTag">
-            <parameter>param</parameter>
-            <parameter>relatedPages</parameter>
-            <parameter>M:WikiClientLibrary.Wikia.Discussions.Board.NewPostAsync(System.Void,WikiClientLibrary.Wikia.Discussions.Post,System.String,System.String)</parameter>
-          </include>
-        </markup>
-      </param>
-      <param name="options">
-        <markup>
-          <include item="SMCMissingParamTag">
-            <parameter>param</parameter>
-            <parameter>options</parameter>
-            <parameter>M:WikiClientLibrary.Wikia.Discussions.Board.NewPostAsync(System.Void,WikiClientLibrary.Wikia.Discussions.Post,System.String,System.String)</parameter>
-          </include>
-        </markup>
-      </param>
+            Asynchronously adds a new reply to the post.
+            </summary>
+      <param name="postTitle">Title of the new post, in wikitext format.</param>
+      <param name="postContent">The content in reply.</param>
+      <param name="relatedPages">When posting in the Forum, specifies titles of related pages (aka. topics). Can be <c>null</c>.</param>
+      <param name="options">The options for creating the post.</param>
+      <param name="cancellationToken">A token used to cancel the operation.</param>
+      <returns>A new post containing the ID of the new post.</returns>
     </member>
-    <member name="M:WikiClientLibrary.Wikia.Discussions.Board.NewPostAsync(System.Void,WikiClientLibrary.Wikia.Discussions.Post,System.String,System.String,System.Collections.Generic.IEnumerable{System.String})">
+    <member name="M:WikiClientLibrary.Wikia.Discussions.Board.NewPostAsync(System.String,System.String,WikiClientLibrary.Wikia.Discussions.PostCreationOptions)">
       <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>M:WikiClientLibrary.Wikia.Discussions.Board.NewPostAsync(System.Void,WikiClientLibrary.Wikia.Discussions.Post,System.String,System.String,System.Collections.Generic.IEnumerable{System.String})</parameter>
-          </include>
-        </markup>
-      </summary>
-      <param name="postTitle">
-        <markup>
-          <include item="SMCMissingParamTag">
-            <parameter>param</parameter>
-            <parameter>postTitle</parameter>
-            <parameter>M:WikiClientLibrary.Wikia.Discussions.Board.NewPostAsync(System.Void,WikiClientLibrary.Wikia.Discussions.Post,System.String,System.String,System.Collections.Generic.IEnumerable{System.String})</parameter>
-          </include>
-        </markup>
-      </param>
-      <param name="postContent">
-        <markup>
-          <include item="SMCMissingParamTag">
-            <parameter>param</parameter>
-            <parameter>postContent</parameter>
-            <parameter>M:WikiClientLibrary.Wikia.Discussions.Board.NewPostAsync(System.Void,WikiClientLibrary.Wikia.Discussions.Post,System.String,System.String,System.Collections.Generic.IEnumerable{System.String})</parameter>
-          </include>
-        </markup>
-      </param>
-      <param name="relatedPages">
-        <markup>
-          <include item="SMCMissingParamTag">
-            <parameter>param</parameter>
-            <parameter>relatedPages</parameter>
-            <parameter>M:WikiClientLibrary.Wikia.Discussions.Board.NewPostAsync(System.Void,WikiClientLibrary.Wikia.Discussions.Post,System.String,System.String,System.Collections.Generic.IEnumerable{System.String})</parameter>
-          </include>
-        </markup>
-      </param>
-      <param name="options">
-        <markup>
-          <include item="SMCMissingParamTag">
-            <parameter>param</parameter>
-            <parameter>options</parameter>
-            <parameter>M:WikiClientLibrary.Wikia.Discussions.Board.NewPostAsync(System.Void,WikiClientLibrary.Wikia.Discussions.Post,System.String,System.String,System.Collections.Generic.IEnumerable{System.String})</parameter>
-          </include>
-        </markup>
-      </param>
-      <param name="cancellationToken">
-        <markup>
-          <include item="SMCMissingParamTag">
-            <parameter>param</parameter>
-            <parameter>cancellationToken</parameter>
-            <parameter>M:WikiClientLibrary.Wikia.Discussions.Board.NewPostAsync(System.Void,WikiClientLibrary.Wikia.Discussions.Post,System.String,System.String,System.Collections.Generic.IEnumerable{System.String})</parameter>
-          </include>
-        </markup>
-      </param>
+            Asynchronously adds a new reply to the post.
+            </summary>
+      <param name="postTitle">Title of the new post, in wikitext format.</param>
+      <param name="postContent">The content in reply.</param>
+      <param name="relatedPages">When posting in the Forum, specifies titles of related pages (aka. topics). Can be <c>null</c>.</param>
+      <param name="options">The options for creating the post.</param>
+      <param name="cancellationToken">A token used to cancel the operation.</param>
+      <returns>A new post containing the ID of the new post.</returns>
     </member>
     <member name="P:WikiClientLibrary.Wikia.Discussions.Board.Page">
       <summary>Gets the corresponding page information.</summary>
@@ -951,89 +782,32 @@
     <member name="P:WikiClientLibrary.Wikia.Discussions.Post.Replies">
       <summary>Gets the replies of the post.</summary>
     </member>
-    <member name="M:WikiClientLibrary.Wikia.Discussions.Post.ReplyAsync(System.Void)">
+    <member name="M:WikiClientLibrary.Wikia.Discussions.Post.ReplyAsync(System.String)">
       <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>M:WikiClientLibrary.Wikia.Discussions.Post.ReplyAsync(System.Void)</parameter>
-          </include>
-        </markup>
-      </summary>
-      <param name="content">
-        <markup>
-          <include item="SMCMissingParamTag">
-            <parameter>param</parameter>
-            <parameter>content</parameter>
-            <parameter>M:WikiClientLibrary.Wikia.Discussions.Post.ReplyAsync(System.Void)</parameter>
-          </include>
-        </markup>
-      </param>
+            Add a new reply to the post.
+            </summary>
+      <param name="content">The content in reply.</param>
+      <param name="options">The options for creating the reply.</param>
+      <param name="cancellationToken">A token used to cancel the operation.</param>
+      <returns>A new post containing the workflow ID of the new post.</returns>
     </member>
-    <member name="M:WikiClientLibrary.Wikia.Discussions.Post.ReplyAsync(System.Void,WikiClientLibrary.Wikia.Discussions.Post)">
+    <member name="M:WikiClientLibrary.Wikia.Discussions.Post.ReplyAsync(System.String,WikiClientLibrary.Wikia.Discussions.PostCreationOptions)">
       <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>M:WikiClientLibrary.Wikia.Discussions.Post.ReplyAsync(System.Void,WikiClientLibrary.Wikia.Discussions.Post)</parameter>
-          </include>
-        </markup>
-      </summary>
-      <param name="content">
-        <markup>
-          <include item="SMCMissingParamTag">
-            <parameter>param</parameter>
-            <parameter>content</parameter>
-            <parameter>M:WikiClientLibrary.Wikia.Discussions.Post.ReplyAsync(System.Void,WikiClientLibrary.Wikia.Discussions.Post)</parameter>
-          </include>
-        </markup>
-      </param>
-      <param name="options">
-        <markup>
-          <include item="SMCMissingParamTag">
-            <parameter>param</parameter>
-            <parameter>options</parameter>
-            <parameter>M:WikiClientLibrary.Wikia.Discussions.Post.ReplyAsync(System.Void,WikiClientLibrary.Wikia.Discussions.Post)</parameter>
-          </include>
-        </markup>
-      </param>
+            Add a new reply to the post.
+            </summary>
+      <param name="content">The content in reply.</param>
+      <param name="options">The options for creating the reply.</param>
+      <param name="cancellationToken">A token used to cancel the operation.</param>
+      <returns>A new post containing the workflow ID of the new post.</returns>
     </member>
-    <member name="M:WikiClientLibrary.Wikia.Discussions.Post.ReplyAsync(System.Void,WikiClientLibrary.Wikia.Discussions.Post,System.String)">
+    <member name="M:WikiClientLibrary.Wikia.Discussions.Post.ReplyAsync(System.String,WikiClientLibrary.Wikia.Discussions.PostCreationOptions,System.Threading.CancellationToken)">
       <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>M:WikiClientLibrary.Wikia.Discussions.Post.ReplyAsync(System.Void,WikiClientLibrary.Wikia.Discussions.Post,System.String)</parameter>
-          </include>
-        </markup>
-      </summary>
-      <param name="content">
-        <markup>
-          <include item="SMCMissingParamTag">
-            <parameter>param</parameter>
-            <parameter>content</parameter>
-            <parameter>M:WikiClientLibrary.Wikia.Discussions.Post.ReplyAsync(System.Void,WikiClientLibrary.Wikia.Discussions.Post,System.String)</parameter>
-          </include>
-        </markup>
-      </param>
-      <param name="options">
-        <markup>
-          <include item="SMCMissingParamTag">
-            <parameter>param</parameter>
-            <parameter>options</parameter>
-            <parameter>M:WikiClientLibrary.Wikia.Discussions.Post.ReplyAsync(System.Void,WikiClientLibrary.Wikia.Discussions.Post,System.String)</parameter>
-          </include>
-        </markup>
-      </param>
-      <param name="cancellationToken">
-        <markup>
-          <include item="SMCMissingParamTag">
-            <parameter>param</parameter>
-            <parameter>cancellationToken</parameter>
-            <parameter>M:WikiClientLibrary.Wikia.Discussions.Post.ReplyAsync(System.Void,WikiClientLibrary.Wikia.Discussions.Post,System.String)</parameter>
-          </include>
-        </markup>
-      </param>
+            Add a new reply to the post.
+            </summary>
+      <param name="content">The content in reply.</param>
+      <param name="options">The options for creating the reply.</param>
+      <param name="cancellationToken">A token used to cancel the operation.</param>
+      <returns>A new post containing the workflow ID of the new post.</returns>
     </member>
     <member name="P:WikiClientLibrary.Wikia.Discussions.Post.Site">
       <summary>Gets the Wikia site.</summary>
@@ -1884,245 +1658,94 @@
         </markup>
       </param>
     </member>
-    <member name="M:WikiClientLibrary.Wikia.Sites.WikiaSite.InvokeNirvanaAsync(System.Void,Newtonsoft.Json.Linq.JToken)">
+    <member name="M:WikiClientLibrary.Wikia.Sites.WikiaSite.InvokeNirvanaAsync(WikiClientLibrary.Client.WikiRequestMessage,System.Threading.CancellationToken)">
       <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>M:WikiClientLibrary.Wikia.Sites.WikiaSite.InvokeNirvanaAsync(System.Void,Newtonsoft.Json.Linq.JToken)</parameter>
-          </include>
-        </markup>
-      </summary>
-      <param name="request">
-        <markup>
-          <include item="SMCMissingParamTag">
-            <parameter>param</parameter>
-            <parameter>request</parameter>
-            <parameter>M:WikiClientLibrary.Wikia.Sites.WikiaSite.InvokeNirvanaAsync(System.Void,Newtonsoft.Json.Linq.JToken)</parameter>
-          </include>
-        </markup>
-      </param>
-      <param name="cancellationToken">
-        <markup>
-          <include item="SMCMissingParamTag">
-            <parameter>param</parameter>
-            <parameter>cancellationToken</parameter>
-            <parameter>M:WikiClientLibrary.Wikia.Sites.WikiaSite.InvokeNirvanaAsync(System.Void,Newtonsoft.Json.Linq.JToken)</parameter>
-          </include>
-        </markup>
-      </param>
+            Invokes nirvana API call.
+            </summary>
+      <param name="request">The request message.</param>
+      <param name="responseParser">The parser used to parse the response.</param>
+      <param name="cancellationToken">The token used to cancel the operation.</param>
+      <returns>The parsed JSON root of response.</returns>
+      <exception cref="T:System.ArgumentNullException">Either <paramref name="request" /> or <paramref name="responseParser" /> is <c>null</c>.</exception>
     </member>
-    <member name="M:WikiClientLibrary.Wikia.Sites.WikiaSite.InvokeNirvanaAsync``1(System.Void,``0,WikiClientLibrary.Client.WikiRequestMessage)">
+    <member name="M:WikiClientLibrary.Wikia.Sites.WikiaSite.InvokeNirvanaAsync``1(WikiClientLibrary.Client.WikiRequestMessage,WikiClientLibrary.Client.IWikiResponseMessageParser{``0},System.Threading.CancellationToken)">
       <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>M:WikiClientLibrary.Wikia.Sites.WikiaSite.InvokeNirvanaAsync``1(System.Void,``0,WikiClientLibrary.Client.WikiRequestMessage)</parameter>
-          </include>
-        </markup>
-      </summary>
-      <param name="request">
-        <markup>
-          <include item="SMCMissingParamTag">
-            <parameter>param</parameter>
-            <parameter>request</parameter>
-            <parameter>M:WikiClientLibrary.Wikia.Sites.WikiaSite.InvokeNirvanaAsync``1(System.Void,``0,WikiClientLibrary.Client.WikiRequestMessage)</parameter>
-          </include>
-        </markup>
-      </param>
-      <param name="responseParser">
-        <markup>
-          <include item="SMCMissingParamTag">
-            <parameter>param</parameter>
-            <parameter>responseParser</parameter>
-            <parameter>M:WikiClientLibrary.Wikia.Sites.WikiaSite.InvokeNirvanaAsync``1(System.Void,``0,WikiClientLibrary.Client.WikiRequestMessage)</parameter>
-          </include>
-        </markup>
-      </param>
-      <param name="cancellationToken">
-        <markup>
-          <include item="SMCMissingParamTag">
-            <parameter>param</parameter>
-            <parameter>cancellationToken</parameter>
-            <parameter>M:WikiClientLibrary.Wikia.Sites.WikiaSite.InvokeNirvanaAsync``1(System.Void,``0,WikiClientLibrary.Client.WikiRequestMessage)</parameter>
-          </include>
-        </markup>
-      </param>
+            Invokes nirvana API call.
+            </summary>
+      <param name="request">The request message.</param>
+      <param name="responseParser">The parser used to parse the response.</param>
+      <param name="cancellationToken">The token used to cancel the operation.</param>
       <typeparam name="T">
         <markup>
           <include item="SMCMissingParamTag">
             <parameter>typeparam</parameter>
             <parameter>T</parameter>
-            <parameter>M:WikiClientLibrary.Wikia.Sites.WikiaSite.InvokeNirvanaAsync``1(System.Void,``0,WikiClientLibrary.Client.WikiRequestMessage)</parameter>
+            <parameter>M:WikiClientLibrary.Wikia.Sites.WikiaSite.InvokeNirvanaAsync``1(WikiClientLibrary.Client.WikiRequestMessage,WikiClientLibrary.Client.IWikiResponseMessageParser{``0},System.Threading.CancellationToken)</parameter>
           </include>
         </markup>
       </typeparam>
+      <returns>The parsed JSON root of response.</returns>
+      <exception cref="T:System.ArgumentNullException">Either <paramref name="request" /> or <paramref name="responseParser" /> is <c>null</c>.</exception>
     </member>
-    <member name="M:WikiClientLibrary.Wikia.Sites.WikiaSite.InvokeWikiaAjaxAsync(System.Void,Newtonsoft.Json.Linq.JToken)">
+    <member name="M:WikiClientLibrary.Wikia.Sites.WikiaSite.InvokeWikiaAjaxAsync(WikiClientLibrary.Client.WikiRequestMessage,System.Threading.CancellationToken)">
       <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>M:WikiClientLibrary.Wikia.Sites.WikiaSite.InvokeWikiaAjaxAsync(System.Void,Newtonsoft.Json.Linq.JToken)</parameter>
-          </include>
-        </markup>
-      </summary>
-      <param name="request">
-        <markup>
-          <include item="SMCMissingParamTag">
-            <parameter>param</parameter>
-            <parameter>request</parameter>
-            <parameter>M:WikiClientLibrary.Wikia.Sites.WikiaSite.InvokeWikiaAjaxAsync(System.Void,Newtonsoft.Json.Linq.JToken)</parameter>
-          </include>
-        </markup>
-      </param>
-      <param name="cancellationToken">
-        <markup>
-          <include item="SMCMissingParamTag">
-            <parameter>param</parameter>
-            <parameter>cancellationToken</parameter>
-            <parameter>M:WikiClientLibrary.Wikia.Sites.WikiaSite.InvokeWikiaAjaxAsync(System.Void,Newtonsoft.Json.Linq.JToken)</parameter>
-          </include>
-        </markup>
-      </param>
+            Invokes <c>index.php</c> call with <c>action=ajax</c> query.
+            </summary>
+      <param name="request">The request message.</param>
+      <param name="responseParser">The parser used to parse the response.</param>
+      <param name="cancellationToken">The token used to cancel the operation.</param>
+      <returns>The parsed JSON root of response.</returns>
+      <exception cref="T:System.ArgumentNullException">Either <paramref name="request" /> or <paramref name="responseParser" /> is <c>null</c>.</exception>
     </member>
-    <member name="M:WikiClientLibrary.Wikia.Sites.WikiaSite.InvokeWikiaAjaxAsync``1(System.Void,``0,WikiClientLibrary.Client.WikiRequestMessage)">
+    <member name="M:WikiClientLibrary.Wikia.Sites.WikiaSite.InvokeWikiaAjaxAsync``1(WikiClientLibrary.Client.WikiRequestMessage,WikiClientLibrary.Client.IWikiResponseMessageParser{``0},System.Threading.CancellationToken)">
       <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>M:WikiClientLibrary.Wikia.Sites.WikiaSite.InvokeWikiaAjaxAsync``1(System.Void,``0,WikiClientLibrary.Client.WikiRequestMessage)</parameter>
-          </include>
-        </markup>
-      </summary>
-      <param name="request">
-        <markup>
-          <include item="SMCMissingParamTag">
-            <parameter>param</parameter>
-            <parameter>request</parameter>
-            <parameter>M:WikiClientLibrary.Wikia.Sites.WikiaSite.InvokeWikiaAjaxAsync``1(System.Void,``0,WikiClientLibrary.Client.WikiRequestMessage)</parameter>
-          </include>
-        </markup>
-      </param>
-      <param name="responseParser">
-        <markup>
-          <include item="SMCMissingParamTag">
-            <parameter>param</parameter>
-            <parameter>responseParser</parameter>
-            <parameter>M:WikiClientLibrary.Wikia.Sites.WikiaSite.InvokeWikiaAjaxAsync``1(System.Void,``0,WikiClientLibrary.Client.WikiRequestMessage)</parameter>
-          </include>
-        </markup>
-      </param>
-      <param name="cancellationToken">
-        <markup>
-          <include item="SMCMissingParamTag">
-            <parameter>param</parameter>
-            <parameter>cancellationToken</parameter>
-            <parameter>M:WikiClientLibrary.Wikia.Sites.WikiaSite.InvokeWikiaAjaxAsync``1(System.Void,``0,WikiClientLibrary.Client.WikiRequestMessage)</parameter>
-          </include>
-        </markup>
-      </param>
+            Invokes <c>index.php</c> call with <c>action=ajax</c> query.
+            </summary>
+      <param name="request">The request message.</param>
+      <param name="responseParser">The parser used to parse the response.</param>
+      <param name="cancellationToken">The token used to cancel the operation.</param>
       <typeparam name="T">
         <markup>
           <include item="SMCMissingParamTag">
             <parameter>typeparam</parameter>
             <parameter>T</parameter>
-            <parameter>M:WikiClientLibrary.Wikia.Sites.WikiaSite.InvokeWikiaAjaxAsync``1(System.Void,``0,WikiClientLibrary.Client.WikiRequestMessage)</parameter>
+            <parameter>M:WikiClientLibrary.Wikia.Sites.WikiaSite.InvokeWikiaAjaxAsync``1(WikiClientLibrary.Client.WikiRequestMessage,WikiClientLibrary.Client.IWikiResponseMessageParser{``0},System.Threading.CancellationToken)</parameter>
           </include>
         </markup>
       </typeparam>
+      <returns>The parsed JSON root of response.</returns>
+      <exception cref="T:System.ArgumentNullException">Either <paramref name="request" /> or <paramref name="responseParser" /> is <c>null</c>.</exception>
     </member>
-    <member name="M:WikiClientLibrary.Wikia.Sites.WikiaSite.InvokeWikiaApiAsync(System.Void,Newtonsoft.Json.Linq.JToken,System.String)">
+    <member name="M:WikiClientLibrary.Wikia.Sites.WikiaSite.InvokeWikiaApiAsync(System.String,WikiClientLibrary.Client.WikiRequestMessage,System.Threading.CancellationToken)">
       <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>M:WikiClientLibrary.Wikia.Sites.WikiaSite.InvokeWikiaApiAsync(System.Void,Newtonsoft.Json.Linq.JToken,System.String)</parameter>
-          </include>
-        </markup>
-      </summary>
-      <param name="relativeUri">
-        <markup>
-          <include item="SMCMissingParamTag">
-            <parameter>param</parameter>
-            <parameter>relativeUri</parameter>
-            <parameter>M:WikiClientLibrary.Wikia.Sites.WikiaSite.InvokeWikiaApiAsync(System.Void,Newtonsoft.Json.Linq.JToken,System.String)</parameter>
-          </include>
-        </markup>
-      </param>
-      <param name="request">
-        <markup>
-          <include item="SMCMissingParamTag">
-            <parameter>param</parameter>
-            <parameter>request</parameter>
-            <parameter>M:WikiClientLibrary.Wikia.Sites.WikiaSite.InvokeWikiaApiAsync(System.Void,Newtonsoft.Json.Linq.JToken,System.String)</parameter>
-          </include>
-        </markup>
-      </param>
-      <param name="cancellationToken">
-        <markup>
-          <include item="SMCMissingParamTag">
-            <parameter>param</parameter>
-            <parameter>cancellationToken</parameter>
-            <parameter>M:WikiClientLibrary.Wikia.Sites.WikiaSite.InvokeWikiaApiAsync(System.Void,Newtonsoft.Json.Linq.JToken,System.String)</parameter>
-          </include>
-        </markup>
-      </param>
+            Invokes Wikia API v1 call.
+            </summary>
+      <param name="relativeUri">The URI relative to <see cref="P:WikiClientLibrary.Wikia.WikiaSiteOptions.WikiaApiRootUrl" />. It often starts with a slash.</param>
+      <param name="request">The request message.</param>
+      <param name="responseParser">The parser used to parse the response.</param>
+      <param name="cancellationToken">The token used to cancel the operation.</param>
+      <returns>The parsed JSON root of response.</returns>
+      <exception cref="T:System.ArgumentNullException">Either <paramref name="request" /> or <paramref name="responseParser" /> is <c>null</c>.</exception>
     </member>
-    <member name="M:WikiClientLibrary.Wikia.Sites.WikiaSite.InvokeWikiaApiAsync``1(System.Void,``0,System.String,WikiClientLibrary.Client.WikiRequestMessage)">
+    <member name="M:WikiClientLibrary.Wikia.Sites.WikiaSite.InvokeWikiaApiAsync``1(System.String,WikiClientLibrary.Client.WikiRequestMessage,WikiClientLibrary.Client.IWikiResponseMessageParser{``0},System.Threading.CancellationToken)">
       <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>M:WikiClientLibrary.Wikia.Sites.WikiaSite.InvokeWikiaApiAsync``1(System.Void,``0,System.String,WikiClientLibrary.Client.WikiRequestMessage)</parameter>
-          </include>
-        </markup>
-      </summary>
-      <param name="relativeUri">
-        <markup>
-          <include item="SMCMissingParamTag">
-            <parameter>param</parameter>
-            <parameter>relativeUri</parameter>
-            <parameter>M:WikiClientLibrary.Wikia.Sites.WikiaSite.InvokeWikiaApiAsync``1(System.Void,``0,System.String,WikiClientLibrary.Client.WikiRequestMessage)</parameter>
-          </include>
-        </markup>
-      </param>
-      <param name="request">
-        <markup>
-          <include item="SMCMissingParamTag">
-            <parameter>param</parameter>
-            <parameter>request</parameter>
-            <parameter>M:WikiClientLibrary.Wikia.Sites.WikiaSite.InvokeWikiaApiAsync``1(System.Void,``0,System.String,WikiClientLibrary.Client.WikiRequestMessage)</parameter>
-          </include>
-        </markup>
-      </param>
-      <param name="responseParser">
-        <markup>
-          <include item="SMCMissingParamTag">
-            <parameter>param</parameter>
-            <parameter>responseParser</parameter>
-            <parameter>M:WikiClientLibrary.Wikia.Sites.WikiaSite.InvokeWikiaApiAsync``1(System.Void,``0,System.String,WikiClientLibrary.Client.WikiRequestMessage)</parameter>
-          </include>
-        </markup>
-      </param>
-      <param name="cancellationToken">
-        <markup>
-          <include item="SMCMissingParamTag">
-            <parameter>param</parameter>
-            <parameter>cancellationToken</parameter>
-            <parameter>M:WikiClientLibrary.Wikia.Sites.WikiaSite.InvokeWikiaApiAsync``1(System.Void,``0,System.String,WikiClientLibrary.Client.WikiRequestMessage)</parameter>
-          </include>
-        </markup>
-      </param>
+            Invokes Wikia API v1 call.
+            </summary>
+      <param name="relativeUri">The URI relative to <see cref="P:WikiClientLibrary.Wikia.WikiaSiteOptions.WikiaApiRootUrl" />. It often starts with a slash.</param>
+      <param name="request">The request message.</param>
+      <param name="responseParser">The parser used to parse the response.</param>
+      <param name="cancellationToken">The token used to cancel the operation.</param>
       <typeparam name="T">
         <markup>
           <include item="SMCMissingParamTag">
             <parameter>typeparam</parameter>
             <parameter>T</parameter>
-            <parameter>M:WikiClientLibrary.Wikia.Sites.WikiaSite.InvokeWikiaApiAsync``1(System.Void,``0,System.String,WikiClientLibrary.Client.WikiRequestMessage)</parameter>
+            <parameter>M:WikiClientLibrary.Wikia.Sites.WikiaSite.InvokeWikiaApiAsync``1(System.String,WikiClientLibrary.Client.WikiRequestMessage,WikiClientLibrary.Client.IWikiResponseMessageParser{``0},System.Threading.CancellationToken)</parameter>
           </include>
         </markup>
       </typeparam>
+      <returns>The parsed JSON root of response.</returns>
+      <exception cref="T:System.ArgumentNullException">Either <paramref name="request" /> or <paramref name="responseParser" /> is <c>null</c>.</exception>
     </member>
     <member name="P:WikiClientLibrary.Wikia.Sites.WikiaSite.Options">
       <summary>
@@ -2398,209 +2021,85 @@
     <member name="T:WikiClientLibrary.Wikia.WikiaApi.WikiaSiteWikiaApiExtensions">
       <summary>Extension methods that implements Wikia REST-ful API.</summary>
     </member>
-    <member name="M:WikiClientLibrary.Wikia.WikiaApi.WikiaSiteWikiaApiExtensions.FetchRelatedPagesAsync(System.Void,System.Collections.Generic.IList{WikiClientLibrary.Wikia.WikiaApi.RelatedPageItem})">
+    <member name="M:WikiClientLibrary.Wikia.WikiaApi.WikiaSiteWikiaApiExtensions.FetchRelatedPagesAsync(WikiClientLibrary.Wikia.Sites.WikiaSite,System.Int32)">
       <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>M:WikiClientLibrary.Wikia.WikiaApi.WikiaSiteWikiaApiExtensions.FetchRelatedPagesAsync(System.Void,System.Collections.Generic.IList{WikiClientLibrary.Wikia.WikiaApi.RelatedPageItem})</parameter>
-          </include>
-        </markup>
-      </summary>
-      <param name="site">
-        <markup>
-          <include item="SMCMissingParamTag">
-            <parameter>param</parameter>
-            <parameter>site</parameter>
-            <parameter>M:WikiClientLibrary.Wikia.WikiaApi.WikiaSiteWikiaApiExtensions.FetchRelatedPagesAsync(System.Void,System.Collections.Generic.IList{WikiClientLibrary.Wikia.WikiaApi.RelatedPageItem})</parameter>
-          </include>
-        </markup>
-      </param>
-      <param name="pageId">
-        <markup>
-          <include item="SMCMissingParamTag">
-            <parameter>param</parameter>
-            <parameter>pageId</parameter>
-            <parameter>M:WikiClientLibrary.Wikia.WikiaApi.WikiaSiteWikiaApiExtensions.FetchRelatedPagesAsync(System.Void,System.Collections.Generic.IList{WikiClientLibrary.Wikia.WikiaApi.RelatedPageItem})</parameter>
-          </include>
-        </markup>
-      </param>
+            Asynchronously fetches the specified page's related pages.
+            </summary>
+      <param name="site">The site to issue the request.</param>
+      <param name="pageId">ID of the page to find the related ones.</param>
+      <param name="maxCount">Maximum count of the returned items.</param>
+      <param name="cancellationToken">A token used to cancel the operation.</param>
+      <returns></returns>
+      <exception cref="T:System.ArgumentNullException">
+        <paramref name="site" /> is <c>null</c>.</exception>
+      <exception cref="T:System.ArgumentOutOfRangeException">
+        <paramref name="pageId" /> is less than or equals to 0.</exception>
+      <exception cref="T:WikiClientLibrary.Wikia.NotFoundApiException">
+        <c>Related Pages</c> extension is not available.</exception>
     </member>
-    <member name="M:WikiClientLibrary.Wikia.WikiaApi.WikiaSiteWikiaApiExtensions.FetchRelatedPagesAsync(System.Void,System.Collections.Generic.IList{WikiClientLibrary.Wikia.WikiaApi.RelatedPageItem},WikiClientLibrary.Wikia.Sites.WikiaSite)">
+    <member name="M:WikiClientLibrary.Wikia.WikiaApi.WikiaSiteWikiaApiExtensions.FetchRelatedPagesAsync(WikiClientLibrary.Wikia.Sites.WikiaSite,System.Int32,System.Int32)">
       <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>M:WikiClientLibrary.Wikia.WikiaApi.WikiaSiteWikiaApiExtensions.FetchRelatedPagesAsync(System.Void,System.Collections.Generic.IList{WikiClientLibrary.Wikia.WikiaApi.RelatedPageItem},WikiClientLibrary.Wikia.Sites.WikiaSite)</parameter>
-          </include>
-        </markup>
-      </summary>
-      <param name="site">
-        <markup>
-          <include item="SMCMissingParamTag">
-            <parameter>param</parameter>
-            <parameter>site</parameter>
-            <parameter>M:WikiClientLibrary.Wikia.WikiaApi.WikiaSiteWikiaApiExtensions.FetchRelatedPagesAsync(System.Void,System.Collections.Generic.IList{WikiClientLibrary.Wikia.WikiaApi.RelatedPageItem},WikiClientLibrary.Wikia.Sites.WikiaSite)</parameter>
-          </include>
-        </markup>
-      </param>
-      <param name="pageId">
-        <markup>
-          <include item="SMCMissingParamTag">
-            <parameter>param</parameter>
-            <parameter>pageId</parameter>
-            <parameter>M:WikiClientLibrary.Wikia.WikiaApi.WikiaSiteWikiaApiExtensions.FetchRelatedPagesAsync(System.Void,System.Collections.Generic.IList{WikiClientLibrary.Wikia.WikiaApi.RelatedPageItem},WikiClientLibrary.Wikia.Sites.WikiaSite)</parameter>
-          </include>
-        </markup>
-      </param>
-      <param name="maxCount">
-        <markup>
-          <include item="SMCMissingParamTag">
-            <parameter>param</parameter>
-            <parameter>maxCount</parameter>
-            <parameter>M:WikiClientLibrary.Wikia.WikiaApi.WikiaSiteWikiaApiExtensions.FetchRelatedPagesAsync(System.Void,System.Collections.Generic.IList{WikiClientLibrary.Wikia.WikiaApi.RelatedPageItem},WikiClientLibrary.Wikia.Sites.WikiaSite)</parameter>
-          </include>
-        </markup>
-      </param>
+            Asynchronously fetches the specified page's related pages.
+            </summary>
+      <param name="site">The site to issue the request.</param>
+      <param name="pageId">ID of the page to find the related ones.</param>
+      <param name="maxCount">Maximum count of the returned items.</param>
+      <param name="cancellationToken">A token used to cancel the operation.</param>
+      <returns></returns>
+      <exception cref="T:System.ArgumentNullException">
+        <paramref name="site" /> is <c>null</c>.</exception>
+      <exception cref="T:System.ArgumentOutOfRangeException">
+        <paramref name="pageId" /> is less than or equals to 0.</exception>
+      <exception cref="T:WikiClientLibrary.Wikia.NotFoundApiException">
+        <c>Related Pages</c> extension is not available.</exception>
     </member>
-    <member name="M:WikiClientLibrary.Wikia.WikiaApi.WikiaSiteWikiaApiExtensions.FetchRelatedPagesAsync(System.Void,System.Collections.Generic.IList{WikiClientLibrary.Wikia.WikiaApi.RelatedPageItem},WikiClientLibrary.Wikia.Sites.WikiaSite,System.Int32)">
+    <member name="M:WikiClientLibrary.Wikia.WikiaApi.WikiaSiteWikiaApiExtensions.FetchRelatedPagesAsync(WikiClientLibrary.Wikia.Sites.WikiaSite,System.Int32,System.Int32,System.Threading.CancellationToken)">
       <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>M:WikiClientLibrary.Wikia.WikiaApi.WikiaSiteWikiaApiExtensions.FetchRelatedPagesAsync(System.Void,System.Collections.Generic.IList{WikiClientLibrary.Wikia.WikiaApi.RelatedPageItem},WikiClientLibrary.Wikia.Sites.WikiaSite,System.Int32)</parameter>
-          </include>
-        </markup>
-      </summary>
-      <param name="site">
-        <markup>
-          <include item="SMCMissingParamTag">
-            <parameter>param</parameter>
-            <parameter>site</parameter>
-            <parameter>M:WikiClientLibrary.Wikia.WikiaApi.WikiaSiteWikiaApiExtensions.FetchRelatedPagesAsync(System.Void,System.Collections.Generic.IList{WikiClientLibrary.Wikia.WikiaApi.RelatedPageItem},WikiClientLibrary.Wikia.Sites.WikiaSite,System.Int32)</parameter>
-          </include>
-        </markup>
-      </param>
-      <param name="pageId">
-        <markup>
-          <include item="SMCMissingParamTag">
-            <parameter>param</parameter>
-            <parameter>pageId</parameter>
-            <parameter>M:WikiClientLibrary.Wikia.WikiaApi.WikiaSiteWikiaApiExtensions.FetchRelatedPagesAsync(System.Void,System.Collections.Generic.IList{WikiClientLibrary.Wikia.WikiaApi.RelatedPageItem},WikiClientLibrary.Wikia.Sites.WikiaSite,System.Int32)</parameter>
-          </include>
-        </markup>
-      </param>
-      <param name="maxCount">
-        <markup>
-          <include item="SMCMissingParamTag">
-            <parameter>param</parameter>
-            <parameter>maxCount</parameter>
-            <parameter>M:WikiClientLibrary.Wikia.WikiaApi.WikiaSiteWikiaApiExtensions.FetchRelatedPagesAsync(System.Void,System.Collections.Generic.IList{WikiClientLibrary.Wikia.WikiaApi.RelatedPageItem},WikiClientLibrary.Wikia.Sites.WikiaSite,System.Int32)</parameter>
-          </include>
-        </markup>
-      </param>
-      <param name="cancellationToken">
-        <markup>
-          <include item="SMCMissingParamTag">
-            <parameter>param</parameter>
-            <parameter>cancellationToken</parameter>
-            <parameter>M:WikiClientLibrary.Wikia.WikiaApi.WikiaSiteWikiaApiExtensions.FetchRelatedPagesAsync(System.Void,System.Collections.Generic.IList{WikiClientLibrary.Wikia.WikiaApi.RelatedPageItem},WikiClientLibrary.Wikia.Sites.WikiaSite,System.Int32)</parameter>
-          </include>
-        </markup>
-      </param>
+            Asynchronously fetches the specified page's related pages.
+            </summary>
+      <param name="site">The site to issue the request.</param>
+      <param name="pageId">ID of the page to find the related ones.</param>
+      <param name="maxCount">Maximum count of the returned items.</param>
+      <param name="cancellationToken">A token used to cancel the operation.</param>
+      <returns></returns>
+      <exception cref="T:System.ArgumentNullException">
+        <paramref name="site" /> is <c>null</c>.</exception>
+      <exception cref="T:System.ArgumentOutOfRangeException">
+        <paramref name="pageId" /> is less than or equals to 0.</exception>
+      <exception cref="T:WikiClientLibrary.Wikia.NotFoundApiException">
+        <c>Related Pages</c> extension is not available.</exception>
     </member>
-    <member name="M:WikiClientLibrary.Wikia.WikiaApi.WikiaSiteWikiaApiExtensions.FetchUserAsync(System.Void,WikiClientLibrary.Wikia.WikiaApi.UserInfo)">
+    <member name="M:WikiClientLibrary.Wikia.WikiaApi.WikiaSiteWikiaApiExtensions.FetchUserAsync(WikiClientLibrary.Wikia.Sites.WikiaSite,System.String)">
       <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>M:WikiClientLibrary.Wikia.WikiaApi.WikiaSiteWikiaApiExtensions.FetchUserAsync(System.Void,WikiClientLibrary.Wikia.WikiaApi.UserInfo)</parameter>
-          </include>
-        </markup>
-      </summary>
-      <param name="site">
-        <markup>
-          <include item="SMCMissingParamTag">
-            <parameter>param</parameter>
-            <parameter>site</parameter>
-            <parameter>M:WikiClientLibrary.Wikia.WikiaApi.WikiaSiteWikiaApiExtensions.FetchUserAsync(System.Void,WikiClientLibrary.Wikia.WikiaApi.UserInfo)</parameter>
-          </include>
-        </markup>
-      </param>
-      <param name="userName">
-        <markup>
-          <include item="SMCMissingParamTag">
-            <parameter>param</parameter>
-            <parameter>userName</parameter>
-            <parameter>M:WikiClientLibrary.Wikia.WikiaApi.WikiaSiteWikiaApiExtensions.FetchUserAsync(System.Void,WikiClientLibrary.Wikia.WikiaApi.UserInfo)</parameter>
-          </include>
-        </markup>
-      </param>
+            Asynchronously fetches the specified user's information.
+            </summary>
+      <param name="site">The site to issue the request.</param>
+      <param name="userName">The user name to be fetched.</param>
+      <param name="cancellationToken">A token used to cancel the request.</param>
+      <returns>A task that returns the requested user information, or <c>null</c> for inexistent user.</returns>
+      <exception cref="T:System.ArgumentNullException">Either <paramref name="site" /> or <paramref name="userName" /> is <c>null</c>.</exception>
     </member>
-    <member name="M:WikiClientLibrary.Wikia.WikiaApi.WikiaSiteWikiaApiExtensions.FetchUserAsync(System.Void,WikiClientLibrary.Wikia.WikiaApi.UserInfo,WikiClientLibrary.Wikia.Sites.WikiaSite)">
+    <member name="M:WikiClientLibrary.Wikia.WikiaApi.WikiaSiteWikiaApiExtensions.FetchUserAsync(WikiClientLibrary.Wikia.Sites.WikiaSite,System.String,System.Threading.CancellationToken)">
       <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>M:WikiClientLibrary.Wikia.WikiaApi.WikiaSiteWikiaApiExtensions.FetchUserAsync(System.Void,WikiClientLibrary.Wikia.WikiaApi.UserInfo,WikiClientLibrary.Wikia.Sites.WikiaSite)</parameter>
-          </include>
-        </markup>
-      </summary>
-      <param name="site">
-        <markup>
-          <include item="SMCMissingParamTag">
-            <parameter>param</parameter>
-            <parameter>site</parameter>
-            <parameter>M:WikiClientLibrary.Wikia.WikiaApi.WikiaSiteWikiaApiExtensions.FetchUserAsync(System.Void,WikiClientLibrary.Wikia.WikiaApi.UserInfo,WikiClientLibrary.Wikia.Sites.WikiaSite)</parameter>
-          </include>
-        </markup>
-      </param>
-      <param name="userName">
-        <markup>
-          <include item="SMCMissingParamTag">
-            <parameter>param</parameter>
-            <parameter>userName</parameter>
-            <parameter>M:WikiClientLibrary.Wikia.WikiaApi.WikiaSiteWikiaApiExtensions.FetchUserAsync(System.Void,WikiClientLibrary.Wikia.WikiaApi.UserInfo,WikiClientLibrary.Wikia.Sites.WikiaSite)</parameter>
-          </include>
-        </markup>
-      </param>
-      <param name="cancellationToken">
-        <markup>
-          <include item="SMCMissingParamTag">
-            <parameter>param</parameter>
-            <parameter>cancellationToken</parameter>
-            <parameter>M:WikiClientLibrary.Wikia.WikiaApi.WikiaSiteWikiaApiExtensions.FetchUserAsync(System.Void,WikiClientLibrary.Wikia.WikiaApi.UserInfo,WikiClientLibrary.Wikia.Sites.WikiaSite)</parameter>
-          </include>
-        </markup>
-      </param>
+            Asynchronously fetches the specified user's information.
+            </summary>
+      <param name="site">The site to issue the request.</param>
+      <param name="userName">The user name to be fetched.</param>
+      <param name="cancellationToken">A token used to cancel the request.</param>
+      <returns>A task that returns the requested user information, or <c>null</c> for inexistent user.</returns>
+      <exception cref="T:System.ArgumentNullException">Either <paramref name="site" /> or <paramref name="userName" /> is <c>null</c>.</exception>
     </member>
-    <member name="M:WikiClientLibrary.Wikia.WikiaApi.WikiaSiteWikiaApiExtensions.FetchUsersAsync(System.Void,WikiClientLibrary.Wikia.WikiaApi.UserInfo)">
+    <member name="M:WikiClientLibrary.Wikia.WikiaApi.WikiaSiteWikiaApiExtensions.FetchUsersAsync(WikiClientLibrary.Wikia.Sites.WikiaSite,System.Collections.Generic.IEnumerable{System.String})">
       <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>M:WikiClientLibrary.Wikia.WikiaApi.WikiaSiteWikiaApiExtensions.FetchUsersAsync(System.Void,WikiClientLibrary.Wikia.WikiaApi.UserInfo)</parameter>
-          </include>
-        </markup>
-      </summary>
-      <param name="site">
-        <markup>
-          <include item="SMCMissingParamTag">
-            <parameter>param</parameter>
-            <parameter>site</parameter>
-            <parameter>M:WikiClientLibrary.Wikia.WikiaApi.WikiaSiteWikiaApiExtensions.FetchUsersAsync(System.Void,WikiClientLibrary.Wikia.WikiaApi.UserInfo)</parameter>
-          </include>
-        </markup>
-      </param>
-      <param name="userNames">
-        <markup>
-          <include item="SMCMissingParamTag">
-            <parameter>param</parameter>
-            <parameter>userNames</parameter>
-            <parameter>M:WikiClientLibrary.Wikia.WikiaApi.WikiaSiteWikiaApiExtensions.FetchUsersAsync(System.Void,WikiClientLibrary.Wikia.WikiaApi.UserInfo)</parameter>
-          </include>
-        </markup>
-      </param>
+            Asynchronously fetches the specified users' information.
+            </summary>
+      <param name="site">The site to issue the request.</param>
+      <param name="userNames">The user names to be fetched.</param>
+      <returns>
+            An asynchronous sequence containing the detailed user information.
+            The user names are normalized by the server. Inexistent user names are skipped.
+            </returns>
+      <exception cref="T:System.ArgumentNullException">Either <paramref name="site" /> or <paramref name="userNames" /> is <c>null</c>.</exception>
     </member>
   </members>
 </doc>
