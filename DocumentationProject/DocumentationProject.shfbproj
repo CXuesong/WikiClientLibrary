@@ -7,7 +7,7 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>9ee6a01d-862f-48f1-a090-81aa67d9e9fc</ProjectGuid>
-    <SHFBSchemaVersion>2015.6.5.0</SHFBSchemaVersion>
+    <SHFBSchemaVersion>2017.9.26.0</SHFBSchemaVersion>
     <!-- AssemblyName, Name, and RootNamespace are not used by SHFB but Visual Studio adds them anyway -->
     <AssemblyName>DocumentationProject</AssemblyName>
     <RootNamespace>DocumentationProject</RootNamespace>
@@ -91,18 +91,6 @@
       </ComponentConfig>
     </ComponentConfigurations>
     <PlugInConfigurations>
-      <PlugInConfig id="Assembly Binding Redirection" enabled="True">
-        <configuration useGAC="true">
-          <assemblyBinding />
-          <ignoreIfUnresolved>
-            <assemblyIdentity name="AsyncEnumerableExtensions" />
-            <assemblyIdentity name="BusinessObjects.Licensing.KeycodeDecoder" />
-            <assemblyIdentity name="HtmlAgilityPack" />
-            <assemblyIdentity name="Microsoft.VisualStudio.TestTools.UITest.Playback" />
-            <assemblyIdentity name="Newtonsoft.Json" />
-          </ignoreIfUnresolved>
-        </configuration>
-      </PlugInConfig>
     </PlugInConfigurations>
     <HelpFileVersion>1.0.0.0</HelpFileVersion>
     <MaximumGroupParts>2</MaximumGroupParts>
@@ -116,7 +104,7 @@
     <HelpTitle>Wiki Client Library</HelpTitle>
     <ContentPlacement>AboveNamespaces</ContentPlacement>
     <CopyrightText>Copyright %28C%29 CXuesong 2017</CopyrightText>
-    <VisibleItems>Attributes, ExplicitInterfaceImplementations, InheritedMembers, InheritedFrameworkMembers, Protected, ProtectedInternalAsProtected</VisibleItems>
+    <VisibleItems>Attributes, ExplicitInterfaceImplementations, InheritedMembers, InheritedFrameworkMembers, Protected, ProtectedInternalAsProtected, EditorBrowsableNever, NonBrowsable</VisibleItems>
     <HeaderText>
     </HeaderText>
     <WebsiteSdkLinkType>Msdn</WebsiteSdkLinkType>
