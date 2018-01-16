@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using AsyncEnumerableExtensions;
 using Newtonsoft.Json.Linq;
 using WikiClientLibrary.Client;
 using WikiClientLibrary.Infrastructures;
@@ -46,6 +47,7 @@ namespace WikiClientLibrary.Wikibase
                     }
                 }
             }
+
             return new Dictionary<string, object>
             {
                 {
@@ -59,7 +61,7 @@ namespace WikiClientLibrary.Wikibase
             };
         }
 
-        public static async Task RefreshEntitiesAsync(IEnumerable<Entity> entities, EntityQueryOptions options, 
+        public static async Task RefreshEntitiesAsync(IEnumerable<Entity> entities, EntityQueryOptions options,
             IEnumerable<string> languages, CancellationToken cancellationToken)
         {
             if (entities == null) throw new ArgumentNullException(nameof(entities));
@@ -95,6 +97,47 @@ namespace WikiClientLibrary.Wikibase
                     }
                 }
             }
+        }
+
+        private static readonly char[] whitespaceAndUnderscore = {' ', '\t', '\v', '　', '_'};
+
+        public static IAsyncEnumerable<string> EntityIdsFromSiteLinksAsync(WikiSite site,
+            string siteName, IEnumerable<string> siteLinks)
+        {
+            Debug.Assert(siteName != null);
+            Debug.Assert(siteLinks != null);
+            var titleLimit = site.AccountInfo.HasRight(UserRights.ApiHighLimits) ? 500 : 50;
+            return AsyncEnumerableFactory.FromAsyncGenerator<string>(async (sink, ct) =>
+            {
+                var req = new OrderedKeyValuePairs<string, string>
+                {
+                    {"action", "wbgetentities"},
+                    {"props", "sitelinks"},
+                    {"sites", siteName},
+                    {"sitefilter", siteName},
+                };
+                using (site.BeginActionScope(siteLinks))
+                {
+                    foreach (var partition in siteLinks.Partition(titleLimit).Select(partition => partition.ToList()))
+                    {
+                        //site.Logger.LogDebug("Fetching {Count} pages from {Site}.", partition.Count, site);
+                        for (int i = 0; i < partition.Count; i++)
+                        {
+                            if (partition[i] == null) throw new ArgumentException("Link titles contain null element.", nameof(siteLinks));
+                            // Do some basic title normalization locally.
+                            // Note Wikibase cannot even normalize the first letter case of the title.
+                            partition[i] = partition[i].Trim(whitespaceAndUnderscore).Replace('_', ' ');
+                        }
+                        req["titles"] = MediaWikiHelper.JoinValues(partition);
+                        var jresult = await site.InvokeMediaWikiApiAsync(new MediaWikiFormRequestMessage(req), ct);
+                        var jentities = (JObject)jresult["entities"];
+                        var nameIdDict = jentities.PropertyValues().Where(e => e["missing"] == null)
+                            .ToDictionary(e => (string)e["sitelinks"][siteName]["title"], e => (string)e["id"]);
+                        await sink.YieldAndWait(partition.Select(title =>
+                            nameIdDict.TryGetValue(title, out var id) ? id : null));
+                    }
+                }
+            });
         }
 
     }

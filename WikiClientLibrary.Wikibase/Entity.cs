@@ -34,7 +34,30 @@ namespace WikiClientLibrary.Wikibase
 
         internal static readonly ClaimCollection emptyClaims
             = new ClaimCollection {IsReadOnly = true};
-        
+
+        #region Static Methods
+
+        /// <summary>
+        /// Asynchronously gets the entity IDs with specified sequence of titles on the specified site.
+        /// </summary>
+        /// <param name="site">The Wikibase repository site.</param>
+        /// <param name="siteName">The site name of the sitelinks.</param>
+        /// <param name="titles">The article titles on the site <paramref name="siteName"/> to check for entity IDs.</param>
+        /// <exception cref="ArgumentNullException">Either <paramref name="site"/>, <paramref name="siteName"/>, or <paramref name="titles"/> is <c>null</c>.</exception>
+        /// <returns>
+        /// A asynchronous sequence of entity IDs in the identical order with <paramref name="titles"/>.
+        /// If one or more entities are missing, the corresponding entity ID will be <c>null</c>.
+        /// </returns>
+        public static IAsyncEnumerable<string> IdsFromSiteLinksAsync(WikiSite site, string siteName, IEnumerable<string> titles)
+        {
+            if (site == null) throw new ArgumentNullException(nameof(site));
+            if (siteName == null) throw new ArgumentNullException(nameof(siteName));
+            if (titles == null) throw new ArgumentNullException(nameof(titles));
+            return WikibaseRequestHelper.EntityIdsFromSiteLinksAsync(site, siteName, titles);
+        }
+
+        #endregion
+
         /// <summary>
         /// Initializes a new <see cref="Entity"/> entity from Wikibase site,
         /// marked for creation.

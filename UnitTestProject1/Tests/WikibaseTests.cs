@@ -101,6 +101,17 @@ namespace UnitTestProject1.Tests
             Assert.Equal(EntityType.Property, entity4.Type);
         }
 
+
+        [Fact]
+        public async Task EntityFromSiteLinkTest()
+        {
+            var site = await WikidataSiteAsync;
+            var links = new[] {"Mount Everest", "Test_(Unix)", "Inexistent title", "Earth"};
+            var ids = await Entity.IdsFromSiteLinksAsync(site, "enwiki", links).ToList();
+            Output.WriteLine(string.Join(", ", ids));
+            Assert.Equal(new[] {"Q513", "Q257491", null, "Q2"}, ids);
+        }
+
         [Theory]
         [InlineData(EntityEditOptions.None)]
         [InlineData(EntityEditOptions.Bulk)]

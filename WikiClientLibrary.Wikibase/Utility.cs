@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
+using System.Threading.Tasks;
+using AsyncEnumerableExtensions;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using Newtonsoft.Json;
@@ -80,6 +82,31 @@ namespace WikiClientLibrary.Wikibase
         public static string NewClaimGuid(string entityId)
         {
             return entityId + "$" + Guid.NewGuid().ToString("D");
+        }
+
+
+        public static IAsyncEnumerable<TResult> SelectAsync<TSource, TResult>(this IEnumerable<TSource> source,
+            Func<TSource, Task<TResult>> selector)
+        {
+            return AsyncEnumerableFactory.FromAsyncGenerator<TResult>(async sink =>
+            {
+                foreach (var item in source)
+                {
+                    await sink.YieldAndWait(await selector(item));
+                }
+            });
+        }
+
+        public static IAsyncEnumerable<TResult> SelectManyAsync<TSource, TResult>(this IEnumerable<TSource> source,
+            Func<TSource, Task<IEnumerable<TResult>>> selector)
+        {
+            return AsyncEnumerableFactory.FromAsyncGenerator<TResult>(async sink =>
+            {
+                foreach (var item in source)
+                {
+                    await sink.YieldAndWait(await selector(item));
+                }
+            });
         }
 
     }
