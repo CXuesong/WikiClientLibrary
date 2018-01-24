@@ -77,7 +77,13 @@ namespace WikiClientLibrary.Infrastructures
         /// <inheritdoc />
         public bool TryGetValue(string key, out JToken value)
         {
-            return myDict.TryGetValue(key, out value);
+            if (myDict.TryGetValue(key, out var v))
+            {
+                value = v.DeepClone();
+                return true;
+            }
+            value = null;
+            return false;
         }
 
         /// <inheritdoc />

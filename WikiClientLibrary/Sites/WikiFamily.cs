@@ -76,7 +76,7 @@ namespace WikiClientLibrary.Sites
         /// <summary>
         /// Initializes the instance with a <see cref="Client.WikiClient"/> and family name.
         /// </summary>
-        public WikiFamily(WikiClient wikiClient) : this(wikiClient, null)
+        public WikiFamily(IWikiClient wikiClient) : this(wikiClient, null)
         {
         }
 
