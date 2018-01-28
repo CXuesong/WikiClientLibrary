@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using WikiClientLibrary;
@@ -196,6 +197,31 @@ namespace UnitTestProject1.Tests
                 Assert.True(flags != RevisionFlags.None);
                 Assert.True(flags.HasFlag(RevisionFlags.Bot));
                 Assert.True(flags.HasFlag(RevisionFlags.Minor));
+            }
+        }
+
+        [Fact]
+        public async Task WpLzhLogEventsListTest()
+        {
+            var site = await WpLzhSiteAsync;
+            var generator = new LogEventsList(site)
+            {
+                PaginationSize = 100,
+                LogType = LogTypes.Move,
+                LogAction = LogActions.MoveOverRedirect,
+                TimeAscending = false,
+                // Local time should be converted to UTC in Utility.ToWikiQueryValue
+                StartTime = DateTime.Now - TimeSpan.FromDays(7)
+            };
+            var logs = await generator.EnumItemsAsync().Take(200).ToList();
+            ShallowTrace(logs, 1);
+            var lastTimestamp = generator.StartTime.Value;
+            foreach (var log in logs)
+            {
+                Assert.True(log.TimeStamp <= lastTimestamp);
+                lastTimestamp = log.TimeStamp;
+                Assert.Equal(LogTypes.Move, log.Type);
+                Assert.Equal(LogActions.MoveOverRedirect, log.Action);
             }
         }
 

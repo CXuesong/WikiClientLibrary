@@ -7,19 +7,19 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
-using WikiClientLibrary.Infrastructures;
 using WikiClientLibrary.Pages;
 using WikiClientLibrary.Sites;
 
 namespace WikiClientLibrary.Generators
 {
     /// <summary>
-    /// Represents an item in RecentChanges list.
+    /// Represents MediaWiki recent change entry.
     /// </summary>
     [JsonObject(MemberSerialization.OptIn)]
     public class RecentChangeItem
     {
-        public WikiSite Site { get; }
+
+        private WikiSite Site { get; }
 
         internal RecentChangeItem(WikiSite site)
         {
@@ -93,6 +93,12 @@ namespace WikiClientLibrary.Generators
         /// <summary>Name of the user making this recent change.</summary>
         [JsonProperty("user")]
         public string UserName { get; private set; }
+
+        /// <summary>The user ID who was responsible for the recent change.</summary>
+        /// <remarks>When using this property with log events, there are some caveats.
+        /// See <see cref="LogEventItem.UserId"/> for more information.</remarks>
+        [JsonProperty]
+        public int UserId { get; private set; }
 
         /// <summary>Content length of the old revision affected by this item.</summary>
         [JsonProperty("oldlen")]
@@ -212,125 +218,49 @@ namespace WikiClientLibrary.Generators
         }
 
         /// <summary>
-        /// 返回表示当前对象的字符串。
+        /// If the current recent change item is a log event, returns the corresponding log event item.
         /// </summary>
-        /// <returns>
-        /// 表示当前对象的字符串。
-        /// </returns>
+        /// <exception cref="InvalidOperationException"><see cref="Type"/> is not <see cref="RecentChangesType.Log"/>.</exception>
+        /// <returns>The corresponding log event item.</returns>
+        public LogEventItem ToLogEventItem()
+        {
+            if (Type != RecentChangesType.Log)
+                throw new InvalidOperationException("The Type of the RecentChangeItem should be RecentChangesType.Log to acquire the LogEventItem.");
+            return LogEventItem.FromRecentChangeItem(this);
+        }
+
+        /// <inheritdoc/>
         public override string ToString()
         {
             var sb = new StringBuilder();
-            Action<object> push = v =>
-            {
-                if (v != null)
-                {
-                    sb.Append(',');
-                    sb.Append(v);
-                }
-            };
             sb.Append(Id);
-            push(TimeStamp);
-            push(Type);
-            sb.Append(",[");
-            sb.Append(Flags);
-            sb.Append("]");
+            sb.Append(',');
+            sb.Append(TimeStamp);
+            sb.Append(',');
             if (LogType != null)
             {
-                sb.Append(',');
                 sb.Append(LogType);
-                sb.Append('[');
+                sb.Append('/');
                 sb.Append(LogAction);
-                sb.Append(']');
+                sb.Append(",{");
                 if (LogParams.Count > 0)
                 {
-                    sb.Append(",{");
-                    sb.Append(string.Join(",", LogParams.Select(p => p.Key + "=" + p.Value.ToString(Formatting.None))));
-                    sb.Append("}");
+                    sb.Append(string.Join(",",
+                        LogParams.Select(p => p.Key + "=" + p.Value.ToString(Formatting.None))));
                 }
+                sb.Append("},");
             }
-            push(Title);
-            push(Comment);
+            sb.Append(Type);
+            sb.Append(",[");
+            sb.Append(Flags);
+            sb.Append("],");
+            sb.Append(Title);
+            sb.Append(',');
+            sb.Append(UserName);
+            sb.Append(',');
+            sb.Append(Comment);
             return sb.ToString();
         }
-    }
-
-    /// <summary>
-    /// Predefined Log Type values used in <see cref="RecentChangeItem.LogType"/>.
-    /// </summary>
-    /// <remarks>See <a href="https://www.mediawiki.org/wiki/Manual:Log_actions">mw:Manual:Log actions</a> for a table of typical log types.</remarks>
-    public static class LogTypes
-    {
-        public const string Block = "block";
-        public const string Delete = "delete";
-        public const string Import = "import";
-        public const string Merge = "merge";
-        public const string Move = "move";
-        public const string NewUsers = "newusers";
-        public const string PageLanguage = "pagelang";
-        public const string Patrol = "patrol";
-        public const string Protect = "protect";
-        /// <summary>Change a user's groups.</summary>
-        public const string Rights = "rights";
-        public const string Upload = "upload";
-    }
-
-    /// <summary>
-    /// Predefined Log Action values used in <see cref="RecentChangeItem.LogAction"/>.
-    /// </summary>
-    /// <remarks>See <a href="https://www.mediawiki.org/wiki/Manual:Log_actions">mw:Manual:Log actions</a> for a table of typical log actions.</remarks>
-    public static class LogActions
-    {
-        /// <summary>(<see cref="LogTypes.Block"/>) Block user.</summary>
-        public const string Block = "block";
-        /// <summary>(<see cref="LogTypes.Block"/>) Change block.</summary>
-        public const string Reblock = "reblock";
-        /// <summary>(<see cref="LogTypes.Block"/>) Unblock user.</summary>
-        public const string Unblock = "unblock";
-        /// <summary>(<see cref="LogTypes.Delete"/>) Delete a page.</summary>
-        public const string Delete = "delete";
-        /// <summary>(<see cref="LogTypes.Delete"/>) Delete a log event.</summary>
-        public const string Event = "event";
-        /// <summary>(<see cref="LogTypes.Delete"/>) Restore a page.</summary>
-        public const string Restore = "restore";
-        /// <summary>(<see cref="LogTypes.Delete"/>) Change revision visibility.</summary>
-        public const string Revision = "revision";
-        /// <summary>(<see cref="LogTypes.Import"/>) Import interwiki.</summary>
-        public const string Interwiki = "interwiki";
-        /// <summary>(<see cref="LogTypes.Merge"/>) Merge history.</summary>
-        public const string Merge = "merge";
-        /// <summary>(<see cref="LogTypes.Move"/>) Move a page.</summary>
-        public const string Move = "move";
-        /// <summary>(<see cref="LogTypes.Move"/>) Move a page over a redirect.</summary>
-        public const string MoveOverRedirect = "move_redir";
-        /// <summary>(<see cref="LogTypes.NewUsers"/>) When the user is automatically created (such as by CentralAuth).</summary>
-        public const string AutoCreate = "autocreate";
-        /// <summary>(<see cref="LogTypes.NewUsers"/>) When the created user will receive its password by email.</summary>
-        public const string ByEmail = "byemail";
-        /// <summary>(<see cref="LogTypes.NewUsers"/>) For an anonymous user creating an account for himself.</summary>
-        public const string Create = "create";
-        /// <summary>(<see cref="LogTypes.NewUsers"/>) For a logged in user creating an account for someone else.</summary>
-        public const string Create2 = "create2";
-        /// <summary>(<see cref="LogTypes.PageLanguage"/>) For pages whose language has been changed.</summary>
-        public const string PageLanguage = "pagelang";
-        /// <summary>(<see cref="LogTypes.Patrol"/>) Mark a revision as patrolled.</summary>
-        public const string Patrol = "patrol";
-        /// <summary>(<see cref="LogTypes.Patrol"/>) Automatic patrol of a revision.</summary>
-        public const string AutoPatrol = "autopatrol";
-        /// <summary>(<see cref="LogTypes.Protect"/>) Modify the protection of a protected page.</summary>
-        public const string Modify = "modify";
-        /// <summary>(<see cref="LogTypes.Protect"/>) Protect an unprotected page.</summary>
-        public const string Protect = "protect";
-        /// <summary>(<see cref="LogTypes.Protect"/>) Unprotect a page.</summary>
-        public const string Unprotect = "unprotect";
-        /// <summary>(<see cref="LogTypes.Rights"/>) Change a user's groups.</summary>
-        public const string Rights = "rights";
-        /// <summary>(<see cref="LogTypes.Upload"/>) Re-upload a file.</summary>
-        public const string Overwrite = "overwrite";
-        /// <summary>
-        /// (<see cref="LogTypes.Import"/>) Import from an uploaded XML file.
-        /// (<see cref="LogTypes.Upload"/>) Upload a new file.
-        /// </summary>
-        public const string Upload = "upload";
     }
 
     /// <summary>
@@ -374,31 +304,6 @@ namespace WikiClientLibrary.Generators
         /// Patrolled.
         /// </summary>
         Patrolled,
-    }
-
-    /// <summary>
-    /// A collection of extensible log parameters.
-    /// </summary>
-    /// <remarks>See <a href="https://www.mediawiki.org/wiki/Manual:Log_actions">mw:Manual:Log actions</a>
-    /// for a table of typical log parameters for each type of log action.</remarks>
-    public class LogParameterCollection : WikiReadOnlyDictionary
-    {
-
-        /// <summary>
-        /// Namespace ID of the move target.
-        /// </summary>
-        public int? TargetNamespaceId => (int?)GetValueDirect("target_ns");
-
-        /// <summary>
-        /// Full title of the move target.
-        /// </summary>
-        public string TargetTitle => (string)GetValueDirect("target_title");
-
-        /// <summary>
-        /// Whether to suppress the creation of redirect when moving the page.
-        /// </summary>
-        public bool SuppressRedirect => GetValueDirect("suppressredirect") != null;
-
     }
 
 }

@@ -1,12 +1,10 @@
 ﻿using System;
 using System.Collections;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
 using System.Text;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json;
-using WikiClientLibrary.Pages;
 
 namespace WikiClientLibrary.Infrastructures
 {
@@ -59,6 +57,35 @@ namespace WikiClientLibrary.Infrastructures
             return null;
         }
 
+        /// <summary>
+        /// Gets the <see cref="int"/> value by property name.
+        /// This overload raises exception for missing key.
+        /// </summary>
+        /// <param name="key">The property name.</param>
+        /// <returns>The converted value.</returns>
+        /// <exception cref="KeyNotFoundException">The property is not found.</exception>
+        public int GetInt32Value(string key)
+        {
+            return (int)myDict[key];
+        }
+
+        public int GetInt32Value(string key, int defaultValue)
+        {
+            if (myDict.TryGetValue(key, out var value)) return (int)value;
+            return defaultValue;
+        }
+
+        public bool GetBooleanValue(string key)
+        {
+            return myDict[key] != null;
+        }
+
+        public string GetStringValue(string key)
+        {
+            if (myDict.TryGetValue(key, out var value)) return (string)value;
+            return null;
+        }
+
         /// <inheritdoc />
         public ICollection<string> Keys => myDict.Keys;
 
@@ -106,7 +133,7 @@ namespace WikiClientLibrary.Infrastructures
         /// <inheritdoc />
         IEnumerator IEnumerable.GetEnumerator()
         {
-            return ((IEnumerable) myDict).GetEnumerator();
+            return ((IEnumerable)myDict).GetEnumerator();
         }
 
         /// <inheritdoc />

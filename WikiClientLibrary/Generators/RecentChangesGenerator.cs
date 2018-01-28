@@ -1,16 +1,13 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
-using System.Runtime.Serialization;
 using System.Threading;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Linq;
 using WikiClientLibrary.Generators.Primitive;
 using WikiClientLibrary.Infrastructures;
-using WikiClientLibrary.Pages;
 using WikiClientLibrary.Sites;
 
 namespace WikiClientLibrary.Generators
@@ -27,7 +24,7 @@ namespace WikiClientLibrary.Generators
         }
 
         /// <summary>
-        /// Whether to list pages in an ascending order of time.
+        /// Whether to list pages in an ascending order of time.  (Default: <c>false</c>)
         /// </summary>
         /// <value><c>true</c>, if oldest changes are listed first; or <c>false</c>, if newest changes are listed first.</value>
         /// <remarks>
@@ -138,9 +135,7 @@ namespace WikiClientLibrary.Generators
             };
             if (isList)
             {
-                // All except userid .
-                // rcpermissiondenied
-                var fields = "user|comment|parsedcomment|flags|timestamp|title|ids|sizes|redirect|loginfo|tags|sha1";
+                var fields = "user|userid|comment|parsedcomment|flags|timestamp|title|ids|sizes|redirect|loginfo|tags|sha1";
                 if (Site.AccountInfo.HasRight(UserRights.Patrol)) fields += "|patrolled";
                 dict.Add("rcprop", fields);
             }
