@@ -269,7 +269,7 @@ namespace WikiClientLibrary.Generators
         /// <summary>
         /// (<see cref="LogActions.Move"/>) Namespace ID of the move target.
         /// </summary>
-        public int? TargetNamespaceId => (int?)GetValueDirect("target_ns");
+        public int TargetNamespaceId => GetInt32Value("target_ns");
 
         /// <summary>
         /// (<see cref="LogActions.Move"/>) Full title of the move target.
@@ -279,7 +279,7 @@ namespace WikiClientLibrary.Generators
         /// <summary>
         /// (<see cref="LogActions.Move"/>) Whether to suppress the creation of redirect when moving the page.
         /// </summary>
-        public bool SuppressRedirect => GetValueDirect("suppressredirect") != null;
+        public bool SuppressRedirect => GetBooleanValue("suppressredirect");
 
         /// <summary>
         /// (<see cref="LogActions.Patrol"/>)

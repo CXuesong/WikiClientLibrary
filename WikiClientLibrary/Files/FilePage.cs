@@ -2,20 +2,11 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
-using System.IO;
 using System.Linq;
-using System.Net.Http;
 using System.Runtime.Serialization;
-using System.Threading;
-using System.Threading.Tasks;
-using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using WikiClientLibrary.Client;
-using WikiClientLibrary.Files;
 using WikiClientLibrary.Infrastructures;
-using WikiClientLibrary.Infrastructures.Logging;
-using WikiClientLibrary.Sites;
 
 namespace WikiClientLibrary.Pages
 {
@@ -253,37 +244,37 @@ namespace WikiClientLibrary.Pages
         /// <summary>
         /// The file content is empty.
         /// </summary>
-        public bool IsEmptyFile => GetValueDirect("emptyfile") != null;
+        public bool IsEmptyFile => GetBooleanValue("emptyfile");
 
         /// <summary>
         /// The title exists.
         /// </summary>
-        public bool TitleExists => GetValueDirect("exists") != null;
+        public bool TitleExists => GetBooleanValue("exists");
 
         /// <summary>
         /// File exists with different extension as…
         /// </summary>
-        public string ExistingAlternativeExtension => (string) GetValueDirect("exists-normalized");
+        public string ExistingAlternativeExtension => GetStringValue("exists-normalized");
 
         /// <summary>
         /// Target filename is invalid.
         /// </summary>
-        public bool IsBadFileName => GetValueDirect("badfilename") != null;
+        public bool IsBadFileName => GetBooleanValue("badfilename");
 
         /// <summary>
         /// The file type is of an unwanted type.
         /// </summary>
-        public bool IsUnwantedType => GetValueDirect("filetype-unwanted-type") != null;
+        public bool IsUnwantedType => GetBooleanValue("filetype-unwanted-type");
 
         /// <summary>
         /// The file with the specified title was previously deleted.
         /// </summary>
-        public bool WasTitleDeleted => GetValueDirect("was-deleted") != null;
+        public bool WasTitleDeleted => GetBooleanValue("was-deleted");
 
         /// <summary>
         /// The file content is a duplicate of a deleted file.
         /// </summary>
-        public bool WasContentDeleted => GetValueDirect("duplicate-archive") != null;
+        public bool WasContentDeleted => GetBooleanValue("duplicate-archive");
 
         [OnDeserialized]
         private void OnDeserialized(StreamingContext context)

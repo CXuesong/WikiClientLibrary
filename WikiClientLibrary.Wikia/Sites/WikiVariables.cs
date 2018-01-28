@@ -61,21 +61,21 @@ namespace WikiClientLibrary.Wikia.Sites
     public class SiteThemeInfo : WikiReadOnlyDictionary
     {
 
-        public string BodyColor => (string)GetValueDirect("color-body");
+        public string BodyColor => GetStringValue("color-body");
 
-        public string BodyMiddleColor => (string)GetValueDirect("color-body-middle");
+        public string BodyMiddleColor => GetStringValue("color-body-middle");
 
-        public string PageColor => (string)GetValueDirect("color-page");
+        public string PageColor => GetStringValue("color-page");
 
-        public string ButtonsColor => (string)GetValueDirect("color-buttons");
+        public string ButtonsColor => GetStringValue("color-buttons");
 
-        public string CommunityHeaderColor => (string)GetValueDirect("color-community-header");
+        public string CommunityHeaderColor => GetStringValue("color-community-header");
 
-        public string LinksColor => (string)GetValueDirect("color-links");
+        public string LinksColor => GetStringValue("color-links");
 
-        public string HeaderColor => (string)GetValueDirect("color-header");
+        public string HeaderColor => GetStringValue("color-header");
 
-        public string BackgroundImage => (string)GetValueDirect("background-image");
+        public string BackgroundImage => GetStringValue("background-image");
 
         public float BackgroundImageWidth => (float)GetValueDirect("background-image-width");
 
@@ -83,9 +83,9 @@ namespace WikiClientLibrary.Wikia.Sites
 
         public bool IsBackgroundDynamic => (bool)GetValueDirect("background-dynamic");
 
-        public string PageOpacity => (string)GetValueDirect("page-opacity");
+        public string PageOpacity => GetStringValue("page-opacity");
 
-        public string WordmarkFont => (string)GetValueDirect("wordmark-font");
+        public string WordmarkFont => GetStringValue("wordmark-font");
     }
 
     /// <summary>
@@ -94,7 +94,7 @@ namespace WikiClientLibrary.Wikia.Sites
     public class TrackingInfo : WikiReadOnlyDictionary
     {
 
-        public string Vertical => (string)GetValueDirect("vertical");
+        public string Vertical => GetStringValue("vertical");
 
         //[JsonProperty("comscore")]
         //public Comscore Comscore { get; private set; }
