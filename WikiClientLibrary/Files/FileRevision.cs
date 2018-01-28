@@ -7,8 +7,9 @@ using System.Runtime.Serialization;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using WikiClientLibrary.Infrastructures;
+using WikiClientLibrary.Pages;
 
-namespace WikiClientLibrary.Pages
+namespace WikiClientLibrary.Files
 {
 
     /// <summary>
@@ -35,6 +36,9 @@ namespace WikiClientLibrary.Pages
         [JsonProperty]
         public int BitDepth { get; private set; }
 
+        /// <summary>
+        /// MIME type of the file.
+        /// </summary>
         [JsonProperty]
         public string Mime { get; private set; }
 
@@ -44,6 +48,9 @@ namespace WikiClientLibrary.Pages
         [JsonProperty]
         public DateTime TimeStamp { get; private set; }
 
+        /// <summary>
+        /// Name of the user uploading this file revision.
+        /// </summary>
         [JsonProperty("user")]
         public string UserName { get; private set; }
 
@@ -72,7 +79,7 @@ namespace WikiClientLibrary.Pages
         public int Size { get; private set; }
 
         [JsonProperty]
-        public int? Width { get; private set; }
+        public int Width { get; private set; }
 
         [JsonProperty]
         public int Height { get; private set; }
@@ -93,14 +100,14 @@ namespace WikiClientLibrary.Pages
     {
 
         /// <summary>
-        /// Try to convert the specified warning code and context into a user-fridendly
+        /// Try to convert the specified warning code and context into a user-friendly
         /// warning message.
         /// </summary>
         /// <param name="warningCode">Case-sensitive warning code.</param>
         /// <param name="context">The extra content of the warning.</param>
         /// <returns>
         /// It tries to match the warningCode with well-known ones, and returns a
-        /// user-fridendly warning message. If there's no match, a string containing
+        /// user-friendly warning message. If there's no match, a string containing
         /// warningCode and context will be returned.
         /// </returns>
         [Obsolete("Please use UploadWarningCollection.FormatWarning instead.")]
@@ -170,7 +177,7 @@ namespace WikiClientLibrary.Pages
         /// </value>
         /// <remarks>
         /// <para>You can use <see cref="FormatWarning"/> to get user-friendly warning messages.</para>
-        /// <para>If you have supressed warnings, the warnings will still be here, but <see cref="ResultCode"/> will be <see cref="UploadResultCode.Success"/>.</para>
+        /// <para>If you have suppressed warnings, the warnings will still be here, but <see cref="ResultCode"/> will be <see cref="UploadResultCode.Success"/>.</para>
         /// </remarks>
         [JsonProperty("warnings", ObjectCreationHandling = ObjectCreationHandling.Replace)]
         public UploadWarningCollection Warnings { get; private set; } = UploadWarningCollection.Empty;
@@ -222,7 +229,7 @@ namespace WikiClientLibrary.Pages
         {
             // Referenced from pywikibot, site.py
             // map API warning codes to user error messages
-            // {0} will be replaced by message string from API responsse
+            // {0} will be replaced by message string from API response
             {"duplicate-archive", "The file is a duplicate of a deleted file {0}."},
             {"was-deleted", "The file {0} was previously deleted."},
             {"emptyfile", "File {0} is empty."},
@@ -312,14 +319,14 @@ namespace WikiClientLibrary.Pages
         public IList<DateTime> DuplicateVersions { get; private set; } = emptyDateTimeList;
 
         /// <summary>
-        /// Try to convert the specified warning code and context into a user-fridendly
+        /// Try to convert the specified warning code and context into a user-friendly
         /// warning message.
         /// </summary>
         /// <param name="warningCode">Case-sensitive warning code.</param>
         /// <param name="context">The extra content of the warning.</param>
         /// <returns>
         /// It tries to match the warningCode with well-known ones, and returns a
-        /// user-fridendly warning message. If there's no match, a string containing
+        /// user-friendly warning message. If there's no match, a string containing
         /// warningCode and context will be returned.
         /// </returns>
         public static string FormatWarning(string warningCode, JToken context)

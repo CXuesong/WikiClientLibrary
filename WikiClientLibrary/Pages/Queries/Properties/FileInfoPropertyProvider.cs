@@ -5,6 +5,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using Newtonsoft.Json.Linq;
+using WikiClientLibrary.Files;
 using WikiClientLibrary.Infrastructures;
 
 namespace WikiClientLibrary.Pages.Queries.Properties

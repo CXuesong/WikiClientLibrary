@@ -12,9 +12,9 @@ using System.Threading;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using WikiClientLibrary.Files;
 using WikiClientLibrary.Pages;
 using WikiClientLibrary.Pages.Queries;
-using WikiClientLibrary.Pages.Queries.Properties;
 
 namespace WikiClientLibrary.Infrastructures
 {
