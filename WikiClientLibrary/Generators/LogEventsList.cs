@@ -50,10 +50,10 @@ namespace WikiClientLibrary.Generators
         public DateTime? EndTime { get; set; }
 
         /// <summary>
-        /// Only list pages in these namespaces.
+        /// Only list log events associated with pages in this namespace.
         /// </summary>
-        /// <value>Selected ids of namespace, or null if all the namespaces are selected.</value>
-        public IEnumerable<int> NamespaceIds { get; set; }
+        /// <value>Selected id of namespace, or <c>null</c> if all the namespaces are selected.</value>
+        public int? NamespaceId { get; set; }
 
         /// <summary>
         /// Only list changes made by this user.
@@ -83,6 +83,12 @@ namespace WikiClientLibrary.Generators
         /// and <see cref="LogType"/> will be prepended to the action name automatically.</value>
         /// <remarks>
         /// <para>See <see cref="LogActions"/> for a list of predefined values.</para>
+        /// <para>
+        /// Note that for MediaWiki 1.19 and before, using the same action name as log type name is not allowed.
+        /// For example, you should set <see cref="LogType"/> to <c>"move"</c>,
+        /// and <see cref="LogAction"/> to <c>null</c> instead of <c>"move"</c>,
+        /// or <c>"move/move"</c>, to filter in all the page move events.
+        /// </para>
         /// </remarks>
         public string LogAction
         {
@@ -114,7 +120,7 @@ namespace WikiClientLibrary.Generators
                 {"ledir", TimeAscending ? "newer" : "older"},
                 {"lestart", StartTime},
                 {"leend", EndTime},
-                {"lenamespace", NamespaceIds == null ? null : MediaWikiHelper.JoinValues(NamespaceIds)},
+                {"lenamespace", NamespaceId},
                 {"leuser", UserName},
                 {"letag", Tag},
                 {"letype", LogType},
@@ -123,9 +129,40 @@ namespace WikiClientLibrary.Generators
             };
         }
 
+        // Maps the legacy MW log event parameter names into names as presented in `params` node.
+        private static readonly Dictionary<string, string> legacyLogEventParamNameMapping = new Dictionary<string, string>
+        {
+            {"new_ns", "target_ns"},
+            {"new_title", "target_title"},
+        };
+
         /// <inheritdoc />
         protected override LogEventItem ItemFromJson(JToken json)
         {
+            if (json["params"] == null)
+            {
+                var action = (string)json["action"];
+                var joldParams = (JObject)json[action];
+                if (action != null && joldParams != null)
+                {
+                    // Legacy log event format (as in MW 1.19),
+                    // Need to fix it.
+                    var jparams = new JObject();
+                    foreach (var prop in joldParams.Properties())
+                    {
+                        // Detach
+                        var value = prop.Value;
+                        prop.Value = null;
+                        if (legacyLogEventParamNameMapping.TryGetValue(prop.Name, out var mappedName))
+                            jparams[mappedName] = value;
+                        else
+                            jparams[prop.Name] = value;
+                    }
+
+                    json["params"] = jparams;
+                }
+            }
+
             return json.ToObject<LogEventItem>(Utility.WikiJsonSerializer);
         }
     }
@@ -207,6 +244,7 @@ namespace WikiClientLibrary.Generators
         [JsonProperty]
         public string ParsedComment { get; private set; }
 
+        /// <summary>Tags for the event.</summary>
         [JsonProperty]
         public IList<string> Tags { get; private set; }
 
@@ -353,7 +391,7 @@ namespace WikiClientLibrary.Generators
         public const string Merge = "merge";
         /// <summary>(<see cref="LogTypes.Move"/>) Move a page.</summary>
         public const string Move = "move";
-        /// <summary>(<see cref="LogTypes.Move"/>) Move a page over a redirect.</summary>
+        /// <summary>(<see cref="LogTypes.Move"/>) Move a page over a redirect. (N/A to MediaWiki 1.19)</summary>
         public const string MoveOverRedirect = "move_redir";
         /// <summary>(<see cref="LogTypes.NewUsers"/>) When the user is automatically created (such as by CentralAuth).</summary>
         public const string AutoCreate = "autocreate";

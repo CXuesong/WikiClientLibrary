@@ -226,6 +226,34 @@ namespace UnitTestProject1.Tests
         }
 
         [Fact]
+        public async Task WikiaLogEventsListTest()
+        {
+            var site = await WikiaTestSiteAsync;
+            var generator = new LogEventsList(site)
+            {
+                PaginationSize = 100,
+                LogType = LogTypes.Move,
+                TimeAscending = false,
+            };
+            var logs = await generator.EnumItemsAsync().Take(200).ToList();
+            ShallowTrace(logs, 1);
+            var lastTimestamp = DateTime.MaxValue;
+            foreach (var log in logs)
+            {
+                Assert.True(log.TimeStamp <= lastTimestamp);
+                lastTimestamp = log.TimeStamp;
+                Assert.Equal(LogTypes.Move, log.Type);
+                Assert.Equal(LogActions.Move, log.Action);
+                // Wikia doesn't have `params` node in the logevent content,
+                // but LogEventsList should have taken care of it properly.
+                Assert.NotNull(log.Params);
+                Assert.NotNull(log.Params.TargetTitle);
+                // Should not throw KeyNotFoundException
+                var ns = log.Params.TargetNamespaceId;
+            }
+        }
+
+        [Fact]
         public async Task WikiaRecentChangesListTest()
         {
             var site = await WikiaTestSiteAsync;
