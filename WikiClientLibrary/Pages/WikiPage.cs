@@ -41,7 +41,7 @@ namespace WikiClientLibrary.Pages
         /// <param name="title">Page title with or without namespace prefix.</param>
         /// <param name="defaultNamespaceId">The default namespace ID for page title without namespace prefix.</param>
         /// <remarks>The initialized instance does not contain any live information from MediaWiki site.
-        /// Use <see cref="RefreshAsync()"/> to fetch for infromation from server.</remarks>
+        /// Use <see cref="RefreshAsync()"/> to fetch for information from server.</remarks>
         public WikiPage(WikiSite site, string title, int defaultNamespaceId)
         {
             if (site == null) throw new ArgumentNullException(nameof(site));
@@ -57,7 +57,7 @@ namespace WikiClientLibrary.Pages
         /// <param name="site">The wiki site this page is on.</param>
         /// <param name="id">Page ID.</param>
         /// <remarks>The initialized instance does not contain any live information from MediaWiki site.
-        /// Use <see cref="RefreshAsync()"/> to fetch for infromation from server.</remarks>
+        /// Use <see cref="RefreshAsync()"/> to fetch for information from server.</remarks>
         public WikiPage(WikiSite site, int id)
         {
             if (site == null) throw new ArgumentNullException(nameof(site));
@@ -673,7 +673,7 @@ namespace WikiClientLibrary.Pages
     }
 
     /// <summary>
-    /// Specifies wheter to watch the page after editing it.
+    /// Specifies whether to watch the page after editing it.
     /// </summary>
     public enum AutoWatchBehavior
     {

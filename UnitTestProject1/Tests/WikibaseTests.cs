@@ -113,7 +113,7 @@ namespace UnitTestProject1.Tests
         }
 
         [Theory]
-        [InlineData(EntityEditOptions.None)]
+        [InlineData(EntityEditOptions.Progressive)]
         [InlineData(EntityEditOptions.Bulk)]
         public async Task EditEntityTest1(EntityEditOptions options)
         {
@@ -134,31 +134,43 @@ namespace UnitTestProject1.Tests
                     new WbMonolingualText("en",
                         "This is a test entity for unit test. If you see this entity outside the test site, please check the revision history and notify the editor.")),
                 new EntityEditEntry(nameof(Entity.Descriptions), new WbMonolingualText("zh", "此实体仅用于测试之用。如果你在非测试维基见到此实体，请检查修订历史并告知编辑者。")),
+                new EntityEditEntry(nameof(entity.SiteLinks), new EntitySiteLink("testwiki", "Foo")),
             };
             await entity.EditAsync(changelist, "Create test entity.", options);
+            if ((options & EntityEditOptions.Bulk) != EntityEditOptions.Bulk)
+                await entity.RefreshAsync(EntityQueryOptions.FetchLabels
+                                          | EntityQueryOptions.FetchDescriptions
+                                          | EntityQueryOptions.FetchAliases
+                                          | EntityQueryOptions.FetchSiteLinks);
             ShallowTrace(entity);
             Assert.Equal("test entity " + rand, entity.Labels["en"]);
             Assert.Contains("test", entity.Aliases["en"]);
             Assert.Contains("This is a test entity", entity.Descriptions["en"]);
             Assert.Contains("此实体仅用于测试之用。", entity.Descriptions["zh"]);
-
+            Assert.Equal("Foo", entity.SiteLinks["testwiki"].Title);
+            
             // General edit
             changelist = new[]
             {
                 new EntityEditEntry(nameof(Entity.Labels), new WbMonolingualText("zh-hans", "测试实体" + rand)),
                 new EntityEditEntry(nameof(Entity.Labels), new WbMonolingualText("zh-hant", "測試實體" + rand)),
-                // One language can have multiple aliases, so we cannot use "dummy" here.
+                // One language can have multiple aliases, so we need to specify which alias to remove, instead of using "dummy" here.
                 new EntityEditEntry(nameof(Entity.Aliases), new WbMonolingualText("en", "Test"), EntityEditEntryState.Removed),
                 new EntityEditEntry(nameof(Entity.Descriptions), new WbMonolingualText("zh", "dummy"), EntityEditEntryState.Removed),
+                new EntityEditEntry(nameof(Entity.SiteLinks), new EntitySiteLink("testwiki", "dummy"), EntityEditEntryState.Removed),
             };
             await entity.EditAsync(changelist, "Edit test entity.", options);
             if ((options & EntityEditOptions.Bulk) != EntityEditOptions.Bulk)
-                await entity.RefreshAsync(EntityQueryOptions.FetchLabels | EntityQueryOptions.FetchDescriptions | EntityQueryOptions.FetchAliases);
+                await entity.RefreshAsync(EntityQueryOptions.FetchLabels
+                                          | EntityQueryOptions.FetchDescriptions
+                                          | EntityQueryOptions.FetchAliases
+                                          | EntityQueryOptions.FetchSiteLinks);
             ShallowTrace(entity);
             Assert.Null(entity.Descriptions["zh"]);
             Assert.Equal("测试实体" + rand, entity.Labels["zh-hans"]);
             Assert.Equal("測試實體" + rand, entity.Labels["zh-hant"]);
             Assert.DoesNotContain("Test", entity.Aliases["en"]);
+            Assert.False(entity.SiteLinks.ContainsKey("testwiki"));
 
             // Add claim
             //  Create a property first.
@@ -168,7 +180,7 @@ namespace UnitTestProject1.Tests
                 new EntityEditEntry(nameof(Entity.Labels), new WbMonolingualText("en", "test property " + rand)),
                 new EntityEditEntry(nameof(Entity.DataType), BuiltInDataTypes.WikibaseItem),
             };
-            await prop.EditAsync(changelist, "Create a property for test.", options);
+            await prop.EditAsync(changelist, "Create a property for test.");
             // Refill basic information, esp. WbEntity.DataType
             await prop.RefreshAsync(EntityQueryOptions.FetchInfo);
 

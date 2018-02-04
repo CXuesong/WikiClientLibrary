@@ -154,9 +154,10 @@ namespace WikiClientLibrary.Wikibase
         /// <param name="cancellationToken">A token used to cancel the operation.</param>
         /// <exception cref="ArgumentNullException">Either <paramref name="edits"/> is <c>null</c>.</exception>
         /// <exception cref="ArgumentException"><paramref name="options"/> is invalid.</exception>
+        /// <exception cref="NotSupportedException">Attempt to set <see cref="DataType"/> when editing an existing property entity, or force progressive edits when creating a property entity.</exception>
         /// <exception cref="OperationConflictException">Edit conflict detected.</exception>
         /// <exception cref="UnauthorizedOperationException">You have no rights to edit the page.</exception>
-        /// <remarks><para>After the operation, the entity may be automatically refereshed,
+        /// <remarks><para>After the operation, the entity may be automatically refreshed,
         /// which means all the <see cref="Claim"/> instances that used to belong to this claim will be detached,
         /// and perhaps replicates will take the place.
         /// If the edit operation is bulk edit, this is effectively a refresh operation with <see cref="EntityQueryOptions.FetchAllProperties"/> flag,
@@ -172,6 +173,8 @@ namespace WikiClientLibrary.Wikibase
         {
             const int bulkEditThreshold = 5;
             if (edits == null) throw new ArgumentNullException(nameof(edits));
+            if (Id == null && Type == EntityType.Property && (options & EntityEditOptions.Progressive) == EntityEditOptions.Progressive)
+                throw new NotSupportedException("Creating a property is not possible in progressive mode.");
             CheckEditOptions(options);
             cancellationToken.ThrowIfCancellationRequested();
             using (Site.BeginActionScope(this, options))
@@ -179,6 +182,7 @@ namespace WikiClientLibrary.Wikibase
                 var bulk = (options & EntityEditOptions.Bulk) == EntityEditOptions.Bulk;
                 if (!bulk && (options & EntityEditOptions.Progressive) != EntityEditOptions.Progressive)
                 {
+                    // Determine to use bulk/progressive by the item count.
                     if (Id == null) bulk = true;
                     else if (edits is IReadOnlyCollection<EntityEditEntry> rc) bulk = rc.Count >= bulkEditThreshold;
                     else if (edits is ICollection<EntityEditEntry> c) bulk = c.Count >= bulkEditThreshold;
@@ -232,7 +236,6 @@ namespace WikiClientLibrary.Wikibase
             bool strict, CancellationToken cancellationToken)
         {
             Debug.Assert(edits != null);
-            Debug.Assert(Id != null);
             var checkbaseRev = true;
             foreach (var prop in edits.GroupBy(e => e.PropertyName))
             {
@@ -241,7 +244,7 @@ namespace WikiClientLibrary.Wikibase
                 switch (prop.Key)
                 {
                     case nameof(DataType):
-                        throw new NotSupportedException("Setting data type is not possible in progrssive mode.");
+                        throw new NotSupportedException("Setting data type is not possible in progressive mode.");
                     case nameof(Labels):
                         foreach (var p in prop)
                         {
@@ -319,7 +322,7 @@ namespace WikiClientLibrary.Wikibase
                                 string link = null, badges = null;
                                 try
                                 {
-                                    var item = (EntityEditEntry)siteGroup.Single().Value;
+                                    var item = siteGroup.Single();
                                     if (item.State == EntityEditEntryState.Updated)
                                     {
                                         var value = (EntitySiteLink)item.Value;
@@ -441,6 +444,8 @@ namespace WikiClientLibrary.Wikibase
         Bot = 1,
         /// <summary>Forces progressive edit, even if the client is creating a new item.
         /// This option cannot be used with <see cref="Bulk"/> and <see cref="ClearData"/>.</summary>
+        /// <remarks>Note that setting <see cref="Entity.DataType"/> is not possible in progressive mode,
+        /// nor can you change the data type of an existing property due to the limitation of Wikibase.</remarks>
         Progressive = 2,
         /// <summary>Forces bulk edit, even if the client is creating a new item.</summary>
         Bulk = 4,

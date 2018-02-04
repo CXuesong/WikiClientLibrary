@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Linq;
 using System.Net.Http;
+using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
@@ -160,6 +162,20 @@ namespace WikiClientLibrary.Client
                 default:
                     if (errorCode.EndsWith("conflict"))
                         throw new OperationConflictException(errorCode, errorMessage);
+                    // "messages": [
+                    // {
+                    // "name": "wikibase-api-failed-save",
+                    // "parameters": [],
+                    // "html": {
+                    // "*": "The save has failed."
+                    // }
+                    // },
+                    // ...]
+                    var messages = (JArray)errorNode["messages"];
+                    if (messages != null && messages.Count > 1 && messages[0]["html"] != null)
+                    {
+                        errorMessage = string.Join(" ", messages.Select(m => (string)m["html"]["*"]));
+                    }
                     throw new OperationFailedException(errorCode, errorMessage);
             }
         }
