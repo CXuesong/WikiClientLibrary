@@ -28,7 +28,7 @@ namespace WikiClientLibrary.Generators
 
         /// <inheritdoc />
         public override string ListName => "logevents";
-        
+
         /// <summary>
         /// Whether to list pages in an ascending order of time. (Default: <c>false</c>)
         /// </summary>
@@ -50,7 +50,7 @@ namespace WikiClientLibrary.Generators
         public DateTime? EndTime { get; set; }
 
         /// <summary>
-        /// Only list log events associated with pages in this namespace.
+        /// Only list log events associated with pages in this namespace. (MediaWiki 1.24+)
         /// </summary>
         /// <value>Selected id of namespace, or <c>null</c> if all the namespaces are selected.</value>
         public int? NamespaceId { get; set; }
@@ -141,12 +141,13 @@ namespace WikiClientLibrary.Generators
         {
             if (json["params"] == null)
             {
-                var action = (string)json["action"];
-                var joldParams = (JObject)json[action];
-                if (action != null && joldParams != null)
+                // Can be legacy log event format (as in MW 1.19),
+                // Need to fix it.
+                // Fist, check if there are suspectable legacy "params" node
+                var type = (string)json["type"];
+                var joldParams = (JObject)json[type];
+                if (type != null && joldParams != null)
                 {
-                    // Legacy log event format (as in MW 1.19),
-                    // Need to fix it.
                     var jparams = new JObject();
                     foreach (var prop in joldParams.Properties())
                     {
