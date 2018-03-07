@@ -4,9 +4,9 @@
     <TargetFramework>netstandard1.1</TargetFramework>
     <AssemblyName>WikiClientLibrary.Flow</AssemblyName>
     <PackageId>CXuesong.MW.WikiClientLibrary.Flow</PackageId>
-    <Version>0.6.0-intX4</Version>
-    <AssemblyVersion>0.6.0.14</AssemblyVersion>
-    <FileVersion>0.6.0.14</FileVersion>
+    <Version>0.6.0-intX7</Version>
+    <AssemblyVersion>0.6.0.17</AssemblyVersion>
+    <FileVersion>0.6.0.17</FileVersion>
     <Copyright>Copyright (C) CXuesong 2017</Copyright>
     <Description>
       WikiClientLibrary.Flow is a .NET Standard &amp; asynchronous client library for MediaWiki sites with Structured Discussions (aka. Flow) support.
