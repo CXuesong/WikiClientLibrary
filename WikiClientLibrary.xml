@@ -818,61 +818,6 @@
         </markup>
       </param>
     </member>
-    <member name="T:WikiClientLibrary.UploadException">
-      <summary>
-            An exception indicating the upload operation has at least one warning.
-            </summary>
-    </member>
-    <member name="M:WikiClientLibrary.UploadException.#ctor(System.String,System.Exception)">
-      <summary>
-        <markup>
-          <include item="SMCAutoDocConstructor">
-            <parameter>WikiClientLibrary.UploadException</parameter>
-          </include>
-        </markup>
-      </summary>
-      <param name="message">
-        <markup>
-          <include item="SMCMissingParamTag">
-            <parameter>param</parameter>
-            <parameter>message</parameter>
-            <parameter>M:WikiClientLibrary.UploadException.#ctor(System.String,System.Exception)</parameter>
-          </include>
-        </markup>
-      </param>
-      <param name="innerException">
-        <markup>
-          <include item="SMCMissingParamTag">
-            <parameter>param</parameter>
-            <parameter>innerException</parameter>
-            <parameter>M:WikiClientLibrary.UploadException.#ctor(System.String,System.Exception)</parameter>
-          </include>
-        </markup>
-      </param>
-    </member>
-    <member name="M:WikiClientLibrary.UploadException.#ctor(WikiClientLibrary.Pages.UploadResult)">
-      <summary>
-        <markup>
-          <include item="SMCAutoDocConstructor">
-            <parameter>WikiClientLibrary.UploadException</parameter>
-          </include>
-        </markup>
-      </summary>
-      <param name="uploadResult">
-        <markup>
-          <include item="SMCMissingParamTag">
-            <parameter>param</parameter>
-            <parameter>uploadResult</parameter>
-            <parameter>M:WikiClientLibrary.UploadException.#ctor(WikiClientLibrary.Pages.UploadResult)</parameter>
-          </include>
-        </markup>
-      </param>
-    </member>
-    <member name="P:WikiClientLibrary.UploadException.UploadResult">
-      <summary>
-            The upload result that caused the exception.
-            </summary>
-    </member>
     <member name="T:WikiClientLibrary.UserStub">
       <summary>
             Represents basic information of a user.
@@ -1657,7 +1602,7 @@
     </member>
     <member name="P:WikiClientLibrary.Client.MediaWikiFormRequestMessage.Fields">
       <summary>
-            Gets a readonly list of all the fields in the form.
+            Gets a read-only list of all the fields in the form.
             </summary>
     </member>
     <member name="M:WikiClientLibrary.Client.MediaWikiFormRequestMessage.GetHttpContent">
@@ -1963,7 +1908,7 @@
     </member>
     <member name="T:WikiClientLibrary.Client.WikiResponseParsingContext">
       <summary>
-            Provides parsing context for <see cref="!:IWikiResponseMessageParser.ParseResponseAsync" />.
+            Provides parsing context for <see cref="M:WikiClientLibrary.Client.IWikiResponseMessageParser`1.ParseResponseAsync(System.Net.Http.HttpResponseMessage,WikiClientLibrary.Client.WikiResponseParsingContext)" />.
             </summary>
     </member>
     <member name="M:WikiClientLibrary.Client.WikiResponseParsingContext.#ctor(Microsoft.Extensions.Logging.ILogger,System.Threading.CancellationToken)">
@@ -1991,7 +1936,7 @@
     </member>
     <member name="P:WikiClientLibrary.Client.WikiResponseParsingContext.NeedRetry">
       <summary>
-            When set in <see cref="!:IWikiResponseMessageParser.ParseResponseAsync" /> implementation,
+            When set in <see cref="M:WikiClientLibrary.Client.IWikiResponseMessageParser`1.ParseResponseAsync(System.Net.Http.HttpResponseMessage,WikiClientLibrary.Client.WikiResponseParsingContext)" /> implementation,
             requests for retrying the request.
             </summary>
     </member>
@@ -2078,7 +2023,7 @@
     </member>
     <member name="P:WikiClientLibrary.Files.ChunkedUploadSource.IsStashed">
       <summary>
-            Determins whether the file has been stashed completely.
+            Determines whether the file has been stashed completely.
             </summary>
     </member>
     <member name="P:WikiClientLibrary.Files.ChunkedUploadSource.IsStashing">
@@ -2270,6 +2215,100 @@
         </markup>
       </summary>
     </member>
+    <member name="T:WikiClientLibrary.Files.FileRevision">
+      <summary>
+            Represents a revision of a file or image.
+            </summary>
+    </member>
+    <member name="M:WikiClientLibrary.Files.FileRevision.#ctor">
+      <summary>
+        <markup>
+          <include item="SMCAutoDocConstructor">
+            <parameter>WikiClientLibrary.Files.FileRevision</parameter>
+          </include>
+        </markup>
+      </summary>
+    </member>
+    <member name="P:WikiClientLibrary.Files.FileRevision.BitDepth">
+      <summary>
+        <markup>
+          <include item="SMCMissingTag">
+            <parameter>summary</parameter>
+            <parameter>P:WikiClientLibrary.Files.FileRevision.BitDepth</parameter>
+          </include>
+        </markup>
+      </summary>
+    </member>
+    <member name="P:WikiClientLibrary.Files.FileRevision.Comment">
+      <summary>
+            The comment associated with the upload of this revision.
+            </summary>
+    </member>
+    <member name="P:WikiClientLibrary.Files.FileRevision.DescriptionUrl">
+      <summary>
+            Url of the description page.
+            </summary>
+    </member>
+    <member name="P:WikiClientLibrary.Files.FileRevision.Height">
+      <summary>
+        <markup>
+          <include item="SMCMissingTag">
+            <parameter>summary</parameter>
+            <parameter>P:WikiClientLibrary.Files.FileRevision.Height</parameter>
+          </include>
+        </markup>
+      </summary>
+    </member>
+    <member name="P:WikiClientLibrary.Files.FileRevision.IsAnonymous">
+      <summary>
+            Whether the file is anonymous.
+            </summary>
+    </member>
+    <member name="P:WikiClientLibrary.Files.FileRevision.Mime">
+      <summary>
+            MIME type of the file.
+            </summary>
+    </member>
+    <member name="P:WikiClientLibrary.Files.FileRevision.Page">
+      <summary>
+            Gets the stub of page this revision applies to.
+            </summary>
+    </member>
+    <member name="P:WikiClientLibrary.Files.FileRevision.Sha1">
+      <summary>
+            The file's SHA-1 hash.
+            </summary>
+    </member>
+    <member name="P:WikiClientLibrary.Files.FileRevision.Size">
+      <summary>
+            Size of the file. In bytes.
+            </summary>
+    </member>
+    <member name="P:WikiClientLibrary.Files.FileRevision.TimeStamp">
+      <summary>
+            The time and date of the revision.
+            </summary>
+    </member>
+    <member name="P:WikiClientLibrary.Files.FileRevision.Url">
+      <summary>
+            Url of the file.
+            </summary>
+    </member>
+    <member name="P:WikiClientLibrary.Files.FileRevision.UserName">
+      <summary>
+            Name of the user uploading this file revision.
+            </summary>
+    </member>
+    <member name="P:WikiClientLibrary.Files.FileRevision.Width">
+      <summary>
+        <markup>
+          <include item="SMCMissingTag">
+            <parameter>summary</parameter>
+            <parameter>P:WikiClientLibrary.Files.FileRevision.Width</parameter>
+          </include>
+        </markup>
+      </summary>
+    </member>
     <member name="T:WikiClientLibrary.Files.StreamUploadSource">
       <summary>
             Represents uploadable content contained in a <see cref="P:WikiClientLibrary.Files.StreamUploadSource.Stream" />.
@@ -2312,6 +2351,155 @@
         </markup>
       </summary>
     </member>
+    <member name="T:WikiClientLibrary.Files.UploadResult">
+      <summary>
+            Contains the result from server after an upload operation.
+            </summary>
+    </member>
+    <member name="M:WikiClientLibrary.Files.UploadResult.#ctor">
+      <summary>
+        <markup>
+          <include item="SMCAutoDocConstructor">
+            <parameter>WikiClientLibrary.Files.UploadResult</parameter>
+          </include>
+        </markup>
+      </summary>
+    </member>
+    <member name="P:WikiClientLibrary.Files.UploadResult.DuplicateVersions">
+      <summary>
+            Gets a list of timestamps indicating the duplicate file versions, if any.
+            </summary>
+    </member>
+    <member name="P:WikiClientLibrary.Files.UploadResult.FileKey">
+      <summary>
+            For <see cref="F:WikiClientLibrary.Files.UploadResultCode.Warning" /> and <see cref="F:WikiClientLibrary.Files.UploadResultCode.Continue" />,
+            the file key to be passed into the next upload attempt. 
+            </summary>
+    </member>
+    <member name="P:WikiClientLibrary.Files.UploadResult.FileRevision">
+      <summary>
+            For a successful upload or stashing, gets the revision information
+            for the uploaded file.
+            </summary>
+    </member>
+    <member name="M:WikiClientLibrary.Files.UploadResult.FormatWarning(System.String,Newtonsoft.Json.Linq.JToken)">
+      <summary>
+            Try to convert the specified warning code and context into a user-friendly
+            warning message.
+            </summary>
+      <param name="warningCode">Case-sensitive warning code.</param>
+      <param name="context">The extra content of the warning.</param>
+      <returns>
+            It tries to match the warningCode with well-known ones, and returns a
+            user-friendly warning message. If there's no match, a string containing
+            warningCode and context will be returned.
+            </returns>
+    </member>
+    <member name="P:WikiClientLibrary.Files.UploadResult.Offset">
+      <summary>
+            When performing chunked uploading, gets the starting offset of the next chunk.
+            </summary>
+    </member>
+    <member name="P:WikiClientLibrary.Files.UploadResult.ResultCode">
+      <summary>
+            A brief word describing the result of the operation.
+            </summary>
+    </member>
+    <member name="M:WikiClientLibrary.Files.UploadResult.ToString">
+      <summary>
+            返回表示当前对象的字符串。
+            </summary>
+      <returns>
+            表示当前对象的字符串。
+            </returns>
+    </member>
+    <member name="P:WikiClientLibrary.Files.UploadResult.Warnings">
+      <summary>
+            Gets a collection of warnings resulted from this upload.
+            </summary>
+    </member>
+    <member name="T:WikiClientLibrary.Files.UploadResultCode">
+      <summary>
+            General results of an upload operation.
+            </summary>
+    </member>
+    <member name="T:WikiClientLibrary.Files.UploadWarningCollection">
+      <summary>
+            A collection containing the warning messages of file upload.
+            </summary>
+    </member>
+    <member name="M:WikiClientLibrary.Files.UploadWarningCollection.#ctor">
+      <summary>
+        <markup>
+          <include item="SMCAutoDocConstructor">
+            <parameter>WikiClientLibrary.Files.UploadWarningCollection</parameter>
+          </include>
+        </markup>
+      </summary>
+    </member>
+    <member name="P:WikiClientLibrary.Files.UploadWarningCollection.DuplicateTitles">
+      <summary>
+            Uploaded file is a duplicate of these titles.
+            </summary>
+    </member>
+    <member name="P:WikiClientLibrary.Files.UploadWarningCollection.DuplicateVersions">
+      <summary>
+            Uploaded file is duplicate of these versions .
+            </summary>
+    </member>
+    <member name="P:WikiClientLibrary.Files.UploadWarningCollection.ExistingAlternativeExtension">
+      <summary>
+            File exists with different extension as…
+            </summary>
+    </member>
+    <member name="M:WikiClientLibrary.Files.UploadWarningCollection.FormatWarning(System.String,Newtonsoft.Json.Linq.JToken)">
+      <summary>
+            Try to convert the specified warning code and context into a user-friendly
+            warning message.
+            </summary>
+      <param name="warningCode">Case-sensitive warning code.</param>
+      <param name="context">The extra content of the warning.</param>
+      <returns>
+            It tries to match the warningCode with well-known ones, and returns a
+            user-friendly warning message. If there's no match, a string containing
+            warningCode and context will be returned.
+            </returns>
+    </member>
+    <member name="P:WikiClientLibrary.Files.UploadWarningCollection.IsBadFileName">
+      <summary>
+            Target filename is invalid.
+            </summary>
+    </member>
+    <member name="P:WikiClientLibrary.Files.UploadWarningCollection.IsEmptyFile">
+      <summary>
+            The file content is empty.
+            </summary>
+    </member>
+    <member name="P:WikiClientLibrary.Files.UploadWarningCollection.IsUnwantedType">
+      <summary>
+            The file type is of an unwanted type.
+            </summary>
+    </member>
+    <member name="P:WikiClientLibrary.Files.UploadWarningCollection.TitleExists">
+      <summary>
+            The title exists.
+            </summary>
+    </member>
+    <member name="M:WikiClientLibrary.Files.UploadWarningCollection.ToString">
+      <summary>
+            Gets the formatted warning messages, one warning per line.
+            </summary>
+    </member>
+    <member name="P:WikiClientLibrary.Files.UploadWarningCollection.WasContentDeleted">
+      <summary>
+            The file content is a duplicate of a deleted file.
+            </summary>
+    </member>
+    <member name="P:WikiClientLibrary.Files.UploadWarningCollection.WasTitleDeleted">
+      <summary>
+            The file with the specified title was previously deleted.
+            </summary>
+    </member>
     <member name="T:WikiClientLibrary.Files.WikiSiteExtensions">
       <summary>
         <markup>
@@ -2333,7 +2521,7 @@
       <param name="ignoreWarnings">Ignore any warnings. This must be set to upload a new version of an existing image.</param>
       <param name="watch">Whether to add the file into your watchlist.</param>
       <param name="cancellationToken">The cancellation token that will be checked prior to completing the returned task.</param>
-      <returns>An <see cref="T:WikiClientLibrary.Pages.UploadResult" />. You need to check <see cref="P:WikiClientLibrary.Pages.UploadResult.ResultCode" /> for further action.</returns>
+      <returns>An <see cref="T:WikiClientLibrary.Files.UploadResult" />. You need to check <see cref="P:WikiClientLibrary.Files.UploadResult.ResultCode" /> for further action.</returns>
       <exception cref="T:System.UnauthorizedAccessException">You do not have the permission to upload the file.</exception>
       <exception cref="T:WikiClientLibrary.OperationFailedException">
             There's an general failure while uploading the file.
@@ -2356,7 +2544,7 @@
       <param name="ignoreWarnings">Ignore any warnings. This must be set to upload a new version of an existing image.</param>
       <param name="watch">Whether to add the file into your watchlist.</param>
       <param name="cancellationToken">The cancellation token that will be checked prior to completing the returned task.</param>
-      <returns>An <see cref="T:WikiClientLibrary.Pages.UploadResult" />. You need to check <see cref="P:WikiClientLibrary.Pages.UploadResult.ResultCode" /> for further action.</returns>
+      <returns>An <see cref="T:WikiClientLibrary.Files.UploadResult" />. You need to check <see cref="P:WikiClientLibrary.Files.UploadResult.ResultCode" /> for further action.</returns>
       <exception cref="T:System.UnauthorizedAccessException">You do not have the permission to upload the file.</exception>
       <exception cref="T:WikiClientLibrary.OperationFailedException">
             There's an general failure while uploading the file.
@@ -2379,7 +2567,7 @@
       <param name="ignoreWarnings">Ignore any warnings. This must be set to upload a new version of an existing image.</param>
       <param name="watch">Whether to add the file into your watchlist.</param>
       <param name="cancellationToken">The cancellation token that will be checked prior to completing the returned task.</param>
-      <returns>An <see cref="T:WikiClientLibrary.Pages.UploadResult" />. You need to check <see cref="P:WikiClientLibrary.Pages.UploadResult.ResultCode" /> for further action.</returns>
+      <returns>An <see cref="T:WikiClientLibrary.Files.UploadResult" />. You need to check <see cref="P:WikiClientLibrary.Files.UploadResult.ResultCode" /> for further action.</returns>
       <exception cref="T:System.UnauthorizedAccessException">You do not have the permission to upload the file.</exception>
       <exception cref="T:WikiClientLibrary.OperationFailedException">
             There's an general failure while uploading the file.
@@ -2909,115 +3097,366 @@
     </member>
     <member name="T:WikiClientLibrary.Generators.LogActions">
       <summary>
-            Predefined Log Action values.
+            Predefined Log Action values used in <see cref="P:WikiClientLibrary.Generators.LogEventItem.Action" />.
             </summary>
     </member>
+    <member name="F:WikiClientLibrary.Generators.LogActions.AutoCreate">
+      <summary>(<see cref="F:WikiClientLibrary.Generators.LogTypes.NewUsers" />) When the user is automatically created (such as by CentralAuth).</summary>
+    </member>
+    <member name="F:WikiClientLibrary.Generators.LogActions.AutoPatrol">
+      <summary>(<see cref="F:WikiClientLibrary.Generators.LogTypes.Patrol" />) Automatic patrol of a revision.</summary>
+    </member>
     <member name="F:WikiClientLibrary.Generators.LogActions.Block">
-      <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>F:WikiClientLibrary.Generators.LogActions.Block</parameter>
-          </include>
-        </markup>
-      </summary>
+      <summary>(<see cref="F:WikiClientLibrary.Generators.LogTypes.Block" />) Block user.</summary>
+    </member>
+    <member name="F:WikiClientLibrary.Generators.LogActions.ByEmail">
+      <summary>(<see cref="F:WikiClientLibrary.Generators.LogTypes.NewUsers" />) When the created user will receive its password by email.</summary>
+    </member>
+    <member name="F:WikiClientLibrary.Generators.LogActions.Create">
+      <summary>(<see cref="F:WikiClientLibrary.Generators.LogTypes.NewUsers" />) For an anonymous user creating an account for himself.</summary>
+    </member>
+    <member name="F:WikiClientLibrary.Generators.LogActions.Create2">
+      <summary>(<see cref="F:WikiClientLibrary.Generators.LogTypes.NewUsers" />) For a logged in user creating an account for someone else.</summary>
     </member>
     <member name="F:WikiClientLibrary.Generators.LogActions.Delete">
-      <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>F:WikiClientLibrary.Generators.LogActions.Delete</parameter>
-          </include>
-        </markup>
-      </summary>
+      <summary>(<see cref="F:WikiClientLibrary.Generators.LogTypes.Delete" />) Delete a page.</summary>
     </member>
-    <member name="F:WikiClientLibrary.Generators.LogActions.Import">
-      <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>F:WikiClientLibrary.Generators.LogActions.Import</parameter>
-          </include>
-        </markup>
-      </summary>
+    <member name="F:WikiClientLibrary.Generators.LogActions.Event">
+      <summary>(<see cref="F:WikiClientLibrary.Generators.LogTypes.Delete" />) Delete a log event.</summary>
+    </member>
+    <member name="F:WikiClientLibrary.Generators.LogActions.Interwiki">
+      <summary>(<see cref="F:WikiClientLibrary.Generators.LogTypes.Import" />) Import interwiki.</summary>
     </member>
     <member name="F:WikiClientLibrary.Generators.LogActions.Merge">
-      <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>F:WikiClientLibrary.Generators.LogActions.Merge</parameter>
-          </include>
-        </markup>
-      </summary>
+      <summary>(<see cref="F:WikiClientLibrary.Generators.LogTypes.Merge" />) Merge history.</summary>
+    </member>
+    <member name="F:WikiClientLibrary.Generators.LogActions.Modify">
+      <summary>(<see cref="F:WikiClientLibrary.Generators.LogTypes.Protect" />) Modify the protection of a protected page.</summary>
     </member>
     <member name="F:WikiClientLibrary.Generators.LogActions.Move">
-      <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>F:WikiClientLibrary.Generators.LogActions.Move</parameter>
-          </include>
-        </markup>
-      </summary>
+      <summary>(<see cref="F:WikiClientLibrary.Generators.LogTypes.Move" />) Move a page.</summary>
     </member>
-    <member name="F:WikiClientLibrary.Generators.LogActions.NewUsers">
-      <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>F:WikiClientLibrary.Generators.LogActions.NewUsers</parameter>
-          </include>
-        </markup>
-      </summary>
+    <member name="F:WikiClientLibrary.Generators.LogActions.MoveOverRedirect">
+      <summary>(<see cref="F:WikiClientLibrary.Generators.LogTypes.Move" />) Move a page over a redirect. (N/A to MediaWiki 1.19)</summary>
+    </member>
+    <member name="F:WikiClientLibrary.Generators.LogActions.Overwrite">
+      <summary>(<see cref="F:WikiClientLibrary.Generators.LogTypes.Upload" />) Re-upload a file.</summary>
     </member>
     <member name="F:WikiClientLibrary.Generators.LogActions.PageLanguage">
-      <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>F:WikiClientLibrary.Generators.LogActions.PageLanguage</parameter>
-          </include>
-        </markup>
-      </summary>
+      <summary>(<see cref="F:WikiClientLibrary.Generators.LogTypes.PageLanguage" />) For pages whose language has been changed.</summary>
     </member>
     <member name="F:WikiClientLibrary.Generators.LogActions.Patrol">
-      <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>F:WikiClientLibrary.Generators.LogActions.Patrol</parameter>
-          </include>
-        </markup>
-      </summary>
+      <summary>(<see cref="F:WikiClientLibrary.Generators.LogTypes.Patrol" />) Mark a revision as patrolled.</summary>
     </member>
     <member name="F:WikiClientLibrary.Generators.LogActions.Protect">
-      <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>F:WikiClientLibrary.Generators.LogActions.Protect</parameter>
-          </include>
-        </markup>
-      </summary>
+      <summary>(<see cref="F:WikiClientLibrary.Generators.LogTypes.Protect" />) Protect an unprotected page.</summary>
+    </member>
+    <member name="F:WikiClientLibrary.Generators.LogActions.Reblock">
+      <summary>(<see cref="F:WikiClientLibrary.Generators.LogTypes.Block" />) Change block.</summary>
+    </member>
+    <member name="F:WikiClientLibrary.Generators.LogActions.Restore">
+      <summary>(<see cref="F:WikiClientLibrary.Generators.LogTypes.Delete" />) Restore a page.</summary>
+    </member>
+    <member name="F:WikiClientLibrary.Generators.LogActions.Revision">
+      <summary>(<see cref="F:WikiClientLibrary.Generators.LogTypes.Delete" />) Change revision visibility.</summary>
     </member>
     <member name="F:WikiClientLibrary.Generators.LogActions.Rights">
-      <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>F:WikiClientLibrary.Generators.LogActions.Rights</parameter>
-          </include>
-        </markup>
-      </summary>
+      <summary>(<see cref="F:WikiClientLibrary.Generators.LogTypes.Rights" />) Change a user's groups.</summary>
+    </member>
+    <member name="F:WikiClientLibrary.Generators.LogActions.Unblock">
+      <summary>(<see cref="F:WikiClientLibrary.Generators.LogTypes.Block" />) Unblock user.</summary>
+    </member>
+    <member name="F:WikiClientLibrary.Generators.LogActions.Unprotect">
+      <summary>(<see cref="F:WikiClientLibrary.Generators.LogTypes.Protect" />) Unprotect a page.</summary>
     </member>
     <member name="F:WikiClientLibrary.Generators.LogActions.Upload">
       <summary>
+            (<see cref="F:WikiClientLibrary.Generators.LogTypes.Import" />) Import from an uploaded XML file.
+            (<see cref="F:WikiClientLibrary.Generators.LogTypes.Upload" />) Upload a new file.
+            </summary>
+    </member>
+    <member name="T:WikiClientLibrary.Generators.LogEventItem">
+      <summary>
+            Represents an MediaWiki log event entry.
+            </summary>
+    </member>
+    <member name="P:WikiClientLibrary.Generators.LogEventItem.Action">
+      <summary>
+            Specific log action.
+            </summary>
+    </member>
+    <member name="P:WikiClientLibrary.Generators.LogEventItem.Comment">
+      <summary>The edit/log comment.</summary>
+    </member>
+    <member name="P:WikiClientLibrary.Generators.LogEventItem.LogId">
+      <summary>Gets ID of the log entry.</summary>
+    </member>
+    <member name="P:WikiClientLibrary.Generators.LogEventItem.NamespaceId">
+      <summary>Namespace ID of the page affected by this item.</summary>
+    </member>
+    <member name="P:WikiClientLibrary.Generators.LogEventItem.PageId">
+      <summary>the page id at the time the log was stored.</summary>
+    </member>
+    <member name="P:WikiClientLibrary.Generators.LogEventItem.Params">
+      <summary>For log items, gets additional log parameters.</summary>
+    </member>
+    <member name="P:WikiClientLibrary.Generators.LogEventItem.ParsedComment">
+      <summary>The parsed comment for the edit/log comment.</summary>
+    </member>
+    <member name="P:WikiClientLibrary.Generators.LogEventItem.Tags">
+      <summary>Tags for the event.</summary>
+    </member>
+    <member name="P:WikiClientLibrary.Generators.LogEventItem.TimeStamp">
+      <summary>The time and date of the change.</summary>
+    </member>
+    <member name="P:WikiClientLibrary.Generators.LogEventItem.Title">
+      <summary>Full title of the page affected by this item.</summary>
+    </member>
+    <member name="M:WikiClientLibrary.Generators.LogEventItem.ToString">
+      <summary>
         <markup>
           <include item="SMCMissingTag">
             <parameter>summary</parameter>
-            <parameter>F:WikiClientLibrary.Generators.LogActions.Upload</parameter>
+            <parameter>M:WikiClientLibrary.Generators.LogEventItem.ToString</parameter>
+          </include>
+        </markup>
+      </summary>
+    </member>
+    <member name="P:WikiClientLibrary.Generators.LogEventItem.Type">
+      <summary>Gets log type name.</summary>
+    </member>
+    <member name="P:WikiClientLibrary.Generators.LogEventItem.UserId">
+      <summary>The user ID who was responsible for the log event/recent change.</summary>
+    </member>
+    <member name="P:WikiClientLibrary.Generators.LogEventItem.UserName">
+      <summary>Name of the user making this recent change.</summary>
+    </member>
+    <member name="T:WikiClientLibrary.Generators.LogEventsList">
+      <summary>
+            Get a list of all logged events, à la <c>Special:Log</c>.
+            </summary>
+    </member>
+    <member name="M:WikiClientLibrary.Generators.LogEventsList.#ctor(WikiClientLibrary.Sites.WikiSite)">
+      <summary>
+        <markup>
+          <include item="SMCAutoDocConstructor">
+            <parameter>WikiClientLibrary.Generators.LogEventsList</parameter>
+          </include>
+        </markup>
+      </summary>
+      <param name="site">The MediaWiki site this instance applies to.</param>
+    </member>
+    <member name="P:WikiClientLibrary.Generators.LogEventsList.EndTime">
+      <summary>
+            The timestamp to end listing at.
+            </summary>
+    </member>
+    <member name="M:WikiClientLibrary.Generators.LogEventsList.EnumListParameters">
+      <summary>
+            When overridden, fills generator parameters for <c>action=query&amp;list={ListName}</c> request.
+            </summary>
+      <returns>A sequence of fields, which will override the basic query parameters.</returns>
+    </member>
+    <member name="M:WikiClientLibrary.Generators.LogEventsList.ItemFromJson(Newtonsoft.Json.Linq.JToken)">
+      <summary>
+            Parses an item contained in the <c>action=query&amp;list=</c> JSON response.
+            </summary>
+      <param name="json">One of the item node under the JSON path <c>query/{listname}</c>.</param>
+      <returns>The item that will be returned in the sequence from <see cref="M:WikiClientLibrary.Generators.Primitive.WikiList`1.EnumItemsAsync" />.</returns>
+    </member>
+    <member name="P:WikiClientLibrary.Generators.LogEventsList.ListName">
+      <summary>
+            The name of list, used as the value of <c>list</c> parameter in <c>action=query</c> request.
+            </summary>
+    </member>
+    <member name="P:WikiClientLibrary.Generators.LogEventsList.LogAction">
+      <summary>
+            Filter log actions to only this type.
+            </summary>
+    </member>
+    <member name="P:WikiClientLibrary.Generators.LogEventsList.LogType">
+      <summary>
+            Only list log entries of this type.
+            </summary>
+    </member>
+    <member name="P:WikiClientLibrary.Generators.LogEventsList.NamespaceId">
+      <summary>
+            Only list log events associated with pages in this namespace. (MediaWiki 1.24+)
+            </summary>
+    </member>
+    <member name="P:WikiClientLibrary.Generators.LogEventsList.StartTime">
+      <summary>
+            The timestamp to start listing from.
+            </summary>
+    </member>
+    <member name="P:WikiClientLibrary.Generators.LogEventsList.Tag">
+      <summary>
+            Only list event entries tagged with this tag.
+            </summary>
+    </member>
+    <member name="P:WikiClientLibrary.Generators.LogEventsList.TimeAscending">
+      <summary>
+            Whether to list pages in an ascending order of time. (Default: <c>false</c>)
+            </summary>
+    </member>
+    <member name="P:WikiClientLibrary.Generators.LogEventsList.UserName">
+      <summary>
+            Only list changes made by this user.
+            </summary>
+    </member>
+    <member name="T:WikiClientLibrary.Generators.LogParameterCollection">
+      <summary>
+            A collection of extensible log parameters.
+            </summary>
+    </member>
+    <member name="M:WikiClientLibrary.Generators.LogParameterCollection.#ctor">
+      <summary>
+        <markup>
+          <include item="SMCAutoDocConstructor">
+            <parameter>WikiClientLibrary.Generators.LogParameterCollection</parameter>
+          </include>
+        </markup>
+      </summary>
+    </member>
+    <member name="P:WikiClientLibrary.Generators.LogParameterCollection.CurrentRevisionId">
+      <summary>
+            (<see cref="F:WikiClientLibrary.Generators.LogActions.Patrol" />)
+            </summary>
+    </member>
+    <member name="P:WikiClientLibrary.Generators.LogParameterCollection.IsAutoPatrol">
+      <summary>
+            (<see cref="F:WikiClientLibrary.Generators.LogActions.Patrol" />)
+            </summary>
+    </member>
+    <member name="P:WikiClientLibrary.Generators.LogParameterCollection.PreviousRevisionId">
+      <summary>
+            (<see cref="F:WikiClientLibrary.Generators.LogActions.Patrol" />)
+            </summary>
+    </member>
+    <member name="P:WikiClientLibrary.Generators.LogParameterCollection.SuppressRedirect">
+      <summary>
+            (<see cref="F:WikiClientLibrary.Generators.LogActions.Move" />) Whether to suppress the creation of redirect when moving the page.
+            </summary>
+    </member>
+    <member name="P:WikiClientLibrary.Generators.LogParameterCollection.TargetNamespaceId">
+      <summary>
+            (<see cref="F:WikiClientLibrary.Generators.LogActions.Move" />) Namespace ID of the move target.
+            </summary>
+    </member>
+    <member name="P:WikiClientLibrary.Generators.LogParameterCollection.TargetTitle">
+      <summary>
+            (<see cref="F:WikiClientLibrary.Generators.LogActions.Move" />) Full title of the move target.
+            </summary>
+    </member>
+    <member name="P:WikiClientLibrary.Generators.LogParameterCollection.UserId">
+      <summary>
+            (<see cref="F:WikiClientLibrary.Generators.LogTypes.NewUsers" />) The user ID of the created user.
+            </summary>
+    </member>
+    <member name="T:WikiClientLibrary.Generators.LogTypes">
+      <summary>
+            Predefined Log Type values used in <see cref="P:WikiClientLibrary.Generators.LogEventItem.Type" />.
+            </summary>
+    </member>
+    <member name="F:WikiClientLibrary.Generators.LogTypes.Block">
+      <summary>
+        <markup>
+          <include item="SMCMissingTag">
+            <parameter>summary</parameter>
+            <parameter>F:WikiClientLibrary.Generators.LogTypes.Block</parameter>
+          </include>
+        </markup>
+      </summary>
+    </member>
+    <member name="F:WikiClientLibrary.Generators.LogTypes.Delete">
+      <summary>
+        <markup>
+          <include item="SMCMissingTag">
+            <parameter>summary</parameter>
+            <parameter>F:WikiClientLibrary.Generators.LogTypes.Delete</parameter>
+          </include>
+        </markup>
+      </summary>
+    </member>
+    <member name="F:WikiClientLibrary.Generators.LogTypes.Import">
+      <summary>
+        <markup>
+          <include item="SMCMissingTag">
+            <parameter>summary</parameter>
+            <parameter>F:WikiClientLibrary.Generators.LogTypes.Import</parameter>
+          </include>
+        </markup>
+      </summary>
+    </member>
+    <member name="F:WikiClientLibrary.Generators.LogTypes.Merge">
+      <summary>
+        <markup>
+          <include item="SMCMissingTag">
+            <parameter>summary</parameter>
+            <parameter>F:WikiClientLibrary.Generators.LogTypes.Merge</parameter>
+          </include>
+        </markup>
+      </summary>
+    </member>
+    <member name="F:WikiClientLibrary.Generators.LogTypes.Move">
+      <summary>
+        <markup>
+          <include item="SMCMissingTag">
+            <parameter>summary</parameter>
+            <parameter>F:WikiClientLibrary.Generators.LogTypes.Move</parameter>
+          </include>
+        </markup>
+      </summary>
+    </member>
+    <member name="F:WikiClientLibrary.Generators.LogTypes.NewUsers">
+      <summary>
+        <markup>
+          <include item="SMCMissingTag">
+            <parameter>summary</parameter>
+            <parameter>F:WikiClientLibrary.Generators.LogTypes.NewUsers</parameter>
+          </include>
+        </markup>
+      </summary>
+    </member>
+    <member name="F:WikiClientLibrary.Generators.LogTypes.PageLanguage">
+      <summary>
+        <markup>
+          <include item="SMCMissingTag">
+            <parameter>summary</parameter>
+            <parameter>F:WikiClientLibrary.Generators.LogTypes.PageLanguage</parameter>
+          </include>
+        </markup>
+      </summary>
+    </member>
+    <member name="F:WikiClientLibrary.Generators.LogTypes.Patrol">
+      <summary>
+        <markup>
+          <include item="SMCMissingTag">
+            <parameter>summary</parameter>
+            <parameter>F:WikiClientLibrary.Generators.LogTypes.Patrol</parameter>
+          </include>
+        </markup>
+      </summary>
+    </member>
+    <member name="F:WikiClientLibrary.Generators.LogTypes.Protect">
+      <summary>
+        <markup>
+          <include item="SMCMissingTag">
+            <parameter>summary</parameter>
+            <parameter>F:WikiClientLibrary.Generators.LogTypes.Protect</parameter>
+          </include>
+        </markup>
+      </summary>
+    </member>
+    <member name="F:WikiClientLibrary.Generators.LogTypes.Rights">
+      <summary>Change a user's groups.</summary>
+    </member>
+    <member name="F:WikiClientLibrary.Generators.LogTypes.Upload">
+      <summary>
+        <markup>
+          <include item="SMCMissingTag">
+            <parameter>summary</parameter>
+            <parameter>F:WikiClientLibrary.Generators.LogTypes.Upload</parameter>
           </include>
         </markup>
       </summary>
@@ -3140,18 +3579,11 @@
     </member>
     <member name="T:WikiClientLibrary.Generators.RecentChangeItem">
       <summary>
-            Represents an item in RecentChanges list.
+            Represents MediaWiki recent change entry.
             </summary>
     </member>
     <member name="P:WikiClientLibrary.Generators.RecentChangeItem.Comment">
-      <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>P:WikiClientLibrary.Generators.RecentChangeItem.Comment</parameter>
-          </include>
-        </markup>
-      </summary>
+      <summary>The edit/log comment.</summary>
     </member>
     <member name="P:WikiClientLibrary.Generators.RecentChangeItem.DeltaContentLength">
       <summary>
@@ -3174,99 +3606,39 @@
       </summary>
     </member>
     <member name="P:WikiClientLibrary.Generators.RecentChangeItem.Id">
-      <summary>
-            Id of recent change entry.
-            </summary>
+      <summary>ID of recent change entry.</summary>
     </member>
     <member name="P:WikiClientLibrary.Generators.RecentChangeItem.LogAction">
       <summary>
-            Log action.
+            Specific log action.
             </summary>
     </member>
     <member name="P:WikiClientLibrary.Generators.RecentChangeItem.LogId">
-      <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>P:WikiClientLibrary.Generators.RecentChangeItem.LogId</parameter>
-          </include>
-        </markup>
-      </summary>
+      <summary>For log items, ID of the log entry.</summary>
     </member>
     <member name="P:WikiClientLibrary.Generators.RecentChangeItem.LogParams">
-      <summary>
-            Additional log parameters.
-            </summary>
+      <summary>For log items, gets additional log parameters.</summary>
     </member>
     <member name="P:WikiClientLibrary.Generators.RecentChangeItem.LogType">
-      <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>P:WikiClientLibrary.Generators.RecentChangeItem.LogType</parameter>
-          </include>
-        </markup>
-      </summary>
+      <summary>For log items, gets log type name.</summary>
     </member>
     <member name="P:WikiClientLibrary.Generators.RecentChangeItem.NamespaceId">
-      <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>P:WikiClientLibrary.Generators.RecentChangeItem.NamespaceId</parameter>
-          </include>
-        </markup>
-      </summary>
+      <summary>Namespace ID of the page affected by this item.</summary>
     </member>
     <member name="P:WikiClientLibrary.Generators.RecentChangeItem.NewContentLength">
-      <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>P:WikiClientLibrary.Generators.RecentChangeItem.NewContentLength</parameter>
-          </include>
-        </markup>
-      </summary>
+      <summary>Content length of the new revision affected by this item.</summary>
     </member>
     <member name="P:WikiClientLibrary.Generators.RecentChangeItem.OldContentLength">
-      <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>P:WikiClientLibrary.Generators.RecentChangeItem.OldContentLength</parameter>
-          </include>
-        </markup>
-      </summary>
+      <summary>Content length of the old revision affected by this item.</summary>
     </member>
     <member name="P:WikiClientLibrary.Generators.RecentChangeItem.OldRevisionId">
-      <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>P:WikiClientLibrary.Generators.RecentChangeItem.OldRevisionId</parameter>
-          </include>
-        </markup>
-      </summary>
+      <summary>ID of the old revision affected by this item.</summary>
     </member>
     <member name="P:WikiClientLibrary.Generators.RecentChangeItem.PageId">
-      <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>P:WikiClientLibrary.Generators.RecentChangeItem.PageId</parameter>
-          </include>
-        </markup>
-      </summary>
+      <summary>ID of the page affected by this item.</summary>
     </member>
     <member name="P:WikiClientLibrary.Generators.RecentChangeItem.ParsedComment">
-      <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>P:WikiClientLibrary.Generators.RecentChangeItem.ParsedComment</parameter>
-          </include>
-        </markup>
-      </summary>
+      <summary>The parsed comment for the edit/log comment.</summary>
     </member>
     <member name="M:WikiClientLibrary.Generators.RecentChangeItem.PatrolAsync">
       <summary>
@@ -3310,34 +3682,10 @@
       </summary>
     </member>
     <member name="P:WikiClientLibrary.Generators.RecentChangeItem.RevisionId">
-      <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>P:WikiClientLibrary.Generators.RecentChangeItem.RevisionId</parameter>
-          </include>
-        </markup>
-      </summary>
+      <summary>ID of the new revision affected by this item.</summary>
     </member>
     <member name="P:WikiClientLibrary.Generators.RecentChangeItem.Sha1">
-      <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>P:WikiClientLibrary.Generators.RecentChangeItem.Sha1</parameter>
-          </include>
-        </markup>
-      </summary>
-    </member>
-    <member name="P:WikiClientLibrary.Generators.RecentChangeItem.Site">
-      <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>P:WikiClientLibrary.Generators.RecentChangeItem.Site</parameter>
-          </include>
-        </markup>
-      </summary>
+      <summary>SHA-1 hash of the updated revision.</summary>
     </member>
     <member name="P:WikiClientLibrary.Generators.RecentChangeItem.Tags">
       <summary>
@@ -3350,52 +3698,37 @@
       </summary>
     </member>
     <member name="P:WikiClientLibrary.Generators.RecentChangeItem.TimeStamp">
-      <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>P:WikiClientLibrary.Generators.RecentChangeItem.TimeStamp</parameter>
-          </include>
-        </markup>
-      </summary>
+      <summary>The time and date of the change.</summary>
     </member>
     <member name="P:WikiClientLibrary.Generators.RecentChangeItem.Title">
+      <summary>Full title of the page affected by this item.</summary>
+    </member>
+    <member name="M:WikiClientLibrary.Generators.RecentChangeItem.ToLogEventItem">
       <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>P:WikiClientLibrary.Generators.RecentChangeItem.Title</parameter>
-          </include>
-        </markup>
-      </summary>
+            If the current recent change item is a log event, returns the corresponding log event item.
+            </summary>
+      <returns>The corresponding log event item.</returns>
+      <exception cref="T:System.InvalidOperationException">
+        <see cref="P:WikiClientLibrary.Generators.RecentChangeItem.Type" /> is not <see cref="F:WikiClientLibrary.Generators.RecentChangesType.Log" />.</exception>
     </member>
     <member name="M:WikiClientLibrary.Generators.RecentChangeItem.ToString">
       <summary>
-            返回表示当前对象的字符串。
-            </summary>
-      <returns>
-            表示当前对象的字符串。
-            </returns>
+        <markup>
+          <include item="SMCMissingTag">
+            <parameter>summary</parameter>
+            <parameter>M:WikiClientLibrary.Generators.RecentChangeItem.ToString</parameter>
+          </include>
+        </markup>
+      </summary>
     </member>
     <member name="P:WikiClientLibrary.Generators.RecentChangeItem.Type">
-      <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>P:WikiClientLibrary.Generators.RecentChangeItem.Type</parameter>
-          </include>
-        </markup>
-      </summary>
+      <summary>Recent change type.</summary>
+    </member>
+    <member name="P:WikiClientLibrary.Generators.RecentChangeItem.UserId">
+      <summary>The user ID who was responsible for the recent change.</summary>
     </member>
     <member name="P:WikiClientLibrary.Generators.RecentChangeItem.UserName">
-      <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>P:WikiClientLibrary.Generators.RecentChangeItem.UserName</parameter>
-          </include>
-        </markup>
-      </summary>
+      <summary>Name of the user making this recent change.</summary>
     </member>
     <member name="T:WikiClientLibrary.Generators.RecentChangesFilterTypes">
       <summary>
@@ -3560,7 +3893,7 @@
     </member>
     <member name="P:WikiClientLibrary.Generators.RecentChangesGenerator.TimeAscending">
       <summary>
-            Whether to list pages in an ascending order of time.
+            Whether to list pages in an ascending order of time.  (Default: <c>false</c>)
             </summary>
     </member>
     <member name="P:WikiClientLibrary.Generators.RecentChangesGenerator.TypeFilters">
@@ -3784,7 +4117,7 @@
     </member>
     <member name="P:WikiClientLibrary.Generators.SearchGenerator.BackendName">
       <summary>
-            Class name of search backend to use (Default: $wgSearchType, MediaWiki 1.22+)
+            Class name of search back-end to use (Default: $wgSearchType, MediaWiki 1.22+)
             </summary>
     </member>
     <member name="M:WikiClientLibrary.Generators.SearchGenerator.EnumListParameters">
@@ -4871,31 +5204,11 @@
     </member>
     <member name="M:WikiClientLibrary.Infrastructures.WikiJsonContractResolver.CreateProperty(System.Reflection.MemberInfo,Newtonsoft.Json.MemberSerialization)">
       <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>M:WikiClientLibrary.Infrastructures.WikiJsonContractResolver.CreateProperty(System.Reflection.MemberInfo,Newtonsoft.Json.MemberSerialization)</parameter>
-          </include>
-        </markup>
-      </summary>
-      <param name="member">
-        <markup>
-          <include item="SMCMissingParamTag">
-            <parameter>param</parameter>
-            <parameter>member</parameter>
-            <parameter>M:WikiClientLibrary.Infrastructures.WikiJsonContractResolver.CreateProperty(System.Reflection.MemberInfo,Newtonsoft.Json.MemberSerialization)</parameter>
-          </include>
-        </markup>
-      </param>
-      <param name="memberSerialization">
-        <markup>
-          <include item="SMCMissingParamTag">
-            <parameter>param</parameter>
-            <parameter>memberSerialization</parameter>
-            <parameter>M:WikiClientLibrary.Infrastructures.WikiJsonContractResolver.CreateProperty(System.Reflection.MemberInfo,Newtonsoft.Json.MemberSerialization)</parameter>
-          </include>
-        </markup>
-      </param>
+            Creates a <see cref="T:Newtonsoft.Json.Serialization.JsonProperty" /> for the given <see cref="T:System.Reflection.MemberInfo" />.
+            </summary>
+      <param name="memberSerialization">The member's parent <see cref="T:Newtonsoft.Json.MemberSerialization" />.</param>
+      <param name="member">The member to create a <see cref="T:Newtonsoft.Json.Serialization.JsonProperty" /> for.</param>
+      <returns>A created <see cref="T:Newtonsoft.Json.Serialization.JsonProperty" /> for the given <see cref="T:System.Reflection.MemberInfo" />.</returns>
     </member>
     <member name="M:WikiClientLibrary.Infrastructures.WikiJsonContractResolver.ResolveDictionaryKey(System.String)">
       <summary>
@@ -4971,6 +5284,81 @@
       <summary>
             Gets the count of all properties.
             </summary>
+    </member>
+    <member name="M:WikiClientLibrary.Infrastructures.WikiReadOnlyDictionary.GetBooleanValue(System.String)">
+      <summary>
+        <markup>
+          <include item="SMCMissingTag">
+            <parameter>summary</parameter>
+            <parameter>M:WikiClientLibrary.Infrastructures.WikiReadOnlyDictionary.GetBooleanValue(System.String)</parameter>
+          </include>
+        </markup>
+      </summary>
+      <param name="key">
+        <markup>
+          <include item="SMCMissingParamTag">
+            <parameter>param</parameter>
+            <parameter>key</parameter>
+            <parameter>M:WikiClientLibrary.Infrastructures.WikiReadOnlyDictionary.GetBooleanValue(System.String)</parameter>
+          </include>
+        </markup>
+      </param>
+    </member>
+    <member name="M:WikiClientLibrary.Infrastructures.WikiReadOnlyDictionary.GetInt32Value(System.String)">
+      <summary>
+            Gets the <see cref="T:System.Int32" /> value by property name.
+            This overload raises exception for missing key.
+            </summary>
+      <param name="key">The property name.</param>
+      <returns>The converted value.</returns>
+      <exception cref="T:System.Collections.Generic.KeyNotFoundException">The property is not found.</exception>
+    </member>
+    <member name="M:WikiClientLibrary.Infrastructures.WikiReadOnlyDictionary.GetInt32Value(System.String,System.Int32)">
+      <summary>
+        <markup>
+          <include item="SMCMissingTag">
+            <parameter>summary</parameter>
+            <parameter>M:WikiClientLibrary.Infrastructures.WikiReadOnlyDictionary.GetInt32Value(System.String,System.Int32)</parameter>
+          </include>
+        </markup>
+      </summary>
+      <param name="key">
+        <markup>
+          <include item="SMCMissingParamTag">
+            <parameter>param</parameter>
+            <parameter>key</parameter>
+            <parameter>M:WikiClientLibrary.Infrastructures.WikiReadOnlyDictionary.GetInt32Value(System.String,System.Int32)</parameter>
+          </include>
+        </markup>
+      </param>
+      <param name="defaultValue">
+        <markup>
+          <include item="SMCMissingParamTag">
+            <parameter>param</parameter>
+            <parameter>defaultValue</parameter>
+            <parameter>M:WikiClientLibrary.Infrastructures.WikiReadOnlyDictionary.GetInt32Value(System.String,System.Int32)</parameter>
+          </include>
+        </markup>
+      </param>
+    </member>
+    <member name="M:WikiClientLibrary.Infrastructures.WikiReadOnlyDictionary.GetStringValue(System.String)">
+      <summary>
+        <markup>
+          <include item="SMCMissingTag">
+            <parameter>summary</parameter>
+            <parameter>M:WikiClientLibrary.Infrastructures.WikiReadOnlyDictionary.GetStringValue(System.String)</parameter>
+          </include>
+        </markup>
+      </summary>
+      <param name="key">
+        <markup>
+          <include item="SMCMissingParamTag">
+            <parameter>param</parameter>
+            <parameter>key</parameter>
+            <parameter>M:WikiClientLibrary.Infrastructures.WikiReadOnlyDictionary.GetStringValue(System.String)</parameter>
+          </include>
+        </markup>
+      </param>
     </member>
     <member name="M:WikiClientLibrary.Infrastructures.WikiReadOnlyDictionary.GetValueDirect(System.String)">
       <summary>
@@ -5548,7 +5936,7 @@
     </member>
     <member name="T:WikiClientLibrary.Pages.AutoWatchBehavior">
       <summary>
-            Specifies wheter to watch the page after editing it.
+            Specifies whether to watch the page after editing it.
             </summary>
     </member>
     <member name="F:WikiClientLibrary.Pages.AutoWatchBehavior.Default">
@@ -5560,421 +5948,6 @@
       <summary>
             Do not change watchlist.
             </summary>
-    </member>
-    <member name="T:WikiClientLibrary.Pages.CategoryPage">
-      <summary>
-            Represents a category on MediaWiki site.
-            </summary>
-    </member>
-    <member name="M:WikiClientLibrary.Pages.CategoryPage.#ctor(WikiClientLibrary.Sites.WikiSite,System.String)">
-      <summary>
-        <markup>
-          <include item="SMCAutoDocConstructor">
-            <parameter>WikiClientLibrary.Pages.CategoryPage</parameter>
-          </include>
-        </markup>
-      </summary>
-      <param name="site">
-        <markup>
-          <include item="SMCMissingParamTag">
-            <parameter>param</parameter>
-            <parameter>site</parameter>
-            <parameter>M:WikiClientLibrary.Pages.CategoryPage.#ctor(WikiClientLibrary.Sites.WikiSite,System.String)</parameter>
-          </include>
-        </markup>
-      </param>
-      <param name="title">
-        <markup>
-          <include item="SMCMissingParamTag">
-            <parameter>param</parameter>
-            <parameter>title</parameter>
-            <parameter>M:WikiClientLibrary.Pages.CategoryPage.#ctor(WikiClientLibrary.Sites.WikiSite,System.String)</parameter>
-          </include>
-        </markup>
-      </param>
-    </member>
-    <member name="M:WikiClientLibrary.Pages.CategoryPage.EnumMembers">
-      <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>M:WikiClientLibrary.Pages.CategoryPage.EnumMembers</parameter>
-          </include>
-        </markup>
-      </summary>
-    </member>
-    <member name="M:WikiClientLibrary.Pages.CategoryPage.EnumMembers(WikiClientLibrary.Pages.PageQueryOptions)">
-      <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>M:WikiClientLibrary.Pages.CategoryPage.EnumMembers(WikiClientLibrary.Pages.PageQueryOptions)</parameter>
-          </include>
-        </markup>
-      </summary>
-      <param name="options">
-        <markup>
-          <include item="SMCMissingParamTag">
-            <parameter>param</parameter>
-            <parameter>options</parameter>
-            <parameter>M:WikiClientLibrary.Pages.CategoryPage.EnumMembers(WikiClientLibrary.Pages.PageQueryOptions)</parameter>
-          </include>
-        </markup>
-      </param>
-    </member>
-    <member name="M:WikiClientLibrary.Pages.CategoryPage.EnumMembersAsync">
-      <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>M:WikiClientLibrary.Pages.CategoryPage.EnumMembersAsync</parameter>
-          </include>
-        </markup>
-      </summary>
-    </member>
-    <member name="M:WikiClientLibrary.Pages.CategoryPage.EnumMembersAsync(WikiClientLibrary.Pages.PageQueryOptions)">
-      <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>M:WikiClientLibrary.Pages.CategoryPage.EnumMembersAsync(WikiClientLibrary.Pages.PageQueryOptions)</parameter>
-          </include>
-        </markup>
-      </summary>
-      <param name="options">
-        <markup>
-          <include item="SMCMissingParamTag">
-            <parameter>param</parameter>
-            <parameter>options</parameter>
-            <parameter>M:WikiClientLibrary.Pages.CategoryPage.EnumMembersAsync(WikiClientLibrary.Pages.PageQueryOptions)</parameter>
-          </include>
-        </markup>
-      </param>
-    </member>
-    <member name="P:WikiClientLibrary.Pages.CategoryPage.FilesCount">
-      <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>P:WikiClientLibrary.Pages.CategoryPage.FilesCount</parameter>
-          </include>
-        </markup>
-      </summary>
-    </member>
-    <member name="P:WikiClientLibrary.Pages.CategoryPage.MembersCount">
-      <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>P:WikiClientLibrary.Pages.CategoryPage.MembersCount</parameter>
-          </include>
-        </markup>
-      </summary>
-    </member>
-    <member name="P:WikiClientLibrary.Pages.CategoryPage.PagesCount">
-      <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>P:WikiClientLibrary.Pages.CategoryPage.PagesCount</parameter>
-          </include>
-        </markup>
-      </summary>
-    </member>
-    <member name="P:WikiClientLibrary.Pages.CategoryPage.SubcategoriesCount">
-      <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>P:WikiClientLibrary.Pages.CategoryPage.SubcategoriesCount</parameter>
-          </include>
-        </markup>
-      </summary>
-    </member>
-    <member name="M:WikiClientLibrary.Pages.CategoryPage.ToString">
-      <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>M:WikiClientLibrary.Pages.CategoryPage.ToString</parameter>
-          </include>
-        </markup>
-      </summary>
-    </member>
-    <member name="T:WikiClientLibrary.Pages.FilePage">
-      <summary>
-            Represents a file page on MediaWiki site.
-            </summary>
-    </member>
-    <member name="M:WikiClientLibrary.Pages.FilePage.#ctor(WikiClientLibrary.Sites.WikiSite,System.String)">
-      <summary>
-            Initializes a new instance of <see cref="T:WikiClientLibrary.Pages.WikiPage" /> from page title.
-            </summary>
-      <param name="site">The wiki site this page is on.</param>
-      <param name="title">Page title with or without namespace prefix.</param>
-      <param name="defaultNamespaceId">The default namespace ID for page title without namespace prefix.</param>
-    </member>
-    <member name="M:WikiClientLibrary.Pages.FilePage.UploadAsync(WikiClientLibrary.Files.WikiUploadSource,System.String,System.Boolean)">
-      <summary>
-            Asynchronously uploads a file in this title.
-            </summary>
-      <param name="source">Source of the file.</param>
-      <param name="comment">Comment of the upload, as well as the page content if it doesn't exist.</param>
-      <param name="ignoreWarnings">Ignore any warnings. This must be set to upload a new version of an existing image.</param>
-      <param name="watch">Whether to add the file into your watchlist.</param>
-      <param name="cancellationToken">The cancellation token that will be checked prior to completing the returned task.</param>
-      <returns>An <see cref="T:WikiClientLibrary.Pages.UploadResult" />. You need to check <see cref="P:WikiClientLibrary.Pages.UploadResult.ResultCode" /> for further action.</returns>
-      <exception cref="T:System.UnauthorizedAccessException">You do not have the permission to upload the file.</exception>
-      <exception cref="T:WikiClientLibrary.OperationFailedException">
-            There's an general failure while uploading the file.
-            - or -
-            Since MW 1.31, if you are uploading the exactly same content to the same title
-            with <paramref name="ignoreWarnings" /> set to <c>true</c>,
-            you will reveive this exception with <see cref="P:WikiClientLibrary.OperationFailedException.ErrorCode" />
-            set to <c>fileexists-no-change</c>. See https://gerrit.wikimedia.org/r/378702 .
-            </exception>
-      <exception cref="T:System.TimeoutException">Timeout specified in <see cref="P:WikiClientLibrary.Client.WikiClient.Timeout" /> has been reached.</exception>
-    </member>
-    <member name="M:WikiClientLibrary.Pages.FilePage.UploadAsync(WikiClientLibrary.Files.WikiUploadSource,System.String,System.Boolean,WikiClientLibrary.Pages.AutoWatchBehavior)">
-      <summary>
-            Asynchronously uploads a file in this title.
-            </summary>
-      <param name="source">Source of the file.</param>
-      <param name="comment">Comment of the upload, as well as the page content if it doesn't exist.</param>
-      <param name="ignoreWarnings">Ignore any warnings. This must be set to upload a new version of an existing image.</param>
-      <param name="watch">Whether to add the file into your watchlist.</param>
-      <param name="cancellationToken">The cancellation token that will be checked prior to completing the returned task.</param>
-      <returns>An <see cref="T:WikiClientLibrary.Pages.UploadResult" />. You need to check <see cref="P:WikiClientLibrary.Pages.UploadResult.ResultCode" /> for further action.</returns>
-      <exception cref="T:System.UnauthorizedAccessException">You do not have the permission to upload the file.</exception>
-      <exception cref="T:WikiClientLibrary.OperationFailedException">
-            There's an general failure while uploading the file.
-            - or -
-            Since MW 1.31, if you are uploading the exactly same content to the same title
-            with <paramref name="ignoreWarnings" /> set to <c>true</c>,
-            you will reveive this exception with <see cref="P:WikiClientLibrary.OperationFailedException.ErrorCode" />
-            set to <c>fileexists-no-change</c>. See https://gerrit.wikimedia.org/r/378702 .
-            </exception>
-      <exception cref="T:System.TimeoutException">Timeout specified in <see cref="P:WikiClientLibrary.Client.WikiClient.Timeout" /> has been reached.</exception>
-    </member>
-    <member name="M:WikiClientLibrary.Pages.FilePage.UploadAsync(WikiClientLibrary.Files.WikiUploadSource,System.String,System.Boolean,WikiClientLibrary.Pages.AutoWatchBehavior,System.Threading.CancellationToken)">
-      <summary>
-            Asynchronously uploads a file in this title.
-            </summary>
-      <param name="source">Source of the file.</param>
-      <param name="comment">Comment of the upload, as well as the page content if it doesn't exist.</param>
-      <param name="ignoreWarnings">Ignore any warnings. This must be set to upload a new version of an existing image.</param>
-      <param name="watch">Whether to add the file into your watchlist.</param>
-      <param name="cancellationToken">The cancellation token that will be checked prior to completing the returned task.</param>
-      <returns>An <see cref="T:WikiClientLibrary.Pages.UploadResult" />. You need to check <see cref="P:WikiClientLibrary.Pages.UploadResult.ResultCode" /> for further action.</returns>
-      <exception cref="T:System.UnauthorizedAccessException">You do not have the permission to upload the file.</exception>
-      <exception cref="T:WikiClientLibrary.OperationFailedException">
-            There's an general failure while uploading the file.
-            - or -
-            Since MW 1.31, if you are uploading the exactly same content to the same title
-            with <paramref name="ignoreWarnings" /> set to <c>true</c>,
-            you will reveive this exception with <see cref="P:WikiClientLibrary.OperationFailedException.ErrorCode" />
-            set to <c>fileexists-no-change</c>. See https://gerrit.wikimedia.org/r/378702 .
-            </exception>
-      <exception cref="T:System.TimeoutException">Timeout specified in <see cref="P:WikiClientLibrary.Client.WikiClient.Timeout" /> has been reached.</exception>
-    </member>
-    <member name="M:WikiClientLibrary.Pages.FilePage.UploadAsync(WikiClientLibrary.Sites.WikiSite,System.IO.Stream,System.String,System.String,System.Boolean)">
-      <summary>
-            Asynchronously uploads a file.
-            </summary>
-      <param name="site">MedaiWiki site.</param>
-      <param name="content">Content of the file.</param>
-      <param name="title">Title of the file, with or without File: prefix.</param>
-      <param name="comment">Comment of the upload, as well as the page content if it doesn't exist.</param>
-      <param name="ignoreWarnings">Ignore any warnings. This must be set to upload a new version of an existing image.</param>
-      <returns>An <see cref="T:WikiClientLibrary.Pages.UploadResult" />.</returns>
-      <exception cref="T:WikiClientLibrary.UploadException">
-            There's warning from server, and <paramref name="ignoreWarnings" /> is <c>false</c>.
-            Check <see cref="P:WikiClientLibrary.UploadException.UploadResult" /> for the warning message or continuing the upload.
-            </exception>
-      <exception cref="T:System.UnauthorizedAccessException">You do not have the permission to upload the file.</exception>
-      <exception cref="T:WikiClientLibrary.OperationFailedException"> There's an error while uploading the file. </exception>
-      <exception cref="T:System.TimeoutException">Timeout specified in <see cref="P:WikiClientLibrary.Client.WikiClient.Timeout" /> has been reached.</exception>
-    </member>
-    <member name="M:WikiClientLibrary.Pages.FilePage.UploadAsync(WikiClientLibrary.Sites.WikiSite,System.IO.Stream,System.String,System.String,System.Boolean,WikiClientLibrary.Pages.AutoWatchBehavior,System.Threading.CancellationToken)">
-      <summary>
-            Asynchronously uploads a file.
-            </summary>
-      <param name="site">MedaiWiki site.</param>
-      <param name="content">Content of the file.</param>
-      <param name="title">Title of the file, with or without File: prefix.</param>
-      <param name="comment">Comment of the upload, as well as the page content if it doesn't exist.</param>
-      <param name="ignoreWarnings">Ignore any warnings. This must be set to upload a new version of an existing image.</param>
-      <param name="watch">Whether to add the file into your watchlist.</param>
-      <param name="cancellationToken">The cancellation token that will be checked prior to completing the returned task.</param>
-      <returns>An <see cref="T:WikiClientLibrary.Pages.UploadResult" />.</returns>
-      <exception cref="T:WikiClientLibrary.UploadException">
-            There's warning from server, and <paramref name="ignoreWarnings" /> is <c>false</c>.
-            Check <see cref="P:WikiClientLibrary.UploadException.UploadResult" /> for the warning message or continuing the upload.
-            </exception>
-      <exception cref="T:System.UnauthorizedAccessException">You do not have the permission to upload the file.</exception>
-      <exception cref="T:WikiClientLibrary.OperationFailedException"> There's an general failure while uploading the file. </exception>
-      <exception cref="T:System.TimeoutException">Timeout specified in <see cref="P:WikiClientLibrary.Client.WikiClient.Timeout" /> has been reached.</exception>
-    </member>
-    <member name="M:WikiClientLibrary.Pages.FilePage.UploadAsync(WikiClientLibrary.Sites.WikiSite,System.String,System.String,System.String,System.Boolean)">
-      <summary>
-            Asynchronously uploads a file from an external URL.
-            </summary>
-      <param name="site">MedaiWiki site.</param>
-      <param name="url">The URL of the file to be uploaded.</param>
-      <param name="title">Title of the file, with or without File: prefix.</param>
-      <param name="comment">Comment of the upload, as well as the page content if it doesn't exist.</param>
-      <param name="ignoreWarnings">Ignore any warnings. This must be set to upload a new version of an existing image.</param>
-      <returns>An <see cref="T:WikiClientLibrary.Pages.UploadResult" />.</returns>
-      <exception cref="T:WikiClientLibrary.UploadException">
-            There's warning from server, and <paramref name="ignoreWarnings" /> is <c>false</c>.
-            Check <see cref="P:WikiClientLibrary.UploadException.UploadResult" /> for the warning message or continuing the upload.
-            </exception>
-      <exception cref="T:WikiClientLibrary.OperationFailedException"> There's an error while uploading the file. </exception>
-      <exception cref="T:System.TimeoutException">
-            Timeout specified in <see cref="P:WikiClientLibrary.Client.WikiClient.Timeout" /> has been reached. Note in this
-            invocation, there will be no retries.
-            </exception>
-    </member>
-    <member name="M:WikiClientLibrary.Pages.FilePage.UploadAsync(WikiClientLibrary.Sites.WikiSite,System.String,System.String,System.String,System.Boolean,System.Threading.CancellationToken)">
-      <summary>
-            Asynchronously uploads a file from an external URL.
-            </summary>
-      <param name="site">MedaiWiki site.</param>
-      <param name="url">The URL of the file to be uploaded.</param>
-      <param name="title">Title of the file, with or without File: prefix.</param>
-      <param name="comment">Comment of the upload, as well as the page content if it doesn't exist.</param>
-      <param name="ignoreWarnings">Ignore any warnings. This must be set to upload a new version of an existing image.</param>
-      <param name="cancellationToken"></param>
-      <returns>An <see cref="T:WikiClientLibrary.Pages.UploadResult" />.</returns>
-      <exception cref="T:WikiClientLibrary.UploadException">
-            There's warning from server, and <paramref name="ignoreWarnings" /> is <c>false</c>.
-            Check <see cref="P:WikiClientLibrary.UploadException.UploadResult" /> for the warning message or continuing the upload.
-            </exception>
-      <exception cref="T:System.UnauthorizedAccessException">You do not have the permission to upload the file.</exception>
-      <exception cref="T:WikiClientLibrary.OperationFailedException"> There's an error while uploading the file. </exception>
-      <exception cref="T:System.TimeoutException">Timeout specified in <see cref="P:WikiClientLibrary.Client.WikiClient.Timeout" /> has been reached.</exception>
-    </member>
-    <member name="M:WikiClientLibrary.Pages.FilePage.UploadAsync(WikiClientLibrary.Sites.WikiSite,WikiClientLibrary.Pages.UploadResult,System.String,System.String,System.Boolean)">
-      <summary>
-            Asynchronously uploads a file, again.
-            </summary>
-      <param name="site">MedaiWiki site.</param>
-      <param name="previousResult">An <see cref="T:WikiClientLibrary.Pages.UploadResult" /> returned from previous failed (or warned) upload.</param>
-      <param name="title">Title of the file, with or without File: prefix.</param>
-      <param name="comment">Comment of the upload, as well as the page content if it doesn't exist.</param>
-      <param name="ignoreWarnings">Ignore any warnings. This must be set to upload a new version of an existing image.</param>
-      <returns>An <see cref="T:WikiClientLibrary.Pages.UploadResult" />.</returns>
-      <exception cref="T:WikiClientLibrary.UploadException">
-            There's warning from server, and <paramref name="ignoreWarnings" /> is <c>false</c>.
-            Check <see cref="P:WikiClientLibrary.UploadException.UploadResult" /> for the warning message or continuing the upload.
-            </exception>
-      <exception cref="T:System.UnauthorizedAccessException">You do not have the permission to upload the file.</exception>
-      <exception cref="T:WikiClientLibrary.OperationFailedException"> There's an error while uploading the file. </exception>
-      <exception cref="T:System.TimeoutException">Timeout specified in <see cref="P:WikiClientLibrary.Client.WikiClient.Timeout" /> has been reached.</exception>
-    </member>
-    <member name="T:WikiClientLibrary.Pages.FileRevision">
-      <summary>
-            Represents a revision of a file or image.
-            </summary>
-    </member>
-    <member name="M:WikiClientLibrary.Pages.FileRevision.#ctor">
-      <summary>
-        <markup>
-          <include item="SMCAutoDocConstructor">
-            <parameter>WikiClientLibrary.Pages.FileRevision</parameter>
-          </include>
-        </markup>
-      </summary>
-    </member>
-    <member name="P:WikiClientLibrary.Pages.FileRevision.BitDepth">
-      <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>P:WikiClientLibrary.Pages.FileRevision.BitDepth</parameter>
-          </include>
-        </markup>
-      </summary>
-    </member>
-    <member name="P:WikiClientLibrary.Pages.FileRevision.Comment">
-      <summary>
-            The comment associated with the upload of this revision.
-            </summary>
-    </member>
-    <member name="P:WikiClientLibrary.Pages.FileRevision.DescriptionUrl">
-      <summary>
-            Url of the description page.
-            </summary>
-    </member>
-    <member name="P:WikiClientLibrary.Pages.FileRevision.Height">
-      <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>P:WikiClientLibrary.Pages.FileRevision.Height</parameter>
-          </include>
-        </markup>
-      </summary>
-    </member>
-    <member name="P:WikiClientLibrary.Pages.FileRevision.IsAnonymous">
-      <summary>
-            Whether the file is anonymous.
-            </summary>
-    </member>
-    <member name="P:WikiClientLibrary.Pages.FileRevision.Mime">
-      <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>P:WikiClientLibrary.Pages.FileRevision.Mime</parameter>
-          </include>
-        </markup>
-      </summary>
-    </member>
-    <member name="P:WikiClientLibrary.Pages.FileRevision.Page">
-      <summary>
-            Gets the stub of page this revision applies to.
-            </summary>
-    </member>
-    <member name="P:WikiClientLibrary.Pages.FileRevision.Sha1">
-      <summary>
-            The file's SHA-1 hash.
-            </summary>
-    </member>
-    <member name="P:WikiClientLibrary.Pages.FileRevision.Size">
-      <summary>
-            Size of the file. In bytes.
-            </summary>
-    </member>
-    <member name="P:WikiClientLibrary.Pages.FileRevision.TimeStamp">
-      <summary>
-            The time and date of the revision.
-            </summary>
-    </member>
-    <member name="P:WikiClientLibrary.Pages.FileRevision.Url">
-      <summary>
-            Url of the file.
-            </summary>
-    </member>
-    <member name="P:WikiClientLibrary.Pages.FileRevision.UserName">
-      <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>P:WikiClientLibrary.Pages.FileRevision.UserName</parameter>
-          </include>
-        </markup>
-      </summary>
-    </member>
-    <member name="P:WikiClientLibrary.Pages.FileRevision.Width">
-      <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>P:WikiClientLibrary.Pages.FileRevision.Width</parameter>
-          </include>
-        </markup>
-      </summary>
     </member>
     <member name="T:WikiClientLibrary.Pages.PageMovingOptions">
       <summary>
@@ -6463,155 +6436,6 @@
             Hidden part of revision indicators.
             </summary>
     </member>
-    <member name="T:WikiClientLibrary.Pages.UploadResult">
-      <summary>
-            Contains the result from server after an upload operation.
-            </summary>
-    </member>
-    <member name="M:WikiClientLibrary.Pages.UploadResult.#ctor">
-      <summary>
-        <markup>
-          <include item="SMCAutoDocConstructor">
-            <parameter>WikiClientLibrary.Pages.UploadResult</parameter>
-          </include>
-        </markup>
-      </summary>
-    </member>
-    <member name="P:WikiClientLibrary.Pages.UploadResult.DuplicateVersions">
-      <summary>
-            Gets a list of timestamps indicating the duplicate file versions, if any.
-            </summary>
-    </member>
-    <member name="P:WikiClientLibrary.Pages.UploadResult.FileKey">
-      <summary>
-            For <see cref="F:WikiClientLibrary.Pages.UploadResultCode.Warning" /> and <see cref="F:WikiClientLibrary.Pages.UploadResultCode.Continue" />,
-            the file key to be passed into the next upload attempt. 
-            </summary>
-    </member>
-    <member name="P:WikiClientLibrary.Pages.UploadResult.FileRevision">
-      <summary>
-            For a successful upload or stashing, gets the revision information
-            for the uploaded file.
-            </summary>
-    </member>
-    <member name="M:WikiClientLibrary.Pages.UploadResult.FormatWarning(System.String,Newtonsoft.Json.Linq.JToken)">
-      <summary>
-            Try to convert the specified warning code and context into a user-fridendly
-            warning message.
-            </summary>
-      <param name="warningCode">Case-sensitive warning code.</param>
-      <param name="context">The extra content of the warning.</param>
-      <returns>
-            It tries to match the warningCode with well-known ones, and returns a
-            user-fridendly warning message. If there's no match, a string containing
-            warningCode and context will be returned.
-            </returns>
-    </member>
-    <member name="P:WikiClientLibrary.Pages.UploadResult.Offset">
-      <summary>
-            When performing chunked uploading, gets the starting offset of the next chunk.
-            </summary>
-    </member>
-    <member name="P:WikiClientLibrary.Pages.UploadResult.ResultCode">
-      <summary>
-            A brief word describing the result of the operation.
-            </summary>
-    </member>
-    <member name="M:WikiClientLibrary.Pages.UploadResult.ToString">
-      <summary>
-            返回表示当前对象的字符串。
-            </summary>
-      <returns>
-            表示当前对象的字符串。
-            </returns>
-    </member>
-    <member name="P:WikiClientLibrary.Pages.UploadResult.Warnings">
-      <summary>
-            Gets a collection of warnings resulted from this upload.
-            </summary>
-    </member>
-    <member name="T:WikiClientLibrary.Pages.UploadResultCode">
-      <summary>
-            General results of an upload operation.
-            </summary>
-    </member>
-    <member name="T:WikiClientLibrary.Pages.UploadWarningCollection">
-      <summary>
-            A collection containing the warning messages of file upload.
-            </summary>
-    </member>
-    <member name="M:WikiClientLibrary.Pages.UploadWarningCollection.#ctor">
-      <summary>
-        <markup>
-          <include item="SMCAutoDocConstructor">
-            <parameter>WikiClientLibrary.Pages.UploadWarningCollection</parameter>
-          </include>
-        </markup>
-      </summary>
-    </member>
-    <member name="P:WikiClientLibrary.Pages.UploadWarningCollection.DuplicateTitles">
-      <summary>
-            Uploaded file is a duplicate of these titles.
-            </summary>
-    </member>
-    <member name="P:WikiClientLibrary.Pages.UploadWarningCollection.DuplicateVersions">
-      <summary>
-            Uploaded file is duplicate of these versions .
-            </summary>
-    </member>
-    <member name="P:WikiClientLibrary.Pages.UploadWarningCollection.ExistingAlternativeExtension">
-      <summary>
-            File exists with different extension as…
-            </summary>
-    </member>
-    <member name="M:WikiClientLibrary.Pages.UploadWarningCollection.FormatWarning(System.String,Newtonsoft.Json.Linq.JToken)">
-      <summary>
-            Try to convert the specified warning code and context into a user-fridendly
-            warning message.
-            </summary>
-      <param name="warningCode">Case-sensitive warning code.</param>
-      <param name="context">The extra content of the warning.</param>
-      <returns>
-            It tries to match the warningCode with well-known ones, and returns a
-            user-fridendly warning message. If there's no match, a string containing
-            warningCode and context will be returned.
-            </returns>
-    </member>
-    <member name="P:WikiClientLibrary.Pages.UploadWarningCollection.IsBadFileName">
-      <summary>
-            Target filename is invalid.
-            </summary>
-    </member>
-    <member name="P:WikiClientLibrary.Pages.UploadWarningCollection.IsEmptyFile">
-      <summary>
-            The file content is empty.
-            </summary>
-    </member>
-    <member name="P:WikiClientLibrary.Pages.UploadWarningCollection.IsUnwantedType">
-      <summary>
-            The file type is of an unwanted type.
-            </summary>
-    </member>
-    <member name="P:WikiClientLibrary.Pages.UploadWarningCollection.TitleExists">
-      <summary>
-            The title exists.
-            </summary>
-    </member>
-    <member name="M:WikiClientLibrary.Pages.UploadWarningCollection.ToString">
-      <summary>
-            Gets the formatted warning messages, one warning per line.
-            </summary>
-    </member>
-    <member name="P:WikiClientLibrary.Pages.UploadWarningCollection.WasContentDeleted">
-      <summary>
-            The file content is a duplicate of a deleted file.
-            </summary>
-    </member>
-    <member name="P:WikiClientLibrary.Pages.UploadWarningCollection.WasTitleDeleted">
-      <summary>
-            The file with the specified title was previously deleted.
-            </summary>
-    </member>
     <member name="T:WikiClientLibrary.Pages.WikiPage">
       <summary>
             Represents a page on MediaWiki site.
@@ -6734,92 +6558,11 @@
         </markup>
       </param>
     </member>
-    <member name="M:WikiClientLibrary.Pages.WikiPage.EnumLinksAsync">
-      <summary>
-            Enumerate all links on the pages.
-            </summary>
-    </member>
-    <member name="M:WikiClientLibrary.Pages.WikiPage.EnumLinksAsync(System.Collections.Generic.IEnumerable{System.Int32})">
-      <summary>
-            Enumerate all links on the pages.
-            </summary>
-      <param name="namespaces">
-            Only list links to pages in these namespaces.
-            If this is empty or <c>null</c>, all the pages will be listed.
-            </param>
-    </member>
-    <member name="M:WikiClientLibrary.Pages.WikiPage.EnumRevisionsAsync">
-      <summary>
-            Enumerates revisions of the page, descending in time, without revision content.
-            This overload asks for as many items as possible per request. This is usually 500 for user, and 5000 for bots.
-            </summary>
-    </member>
-    <member name="M:WikiClientLibrary.Pages.WikiPage.EnumRevisionsAsync(System.Int32)">
-      <summary>
-            Enumerates revisions of the page, descending in time, without revision content.
-            </summary>
-      <param name="pagingSize">Maximum items returned per request.</param>
-      <exception cref="T:System.ArgumentOutOfRangeException">
-        <paramref name="pagingSize" /> is non-positive.</exception>
-    </member>
-    <member name="M:WikiClientLibrary.Pages.WikiPage.EnumRevisionsAsync(System.Int32,WikiClientLibrary.Pages.PageQueryOptions)">
-      <summary>
-            Enumerates revisions of the page, descending in tim.
-            </summary>
-      <param name="pagingSize">Maximum items returned per request.</param>
-      <param name="options">Options for revision listing. Note <see cref="F:WikiClientLibrary.Pages.PageQueryOptions.ResolveRedirects" /> will raise exception.</param>
-      <exception cref="T:System.ArgumentOutOfRangeException">
-        <paramref name="pagingSize" /> is non-positive.</exception>
-    </member>
-    <member name="M:WikiClientLibrary.Pages.WikiPage.EnumTransclusionsAsync">
-      <summary>
-            Enumerate all pages (typically templates) transcluded on the pages.
-            </summary>
-    </member>
-    <member name="M:WikiClientLibrary.Pages.WikiPage.EnumTransclusionsAsync(System.Collections.Generic.IEnumerable{System.Int32})">
-      <summary>
-            Enumerate all pages (typically templates) transcluded on the pages.
-            </summary>
-      <param name="namespaces">
-            Only list links to pages in these namespaces.
-            If this is empty or <c>null</c>, all the transcluded pages will be listed.
-            </param>
-    </member>
     <member name="P:WikiClientLibrary.Pages.WikiPage.Exists">
       <summary>
             Gets whether the page exists.
             For category, gets whether the categories description page exists.
             </summary>
-    </member>
-    <member name="M:WikiClientLibrary.Pages.WikiPage.FromTitle(WikiClientLibrary.Sites.WikiSite,System.String)">
-      <summary>
-            Create an instance of <see cref="T:WikiClientLibrary.Pages.WikiPage" /> or its derived class,
-            depending on the namespace the page is in.
-            </summary>
-      <param name="site">Site instance.</param>
-      <param name="title">Title of the page.</param>
-      <exception cref="T:System.ArgumentNullException">Either <paramref name="site" /> or <paramref name="title" /> is <c>null</c>.</exception>
-      <exception cref="T:System.ArgumentException">
-        <paramref name="title" /> has invalid title patterns.</exception>
-      <exception cref="T:System.InvalidOperationException">
-        <paramref name="title" /> is an interwiki link.</exception>
-    </member>
-    <member name="M:WikiClientLibrary.Pages.WikiPage.FromTitle(WikiClientLibrary.Sites.WikiSite,System.String,System.Int32)">
-      <summary>
-            Create an instance of <see cref="T:WikiClientLibrary.Pages.WikiPage" /> or its derived class,
-            depending on the namespace the page is in.
-            </summary>
-      <param name="site">Site instance.</param>
-      <param name="title">Title of the page, with or without namespace prefix.</param>
-      <param name="defaultNamespaceId">
-            The namespace id of the page used when there's no explicit namespace prefix in <paramref name="title" />.
-            See <see cref="T:WikiClientLibrary.BuiltInNamespaces" /> for a list of possible values.
-            </param>
-      <exception cref="T:System.ArgumentNullException">Either <paramref name="site" /> or <paramref name="title" /> is <c>null</c>.</exception>
-      <exception cref="T:System.ArgumentException">
-        <paramref name="title" /> has invalid title patterns.</exception>
-      <exception cref="T:System.InvalidOperationException">
-        <paramref name="title" /> is an interwiki link.</exception>
     </member>
     <member name="M:WikiClientLibrary.Pages.WikiPage.GetPropertyGroup``1">
       <summary>
@@ -8209,6 +7952,11 @@
             Options for page or content parsing.
             </summary>
     </member>
+    <member name="F:WikiClientLibrary.Pages.Parsing.ParsingOptions.None">
+      <summary>
+            No parsing options.
+            </summary>
+    </member>
     <member name="F:WikiClientLibrary.Pages.Parsing.ParsingOptions.ResolveRedirects">
       <summary>
             When parsing by page title or page id, returns the target page when meeting redirects.
@@ -8217,6 +7965,16 @@
     <member name="F:WikiClientLibrary.Pages.Parsing.ParsingOptions.DisableToc">
       <summary>
             Disable table of contents in output. (1.23+)
+            </summary>
+    </member>
+    <member name="F:WikiClientLibrary.Pages.Parsing.ParsingOptions.DisableEditSection">
+      <summary>
+            Disable edit section links from the parser output. (1.24+)
+            </summary>
+    </member>
+    <member name="F:WikiClientLibrary.Pages.Parsing.ParsingOptions.DisableTidy">
+      <summary>
+            Do not run HTML cleanup (e.g. tidy) on the parser output. (1.26+)
             </summary>
     </member>
     <member name="F:WikiClientLibrary.Pages.Parsing.ParsingOptions.Preview">
@@ -8247,7 +8005,7 @@
     </member>
     <member name="F:WikiClientLibrary.Pages.Parsing.ParsingOptions.DisableLimitReport">
       <summary>
-            Omit the limit report ("NewPP limit report") from the parser output. (1.17+, disablepp; 1.23+, disablelimitreport)
+            Omit the limit report ("NewPP limit report") from the parser output. (1.17~1.22, <c>disablepp</c>; 1.23+, <c>disablelimitreport</c>)
             <see cref="P:WikiClientLibrary.Pages.Parsing.ParsedContentInfo.ParserLimitReports" /> will be empty if both this flag and <see cref="F:WikiClientLibrary.Pages.Parsing.ParsingOptions.LimitReport" /> is set.
             </summary>
     </member>
@@ -8275,10 +8033,10 @@
       <param name="summary">The summary to parse. Can be <c>null</c>.</param>
       <param name="title">Act like the wikitext is on this page.
                 This only really matters when parsing links to the page itself or subpages,
-                or when using magic words like {{PAGENAME}}.
-                If <c>null</c> is given, the default value "API" will be used.</param>
+                or when using magic words like <c>{{PAGENAME}}</c>.
+                If <c>null</c> is given, the default value <c>"API"</c> will be used.</param>
       <param name="contentModel">The content model name of the text specified in <paramref name="content" />. <c>null</c> makes the server to infer content model from <paramref name="title" />.</param>
-      <param name="lang">The language (variant) used to render the content. E.g. <c>zh-cn</c>, <c>zh-tw</c>. specify <c>content</c> to use this wiki's content language.</param>
+      <param name="lang">The language (variant) used to render the content. E.g. <c>"zh-cn"</c>, <c>"zh-tw"</c>. specify <c>content</c> to use this wiki's content language.</param>
       <param name="options">Options for parsing.</param>
       <param name="cancellationToken">The cancellation token that will be checked prior to completing the returned task.</param>
       <exception cref="T:System.ArgumentException">Both <paramref name="content" /> and <paramref name="summary" /> is <c>null</c>.</exception>
@@ -8292,10 +8050,10 @@
       <param name="summary">The summary to parse. Can be <c>null</c>.</param>
       <param name="title">Act like the wikitext is on this page.
                 This only really matters when parsing links to the page itself or subpages,
-                or when using magic words like {{PAGENAME}}.
-                If <c>null</c> is given, the default value "API" will be used.</param>
+                or when using magic words like <c>{{PAGENAME}}</c>.
+                If <c>null</c> is given, the default value <c>"API"</c> will be used.</param>
       <param name="contentModel">The content model name of the text specified in <paramref name="content" />. <c>null</c> makes the server to infer content model from <paramref name="title" />.</param>
-      <param name="lang">The language (variant) used to render the content. E.g. <c>zh-cn</c>, <c>zh-tw</c>. specify <c>content</c> to use this wiki's content language.</param>
+      <param name="lang">The language (variant) used to render the content. E.g. <c>"zh-cn"</c>, <c>"zh-tw"</c>. specify <c>content</c> to use this wiki's content language.</param>
       <param name="options">Options for parsing.</param>
       <param name="cancellationToken">The cancellation token that will be checked prior to completing the returned task.</param>
       <exception cref="T:System.ArgumentException">Both <paramref name="content" /> and <paramref name="summary" /> is <c>null</c>.</exception>
@@ -8309,10 +8067,10 @@
       <param name="summary">The summary to parse. Can be <c>null</c>.</param>
       <param name="title">Act like the wikitext is on this page.
                 This only really matters when parsing links to the page itself or subpages,
-                or when using magic words like {{PAGENAME}}.
-                If <c>null</c> is given, the default value "API" will be used.</param>
+                or when using magic words like <c>{{PAGENAME}}</c>.
+                If <c>null</c> is given, the default value <c>"API"</c> will be used.</param>
       <param name="contentModel">The content model name of the text specified in <paramref name="content" />. <c>null</c> makes the server to infer content model from <paramref name="title" />.</param>
-      <param name="lang">The language (variant) used to render the content. E.g. <c>zh-cn</c>, <c>zh-tw</c>. specify <c>content</c> to use this wiki's content language.</param>
+      <param name="lang">The language (variant) used to render the content. E.g. <c>"zh-cn"</c>, <c>"zh-tw"</c>. specify <c>content</c> to use this wiki's content language.</param>
       <param name="options">Options for parsing.</param>
       <param name="cancellationToken">The cancellation token that will be checked prior to completing the returned task.</param>
       <exception cref="T:System.ArgumentException">Both <paramref name="content" /> and <paramref name="summary" /> is <c>null</c>.</exception>
@@ -8326,10 +8084,10 @@
       <param name="summary">The summary to parse. Can be <c>null</c>.</param>
       <param name="title">Act like the wikitext is on this page.
                 This only really matters when parsing links to the page itself or subpages,
-                or when using magic words like {{PAGENAME}}.
-                If <c>null</c> is given, the default value "API" will be used.</param>
+                or when using magic words like <c>{{PAGENAME}}</c>.
+                If <c>null</c> is given, the default value <c>"API"</c> will be used.</param>
       <param name="contentModel">The content model name of the text specified in <paramref name="content" />. <c>null</c> makes the server to infer content model from <paramref name="title" />.</param>
-      <param name="lang">The language (variant) used to render the content. E.g. <c>zh-cn</c>, <c>zh-tw</c>. specify <c>content</c> to use this wiki's content language.</param>
+      <param name="lang">The language (variant) used to render the content. E.g. <c>"zh-cn"</c>, <c>"zh-tw"</c>. specify <c>content</c> to use this wiki's content language.</param>
       <param name="options">Options for parsing.</param>
       <param name="cancellationToken">The cancellation token that will be checked prior to completing the returned task.</param>
       <exception cref="T:System.ArgumentException">Both <paramref name="content" /> and <paramref name="summary" /> is <c>null</c>.</exception>
@@ -8340,7 +8098,7 @@
             </summary>
       <param name="site">The MediaWiki site to execute the request on.</param>
       <param name="title">Title of the page to be parsed.</param>
-      <param name="lang">The language (variant) used to render the content. E.g. <c>zh-cn</c>, <c>zh-tw</c>. specify <c>content</c> to use this wiki's content language.</param>
+      <param name="lang">The language (variant) used to render the content. E.g. <c>"zh-cn"</c>, <c>"zh-tw"</c>. specify <c>content</c> to use this wiki's content language.</param>
       <param name="options">Options for parsing.</param>
       <param name="cancellationToken">The cancellation token that will be checked prior to completing the returned task.</param>
       <param name="id">
@@ -8361,7 +8119,7 @@
             </summary>
       <param name="site">The MediaWiki site to execute the request on.</param>
       <param name="id">Id of the page to be parsed.</param>
-      <param name="lang">The language (variant) used to render the content. E.g. <c>zh-cn</c>, <c>zh-tw</c>. specify <c>content</c> to use this wiki's content language.</param>
+      <param name="lang">The language (variant) used to render the content. E.g. <c>"zh-cn"</c>, <c>"zh-tw"</c>. specify <c>content</c> to use this wiki's content language.</param>
       <param name="options">Options for parsing.</param>
       <param name="cancellationToken">The cancellation token that will be checked prior to completing the returned task.</param>
       <exception cref="T:System.ArgumentOutOfRangeException">
@@ -8373,7 +8131,7 @@
             </summary>
       <param name="site">The MediaWiki site to execute the request on.</param>
       <param name="title">Title of the page to be parsed.</param>
-      <param name="lang">The language (variant) used to render the content. E.g. <c>zh-cn</c>, <c>zh-tw</c>. specify <c>content</c> to use this wiki's content language.</param>
+      <param name="lang">The language (variant) used to render the content. E.g. <c>"zh-cn"</c>, <c>"zh-tw"</c>. specify <c>content</c> to use this wiki's content language.</param>
       <param name="options">Options for parsing.</param>
       <param name="cancellationToken">The cancellation token that will be checked prior to completing the returned task.</param>
       <param name="id">
@@ -8394,7 +8152,7 @@
             </summary>
       <param name="site">The MediaWiki site to execute the request on.</param>
       <param name="title">Title of the page to be parsed.</param>
-      <param name="lang">The language (variant) used to render the content. E.g. <c>zh-cn</c>, <c>zh-tw</c>. specify <c>content</c> to use this wiki's content language.</param>
+      <param name="lang">The language (variant) used to render the content. E.g. <c>"zh-cn"</c>, <c>"zh-tw"</c>. specify <c>content</c> to use this wiki's content language.</param>
       <param name="options">Options for parsing.</param>
       <param name="cancellationToken">The cancellation token that will be checked prior to completing the returned task.</param>
       <param name="id">
@@ -8415,7 +8173,7 @@
             </summary>
       <param name="site">The MediaWiki site to execute the request on.</param>
       <param name="title">Title of the page to be parsed.</param>
-      <param name="lang">The language (variant) used to render the content. E.g. <c>zh-cn</c>, <c>zh-tw</c>. specify <c>content</c> to use this wiki's content language.</param>
+      <param name="lang">The language (variant) used to render the content. E.g. <c>"zh-cn"</c>, <c>"zh-tw"</c>. specify <c>content</c> to use this wiki's content language.</param>
       <param name="options">Options for parsing.</param>
       <param name="cancellationToken">The cancellation token that will be checked prior to completing the returned task.</param>
       <exception cref="T:System.ArgumentNullException">
@@ -8427,7 +8185,7 @@
             </summary>
       <param name="site">The MediaWiki site to execute the request on.</param>
       <param name="title">Title of the page to be parsed.</param>
-      <param name="lang">The language (variant) used to render the content. E.g. <c>zh-cn</c>, <c>zh-tw</c>. specify <c>content</c> to use this wiki's content language.</param>
+      <param name="lang">The language (variant) used to render the content. E.g. <c>"zh-cn"</c>, <c>"zh-tw"</c>. specify <c>content</c> to use this wiki's content language.</param>
       <param name="options">Options for parsing.</param>
       <param name="cancellationToken">The cancellation token that will be checked prior to completing the returned task.</param>
       <exception cref="T:System.ArgumentNullException">
@@ -8439,7 +8197,7 @@
             </summary>
       <param name="site">The MediaWiki site to execute the request on.</param>
       <param name="title">Title of the page to be parsed.</param>
-      <param name="lang">The language (variant) used to render the content. E.g. <c>zh-cn</c>, <c>zh-tw</c>. specify <c>content</c> to use this wiki's content language.</param>
+      <param name="lang">The language (variant) used to render the content. E.g. <c>"zh-cn"</c>, <c>"zh-tw"</c>. specify <c>content</c> to use this wiki's content language.</param>
       <param name="options">Options for parsing.</param>
       <param name="cancellationToken">The cancellation token that will be checked prior to completing the returned task.</param>
       <exception cref="T:System.ArgumentNullException">
@@ -8451,7 +8209,7 @@
             </summary>
       <param name="site">The MediaWiki site to execute the request on.</param>
       <param name="title">Title of the page to be parsed.</param>
-      <param name="lang">The language (variant) used to render the content. E.g. <c>zh-cn</c>, <c>zh-tw</c>. specify <c>content</c> to use this wiki's content language.</param>
+      <param name="lang">The language (variant) used to render the content. E.g. <c>"zh-cn"</c>, <c>"zh-tw"</c>. specify <c>content</c> to use this wiki's content language.</param>
       <param name="options">Options for parsing.</param>
       <param name="cancellationToken">The cancellation token that will be checked prior to completing the returned task.</param>
       <exception cref="T:System.ArgumentNullException">
@@ -8463,7 +8221,7 @@
             </summary>
       <param name="site">The MediaWiki site to execute the request on.</param>
       <param name="revId">Id of the revision to be parsed.</param>
-      <param name="lang">The language (variant) used to render the content. E.g. <c>zh-cn</c>, <c>zh-tw</c>. specify <c>content</c> to use this wiki's content language.</param>
+      <param name="lang">The language (variant) used to render the content. E.g. <c>"zh-cn"</c>, <c>"zh-tw"</c>. specify <c>content</c> to use this wiki's content language.</param>
       <param name="options">Options for parsing.</param>
       <param name="cancellationToken">The cancellation token that will be checked prior to completing the returned task.</param>
       <exception cref="T:System.ArgumentOutOfRangeException">
@@ -8475,7 +8233,7 @@
             </summary>
       <param name="site">The MediaWiki site to execute the request on.</param>
       <param name="revId">Id of the revision to be parsed.</param>
-      <param name="lang">The language (variant) used to render the content. E.g. <c>zh-cn</c>, <c>zh-tw</c>. specify <c>content</c> to use this wiki's content language.</param>
+      <param name="lang">The language (variant) used to render the content. E.g. <c>"zh-cn"</c>, <c>"zh-tw"</c>. specify <c>content</c> to use this wiki's content language.</param>
       <param name="options">Options for parsing.</param>
       <param name="cancellationToken">The cancellation token that will be checked prior to completing the returned task.</param>
       <exception cref="T:System.ArgumentOutOfRangeException">
@@ -8487,7 +8245,7 @@
             </summary>
       <param name="site">The MediaWiki site to execute the request on.</param>
       <param name="revId">Id of the revision to be parsed.</param>
-      <param name="lang">The language (variant) used to render the content. E.g. <c>zh-cn</c>, <c>zh-tw</c>. specify <c>content</c> to use this wiki's content language.</param>
+      <param name="lang">The language (variant) used to render the content. E.g. <c>"zh-cn"</c>, <c>"zh-tw"</c>. specify <c>content</c> to use this wiki's content language.</param>
       <param name="options">Options for parsing.</param>
       <param name="cancellationToken">The cancellation token that will be checked prior to completing the returned task.</param>
       <exception cref="T:System.ArgumentOutOfRangeException">
@@ -8499,7 +8257,7 @@
             </summary>
       <param name="site">The MediaWiki site to execute the request on.</param>
       <param name="revId">Id of the revision to be parsed.</param>
-      <param name="lang">The language (variant) used to render the content. E.g. <c>zh-cn</c>, <c>zh-tw</c>. specify <c>content</c> to use this wiki's content language.</param>
+      <param name="lang">The language (variant) used to render the content. E.g. <c>"zh-cn"</c>, <c>"zh-tw"</c>. specify <c>content</c> to use this wiki's content language.</param>
       <param name="options">Options for parsing.</param>
       <param name="cancellationToken">The cancellation token that will be checked prior to completing the returned task.</param>
       <exception cref="T:System.ArgumentOutOfRangeException">
@@ -10145,7 +9903,7 @@
     </member>
     <member name="T:WikiClientLibrary.Sites.InterwikiEntry">
       <summary>
-            An item of iterwiki map.
+            An item of interwiki map.
             </summary>
     </member>
     <member name="M:WikiClientLibrary.Sites.InterwikiEntry.#ctor">
@@ -10176,7 +9934,7 @@
     </member>
     <member name="P:WikiClientLibrary.Sites.InterwikiEntry.IsProtocolRelative">
       <summary>
-            Whether the value of url can be treated as protocol-relative. (MediaWiki 1.24+)
+            Whether the value of URL can be treated as protocol-relative. (MediaWiki 1.24+)
             Note, however, that the <see cref="P:WikiClientLibrary.Sites.InterwikiEntry.Url" /> actually returned will always include the current protocol.
             </summary>
     </member>
@@ -11045,6 +10803,20 @@
             a list of API endpoint URLs.
             </summary>
     </member>
+    <member name="M:WikiClientLibrary.Sites.WikiFamily.#ctor(WikiClientLibrary.Client.IWikiClient)">
+      <summary>
+            Initializes the instance with a <see cref="T:WikiClientLibrary.Client.WikiClient" /> and family name.
+            </summary>
+      <param name="wikiClient">
+        <markup>
+          <include item="SMCMissingParamTag">
+            <parameter>param</parameter>
+            <parameter>wikiClient</parameter>
+            <parameter>M:WikiClientLibrary.Sites.WikiFamily.#ctor(WikiClientLibrary.Client.IWikiClient)</parameter>
+          </include>
+        </markup>
+      </param>
+    </member>
     <member name="M:WikiClientLibrary.Sites.WikiFamily.#ctor(WikiClientLibrary.Client.IWikiClient,System.String)">
       <summary>
             Initializes the instance with a <see cref="T:WikiClientLibrary.Client.WikiClient" /> and family name.
@@ -11069,20 +10841,6 @@
       </param>
       <exception cref="T:System.ArgumentNullException">
         <paramref name="wikiClient" /> is <c>null</c>.</exception>
-    </member>
-    <member name="M:WikiClientLibrary.Sites.WikiFamily.#ctor(WikiClientLibrary.Client.WikiClient)">
-      <summary>
-            Initializes the instance with a <see cref="T:WikiClientLibrary.Client.WikiClient" /> and family name.
-            </summary>
-      <param name="wikiClient">
-        <markup>
-          <include item="SMCMissingParamTag">
-            <parameter>param</parameter>
-            <parameter>wikiClient</parameter>
-            <parameter>M:WikiClientLibrary.Sites.WikiFamily.#ctor(WikiClientLibrary.Client.WikiClient)</parameter>
-          </include>
-        </markup>
-      </param>
     </member>
     <member name="P:WikiClientLibrary.Sites.WikiFamily.Count">
       <summary>
@@ -11243,10 +11001,10 @@
           </include>
         </markup>
       </param>
+      <exception cref="T:WikiClientLibrary.UnauthorizedOperationException">Cannot access query API module due to target site permission settings. You may need to use <see cref="M:WikiClientLibrary.Sites.WikiSite.#ctor(WikiClientLibrary.Client.IWikiClient,WikiClientLibrary.Sites.SiteOptions,System.String,System.String)" /> to login before any other API requests.</exception>
       <exception cref="T:System.ArgumentNullException">
         <paramref name="wikiClient" /> or <paramref name="options" /> is <c>null</c>.</exception>
       <exception cref="T:System.ArgumentException">One or more settings in <paramref name="options" /> is invalid.</exception>
-      <exception cref="T:WikiClientLibrary.UnauthorizedOperationException">Cannot access query API module due to target site permission settings. You may take a look at <see cref="!:SiteOptions.ExplicitInfoRefresh" />.</exception>
     </member>
     <member name="M:WikiClientLibrary.Sites.WikiSite.#ctor(WikiClientLibrary.Client.IWikiClient,WikiClientLibrary.Sites.SiteOptions)">
       <summary>
@@ -11256,10 +11014,10 @@
       <param name="options">Site options.</param>
       <param name="userName">The user name used to login before fetching for site information. Pass <c>null</c> to fetch site information without login first.</param>
       <param name="password">The password used to login before fetching for site information.</param>
+      <exception cref="T:WikiClientLibrary.UnauthorizedOperationException">Cannot access query API module due to target site permission settings. You may need to use <see cref="M:WikiClientLibrary.Sites.WikiSite.#ctor(WikiClientLibrary.Client.IWikiClient,WikiClientLibrary.Sites.SiteOptions,System.String,System.String)" /> to login before any other API requests.</exception>
       <exception cref="T:System.ArgumentNullException">
         <paramref name="wikiClient" /> or <paramref name="options" /> is <c>null</c>.</exception>
       <exception cref="T:System.ArgumentException">One or more settings in <paramref name="options" /> is invalid.</exception>
-      <exception cref="T:WikiClientLibrary.UnauthorizedOperationException">Cannot access query API module due to target site permission settings. You may take a look at <see cref="!:SiteOptions.ExplicitInfoRefresh" />.</exception>
     </member>
     <member name="M:WikiClientLibrary.Sites.WikiSite.#ctor(WikiClientLibrary.Client.IWikiClient,WikiClientLibrary.Sites.SiteOptions,System.String,System.String)">
       <summary>
@@ -11273,7 +11031,6 @@
       <exception cref="T:System.ArgumentNullException">
         <paramref name="wikiClient" /> or <paramref name="options" /> is <c>null</c>.</exception>
       <exception cref="T:System.ArgumentException">One or more settings in <paramref name="options" /> is invalid.</exception>
-      <exception cref="T:WikiClientLibrary.UnauthorizedOperationException">Cannot access query API module due to target site permission settings. You may take a look at <see cref="!:SiteOptions.ExplicitInfoRefresh" />.</exception>
     </member>
     <member name="P:WikiClientLibrary.Sites.WikiSite.AccountAssertionFailureHandler">
       <summary>
@@ -11289,60 +11046,6 @@
       <summary>
             The endpoint URL for MediaWiki API.
             </summary>
-    </member>
-    <member name="M:WikiClientLibrary.Sites.WikiSite.CreateAsync(WikiClientLibrary.Client.IWikiClient,System.String)">
-      <summary>
-            Initialize a <see cref="T:WikiClientLibrary.Sites.WikiSite" /> instance with the given API Endpoint URL.
-            </summary>
-      <param name="wikiClient">
-        <markup>
-          <include item="SMCMissingParamTag">
-            <parameter>param</parameter>
-            <parameter>wikiClient</parameter>
-            <parameter>M:WikiClientLibrary.Sites.WikiSite.CreateAsync(WikiClientLibrary.Client.IWikiClient,System.String)</parameter>
-          </include>
-        </markup>
-      </param>
-      <param name="apiEndpoint">
-        <markup>
-          <include item="SMCMissingParamTag">
-            <parameter>param</parameter>
-            <parameter>apiEndpoint</parameter>
-            <parameter>M:WikiClientLibrary.Sites.WikiSite.CreateAsync(WikiClientLibrary.Client.IWikiClient,System.String)</parameter>
-          </include>
-        </markup>
-      </param>
-      <exception cref="T:System.ArgumentNullException">
-        <paramref name="wikiClient" /> or <paramref name="apiEndpoint" /> is <c>null</c>.</exception>
-      <exception cref="T:System.ArgumentException">
-        <paramref name="apiEndpoint" /> is invalid.</exception>
-      <exception cref="T:WikiClientLibrary.UnauthorizedOperationException">Cannot access query API module due to target site permission settings. You may take a look at <see cref="!:SiteOptions.ExplicitInfoRefresh" />.</exception>
-    </member>
-    <member name="M:WikiClientLibrary.Sites.WikiSite.CreateAsync(WikiClientLibrary.Client.IWikiClient,WikiClientLibrary.Sites.SiteOptions)">
-      <summary>
-            Initialize a <see cref="T:WikiClientLibrary.Sites.WikiSite" /> instance with the given options.
-            </summary>
-      <param name="wikiClient">
-        <markup>
-          <include item="SMCMissingParamTag">
-            <parameter>param</parameter>
-            <parameter>wikiClient</parameter>
-            <parameter>M:WikiClientLibrary.Sites.WikiSite.CreateAsync(WikiClientLibrary.Client.IWikiClient,WikiClientLibrary.Sites.SiteOptions)</parameter>
-          </include>
-        </markup>
-      </param>
-      <param name="options">
-        <markup>
-          <include item="SMCMissingParamTag">
-            <parameter>param</parameter>
-            <parameter>options</parameter>
-            <parameter>M:WikiClientLibrary.Sites.WikiSite.CreateAsync(WikiClientLibrary.Client.IWikiClient,WikiClientLibrary.Sites.SiteOptions)</parameter>
-          </include>
-        </markup>
-      </param>
-      <exception cref="T:System.ArgumentNullException">
-        <paramref name="wikiClient" /> or <paramref name="options" /> is <c>null</c>.</exception>
-      <exception cref="T:WikiClientLibrary.UnauthorizedOperationException">Cannot access query API module due to target site permission settings. You may take a look at <see cref="!:SiteOptions.ExplicitInfoRefresh" />.</exception>
     </member>
     <member name="P:WikiClientLibrary.Sites.WikiSite.Extensions">
       <summary>
@@ -11481,15 +11184,6 @@
         </markup>
       </param>
       <exception cref="T:System.ArgumentException">Specified token type cannot be recognized.</exception>
-    </member>
-    <member name="M:WikiClientLibrary.Sites.WikiSite.GetTokensAsync(System.Collections.Generic.IEnumerable{System.String},System.Boolean,System.Threading.CancellationToken)">
-      <summary>
-            Request tokens for operations.
-            </summary>
-      <param name="tokenTypes">The names of token. Names should be as accurate as possible (E.g. use "edit" instead of "csrf").</param>
-      <param name="forceRefetch">Whether to fetch token from server, regardless of the cache.</param>
-      <param name="cancellationToken">The cancellation token that will be checked prior to completing the returned task.</param>
-      <exception cref="T:System.InvalidOperationException">One or more specified token types cannot be recognized.</exception>
     </member>
     <member name="P:WikiClientLibrary.Sites.WikiSite.Initialization">
       <summary>
@@ -11688,90 +11382,6 @@
       <summary>
             Gets the options applied to the current instance.
             </summary>
-    </member>
-    <member name="M:WikiClientLibrary.Sites.WikiSite.PostValuesAsync(System.Collections.Generic.IEnumerable{System.Collections.Generic.KeyValuePair{System.String,System.String}},System.Boolean,System.Threading.CancellationToken)">
-      <summary>
-            Invokes API and get JSON result.
-            </summary>
-      <param name="queryParams">
-        <markup>
-          <include item="SMCMissingParamTag">
-            <parameter>param</parameter>
-            <parameter>queryParams</parameter>
-            <parameter>M:WikiClientLibrary.Sites.WikiSite.PostValuesAsync(System.Collections.Generic.IEnumerable{System.Collections.Generic.KeyValuePair{System.String,System.String}},System.Boolean,System.Threading.CancellationToken)</parameter>
-          </include>
-        </markup>
-      </param>
-      <param name="supressAccountAssertion">
-        <markup>
-          <include item="SMCMissingParamTag">
-            <parameter>param</parameter>
-            <parameter>supressAccountAssertion</parameter>
-            <parameter>M:WikiClientLibrary.Sites.WikiSite.PostValuesAsync(System.Collections.Generic.IEnumerable{System.Collections.Generic.KeyValuePair{System.String,System.String}},System.Boolean,System.Threading.CancellationToken)</parameter>
-          </include>
-        </markup>
-      </param>
-      <param name="cancellationToken">
-        <markup>
-          <include item="SMCMissingParamTag">
-            <parameter>param</parameter>
-            <parameter>cancellationToken</parameter>
-            <parameter>M:WikiClientLibrary.Sites.WikiSite.PostValuesAsync(System.Collections.Generic.IEnumerable{System.Collections.Generic.KeyValuePair{System.String,System.String}},System.Boolean,System.Threading.CancellationToken)</parameter>
-          </include>
-        </markup>
-      </param>
-      <exception cref="T:WikiClientLibrary.InvalidActionException">Specified action is not supported.</exception>
-      <exception cref="T:System.OperationCanceledException">The operation has been cancelled via <paramref name="cancellationToken" />.</exception>
-      <exception cref="T:WikiClientLibrary.UnauthorizedOperationException">Permission denied.</exception>
-      <exception cref="T:WikiClientLibrary.OperationFailedException">There's "error" node in returned JSON.</exception>
-    </member>
-    <member name="M:WikiClientLibrary.Sites.WikiSite.PostValuesAsync(System.Collections.Generic.IEnumerable{System.Collections.Generic.KeyValuePair{System.String,System.String}},System.Threading.CancellationToken)">
-      <summary>
-            Invokes API and get JSON result.
-            </summary>
-      <param name="queryParams">
-        <markup>
-          <include item="SMCMissingParamTag">
-            <parameter>param</parameter>
-            <parameter>queryParams</parameter>
-            <parameter>M:WikiClientLibrary.Sites.WikiSite.PostValuesAsync(System.Collections.Generic.IEnumerable{System.Collections.Generic.KeyValuePair{System.String,System.String}},System.Threading.CancellationToken)</parameter>
-          </include>
-        </markup>
-      </param>
-      <param name="cancellationToken">
-        <markup>
-          <include item="SMCMissingParamTag">
-            <parameter>param</parameter>
-            <parameter>cancellationToken</parameter>
-            <parameter>M:WikiClientLibrary.Sites.WikiSite.PostValuesAsync(System.Collections.Generic.IEnumerable{System.Collections.Generic.KeyValuePair{System.String,System.String}},System.Threading.CancellationToken)</parameter>
-          </include>
-        </markup>
-      </param>
-      <exception cref="T:WikiClientLibrary.InvalidActionException">Specified action is not supported.</exception>
-      <exception cref="T:System.OperationCanceledException">The operation has been cancelled via <paramref name="cancellationToken" />.</exception>
-      <exception cref="T:WikiClientLibrary.UnauthorizedOperationException">Permission denied.</exception>
-      <exception cref="T:WikiClientLibrary.OperationFailedException">There's "error" node in returned JSON.</exception>
-    </member>
-    <member name="M:WikiClientLibrary.Sites.WikiSite.PostValuesAsync(System.Object,System.Boolean,System.Threading.CancellationToken)">
-      <summary>
-            Invoke API and get JSON result.
-            </summary>
-      <param name="queryParams">An object whose proeprty-value pairs will be converted into key-value pairs and sent.</param>
-      <param name="supressAccountAssertion">Whether to temporarily disable account assertion as set in <see cref="P:WikiClientLibrary.Sites.SiteOptions.AccountAssertion" />.</param>
-      <param name="cancellationToken">The cancellation token that will be checked prior to completing the returned task.</param>
-      <exception cref="T:WikiClientLibrary.InvalidActionException">Specified action is not supported.</exception>
-      <exception cref="T:System.OperationCanceledException">The operation has been cancelled via <paramref name="cancellationToken" />.</exception>
-      <exception cref="T:WikiClientLibrary.OperationFailedException">There's "error" node in returned JSON.</exception>
-    </member>
-    <member name="M:WikiClientLibrary.Sites.WikiSite.PostValuesAsync(System.Object,System.Threading.CancellationToken)">
-      <summary>
-            Invoke API and get JSON result.
-            </summary>
-      <param name="queryParams">An object whose proeprty-value pairs will be converted into key-value pairs and sent.</param>
-      <param name="cancellationToken">The cancellation token that will be checked prior to completing the returned task.</param>
-      <exception cref="T:WikiClientLibrary.InvalidActionException">Specified action is not supported.</exception>
-      <exception cref="T:System.OperationCanceledException">The operation has been cancelled via <paramref name="cancellationToken" />.</exception>
-      <exception cref="T:WikiClientLibrary.OperationFailedException">There's "error" node in returned JSON.</exception>
     </member>
     <member name="M:WikiClientLibrary.Sites.WikiSite.RefreshAccountInfoAsync">
       <summary>

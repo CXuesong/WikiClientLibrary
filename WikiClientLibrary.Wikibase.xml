@@ -227,6 +227,7 @@
       <exception cref="T:System.ArgumentNullException">Either <paramref name="edits" /> is <c>null</c>.</exception>
       <exception cref="T:System.ArgumentException">
         <paramref name="options" /> is invalid.</exception>
+      <exception cref="T:System.NotSupportedException">Attempt to set <see cref="P:WikiClientLibrary.Wikibase.Entity.DataType" /> when editing an existing property entity, or force progressive edits when creating a property entity.</exception>
       <exception cref="T:WikiClientLibrary.OperationConflictException">Edit conflict detected.</exception>
       <exception cref="T:WikiClientLibrary.UnauthorizedOperationException">You have no rights to edit the page.</exception>
     </member>
@@ -241,6 +242,7 @@
       <exception cref="T:System.ArgumentNullException">Either <paramref name="edits" /> is <c>null</c>.</exception>
       <exception cref="T:System.ArgumentException">
         <paramref name="options" /> is invalid.</exception>
+      <exception cref="T:System.NotSupportedException">Attempt to set <see cref="P:WikiClientLibrary.Wikibase.Entity.DataType" /> when editing an existing property entity, or force progressive edits when creating a property entity.</exception>
       <exception cref="T:WikiClientLibrary.OperationConflictException">Edit conflict detected.</exception>
       <exception cref="T:WikiClientLibrary.UnauthorizedOperationException">You have no rights to edit the page.</exception>
     </member>
@@ -255,6 +257,7 @@
       <exception cref="T:System.ArgumentNullException">Either <paramref name="edits" /> is <c>null</c>.</exception>
       <exception cref="T:System.ArgumentException">
         <paramref name="options" /> is invalid.</exception>
+      <exception cref="T:System.NotSupportedException">Attempt to set <see cref="P:WikiClientLibrary.Wikibase.Entity.DataType" /> when editing an existing property entity, or force progressive edits when creating a property entity.</exception>
       <exception cref="T:WikiClientLibrary.OperationConflictException">Edit conflict detected.</exception>
       <exception cref="T:WikiClientLibrary.UnauthorizedOperationException">You have no rights to edit the page.</exception>
     </member>
@@ -267,6 +270,19 @@
       <summary>
             Id of the entity.
             </summary>
+    </member>
+    <member name="M:WikiClientLibrary.Wikibase.Entity.IdsFromSiteLinksAsync(WikiClientLibrary.Sites.WikiSite,System.String,System.Collections.Generic.IEnumerable{System.String})">
+      <summary>
+            Asynchronously gets the entity IDs with specified sequence of titles on the specified site.
+            </summary>
+      <param name="site">The Wikibase repository site.</param>
+      <param name="siteName">The site name of the sitelinks.</param>
+      <param name="titles">The article titles on the site <paramref name="siteName" /> to check for entity IDs.</param>
+      <returns>
+            A asynchronous sequence of entity IDs in the identical order with <paramref name="titles" />.
+            If one or more entities are missing, the corresponding entity ID will be <c>null</c>.
+            </returns>
+      <exception cref="T:System.ArgumentNullException">Either <paramref name="site" />, <paramref name="siteName" />, or <paramref name="titles" /> is <c>null</c>.</exception>
     </member>
     <member name="P:WikiClientLibrary.Wikibase.Entity.Labels">
       <summary>Gets the labels (aka. names) of the entity.</summary>
@@ -2241,7 +2257,7 @@
     </member>
     <member name="T:WikiClientLibrary.Wikibase.DataTypes.WbQuantity">
       <summary>
-            Represents an amount with arbitary precision, combined with a unit.
+            Represents an amount with arbitrary precision, combined with a unit.
             </summary>
     </member>
     <member name="M:WikiClientLibrary.Wikibase.DataTypes.WbQuantity.#ctor(System.Double,System.Double,System.Double,System.Uri)">
@@ -2251,7 +2267,7 @@
       <param name="amount">The numeric value of the amount.</param>
       <param name="lowerBound">The lower-bound of the <paramref name="amount" /> caused by error.</param>
       <param name="upperBound">The upper-bound of the <paramref name="amount" /> caused by error.</param>
-      <param name="unit">Entity URI of the unit. Use <see cref="P:WikiClientLibrary.Wikibase.DataTypes.WbQuantity.Unity" /> for quantities that have no explict units.</param>
+      <param name="unit">Entity URI of the unit. Use <see cref="P:WikiClientLibrary.Wikibase.DataTypes.WbQuantity.Unity" /> for quantities that have no explicit units.</param>
       <exception cref="T:System.ArgumentException">
         <paramref name="amount" /> is not in the range of <paramref name="lowerBound" /> and <paramref name="upperBound" />.</exception>
       <exception cref="T:System.ArgumentNullException">
@@ -2261,11 +2277,11 @@
       <summary>
             Initializes a new <see cref="T:WikiClientLibrary.Wikibase.DataTypes.WbQuantity" /> with the amount, error, and entity URI of the unit.
             </summary>
-      <param name="error">The numberic error of the <paramref name="amount" />.</param>
+      <param name="error">The numeric error of the <paramref name="amount" />.</param>
       <param name="amount">The numeric value of the amount.</param>
       <param name="lowerBound">The lower-bound of the <paramref name="amount" /> caused by error.</param>
       <param name="upperBound">The upper-bound of the <paramref name="amount" /> caused by error.</param>
-      <param name="unit">Entity URI of the unit. Use <see cref="P:WikiClientLibrary.Wikibase.DataTypes.WbQuantity.Unity" /> for quantities that have no explict units.</param>
+      <param name="unit">Entity URI of the unit. Use <see cref="P:WikiClientLibrary.Wikibase.DataTypes.WbQuantity.Unity" /> for quantities that have no explicit units.</param>
       <exception cref="T:System.ArgumentException">
         <paramref name="amount" /> is not in the range of <paramref name="lowerBound" /> and <paramref name="upperBound" />.</exception>
       <exception cref="T:System.ArgumentNullException">
@@ -2278,7 +2294,7 @@
       <param name="amount">The numeric value of the amount.</param>
       <param name="lowerBound">The lower-bound of the <paramref name="amount" /> caused by error.</param>
       <param name="upperBound">The upper-bound of the <paramref name="amount" /> caused by error.</param>
-      <param name="unit">Entity URI of the unit. Use <see cref="P:WikiClientLibrary.Wikibase.DataTypes.WbQuantity.Unity" /> for quantities that have no explict units.</param>
+      <param name="unit">Entity URI of the unit. Use <see cref="P:WikiClientLibrary.Wikibase.DataTypes.WbQuantity.Unity" /> for quantities that have no explicit units.</param>
       <exception cref="T:System.ArgumentException">
         <paramref name="amount" /> is not in the range of <paramref name="lowerBound" /> and <paramref name="upperBound" />.</exception>
       <exception cref="T:System.ArgumentNullException">
@@ -2670,7 +2686,7 @@
     </member>
     <member name="M:WikiClientLibrary.Wikibase.DataTypes.WbTime.ToDateTimeOffset">
       <summary>
-            Converts to <see cref="T:System.DateTimeOffset" />, using appropriate rouding specified by <see cref="P:WikiClientLibrary.Wikibase.DataTypes.WbTime.Precision" />.
+            Converts to <see cref="T:System.DateTimeOffset" />, using appropriate rounding specified by <see cref="P:WikiClientLibrary.Wikibase.DataTypes.WbTime.Precision" />.
             </summary>
     </member>
     <member name="M:WikiClientLibrary.Wikibase.DataTypes.WbTime.ToIso8601UtcString">
@@ -3374,14 +3390,14 @@
     </member>
     <member name="P:WikiClientLibrary.Wikibase.Infrastructures.UnorderedKeyedMultiCollection`2.Item(`0)">
       <summary>
-            Gets a readonly view of the items with the specified key.
+            Gets a read-only view of the items with the specified key.
             </summary>
       <returns>The items with specified key, or empty collection if no such item exists.
             The view is guaranteed to be valid until any modifications to the collection.</returns>
     </member>
     <member name="P:WikiClientLibrary.Wikibase.Infrastructures.UnorderedKeyedMultiCollection`2.Keys">
       <summary>
-            Gets a readonly view of the key collection.
+            Gets a read-only view of the key collection.
             </summary>
     </member>
     <member name="M:WikiClientLibrary.Wikibase.Infrastructures.UnorderedKeyedMultiCollection`2.Remove(`1)">

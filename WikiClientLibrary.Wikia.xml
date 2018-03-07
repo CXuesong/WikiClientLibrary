@@ -468,7 +468,7 @@
     </member>
     <member name="P:WikiClientLibrary.Wikia.WikiaQueryRequestMessage.Fields">
       <summary>
-            Gets a readonly list of all the fields in the form.
+            Gets a read-only list of all the fields in the form.
             </summary>
     </member>
     <member name="M:WikiClientLibrary.Wikia.WikiaQueryRequestMessage.GetHttpContent">
@@ -1581,10 +1581,10 @@
       <param name="options">Site options.</param>
       <param name="userName">The user name used to login before fetching for site information. Pass <c>null</c> to fetch site information without login first.</param>
       <param name="password">The password used to login before fetching for site information.</param>
+      <exception cref="T:WikiClientLibrary.UnauthorizedOperationException">Cannot access query API module due to target site permission settings. You may need to use <see cref="M:WikiClientLibrary.Sites.WikiSite.#ctor(WikiClientLibrary.Client.IWikiClient,WikiClientLibrary.Sites.SiteOptions,System.String,System.String)" /> to login before any other API requests.</exception>
       <exception cref="T:System.ArgumentNullException">
         <paramref name="wikiClient" /> or <paramref name="options" /> is <c>null</c>.</exception>
       <exception cref="T:System.ArgumentException">One or more settings in <paramref name="options" /> is invalid.</exception>
-      <exception cref="T:WikiClientLibrary.UnauthorizedOperationException">Cannot access query API module due to target site permission settings. You may take a look at <see cref="!:SiteOptions.ExplicitInfoRefresh" />.</exception>
     </member>
     <member name="M:WikiClientLibrary.Wikia.Sites.WikiaSite.#ctor(WikiClientLibrary.Client.IWikiClient,WikiClientLibrary.Wikia.WikiaSiteOptions)">
       <summary>
