@@ -23,6 +23,8 @@ namespace WikiClientLibrary.Pages.Parsing
                 {"action", "parse"},
                 {"prop", "text|langlinks|categories|sections|revid|displaytitle|properties"},
                 {"disabletoc", (options & ParsingOptions.DisableToc) == ParsingOptions.DisableToc},
+                {"disableeditsection", (options & ParsingOptions.DisableEditSection) == ParsingOptions.DisableEditSection},
+                {"disabletidy", (options & ParsingOptions.DisableTidy) == ParsingOptions.DisableTidy},
                 {"preview", (options & ParsingOptions.Preview) == ParsingOptions.Preview},
                 {"sectionpreview", (options & ParsingOptions.SectionPreview) == ParsingOptions.SectionPreview},
                 {"redirects", (options & ParsingOptions.ResolveRedirects) == ParsingOptions.ResolveRedirects},
@@ -68,7 +70,7 @@ namespace WikiClientLibrary.Pages.Parsing
         /// </summary>
         /// <param name="site">The MediaWiki site to execute the request on.</param>
         /// <param name="title">Title of the page to be parsed.</param>
-        /// <param name="lang">The language (variant) used to render the content. E.g. <c>zh-cn</c>, <c>zh-tw</c>. specify <c>content</c> to use this wiki's content language.</param>
+        /// <param name="lang">The language (variant) used to render the content. E.g. <c>"zh-cn"</c>, <c>"zh-tw"</c>. specify <c>content</c> to use this wiki's content language.</param>
         /// <param name="options">Options for parsing.</param>
         /// <param name="cancellationToken">The cancellation token that will be checked prior to completing the returned task.</param>
         /// <exception cref="ArgumentNullException"><paramref name="title"/> is <c>null</c>.</exception>
@@ -108,7 +110,7 @@ namespace WikiClientLibrary.Pages.Parsing
         /// </summary>
         /// <param name="site">The MediaWiki site to execute the request on.</param>
         /// <param name="id">Id of the page to be parsed.</param>
-        /// <param name="lang">The language (variant) used to render the content. E.g. <c>zh-cn</c>, <c>zh-tw</c>. specify <c>content</c> to use this wiki's content language.</param>
+        /// <param name="lang">The language (variant) used to render the content. E.g. <c>"zh-cn"</c>, <c>"zh-tw"</c>. specify <c>content</c> to use this wiki's content language.</param>
         /// <param name="options">Options for parsing.</param>
         /// <param name="cancellationToken">The cancellation token that will be checked prior to completing the returned task.</param>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="id"/> is zero or negative.</exception>
@@ -147,7 +149,7 @@ namespace WikiClientLibrary.Pages.Parsing
         /// </summary>
         /// <param name="site">The MediaWiki site to execute the request on.</param>
         /// <param name="revId">Id of the revision to be parsed.</param>
-        /// <param name="lang">The language (variant) used to render the content. E.g. <c>zh-cn</c>, <c>zh-tw</c>. specify <c>content</c> to use this wiki's content language.</param>
+        /// <param name="lang">The language (variant) used to render the content. E.g. <c>"zh-cn"</c>, <c>"zh-tw"</c>. specify <c>content</c> to use this wiki's content language.</param>
         /// <param name="options">Options for parsing.</param>
         /// <param name="cancellationToken">The cancellation token that will be checked prior to completing the returned task.</param>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="revId"/> is zero or negative.</exception>
@@ -190,10 +192,10 @@ namespace WikiClientLibrary.Pages.Parsing
         /// <param name="summary">The summary to parse. Can be <c>null</c>.</param>
         /// <param name="title">Act like the wikitext is on this page.
         ///     This only really matters when parsing links to the page itself or subpages,
-        ///     or when using magic words like {{PAGENAME}}.
-        ///     If <c>null</c> is given, the default value "API" will be used.</param>
+        ///     or when using magic words like <c>{{PAGENAME}}</c>.
+        ///     If <c>null</c> is given, the default value <c>"API"</c> will be used.</param>
         /// <param name="contentModel">The content model name of the text specified in <paramref name="content"/>. <c>null</c> makes the server to infer content model from <paramref name="title"/>.</param>
-        /// <param name="lang">The language (variant) used to render the content. E.g. <c>zh-cn</c>, <c>zh-tw</c>. specify <c>content</c> to use this wiki's content language.</param>
+        /// <param name="lang">The language (variant) used to render the content. E.g. <c>"zh-cn"</c>, <c>"zh-tw"</c>. specify <c>content</c> to use this wiki's content language.</param>
         /// <param name="options">Options for parsing.</param>
         /// <param name="cancellationToken">The cancellation token that will be checked prior to completing the returned task.</param>
         /// <remarks>If both <paramref name="title"/> and <paramref name="contentModel"/> is <c>null</c>, the content model will be assumed as wikitext.</remarks>
