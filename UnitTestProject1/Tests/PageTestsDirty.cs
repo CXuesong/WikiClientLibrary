@@ -126,7 +126,7 @@ The original title of the page is '''{title}'''.
             wikiClient.RetryDelay = TimeSpan.FromSeconds(1);
             wikiClient.MaxRetries = 1;
             var buffer = new byte[1024 * 1024 * 2];     // 2MB, I think this size is fairly large.
-                                                        // If your connection speed is too fast then, well, trottle it plz.
+                                                        // If your connection speed is too fast then, well, throttle it plz.
             using (var ms = new MemoryStream(buffer))
             {
                 await Assert.ThrowsAsync<TimeoutException>(async () =>
@@ -136,6 +136,8 @@ The original title of the page is '''{title}'''.
                     // Usually we should notify the user, then perform the re-upload ignoring the warning.
                     Assert.Equal(UploadResultCode.Warning, result.ResultCode);
                 });
+                // Ensure that the stream has not been disposed in this case.
+                ms.Seek(0, SeekOrigin.Begin);
             }
         }
 

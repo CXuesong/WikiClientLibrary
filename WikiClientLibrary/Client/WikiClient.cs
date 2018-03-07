@@ -19,10 +19,17 @@ namespace WikiClientLibrary.Client
     /// </summary>
     public class WikiClient : IWikiClient, IWikiClientLoggable, IDisposable
     {
+
+#if NETSTANDARD1_1
+        private const string targetFramework = ".NET Standard 1.1";
+#elif NETSTANDARD2_0
+        private const string targetFramework = ".NET Standard 2.0";
+#endif
+
         /// <summary>
         /// The User Agent of Wiki Client Library.
         /// </summary>
-        public const string WikiClientUserAgent = "WikiClientLibrary/0.6 (.NET Portable; http://github.com/cxuesong/WikiClientLibrary)";
+        public const string WikiClientUserAgent = "WikiClientLibrary/0.6 (" + targetFramework + "; http://github.com/cxuesong/WikiClientLibrary)";
 
         public WikiClient() : this(new HttpClientHandler(), true)
         {
@@ -103,7 +110,7 @@ namespace WikiClientLibrary.Client
                     _ClientUserAgent = value;
                 }
             }
-        } 
+        }
 
         /// <summary>
         /// Referer.
@@ -165,7 +172,7 @@ namespace WikiClientLibrary.Client
             var query = message.GetHttpQuery();
             if (query != null) url = url + "?" + query;
             return new HttpRequestMessage(message.GetHttpMethod(), url)
-                {Content = message.GetHttpContent()};
+            { Content = message.GetHttpContent() };
         }
 
         private async Task<T> SendAsync<T>(string endPointUrl, WikiRequestMessage message,

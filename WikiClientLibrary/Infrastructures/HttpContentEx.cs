@@ -41,6 +41,7 @@ namespace WikiClientLibrary.Infrastructures
                 sb.Append('=');
                 Encode(sb, nameValue.Value);
             }
+
             sb.Replace("%20", "+");
             return DefaultHttpEncoding.GetBytes(sb.ToString());
         }
@@ -72,24 +73,18 @@ namespace WikiClientLibrary.Infrastructures
 
         }
 
-        /// <summary>
-        /// Determines whether to dispose the underlying stream when disposing this <see cref="KeepAlivingStreamContent"/>.
-        /// </summary>
-        public bool DisposeStream { get; set; }
+#if NETSTANDARD1_1
 
-        private static readonly Action<KeepAlivingStreamContent> disposeImpl
-            ; // Calls System.Net.Http.HttpContent.Dispose
+        // Workaround for https://github.com/dotnet/corefx/pull/19082
+        // This PR hasn't been merged until .NET Core 2.0.
+
+        private static readonly Action<KeepAlivingStreamContent> disposeImpl; // Calls System.Net.Http.HttpContent.Dispose
 
         /// <inheritdoc />
         protected override void Dispose(bool disposing)
         {
             if (disposing)
-            {
-                if (DisposeStream)
-                    base.Dispose(true);
-                else
-                    disposeImpl(this); // We want to bypass StreamContent::Dispose(true) implementation.
-            }
+                disposeImpl(this); // We want to bypass StreamContent::Dispose(true) implementation.
             else
                 base.Dispose(false);
         }
@@ -97,7 +92,7 @@ namespace WikiClientLibrary.Infrastructures
         static KeepAlivingStreamContent()
         {
             var method = new DynamicMethod("$KeepAlivingStreamContent.Dispose()", null,
-                new[] {typeof(KeepAlivingStreamContent)}, typeof(KeepAlivingStreamContent));
+                new[] { typeof(KeepAlivingStreamContent) }, typeof(KeepAlivingStreamContent));
             var il = method.GetILGenerator();
             il.Emit(OpCodes.Ldarg_0); // this
             il.Emit(OpCodes.Ldc_I4_1); // disposing
@@ -108,7 +103,10 @@ namespace WikiClientLibrary.Infrastructures
                 null);
             il.Emit(OpCodes.Ret);
             disposeImpl =
-                (Action<KeepAlivingStreamContent>) method.CreateDelegate(typeof(Action<KeepAlivingStreamContent>));
+                (Action<KeepAlivingStreamContent>)method.CreateDelegate(typeof(Action<KeepAlivingStreamContent>));
         }
+
+#endif
+
     }
 }
