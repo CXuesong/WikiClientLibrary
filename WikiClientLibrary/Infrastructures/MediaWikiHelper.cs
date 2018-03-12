@@ -35,8 +35,8 @@ namespace WikiClientLibrary.Infrastructures
         /// Converts the specified relative protocol URL (starting with <c>//</c>) to absolute protocol URL.
         /// </summary>
         /// <param name="relativeProtocolUrl">The URL to be converted.</param>
-        /// <param name="defaultProtocol">For protocol-relative URL, (e.g. <c>//en.wikipedia.org/</c>)
-        /// specifies the default protocol to use. (e.g. <c>https:</c>)</param>
+        /// <param name="defaultProtocol">For protocol-relative URL,(e.g. <c>//en.wikipedia.org/</c>),
+        /// specifies the default protocol to use. (e.g. <c>https</c>)</param>
         /// <exception cref="ArgumentNullException">Either <paramref name="relativeProtocolUrl"/> or <paramref name="defaultProtocol"/> is <c>null</c>.</exception>
         /// <returns>The URL with absolute protocol. If the specified URL is not a relative protocol URL,
         /// it will be returned directly.</returns>
@@ -45,12 +45,12 @@ namespace WikiClientLibrary.Infrastructures
             if (relativeProtocolUrl == null) throw new ArgumentNullException(nameof(relativeProtocolUrl));
             if (defaultProtocol == null) throw new ArgumentNullException(nameof(defaultProtocol));
             var url = relativeProtocolUrl;
-            if (url.StartsWith("//")) url = defaultProtocol + url;
+            if (url.StartsWith("//")) url = defaultProtocol + ":" + url;
             return url;
         }
 
         /// <summary>
-        /// Combines a base URL and a relative URL, using <c>https:</c> for relative protocol URL.
+        /// Combines a base URL and a relative URL, using <c>https</c> for relative protocol URL.
         /// </summary>
         /// <param name="baseUrl">The base absolute URL. Can be relative protocol URL.</param>
         /// <param name="relativeUrl">The relative URL.</param>
@@ -58,7 +58,7 @@ namespace WikiClientLibrary.Infrastructures
         /// <returns>The combined URL with absolute protocol.</returns>
         public static string MakeAbsoluteUrl(string baseUrl, string relativeUrl)
         {
-            return MakeAbsoluteUrl(baseUrl, relativeUrl, "https:");
+            return MakeAbsoluteUrl(baseUrl, relativeUrl, "https");
         }
 
         /// <summary>

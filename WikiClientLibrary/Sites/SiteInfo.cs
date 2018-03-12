@@ -85,8 +85,8 @@ namespace WikiClientLibrary.Sites
         /// Makes the full URL to the page of specified title.
         /// </summary>
         /// <param name="title">The title of the article.</param>
-        /// <param name="defaultProtocol">For protocol-relative URL, (e.g. <c>//en.wikipedia.org/</c>)
-        /// specifies the default protocol to use. (e.g. <c>https:</c>)</param>
+        /// <param name="defaultProtocol">For protocol-relative URL (e.g. <c>//en.wikipedia.org/</c>),
+        /// specifies the default protocol to use. (e.g. <c>https</c>)</param>
         /// <exception cref="ArgumentNullException">Either <paramref name="title"/> or <paramref name="defaultProtocol"/> is <c>null</c>.</exception>
         /// <returns>The full URL of the article.</returns>
         public string MakeArticleUrl(string title, string defaultProtocol)
