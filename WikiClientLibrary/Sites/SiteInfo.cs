@@ -78,7 +78,7 @@ namespace WikiClientLibrary.Sites
         /// <remarks>This overload uses <c>https:</c> as default protocol for protocol-relative.</remarks>
         public string MakeArticleUrl(string title)
         {
-            return MakeArticleUrl(title, "https:");
+            return MakeArticleUrl(title, "https");
         }
 
         /// <summary>
@@ -96,7 +96,7 @@ namespace WikiClientLibrary.Sites
             var cache = articleUrlTemplateCache;
             if (cache == null || cache.Item1 != defaultProtocol)
             {
-                var urlTemplate = MediaWikiHelper.MakeAbsoluteUrl(ServerUrl, ArticlePath);
+                var urlTemplate = MediaWikiHelper.MakeAbsoluteUrl(ServerUrl, ArticlePath, defaultProtocol);
                 cache = new Tuple<string, string>(defaultProtocol, urlTemplate);
                 Volatile.Write(ref articleUrlTemplateCache, cache);
             }
