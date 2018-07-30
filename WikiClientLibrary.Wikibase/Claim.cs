@@ -347,7 +347,7 @@ namespace WikiClientLibrary.Wikibase
         }
 
         /// <summary>Parsed value of <c>datavalue</c> node.</summary>
-        /// <remarks>For the cases when <see cref="SnakType"/> is not <see cref="SnakType.Value"/>, this property should be <c>null</c>.</remarks>
+        /// <remarks>For the cases when <see cref="SnakType"/> is not <see cref="Wikibase.SnakType.Value"/>, this property should be <c>null</c>.</remarks>
         public object DataValue
         {
             get
