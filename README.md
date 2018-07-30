@@ -7,9 +7,9 @@ The packages `CXuesong.MW.WikiClientLibrary.*` are now available on NuGet. E.g. 
 
 ```powershell
 #  Package Management Console
-Install-Package CXuesong.MW.WikiClientLibrary -Pre
+Install-Package CXuesong.MW.WikiClientLibrary
 #  .NET CLI
-dotnet add package CXuesong.MW.WikiClientLibrary --version 0.6.0-intX7
+dotnet add package CXuesong.MW.WikiClientLibrary
 ```
 
 | Package                                  | Status                                   |
