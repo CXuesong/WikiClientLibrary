@@ -89,6 +89,10 @@ namespace UnitTestProject1
             }
         }
 
+        /// <summary>
+        /// Creates a <see cref="WikiSite"/> instance with a dedicated <see cref="WikiClient"/> instance.
+        /// </summary>
+        /// <remarks>This method can be handy for you to maul a certain WikiClient without affecting other WikiSite instances.</remarks>
         protected Task<WikiSite> CreateIsolatedWikiSiteAsync(string apiEndpoint)
         {
             var isolatedClient = CreateWikiClient();

@@ -9,7 +9,11 @@ namespace WikiClientLibrary.Client
     /// The traceable API request message to be sent to the wiki sites.
     /// </summary>
     /// <remarks>
-    /// <para>For the role this class plays in invoking wiki API, see <see cref="IWikiClient.InvokeAsync"/>.</para>
+    /// <para>
+    /// In some cases, the instance of this class can be reused to issue same requests.
+    /// However, never issue the requests the same <see cref="WikiRequestMessage"/> instance concurrently.
+    /// </para>
+    /// <para>For the role this class plays in invoking wiki API, see <see cref="IWikiClient.InvokeAsync{T}"/>.</para>
     /// </remarks>
     public abstract class WikiRequestMessage
     {

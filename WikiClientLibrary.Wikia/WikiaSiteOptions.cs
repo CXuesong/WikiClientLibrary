@@ -14,6 +14,7 @@ namespace WikiClientLibrary.Wikia
     {
 
         /// <summary>Initializes an empty <see cref="WikiaSiteOptions"/> instance.</summary>
+        /// <remarks>You may use <see cref="WikiaSiteOptions(string)"/> overload, which might be handy.</remarks>
         public WikiaSiteOptions()
         {
             

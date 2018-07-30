@@ -162,6 +162,10 @@ namespace WikiClientLibrary.Wikia.Sites
     /// <summary>
     /// Represents a node in the WikiVariable API response.
     /// </summary>
+    /// <remarks>See
+    /// <a href="http://www.wikia.com/api/v1/#!/Mercury/getWikiData_get_0">http://www.wikia.com/api/v1/#!/Mercury/getWikiData_get_0</a>
+    /// for Wikia's official documentation for the WikiVariable API response.
+    /// </remarks>
     [JsonObject(MemberSerialization.OptIn)]
     public class SiteVariableData
     {
@@ -169,6 +173,9 @@ namespace WikiClientLibrary.Wikia.Sites
         [JsonProperty("appleTouchIcon")]
         public AppleTouchIconInfo AppleTouchIcon { get; private set; }
 
+        /// <summary>
+        /// Current wiki cachebuster value,
+        /// </summary>
         [JsonProperty("cacheBuster")]
         public long CacheBuster { get; private set; }
 
