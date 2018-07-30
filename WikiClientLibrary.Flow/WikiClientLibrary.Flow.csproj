@@ -1,13 +1,13 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>netstandard1.1</TargetFramework>
     <AssemblyName>WikiClientLibrary.Flow</AssemblyName>
     <PackageId>CXuesong.MW.WikiClientLibrary.Flow</PackageId>
-    <Version>0.6.0-intX7</Version>
-    <AssemblyVersion>0.6.0.17</AssemblyVersion>
-    <FileVersion>0.6.0.17</FileVersion>
-    <Copyright>Copyright (C) CXuesong 2017</Copyright>
+    <Version>0.6.0</Version>
+    <AssemblyVersion>0.6.0.18</AssemblyVersion>
+    <FileVersion>0.6.0.18</FileVersion>
+    <Copyright>Copyright (C) CXuesong 2018</Copyright>
     <Description>
       WikiClientLibrary.Flow is a .NET Standard &amp; asynchronous client library for MediaWiki sites with Structured Discussions (aka. Flow) support.
     </Description>
@@ -24,10 +24,15 @@
     <NoWarn>1701;1702;1705;1591</NoWarn>
     <SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>../WikiClientLibrary.snk</AssemblyOriginatorKeyFile>
+    <PublishRepositoryUrl>true</PublishRepositoryUrl>
+    <AllowedOutputExtensionsInPackageBuildOutputFolder>$(AllowedOutputExtensionsInPackageBuildOutputFolder);.pdb</AllowedOutputExtensionsInPackageBuildOutputFolder>
   </PropertyGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\WikiClientLibrary\WikiClientLibrary.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0-beta-63127-02" PrivateAssets="All" />
+  </ItemGroup>
 </Project>

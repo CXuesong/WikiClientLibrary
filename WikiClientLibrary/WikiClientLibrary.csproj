@@ -4,10 +4,10 @@
     <TargetFrameworks>netstandard1.1;netstandard2.0</TargetFrameworks>
     <AssemblyName>WikiClientLibrary</AssemblyName>
     <PackageId>CXuesong.MW.WikiClientLibrary</PackageId>
-    <Version>0.6.0-intX7a</Version>
-    <AssemblyVersion>0.6.0.17</AssemblyVersion>
-    <FileVersion>0.6.0.17</FileVersion>
-    <Copyright>Copyright (C) CXuesong 2017</Copyright>
+    <Version>0.6.0</Version>
+    <AssemblyVersion>0.6.0.18</AssemblyVersion>
+    <FileVersion>0.6.0.18</FileVersion>
+    <Copyright>Copyright (C) CXuesong 2018</Copyright>
     <Description>
       Wiki Client Library is a .NET Standard &amp; asynchronous client library for MediaWiki sites.
 
@@ -36,6 +36,8 @@
     <NoWarn>1701;1702;1705;1573；1591</NoWarn>
     <SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>../WikiClientLibrary.snk</AssemblyOriginatorKeyFile>
+    <PublishRepositoryUrl>True</PublishRepositoryUrl>
+    <AllowedOutputExtensionsInPackageBuildOutputFolder>$(AllowedOutputExtensionsInPackageBuildOutputFolder);.pdb</AllowedOutputExtensionsInPackageBuildOutputFolder>
   </PropertyGroup>
 
   <ItemGroup>
@@ -47,5 +49,9 @@
 
   <ItemGroup Condition=" '$(TargetFramework)' == 'netstandard1.1' ">
     <PackageReference Include="System.Reflection.Emit.Lightweight" Version="4.3.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0-beta-63127-02" PrivateAssets="All" />
   </ItemGroup>
 </Project>
