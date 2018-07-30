@@ -1227,13 +1227,8 @@
     </member>
     <member name="P:WikiClientLibrary.Wikia.Sites.SiteVariableData.CacheBuster">
       <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>P:WikiClientLibrary.Wikia.Sites.SiteVariableData.CacheBuster</parameter>
-          </include>
-        </markup>
-      </summary>
+            Current wiki cachebuster value,
+            </summary>
     </member>
     <member name="P:WikiClientLibrary.Wikia.Sites.SiteVariableData.CdnRootUrl">
       <summary>
@@ -1766,6 +1761,11 @@
             <see cref="P:WikiClientLibrary.Sites.WikiSite.InterwikiMap" />, and <see cref="P:WikiClientLibrary.Sites.WikiSite.Extensions" /> properties.
             </returns>
       <exception cref="T:WikiClientLibrary.UnauthorizedOperationException">Cannot access query API module due to target site permission settings. You may need to login first.</exception>
+    </member>
+    <member name="M:WikiClientLibrary.Wikia.Sites.WikiaSite.SendLogoutRequestAsync">
+      <summary>
+            Directly sends a logout request. This method will be invoked by <see cref="M:WikiClientLibrary.Sites.WikiSite.LogoutAsync(System.Boolean)" />.
+            </summary>
     </member>
     <member name="P:WikiClientLibrary.Wikia.Sites.WikiaSite.WikiVariables">
       <summary>

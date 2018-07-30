@@ -4845,15 +4845,15 @@
             Converts the specified relative protocol URL (starting with <c>//</c>) to absolute protocol URL.
             </summary>
       <param name="relativeProtocolUrl">The URL to be converted.</param>
-      <param name="defaultProtocol">For protocol-relative URL, (e.g. <c>//en.wikipedia.org/</c>)
-            specifies the default protocol to use. (e.g. <c>https:</c>)</param>
+      <param name="defaultProtocol">For protocol-relative URL,(e.g. <c>//en.wikipedia.org/</c>),
+            specifies the default protocol to use. (e.g. <c>https</c>)</param>
       <returns>The URL with absolute protocol. If the specified URL is not a relative protocol URL,
             it will be returned directly.</returns>
       <exception cref="T:System.ArgumentNullException">Either <paramref name="relativeProtocolUrl" /> or <paramref name="defaultProtocol" /> is <c>null</c>.</exception>
     </member>
     <member name="M:WikiClientLibrary.Infrastructures.MediaWikiHelper.MakeAbsoluteUrl(System.String,System.String)">
       <summary>
-            Combines a base URL and a relative URL, using <c>https:</c> for relative protocol URL.
+            Combines a base URL and a relative URL, using <c>https</c> for relative protocol URL.
             </summary>
       <param name="baseUrl">The base absolute URL. Can be relative protocol URL.</param>
       <param name="relativeUrl">The relative URL.</param>
@@ -10504,8 +10504,8 @@
             Makes the full URL to the page of specified title.
             </summary>
       <param name="title">The title of the article.</param>
-      <param name="defaultProtocol">For protocol-relative URL, (e.g. <c>//en.wikipedia.org/</c>)
-            specifies the default protocol to use. (e.g. <c>https:</c>)</param>
+      <param name="defaultProtocol">For protocol-relative URL (e.g. <c>//en.wikipedia.org/</c>),
+            specifies the default protocol to use. (e.g. <c>https</c>)</param>
       <returns>The full URL of the article.</returns>
       <exception cref="T:System.ArgumentNullException">Either <paramref name="title" /> or <paramref name="defaultProtocol" /> is <c>null</c>.</exception>
     </member>
@@ -11409,6 +11409,11 @@
       <exception cref="T:System.ArgumentNullException">
         <paramref name="client" /> or <paramref name="urlExpression" /> is <c>null</c>.</exception>
       <exception cref="T:System.TimeoutException">A time-out has been reached during test requests.</exception>
+    </member>
+    <member name="M:WikiClientLibrary.Sites.WikiSite.SendLogoutRequestAsync">
+      <summary>
+            Directly sends a logout request. This method will be invoked by <see cref="M:WikiClientLibrary.Sites.WikiSite.LogoutAsync(System.Boolean)" />.
+            </summary>
     </member>
     <member name="P:WikiClientLibrary.Sites.WikiSite.SiteInfo">
       <summary>
