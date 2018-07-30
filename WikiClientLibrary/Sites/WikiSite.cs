@@ -609,10 +609,7 @@ namespace WikiClientLibrary.Sites
             {
                 try
                 {
-                    var jobj = await InvokeMediaWikiApiAsync(new MediaWikiFormRequestMessage(new
-                    {
-                        action = "logout",
-                    }), true, CancellationToken.None);
+                    await SendLogoutRequestAsync();
                     tokensManager.ClearCache();
                     if (invalidateAccountInfo)
                         _AccountInfo = null;
@@ -624,6 +621,22 @@ namespace WikiClientLibrary.Sites
                     Interlocked.Exchange(ref isLoggingInOut, 0);
                 }
             }
+        }
+
+        /// <summary>
+        /// Directly sends a logout request. This method will be invoked by <see cref="LogoutAsync(bool)"/>.
+        /// </summary>
+        /// <remarks>
+        /// The default behavior is to send an <c>action=logout</c> MW API request.
+        /// Derived classes may override this method to implement their own customized logout behavior.
+        /// </remarks>
+        protected virtual async Task SendLogoutRequestAsync()
+        {
+            Debug.Assert(isLoggingInOut == 1);
+            var jobj = await InvokeMediaWikiApiAsync(new MediaWikiFormRequestMessage(new
+            {
+                action = "logout",
+            }), true, CancellationToken.None);
         }
 
         private Task<bool> reLoginTask;

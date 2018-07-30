@@ -1,10 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json.Linq;
 using WikiClientLibrary.Client;
+using WikiClientLibrary.Infrastructures;
 using WikiClientLibrary.Infrastructures.Logging;
 using WikiClientLibrary.Sites;
 
@@ -13,6 +16,7 @@ namespace WikiClientLibrary.Wikia.Sites
     /// <summary>
     /// The encapsulated Wikia site endpoint.
     /// </summary>
+    /// <remarks>See <see cref="WikiClientLibrary.Wikia.Sites"/> for a summary on Wikia(FANDOM)-specific APIs.</remarks>
     public class WikiaSite : WikiSite
     {
 
@@ -140,5 +144,48 @@ namespace WikiClientLibrary.Wikia.Sites
                 WikiVariables = jdata.ToObject<SiteVariableData>();
             }
         }
+
+        /// <inheritdoc />
+        /// <remarks>
+        /// To logout the user, this override sends a POST request to <c>https://www.wikia.com/logout</c>.
+        /// </remarks>
+        protected override async Task SendLogoutRequestAsync()
+        {
+            var logoutUrl = "https://www.wikia.com/logout";
+            if (SiteInfo.ServerUrl.IndexOf(".wikia.com", StringComparison.OrdinalIgnoreCase) < 0)
+            {
+                logoutUrl = MediaWikiHelper.MakeAbsoluteUrl(SiteInfo.ServerUrl, "logout");
+                // User is using WikiaSite instance outside Wikia… I wish you good luck.
+                this.Logger.LogWarning("WikiaSite is instantiated with a non-FANDOM site URL: {Url}. Assuming logout URL as {LogoutUrl}.",
+                    SiteInfo.ServerUrl, logoutUrl);
+            }
+            await WikiClient.InvokeAsync(logoutUrl,
+                new MediaWikiFormRequestMessage(new {redirect = ""}),
+                DiscardingResponseMessageParser.Instance,
+                CancellationToken.None);
+        }
+
+        /// <summary>
+        /// This WikiResponseMessageParser implementation validates the HTTP status code, and discards the response content.
+        /// </summary>
+        private class DiscardingResponseMessageParser : WikiResponseMessageParser<object>
+        {
+
+            private static readonly Task<object> dummyResult = Task.FromResult(new object());
+
+            public static readonly DiscardingResponseMessageParser Instance = new DiscardingResponseMessageParser();
+
+            /// <inheritdoc />
+            public override Task<object> ParseResponseAsync(HttpResponseMessage response, WikiResponseParsingContext context)
+            {
+                var responseCode = (int) response.StatusCode;
+                if (responseCode >= 300 && responseCode <= 399 || response.IsSuccessStatusCode) return dummyResult;
+
+                context.NeedRetry = true;
+                response.EnsureSuccessStatusCode();     // An exception will be thrown here.
+                return dummyResult;
+            }
+        }
+
     }
 }
