@@ -26,7 +26,7 @@ namespace UnitTestProject1.Tests
             Assert.Equal("一九五二年", result.DisplayTitle);
             Assert.True(result.Interlanguages.First(l => l.Language == "en").PageTitle == "1952");
             Assert.True(result.Interlanguages.First(l => l.Language == "zh").PageTitle == "1952年");
-            Assert.Contains("<p><b>一九五二年</b>，繼<b>", result.Content);
+            Assert.Contains("><b>一九五二年</b>，繼<b>", result.Content);
             Assert.Contains(result.Sections, s => s.Heading == "大事");
         }
 
@@ -39,7 +39,7 @@ namespace UnitTestProject1.Tests
             ShallowTrace(result, 3);
             Assert.Equal("TITLE", result.Title);
             Assert.Equal("<i>TITLE</i>", result.DisplayTitle);
-            Assert.Contains("<p>Text <b>Text</b></p>\n<p>TITLE</p>", result.Content);
+            Assert.Contains("<p>Text <b>Text</b>\n</p><p>TITLE\n</p>", result.Content);
             /////////////////////
             result = await site.ParseContentAsync("{{ambox}}", "Summary.", "TITLE",
                 ParsingOptions.LimitReport | ParsingOptions.TranscludedPages);
