@@ -127,7 +127,11 @@ namespace WikiClientLibrary.Flow
                 var jresult = await Site.InvokeMediaWikiApiAsync(new MediaWikiFormRequestMessage(queryParams), ct);
                 var jtopiclist = (JObject)jresult["flow"]["view-topiclist"]["result"]["topiclist"];
                 await sink.YieldAndWait(Topic.FromJsonTopicList(Site, jtopiclist));
-                var nextPageUrl = (string)jtopiclist["links"]?["pagination"]?["fwd"]?["url"];
+                // 2018-07-30 flow.view-topiclist.result.topiclist.links.pagination is [] instead of null for boards without pagination.
+                var jpagination = jtopiclist["links"]?["pagination"];
+                var nextPageUrl = jpagination == null || jpagination is JArray 
+                    ? null 
+                    : (string) jpagination["fwd"]?["url"];
                 if (nextPageUrl != null)
                 {
                     var urlParams = FlowUtility.ParseUrlQueryParametrs(nextPageUrl);
