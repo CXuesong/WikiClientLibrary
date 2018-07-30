@@ -170,7 +170,7 @@ namespace WikiClientLibrary.Wikia.Sites
         public AppleTouchIconInfo AppleTouchIcon { get; private set; }
 
         [JsonProperty("cacheBuster")]
-        public int CacheBuster { get; private set; }
+        public long CacheBuster { get; private set; }
 
         [JsonProperty("cdnRootUrl")]
         public string CdnRootUrl { get; private set; }
