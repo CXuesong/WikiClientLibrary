@@ -20,11 +20,13 @@ namespace WikiClientLibrary.Generators
         {
         }
 
+        /// <inheritdoc />
         protected override WikiPageStub ItemFromJson(JToken json)
         {
             return new WikiPageStub((int)json["id"], (string)json["title"], (int)json["ns"]);
         }
 
+        /// <inheritdoc />
         public int NamespaceId { get; set; } = 0;
 
         /// <summary>
@@ -46,6 +48,4 @@ namespace WikiClientLibrary.Generators
             };
         }
     }
-}
-
 }
