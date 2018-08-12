@@ -5,6 +5,7 @@ using System.Text;
 using WikiClientLibrary.Client;
 using WikiClientLibrary.Generators;
 using WikiClientLibrary.Generators.Primitive;
+using WikiClientLibrary.Infrastructures;
 using WikiClientLibrary.Pages;
 using WikiClientLibrary.Sites;
 
@@ -26,8 +27,11 @@ namespace WikiClientLibrary.Generators
             return new WikiPageStub((int)json["id"], (string)json["title"], (int)json["ns"]);
         }
 
-        /// <inheritdoc />
-        public int NamespaceId { get; set; } = 0;
+        /// <summary>
+        /// Only list pages in these namespaces.
+        /// </summary>
+        /// <value>Selected ids of namespace, or <c>null</c> if all the namespaces are selected.</value>
+        public IEnumerable<int> NamespaceIds { get; set; }
 
         /// <summary>
         /// How to filter redirects.
@@ -42,8 +46,8 @@ namespace WikiClientLibrary.Generators
         {
             return new Dictionary<string, object>
             {
-                { "rnnamespace", NamespaceId},
-                {"rnfilterredir", RedirectsFilter},
+                {"rnnamespace", NamespaceIds == null ? null : MediaWikiHelper.JoinValues(NamespaceIds)},
+                {"rnfilterredir", RedirectsFilter.ToString("redirects", "nonredirects")},
                 {"rnlimit", PaginationSize},
             };
         }
