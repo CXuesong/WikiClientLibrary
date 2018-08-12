@@ -86,6 +86,8 @@ namespace WikiClientLibrary.Generators
                 {"srnamespace", NamespaceIds == null ? "*" : MediaWikiHelper.JoinValues(NamespaceIds)},
                 {"srwhat", MatchingField},
                 {"srlimit", PaginationSize},
+                {"srinterwiki", IncludesInterwiki},
+                {"srbackend", BackendName}
             };
             // Include redirect pages in the search. From 1.23 onwards, redirects are always included. (Removed in 1.23)
             if (Site.SiteInfo.Version < new Version(1, 23))
