@@ -234,10 +234,10 @@
   <HelpKINode Title="BlockId property" Url="html/dd2d60eb-24f9-ad4c-f51d-5a7a0c860f22.htm" />
   <HelpKINode Title="BlockReason property" Url="html/004c245e-d802-caee-2924-9a3f1a58dc48.htm" />
   <HelpKINode Title="Board class">
-    <HelpKINode Title="Board Class" Url="html/eb05c093-7e73-b5e5-53fe-d4864b545ee8.htm" />
     <HelpKINode Title="Board Class" Url="html/88ce6563-18e7-4c4a-b47e-5159f6c8376d.htm" />
-    <HelpKINode Title="constructor" Url="html/70605864-9045-8923-bb0d-675c889f9a25.htm" />
+    <HelpKINode Title="Board Class" Url="html/eb05c093-7e73-b5e5-53fe-d4864b545ee8.htm" />
     <HelpKINode Title="constructor" Url="html/31266511-b581-772c-8bc3-ad983af48d46.htm" />
+    <HelpKINode Title="constructor" Url="html/70605864-9045-8923-bb0d-675c889f9a25.htm" />
     <HelpKINode Title="methods" Url="html/d4c14b9e-c9dd-a060-b997-4784ad6bbdc6.htm" />
     <HelpKINode Title="methods" Url="html/a34291a7-1d2d-aa43-abd3-ce44c7713476.htm" />
     <HelpKINode Title="properties" Url="html/20b4f3c4-03c8-333a-dcd8-a48186529066.htm" />
@@ -266,8 +266,8 @@
   </HelpKINode>
   <HelpKINode Title="Board.Title property" Url="html/fc7c9aa3-0ca6-bbdf-1fb6-08df8f252ce8.htm" />
   <HelpKINode Title="Board.ToString method">
-    <HelpKINode Title="Board.ToString Method " Url="html/973a775b-8f53-8f54-fe88-1e0badc971d5.htm" />
     <HelpKINode Title="Board.ToString Method " Url="html/3c919292-7810-54b8-e558-43fd499e682a.htm" />
+    <HelpKINode Title="Board.ToString Method " Url="html/973a775b-8f53-8f54-fe88-1e0badc971d5.htm" />
   </HelpKINode>
   <HelpKINode Title="BodyColor property" Url="html/a13ef2c1-2068-eee1-393f-994fadea2622.htm" />
   <HelpKINode Title="BodyMiddleColor property" Url="html/ccf89c4e-e9c3-18a8-ae8c-8db584e579a2.htm" />
@@ -491,10 +491,10 @@
   <HelpKINode Title="Content property">
     <HelpKINode Title="ParsedContentInfo.Content Property " Url="html/1e30af5e-e3cc-c79c-9e0c-cc655cea99d6.htm" />
     <HelpKINode Title="ParserLimitReport.Content Property " Url="html/8a9e2fd4-4105-c0c6-e8f0-1f02648a5673.htm" />
-    <HelpKINode Title="Post.Content Property " Url="html/ec969818-d159-d2b5-556b-644d2ba6035e.htm" />
     <HelpKINode Title="Post.Content Property " Url="html/a7ee7528-5573-ac6e-ef5d-d3ed25c877cb.htm" />
-    <HelpKINode Title="Revision.Content Property " Url="html/7e0f98f5-08fb-feab-9776-7ebe526dfeaa.htm" />
+    <HelpKINode Title="Post.Content Property " Url="html/ec969818-d159-d2b5-556b-644d2ba6035e.htm" />
     <HelpKINode Title="Revision.Content Property " Url="html/3cfd923d-e823-6a74-cdb5-d0bc813a563f.htm" />
+    <HelpKINode Title="Revision.Content Property " Url="html/7e0f98f5-08fb-feab-9776-7ebe526dfeaa.htm" />
     <HelpKINode Title="WikiPage.Content Property " Url="html/ef159b6c-f6e7-eaef-6c04-e3aacb2d5a58.htm" />
   </HelpKINode>
   <HelpKINode Title="ContentCategoryInfo class">
@@ -512,8 +512,8 @@
   <HelpKINode Title="ContentLanguage property" Url="html/bb9a2f2a-b7f9-b1d4-5e73-da499f0d3d33.htm" />
   <HelpKINode Title="ContentLength property">
     <HelpKINode Title="PageInfoPropertyGroup.ContentLength Property " Url="html/27e672ff-41a0-89fa-b0dc-b2194cc40fb2.htm" />
-    <HelpKINode Title="Revision.ContentLength Property " Url="html/adc46aaa-a1a5-c61b-bf9f-d2e1323ca965.htm" />
     <HelpKINode Title="Revision.ContentLength Property " Url="html/07fce57a-c1ef-4a37-e1a5-d922e21097a9.htm" />
+    <HelpKINode Title="Revision.ContentLength Property " Url="html/adc46aaa-a1a5-c61b-bf9f-d2e1323ca965.htm" />
     <HelpKINode Title="SearchResultItem.ContentLength Property " Url="html/5d10626a-5cf7-10b4-a183-c33070d4353a.htm" />
     <HelpKINode Title="WikiPage.ContentLength Property " Url="html/5d6c65ca-f12a-8f10-84b8-8921d9299248.htm" />
   </HelpKINode>
@@ -819,6 +819,7 @@
     <HelpKINode Title="LinksGenerator.EnumListParameters Method " Url="html/81c9a296-e5bf-b301-122c-9162ef55960a.htm" />
     <HelpKINode Title="LogEventsList.EnumListParameters Method " Url="html/e7690e27-4d6a-8b84-1f2e-4122a8f56261.htm" />
     <HelpKINode Title="QueryPageGenerator.EnumListParameters Method " Url="html/a64c0db2-d210-7e85-a9f8-0bc526c70d31.htm" />
+    <HelpKINode Title="RandomPageGenerator.EnumListParameters Method " Url="html/f7d97921-54fa-25c6-caf8-a9331b8f8935.htm" />
     <HelpKINode Title="RecentChangesGenerator.EnumListParameters Method " Url="html/aa14e81a-8007-c596-4c1b-acede5fa0588.htm" />
     <HelpKINode Title="RevisionsGenerator.EnumListParameters Method " Url="html/d1573b45-db57-3fb2-8285-83d9cd55c77f.htm" />
     <HelpKINode Title="SearchGenerator.EnumListParameters Method " Url="html/d800729b-012e-8bc8-7005-b287d655a7c5.htm" />
@@ -1610,6 +1611,7 @@
     <HelpKINode Title="CategoriesGenerator.ItemFromJson Method " Url="html/e7db333e-68fa-1d12-6e65-2e5b232759cc.htm" />
     <HelpKINode Title="GeoSearchGenerator.ItemFromJson Method " Url="html/4065c6f4-7e25-4c6b-2279-0ecb84fe6df7.htm" />
     <HelpKINode Title="LogEventsList.ItemFromJson Method " Url="html/3ce9c9ea-a2de-d161-ead8-aa71fd202504.htm" />
+    <HelpKINode Title="RandomPageGenerator.ItemFromJson Method " Url="html/39a0a3b4-c7fc-58d3-7ff7-a1362b84fbff.htm" />
     <HelpKINode Title="RecentChangesGenerator.ItemFromJson Method " Url="html/e7663314-d220-e9a7-4b95-ef59d072be67.htm" />
     <HelpKINode Title="RevisionsGenerator.ItemFromJson Method " Url="html/f3376184-c124-1830-4379-e511102c63d5.htm" />
     <HelpKINode Title="SearchGenerator.ItemFromJson Method " Url="html/4b503ff0-f3f3-de13-db99-f9163a2dc41e.htm" />
@@ -1733,8 +1735,8 @@
   <HelpKINode Title="LastFileRevision property" Url="html/8da87677-77cb-16bd-6e8f-61f5a7137cf0.htm" />
   <HelpKINode Title="LastModified property" Url="html/ba678c8a-62c4-1fde-8f61-42b0f63fda43.htm" />
   <HelpKINode Title="LastRevision property">
-    <HelpKINode Title="Post.LastRevision Property " Url="html/e7400e28-6198-03d8-2fc0-0c841b02623a.htm" />
     <HelpKINode Title="Post.LastRevision Property " Url="html/eb454bdb-af61-4a23-af52-5b3189573cf3.htm" />
+    <HelpKINode Title="Post.LastRevision Property " Url="html/e7400e28-6198-03d8-2fc0-0c841b02623a.htm" />
     <HelpKINode Title="WikiPage.LastRevision Property " Url="html/40c362e2-ff1c-3a69-6d23-e58539027f06.htm" />
   </HelpKINode>
   <HelpKINode Title="LastRevisionId property">
@@ -1791,6 +1793,7 @@
     <HelpKINode Title="GeoSearchGenerator.ListName Property " Url="html/68204b2a-f2fe-5584-9af0-690933563dcc.htm" />
     <HelpKINode Title="LogEventsList.ListName Property " Url="html/ddbf3c3b-a6bc-70eb-1f2f-a50a1307616e.htm" />
     <HelpKINode Title="QueryPageGenerator.ListName Property " Url="html/ae434a7e-71d5-9c2a-0d19-4afddad49d4a.htm" />
+    <HelpKINode Title="RandomPageGenerator.ListName Property " Url="html/1105a327-181b-f579-69a2-d01d1afdf894.htm" />
     <HelpKINode Title="RecentChangesGenerator.ListName Property " Url="html/2e64ec8f-a9c9-d0d6-3cf5-82adc01cd7c0.htm" />
     <HelpKINode Title="SearchGenerator.ListName Property " Url="html/b60a33a5-0ece-5414-089a-dc869f4641f8.htm" />
     <HelpKINode Title="TranscludedInGenerator.ListName Property " Url="html/87900d58-7a48-72f2-c9ea-3ff20bc2606b.htm" />
@@ -2124,6 +2127,7 @@
     <HelpKINode Title="GeoSearchGenerator.NamespaceIds Property " Url="html/13557722-5465-cf0e-0a14-65b851c59e98.htm" />
     <HelpKINode Title="LinksGenerator.NamespaceIds Property " Url="html/ee773676-69ff-9537-3136-5f1b8fef5e11.htm" />
     <HelpKINode Title="LocalWikiSearchList.NamespaceIds Property " Url="html/87f60008-5465-c1d9-a646-c0874fd2b442.htm" />
+    <HelpKINode Title="RandomPageGenerator.NamespaceIds Property " Url="html/7ebea299-208d-dc7b-c4d0-07903c45ef96.htm" />
     <HelpKINode Title="RecentChangesGenerator.NamespaceIds Property " Url="html/45f25fb4-3856-fa07-8bec-e31c31b4bcb3.htm" />
     <HelpKINode Title="SearchGenerator.NamespaceIds Property " Url="html/f1f3c4d6-4abd-8c71-8657-708befcb68d4.htm" />
     <HelpKINode Title="TranscludedInGenerator.NamespaceIds Property " Url="html/df96a0b3-3748-6499-1ece-c9f8145490c5.htm" />
@@ -2514,10 +2518,10 @@
   <HelpKINode Title="Post class">
     <HelpKINode Title="Post Class" Url="html/d09cb916-a3e3-e3cc-c5f7-8b465eec038d.htm" />
     <HelpKINode Title="Post Class" Url="html/2c003f3d-ff36-9981-3992-35b28e15ea10.htm" />
-    <HelpKINode Title="constructor" Url="html/bac2486e-5dfd-9c23-278d-95022f26cf2d.htm" />
     <HelpKINode Title="constructor" Url="html/16db15fa-b23e-b041-ded2-db05680e2dcf.htm" />
-    <HelpKINode Title="methods" Url="html/51ef3321-8b17-3e4f-1143-685127541ebc.htm" />
+    <HelpKINode Title="constructor" Url="html/bac2486e-5dfd-9c23-278d-95022f26cf2d.htm" />
     <HelpKINode Title="methods" Url="html/b9c9e508-fefb-0d68-cc2e-7b76eba88a5e.htm" />
+    <HelpKINode Title="methods" Url="html/51ef3321-8b17-3e4f-1143-685127541ebc.htm" />
     <HelpKINode Title="properties" Url="html/d100c01c-f39c-2a57-d196-69e6167a0f19.htm" />
     <HelpKINode Title="properties" Url="html/a613c186-7dac-d3b4-fcdf-7b7ebf77fadd.htm" />
   </HelpKINode>
@@ -2530,8 +2534,8 @@
   <HelpKINode Title="Post.Id property" Url="html/088886f2-ab82-37fd-76a8-19be327aa778.htm" />
   <HelpKINode Title="Post.LastEditor property" Url="html/27e786fe-8ff0-e92e-8d9d-307df1dd1203.htm" />
   <HelpKINode Title="Post.LastRevision property">
-    <HelpKINode Title="Post.LastRevision Property " Url="html/eb454bdb-af61-4a23-af52-5b3189573cf3.htm" />
     <HelpKINode Title="Post.LastRevision Property " Url="html/e7400e28-6198-03d8-2fc0-0c841b02623a.htm" />
+    <HelpKINode Title="Post.LastRevision Property " Url="html/eb454bdb-af61-4a23-af52-5b3189573cf3.htm" />
   </HelpKINode>
   <HelpKINode Title="Post.LastUpdated property" Url="html/f614fe23-5262-0f6c-2667-f90c4608ac8b.htm" />
   <HelpKINode Title="Post.ModerateAsync method" Url="html/9ac82390-2c19-2334-036a-7d5be5c3bc07.htm" />
@@ -2541,16 +2545,16 @@
     <HelpKINode Title="Post Constructor " Url="html/bac2486e-5dfd-9c23-278d-95022f26cf2d.htm" />
   </HelpKINode>
   <HelpKINode Title="Post.RefreshAsync method">
-    <HelpKINode Title="Post.RefreshAsync Method " Url="html/ebdf6be3-174c-d898-5a16-105c0ad9d756.htm" />
     <HelpKINode Title="Post.RefreshAsync Method " Url="html/d2267a5c-d97c-faba-85f4-21b307dd74ac.htm" />
+    <HelpKINode Title="Post.RefreshAsync Method " Url="html/ebdf6be3-174c-d898-5a16-105c0ad9d756.htm" />
   </HelpKINode>
   <HelpKINode Title="Post.Replies property">
     <HelpKINode Title="Post.Replies Property " Url="html/68caa221-33d3-5135-c374-792fe280c50f.htm" />
     <HelpKINode Title="Post.Replies Property " Url="html/d21f08a4-570f-b91d-42af-77deacefb492.htm" />
   </HelpKINode>
   <HelpKINode Title="Post.ReplyAsync method">
-    <HelpKINode Title="Post.ReplyAsync Method " Url="html/f1c5fb45-c0ea-ca3d-8b68-3c1579f75536.htm" />
     <HelpKINode Title="Post.ReplyAsync Method " Url="html/c368e346-f284-fe79-73ac-5feeff191241.htm" />
+    <HelpKINode Title="Post.ReplyAsync Method " Url="html/f1c5fb45-c0ea-ca3d-8b68-3c1579f75536.htm" />
   </HelpKINode>
   <HelpKINode Title="Post.Site property">
     <HelpKINode Title="Post.Site Property " Url="html/5aec9209-db08-99ac-bb67-4da1f7cb3871.htm" />
@@ -2672,6 +2676,18 @@
   <HelpKINode Title="QueuedWorkCount property" Url="html/53a67b52-1013-cce7-d73b-b5d259ef6c1a.htm" />
   <HelpKINode Title="QueueWorkAsync method" Url="html/54acb7a3-541e-13d3-d0c2-41b719ad456e.htm" />
   <HelpKINode Title="Radius property" Url="html/1e5ff858-41b3-79f3-5247-6c61e6130e4f.htm" />
+  <HelpKINode Title="RandomPageGenerator class">
+    <HelpKINode Title="RandomPageGenerator Class" Url="html/14acf499-3e14-6897-22bc-be68eb3074b3.htm" />
+    <HelpKINode Title="constructor" Url="html/bbe4733c-c496-3250-b80a-a545b0c694e7.htm" />
+    <HelpKINode Title="methods" Url="html/b76f22c0-40dd-6415-01f2-6da5cdaf1835.htm" />
+    <HelpKINode Title="properties" Url="html/478937fa-2621-c217-9313-67a389e45d89.htm" />
+  </HelpKINode>
+  <HelpKINode Title="RandomPageGenerator.EnumListParameters method" Url="html/f7d97921-54fa-25c6-caf8-a9331b8f8935.htm" />
+  <HelpKINode Title="RandomPageGenerator.ItemFromJson method" Url="html/39a0a3b4-c7fc-58d3-7ff7-a1362b84fbff.htm" />
+  <HelpKINode Title="RandomPageGenerator.ListName property" Url="html/1105a327-181b-f579-69a2-d01d1afdf894.htm" />
+  <HelpKINode Title="RandomPageGenerator.NamespaceIds property" Url="html/7ebea299-208d-dc7b-c4d0-07903c45ef96.htm" />
+  <HelpKINode Title="RandomPageGenerator.RandomPageGenerator constructor" Url="html/bbe4733c-c496-3250-b80a-a545b0c694e7.htm" />
+  <HelpKINode Title="RandomPageGenerator.RedirectsFilter property" Url="html/70299937-db08-ac5c-082b-14f62c377947.htm" />
   <HelpKINode Title="Rank property" Url="html/b14afa56-0a7a-e547-0f0b-8a909b98c3a6.htm" />
   <HelpKINode Title="RankingType property" Url="html/6e87d4fa-6350-8f27-6d1c-cee84173d057.htm" />
   <HelpKINode Title="RawDataValue property" Url="html/ad10174e-2942-c9fb-cb72-3a071babe9ca.htm" />
@@ -2749,6 +2765,7 @@
   <HelpKINode Title="RedirectsFilter property">
     <HelpKINode Title="AllPagesGenerator.RedirectsFilter Property " Url="html/a27d23eb-6bca-236c-d921-5aa5f83e75dd.htm" />
     <HelpKINode Title="BacklinksGenerator.RedirectsFilter Property " Url="html/43e4b0b1-d739-303d-9e27-891281276d00.htm" />
+    <HelpKINode Title="RandomPageGenerator.RedirectsFilter Property " Url="html/70299937-db08-ac5c-082b-14f62c377947.htm" />
     <HelpKINode Title="RecentChangesGenerator.RedirectsFilter Property " Url="html/5256f49b-ac11-aa38-74f4-13dc004d2f1a.htm" />
     <HelpKINode Title="TranscludedInGenerator.RedirectsFilter Property " Url="html/9f2d6a9b-d056-50db-5cb5-d5d67284b2c7.htm" />
   </HelpKINode>
@@ -2756,8 +2773,8 @@
   <HelpKINode Title="Referer property" Url="html/b4e70406-895b-c3c7-4e8c-f6a019d3b2ed.htm" />
   <HelpKINode Title="RefreshAccountInfoAsync method" Url="html/8a5fcad8-0c84-6dae-2933-368076cfeafd.htm" />
   <HelpKINode Title="RefreshAsync method">
-    <HelpKINode Title="Board.RefreshAsync Method " Url="html/029e888f-f2f2-41c8-db34-d4e012735840.htm" />
     <HelpKINode Title="Board.RefreshAsync Method " Url="html/323db725-c375-847b-78fe-6716db565264.htm" />
+    <HelpKINode Title="Board.RefreshAsync Method " Url="html/029e888f-f2f2-41c8-db34-d4e012735840.htm" />
     <HelpKINode Title="DiscussionsExtensions.RefreshAsync Method " Url="html/01b2c452-bbf7-2a49-3c14-d87341f7fc76.htm" />
     <HelpKINode Title="Entity.RefreshAsync Method " Url="html/1e1d3b82-15a5-2aaf-4d82-2c9b21aec912.htm" />
     <HelpKINode Title="EntityExtensions.RefreshAsync Method " Url="html/b7f3702f-658a-bd74-9e01-3ddccced0581.htm" />
@@ -2799,8 +2816,8 @@
   </HelpKINode>
   <HelpKINode Title="Reply enumeration member" Url="html/58cb1ce4-4fc1-1786-46fc-6f6d2a18d73f.htm" />
   <HelpKINode Title="ReplyAsync method">
-    <HelpKINode Title="Post.ReplyAsync Method " Url="html/f1c5fb45-c0ea-ca3d-8b68-3c1579f75536.htm" />
     <HelpKINode Title="Post.ReplyAsync Method " Url="html/c368e346-f284-fe79-73ac-5feeff191241.htm" />
+    <HelpKINode Title="Post.ReplyAsync Method " Url="html/f1c5fb45-c0ea-ca3d-8b68-3c1579f75536.htm" />
     <HelpKINode Title="Topic.ReplyAsync Method " Url="html/3fd440a8-a9ea-d71f-1cc7-2b71065d1919.htm" />
   </HelpKINode>
   <HelpKINode Title="ReplyIds property" Url="html/cad3a1c7-1cca-ba41-7a20-3e46863079bb.htm" />
@@ -2829,12 +2846,12 @@
   <HelpKINode Title="Revision class">
     <HelpKINode Title="Revision Class" Url="html/378c50e0-3137-0c2a-0f9d-3ab10f97dd75.htm" />
     <HelpKINode Title="Revision Class" Url="html/6ff78e1f-4de4-5581-ceb5-3b3ec15a9313.htm" />
-    <HelpKINode Title="constructor" Url="html/812a4550-942d-7a5f-ee5e-068193d6f1c2.htm" />
     <HelpKINode Title="constructor" Url="html/f3933df4-33bd-fa61-6f3b-55cad6047627.htm" />
-    <HelpKINode Title="methods" Url="html/97b5bccf-e8eb-f736-feab-23f008c351b4.htm" />
+    <HelpKINode Title="constructor" Url="html/812a4550-942d-7a5f-ee5e-068193d6f1c2.htm" />
     <HelpKINode Title="methods" Url="html/2c87eb95-c903-095b-1cd3-88517a4fca5b.htm" />
-    <HelpKINode Title="properties" Url="html/42728da8-d835-447f-5c2f-87501372d81f.htm" />
+    <HelpKINode Title="methods" Url="html/97b5bccf-e8eb-f736-feab-23f008c351b4.htm" />
     <HelpKINode Title="properties" Url="html/f5abe5a1-54d0-133a-8c4d-6836411a0983.htm" />
+    <HelpKINode Title="properties" Url="html/42728da8-d835-447f-5c2f-87501372d81f.htm" />
   </HelpKINode>
   <HelpKINode Title="Revision field" Url="html/a66d6ced-8e00-45fb-fe41-edc445631963.htm" />
   <HelpKINode Title="Revision.Actions property" Url="html/b3bd7aad-19ab-0739-7c04-0a1e9777258b.htm" />
@@ -2843,8 +2860,8 @@
   <HelpKINode Title="Revision.ChangeType property" Url="html/342d4c5f-16ec-8c4a-17a9-0b4487d61763.htm" />
   <HelpKINode Title="Revision.Comment property" Url="html/7794a132-e8bd-1d53-2062-94b3d24473d7.htm" />
   <HelpKINode Title="Revision.Content property">
-    <HelpKINode Title="Revision.Content Property " Url="html/3cfd923d-e823-6a74-cdb5-d0bc813a563f.htm" />
     <HelpKINode Title="Revision.Content Property " Url="html/7e0f98f5-08fb-feab-9776-7ebe526dfeaa.htm" />
+    <HelpKINode Title="Revision.Content Property " Url="html/3cfd923d-e823-6a74-cdb5-d0bc813a563f.htm" />
   </HelpKINode>
   <HelpKINode Title="Revision.ContentLength property">
     <HelpKINode Title="Revision.ContentLength Property " Url="html/adc46aaa-a1a5-c61b-bf9f-d2e1323ca965.htm" />
@@ -2878,8 +2895,8 @@
   <HelpKINode Title="Revision.ReplyIds property" Url="html/cad3a1c7-1cca-ba41-7a20-3e46863079bb.htm" />
   <HelpKINode Title="Revision.ReplyToId property" Url="html/aac1d0a5-0dc8-7aa5-f338-80610172b1fa.htm" />
   <HelpKINode Title="Revision.Revision constructor">
-    <HelpKINode Title="Revision Constructor " Url="html/f3933df4-33bd-fa61-6f3b-55cad6047627.htm" />
     <HelpKINode Title="Revision Constructor " Url="html/812a4550-942d-7a5f-ee5e-068193d6f1c2.htm" />
+    <HelpKINode Title="Revision Constructor " Url="html/f3933df4-33bd-fa61-6f3b-55cad6047627.htm" />
   </HelpKINode>
   <HelpKINode Title="Revision.RevisionId property" Url="html/ddae693f-6d95-46c8-e950-9c7df81ec9be.htm" />
   <HelpKINode Title="Revision.Sha1 property" Url="html/f3a54e45-1384-efbc-64d5-ee4cb429ffd0.htm" />
@@ -4183,6 +4200,7 @@
   <HelpKINode Title="WikiClientLibrary.Generators.Primitive.WikiPagePropertyList&lt;T&gt; class" Url="html/2477b244-c90b-b6bc-0091-5f2353b654c0.htm" />
   <HelpKINode Title="WikiClientLibrary.Generators.PropertyFilterOption enumeration" Url="html/cdc3aaca-a8a4-9889-e2d6-58094c943b29.htm" />
   <HelpKINode Title="WikiClientLibrary.Generators.QueryPageGenerator class" Url="html/c66baa57-3922-11be-7186-7640be959a2b.htm" />
+  <HelpKINode Title="WikiClientLibrary.Generators.RandomPageGenerator class" Url="html/14acf499-3e14-6897-22bc-be68eb3074b3.htm" />
   <HelpKINode Title="WikiClientLibrary.Generators.RecentChangeItem class" Url="html/c6df50de-370c-2a57-037a-263feeae94fc.htm" />
   <HelpKINode Title="WikiClientLibrary.Generators.RecentChangesFilterTypes enumeration" Url="html/4ebf4b51-1ad9-4ba5-1ec5-0bc3e66581b4.htm" />
   <HelpKINode Title="WikiClientLibrary.Generators.RecentChangesGenerator class" Url="html/8b350883-08fb-9985-bbc8-1ccc7ec781f1.htm" />
@@ -4513,10 +4531,10 @@
   <HelpKINode Title="WikiPageCategoryInfo.ToString method" Url="html/3c9c0461-ba8e-2e0e-50fe-0322ea4469d0.htm" />
   <HelpKINode Title="WikiPageCategoryInfo.WikiPageCategoryInfo constructor" Url="html/77214842-c4af-d057-88c6-1dbb9f91be06.htm" />
   <HelpKINode Title="WikiPageExtensions class">
-    <HelpKINode Title="WikiPageExtensions Class" Url="html/519a0734-3def-bc86-99ff-ec3a082d2229.htm" />
     <HelpKINode Title="WikiPageExtensions Class" Url="html/e4d0192d-fd85-d667-b29f-d2ae1204ffbd.htm" />
-    <HelpKINode Title="methods" Url="html/fe2a93db-c70e-56eb-d9aa-d51e68635aa9.htm" />
+    <HelpKINode Title="WikiPageExtensions Class" Url="html/519a0734-3def-bc86-99ff-ec3a082d2229.htm" />
     <HelpKINode Title="methods" Url="html/f0044a54-613e-d4d5-9ec0-339c9551b755.htm" />
+    <HelpKINode Title="methods" Url="html/fe2a93db-c70e-56eb-d9aa-d51e68635aa9.htm" />
   </HelpKINode>
   <HelpKINode Title="WikiPageExtensions.CreateLinksGenerator method" Url="html/a1906efc-7da5-b823-b03b-d585e57145c3.htm" />
   <HelpKINode Title="WikiPageExtensions.CreateRevisionsGenerator method" Url="html/26fe9e6c-4258-aff9-ea74-0511dd23c23c.htm" />
@@ -4801,8 +4819,8 @@
   <HelpKINode Title="WikiSiteExtensions class">
     <HelpKINode Title="WikiSiteExtensions Class" Url="html/c05e1ab3-b4c6-862f-fd48-bef38aff957d.htm" />
     <HelpKINode Title="WikiSiteExtensions Class" Url="html/775bde37-6d4a-3803-c4d0-051dbeefb148.htm" />
-    <HelpKINode Title="methods" Url="html/722f86fb-14a2-68d3-fbba-250160ac6131.htm" />
     <HelpKINode Title="methods" Url="html/f97f3a57-0844-70f1-5d8e-82f264cab1b9.htm" />
+    <HelpKINode Title="methods" Url="html/722f86fb-14a2-68d3-fbba-250160ac6131.htm" />
   </HelpKINode>
   <HelpKINode Title="WikiSiteExtensions.ParseContentAsync method" Url="html/3129081f-d872-681c-44f0-8ccbd2e9d8a5.htm" />
   <HelpKINode Title="WikiSiteExtensions.ParsePageAsync method" Url="html/6e44a9c1-b6b9-c2d0-e33c-24792d36f9ff.htm" />

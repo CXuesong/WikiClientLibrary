@@ -2706,13 +2706,8 @@
     </member>
     <member name="P:WikiClientLibrary.Generators.AllPagesGenerator.NamespaceId">
       <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>P:WikiClientLibrary.Generators.AllPagesGenerator.NamespaceId</parameter>
-          </include>
-        </markup>
-      </summary>
+            List all the pages in this namespace.
+            </summary>
     </member>
     <member name="P:WikiClientLibrary.Generators.AllPagesGenerator.Prefix">
       <summary>
@@ -3577,6 +3572,50 @@
         </markup>
       </summary>
     </member>
+    <member name="T:WikiClientLibrary.Generators.RandomPageGenerator">
+      <summary>
+            Gets random pages in a specific namespace.
+            (<a href="https://www.mediawiki.org/wiki/API:Random">mw:API:Random</a>, MediaWiki 1.12+)
+            </summary>
+    </member>
+    <member name="M:WikiClientLibrary.Generators.RandomPageGenerator.#ctor(WikiClientLibrary.Sites.WikiSite)">
+      <summary>
+        <markup>
+          <include item="SMCAutoDocConstructor">
+            <parameter>WikiClientLibrary.Generators.RandomPageGenerator</parameter>
+          </include>
+        </markup>
+      </summary>
+      <param name="site">The MediaWiki site this instance applies to.</param>
+    </member>
+    <member name="M:WikiClientLibrary.Generators.RandomPageGenerator.EnumListParameters">
+      <summary>
+            When overridden, fills generator parameters for <c>action=query&amp;list={ListName}</c> request.
+            </summary>
+      <returns>A sequence of fields, which will override the basic query parameters.</returns>
+    </member>
+    <member name="M:WikiClientLibrary.Generators.RandomPageGenerator.ItemFromJson(Newtonsoft.Json.Linq.JToken)">
+      <summary>
+            Parses an item contained in the <c>action=query&amp;list=</c> JSON response.
+            </summary>
+      <param name="json">One of the item node under the JSON path <c>query/{listname}</c>.</param>
+      <returns>The item that will be returned in the sequence from <see cref="M:WikiClientLibrary.Generators.Primitive.WikiList`1.EnumItemsAsync" />.</returns>
+    </member>
+    <member name="P:WikiClientLibrary.Generators.RandomPageGenerator.ListName">
+      <summary>
+            The name of list, used as the value of <c>list</c> parameter in <c>action=query</c> request.
+            </summary>
+    </member>
+    <member name="P:WikiClientLibrary.Generators.RandomPageGenerator.NamespaceIds">
+      <summary>
+            Only list pages in these namespaces.
+            </summary>
+    </member>
+    <member name="P:WikiClientLibrary.Generators.RandomPageGenerator.RedirectsFilter">
+      <summary>
+            How to filter redirects.
+            </summary>
+    </member>
     <member name="T:WikiClientLibrary.Generators.RecentChangeItem">
       <summary>
             Represents MediaWiki recent change entry.
@@ -3788,33 +3827,19 @@
     </member>
     <member name="P:WikiClientLibrary.Generators.RecentChangesGenerator.AnonymousFilter">
       <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>P:WikiClientLibrary.Generators.RecentChangesGenerator.AnonymousFilter</parameter>
-          </include>
-        </markup>
-      </summary>
+            Whether to list edits by anonymous users.
+            </summary>
     </member>
     <member name="P:WikiClientLibrary.Generators.RecentChangesGenerator.BotFilter">
       <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>P:WikiClientLibrary.Generators.RecentChangesGenerator.BotFilter</parameter>
-          </include>
-        </markup>
-      </summary>
+            Whether to list bot edits.
+            </summary>
     </member>
     <member name="P:WikiClientLibrary.Generators.RecentChangesGenerator.DistinctGeneratedPages">
       <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>P:WikiClientLibrary.Generators.RecentChangesGenerator.DistinctGeneratedPages</parameter>
-          </include>
-        </markup>
-      </summary>
+            When using the default implementation of <see cref="M:WikiClientLibrary.Generators.Primitive.WikiPageGenerator`1.EnumPagesAsync(WikiClientLibrary.Pages.Queries.IWikiPageQueryProvider)" />,
+            determines whether to remove duplicate page results generated from generator results.
+            </summary>
     </member>
     <member name="P:WikiClientLibrary.Generators.RecentChangesGenerator.EndTime">
       <summary>
@@ -3857,13 +3882,8 @@
     </member>
     <member name="P:WikiClientLibrary.Generators.RecentChangesGenerator.MinorFilter">
       <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>P:WikiClientLibrary.Generators.RecentChangesGenerator.MinorFilter</parameter>
-          </include>
-        </markup>
-      </summary>
+            Whether to list minor edits.
+            </summary>
     </member>
     <member name="P:WikiClientLibrary.Generators.RecentChangesGenerator.NamespaceIds">
       <summary>
@@ -4347,60 +4367,24 @@
     </member>
     <member name="M:WikiClientLibrary.Generators.WikiPageExtensions.CreateLinksGenerator(WikiClientLibrary.Pages.WikiPage)">
       <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>M:WikiClientLibrary.Generators.WikiPageExtensions.CreateLinksGenerator(WikiClientLibrary.Pages.WikiPage)</parameter>
-          </include>
-        </markup>
-      </summary>
-      <param name="page">
-        <markup>
-          <include item="SMCMissingParamTag">
-            <parameter>param</parameter>
-            <parameter>page</parameter>
-            <parameter>M:WikiClientLibrary.Generators.WikiPageExtensions.CreateLinksGenerator(WikiClientLibrary.Pages.WikiPage)</parameter>
-          </include>
-        </markup>
-      </param>
+            Creates a <see cref="T:WikiClientLibrary.Generators.LinksGenerator" /> instance from the specified page,
+            which generates pages from all links on the page.
+            </summary>
+      <param name="page">The page.</param>
     </member>
     <member name="M:WikiClientLibrary.Generators.WikiPageExtensions.CreateRevisionsGenerator(WikiClientLibrary.Pages.WikiPage)">
       <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>M:WikiClientLibrary.Generators.WikiPageExtensions.CreateRevisionsGenerator(WikiClientLibrary.Pages.WikiPage)</parameter>
-          </include>
-        </markup>
-      </summary>
-      <param name="page">
-        <markup>
-          <include item="SMCMissingParamTag">
-            <parameter>param</parameter>
-            <parameter>page</parameter>
-            <parameter>M:WikiClientLibrary.Generators.WikiPageExtensions.CreateRevisionsGenerator(WikiClientLibrary.Pages.WikiPage)</parameter>
-          </include>
-        </markup>
-      </param>
+            Creates a <see cref="T:WikiClientLibrary.Generators.RevisionsGenerator" /> instance from the specified page,
+            which enumerates the sequence of revisions on the page.
+            </summary>
+      <param name="page">The page.</param>
     </member>
     <member name="M:WikiClientLibrary.Generators.WikiPageExtensions.CreateTransclusionsGenerator(WikiClientLibrary.Pages.WikiPage)">
       <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>M:WikiClientLibrary.Generators.WikiPageExtensions.CreateTransclusionsGenerator(WikiClientLibrary.Pages.WikiPage)</parameter>
-          </include>
-        </markup>
-      </summary>
-      <param name="page">
-        <markup>
-          <include item="SMCMissingParamTag">
-            <parameter>param</parameter>
-            <parameter>page</parameter>
-            <parameter>M:WikiClientLibrary.Generators.WikiPageExtensions.CreateTransclusionsGenerator(WikiClientLibrary.Pages.WikiPage)</parameter>
-          </include>
-        </markup>
-      </param>
+            Creates a <see cref="T:WikiClientLibrary.Generators.TransclusionsGenerator" /> instance from the specified page,
+            which generates pages from all pages (typically templates) transcluded in the page.
+            </summary>
+      <param name="page">The page.</param>
     </member>
     <member name="T:WikiClientLibrary.Generators.Primitive.IWikiList`1">
       <summary>
