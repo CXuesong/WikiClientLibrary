@@ -417,17 +417,20 @@ namespace UnitTestProject1.Tests
         }
 
         [Theory]
-        [InlineData(new[] { BuiltInNamespaces.Main })]
-        [InlineData(new[] { BuiltInNamespaces.Category })]
-        [InlineData(new[] { BuiltInNamespaces.Project, BuiltInNamespaces.Help })]
-        public async Task WpTest2RandomGeneratorTests(int[] namespaces)
+        [InlineData(Endpoints.WikipediaBetaEn, new[] {  BuiltInNamespaces.Main })]
+        [InlineData(Endpoints.WikipediaBetaEn, new[] {  BuiltInNamespaces.Category })]
+        [InlineData(Endpoints.WikipediaBetaEn, new[] {  BuiltInNamespaces.Project, BuiltInNamespaces.Help })]
+        [InlineData(Endpoints.WikiaTest, new[] { BuiltInNamespaces.Main })]
+        [InlineData(Endpoints.WikiaTest, new[] { BuiltInNamespaces.Category })]
+        [InlineData(Endpoints.WikiaTest, new[] { BuiltInNamespaces.Project, BuiltInNamespaces.Help })]
+        public async Task WpTest2RandomGeneratorTests(string endpoint, int[] namespaces)
         {
-            var site = await WpTest2SiteAsync;
-            var generator = new RandomPageGenerator(site) { NamespaceIds = namespaces, PaginationSize = 50 };
-            var stubs = await generator.EnumItemsAsync().Take(50).ToList();
+            var site = await GetWikiSiteAsync(endpoint);
+            var generator = new RandomPageGenerator(site) { NamespaceIds = namespaces, PaginationSize = 10 };
+            var stubs = await generator.EnumItemsAsync().Take(20).ToList();
             Assert.All(stubs, s => Assert.Contains(s.NamespaceId, namespaces));
             generator.RedirectsFilter = PropertyFilterOption.WithProperty;
-            var pages = await generator.EnumPagesAsync().Take(50).ToList();
+            var pages = await generator.EnumPagesAsync().Take(20).ToList();
             Assert.All(pages, p =>
             {
                 Assert.Contains(p.NamespaceId, namespaces);
