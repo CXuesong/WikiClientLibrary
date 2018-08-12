@@ -14,7 +14,7 @@ namespace WikiClientLibrary.Generators
     /// <summary>
     /// Gets random pages in a specific namespace.
     /// </summary>
-    class RandomPageGenerator : WikiPageGenerator
+    public class RandomPageGenerator : WikiPageGenerator
     {
         /// <inheritdoc />
         public RandomPageGenerator(WikiSite site) : base(site)

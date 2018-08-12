@@ -416,5 +416,26 @@ namespace UnitTestProject1.Tests
             Assert.Contains("分類:後波拿巴列傳", titles);
         }
 
+        [Theory]
+        [InlineData(new[] { BuiltInNamespaces.Main })]
+        [InlineData(new[] { BuiltInNamespaces.Category })]
+        [InlineData(new[] { BuiltInNamespaces.Project, BuiltInNamespaces.Help })]
+        public async Task WpTest2RandomGeneratorTests(int[] namespaces)
+        {
+            var site = await WpTest2SiteAsync;
+            var generator = new RandomPageGenerator(site) { NamespaceIds = namespaces, PaginationSize = 50 };
+            var stubs = await generator.EnumItemsAsync().Take(50).ToList();
+            Assert.All(stubs, s => Assert.Contains(s.NamespaceId, namespaces));
+            generator.RedirectsFilter = PropertyFilterOption.WithProperty;
+            var pages = await generator.EnumPagesAsync().Take(50).ToList();
+            Assert.All(pages, p =>
+            {
+                Assert.Contains(p.NamespaceId, namespaces);
+                Assert.True(p.IsRedirect);
+            });
+            // We are obtaining random sequence.
+            if (stubs.Count > 0) Assert.NotEqual(stubs.Select(s => s.Title), pages.Select(p => p.Title));
+        }
+
     }
 }
