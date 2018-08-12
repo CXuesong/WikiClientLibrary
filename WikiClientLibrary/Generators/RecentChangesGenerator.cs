@@ -70,10 +70,19 @@ namespace WikiClientLibrary.Generators
         /// </summary>
         public RecentChangesFilterTypes TypeFilters { get; set; } = RecentChangesFilterTypes.All;
 
+        /// <summary>
+        /// Whether to list minor edits.
+        /// </summary>
         public PropertyFilterOption MinorFilter { get; set; }
 
+        /// <summary>
+        /// Whether to list bot edits.
+        /// </summary>
         public PropertyFilterOption BotFilter { get; set; }
 
+        /// <summary>
+        /// Whether to list edits by anonymous users.
+        /// </summary>
         public PropertyFilterOption AnonymousFilter { get; set; }
 
         /// <summary>
@@ -158,6 +167,7 @@ namespace WikiClientLibrary.Generators
         // if a wiki page is modified more than once. And when a page title is shown for the
         // 2nd, 3rd, etc time, only the properties that has been changed will be included in JSON,
         // which will screw up Page.LoadFromJson .
+        /// <inheritdoc />
         protected override bool DistinctGeneratedPages => true;
 
         /// <inheritdoc />

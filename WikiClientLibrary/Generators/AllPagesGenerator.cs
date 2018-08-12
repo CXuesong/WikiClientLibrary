@@ -15,6 +15,11 @@ namespace WikiClientLibrary.Generators
     /// <summary>
     /// Generates all the pages in a specific namespace.
     /// </summary>
+    /// <remarks>
+    /// To enumerate all the categories used on a wiki site,
+    /// along with those without existing category pages, use <see cref="CategoriesGenerator"/>.
+    /// </remarks>
+    /// <seealso cref="RandomPageGenerator"/>
     public class AllPagesGenerator : WikiPageGenerator
     {
 
@@ -23,7 +28,10 @@ namespace WikiClientLibrary.Generators
         {
         }
 
-        public int NamespaceId { get; set; } = 0;
+        /// <summary>
+        /// List all the pages in this namespace.
+        /// </summary>
+        public int NamespaceId { get; set; } = BuiltInNamespaces.Main;
 
         /// <summary>
         /// Start listing at this title. The title need not exist.
