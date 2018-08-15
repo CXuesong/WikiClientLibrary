@@ -64,22 +64,43 @@ namespace WikiClientLibrary.Infrastructures
         /// <param name="key">The property name.</param>
         /// <returns>The converted value.</returns>
         /// <exception cref="KeyNotFoundException">The property is not found.</exception>
+        /// <see cref="GetInt32Value(string,int)"/>
         public int GetInt32Value(string key)
         {
             return (int)myDict[key];
         }
 
+        /// <summary>
+        /// Gets the <see cref="int"/> value by property name.
+        /// A default value can be provided in case the specified key does not exist.
+        /// </summary>
+        /// <param name="key">The property name.</param>
+        /// <param name="defaultValue">The default value.</param>
+        /// <returns>The converted value - or - <paramref name="defaultValue"/>.</returns>
         public int GetInt32Value(string key, int defaultValue)
         {
             if (myDict.TryGetValue(key, out var value)) return (int)value;
             return defaultValue;
         }
 
+        /// <summary>
+        /// Gets the <see cref="bool"/> value by property name.
+        /// </summary>
+        /// <param name="key">The property name.</param>
+        /// <remarks>
+        /// This method returns true if the specified key exists,
+        /// and its value is something other than <c>null</c> (typically it's <c>""</c>).
+        /// </remarks>
         public bool GetBooleanValue(string key)
         {
-            return myDict[key] != null;
+            return myDict.TryGetValue(key, out var value) && value.Type != JTokenType.Null;
         }
 
+        /// <summary>
+        /// Gets the <see cref="string"/> value by property name.
+        /// </summary>
+        /// <param name="key">The property name.</param>
+        /// <returns>The converted value - or - <c>null</c> if the specified key does not exist.</returns>
         public string GetStringValue(string key)
         {
             if (myDict.TryGetValue(key, out var value)) return (string)value;
