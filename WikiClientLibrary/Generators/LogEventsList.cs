@@ -340,7 +340,13 @@ namespace WikiClientLibrary.Generators
         /// <summary>
         /// (<see cref="LogActions.Move"/>) Whether to suppress the creation of redirect when moving the page.
         /// </summary>
-        public bool SuppressRedirect => GetBooleanValue("suppressredirect");
+        /// <remarks>
+        /// This property returns true if either <c>suppressredirect</c> (Newer MediaWiki)
+        /// or <c>suppressedredirect</c> (MediaWiki 1.19, or Wikia)
+        /// is specified as true in the parameter collection.
+        /// </remarks>
+        public bool SuppressRedirect => GetBooleanValue("suppressredirect")
+                                        || GetBooleanValue("suppressedredirect");   // Yes, this one is dedicated to Wikia.
 
         /// <summary>
         /// (<see cref="LogActions.Patrol"/>)
