@@ -271,8 +271,18 @@ namespace WikiClientLibrary.Generators
         public string Action { get; private set; }
 
         /// <summary>For log items, gets additional log parameters.</summary>
-        [JsonProperty]
-        public LogParameterCollection Params { get; private set; }
+        /// <value>
+        /// The without additional parameters of the log item.
+        /// For log items without additional parameters available,
+        /// this is an empty collection.
+        /// </value>
+        /// <remarks>
+        /// For modern MediaWiki builds, this property uses the value of `params` property.
+        /// For compatibility with MediaWiki 1.19 and below, this property also tries to use the property
+        /// whose name is the value of <see cref="Type"/>. (e.g. use `move` property if <see cref="Type"/> is <see cref="LogActions.Move"/>.
+        /// </remarks>
+        [JsonProperty(ObjectCreationHandling = ObjectCreationHandling.Replace)]
+        public LogParameterCollection Params { get; private set; } = LogParameterCollection.Empty;
 
         /// <inheritdoc/>
         public override string ToString()
@@ -283,8 +293,13 @@ namespace WikiClientLibrary.Generators
             sb.Append(TimeStamp);
             sb.Append(',');
             sb.Append(Type);
-            sb.Append('/');
-            sb.Append(Action);
+            if (Type != Action)
+            {
+                sb.Append('/');
+                sb.Append(Action);
+            }
+            sb.Append(',');
+            sb.Append(Title);
             sb.Append(",{");
             if (Params.Count > 0)
             {
@@ -304,6 +319,13 @@ namespace WikiClientLibrary.Generators
     /// for a table of typical log parameters for each type of log action.</remarks>
     public class LogParameterCollection : WikiReadOnlyDictionary
     {
+
+        internal static readonly LogParameterCollection Empty = new LogParameterCollection();
+
+        static LogParameterCollection()
+        {
+            Empty.MakeReadonly();
+        }
 
         /// <summary>
         /// (<see cref="LogActions.Move"/>) Namespace ID of the move target.
