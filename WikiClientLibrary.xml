@@ -5271,22 +5271,9 @@
     </member>
     <member name="M:WikiClientLibrary.Infrastructures.WikiReadOnlyDictionary.GetBooleanValue(System.String)">
       <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>M:WikiClientLibrary.Infrastructures.WikiReadOnlyDictionary.GetBooleanValue(System.String)</parameter>
-          </include>
-        </markup>
-      </summary>
-      <param name="key">
-        <markup>
-          <include item="SMCMissingParamTag">
-            <parameter>param</parameter>
-            <parameter>key</parameter>
-            <parameter>M:WikiClientLibrary.Infrastructures.WikiReadOnlyDictionary.GetBooleanValue(System.String)</parameter>
-          </include>
-        </markup>
-      </param>
+            Gets the <see cref="T:System.Boolean" /> value by property name.
+            </summary>
+      <param name="key">The property name.</param>
     </member>
     <member name="M:WikiClientLibrary.Infrastructures.WikiReadOnlyDictionary.GetInt32Value(System.String)">
       <summary>
@@ -5299,50 +5286,19 @@
     </member>
     <member name="M:WikiClientLibrary.Infrastructures.WikiReadOnlyDictionary.GetInt32Value(System.String,System.Int32)">
       <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>M:WikiClientLibrary.Infrastructures.WikiReadOnlyDictionary.GetInt32Value(System.String,System.Int32)</parameter>
-          </include>
-        </markup>
-      </summary>
-      <param name="key">
-        <markup>
-          <include item="SMCMissingParamTag">
-            <parameter>param</parameter>
-            <parameter>key</parameter>
-            <parameter>M:WikiClientLibrary.Infrastructures.WikiReadOnlyDictionary.GetInt32Value(System.String,System.Int32)</parameter>
-          </include>
-        </markup>
-      </param>
-      <param name="defaultValue">
-        <markup>
-          <include item="SMCMissingParamTag">
-            <parameter>param</parameter>
-            <parameter>defaultValue</parameter>
-            <parameter>M:WikiClientLibrary.Infrastructures.WikiReadOnlyDictionary.GetInt32Value(System.String,System.Int32)</parameter>
-          </include>
-        </markup>
-      </param>
+            Gets the <see cref="T:System.Int32" /> value by property name.
+            A default value can be provided in case the specified key does not exist.
+            </summary>
+      <param name="key">The property name.</param>
+      <param name="defaultValue">The default value.</param>
+      <returns>The converted value - or - <paramref name="defaultValue" />.</returns>
     </member>
     <member name="M:WikiClientLibrary.Infrastructures.WikiReadOnlyDictionary.GetStringValue(System.String)">
       <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>M:WikiClientLibrary.Infrastructures.WikiReadOnlyDictionary.GetStringValue(System.String)</parameter>
-          </include>
-        </markup>
-      </summary>
-      <param name="key">
-        <markup>
-          <include item="SMCMissingParamTag">
-            <parameter>param</parameter>
-            <parameter>key</parameter>
-            <parameter>M:WikiClientLibrary.Infrastructures.WikiReadOnlyDictionary.GetStringValue(System.String)</parameter>
-          </include>
-        </markup>
-      </param>
+            Gets the <see cref="T:System.String" /> value by property name.
+            </summary>
+      <param name="key">The property name.</param>
+      <returns>The converted value - or - <c>null</c> if the specified key does not exist.</returns>
     </member>
     <member name="M:WikiClientLibrary.Infrastructures.WikiReadOnlyDictionary.GetValueDirect(System.String)">
       <summary>
