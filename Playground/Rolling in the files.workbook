@@ -1,0 +1,47 @@
+---
+uti: com.xamarin.workbook
+id: 736b6ffa-5c46-4e95-b554-10584c77d162
+title: Untitled
+platforms:
+- DotNetCore
+packages:
+- id: CXuesong.MW.WikiClientLibrary
+  version: 0.6.2
+---
+
+## Rolling in the files (simple version)
+
+This workbook demonstrates how to enumerate through all of the files on a Wiki, and to retrieve the URLs to the original files, in less than 20 LOC.
+
+N.B. the approach of using `Take` and `ToList` to take the results out of the generator does not scale. If you are working with sites with a huge amount of files, consider using the [expanded for-each pattern](https://github.com/CXuesong/WikiClientLibrary/wiki/%5BMediaWiki%5D-Generators#how-to-work-with-iasyncenumerablet "How to work with IAsyncEnumerable<T>").
+
+```csharp
+#r "WikiClientLibrary"
+```
+
+```csharp
+using WikiClientLibrary.Client;
+using WikiClientLibrary.Sites;
+using WikiClientLibrary.Pages;
+using WikiClientLibrary.Generators;
+using WikiClientLibrary;
+
+// Prepare WikiSite instance
+var client = new WikiClient { ClientUserAgent = "Rolling-in-the-files"};
+var site = new WikiSite(client, "https://warriors.wikia.com/api.php");
+await site.Initialization;
+```
+
+```csharp
+// Take first 100 files, in alphabetical order, on Warriors Wiki.
+var gen = new AllPagesGenerator(site) {
+    NamespaceId = BuiltInNamespaces.File,
+    PaginationSize = 50
+};
+var files = await gen.EnumPagesAsync().Take(100).Select(page => (page.Title, page.LastFileRevision?.Url)).ToList();
+```
+
+```csharp
+// Clean up
+client.Dispose();
+```
