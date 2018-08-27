@@ -187,7 +187,7 @@ namespace WikiClientLibrary.Sites
                 var extensions = (JArray)jobj["query"]["extensions"];
                 _SiteInfo = qg.ToObject<SiteInfo>(Utility.WikiJsonSerializer);
                 _Namespaces = new NamespaceCollection(this, ns, aliases);
-                _InterwikiMap = new InterwikiMap(this, interwiki);
+                _InterwikiMap = new InterwikiMap(this, interwiki, _Logger);
                 _Extensions = new ExtensionCollection(this, extensions);
             }
         }

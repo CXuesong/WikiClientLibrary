@@ -645,14 +645,31 @@ namespace WikiClientLibrary.Sites
     {
         private readonly IDictionary<string, InterwikiEntry> nameIwDict;
 
-        internal InterwikiMap(WikiSite site, JArray interwikiMap)
+        internal InterwikiMap(WikiSite site, JArray interwikiMap, ILogger logger)
         {
             // interwikiMap : query.namespacealiases
             if (site == null) throw new ArgumentNullException(nameof(site));
             if (interwikiMap == null) throw new ArgumentNullException(nameof(interwikiMap));
-            // I should use InvariantIgnoreCase. But there's no such a member in PCL.
-            nameIwDict = interwikiMap.ToObject<IList<InterwikiEntry>>(Utility.WikiJsonSerializer)
-                .ToDictionary(e => e.Prefix);
+            var entries = interwikiMap.ToObject<IList<InterwikiEntry>>(Utility.WikiJsonSerializer);
+            var entryDict = new Dictionary<string, InterwikiEntry>(entries.Count);
+            foreach (var entry in entries)
+            {
+                var prefix = entry.Prefix.ToLowerInvariant();
+                try
+                {
+                    entryDict.Add(prefix, entry);
+                }
+                catch (ArgumentException)
+                {
+                    // Duplicate key. We will just keep the first occurence.
+                    if (entryDict[prefix].Url != entry.Url)
+                    {
+                        // And there are same prefixes assigned to different URLs. Worse.
+                        logger.LogWarning("Detected conflicting interwiki URL for prefix {Prefix}.", prefix);
+                    }
+                }
+            }
+            nameIwDict = entryDict;
         }
 
         /// <summary>
