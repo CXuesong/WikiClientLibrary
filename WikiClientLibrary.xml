@@ -5987,18 +5987,26 @@
     <member name="T:WikiClientLibrary.Pages.PageQueryOptions">
       <summary>
             Options for refreshing a <see cref="T:WikiClientLibrary.Pages.WikiPage" /> object.
+            For more accurate control on what information to fetch from server when calling library functions,
+            consider using overloads that accept <see cref="T:WikiClientLibrary.Pages.Queries.IWikiPageQueryProvider" />.
             </summary>
+    </member>
+    <member name="F:WikiClientLibrary.Pages.PageQueryOptions.None">
+      <summary>
+            Fetch basic page information using the following property providers:
+            <list type="bullet"><item><term><see cref="T:WikiClientLibrary.Pages.Queries.Properties.PageInfoPropertyProvider" /></term></item><item><term><see cref="T:WikiClientLibrary.Pages.Queries.Properties.RevisionsPropertyProvider" /> (<see cref="P:WikiClientLibrary.Pages.Queries.Properties.RevisionsPropertyProvider.FetchContent" /> is <c>false</c>.)</term></item><item><term><see cref="T:WikiClientLibrary.Pages.Queries.Properties.CategoryInfoPropertyProvider" /></term></item><item><term><see cref="T:WikiClientLibrary.Pages.Queries.Properties.FileInfoPropertyProvider" /></term></item><item><term><see cref="T:WikiClientLibrary.Pages.Queries.Properties.PagePropertiesPropertyProvider" /></term></item></list></summary>
     </member>
     <member name="F:WikiClientLibrary.Pages.PageQueryOptions.FetchContent">
       <summary>
-            Fetch content of the page.
+            Also fetch content of the page. (<see cref="P:WikiClientLibrary.Pages.Queries.Properties.RevisionsPropertyProvider.FetchContent" /> is <c>false</c>.)
             </summary>
     </member>
     <member name="F:WikiClientLibrary.Pages.PageQueryOptions.ResolveRedirects">
       <summary>
             Resolves directs automatically. This may later change <see cref="P:WikiClientLibrary.Pages.WikiPage.Title" />.
             This option cannot be used with generators.
-            In the case of multiple redirects, all redirects will be resolved.
+            In the case of multiple redirects (A→B→C→…→X), all the redirects on the path will be resolved.
+            This will set <see cref="P:WikiClientLibrary.Pages.Queries.WikiPageQueryProvider.ResolveRedirects" /> to <c>true</c>.
             </summary>
     </member>
     <member name="T:WikiClientLibrary.Pages.ProtectionInfo">
@@ -6139,13 +6147,8 @@
     </member>
     <member name="P:WikiClientLibrary.Pages.Revision.Comment">
       <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>P:WikiClientLibrary.Pages.Revision.Comment</parameter>
-          </include>
-        </markup>
-      </summary>
+            Editor's edit summary (editor's comment on revision).
+            </summary>
     </member>
     <member name="P:WikiClientLibrary.Pages.Revision.Content">
       <summary>
@@ -6154,23 +6157,13 @@
     </member>
     <member name="P:WikiClientLibrary.Pages.Revision.ContentLength">
       <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>P:WikiClientLibrary.Pages.Revision.ContentLength</parameter>
-          </include>
-        </markup>
-      </summary>
+            Content length, in bytes.
+            </summary>
     </member>
     <member name="P:WikiClientLibrary.Pages.Revision.ContentModel">
       <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>P:WikiClientLibrary.Pages.Revision.ContentModel</parameter>
-          </include>
-        </markup>
-      </summary>
+            Content model id of the revision.
+            </summary>
     </member>
     <member name="M:WikiClientLibrary.Pages.Revision.FetchRevisionAsync(WikiClientLibrary.Sites.WikiSite,System.Int32)">
       <summary>
@@ -6259,13 +6252,8 @@
     </member>
     <member name="P:WikiClientLibrary.Pages.Revision.Flags">
       <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>P:WikiClientLibrary.Pages.Revision.Flags</parameter>
-          </include>
-        </markup>
-      </summary>
+            Additional status of the revision.
+            </summary>
     </member>
     <member name="P:WikiClientLibrary.Pages.Revision.HiddenFields">
       <summary>
@@ -6299,23 +6287,13 @@
     </member>
     <member name="P:WikiClientLibrary.Pages.Revision.Sha1">
       <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>P:WikiClientLibrary.Pages.Revision.Sha1</parameter>
-          </include>
-        </markup>
-      </summary>
+            SHA-1 (base 16) of the revision.
+            </summary>
     </member>
     <member name="P:WikiClientLibrary.Pages.Revision.Tags">
       <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>P:WikiClientLibrary.Pages.Revision.Tags</parameter>
-          </include>
-        </markup>
-      </summary>
+            Any tags for this revision, such as those added by <a href="https://www.mediawiki.org/wiki/Extension:AbuseFilter">AbuseFilter</a>.
+            </summary>
     </member>
     <member name="P:WikiClientLibrary.Pages.Revision.TimeStamp">
       <summary>
@@ -6324,56 +6302,68 @@
     </member>
     <member name="M:WikiClientLibrary.Pages.Revision.ToString">
       <summary>
-            返回该实例的完全限定类型名。
-            </summary>
-      <returns>
-            包含完全限定类型名的 <see cref="T:System.String" />。
-            </returns>
+        <markup>
+          <include item="SMCMissingTag">
+            <parameter>summary</parameter>
+            <parameter>M:WikiClientLibrary.Pages.Revision.ToString</parameter>
+          </include>
+        </markup>
+      </summary>
     </member>
     <member name="P:WikiClientLibrary.Pages.Revision.UserId">
       <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>P:WikiClientLibrary.Pages.Revision.UserId</parameter>
-          </include>
-        </markup>
-      </summary>
+            User id of revision creator.
+            </summary>
     </member>
     <member name="P:WikiClientLibrary.Pages.Revision.UserName">
       <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>P:WikiClientLibrary.Pages.Revision.UserName</parameter>
-          </include>
-        </markup>
-      </summary>
+            The user who made the revision.
+            </summary>
     </member>
     <member name="P:WikiClientLibrary.Pages.Revision.UserStub">
       <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>P:WikiClientLibrary.Pages.Revision.UserStub</parameter>
-          </include>
-        </markup>
-      </summary>
+            Gets a <see cref="P:WikiClientLibrary.Pages.Revision.UserStub" /> containing the name and ID of the user made this revision.
+            </summary>
     </member>
     <member name="T:WikiClientLibrary.Pages.RevisionFlags">
       <summary>
             Revision flags.
             </summary>
     </member>
+    <member name="F:WikiClientLibrary.Pages.RevisionFlags.Minor">
+      <summary>
+            The revision is a minor edit.
+            </summary>
+    </member>
     <member name="F:WikiClientLibrary.Pages.RevisionFlags.Bot">
       <summary>
             The operation is performed by bot.
-            This flag can only be access via <see cref="P:WikiClientLibrary.Generators.RecentChangeItem.Flags" />.
+            This flag can only be accessed via <see cref="P:WikiClientLibrary.Generators.RecentChangeItem.Flags" />.
+            </summary>
+    </member>
+    <member name="F:WikiClientLibrary.Pages.RevisionFlags.Create">
+      <summary>
+            A new page has been created by this revision.
+            </summary>
+    </member>
+    <member name="F:WikiClientLibrary.Pages.RevisionFlags.Anonymous">
+      <summary>
+            The revision's editor is an anonymous user.
             </summary>
     </member>
     <member name="T:WikiClientLibrary.Pages.RevisionHiddenFields">
       <summary>
             Hidden part of revision indicators.
+            </summary>
+    </member>
+    <member name="F:WikiClientLibrary.Pages.RevisionHiddenFields.None">
+      <summary>
+            No field has been hidden.
+            </summary>
+    </member>
+    <member name="F:WikiClientLibrary.Pages.RevisionHiddenFields.User">
+      <summary>
+            The editor's name has been hidden.
             </summary>
     </member>
     <member name="T:WikiClientLibrary.Pages.WikiPage">
@@ -8291,7 +8281,7 @@
       <summary>
             Resolves directs automatically. This may later change <see cref="P:WikiClientLibrary.Pages.WikiPage.Title" />.
             This option cannot be used with generators.
-            In the case of multiple redirects, all redirects will be resolved.
+            In the case of multiple redirects (A→B→C→…→X), all the redirects on the path will be resolved.
             </summary>
     </member>
     <member name="T:WikiClientLibrary.Pages.Queries.Properties.CategoryInfoPropertyGroup">
