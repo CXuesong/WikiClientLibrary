@@ -205,7 +205,7 @@ namespace WikiClientLibrary.Infrastructures
         /// Gets a read-only implementation of <see cref="IWikiPageQueryProvider"/> for fetching a page.
         /// </summary>
         /// <remarks>
-        /// This method returns a shared instance for a specific <see cref="PageQueryOptions"/> value to reduce memory consumption.
+        /// This method returns a shared read-only instance for a specific <see cref="PageQueryOptions"/> value to reduce memory consumption.
         /// If you want to apply your customization based on the presets, use <see cref="WikiPageQueryProvider.FromOptions"/>.
         /// </remarks>
         public static IWikiPageQueryProvider QueryProviderFromOptions(PageQueryOptions options)

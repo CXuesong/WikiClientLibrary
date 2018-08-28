@@ -15,6 +15,7 @@ using Newtonsoft.Json.Linq;
 using WikiClientLibrary.Client;
 using WikiClientLibrary.Files;
 using WikiClientLibrary.Generators;
+using WikiClientLibrary.Generators.Primitive;
 using WikiClientLibrary.Infrastructures;
 using WikiClientLibrary.Infrastructures.Logging;
 using WikiClientLibrary.Pages.Queries;
@@ -139,6 +140,7 @@ namespace WikiClientLibrary.Pages
         /// has non-zero value while <see cref="LastRevision"/> is <c>null</c>.
         /// See <see cref="UpdateContentAsync(string)"/> for more information.
         /// </summary>
+        /// <seealso cref="Revision.Id"/>
         public int LastRevisionId { get; private set; }
 
         /// <summary>
@@ -148,6 +150,7 @@ namespace WikiClientLibrary.Pages
         /// Even if you haven't fetched content of the page when calling <see cref="RefreshAsync()"/>,
         /// this property will still get its value.
         /// </remarks>
+        /// <seealso cref="Revision.ContentLength"/>
         public int ContentLength => pageInfo?.ContentLength ?? 0;
 
         /// <summary>
@@ -182,6 +185,7 @@ namespace WikiClientLibrary.Pages
         /// Content model. (MediaWiki 1.22)
         /// </summary>
         /// <remarks>See <see cref="ContentModels"/> for a list of commonly-used content model names.</remarks>
+        /// <seealso cref="Revision.ContentModel"/>
         public string ContentModel { get; private set; }
 
         /// <summary>
@@ -723,21 +727,38 @@ namespace WikiClientLibrary.Pages
 
     /// <summary>
     /// Options for refreshing a <see cref="WikiPage"/> object.
+    /// For more accurate control on what information to fetch from server when calling library functions,
+    /// consider using overloads that accept <see cref="IWikiPageQueryProvider"/>.
     /// </summary>
+    /// <seealso cref="WikiPage.RefreshAsync(PageQueryOptions)"/>
+    /// <seealso cref="WikiPageGenerator{TItem}.EnumPagesAsync(PageQueryOptions)"/>
+    /// <seealso cref="WikiPageQueryProvider.FromOptions"/>
+    /// <seealso cref="MediaWikiHelper.QueryProviderFromOptions"/>
     [Flags]
     public enum PageQueryOptions
     {
+        /// <summary>
+        /// Fetch basic page information using the following property providers:
+        /// <list type="bullet">
+        /// <item><term><see cref="PageInfoPropertyProvider"/></term></item>
+        /// <item><term><see cref="RevisionsPropertyProvider"/> (<see cref="RevisionsPropertyProvider.FetchContent"/> is <c>false</c>.)</term></item>
+        /// <item><term><see cref="CategoryInfoPropertyProvider"/></term></item>
+        /// <item><term><see cref="FileInfoPropertyProvider"/></term></item>
+        /// <item><term><see cref="PagePropertiesPropertyProvider"/></term></item>
+        /// </list>
+        /// </summary>
         None = 0,
 
         /// <summary>
-        /// Fetch content of the page.
+        /// Also fetch content of the page. (<see cref="RevisionsPropertyProvider.FetchContent"/> is <c>false</c>.)
         /// </summary>
         FetchContent = 1,
 
         /// <summary>
         /// Resolves directs automatically. This may later change <see cref="WikiPage.Title"/>.
         /// This option cannot be used with generators.
-        /// In the case of multiple redirects, all redirects will be resolved.
+        /// In the case of multiple redirects (A→B→C→…→X), all the redirects on the path will be resolved.
+        /// This will set <see cref="WikiPageQueryProvider.ResolveRedirects"/> to <c>true</c>.
         /// </summary>
         ResolveRedirects = 2,
     }

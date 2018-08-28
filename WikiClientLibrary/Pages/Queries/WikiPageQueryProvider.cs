@@ -13,6 +13,7 @@ namespace WikiClientLibrary.Pages.Queries
     /// Provides basic MediaWiki API request parameters for <c>action=query&amp;titles=</c>
     /// or <c>action=query&amp;pageids=</c> requests.
     /// </summary>
+    /// <remarks>The default implementation of this interface is <see cref="WikiPageQueryProvider"/>.</remarks>
     public interface IWikiPageQueryProvider
     {
 
@@ -80,7 +81,7 @@ namespace WikiClientLibrary.Pages.Queries
         /// <summary>
         /// Resolves directs automatically. This may later change <see cref="WikiPage.Title"/>.
         /// This option cannot be used with generators.
-        /// In the case of multiple redirects, all redirects will be resolved.
+        /// In the case of multiple redirects (A→B→C→…→X), all the redirects on the path will be resolved.
         /// </summary>
         public bool ResolveRedirects { get; set; }
 

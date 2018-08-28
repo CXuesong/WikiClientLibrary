@@ -8,6 +8,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using WikiClientLibrary.Infrastructures;
 using WikiClientLibrary.Pages;
+using WikiClientLibrary.Pages.Queries.Properties;
 
 namespace WikiClientLibrary.Files
 {
@@ -15,6 +16,8 @@ namespace WikiClientLibrary.Files
     /// <summary>
     /// Represents a revision of a file or image.
     /// </summary>
+    /// <seealso cref="FileInfoPropertyGroup"/>
+    /// <seealso cref="FileInfoPropertyProvider"/>
     [JsonObject(MemberSerialization.OptIn)]
     public class FileRevision
     {
@@ -176,7 +179,7 @@ namespace WikiClientLibrary.Files
         /// but it can be empty.
         /// </value>
         /// <remarks>
-        /// <para>You can use <see cref="FormatWarning"/> to get user-friendly warning messages.</para>
+        /// <para>You can use <see cref="UploadWarningCollection.FormatWarning"/> to get user-friendly warning messages.</para>
         /// <para>If you have suppressed warnings, the warnings will still be here, but <see cref="ResultCode"/> will be <see cref="UploadResultCode.Success"/>.</para>
         /// </remarks>
         [JsonProperty("warnings", ObjectCreationHandling = ObjectCreationHandling.Replace)]

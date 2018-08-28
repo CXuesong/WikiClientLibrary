@@ -8,6 +8,7 @@ using Newtonsoft.Json;
 using WikiClientLibrary.Generators;
 using WikiClientLibrary.Infrastructures;
 using WikiClientLibrary.Pages.Queries;
+using WikiClientLibrary.Pages.Queries.Properties;
 using WikiClientLibrary.Sites;
 
 namespace WikiClientLibrary.Pages
@@ -15,6 +16,8 @@ namespace WikiClientLibrary.Pages
     /// <summary>
     /// Represents a revision of a page.
     /// </summary>
+    /// <seealso cref="RevisionsPropertyGroup"/>
+    /// <seealso cref="RevisionsPropertyProvider"/>
     [JsonObject(MemberSerialization.OptIn)]
     public class Revision
     {
@@ -98,30 +101,60 @@ namespace WikiClientLibrary.Pages
         /// Gets the content of the revision.
         /// </summary>
         /// <value>Wikitext source code. OR <c>null</c> if content has not been fetched.</value>
+        /// <seealso cref="RevisionsPropertyProvider.FetchContent"/>
         [JsonProperty("*")]
         public string Content { get; private set; }
 
+        /// <summary>
+        /// Editor's edit summary (editor's comment on revision).
+        /// </summary>
         [JsonProperty]
         public string Comment { get; private set; }
 
+        /// <summary>
+        /// Content model id of the revision.
+        /// </summary>
         [JsonProperty]
         public string ContentModel { get; private set; }
 
+        /// <summary>
+        /// SHA-1 (base 16) of the revision.
+        /// </summary>
         [JsonProperty]
         public string Sha1 { get; private set; }
 
+        /// <summary>
+        /// The user who made the revision.
+        /// </summary>
+        /// <seealso cref="RevisionFlags.Anonymous"/>
+        /// <seealso cref="RevisionHiddenFields.User"/>
         [JsonProperty("user")]
         public string UserName { get; private set; }
 
+        /// <summary>
+        /// User id of revision creator.
+        /// </summary>
+        /// <seealso cref="RevisionFlags.Anonymous"/>
+        /// <seealso cref="RevisionHiddenFields.User"/>
         [JsonProperty]
         public int UserId { get; private set; }
 
+        /// <summary>
+        /// Gets a <see cref="UserStub"/> containing the name and ID of the user made this revision.
+        /// </summary>
         [JsonProperty]
         public UserStub UserStub => new UserStub(UserName, UserId);
 
+        /// <summary>
+        /// Content length, in bytes.
+        /// </summary>
+        /// <seealso cref="WikiPage.ContentLength"/>
         [JsonProperty("size")]
         public int ContentLength { get; private set; }
 
+        /// <summary>
+        /// Any tags for this revision, such as those added by <a href="https://www.mediawiki.org/wiki/Extension:AbuseFilter">AbuseFilter</a>.
+        /// </summary>
         [JsonProperty]
         public IList<string> Tags { get; private set; }
 
@@ -131,6 +164,9 @@ namespace WikiClientLibrary.Pages
         [JsonProperty]
         public DateTime TimeStamp { get; private set; }
 
+        /// <summary>
+        /// Additional status of the revision.
+        /// </summary>
         public RevisionFlags Flags { get; private set; }
 
         /// <summary>
@@ -159,12 +195,7 @@ namespace WikiClientLibrary.Pages
             if (UserHidden) HiddenFields |= RevisionHiddenFields.User;
         }
 
-        /// <summary>
-        /// 返回该实例的完全限定类型名。
-        /// </summary>
-        /// <returns>
-        /// 包含完全限定类型名的 <see cref="T:System.String"/>。
-        /// </returns>
+        /// <inheritdoc/>
         public override string ToString()
         {
             var tags = Tags == null ? null : MediaWikiHelper.JoinValues(Tags);
@@ -175,29 +206,51 @@ namespace WikiClientLibrary.Pages
     /// <summary>
     /// Revision flags.
     /// </summary>
+    /// <seealso cref="Revision.Flags"/>
+    /// <seealso cref="RecentChangeItem.Flags"/>
     [Flags]
     public enum RevisionFlags
     {
         None = 0,
+
+        /// <summary>
+        /// The revision is a minor edit.
+        /// </summary>
         Minor = 1,
 
         /// <summary>
         /// The operation is performed by bot.
-        /// This flag can only be access via <see cref="RecentChangeItem.Flags"/>.
+        /// This flag can only be accessed via <see cref="RecentChangeItem.Flags"/>.
         /// </summary>
         Bot = 2,
+
+        /// <summary>
+        /// A new page has been created by this revision.
+        /// </summary>
         Create = 4,
+
+        /// <summary>
+        /// The revision's editor is an anonymous user.
+        /// </summary>
         Anonymous = 8,
     }
 
     /// <summary>
     /// Hidden part of revision indicators.
     /// </summary>
-    /// <remarks>See https://www.mediawiki.org/wiki/Help:RevisionDelete .</remarks>
+    /// <remarks>See <a href="https://www.mediawiki.org/wiki/Help:RevisionDelete">mw:Help:RevisionDelete</a>.</remarks>
+    /// <seealso cref="Revision.HiddenFields"/>
     [Flags]
     public enum RevisionHiddenFields
     {
+        /// <summary>
+        /// No field has been hidden.
+        /// </summary>
         None = 0,
+
+        /// <summary>
+        /// The editor's name has been hidden.
+        /// </summary>
         User = 1,
         //TODO Content & Comment
     }
