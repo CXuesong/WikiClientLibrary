@@ -102,6 +102,8 @@ namespace WikiClientLibrary
 
         /// <summary>
         /// Tries to parse a new instance using specified Wikilink expression.
+        /// This overload also resolves the target interwiki site with the interwiki map provided by <paramref name="site"/>,
+        /// and the specified <seealso cref="IWikiFamily"/> implementation.
         /// </summary>
         /// <param name="site">Site instance.</param>
         /// <param name="family">Wiki family. You need to provide this argument if you want to parse into interwiki links.</param>
@@ -117,6 +119,8 @@ namespace WikiClientLibrary
 
         /// <summary>
         /// Tries to parse a new instance using specified Wikilink expression.
+        /// This overload also resolves the target interwiki site with the interwiki map provided by <paramref name="site"/>,
+        /// and the specified <seealso cref="IWikiFamily"/> implementation.
         /// </summary>
         /// <param name="site">Site instance.</param>
         /// <param name="family">Wiki family. You need to provide this argument if you want to parse into interwiki links.</param>
@@ -215,6 +219,7 @@ namespace WikiClientLibrary
                 sb.Append('#');
                 sb.Append(link.Section);
             }
+            link.Target = sb.ToString();
             if (link.Anchor != null)
             {
                 sb.Append('|');
@@ -231,7 +236,7 @@ namespace WikiClientLibrary
         public WikiSite Site { get; }
 
         /// <summary>
-        /// The wiki site containing the specified page title. If the parsed wikilink expression
+        /// Gets the wiki site containing the specified page title. If the parsed wikilink expression
         /// does not contain interwiki prefix, this property is the same as <see cref="Site"/>.
         /// If this wikilink is parsed with no <see cref="IWikiFamily"/> provided, while it contains inerwiki
         /// prefix, this property will be <c>null</c>.
@@ -355,31 +360,97 @@ namespace WikiClientLibrary
         public string Title { get; private set; }
 
         /// <summary>
-        /// Title, including namespace name, if exists.
+        /// Title of the page, including namespace name, if exists.
         /// </summary>
         public string FullTitle { get; private set; }
 
         /// <summary>
-        /// The section title of a section on the page.
+        /// The section title of a section on the page, without leading #.
         /// </summary>
         public string Section { get; private set; }
 
         /// <summary>
-        /// For wikilink expression in the form [[target|anchor]], excluding the brackets,
-        /// gets the actual displayed text (anchor) for the link.
+        /// For wikilink expression in the form <c>[[target|anchor]]</c>, excluding the square brackets,
+        /// gets the full page title and section title (<c>target</c>) for the link, including interwiki prefix.
         /// </summary>
+        public string Target { get; private set; }
+
+        /// <summary>
+        /// For wikilink expression in the form <c>[[target|anchor]]</c>, excluding the square brackets,
+        /// gets the actual displayed text (<c>anchor</c>) for the link.
+        /// </summary>
+        /// <remarks>For the actual text this wikilink should show, use <see cref="DisplayText"/>.</remarks>
         public string Anchor { get; private set; }
+
+        private string _DisplayText;
+
+        /// <summary>
+        /// Gets the actual link text that should be shown.
+        /// </summary>
+        /// <value>
+        /// <see cref="Anchor"/>, if the value is not <c>null</c>; otherwise <see cref="Target"/>.
+        /// if <see cref="Anchor"/> is <see cref="string.Empty"/>,
+        /// this property returns the text after the first colon in <see cref="Target"/>.
+        /// See <a href="https://en.wikipedia.org/wiki/Help:Pipe_trick">w:H:Pipe trick</a> for more information.
+        /// </value>
+        public string DisplayText
+        {
+            get
+            {
+                var localValue = _DisplayText;
+                if (localValue == null)
+                {
+                    if (Anchor == null)
+                    {
+                        localValue = Target;
+                    }
+                    else if (Anchor.Length == 0)
+                    {
+                        localValue = Target;
+                        var colonPos = localValue.IndexOf(':');
+                        if (colonPos >= 0) localValue = localValue.Substring(colonPos + 1);
+                    }
+                    else
+                    {
+                        localValue = Anchor;
+                    }
+                    _DisplayText = localValue;
+                }
+                return localValue;
+            }
+        }
 
         /// <summary>
         /// Gets the original wikitext expression that was passed to the Parse or ParseAsync methods.
         /// </summary>
         public string OriginalText { get; }
 
+        private string _TargetUrl;
+
+        /// <summary>
+        /// Gets the full URL of the wikilink target.
+        /// </summary>
+        /// <remarks>This property uses <see cref="SiteInfo.MakeArticleUrl(string)"/> to build the article URL.</remarks>
+        public string TargetUrl
+        {
+            get
+            {
+                var localValue = _TargetUrl;
+                if (localValue == null)
+                {
+                    localValue = Site.SiteInfo.MakeArticleUrl(Target);
+                    _TargetUrl = localValue;
+                }
+                return localValue;
+            }
+        }
+
         private string _FormattedText;
 
         /// <summary>
         /// Gets the formatted expression of the wikilink.
         /// </summary>
+        /// <returns>The wikilink expression, excluding the surrounding square brackets [[ ]].</returns>
         public override string ToString()
         {
             return _FormattedText;
@@ -413,4 +484,5 @@ namespace WikiClientLibrary
             return link._FormattedText;
         }
     }
+
 }
