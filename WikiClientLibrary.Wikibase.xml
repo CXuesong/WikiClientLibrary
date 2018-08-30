@@ -1183,13 +1183,8 @@
     </member>
     <member name="M:WikiClientLibrary.Wikibase.WikibaseSiteInfo.FromSiteInfo(WikiClientLibrary.Sites.SiteInfo)">
       <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>M:WikiClientLibrary.Wikibase.WikibaseSiteInfo.FromSiteInfo(WikiClientLibrary.Sites.SiteInfo)</parameter>
-          </include>
-        </markup>
-      </summary>
+            Constructs a new <see cref="T:WikiClientLibrary.Wikibase.WikibaseSiteInfo" /> from an existing <see cref="T:WikiClientLibrary.Sites.SiteInfo" />.
+            </summary>
       <param name="siteInfo">
         <markup>
           <include item="SMCMissingParamTag">

@@ -1136,13 +1136,18 @@
     </member>
     <member name="P:WikiClientLibrary.WikiLink.Anchor">
       <summary>
-            For wikilink expression in the form [[target|anchor]], excluding the brackets,
-            gets the actual displayed text (anchor) for the link.
+            For wikilink expression in the form <c>[[target|anchor]]</c>, excluding the square brackets,
+            gets the actual displayed text (<c>anchor</c>) for the link.
+            </summary>
+    </member>
+    <member name="P:WikiClientLibrary.WikiLink.DisplayText">
+      <summary>
+            Gets the actual link text that should be shown.
             </summary>
     </member>
     <member name="P:WikiClientLibrary.WikiLink.FullTitle">
       <summary>
-            Title, including namespace name, if exists.
+            Title of the page, including namespace name, if exists.
             </summary>
     </member>
     <member name="F:WikiClientLibrary.WikiLink.IllegalTitlesPattern">
@@ -1242,7 +1247,7 @@
     </member>
     <member name="P:WikiClientLibrary.WikiLink.Section">
       <summary>
-            The section title of a section on the page.
+            The section title of a section on the page, without leading #.
             </summary>
     </member>
     <member name="P:WikiClientLibrary.WikiLink.Site">
@@ -1250,12 +1255,23 @@
             The original wiki site provided to resolve this wikilink.
             </summary>
     </member>
+    <member name="P:WikiClientLibrary.WikiLink.Target">
+      <summary>
+            For wikilink expression in the form <c>[[target|anchor]]</c>, excluding the square brackets,
+            gets the full page title and section title (<c>target</c>) for the link, including interwiki prefix.
+            </summary>
+    </member>
     <member name="P:WikiClientLibrary.WikiLink.TargetSite">
       <summary>
-            The wiki site containing the specified page title. If the parsed wikilink expression
+            Gets the wiki site containing the specified page title. If the parsed wikilink expression
             does not contain interwiki prefix, this property is the same as <see cref="P:WikiClientLibrary.WikiLink.Site" />.
             If this wikilink is parsed with no <see cref="T:WikiClientLibrary.Sites.IWikiFamily" /> provided, while it contains inerwiki
             prefix, this property will be <c>null</c>.
+            </summary>
+    </member>
+    <member name="P:WikiClientLibrary.WikiLink.TargetUrl">
+      <summary>
+            Gets the full URL of the wikilink target.
             </summary>
     </member>
     <member name="P:WikiClientLibrary.WikiLink.Title">
@@ -1267,6 +1283,7 @@
       <summary>
             Gets the formatted expression of the wikilink.
             </summary>
+      <returns>The wikilink expression, excluding the surrounding square brackets [[ ]].</returns>
     </member>
     <member name="M:WikiClientLibrary.WikiLink.TryParse(WikiClientLibrary.Sites.WikiSite,System.String)">
       <summary>
@@ -1294,6 +1311,8 @@
     <member name="M:WikiClientLibrary.WikiLink.TryParseAsync(WikiClientLibrary.Sites.WikiSite,WikiClientLibrary.Sites.IWikiFamily,System.String)">
       <summary>
             Tries to parse a new instance using specified Wikilink expression.
+            This overload also resolves the target interwiki site with the interwiki map provided by <paramref name="site" />,
+            and the specified <seealso cref="T:WikiClientLibrary.Sites.IWikiFamily" /> implementation.
             </summary>
       <param name="site">Site instance.</param>
       <param name="family">Wiki family. You need to provide this argument if you want to parse into interwiki links.</param>
@@ -1306,6 +1325,8 @@
     <member name="M:WikiClientLibrary.WikiLink.TryParseAsync(WikiClientLibrary.Sites.WikiSite,WikiClientLibrary.Sites.IWikiFamily,System.String,System.Int32)">
       <summary>
             Tries to parse a new instance using specified Wikilink expression.
+            This overload also resolves the target interwiki site with the interwiki map provided by <paramref name="site" />,
+            and the specified <seealso cref="T:WikiClientLibrary.Sites.IWikiFamily" /> implementation.
             </summary>
       <param name="site">Site instance.</param>
       <param name="family">Wiki family. You need to provide this argument if you want to parse into interwiki links.</param>
@@ -10434,7 +10455,8 @@
             Makes the full URL to the page of specified title.
             </summary>
       <param name="title">The title of the article.</param>
-      <param name="defaultProtocol">For protocol-relative URL (e.g. <c>//en.wikipedia.org/</c>),
+      <param name="defaultProtocol">
+            For wiki sites whose <see cref="P:WikiClientLibrary.Sites.SiteInfo.ServerUrl" /> is protocol-relative URL (e.g. <c>//en.wikipedia.org/</c>),
             specifies the default protocol to use. (e.g. <c>https</c>)</param>
       <returns>The full URL of the article.</returns>
       <exception cref="T:System.ArgumentNullException">Either <paramref name="title" /> or <paramref name="defaultProtocol" /> is <c>null</c>.</exception>
