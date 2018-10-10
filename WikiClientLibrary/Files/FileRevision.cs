@@ -103,23 +103,6 @@ namespace WikiClientLibrary.Files
     {
 
         /// <summary>
-        /// Try to convert the specified warning code and context into a user-friendly
-        /// warning message.
-        /// </summary>
-        /// <param name="warningCode">Case-sensitive warning code.</param>
-        /// <param name="context">The extra content of the warning.</param>
-        /// <returns>
-        /// It tries to match the warningCode with well-known ones, and returns a
-        /// user-friendly warning message. If there's no match, a string containing
-        /// warningCode and context will be returned.
-        /// </returns>
-        [Obsolete("Please use UploadWarningCollection.FormatWarning instead.")]
-        public static string FormatWarning(string warningCode, JToken context)
-        {
-            return UploadWarningCollection.FormatWarning(warningCode, context);
-        }
-
-        /// <summary>
         /// A brief word describing the result of the operation.
         /// </summary>
         public UploadResultCode ResultCode { get; private set; }
@@ -184,12 +167,6 @@ namespace WikiClientLibrary.Files
         /// </remarks>
         [JsonProperty("warnings", ObjectCreationHandling = ObjectCreationHandling.Replace)]
         public UploadWarningCollection Warnings { get; private set; } = UploadWarningCollection.Empty;
-
-        /// <summary>
-        /// Gets a list of timestamps indicating the duplicate file versions, if any.
-        /// </summary>
-        [Obsolete("Please use Warnings.DuplicateVersions instead.")]
-        public IList<DateTime> DuplicateVersions => Warnings.DuplicateVersions;
 
         /// <summary>
         /// For a successful upload or stashing, gets the revision information

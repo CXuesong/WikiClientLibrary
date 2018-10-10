@@ -108,6 +108,7 @@ namespace WikiClientLibrary.Generators
         [JsonProperty("newlen")]
         public int NewContentLength { get; private set; }
 
+        /// <summary>The difference of <see cref="NewContentLength"/> from <see cref="OldContentLength"/>.</summary>
         public int DeltaContentLength => NewContentLength - OldContentLength;
 
         /// <summary>The time and date of the change.</summary>
