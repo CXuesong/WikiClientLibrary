@@ -113,11 +113,6 @@ namespace WikiClientLibrary.Client
         }
 
         /// <summary>
-        /// Referer.
-        /// </summary>
-        public string Referer { get; set; }
-
-        /// <summary>
         /// Gets/Sets the cookies used in the requests.
         /// </summary>
         /// <remarks>
