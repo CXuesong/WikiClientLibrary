@@ -166,13 +166,23 @@ namespace WikiClientLibrary.Client
             return $"{GetType().Name}#{GetHashCode()}";
         }
 
-        protected virtual HttpRequestMessage CreateHttpRequestMessage(string endPointUrl, WikiRequestMessage message)
+        /// <summary>
+        /// Creates an HTTP request message with the given endpoint URL and <see cref="WikiRequestMessage"/> instance.
+        /// </summary>
+        /// <param name="endpointUrl">MediaWiki API endpoint URL.</param>
+        /// <param name="message">The MediaWiki API request message to be sent.</param>
+        /// <returns>The actual <see cref="HttpRequestMessage"/> to be sent.</returns>
+        /// <remarks>
+        /// When overriding this method in derived class, you may change the message headers and/or content after
+        /// getting the <see cref="HttpRequestMessage"/> instance from base implementation,
+        /// before returning the HTTP request message.
+        /// </remarks>
+        protected virtual HttpRequestMessage CreateHttpRequestMessage(string endpointUrl, WikiRequestMessage message)
         {
-            var url = endPointUrl;
+            var url = endpointUrl;
             var query = message.GetHttpQuery();
             if (query != null) url = url + "?" + query;
-            return new HttpRequestMessage(message.GetHttpMethod(), url)
-            { Content = message.GetHttpContent() };
+            return new HttpRequestMessage(message.GetHttpMethod(), url) { Content = message.GetHttpContent() };
         }
 
         private async Task<T> SendAsync<T>(string endPointUrl, WikiRequestMessage message,
