@@ -86,7 +86,7 @@ namespace WikiClientLibrary.Infrastructures
         /// <param name="dict">A <see cref="IEnumerable{T}"/> of <see cref="KeyValuePair{TKey,TValue}"/>,
         /// where <c>TKey</c> should be <see cref="string"/>, while <c>TValue</c> can either be <see cref="string"/> or <see cref="object"/>.
         /// Or an anonymous object, in which case, its properties and values are enumerated.</param>
-        /// <returns>A sequence containning the enumerated key-value pairs.</returns>
+        /// <returns>A sequence containing the enumerated key-value pairs.</returns>
         public static IEnumerable<KeyValuePair<string, object>> EnumValues(object dict)
         {
             if (dict == null) throw new ArgumentNullException(nameof(dict));

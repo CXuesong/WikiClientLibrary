@@ -61,7 +61,7 @@ namespace WikiClientLibrary.Generators.Primitive
         protected virtual bool DistinctGeneratedPages => false;
 
         /// <summary>
-        /// Asynchornously generate the sequence of pages.
+        /// Asynchronously generate the sequence of pages.
         /// </summary>
         public virtual IAsyncEnumerable<WikiPage> EnumPagesAsync()
         {
@@ -69,7 +69,7 @@ namespace WikiClientLibrary.Generators.Primitive
         }
 
         /// <summary>
-        /// Asynchornously generates the sequence of pages.
+        /// Asynchronously generates the sequence of pages.
         /// </summary>
         public virtual IAsyncEnumerable<WikiPage> EnumPagesAsync(PageQueryOptions options)
         {
@@ -77,7 +77,7 @@ namespace WikiClientLibrary.Generators.Primitive
         }
 
         /// <summary>
-        /// Asynchornously generates the sequence of pages.
+        /// Asynchronously generates the sequence of pages.
         /// </summary>
         /// <param name="options">Options when querying for the pages.</param>
         public virtual IAsyncEnumerable<WikiPage> EnumPagesAsync(IWikiPageQueryProvider options)

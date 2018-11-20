@@ -25,7 +25,7 @@ namespace WikiClientLibrary.Sites
         /// </summary>
         /// <remarks>
         /// <para>This list is used when there's no Disambiguator on the MediaWiki site,
-        /// and WikiClientLibrary is deciding wheter a page is a disambiguation page.
+        /// and WikiClientLibrary is deciding whether a page is a disambiguation page.
         /// The default disambiguation template {{Disambig}} is always included in the
         /// list, implicitly.</para>
         /// <para>If this value is <c>null</c>, WikiClientLibrary will try to
@@ -34,7 +34,7 @@ namespace WikiClientLibrary.Sites
         public IList<string> DisambiguationTemplates { get; set; }
 
         /// <summary>
-        /// Sets the URL of MedaiWiki API endpoint.
+        /// Sets the URL of MediaWiki API endpoint.
         /// </summary>
         public string ApiEndpoint { get; set; }
 
@@ -55,7 +55,7 @@ namespace WikiClientLibrary.Sites
         /// <summary>
         /// Initializes with API endpoint URL.
         /// </summary>
-        /// <param name="apiEndpoint">The URL of MedaiWiki API endpoint.</param>
+        /// <param name="apiEndpoint">The URL of MediaWiki API endpoint.</param>
         public SiteOptions(string apiEndpoint)
         {
             ApiEndpoint = apiEndpoint;

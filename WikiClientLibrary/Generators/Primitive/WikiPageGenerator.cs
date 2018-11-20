@@ -17,7 +17,7 @@ namespace WikiClientLibrary.Generators.Primitive
     public interface IWikiPageGenerator
     {
         /// <summary>
-        /// Asynchornously generates the sequence of pages.
+        /// Asynchronously generates the sequence of pages.
         /// </summary>
         /// <param name="options">Options when querying for the pages.</param>
         /// <remarks>In most cases, the whole sequence will be very long. To take only the top <c>n</c> results
@@ -82,7 +82,7 @@ namespace WikiClientLibrary.Generators.Primitive
         //}
 
         /// <summary>
-        /// Asynchornously generates the sequence of pages.
+        /// Asynchronously generates the sequence of pages.
         /// </summary>
         public IAsyncEnumerable<WikiPage> EnumPagesAsync()
         {
@@ -90,7 +90,7 @@ namespace WikiClientLibrary.Generators.Primitive
         }
 
         /// <summary>
-        /// Asynchornously generates the sequence of pages.
+        /// Asynchronously generates the sequence of pages.
         /// </summary>
         public IAsyncEnumerable<WikiPage> EnumPagesAsync(PageQueryOptions options)
         {
@@ -98,7 +98,7 @@ namespace WikiClientLibrary.Generators.Primitive
         }
 
         /// <summary>
-        /// Asynchornously generates the sequence of pages.
+        /// Asynchronously generates the sequence of pages.
         /// </summary>
         /// <param name="options">Options when querying for the pages.</param>
         public virtual IAsyncEnumerable<WikiPage> EnumPagesAsync(IWikiPageQueryProvider options)

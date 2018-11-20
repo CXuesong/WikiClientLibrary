@@ -46,12 +46,12 @@ namespace WikiClientLibrary.Wikia.Sites
 
         /// <inheritdoc cref="InvokeWikiaAjaxAsync{T}(WikiRequestMessage,IWikiResponseMessageParser{T},CancellationToken)"/>
         /// <remarks>
-        /// <para>This overload uses <see cref="WikiaJsonResonseParser"/> to parse the response.</para>
+        /// <para>This overload uses <see cref="WikiaJsonResponseParser"/> to parse the response.</para>
         /// <para>This method will automatically add <c>action=ajax</c> field in the request.</para>
         /// </remarks>
         public async Task<JToken> InvokeWikiaAjaxAsync(WikiRequestMessage request, CancellationToken cancellationToken)
         {
-            return await InvokeWikiaAjaxAsync(request, WikiaJsonResonseParser.Default, cancellationToken);
+            return await InvokeWikiaAjaxAsync(request, WikiaJsonResponseParser.Default, cancellationToken);
         }
 
         /// <summary>
@@ -85,10 +85,10 @@ namespace WikiClientLibrary.Wikia.Sites
         }
 
         /// <inheritdoc cref="InvokeNirvanaAsync{T}(WikiRequestMessage,IWikiResponseMessageParser{T},CancellationToken)"/>
-        /// <remarks>This overload uses <see cref="WikiaJsonResonseParser"/> to parse the response.</remarks>
+        /// <remarks>This overload uses <see cref="WikiaJsonResponseParser"/> to parse the response.</remarks>
         public Task<JToken> InvokeNirvanaAsync(WikiRequestMessage request, CancellationToken cancellationToken)
         {
-            return InvokeNirvanaAsync(request, WikiaJsonResonseParser.Default, cancellationToken);
+            return InvokeNirvanaAsync(request, WikiaJsonResponseParser.Default, cancellationToken);
         }
 
         /// <summary>
@@ -109,10 +109,10 @@ namespace WikiClientLibrary.Wikia.Sites
         }
 
         /// <inheritdoc cref="InvokeWikiaApiAsync{T}(string,WikiRequestMessage,IWikiResponseMessageParser{T},CancellationToken)"/>
-        /// <remarks>This overload uses <see cref="WikiaJsonResonseParser"/> to parse the response.</remarks>
+        /// <remarks>This overload uses <see cref="WikiaJsonResponseParser"/> to parse the response.</remarks>
         public Task<JToken> InvokeWikiaApiAsync(string relativeUri, WikiRequestMessage request, CancellationToken cancellationToken)
         {
-            return InvokeWikiaApiAsync(relativeUri, request, WikiaJsonResonseParser.Default, cancellationToken);
+            return InvokeWikiaApiAsync(relativeUri, request, WikiaJsonResponseParser.Default, cancellationToken);
         }
 
         /// <summary>

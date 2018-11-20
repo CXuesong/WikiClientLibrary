@@ -15,7 +15,7 @@ namespace WikiClientLibrary
         /// <summary>
         /// Replaces the logger factory of the specified instance.
         /// </summary>
-        /// <remarks>Setting this property to <c>null</c> is equavalent to setting it to <see cref="NullLogger.Instance"/>.</remarks>
+        /// <remarks>Setting this property to <c>null</c> is equivalent to setting it to <see cref="NullLogger.Instance"/>.</remarks>
         ILogger Logger { get; set; }
 
     }

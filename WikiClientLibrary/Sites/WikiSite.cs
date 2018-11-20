@@ -234,7 +234,7 @@ namespace WikiClientLibrary.Sites
         }
 
         /// <summary>
-        /// Gets the currrent user's account information.
+        /// Gets the current user's account information.
         /// </summary>
         public AccountInfo AccountInfo
         {
@@ -327,7 +327,7 @@ namespace WikiClientLibrary.Sites
         /// <param name="suppressAccountAssertion">Whether to temporarily disable account assertion as set in <see cref="SiteOptions.AccountAssertion"/>.</param>
         /// <param name="cancellationToken">The cancellation token that will be checked prior to completing the returned task.</param>
         /// <exception cref="InvalidActionException">Specified action is not supported.</exception>
-        /// <exception cref="OperationFailedException">There is "error" node in returned JSON. Instances of dervied types may be thrown.</exception>
+        /// <exception cref="OperationFailedException">There is "error" node in returned JSON. Instances of derived types may be thrown.</exception>
         /// <exception cref="AccountAssertionFailureException">You enabled account assertion, the assertion failed, and it also failed to retry logging in.</exception>
         /// <returns>A task that returns the JSON response when completed.</returns>
         /// <remarks>
@@ -389,7 +389,7 @@ namespace WikiClientLibrary.Sites
             {
                 if (AccountAssertionFailureHandler != null)
                 {
-                    // ISSUE Relogin might be called nultiple times.
+                    // ISSUE Relogin might be called multiple times.
                     if (reLoginTask == null)
                     {
                         Logger.LogWarning("Account assertion failed. Try to relogin.");
@@ -484,7 +484,7 @@ namespace WikiClientLibrary.Sites
         /// <param name="userName">User name of the account.</param>
         /// <param name="password">Password of the account.</param>
         /// <exception cref="InvalidOperationException">Attempt to login/logout concurrently.</exception>
-        /// <exception cref="OperationFailedException">Canoot login with the specified credential.</exception>
+        /// <exception cref="OperationFailedException">Cannot login with the specified credential.</exception>
         /// <exception cref="ArgumentNullException">Either <paramref name="userName"/> or <paramref name="password"/> is <c>null</c> or empty.</exception>
         /// <remarks>This operation will refresh <see cref="AccountInfo"/>.</remarks>
         public Task LoginAsync(string userName, string password)
@@ -499,7 +499,7 @@ namespace WikiClientLibrary.Sites
         /// <param name="password">Password of the account.</param>
         /// <param name="domain">Domain name. <c>null</c> is usually a good choice.</param>
         /// <exception cref="InvalidOperationException">Attempt to login/logout concurrently.</exception>
-        /// <exception cref="OperationFailedException">Canoot login with the specified credential.</exception>
+        /// <exception cref="OperationFailedException">Cannot login with the specified credential.</exception>
         /// <exception cref="ArgumentNullException">Either <paramref name="userName"/> or <paramref name="password"/> is <c>null</c> or empty.</exception>
         /// <remarks>This operation will refresh <see cref="AccountInfo"/>.</remarks>
         public Task LoginAsync(string userName, string password, string domain)
@@ -515,7 +515,7 @@ namespace WikiClientLibrary.Sites
         /// <param name="domain">Domain name. <c>null</c> is usually a good choice.</param>
         /// <param name="cancellationToken">The cancellation token that will be checked prior to completing the returned task.</param>
         /// <exception cref="InvalidOperationException">Attempt to login/logout concurrently.</exception>
-        /// <exception cref="OperationFailedException">Canoot login with the specified credential.</exception>
+        /// <exception cref="OperationFailedException">Cannot login with the specified credential.</exception>
         /// <exception cref="ArgumentNullException">Either <paramref name="userName"/> or <paramref name="password"/> is <c>null</c> or empty.</exception>
         /// <remarks>This operation will refresh <see cref="AccountInfo"/>.</remarks>
         public async Task LoginAsync(string userName, string password, string domain,
@@ -532,11 +532,11 @@ namespace WikiClientLibrary.Sites
                 try
                 {
                     string token = null;
-                    // For MedaiWiki 1.27+
+                    // For MediaWiki 1.27+
                     if (_SiteInfo != null && _SiteInfo.Version >= new Version("1.27"))
                         token = await GetTokenAsync("login", true, cancellationToken);
-                    // For MedaiWiki < 1.27, We'll have to request twice.
-                    // If we are logging in before initialization of WikiSite, we just treat it the same as MedaiWiki < 1.27,
+                    // For MediaWiki < 1.27, We'll have to request twice.
+                    // If we are logging in before initialization of WikiSite, we just treat it the same as MediaWiki < 1.27,
                     //  because the client might be logging to a private wiki,
                     //  where any "query" operation before logging-in might raise readapidenied error.
                     RETRY:

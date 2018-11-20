@@ -78,7 +78,7 @@ namespace WikiClientLibrary.Wikia
                             method = "Content",
                             articleId = board.Page.Id,
                             page = page
-                        }), WikiaJsonResonseParser.Default, ct);
+                        }), WikiaJsonResponseParser.Default, ct);
                         // Build comment structure.
                         var jcomments = jroot["commentListRaw"];
                         if (jcomments != null && jcomments.HasValues)
@@ -177,7 +177,7 @@ namespace WikiClientLibrary.Wikia
                     convertToFormat = "",
                     parentId = parentId,
                     wpArticleComment = content,
-                }, true), WikiaJsonResonseParser.Default, cancellationToken);
+                }, true), WikiaJsonResponseParser.Default, cancellationToken);
                 if (((int?)jresult["error"] ?? 0) != 0)
                     throw new OperationFailedException((string)jresult["msg"]);
                 var text = (string)jresult["text"];
@@ -236,7 +236,7 @@ namespace WikiClientLibrary.Wikia
                 }
                 BEGIN:
                 queryParams["token"] = await site.GetTokenAsync("edit", cancellationToken);
-                var jresult = await site.InvokeNirvanaAsync(new WikiaQueryRequestMessage(queryParams, true), WikiaJsonResonseParser.Default, cancellationToken);
+                var jresult = await site.InvokeNirvanaAsync(new WikiaQueryRequestMessage(queryParams, true), WikiaJsonResponseParser.Default, cancellationToken);
                 if (!string.Equals((string)jresult["status"], "True", StringComparison.OrdinalIgnoreCase))
                 {
                     var errorMessage = (string)jresult["errormsg"];
@@ -284,7 +284,7 @@ namespace WikiClientLibrary.Wikia
                     parent = parentId,
                     body = messageBody,
                     convertToFormat = "",
-                }, true), WikiaJsonResonseParser.Default, cancellationToken);
+                }, true), WikiaJsonResponseParser.Default, cancellationToken);
                 if (!string.Equals((string)jresult["status"], "True", StringComparison.OrdinalIgnoreCase))
                 {
                     var errorMessage = (string)jresult["errormsg"];

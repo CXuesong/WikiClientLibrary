@@ -44,7 +44,7 @@ namespace WikiClientLibrary.Files
         /// - or -
         /// Since MW 1.31, if you are uploading the exactly same content to the same title
         /// with <paramref name="ignoreWarnings"/> set to <c>true</c>,
-        /// you will reveive this exception with <see cref="OperationFailedException.ErrorCode"/>
+        /// you will receive this exception with <see cref="OperationFailedException.ErrorCode"/>
         /// set to <c>fileexists-no-change</c>. See https://gerrit.wikimedia.org/r/378702 .
         /// </exception>
         /// <exception cref="TimeoutException">Timeout specified in <see cref="WikiClient.Timeout"/> has been reached.</exception>

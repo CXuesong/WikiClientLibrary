@@ -238,7 +238,7 @@ namespace WikiClientLibrary
         /// <summary>
         /// Gets the wiki site containing the specified page title. If the parsed wikilink expression
         /// does not contain interwiki prefix, this property is the same as <see cref="Site"/>.
-        /// If this wikilink is parsed with no <see cref="IWikiFamily"/> provided, while it contains inerwiki
+        /// If this wikilink is parsed with no <see cref="IWikiFamily"/> provided, while it contains interwiki
         /// prefix, this property will be <c>null</c>.
         /// </summary>
         /// <seealso cref="Site"/>

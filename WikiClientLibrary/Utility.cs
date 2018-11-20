@@ -165,7 +165,7 @@ namespace WikiClientLibrary
 
         /// <summary>
         /// Normalizes part of title (either namespace name or page title, not both)
-        /// to its cannonical form.
+        /// to its canonical form.
         /// </summary>
         /// <param name="title">The title to be normalized.</param>
         /// <param name="caseSensitive">Whether the title is case sensitive.</param>

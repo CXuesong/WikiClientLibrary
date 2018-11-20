@@ -117,7 +117,7 @@ The original title of the page is '''{title}'''.
         {
             const string fileName = "File:Test image.jpg";
             var localSite = await CreateIsolatedWikiSiteAsync(CredentialManager.DirtyTestsEntryPointUrl);
-            // Cahce the token first so it won't be affected by the short timeout.
+            // Cache the token first so it won't be affected by the short timeout.
             await localSite.GetTokenAsync("edit");
             Output.WriteLine("Try uploading…");
             // We want to timeout and retry.

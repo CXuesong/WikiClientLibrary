@@ -13,7 +13,7 @@ namespace WikiClientLibrary.Client
     /// </summary>
     /// <remarks>
     /// <para>It's suggested to derive your response message parser classes from <see cref="WikiResponseMessageParser{T}"/>,
-    /// instead of imeplementing this interface directly.</para>
+    /// instead of implementing this interface directly.</para>
     /// <para>For the role this interface plays in invoking wiki API, see <see cref="IWikiClient.InvokeAsync"/>.</para>
     /// </remarks>
     /// <typeparam name="T">The type of parsed response.</typeparam>

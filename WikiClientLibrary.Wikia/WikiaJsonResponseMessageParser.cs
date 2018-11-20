@@ -14,10 +14,10 @@ namespace WikiClientLibrary.Wikia
     /// <summary>
     /// Parser that parses the JSON and dispatches error in the response from generic Wikia API response.
     /// </summary>
-    public class WikiaJsonResonseParser : WikiResponseMessageParser<JToken>
+    public class WikiaJsonResponseParser : WikiResponseMessageParser<JToken>
     {
 
-        internal static readonly WikiaJsonResonseParser Default = new WikiaJsonResonseParser();
+        internal static readonly WikiaJsonResponseParser Default = new WikiaJsonResponseParser();
 
         /// <inheritdoc />
         /// <remarks>

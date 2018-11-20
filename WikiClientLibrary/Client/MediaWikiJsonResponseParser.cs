@@ -22,11 +22,11 @@ namespace WikiClientLibrary.Client
 
         /// <inheritdoc />
         /// <remarks>
-        /// <para>This method checkes the HTTP status code first.
+        /// <para>This method checks the HTTP status code first.
         /// For non-successful HTTP status codes, this method will request for a retry.</para>
         /// <para>Then the content will be parsed as JSON, in <see cref="JToken"/>. If there is
         /// <see cref="JsonException"/> thrown while parsing the response, a retry will be requested.</para>
-        /// <para>Finally, before returining the parsed JSON, this method checks for <c>warning</c> and <c>error</c>
+        /// <para>Finally, before returning the parsed JSON, this method checks for <c>warning</c> and <c>error</c>
         /// nodes. If there exists <c>warning</c> node, a warning will be issued to the logger. If there exists <c>error</c>
         /// node, a <see cref="OperationFailedException"/> or its derived exception will be thrown. You can
         /// customize the error generation behavior by overriding <see cref="OnApiError"/> method.</para>
@@ -91,7 +91,7 @@ namespace WikiClientLibrary.Client
         /// Called when <c>error</c> node presents in the API response.
         /// </summary>
         /// <param name="errorCode">Error code. (<c>error.code</c>)</param>
-        /// <param name="errorMessage">Errir message. (<c>error.info</c>)</param>
+        /// <param name="errorMessage">Error message. (<c>error.info</c>)</param>
         /// <param name="errorNode">The <c>error</c> JSON node.</param>
         /// <param name="responseNode">The JSON root of the API response.</param>
         /// <param name="context">The response parsing context, used for initiating a retry.</param>

@@ -978,7 +978,7 @@ namespace WikiClientLibrary.Sites
     }
 
     /// <summary>
-    /// Contains statistical information of a MedaiWiki site.
+    /// Contains statistical information of a MediaWiki site.
     /// </summary>
     [JsonObject(MemberSerialization.OptIn)]
     public class SiteStatistics

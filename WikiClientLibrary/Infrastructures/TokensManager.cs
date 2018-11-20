@@ -136,7 +136,7 @@ namespace WikiClientLibrary.Infrastructures
                 {
                     // Note that we won't actually cancel this request,
                     // we just give up waiting for it.
-                    // This will prevent cancellation from one consumer from affeting other consumers.
+                    // This will prevent cancellation from one consumer from affecting other consumers.
                     tokenTask = FetchTokenAsyncCore(realTokenType);
                     tokensCache[realTokenType] = tokenTask;
                 }
