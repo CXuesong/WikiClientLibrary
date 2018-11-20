@@ -36,7 +36,7 @@ namespace WikiClientLibrary
         }
 
         /// <param name="latitude">latitude of the location.</param>
-        /// <param name="longitude">logitude of the location.</param>
+        /// <param name="longitude">longitude of the location.</param>
         /// <param name="dimension">size of the object.</param>
         /// <param name="globe">globe identifier of the coordinate.</param>
         public GeoCoordinate(double latitude, double longitude, double dimension, string globe)
@@ -53,7 +53,7 @@ namespace WikiClientLibrary
         public double Latitude { get; set; }
 
         /// <summary>
-        /// Gets/sets the logitude of the location.
+        /// Gets/sets the longitude of the location.
         /// </summary>
         public double Longitude { get; set; }
 
@@ -76,7 +76,7 @@ namespace WikiClientLibrary
         /// <summary>
         /// Offsets the coordinates by the specified values.
         /// </summary>
-        /// <param name="longitudeOffset">Offset of the logitude.</param>
+        /// <param name="longitudeOffset">Offset of the longitude.</param>
         /// <param name="latitudeOffset">Offset of the latitude.</param>
         public void Offset(double longitudeOffset, double latitudeOffset)
         {

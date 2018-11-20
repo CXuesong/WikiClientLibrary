@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading;
@@ -204,7 +205,7 @@ namespace WikiClientLibrary
                         {
                             foreach (var page in partition)
                             {
-                                var jPage = (JObject)jobj["query"]["pages"][page.Id.ToString()];
+                                var jPage = (JObject)jobj["query"]["pages"][page.Id.ToString(CultureInfo.InvariantCulture)];
                                 MediaWikiHelper.PopulatePageFromJson(page, jPage, options);
                             }
                         }

@@ -8,7 +8,7 @@ using WikiClientLibrary.Infrastructures;
 namespace WikiClientLibrary.Pages.Queries.Properties
 {
     /// <summary>
-    /// Returns the geogrpahical coordinates associated with the page.
+    /// Returns the geographical coordinates associated with the page.
     /// (<a href="https://www.mediawiki.org/wiki/Extension:GeoData#prop=coordinates">mw:Extension:GeoData#prop=coordinates</a>)
     /// </summary>
     public class GeoCoordinatesPropertyProvider : WikiPagePropertyProvider<GeoCoordinatesPropertyGroup>

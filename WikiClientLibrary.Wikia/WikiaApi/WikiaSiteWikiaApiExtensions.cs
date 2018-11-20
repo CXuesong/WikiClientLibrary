@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading;
@@ -140,7 +141,7 @@ namespace WikiClientLibrary.Wikia.WikiaApi
                 var jresult = await site.InvokeWikiaApiAsync("/RelatedPages/List",
                     new WikiaQueryRequestMessage(new {ids = pageId, limit = maxCount}),
                     cancellationToken);
-                var jitems = jresult["items"][pageId.ToString()];
+                var jitems = jresult["items"][pageId.ToString(CultureInfo.InvariantCulture)];
                 if (jitems == null) jitems = ((JProperty)jresult["items"].First)?.Value;
                 if (jitems == null || !jitems.HasValues) return emptyRelatedPages;
                 var items = jitems.ToObject<IList<RelatedPageItem>>();
