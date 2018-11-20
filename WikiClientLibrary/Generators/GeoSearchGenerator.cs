@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Text;
 using Newtonsoft.Json.Linq;
 using WikiClientLibrary.Generators.Primitive;
@@ -75,7 +76,8 @@ namespace WikiClientLibrary.Generators
             }
             else
             {
-                prop["gscoord"] = TargetCoordinate.Latitude + "|" + TargetCoordinate.Longitude;
+                prop["gscoord"] = TargetCoordinate.Latitude.ToString(CultureInfo.InvariantCulture)
+                                  + "|" + TargetCoordinate.Longitude.ToString(CultureInfo.InvariantCulture);
             }
             return prop;
         }
