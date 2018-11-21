@@ -114,12 +114,43 @@ namespace WikiClientLibrary.Infrastructures
                    select new KeyValuePair<string, object>(p.Name, value);
         }
 
+        private const string JsonHtmlResponseHint =
+            "This usually indicates the server response is HTML rather than JSON. "
+            + "See https://github.com/CXuesong/WikiClientLibrary/wiki/Troubleshooting for more information.";
+
+        private const string JsonHtmlResponseHelpLink = "https://github.com/CXuesong/WikiClientLibrary/wiki/Troubleshooting";
+
+        /// <summary>
+        /// Asynchronously parses JSON content from the specified stream.
+        /// </summary>
+        /// <param name="stream">The stream containing the non-empty JSON content.</param>
+        /// <param name="cancellationToken">A token used to cancel the operation.</param>
+        /// <exception cref="ArgumentNullException"><paramref name="stream"/> is <c>null</c>.</exception>
+        /// <exception cref="UnexpectedDataException"><paramref name="stream"/> is empty stream, or there is an error parsing the JSON response.</exception>
         public static async Task<JToken> ParseJsonAsync(Stream stream, CancellationToken cancellationToken)
         {
+            if (stream == null) throw new ArgumentNullException(nameof(stream));
             // TODO buffer stream, instead of reading all
             var content = await stream.ReadAllStringAsync(cancellationToken);
-            //Logger?.Trace(content);
-            return JToken.Parse(content);
+            if (string.IsNullOrEmpty(content))
+                throw new UnexpectedDataException("Cannot parse JSON from an empty stream.");
+            if (content[0] == '<')
+                throw new UnexpectedDataException("Stream content starts with '<'. " + JsonHtmlResponseHint)
+                {
+                    HelpLink = JsonHtmlResponseHelpLink
+                };
+            try
+            {
+                return JToken.Parse(content);
+            }
+            catch (Exception ex)
+            {
+                var message = "Error while parsing JSON out of the stream content. ";
+                if (ex is JsonException && !string.IsNullOrEmpty(ex.Message) && ex.Message.Contains("'<'"))
+                    message += JsonHtmlResponseHint + " ";
+                message += ex.Message;
+                throw new UnexpectedDataException(message, ex);
+            }
         }
 
         /// <summary>
@@ -135,7 +166,7 @@ namespace WikiClientLibrary.Infrastructures
         /// {
         ///     // Basic page information
         ///     "title": "Title",
-        ///     "pageud": 1234,
+        ///     "pageid": 1234,
         ///     "ns": 0
         ///     // Page status
         ///     "special": "",
