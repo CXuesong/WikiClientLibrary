@@ -321,14 +321,14 @@
     <member name="M:WikiClientLibrary.GeoCoordinate.#ctor(System.Double,System.Double)">
       <summary>Initializes a new instance of <see cref="T:WikiClientLibrary.GeoCoordinate" /> representing a location on the Earth.</summary>
       <param name="latitude">latitude of the location.</param>
-      <param name="longitude">logitude of the location.</param>
+      <param name="longitude">longitude of the location.</param>
       <param name="dimension">size of the object.</param>
       <param name="globe">globe identifier of the coordinate.</param>
     </member>
     <member name="M:WikiClientLibrary.GeoCoordinate.#ctor(System.Double,System.Double,System.Double)">
       <summary>Initializes a new instance of <see cref="T:WikiClientLibrary.GeoCoordinate" /> representing a location on the Earth.</summary>
       <param name="latitude">latitude of the location.</param>
-      <param name="longitude">logitude of the location.</param>
+      <param name="longitude">longitude of the location.</param>
       <param name="dimension">size of the object.</param>
       <param name="globe">globe identifier of the coordinate.</param>
     </member>
@@ -341,7 +341,7 @@
         </markup>
       </summary>
       <param name="latitude">latitude of the location.</param>
-      <param name="longitude">logitude of the location.</param>
+      <param name="longitude">longitude of the location.</param>
       <param name="dimension">size of the object.</param>
       <param name="globe">globe identifier of the coordinate.</param>
     </member>
@@ -425,14 +425,14 @@
     </member>
     <member name="P:WikiClientLibrary.GeoCoordinate.Longitude">
       <summary>
-            Gets/sets the logitude of the location.
+            Gets/sets the longitude of the location.
             </summary>
     </member>
     <member name="M:WikiClientLibrary.GeoCoordinate.Offset(System.Double,System.Double)">
       <summary>
             Offsets the coordinates by the specified values.
             </summary>
-      <param name="longitudeOffset">Offset of the logitude.</param>
+      <param name="longitudeOffset">Offset of the longitude.</param>
       <param name="latitudeOffset">Offset of the latitude.</param>
     </member>
     <member name="M:WikiClientLibrary.GeoCoordinate.op_Equality(WikiClientLibrary.GeoCoordinate,WikiClientLibrary.GeoCoordinate)">
@@ -1265,7 +1265,7 @@
       <summary>
             Gets the wiki site containing the specified page title. If the parsed wikilink expression
             does not contain interwiki prefix, this property is the same as <see cref="P:WikiClientLibrary.WikiLink.Site" />.
-            If this wikilink is parsed with no <see cref="T:WikiClientLibrary.Sites.IWikiFamily" /> provided, while it contains inerwiki
+            If this wikilink is parsed with no <see cref="T:WikiClientLibrary.Sites.IWikiFamily" /> provided, while it contains interwiki
             prefix, this property will be <c>null</c>.
             </summary>
     </member>
@@ -1542,7 +1542,7 @@
           </include>
         </markup>
       </typeparam>
-      <returns>The parsed response value. The acutal object type depends on the <paramref name="responseParser" />.</returns>
+      <returns>The parsed response value. The actual object type depends on the <paramref name="responseParser" />.</returns>
       <exception cref="T:System.ArgumentNullException">Either <paramref name="endPointUrl" />, <paramref name="request" />, or <paramref name="responseParser" /> is <c>null</c>.</exception>
       <exception cref="T:System.Exception">Other <see cref="T:WikiClientLibrary.Client.IWikiResponseMessageParser`1" />-specified exceptions.</exception>
     </member>
@@ -1663,7 +1663,7 @@
             Called when <c>error</c> node presents in the API response.
             </summary>
       <param name="errorCode">Error code. (<c>error.code</c>)</param>
-      <param name="errorMessage">Errir message. (<c>error.info</c>)</param>
+      <param name="errorMessage">Error message. (<c>error.info</c>)</param>
       <param name="errorNode">The <c>error</c> JSON node.</param>
       <param name="responseNode">The JSON root of the API response.</param>
       <param name="context">The response parsing context, used for initiating a retry.</param>
@@ -1728,31 +1728,11 @@
     </member>
     <member name="M:WikiClientLibrary.Client.WikiClient.CreateHttpRequestMessage(System.String,WikiClientLibrary.Client.WikiRequestMessage)">
       <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>M:WikiClientLibrary.Client.WikiClient.CreateHttpRequestMessage(System.String,WikiClientLibrary.Client.WikiRequestMessage)</parameter>
-          </include>
-        </markup>
-      </summary>
-      <param name="endPointUrl">
-        <markup>
-          <include item="SMCMissingParamTag">
-            <parameter>param</parameter>
-            <parameter>endPointUrl</parameter>
-            <parameter>M:WikiClientLibrary.Client.WikiClient.CreateHttpRequestMessage(System.String,WikiClientLibrary.Client.WikiRequestMessage)</parameter>
-          </include>
-        </markup>
-      </param>
-      <param name="message">
-        <markup>
-          <include item="SMCMissingParamTag">
-            <parameter>param</parameter>
-            <parameter>message</parameter>
-            <parameter>M:WikiClientLibrary.Client.WikiClient.CreateHttpRequestMessage(System.String,WikiClientLibrary.Client.WikiRequestMessage)</parameter>
-          </include>
-        </markup>
-      </param>
+            Creates an HTTP request message with the given endpoint URL and <see cref="T:WikiClientLibrary.Client.WikiRequestMessage" /> instance.
+            </summary>
+      <param name="endpointUrl">MediaWiki API endpoint URL.</param>
+      <param name="message">The MediaWiki API request message to be sent.</param>
+      <returns>The actual <see cref="T:System.Net.Http.HttpRequestMessage" /> to be sent.</returns>
     </member>
     <member name="M:WikiClientLibrary.Client.WikiClient.Dispose">
       <summary>
@@ -1805,7 +1785,7 @@
           </include>
         </markup>
       </typeparam>
-      <returns>The parsed response value. The acutal object type depends on the <paramref name="responseParser" />.</returns>
+      <returns>The parsed response value. The actual object type depends on the <paramref name="responseParser" />.</returns>
       <exception cref="T:System.ArgumentNullException">Either <paramref name="endPointUrl" />, <paramref name="request" />, or <paramref name="responseParser" /> is <c>null</c>.</exception>
       <exception cref="T:System.Exception">Other <see cref="T:WikiClientLibrary.Client.IWikiResponseMessageParser`1" />-specified exceptions.</exception>
     </member>
@@ -1817,11 +1797,6 @@
     <member name="P:WikiClientLibrary.Client.WikiClient.MaxRetries">
       <summary>
             Max retries count.
-            </summary>
-    </member>
-    <member name="P:WikiClientLibrary.Client.WikiClient.Referer">
-      <summary>
-            Referer.
             </summary>
     </member>
     <member name="P:WikiClientLibrary.Client.WikiClient.RetryDelay">
@@ -2386,11 +2361,6 @@
         </markup>
       </summary>
     </member>
-    <member name="P:WikiClientLibrary.Files.UploadResult.DuplicateVersions">
-      <summary>
-            Gets a list of timestamps indicating the duplicate file versions, if any.
-            </summary>
-    </member>
     <member name="P:WikiClientLibrary.Files.UploadResult.FileKey">
       <summary>
             For <see cref="F:WikiClientLibrary.Files.UploadResultCode.Warning" /> and <see cref="F:WikiClientLibrary.Files.UploadResultCode.Continue" />,
@@ -2402,19 +2372,6 @@
             For a successful upload or stashing, gets the revision information
             for the uploaded file.
             </summary>
-    </member>
-    <member name="M:WikiClientLibrary.Files.UploadResult.FormatWarning(System.String,Newtonsoft.Json.Linq.JToken)">
-      <summary>
-            Try to convert the specified warning code and context into a user-friendly
-            warning message.
-            </summary>
-      <param name="warningCode">Case-sensitive warning code.</param>
-      <param name="context">The extra content of the warning.</param>
-      <returns>
-            It tries to match the warningCode with well-known ones, and returns a
-            user-friendly warning message. If there's no match, a string containing
-            warningCode and context will be returned.
-            </returns>
     </member>
     <member name="P:WikiClientLibrary.Files.UploadResult.Offset">
       <summary>
@@ -2549,7 +2506,7 @@
             - or -
             Since MW 1.31, if you are uploading the exactly same content to the same title
             with <paramref name="ignoreWarnings" /> set to <c>true</c>,
-            you will reveive this exception with <see cref="P:WikiClientLibrary.OperationFailedException.ErrorCode" />
+            you will receive this exception with <see cref="P:WikiClientLibrary.OperationFailedException.ErrorCode" />
             set to <c>fileexists-no-change</c>. See https://gerrit.wikimedia.org/r/378702 .
             </exception>
       <exception cref="T:System.TimeoutException">Timeout specified in <see cref="P:WikiClientLibrary.Client.WikiClient.Timeout" /> has been reached.</exception>
@@ -2572,7 +2529,7 @@
             - or -
             Since MW 1.31, if you are uploading the exactly same content to the same title
             with <paramref name="ignoreWarnings" /> set to <c>true</c>,
-            you will reveive this exception with <see cref="P:WikiClientLibrary.OperationFailedException.ErrorCode" />
+            you will receive this exception with <see cref="P:WikiClientLibrary.OperationFailedException.ErrorCode" />
             set to <c>fileexists-no-change</c>. See https://gerrit.wikimedia.org/r/378702 .
             </exception>
       <exception cref="T:System.TimeoutException">Timeout specified in <see cref="P:WikiClientLibrary.Client.WikiClient.Timeout" /> has been reached.</exception>
@@ -2595,7 +2552,7 @@
             - or -
             Since MW 1.31, if you are uploading the exactly same content to the same title
             with <paramref name="ignoreWarnings" /> set to <c>true</c>,
-            you will reveive this exception with <see cref="P:WikiClientLibrary.OperationFailedException.ErrorCode" />
+            you will receive this exception with <see cref="P:WikiClientLibrary.OperationFailedException.ErrorCode" />
             set to <c>fileexists-no-change</c>. See https://gerrit.wikimedia.org/r/378702 .
             </exception>
       <exception cref="T:System.TimeoutException">Timeout specified in <see cref="P:WikiClientLibrary.Client.WikiClient.Timeout" /> has been reached.</exception>
@@ -3646,14 +3603,7 @@
       <summary>The edit/log comment.</summary>
     </member>
     <member name="P:WikiClientLibrary.Generators.RecentChangeItem.DeltaContentLength">
-      <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>P:WikiClientLibrary.Generators.RecentChangeItem.DeltaContentLength</parameter>
-          </include>
-        </markup>
-      </summary>
+      <summary>The difference of <see cref="P:WikiClientLibrary.Generators.RecentChangeItem.NewContentLength" /> from <see cref="P:WikiClientLibrary.Generators.RecentChangeItem.OldContentLength" />.</summary>
     </member>
     <member name="P:WikiClientLibrary.Generators.RecentChangeItem.Flags">
       <summary>
@@ -4426,7 +4376,7 @@
     </member>
     <member name="M:WikiClientLibrary.Generators.Primitive.IWikiPageGenerator.EnumPagesAsync(WikiClientLibrary.Pages.Queries.IWikiPageQueryProvider)">
       <summary>
-            Asynchornously generates the sequence of pages.
+            Asynchronously generates the sequence of pages.
             </summary>
       <param name="options">Options when querying for the pages.</param>
     </member>
@@ -4532,12 +4482,12 @@
     </member>
     <member name="M:WikiClientLibrary.Generators.Primitive.WikiPageGenerator`1.EnumPagesAsync">
       <summary>
-            Asynchornously generates the sequence of pages.
+            Asynchronously generates the sequence of pages.
             </summary>
     </member>
     <member name="M:WikiClientLibrary.Generators.Primitive.WikiPageGenerator`1.EnumPagesAsync(WikiClientLibrary.Pages.PageQueryOptions)">
       <summary>
-            Asynchornously generates the sequence of pages.
+            Asynchronously generates the sequence of pages.
             </summary>
       <param name="options">
         <markup>
@@ -4551,7 +4501,7 @@
     </member>
     <member name="M:WikiClientLibrary.Generators.Primitive.WikiPageGenerator`1.EnumPagesAsync(WikiClientLibrary.Pages.Queries.IWikiPageQueryProvider)">
       <summary>
-            Asynchornously generates the sequence of pages.
+            Asynchronously generates the sequence of pages.
             </summary>
       <param name="options">Options when querying for the pages.</param>
     </member>
@@ -4616,12 +4566,12 @@
     </member>
     <member name="M:WikiClientLibrary.Generators.Primitive.WikiPagePropertyGenerator`1.EnumPagesAsync">
       <summary>
-            Asynchornously generate the sequence of pages.
+            Asynchronously generate the sequence of pages.
             </summary>
     </member>
     <member name="M:WikiClientLibrary.Generators.Primitive.WikiPagePropertyGenerator`1.EnumPagesAsync(WikiClientLibrary.Pages.PageQueryOptions)">
       <summary>
-            Asynchornously generates the sequence of pages.
+            Asynchronously generates the sequence of pages.
             </summary>
       <param name="options">
         <markup>
@@ -4635,7 +4585,7 @@
     </member>
     <member name="M:WikiClientLibrary.Generators.Primitive.WikiPagePropertyGenerator`1.EnumPagesAsync(WikiClientLibrary.Pages.Queries.IWikiPageQueryProvider)">
       <summary>
-            Asynchornously generates the sequence of pages.
+            Asynchronously generates the sequence of pages.
             </summary>
       <param name="options">Options when querying for the pages.</param>
     </member>
@@ -4778,7 +4728,7 @@
       <param name="dict">A <see cref="T:System.Collections.Generic.IEnumerable`1" /> of <see cref="T:System.Collections.Generic.KeyValuePair`2" />,
             where <c>TKey</c> should be <see cref="T:System.String" />, while <c>TValue</c> can either be <see cref="T:System.String" /> or <see cref="T:System.Object" />.
             Or an anonymous object, in which case, its properties and values are enumerated.</param>
-      <returns>A sequence containning the enumerated key-value pairs.</returns>
+      <returns>A sequence containing the enumerated key-value pairs.</returns>
     </member>
     <member name="M:WikiClientLibrary.Infrastructures.MediaWikiHelper.FileRevisionFromJson(Newtonsoft.Json.Linq.JObject,WikiClientLibrary.Pages.WikiPageStub)">
       <summary>
@@ -4890,31 +4840,14 @@
     </member>
     <member name="M:WikiClientLibrary.Infrastructures.MediaWikiHelper.ParseJsonAsync(System.IO.Stream,System.Threading.CancellationToken)">
       <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>M:WikiClientLibrary.Infrastructures.MediaWikiHelper.ParseJsonAsync(System.IO.Stream,System.Threading.CancellationToken)</parameter>
-          </include>
-        </markup>
-      </summary>
-      <param name="stream">
-        <markup>
-          <include item="SMCMissingParamTag">
-            <parameter>param</parameter>
-            <parameter>stream</parameter>
-            <parameter>M:WikiClientLibrary.Infrastructures.MediaWikiHelper.ParseJsonAsync(System.IO.Stream,System.Threading.CancellationToken)</parameter>
-          </include>
-        </markup>
-      </param>
-      <param name="cancellationToken">
-        <markup>
-          <include item="SMCMissingParamTag">
-            <parameter>param</parameter>
-            <parameter>cancellationToken</parameter>
-            <parameter>M:WikiClientLibrary.Infrastructures.MediaWikiHelper.ParseJsonAsync(System.IO.Stream,System.Threading.CancellationToken)</parameter>
-          </include>
-        </markup>
-      </param>
+            Asynchronously parses JSON content from the specified stream.
+            </summary>
+      <param name="stream">The stream containing the non-empty JSON content.</param>
+      <param name="cancellationToken">A token used to cancel the operation.</param>
+      <exception cref="T:System.ArgumentNullException">
+        <paramref name="stream" /> is <c>null</c>.</exception>
+      <exception cref="T:WikiClientLibrary.UnexpectedDataException">
+        <paramref name="stream" /> is empty stream, or there is an error parsing the JSON response.</exception>
     </member>
     <member name="M:WikiClientLibrary.Infrastructures.MediaWikiHelper.PopulatePageFromJson(WikiClientLibrary.Pages.WikiPage,Newtonsoft.Json.Linq.JObject,WikiClientLibrary.Pages.Queries.IWikiPageQueryProvider)">
       <summary>
@@ -7795,7 +7728,7 @@
     <member name="P:WikiClientLibrary.Pages.Parsing.ParsedContentInfo.ParserLimitReports">
       <summary>
             Gets the limit reports generated by the parser.
-            Avaliable if <see cref="F:WikiClientLibrary.Pages.Parsing.ParsingOptions.LimitReport" /> is specified.
+            Available if <see cref="F:WikiClientLibrary.Pages.Parsing.ParsingOptions.LimitReport" /> is specified.
             </summary>
     </member>
     <member name="P:WikiClientLibrary.Pages.Parsing.ParsedContentInfo.Properties">
@@ -7846,7 +7779,7 @@
     <member name="P:WikiClientLibrary.Pages.Parsing.ParsedContentInfo.TranscludedPages">
       <summary>
             Gets a list of templates transcluded in this page.
-            Avaliable if <see cref="F:WikiClientLibrary.Pages.Parsing.ParsingOptions.TranscludedPages" /> is specified.
+            Available if <see cref="F:WikiClientLibrary.Pages.Parsing.ParsingOptions.TranscludedPages" /> is specified.
             </summary>
     </member>
     <member name="T:WikiClientLibrary.Pages.Parsing.ParserLimitReport">
@@ -8554,7 +8487,7 @@
     </member>
     <member name="T:WikiClientLibrary.Pages.Queries.Properties.GeoCoordinatesPropertyProvider">
       <summary>
-            Returns the geogrpahical coordinates associated with the page.
+            Returns the geographical coordinates associated with the page.
             (<a href="https://www.mediawiki.org/wiki/Extension:GeoData#prop=coordinates">mw:Extension:GeoData#prop=coordinates</a>)
             </summary>
     </member>
@@ -9164,6 +9097,11 @@
         </markup>
       </summary>
     </member>
+    <member name="F:WikiClientLibrary.Pages.Queries.Properties.RevisionsPropertyProvider.DocumentationSlotName">
+      <summary>
+            Revision slot name intended for template documentations in future MediaWiki releases.
+            </summary>
+    </member>
     <member name="M:WikiClientLibrary.Pages.Queries.Properties.RevisionsPropertyProvider.EnumParameters">
       <summary>
             Enumerates the MediaWiki API request parameters for <c>action=query</c> request.
@@ -9187,6 +9125,11 @@
             for <c>action=query</c> request.
             </returns>
     </member>
+    <member name="F:WikiClientLibrary.Pages.Queries.Properties.RevisionsPropertyProvider.MainSlotName">
+      <summary>
+            Revision slot name for main revisions.
+            </summary>
+    </member>
     <member name="M:WikiClientLibrary.Pages.Queries.Properties.RevisionsPropertyProvider.ParsePropertyGroup(Newtonsoft.Json.Linq.JObject)">
       <summary>
             Parses the properties from the given<c>action=query</c> JSON response.
@@ -9201,6 +9144,16 @@
             Gets the property name, when this property is needed to be included in the <c>prop=</c> parameter
             in the MediaWiki API request.
             </summary>
+    </member>
+    <member name="P:WikiClientLibrary.Pages.Queries.Properties.RevisionsPropertyProvider.SlotName">
+      <summary>
+        <markup>
+          <include item="SMCMissingTag">
+            <parameter>summary</parameter>
+            <parameter>P:WikiClientLibrary.Pages.Queries.Properties.RevisionsPropertyProvider.SlotName</parameter>
+          </include>
+        </markup>
+      </summary>
     </member>
     <member name="T:WikiClientLibrary.Pages.Queries.Properties.WikiPageCategoryInfo">
       <summary>
@@ -10543,7 +10496,7 @@
       <summary>
             Initializes with API endpoint URL.
             </summary>
-      <param name="apiEndpoint">The URL of MedaiWiki API endpoint.</param>
+      <param name="apiEndpoint">The URL of MediaWiki API endpoint.</param>
     </member>
     <member name="P:WikiClientLibrary.Sites.SiteOptions.AccountAssertion">
       <summary>
@@ -10552,7 +10505,7 @@
     </member>
     <member name="P:WikiClientLibrary.Sites.SiteOptions.ApiEndpoint">
       <summary>
-            Sets the URL of MedaiWiki API endpoint.
+            Sets the URL of MediaWiki API endpoint.
             </summary>
     </member>
     <member name="M:WikiClientLibrary.Sites.SiteOptions.Clone">
@@ -10572,7 +10525,7 @@
     </member>
     <member name="T:WikiClientLibrary.Sites.SiteStatistics">
       <summary>
-            Contains statistical information of a MedaiWiki site.
+            Contains statistical information of a MediaWiki site.
             </summary>
     </member>
     <member name="M:WikiClientLibrary.Sites.SiteStatistics.#ctor">
@@ -10991,7 +10944,7 @@
     </member>
     <member name="P:WikiClientLibrary.Sites.WikiSite.AccountInfo">
       <summary>
-            Gets the currrent user's account information.
+            Gets the current user's account information.
             </summary>
     </member>
     <member name="P:WikiClientLibrary.Sites.WikiSite.ApiEndpoint">
@@ -11157,7 +11110,7 @@
       <param name="cancellationToken">The cancellation token that will be checked prior to completing the returned task.</param>
       <returns>A task that returns the JSON response when completed.</returns>
       <exception cref="T:WikiClientLibrary.InvalidActionException">Specified action is not supported.</exception>
-      <exception cref="T:WikiClientLibrary.OperationFailedException">There is "error" node in returned JSON. Instances of dervied types may be thrown.</exception>
+      <exception cref="T:WikiClientLibrary.OperationFailedException">There is "error" node in returned JSON. Instances of derived types may be thrown.</exception>
       <exception cref="T:WikiClientLibrary.AccountAssertionFailureException">You enabled account assertion, the assertion failed, and it also failed to retry logging in.</exception>
     </member>
     <member name="M:WikiClientLibrary.Sites.WikiSite.InvokeMediaWikiApiAsync(WikiClientLibrary.Client.WikiRequestMessage,System.Threading.CancellationToken)">
@@ -11170,7 +11123,7 @@
       <param name="cancellationToken">The cancellation token that will be checked prior to completing the returned task.</param>
       <returns>A task that returns the JSON response when completed.</returns>
       <exception cref="T:WikiClientLibrary.InvalidActionException">Specified action is not supported.</exception>
-      <exception cref="T:WikiClientLibrary.OperationFailedException">There is "error" node in returned JSON. Instances of dervied types may be thrown.</exception>
+      <exception cref="T:WikiClientLibrary.OperationFailedException">There is "error" node in returned JSON. Instances of derived types may be thrown.</exception>
       <exception cref="T:WikiClientLibrary.AccountAssertionFailureException">You enabled account assertion, the assertion failed, and it also failed to retry logging in.</exception>
     </member>
     <member name="M:WikiClientLibrary.Sites.WikiSite.InvokeMediaWikiApiAsync``1(WikiClientLibrary.Client.WikiRequestMessage,WikiClientLibrary.Client.IWikiResponseMessageParser{``0},System.Boolean,System.Threading.CancellationToken)">
@@ -11192,7 +11145,7 @@
       </typeparam>
       <returns>A task that returns the JSON response when completed.</returns>
       <exception cref="T:WikiClientLibrary.InvalidActionException">Specified action is not supported.</exception>
-      <exception cref="T:WikiClientLibrary.OperationFailedException">There is "error" node in returned JSON. Instances of dervied types may be thrown.</exception>
+      <exception cref="T:WikiClientLibrary.OperationFailedException">There is "error" node in returned JSON. Instances of derived types may be thrown.</exception>
       <exception cref="T:WikiClientLibrary.AccountAssertionFailureException">You enabled account assertion, the assertion failed, and it also failed to retry logging in.</exception>
     </member>
     <member name="P:WikiClientLibrary.Sites.WikiSite.Logger">
@@ -11207,7 +11160,7 @@
       <param name="userName">User name of the account.</param>
       <param name="password">Password of the account.</param>
       <exception cref="T:System.InvalidOperationException">Attempt to login/logout concurrently.</exception>
-      <exception cref="T:WikiClientLibrary.OperationFailedException">Canoot login with the specified credential.</exception>
+      <exception cref="T:WikiClientLibrary.OperationFailedException">Cannot login with the specified credential.</exception>
       <exception cref="T:System.ArgumentNullException">Either <paramref name="userName" /> or <paramref name="password" /> is <c>null</c> or empty.</exception>
     </member>
     <member name="M:WikiClientLibrary.Sites.WikiSite.LoginAsync(System.String,System.String,System.String)">
@@ -11218,7 +11171,7 @@
       <param name="password">Password of the account.</param>
       <param name="domain">Domain name. <c>null</c> is usually a good choice.</param>
       <exception cref="T:System.InvalidOperationException">Attempt to login/logout concurrently.</exception>
-      <exception cref="T:WikiClientLibrary.OperationFailedException">Canoot login with the specified credential.</exception>
+      <exception cref="T:WikiClientLibrary.OperationFailedException">Cannot login with the specified credential.</exception>
       <exception cref="T:System.ArgumentNullException">Either <paramref name="userName" /> or <paramref name="password" /> is <c>null</c> or empty.</exception>
     </member>
     <member name="M:WikiClientLibrary.Sites.WikiSite.LoginAsync(System.String,System.String,System.String,System.Threading.CancellationToken)">
@@ -11230,7 +11183,7 @@
       <param name="domain">Domain name. <c>null</c> is usually a good choice.</param>
       <param name="cancellationToken">The cancellation token that will be checked prior to completing the returned task.</param>
       <exception cref="T:System.InvalidOperationException">Attempt to login/logout concurrently.</exception>
-      <exception cref="T:WikiClientLibrary.OperationFailedException">Canoot login with the specified credential.</exception>
+      <exception cref="T:WikiClientLibrary.OperationFailedException">Cannot login with the specified credential.</exception>
       <exception cref="T:System.ArgumentNullException">Either <paramref name="userName" /> or <paramref name="password" /> is <c>null</c> or empty.</exception>
     </member>
     <member name="M:WikiClientLibrary.Sites.WikiSite.LogoutAsync">

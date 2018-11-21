@@ -1173,13 +1173,8 @@
     </member>
     <member name="P:WikiClientLibrary.Wikibase.WikibaseSiteInfo.ConceptBaseUri">
       <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>P:WikiClientLibrary.Wikibase.WikibaseSiteInfo.ConceptBaseUri</parameter>
-          </include>
-        </markup>
-      </summary>
+            URI prefix of Wikibase items.
+            </summary>
     </member>
     <member name="M:WikiClientLibrary.Wikibase.WikibaseSiteInfo.FromSiteInfo(WikiClientLibrary.Sites.SiteInfo)">
       <summary>
@@ -1197,61 +1192,33 @@
     </member>
     <member name="P:WikiClientLibrary.Wikibase.WikibaseSiteInfo.GeoShapeStorageBaseUri">
       <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>P:WikiClientLibrary.Wikibase.WikibaseSiteInfo.GeoShapeStorageBaseUri</parameter>
-          </include>
-        </markup>
-      </summary>
+            URI prefix of <see cref="P:WikiClientLibrary.Wikibase.DataTypes.BuiltInDataTypes.GeoShape" /> URLs.
+            </summary>
     </member>
     <member name="M:WikiClientLibrary.Wikibase.WikibaseSiteInfo.MakeEntityUri(System.String)">
       <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>M:WikiClientLibrary.Wikibase.WikibaseSiteInfo.MakeEntityUri(System.String)</parameter>
-          </include>
-        </markup>
-      </summary>
-      <param name="entityId">
-        <markup>
-          <include item="SMCMissingParamTag">
-            <parameter>param</parameter>
-            <parameter>entityId</parameter>
-            <parameter>M:WikiClientLibrary.Wikibase.WikibaseSiteInfo.MakeEntityUri(System.String)</parameter>
-          </include>
-        </markup>
-      </param>
+            Makes an entity URL out of the specified entity ID.
+            </summary>
+      <param name="entityId">Wikibase entity ID, such as <c>P13</c>, <c>Q175</c>.</param>
+      <returns>The corresponding Wikibase entity URI. This URI can be used in RDF representations.</returns>
+      <exception cref="T:System.ArgumentNullException">
+        <paramref name="entityId" /> is <c>null</c>.</exception>
     </member>
     <member name="M:WikiClientLibrary.Wikibase.WikibaseSiteInfo.ParseEntityId(System.String)">
       <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>M:WikiClientLibrary.Wikibase.WikibaseSiteInfo.ParseEntityId(System.String)</parameter>
-          </include>
-        </markup>
-      </summary>
-      <param name="entityUri">
-        <markup>
-          <include item="SMCMissingParamTag">
-            <parameter>param</parameter>
-            <parameter>entityUri</parameter>
-            <parameter>M:WikiClientLibrary.Wikibase.WikibaseSiteInfo.ParseEntityId(System.String)</parameter>
-          </include>
-        </markup>
-      </param>
+            Extracts the entity ID out of the given entity URI.
+            </summary>
+      <param name="entityUri">Wikibase entity URI.</param>
+      <returns>The corresponding Wikibase entity ID.</returns>
+      <exception cref="T:System.ArgumentNullException">
+        <paramref name="entityUri" /> is <c>null</c>.</exception>
+      <exception cref="T:System.ArgumentException">
+        <paramref name="entityUri" /> does not have the same URI prefix as specified in <see cref="P:WikiClientLibrary.Wikibase.WikibaseSiteInfo.ConceptBaseUri" />.</exception>
     </member>
     <member name="P:WikiClientLibrary.Wikibase.WikibaseSiteInfo.TabularDataStorageBaseUri">
       <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>P:WikiClientLibrary.Wikibase.WikibaseSiteInfo.TabularDataStorageBaseUri</parameter>
-          </include>
-        </markup>
-      </summary>
+            URI prefix of <see cref="P:WikiClientLibrary.Wikibase.DataTypes.BuiltInDataTypes.TabularData" /> URLs.
+            </summary>
     </member>
     <member name="T:WikiClientLibrary.Wikibase.WikibaseUriFactory">
       <summary>

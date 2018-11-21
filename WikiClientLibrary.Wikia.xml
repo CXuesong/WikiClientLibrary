@@ -294,26 +294,26 @@
         </markup>
       </param>
     </member>
-    <member name="T:WikiClientLibrary.Wikia.WikiaJsonResonseParser">
+    <member name="T:WikiClientLibrary.Wikia.WikiaJsonResponseParser">
       <summary>
             Parser that parses the JSON and dispatches error in the response from generic Wikia API response.
             </summary>
     </member>
-    <member name="M:WikiClientLibrary.Wikia.WikiaJsonResonseParser.#ctor">
+    <member name="M:WikiClientLibrary.Wikia.WikiaJsonResponseParser.#ctor">
       <summary>
         <markup>
           <include item="SMCAutoDocConstructor">
-            <parameter>WikiClientLibrary.Wikia.WikiaJsonResonseParser</parameter>
+            <parameter>WikiClientLibrary.Wikia.WikiaJsonResponseParser</parameter>
           </include>
         </markup>
       </summary>
     </member>
-    <member name="M:WikiClientLibrary.Wikia.WikiaJsonResonseParser.ParseResponseAsync(System.Net.Http.HttpResponseMessage,WikiClientLibrary.Client.WikiResponseParsingContext)">
+    <member name="M:WikiClientLibrary.Wikia.WikiaJsonResponseParser.ParseResponseAsync(System.Net.Http.HttpResponseMessage,WikiClientLibrary.Client.WikiResponseParsingContext)">
       <summary>
         <markup>
           <include item="SMCMissingTag">
             <parameter>summary</parameter>
-            <parameter>M:WikiClientLibrary.Wikia.WikiaJsonResonseParser.ParseResponseAsync(System.Net.Http.HttpResponseMessage,WikiClientLibrary.Client.WikiResponseParsingContext)</parameter>
+            <parameter>M:WikiClientLibrary.Wikia.WikiaJsonResponseParser.ParseResponseAsync(System.Net.Http.HttpResponseMessage,WikiClientLibrary.Client.WikiResponseParsingContext)</parameter>
           </include>
         </markup>
       </summary>
@@ -322,7 +322,7 @@
           <include item="SMCMissingParamTag">
             <parameter>param</parameter>
             <parameter>response</parameter>
-            <parameter>M:WikiClientLibrary.Wikia.WikiaJsonResonseParser.ParseResponseAsync(System.Net.Http.HttpResponseMessage,WikiClientLibrary.Client.WikiResponseParsingContext)</parameter>
+            <parameter>M:WikiClientLibrary.Wikia.WikiaJsonResponseParser.ParseResponseAsync(System.Net.Http.HttpResponseMessage,WikiClientLibrary.Client.WikiResponseParsingContext)</parameter>
           </include>
         </markup>
       </param>
@@ -331,7 +331,7 @@
           <include item="SMCMissingParamTag">
             <parameter>param</parameter>
             <parameter>context</parameter>
-            <parameter>M:WikiClientLibrary.Wikia.WikiaJsonResonseParser.ParseResponseAsync(System.Net.Http.HttpResponseMessage,WikiClientLibrary.Client.WikiResponseParsingContext)</parameter>
+            <parameter>M:WikiClientLibrary.Wikia.WikiaJsonResponseParser.ParseResponseAsync(System.Net.Http.HttpResponseMessage,WikiClientLibrary.Client.WikiResponseParsingContext)</parameter>
           </include>
         </markup>
       </param>
