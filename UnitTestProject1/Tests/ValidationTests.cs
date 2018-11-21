@@ -28,7 +28,7 @@ namespace UnitTestProject1.Tests
         public async Task Issue39()
         {
             // Cause: cacheBuster=7030077030012 in /api/v1/Mercury/WikiVariables request exceeds Int32 limit.
-            var site = new WikiaSite(WikiClient, "http://theedgechronicles.wikia.com/");
+            var site = new WikiaSite(WikiClient, "https://theedgechronicles.fandom.com/");
             await site.Initialization;
         }
 

@@ -79,7 +79,7 @@ namespace UnitTestProject1.Tests
 
             claim = entity.Claims[WikidataProperties.TopographicProminence].First();
             var height = (WbQuantity) claim.MainSnak.DataValue;
-            Assert.Equal(8849, height.Amount, 4);
+            Assert.Equal(8848, height.Amount, 4);
             Assert.Equal(WikidataProperties.ReferenceUrl, claim.References[0].Snaks[0].PropertyId);
             Assert.Equal("http://www.peakbagger.com/peak.aspx?pid=10640", claim.References[0].Snaks[0].DataValue);
 
