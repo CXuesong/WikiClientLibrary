@@ -28,6 +28,6 @@ namespace UnitTestProject1
 
         // TODO This is a rather unofficial test site. Replace it in the future.
 
-        public const string WikiaTest = "http://mediawiki119.wikia.com/api.php";
+        public const string WikiaTest = "https://mediawiki119.wikia.org/api.php";
     }
 }

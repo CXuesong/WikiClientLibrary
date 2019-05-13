@@ -105,7 +105,7 @@ namespace UnitTestProject1
         private async Task<WikiSite> CreateWikiSiteAsync(IWikiClient wikiClient, string url)
         {
             WikiSite site;
-            if (url.Contains(".wikia.com"))
+            if (url.Contains(".wikia.com") || url.Contains(".wikia.org") || url.Contains(".fandom.com"))
             {
                 var uri = new Uri(url, UriKind.Absolute);
                 var options = new WikiaSiteOptions(uri.GetLeftPart(UriPartial.Authority) + "/")
