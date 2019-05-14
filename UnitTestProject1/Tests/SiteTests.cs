@@ -192,9 +192,9 @@ namespace UnitTestProject1.Tests
             var result = await WikiSite.SearchApiEndpointAsync(client, "en.wikipedia.org");
             Assert.Equal("https://en.wikipedia.org/w/api.php", result);
             result = await WikiSite.SearchApiEndpointAsync(client, "mediawiki119.wikia.com");
-            Assert.Equal("http://mediawiki119.wikia.com/api.php", result);
+            Assert.Equal("https://mediawiki119.wikia.org/api.php", result);
             result = await WikiSite.SearchApiEndpointAsync(client, "mediawiki119.wikia.com/abc/def");
-            Assert.Equal("http://mediawiki119.wikia.com/api.php", result);
+            Assert.Equal("https://mediawiki119.wikia.org/api.php", result);
             result = await WikiSite.SearchApiEndpointAsync(client, "wikipedia.org");
             Assert.Null(result);
         }

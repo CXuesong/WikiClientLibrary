@@ -411,7 +411,6 @@ namespace UnitTestProject1.Tests
             var cats = await blg.EnumItemsAsync().ToList();
             ShallowTrace(cats);
             var titles = cats.Select(c => c.Title).ToList();
-            Assert.Contains("分類:卓著", titles);
             Assert.Contains("分類:基礎之文", titles);
             Assert.Contains("分類:後波拿巴列傳", titles);
         }

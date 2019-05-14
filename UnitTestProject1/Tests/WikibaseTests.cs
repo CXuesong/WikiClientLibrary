@@ -57,7 +57,7 @@ namespace UnitTestProject1.Tests
             Assert.Equal(WikidataItems.Chumulangma, entity.Id);
             Assert.Equal(EntityType.Item, entity.Type);
             Assert.Equal("Mount Everest", entity.Labels["en"]);
-            Assert.Contains("Chumulangma", entity.Aliases["en"]);
+            Assert.Contains("Qomolangma", entity.Aliases["en"]);
             Assert.Equal("珠穆朗玛峰", entity.Labels["zh-Hans"]);
             Assert.Equal("珠穆朗瑪峰", entity.Labels["lzh"]);
             Assert.Equal("エベレスト", entity.Labels["ja"]);
