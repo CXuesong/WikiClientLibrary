@@ -633,9 +633,17 @@ namespace WikiClientLibrary.Sites
         protected virtual async Task SendLogoutRequestAsync()
         {
             Debug.Assert(isLoggingInOut == 1);
+            string token = null;
+            if (SiteInfo.Version >= new Version(1, 34))
+            {
+                // 1.34-wmf3
+                // git #d965b0b4 - [SECURITY] [API BREAKING CHANGE] Require logout token. (task T25227) by sbassett
+                token = await tokensManager.GetTokenAsync("csrf", false, CancellationToken.None);
+            }
             var jobj = await InvokeMediaWikiApiAsync(new MediaWikiFormRequestMessage(new
             {
                 action = "logout",
+                token = token,
             }), true, CancellationToken.None);
         }
 
