@@ -11,16 +11,18 @@ using WikiClientLibrary.Sites;
 namespace WikiClientLibrary.Scribunto
 {
     /// <summary>
-    /// Represents a Scribunto LUA console. (<c>action=scribunto-console</c>)
+    /// Represents a Scribunto Lua console. (<c>action=scribunto-console</c>)
     /// </summary>
     /// <remarks>
-    /// An instance of this class is equivalent to the "Debug console" shown in the Scribunto
-    /// Lua module editor page.
+    /// <para>An instance of this class is equivalent to the "Debug console" shown in the Scribunto
+    /// Lua module editor page.</para>
+    /// <para>The MediaWiki site need to have <a href="https://www.mediawiki.org/wiki/Extension:Scribunto">Scribunto extension</a> installed
+    /// to support this feature.</para>
     /// </remarks>
     public class ScribuntoConsole
     {
 
-        private const string adhocModuleTitlePrefix = "Module:WCLAdhoc/DummyModule";
+        internal const string AdhocModuleTitlePrefix = "Module:WCLAdhoc/DummyModule";
 
         private long? _SessionId;
 
@@ -67,22 +69,27 @@ namespace WikiClientLibrary.Scribunto
         /// <param name="moduleContent">Lua module content. The return value of the expression will be the return value of the module.</param>
         /// <param name="moduleTitle">Title of the Lua module, or <c>null</c> to use a dummy module name. To properly evaluate Lua modules, the title should start with <c>Module:</c> namespace prefix.</param>
         /// <param name="cancellationToken">A token used to cancel the operation.</param>
+        /// <exception cref="ScribuntoConsoleException">There is Scribunto console error evaluating module content.</exception>
+        /// <exception cref="UnexpectedDataException">Cannot validate Scribunto console working properly. The sanity test does not pass.</exception>
+        /// <exception cref="NotSupportedException">The MediaWiki site does not support Scribunto console.</exception>
         /// <remarks>
-        /// This operation usually does not change <see cref="SessionId" />, if it's already has a valid value.
+        /// <para>Upon reset of the console, this client library will attempt to evaluate <c>=_VERSION</c> and validates
+        /// whether server can return any value (even if it's <c>nil</c>). This is the sanity test.</para>
+        /// <para>This operation usually does not change <see cref="SessionId" />, if it's already has a valid value.
         /// To create a new Lua evaluation session with a different <seealso cref="SessionId"/>,
-        /// create a new <seealso cref="ScribuntoConsole"/> instance.
+        /// create a new <seealso cref="ScribuntoConsole"/> instance.</para>
         /// </remarks>
         public async Task ResetAsync(string moduleContent, string moduleTitle, CancellationToken cancellationToken)
         {
             if (moduleTitle == null)
-                moduleTitle = adhocModuleTitlePrefix;
+                moduleTitle = AdhocModuleTitlePrefix;
             ModuleTitle = moduleTitle;
             ScribuntoEvaluationResult result = null;
             try
             {
                 result = await InvokeApiAsync(Site, _SessionId, moduleTitle, moduleContent, "=_VERSION", true, cancellationToken);
                 if (string.IsNullOrEmpty(result.ReturnValue))
-                    throw new UnexpectedDataException("Lua _VERSION value is empty.");
+                    throw new UnexpectedDataException("Cannot validate Scribunto console properly. Lua _VERSION value is empty.");
             }
             catch (ScribuntoConsoleException ex)
             {
@@ -133,6 +140,13 @@ namespace WikiClientLibrary.Scribunto
             return EvaluateAsync(expression, CancellationToken.None);
         }
 
+        /// <summary>
+        /// Evaluates the specified Lua expression in the console.
+        /// </summary>
+        /// <param name="expression">The Lua expression to be evaluated.</param>
+        /// <param name="cancellationToken">A token used to cancel the operation.</param>
+        /// <exception cref="ScribuntoConsoleException">There is Scribunto console error evaluating module content.</exception>
+        /// <returns>The console evaluation result.</returns>
         public async Task<ScribuntoEvaluationResult> EvaluateAsync(string expression, CancellationToken cancellationToken)
         {
             ScribuntoEvaluationResult result = null;
@@ -159,15 +173,24 @@ namespace WikiClientLibrary.Scribunto
 
         internal static async Task<ScribuntoEvaluationResult> InvokeApiAsync(WikiSite site, long? sessionId, string title, string content, string question, bool clear, CancellationToken ct)
         {
-            var jresult = await site.InvokeMediaWikiApiAsync(new MediaWikiFormRequestMessage(new
+            JToken jresult;
+            try
             {
-                action = "scribunto-console",
-                session = sessionId,
-                title = title,
-                clear = clear,
-                question = question,
-                content = content
-            }), ct);
+                jresult = await site.InvokeMediaWikiApiAsync(new MediaWikiFormRequestMessage(new
+                {
+                    action = "scribunto-console",
+                    session = sessionId,
+                    title = title,
+                    clear = clear,
+                    question = question,
+                    content = content
+                }), ct);
+            }
+            catch (InvalidActionException ex)
+            {
+                throw new NotSupportedException(
+                    "The MediaWiki site does not support Scribunto console. Check whether the required extension has been installed.", ex);
+            }
             var result = jresult.ToObject<ScribuntoEvaluationResult>(Utility.WikiJsonSerializer);
             switch (result.Type)
             {
@@ -182,10 +205,16 @@ namespace WikiClientLibrary.Scribunto
 
     }
 
+    /// <summary>
+    /// The type of Scribunto console evaluation result.
+    /// </summary>
     public enum ScribuntoEvaluationResultType
     {
+        /// <summary>Unknown / invalid evaluation result type.</summary>
         Unknown = 0,
+        /// <summary>Normal evaluation result. Evaluation completed successfully.</summary>
         Normal,
+        /// <summary>Evaluation error received from server. It will cause <seealso cref="ScribuntoConsoleException"/>.</summary>
         Error,
     }
 
@@ -193,36 +222,45 @@ namespace WikiClientLibrary.Scribunto
     public class ScribuntoEvaluationResult
     {
 
+        /// <summary>The evaluation result type.</summary>
         [JsonProperty("type")]
         public ScribuntoEvaluationResultType Type { get; set; }
 
-        /// <summary>
-        /// The text outputted to the console using <c>mw.log</c>.
-        /// </summary>
+        /// <summary>The text outputted to the console using <c>mw.log</c>.</summary>
+        /// <seealso cref="ReturnValue"/>
         [JsonProperty("print")]
         public string Output { get; set; }
 
-        /// <summary>
-        /// The return value of the evaluated expression.
-        /// </summary>
+        /// <summary>The string representation of the evaluation return value.</summary>
+        /// <remarks>
+        /// The returned value will be in its string representation.
+        /// For example, Lua <c>nil</c> will be CLR string <c>"nil"</c>;
+        /// both Lua number <c>123</c> and string <c>"123"</c> will be CLR string <c>"123"</c>.
+        /// </remarks>
+        /// <seealso cref="Output"/>
         [JsonProperty("return")]
         public string ReturnValue { get; set; }
 
+        /// <summary>The current Scribunto console session ID.</summary>
         [JsonProperty("session")]
         public long SessionId { get; set; }
 
+        /// <summary>Whether the server indicates this session ID is new.</summary>
+        /// <remarks>
+        /// Note that as of MW 1.34, this property is true only
+        /// if the session with <seealso cref="SessionId"/> is just created,
+        /// or the session has been lost on server (e.g. due to session timeout).
+        /// If you resets/clears the session, which does not change the session ID,
+        /// this property will be <c>false</c>.
+        /// </remarks>
         [JsonProperty("sessionIsNew")]
         public bool IsNewSession { get; set; }
 
-        /// <summary>
-        /// Server memory consumption of the current evaluation session.
-        /// </summary>
+        /// <summary>Server memory consumption of the current evaluation session.</summary>
         [JsonProperty("sessionSize")]
         public int SessionSize { get; private set; }
 
-        /// <summary>
-        /// Maximum allowed server memory consumption of the current evaluation session.
-        /// </summary>
+        /// <summary>Maximum allowed server memory consumption of the current evaluation session.</summary>
         [JsonProperty("sessionMaxSize")]
         public int SessionMaxSize { get; private set; }
 

@@ -186,3 +186,16 @@ namespace WikiClientLibrary.Infrastructures.Logging
     }
 }
 
+namespace WikiClientLibrary.Scribunto
+{
+    /// <summary>
+    /// This namespace contains classes that enables you to
+    /// access to <a href="https://www.mediawiki.org/wiki/Extension:Scribunto">Scribunto</a> Lua console,
+    /// and to evaluate the modules on the MediaWiki sites.
+    /// </summary>
+    [CompilerGenerated]
+    internal class NamespaceDoc
+    {
+    }
+}
+
