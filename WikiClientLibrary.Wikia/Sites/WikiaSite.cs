@@ -151,8 +151,20 @@ namespace WikiClientLibrary.Wikia.Sites
         /// </remarks>
         protected override async Task SendLogoutRequestAsync()
         {
-            var logoutUrl = "https://www.wikia.com/logout";
-            if (SiteInfo.ServerUrl.IndexOf(".wikia.com", StringComparison.OrdinalIgnoreCase) < 0)
+            string logoutUrl;
+            if (SiteInfo.ServerUrl.EndsWith(".wikia.com", StringComparison.OrdinalIgnoreCase))
+            {
+                logoutUrl = "https://www.wikia.com/logout";
+            }
+            else if (SiteInfo.ServerUrl.EndsWith(".wikia.org", StringComparison.OrdinalIgnoreCase))
+            {
+                logoutUrl = "https://www.wikia.org/logout";
+            }
+            else if (SiteInfo.ServerUrl.EndsWith(".fandom.com", StringComparison.OrdinalIgnoreCase))
+            {
+                logoutUrl = "https://www.fandom.com/logout";
+            }
+            else
             {
                 logoutUrl = MediaWikiHelper.MakeAbsoluteUrl(SiteInfo.ServerUrl, "logout");
                 // User is using WikiaSite instance outside Wikia… I wish you good luck.
@@ -160,7 +172,7 @@ namespace WikiClientLibrary.Wikia.Sites
                     SiteInfo.ServerUrl, logoutUrl);
             }
             await WikiClient.InvokeAsync(logoutUrl,
-                new MediaWikiFormRequestMessage(new {redirect = ""}),
+                new MediaWikiFormRequestMessage(new { redirect = "" }),
                 DiscardingResponseMessageParser.Instance,
                 CancellationToken.None);
         }
