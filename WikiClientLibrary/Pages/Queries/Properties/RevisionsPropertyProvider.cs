@@ -23,18 +23,6 @@ namespace WikiClientLibrary.Pages.Queries.Properties
     {
 
         /// <summary>
-        /// Revision slot name for main revisions.
-        /// </summary>
-        /// <see cref="SlotName"/>
-        public const string MainSlotName = "main";
-
-        /// <summary>
-        /// Revision slot name intended for template documentations in future MediaWiki releases.
-        /// </summary>
-        /// <see cref="SlotName"/>
-        public const string DocumentationSlotName = "documentation";
-
-        /// <summary>
         /// Gets/sets a value that determines whether to fetch revision content.
         /// If set, the maximum limit per API request will be 10 times as low.
         /// (Note: If you want HTML rather than wikitext, use action=parse instead.)
@@ -42,16 +30,15 @@ namespace WikiClientLibrary.Pages.Queries.Properties
         public bool FetchContent { get; set; }
 
         /// <summary>
-        /// Gets/sets the name of the revision slot from which to retrieve the revisions. (MediaWiki 1.32+)
+        /// Gets/sets the names of the revision slot from which to retrieve the revisions. (MediaWiki 1.32+)
         /// </summary>
+        /// <value>
+        /// A sequence of slot names, or <c>null</c> to use default slot names (<c>["main"]</c>).
+        /// </value>
         /// <remarks>
-        /// <para> Slots have been introduced in MediaWiki 1.32 as part of
-        /// <a href="https://www.mediawiki.org/wiki/Multi-Content_Revisions">Multi-Content Revisions</a>.
-        /// For more information about revision slots, see
-        /// <a href="https://www.mediawiki.org/wiki/Manual:Slot">mw:Manual:slot</a>.</para>
-        /// <p>The default value is <see cref="MainSlotName"/>.</p>
+        /// <para>See <see cref="RevisionSlot"/> for more information on "slot"s.</para>
         /// </remarks>
-        public string SlotName { get; set; } = MainSlotName;
+        public IEnumerable<string> Slots { get; set; }
 
         /// <inheritdoc />
         public override IEnumerable<KeyValuePair<string, object>> EnumParameters()
@@ -63,7 +50,7 @@ namespace WikiClientLibrary.Pages.Queries.Properties
                         ? "ids|timestamp|flags|comment|user|userid|contentmodel|sha1|tags|size|content"
                         : "ids|timestamp|flags|comment|user|userid|contentmodel|sha1|tags|size"
                 },
-                { "rvslot", SlotName }
+                { "rvslots", Slots == null ? "main" : MediaWikiHelper.JoinValues(Slots) }
             };
         }
 

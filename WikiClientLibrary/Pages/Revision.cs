@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Runtime.Serialization;
 using System.Threading;
@@ -34,7 +35,7 @@ namespace WikiClientLibrary.Pages
         /// <exception cref="ArgumentException"><paramref name="revisionId"/> is not an existing revision id.</exception>
         public static Task<Revision> FetchRevisionAsync(WikiSite site, int revisionId)
         {
-            return FetchRevisionsAsync(site, new[] {revisionId}, PageQueryOptions.FetchContent).First();
+            return FetchRevisionsAsync(site, new[] { revisionId }, PageQueryOptions.FetchContent).First();
         }
 
         /// <inheritdoc cref="FetchRevisionsAsync(WikiSite,IEnumerable{int},IWikiPageQueryProvider,CancellationToken)"/>
@@ -170,6 +171,14 @@ namespace WikiClientLibrary.Pages
         public RevisionFlags Flags { get; private set; }
 
         /// <summary>
+        /// Revision slots. (MW 1.32+)
+        /// </summary>
+        /// <value>Revision slots, or <c>null</c> if the MediaWiki site does not support slots.</value>
+        /// <seealso cref="RevisionSlot"/>
+        [JsonProperty]
+        public IDictionary<string, RevisionSlot> Slots { get; private set; }
+
+        /// <summary>
         /// Gets a indicator of whether one or more fields has been hidden.
         /// </summary>
         /// <remarks>See https://www.mediawiki.org/wiki/Help:RevisionDelete .</remarks>
@@ -193,6 +202,15 @@ namespace WikiClientLibrary.Pages
             if (Anon) Flags |= RevisionFlags.Anonymous;
             HiddenFields = RevisionHiddenFields.None;
             if (UserHidden) HiddenFields |= RevisionHiddenFields.User;
+            // Make compatible with the slot-based revision JSON
+            if (Slots != null && Slots.TryGetValue(RevisionSlot.MainSlotName, out var mainSlot))
+            {
+                Debug.Assert(mainSlot != null);
+                if (Content == null) Content = mainSlot.Content;
+                if (ContentLength == 0) ContentLength = mainSlot.ContentLength;
+                if (ContentModel == null) ContentModel = mainSlot.ContentModel;
+                if (Sha1 == null) Sha1 = mainSlot.Sha1;
+            }
         }
 
         /// <inheritdoc/>
@@ -201,6 +219,68 @@ namespace WikiClientLibrary.Pages
             var tags = Tags == null ? null : MediaWikiHelper.JoinValues(Tags);
             return $"Revision#{Id}, {Flags}, {tags}, SHA1={Sha1}";
         }
+    }
+
+    /// <summary>
+    /// Represents a slot in a revision. (MW 1.32+)
+    /// </summary>
+    /// <remarks>
+    /// <para>"Slot"s have been introduced in MediaWiki 1.32 as part of
+    /// <a href="https://www.mediawiki.org/wiki/Multi-Content_Revisions">Multi-Content Revisions</a>.
+    /// For more information about revision slots, see
+    /// <a href="https://www.mediawiki.org/wiki/Manual:Slot">mw:Manual:slot</a>.</para>
+    /// </remarks>
+    /// <seealso cref="RevisionsPropertyProvider.Slots"/>
+    [JsonObject(MemberSerialization.OptIn)]
+    public class RevisionSlot
+    {
+
+        /// <summary>
+        /// Revision slot name for main revisions.
+        /// </summary>
+        public const string MainSlotName = "main";
+
+        /// <summary>
+        /// Revision slot name intended for template documentations in future MediaWiki releases.
+        /// </summary>
+        public const string DocumentationSlotName = "documentation";
+
+        [JsonProperty("*")]
+        public string Content { get; set; }
+
+        /// <summary>
+        /// Content serialization format used for the revision slot. 
+        /// </summary>
+        /// <remarks>
+        /// Possible values: text/x-wiki (wikitext), text/javascript (javascript), text/css (css),
+        /// text/plain (plain text), application/json (json).
+        /// </remarks>
+        [JsonProperty]
+        public string ContentFormat { get; set; }
+
+        /// <summary>
+        /// Content model of the revision slot.
+        /// </summary>
+        /// <remarks>
+        /// Possible values: wikitext, javascript, css, text and json.
+        /// This list may include additional values registered by extensions;
+        /// on Wikimedia wikis, these include: JsonZeroConfig, Scribunto, JsonSchema
+        /// </remarks>
+        [JsonProperty]
+        public string ContentModel { get; set; }
+
+        /// <summary>
+        /// Content length (in bytes) of the revision slot.
+        /// </summary>
+        [JsonProperty("size")]
+        public int ContentLength { get; set; }
+
+        /// <summary>
+        /// SHA-1 (base 16) of the revision slot.
+        /// </summary>
+        [JsonProperty]
+        public string Sha1 { get; set; }
+
     }
 
     /// <summary>
