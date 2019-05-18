@@ -18,9 +18,11 @@ namespace WikiClientLibrary.Sites
     /// <summary>
     /// Provides read-only access to general site information.
     /// </summary>
+    /// <seealso cref="WikiSite"/>
     [JsonObject(MemberSerialization.OptIn)]
     public class SiteInfo
     {
+
         private string _Generator;
 
         /// <summary>
@@ -125,7 +127,7 @@ namespace WikiClientLibrary.Sites
         /// <summary>
         /// API version information as found in $wgVersion. 1.8+
         /// </summary>
-        /// <remarks>Example value: MediaWiki 1.28.0-wmf.15</remarks>
+        /// <remarks>Example value: <c>MediaWiki 1.28.0-wmf.15</c>.</remarks>
         [JsonProperty("generator")]
         public string Generator
         {
@@ -135,16 +137,29 @@ namespace WikiClientLibrary.Sites
                 _Generator = value;
                 if (value != null)
                 {
-                    var part = value.Split(' ', '-');
-                    Version = Version.Parse(part[1]);
+                    var pos = 0;
+                NEXT:
+                    pos = value.IndexOf(' ', pos) + 1;
+                    if (pos <= 0 || pos >= value.Length)
+                    {
+                        Version = MediaWikiVersion.Zero;
+                        return;
+                    }
+                    if (value[pos] < '0' && value[pos] > '9')
+                        goto NEXT;
+                    Version = MediaWikiVersion.Parse(value.Substring(pos));
                 }
             }
         }
 
         /// <summary>
-        /// Gets main part of API version. E.g. 1.28.0 for MediaWiki 1.28.0-wmf.15 .
+        /// Gets MediaWiki API version.
         /// </summary>
-        public Version Version { get; private set; }
+        /// <remarks>
+        /// This version is parsed from the value of <see cref="Generator"/>.
+        /// If WCL failed to parse the version, this property will be <see cref="MediaWikiVersion.Zero"/>.
+        /// </remarks>
+        public MediaWikiVersion Version { get; private set; }
 
         /// <summary>
         /// A list of magic words and their aliases 1.14+

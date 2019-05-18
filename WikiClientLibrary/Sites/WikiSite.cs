@@ -355,10 +355,7 @@ namespace WikiClientLibrary.Sites
             if (form != null)
             {
                 // Apply tokens
-                var newFields = new List<KeyValuePair<string, object>>(form.Fields.Count + 3)
-                {
-                    new KeyValuePair<string, object>("format", "json")
-                };
+                var newFields = new List<KeyValuePair<string, object>>(form.Fields.Count + 3) { new KeyValuePair<string, object>("format", "json") };
                 foreach (var tokenField in form.Fields)
                 {
                     var value = tokenField.Value;
@@ -533,7 +530,7 @@ namespace WikiClientLibrary.Sites
                 {
                     string token = null;
                     // For MediaWiki 1.27+
-                    if (_SiteInfo != null && _SiteInfo.Version >= new Version("1.27"))
+                    if (_SiteInfo != null && _SiteInfo.Version >= new MediaWikiVersion(1, 27))
                         token = await GetTokenAsync("login", true, cancellationToken);
                     // For MediaWiki < 1.27, We'll have to request twice.
                     // If we are logging in before initialization of WikiSite, we just treat it the same as MediaWiki < 1.27,
@@ -634,7 +631,7 @@ namespace WikiClientLibrary.Sites
         {
             Debug.Assert(isLoggingInOut == 1);
             string token = null;
-            if (SiteInfo.Version >= new Version(1, 34))
+            if (SiteInfo.Version >= new MediaWikiVersion(1, 34, MediaWikiDevChannel.Wmf, 3))
             {
                 // 1.34-wmf3
                 // git #d965b0b4 - [SECURITY] [API BREAKING CHANGE] Require logout token. (task T25227) by sbassett

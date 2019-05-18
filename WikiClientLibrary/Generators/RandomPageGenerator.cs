@@ -54,7 +54,7 @@ namespace WikiClientLibrary.Generators
                 {"rnnamespace", NamespaceIds == null ? null : MediaWikiHelper.JoinValues(NamespaceIds)},
                 {"rnlimit", PaginationSize},
             };
-            if (Site.SiteInfo.Version >= new Version(1, 26))
+            if (Site.SiteInfo.Version >= new MediaWikiVersion(1, 26))
             {
                 dict.Add("rnfilterredir", RedirectsFilter.ToString("redirects", "nonredirects"));
             }

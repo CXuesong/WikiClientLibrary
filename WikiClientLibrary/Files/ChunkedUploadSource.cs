@@ -35,7 +35,7 @@ namespace WikiClientLibrary.Files
     public class ChunkedUploadSource : WikiUploadSource
     {
 
-        private static readonly Version v118 = new Version(1, 18);
+        private static readonly MediaWikiVersion v118 = new MediaWikiVersion(1, 18);
 
         private readonly long originalSourceStreamPosition;
         private int state;

@@ -38,7 +38,7 @@ namespace WikiClientLibrary.Pages.Parsing
                 p["prop"] += "|limitreportdata";
             if ((options & ParsingOptions.DisableLimitReport) == ParsingOptions.DisableLimitReport)
             {
-                if (site.SiteInfo.Version >= new Version("1.26"))
+                if (site.SiteInfo.Version >= new MediaWikiVersion(1, 26))
                     p["disablelimitreport"] = true;
                 else
                     p["disablepp"] = true;

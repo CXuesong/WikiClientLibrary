@@ -40,7 +40,7 @@ namespace WikiClientLibrary
                 {
                     var queryParams = parameters.ToDictionary(p => p.Key, p => p.Value);
                     Debug.Assert("query".Equals(queryParams["action"]));
-                    NEXT_PAGE:
+                NEXT_PAGE:
                     var jresult = await site.InvokeMediaWikiApiAsync(new MediaWikiFormRequestMessage(queryParams), ct);
                     // If there's no result, "query" node will not exist.
                     var queryNode = (JObject)jresult["query"];
@@ -306,7 +306,11 @@ namespace WikiClientLibrary
                         {
                             var jresult = await site.InvokeMediaWikiApiAsync(new MediaWikiFormRequestMessage(new
                             {
-                                action = "purge", titles = titles, pageids = ids, forcelinkupdate = (options & PagePurgeOptions.ForceLinkUpdate) == PagePurgeOptions.ForceLinkUpdate, forcerecursivelinkupdate = (options & PagePurgeOptions.ForceRecursiveLinkUpdate) == PagePurgeOptions.ForceRecursiveLinkUpdate,
+                                action = "purge",
+                                titles = titles,
+                                pageids = ids,
+                                forcelinkupdate = (options & PagePurgeOptions.ForceLinkUpdate) == PagePurgeOptions.ForceLinkUpdate,
+                                forcerecursivelinkupdate = (options & PagePurgeOptions.ForceRecursiveLinkUpdate) == PagePurgeOptions.ForceRecursiveLinkUpdate,
                             }), cancellationToken);
                             // Now check whether the pages have been purged successfully.
                             foreach (var jitem in jresult["purge"])
@@ -336,14 +340,17 @@ namespace WikiClientLibrary
                 throw new ArgumentNullException(nameof(recentChangeId), "Either recentChangeId or revisionId should be set.");
             //if (recentChangeId != null && revisionId != null)
             //    throw new ArgumentException("Either recentChangeId or revisionId should be set, not both.");
-            if (revisionId != null && site.SiteInfo.Version < new Version("1.22"))
+            if (revisionId != null && site.SiteInfo.Version < new MediaWikiVersion(1, 22))
                 throw new InvalidOperationException("Current version of site does not support patrol by RevisionId.");
             var token = await site.GetTokenAsync("patrol");
             try
             {
                 var jresult = await site.InvokeMediaWikiApiAsync(new MediaWikiFormRequestMessage(new
                 {
-                    action = "patrol", rcid = recentChangeId, revid = revisionId, token = token,
+                    action = "patrol",
+                    rcid = recentChangeId,
+                    revid = revisionId,
+                    token = token,
                 }), cancellationToken);
                 if (recentChangeId != null) Debug.Assert((int)jresult["patrol"]["rcid"] == recentChangeId.Value);
             }
@@ -371,8 +378,8 @@ namespace WikiClientLibrary
         public static async Task<JObject> QueryParameterInformationAsync(WikiSite site, string moduleName)
         {
             if (site == null) throw new ArgumentNullException(nameof(site));
-            var pa = new Dictionary<string, object> {{"action", "paraminfo"}};
-            if (site.SiteInfo.Version < new Version("1.25"))
+            var pa = new Dictionary<string, object> { { "action", "paraminfo" } };
+            if (site.SiteInfo.Version < new MediaWikiVersion(1, 25))
             {
                 var parts = moduleName.Split('+');
                 switch (parts[0])

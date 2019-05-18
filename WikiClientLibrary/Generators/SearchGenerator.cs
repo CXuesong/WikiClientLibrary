@@ -90,7 +90,7 @@ namespace WikiClientLibrary.Generators
                 {"srbackend", BackendName}
             };
             // Include redirect pages in the search. From 1.23 onwards, redirects are always included. (Removed in 1.23)
-            if (Site.SiteInfo.Version < new Version(1, 23))
+            if (Site.SiteInfo.Version < new MediaWikiVersion(1, 23))
                 dict["srredirects"] = true;
             switch (MatchingField)
             {

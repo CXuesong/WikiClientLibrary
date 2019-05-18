@@ -51,7 +51,7 @@ namespace WikiClientLibrary.Files
     public class FileKeyUploadSource : WikiUploadSource
     {
 
-        private static readonly Version v118 = new Version(1, 18);
+        private static readonly MediaWikiVersion v118 = new MediaWikiVersion(1, 18);
 
         /// <param name="fileKey">File key (or session key before MW1.17) of the previously stashed result.</param>
         public FileKeyUploadSource(string fileKey)

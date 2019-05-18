@@ -30,9 +30,9 @@ namespace WikiClientLibrary.Infrastructures
             "import"
         };
 
-        private static readonly Version v117 = new Version("1.17"),
-            v120 = new Version("1.20"),
-            v124 = new Version("1.24");
+        private static readonly MediaWikiVersion v117 = new MediaWikiVersion(1, 17),
+            v120 = new MediaWikiVersion(1, 20),
+            v124 = new MediaWikiVersion(1, 24);
 
         public TokensManager(WikiSite site)
         {
