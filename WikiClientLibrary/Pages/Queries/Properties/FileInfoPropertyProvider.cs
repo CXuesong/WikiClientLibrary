@@ -16,9 +16,8 @@ namespace WikiClientLibrary.Pages.Queries.Properties
     /// (<a href="https://www.mediawiki.org/wiki/API:Fileinfo">mw:API:Fileinfo</a>, MediaWiki 1.13+)
     /// </summary>
     public class FileInfoPropertyProvider : WikiPagePropertyProvider<FileInfoPropertyGroup>
-    {
-        /// <inheritdoc />
-        public override IEnumerable<KeyValuePair<string, object>> EnumParameters()
+    {        /// <inheritdoc />
+        public override IEnumerable<KeyValuePair<string, object>> EnumParameters(MediaWikiVersion version)
         {
             return new OrderedKeyValuePairs<string, object>
             {

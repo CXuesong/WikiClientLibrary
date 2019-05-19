@@ -14,21 +14,24 @@ namespace WikiClientLibrary.Pages.Queries.Properties
     /// <seealso cref="WikiPage.RefreshAsync(IWikiPageQueryProvider)"/>
     public interface IWikiPagePropertyProvider<out T> where T : IWikiPagePropertyGroup
     {
+
         /// <summary>
         /// Enumerates the MediaWiki API request parameters for <c>action=query</c> request.
         /// </summary>
-        IEnumerable<KeyValuePair<string, object>> EnumParameters();
+        /// <param name="version">MediaWiki API version. Use <seealso cref="MediaWikiVersion.Zero"/> for unknown version or compatible mode.</param>
+        IEnumerable<KeyValuePair<string, object>> EnumParameters(MediaWikiVersion version);
 
         /// <summary>
         /// Gets the maximum allowed count of titles in each MediaWiki API request.
         /// </summary>
+        /// <param name="version">MediaWiki API version. Use <seealso cref="MediaWikiVersion.Zero"/> for unknown version or compatible mode.</param>
         /// <param name="apiHighLimits">Whether the account has <c>api-highlimits</c> right.</param>
         /// <returns>
         /// The maximum allowed count of titles in each MediaWiki API request.
         /// This applies to the values of <c>ids=</c> and <c>titles=</c> parameters
         /// for <c>action=query</c> request.
         /// </returns>
-        int GetMaxPaginationSize(bool apiHighLimits);
+        int GetMaxPaginationSize(MediaWikiVersion version, bool apiHighLimits);
 
         /// <summary>
         /// Gets the property name, when this property is needed to be included in the <c>prop=</c> parameter
@@ -55,11 +58,13 @@ namespace WikiClientLibrary.Pages.Queries.Properties
     /// <typeparam name="T">The type of property group that will be attached to every processed <see cref="T:WikiClientLibrary.Pages.WikiPage" />.</typeparam>
     public abstract class WikiPagePropertyProvider<T> : IWikiPagePropertyProvider<T> where T : IWikiPagePropertyGroup
     {
-        /// <inheritdoc />
-        public abstract IEnumerable<KeyValuePair<string, object>> EnumParameters();
+
 
         /// <inheritdoc />
-        public virtual int GetMaxPaginationSize(bool apiHighLimits)
+        public abstract IEnumerable<KeyValuePair<string, object>> EnumParameters(MediaWikiVersion version);
+
+        /// <inheritdoc />
+        public virtual int GetMaxPaginationSize(MediaWikiVersion version, bool apiHighLimits)
         {
             return apiHighLimits ? 500 : 5000;
         }

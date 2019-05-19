@@ -20,10 +20,8 @@ namespace WikiClientLibrary.Pages.Queries.Properties
         /// <summary>
         /// Only list these categories. Useful for checking whether a certain page is in a certain category.
         /// </summary>
-        public IEnumerable<string> CategorySelection { get; set; }
-
-        /// <inheritdoc />
-        public override IEnumerable<KeyValuePair<string, object>> EnumParameters()
+        public IEnumerable<string> CategorySelection { get; set; }        /// <inheritdoc />
+        public override IEnumerable<KeyValuePair<string, object>> EnumParameters(MediaWikiVersion version)
         {
             var p = new OrderedKeyValuePairs<string, object>
             {

@@ -103,7 +103,7 @@ namespace WikiClientLibrary.Generators.Primitive
         /// <param name="options">Options when querying for the pages.</param>
         public virtual IAsyncEnumerable<WikiPage> EnumPagesAsync(IWikiPageQueryProvider options)
         {
-            var queryParams = options.EnumParameters().ToDictionary();
+            var queryParams = options.EnumParameters(Site.SiteInfo.Version).ToDictionary();
             queryParams.Add("generator", GeneratorName);
             foreach (var v in EnumGeneratorParameters())
                 queryParams[v.Key] = v.Value;

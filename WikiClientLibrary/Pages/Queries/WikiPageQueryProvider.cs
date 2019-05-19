@@ -20,18 +20,20 @@ namespace WikiClientLibrary.Pages.Queries
         /// <summary>
         /// Enumerates the MediaWiki API request parameters for <c>action=query</c> request.
         /// </summary>
-        IEnumerable<KeyValuePair<string, object>> EnumParameters();
+        /// <param name="version"></param>
+        IEnumerable<KeyValuePair<string, object>> EnumParameters(MediaWikiVersion version);
 
         /// <summary>
         /// Gets the maximum allowed count of titles in each MediaWiki API request.
         /// </summary>
+        /// <param name="version">MediaWiki API version. Use <seealso cref="MediaWikiVersion.Zero"/> for unknown version or compatible mode.</param>
         /// <param name="apiHighLimits">Whether the account has <c>api-highlimits</c> right.</param>
         /// <returns>
         /// The maximum allowed count of titles in each MediaWiki API request.
         /// This applies to the values of <c>ids=</c> and <c>titles=</c> parameters
         /// for <c>action=query</c> request.
         /// </returns>
-        int GetMaxPaginationSize(bool apiHighLimits);
+        int GetMaxPaginationSize(MediaWikiVersion version, bool apiHighLimits);
 
         /// <summary>
         /// Parses one or more property groups from the given<c>action=query</c> JSON response.
@@ -98,8 +100,9 @@ namespace WikiClientLibrary.Pages.Queries
             set { _Properties = value; }
         }
 
+        /// <param name="version"></param>
         /// <inheritdoc />
-        public virtual IEnumerable<KeyValuePair<string, object>> EnumParameters()
+        public virtual IEnumerable<KeyValuePair<string, object>> EnumParameters(MediaWikiVersion version)
         {
             var propBuilder = new StringBuilder();
             var p = new OrderedKeyValuePairs<string, object>
@@ -117,7 +120,7 @@ namespace WikiClientLibrary.Pages.Queries
                         if (propBuilder.Length > 0) propBuilder.Append('|');
                         propBuilder.Append(prop.PropertyName);
                     }
-                    p.AddRange(prop.EnumParameters());
+                    p.AddRange(prop.EnumParameters(version));
                 }
             }
             p.Add("prop", propBuilder.ToString());
@@ -125,7 +128,7 @@ namespace WikiClientLibrary.Pages.Queries
         }
 
         /// <inheritdoc />
-        public virtual int GetMaxPaginationSize(bool apiHighLimits)
+        public virtual int GetMaxPaginationSize(MediaWikiVersion version, bool apiHighLimits)
         {
             int limit;
             limit = apiHighLimits ? 500 : 5000;
@@ -133,7 +136,7 @@ namespace WikiClientLibrary.Pages.Queries
             {
                 foreach (var prop in _Properties)
                 {
-                    limit = Math.Min(limit, prop.GetMaxPaginationSize(apiHighLimits));
+                    limit = Math.Min(limit, prop.GetMaxPaginationSize(version, apiHighLimits));
                 }
             }
             return limit;
@@ -159,16 +162,17 @@ namespace WikiClientLibrary.Pages.Queries
             this.underlyingProvider = underlyingProvider ?? throw new ArgumentNullException(nameof(underlyingProvider));
         }
 
+        /// <param name="version"></param>
         /// <inheritdoc />
-        public IEnumerable<KeyValuePair<string, object>> EnumParameters()
+        public IEnumerable<KeyValuePair<string, object>> EnumParameters(MediaWikiVersion version)
         {
-            return underlyingProvider.EnumParameters();
+            return underlyingProvider.EnumParameters(version);
         }
 
         /// <inheritdoc />
-        public int GetMaxPaginationSize(bool apiHighLimits)
+        public int GetMaxPaginationSize(MediaWikiVersion version, bool apiHighLimits)
         {
-            return underlyingProvider.GetMaxPaginationSize(apiHighLimits);
+            return underlyingProvider.GetMaxPaginationSize(version, apiHighLimits);
         }
 
         /// <inheritdoc />

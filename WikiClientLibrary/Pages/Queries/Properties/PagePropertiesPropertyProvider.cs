@@ -9,9 +9,8 @@ using WikiClientLibrary.Infrastructures;
 namespace WikiClientLibrary.Pages.Queries.Properties
 {
     public class PagePropertiesPropertyProvider : WikiPagePropertyProvider<PagePropertiesPropertyGroup>
-    {
-        /// <inheritdoc />
-        public override IEnumerable<KeyValuePair<string, object>> EnumParameters()
+    {        /// <inheritdoc />
+        public override IEnumerable<KeyValuePair<string, object>> EnumParameters(MediaWikiVersion version)
         {
             return new OrderedKeyValuePairs<string, object>
             {

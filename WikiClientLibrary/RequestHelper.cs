@@ -145,8 +145,8 @@ namespace WikiClientLibrary
             foreach (var sitePages in pages.GroupBy(p => new WikiPageGroupKey(p)))
             {
                 var site = sitePages.Key.Site;
-                var queryParams = options.EnumParameters().ToDictionary();
-                var titleLimit = options.GetMaxPaginationSize(site.AccountInfo.HasRight(UserRights.ApiHighLimits));
+                var queryParams = options.EnumParameters(site.SiteInfo.Version).ToDictionary();
+                var titleLimit = options.GetMaxPaginationSize(site.SiteInfo.Version, site.AccountInfo.HasRight(UserRights.ApiHighLimits));
                 using (site.BeginActionScope(sitePages, options))
                 {
                     foreach (var partition in sitePages.Partition(titleLimit))
@@ -223,8 +223,8 @@ namespace WikiClientLibrary
         public static IAsyncEnumerable<Revision> FetchRevisionsAsync(WikiSite site, IEnumerable<int> revIds, IWikiPageQueryProvider options, CancellationToken cancellationToken)
         {
             if (revIds == null) throw new ArgumentNullException(nameof(revIds));
-            var queryParams = options.EnumParameters().ToDictionary();
-            var titleLimit = options.GetMaxPaginationSize(site.AccountInfo.HasRight(UserRights.ApiHighLimits));
+            var queryParams = options.EnumParameters(site.SiteInfo.Version).ToDictionary();
+            var titleLimit = options.GetMaxPaginationSize(site.SiteInfo.Version, site.AccountInfo.HasRight(UserRights.ApiHighLimits));
             return AsyncEnumerableFactory.FromAsyncGenerator<Revision>(async sink =>
             {
                 // Page ID --> Page Stub

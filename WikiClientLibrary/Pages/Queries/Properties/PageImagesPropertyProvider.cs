@@ -26,13 +26,11 @@ namespace WikiClientLibrary.Pages.Queries.Properties
         public int ThumbnailSize { get; set; } = 50;
 
         /// <inheritdoc />
-        public override int GetMaxPaginationSize(bool apiHighLimits)
+        public override int GetMaxPaginationSize(MediaWikiVersion version, bool apiHighLimits)
         {
             return apiHighLimits ? 100 : 50;
-        }
-
-        /// <inheritdoc />
-        public override IEnumerable<KeyValuePair<string, object>> EnumParameters()
+        }        /// <inheritdoc />
+        public override IEnumerable<KeyValuePair<string, object>> EnumParameters(MediaWikiVersion version)
         {
             var p = new OrderedKeyValuePairs<string, object>();
             if (QueryOriginalImage && ThumbnailSize > 0)

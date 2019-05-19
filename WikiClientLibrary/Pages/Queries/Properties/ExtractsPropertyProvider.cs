@@ -41,10 +41,8 @@ namespace WikiClientLibrary.Pages.Queries.Properties
         /// <summary>
         /// Return extracts as plain text instead of limited HTML.
         /// </summary>
-        public bool AsPlainText { get; set; }
-
-        /// <inheritdoc />
-        public override IEnumerable<KeyValuePair<string, object>> EnumParameters()
+        public bool AsPlainText { get; set; }        /// <inheritdoc />
+        public override IEnumerable<KeyValuePair<string, object>> EnumParameters(MediaWikiVersion version)
         {
             var p = new OrderedKeyValuePairs<string, object>
             {
@@ -59,7 +57,7 @@ namespace WikiClientLibrary.Pages.Queries.Properties
         }
 
         /// <inheritdoc />
-        public override int GetMaxPaginationSize(bool apiHighLimits)
+        public override int GetMaxPaginationSize(MediaWikiVersion version, bool apiHighLimits)
         {
             return apiHighLimits ? 10 : 20;
         }

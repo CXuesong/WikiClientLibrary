@@ -38,10 +38,8 @@ namespace WikiClientLibrary.Pages.Queries.Properties
         /// </summary>
         /// <remarks>A page title, or <c>null</c> if no distance querying is required.</remarks>
         /// <seealso cref="QueryDistanceFromPoint"/>
-        public string QueryDistanceFromPage { get; set; }
-
-        /// <inheritdoc />
-        public override IEnumerable<KeyValuePair<string, object>> EnumParameters()
+        public string QueryDistanceFromPage { get; set; }        /// <inheritdoc />
+        public override IEnumerable<KeyValuePair<string, object>> EnumParameters(MediaWikiVersion version)
         {
             var p = new OrderedKeyValuePairs<string, object>
             {

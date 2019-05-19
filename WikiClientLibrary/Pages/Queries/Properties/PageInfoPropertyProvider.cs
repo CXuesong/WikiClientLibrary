@@ -14,10 +14,8 @@ namespace WikiClientLibrary.Pages.Queries.Properties
             new OrderedKeyValuePairs<string, object>
             {
                 {"inprop", "protection"}
-            });
-
-        /// <inheritdoc />
-        public override IEnumerable<KeyValuePair<string, object>> EnumParameters()
+            });        /// <inheritdoc />
+        public override IEnumerable<KeyValuePair<string, object>> EnumParameters(MediaWikiVersion version)
         {
             return fixedProp;
         }
