@@ -100,14 +100,8 @@
       <summary>Full title of the board page.</summary>
     </member>
     <member name="M:WikiClientLibrary.Flow.Board.ToString">
-      <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>M:WikiClientLibrary.Flow.Board.ToString</parameter>
-          </include>
-        </markup>
-      </summary>
+      <summary>Returns a string that represents the current object.</summary>
+      <returns>A string that represents the current object.</returns>
     </member>
     <member name="T:WikiClientLibrary.Flow.FlowLink">
       <summary>
@@ -346,14 +340,8 @@
             </summary>
     </member>
     <member name="M:WikiClientLibrary.Flow.Post.ToString">
-      <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>M:WikiClientLibrary.Flow.Post.ToString</parameter>
-          </include>
-        </markup>
-      </summary>
+      <summary>Returns a string that represents the current object.</summary>
+      <returns>A string that represents the current object.</returns>
     </member>
     <member name="P:WikiClientLibrary.Flow.Post.WorkflowId">
       <summary>

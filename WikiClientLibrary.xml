@@ -361,52 +361,18 @@
             </summary>
     </member>
     <member name="M:WikiClientLibrary.GeoCoordinate.Equals(System.Object)">
-      <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>M:WikiClientLibrary.GeoCoordinate.Equals(System.Object)</parameter>
-          </include>
-        </markup>
-      </summary>
-      <param name="obj">
-        <markup>
-          <include item="SMCMissingParamTag">
-            <parameter>param</parameter>
-            <parameter>obj</parameter>
-            <parameter>M:WikiClientLibrary.GeoCoordinate.Equals(System.Object)</parameter>
-          </include>
-        </markup>
-      </param>
+      <summary>Indicates whether this instance and a specified object are equal.</summary>
+      <param name="obj">The object to compare with the current instance. </param>
+      <returns>true if <paramref name="obj" /> and this instance are the same type and represent the same value; otherwise, false. </returns>
     </member>
     <member name="M:WikiClientLibrary.GeoCoordinate.Equals(WikiClientLibrary.GeoCoordinate)">
-      <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>M:WikiClientLibrary.GeoCoordinate.Equals(WikiClientLibrary.GeoCoordinate)</parameter>
-          </include>
-        </markup>
-      </summary>
-      <param name="other">
-        <markup>
-          <include item="SMCMissingParamTag">
-            <parameter>param</parameter>
-            <parameter>other</parameter>
-            <parameter>M:WikiClientLibrary.GeoCoordinate.Equals(WikiClientLibrary.GeoCoordinate)</parameter>
-          </include>
-        </markup>
-      </param>
+      <summary>Indicates whether the current object is equal to another object of the same type.</summary>
+      <param name="other">An object to compare with this object.</param>
+      <returns>true if the current object is equal to the <paramref name="other" /> parameter; otherwise, false.</returns>
     </member>
     <member name="M:WikiClientLibrary.GeoCoordinate.GetHashCode">
-      <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>M:WikiClientLibrary.GeoCoordinate.GetHashCode</parameter>
-          </include>
-        </markup>
-      </summary>
+      <summary>Returns the hash code for this instance.</summary>
+      <returns>A 32-bit signed integer that is the hash code for this instance.</returns>
     </member>
     <member name="P:WikiClientLibrary.GeoCoordinate.Globe">
       <summary>
@@ -492,14 +458,8 @@
       </param>
     </member>
     <member name="M:WikiClientLibrary.GeoCoordinate.ToString">
-      <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>M:WikiClientLibrary.GeoCoordinate.ToString</parameter>
-          </include>
-        </markup>
-      </summary>
+      <summary>Returns the fully qualified type name of this instance.</summary>
+      <returns>A <see cref="T:System.String" /> containing a fully qualified type name.</returns>
     </member>
     <member name="T:WikiClientLibrary.InvalidActionException">
       <summary>
@@ -551,6 +511,402 @@
     <member name="P:WikiClientLibrary.IWikiClientLoggable.Logger">
       <summary>
             Replaces the logger factory of the specified instance.
+            </summary>
+    </member>
+    <member name="T:WikiClientLibrary.MediaWikiDevChannel">
+      <summary>
+            MediaWiki development channels.
+            </summary>
+    </member>
+    <member name="F:WikiClientLibrary.MediaWikiDevChannel.None">
+      <summary>
+            Official release. No version suffix.
+            </summary>
+    </member>
+    <member name="F:WikiClientLibrary.MediaWikiDevChannel.Wmf">
+      <summary>
+            WMF weekly release. Version suffix is <c>-wmf</c>.
+            </summary>
+    </member>
+    <member name="F:WikiClientLibrary.MediaWikiDevChannel.Alpha">
+      <summary>
+            Alpha release. Version suffix is <c>-alpha</c>.
+            </summary>
+    </member>
+    <member name="F:WikiClientLibrary.MediaWikiDevChannel.Beta">
+      <summary>
+            Beta release. Version suffix is <c>-beta</c>.
+            </summary>
+    </member>
+    <member name="F:WikiClientLibrary.MediaWikiDevChannel.RC">
+      <summary>
+            Release candidate. Version suffix is <c>-rc</c>.
+            </summary>
+    </member>
+    <member name="T:WikiClientLibrary.MediaWikiVersion">
+      <summary>
+            Represents a MediaWiki core version number.
+            </summary>
+    </member>
+    <member name="M:WikiClientLibrary.MediaWikiVersion.#ctor(System.Int32,System.Int32)">
+      <summary>
+            Initializes a new <seealso cref="T:WikiClientLibrary.MediaWikiVersion" /> instance with major and minor versions.
+            </summary>
+      <param name="major">Major version. Should be between 0 and 32767.</param>
+      <param name="minor">Minor version. Should be between 0 and 32767.</param>
+      <param name="revision">Revision number. Should be between 0 and 32767.</param>
+      <param name="devChannel">Channel of development.</param>
+      <param name="devVersion">DevVersion. Should be between 0 and 4095.</param>
+      <exception cref="T:System.ArgumentOutOfRangeException">Any one of the version numbers is out of range.</exception>
+      <exception cref="T:System.ArgumentException">
+        <paramref name="devChannel" /> is <see cref="F:WikiClientLibrary.MediaWikiDevChannel.None" />,
+            but <paramref name="devVersion" /> is non-zero.
+            </exception>
+    </member>
+    <member name="M:WikiClientLibrary.MediaWikiVersion.#ctor(System.Int32,System.Int32,System.Int32)">
+      <summary>
+            Initializes a new <seealso cref="T:WikiClientLibrary.MediaWikiVersion" /> instance with major, minor, revision versions.
+            </summary>
+      <param name="major">Major version. Should be between 0 and 32767.</param>
+      <param name="minor">Minor version. Should be between 0 and 32767.</param>
+      <param name="revision">Revision number. Should be between 0 and 32767.</param>
+      <param name="devChannel">Channel of development.</param>
+      <param name="devVersion">DevVersion. Should be between 0 and 4095.</param>
+      <exception cref="T:System.ArgumentOutOfRangeException">Any one of the version numbers is out of range.</exception>
+      <exception cref="T:System.ArgumentException">
+        <paramref name="devChannel" /> is <see cref="F:WikiClientLibrary.MediaWikiDevChannel.None" />,
+            but <paramref name="devVersion" /> is non-zero.
+            </exception>
+    </member>
+    <member name="M:WikiClientLibrary.MediaWikiVersion.#ctor(System.Int32,System.Int32,System.Int32,WikiClientLibrary.MediaWikiDevChannel)">
+      <summary>
+            Initializes a new <seealso cref="T:WikiClientLibrary.MediaWikiVersion" /> instance with major, minor, revision versions and
+            dev-channel.
+            </summary>
+      <param name="major">Major version. Should be between 0 and 32767.</param>
+      <param name="minor">Minor version. Should be between 0 and 32767.</param>
+      <param name="revision">Revision number. Should be between 0 and 32767.</param>
+      <param name="devChannel">Channel of development.</param>
+      <param name="devVersion">DevVersion. Should be between 0 and 4095.</param>
+      <exception cref="T:System.ArgumentOutOfRangeException">Any one of the version numbers is out of range.</exception>
+      <exception cref="T:System.ArgumentException">
+        <paramref name="devChannel" /> is <see cref="F:WikiClientLibrary.MediaWikiDevChannel.None" />,
+            but <paramref name="devVersion" /> is non-zero.
+            </exception>
+    </member>
+    <member name="M:WikiClientLibrary.MediaWikiVersion.#ctor(System.Int32,System.Int32,System.Int32,WikiClientLibrary.MediaWikiDevChannel,System.Int32)">
+      <summary>
+            Initializes a new <seealso cref="T:WikiClientLibrary.MediaWikiVersion" /> instance with major, minor, revision versions and
+            dev-version.
+            </summary>
+      <param name="major">Major version. Should be between 0 and 32767.</param>
+      <param name="minor">Minor version. Should be between 0 and 32767.</param>
+      <param name="revision">Revision number. Should be between 0 and 32767.</param>
+      <param name="devChannel">Channel of development.</param>
+      <param name="devVersion">DevVersion. Should be between 0 and 4095.</param>
+      <exception cref="T:System.ArgumentOutOfRangeException">Any one of the version numbers is out of range.</exception>
+      <exception cref="T:System.ArgumentException">
+        <paramref name="devChannel" /> is <see cref="F:WikiClientLibrary.MediaWikiDevChannel.None" />,
+            but <paramref name="devVersion" /> is non-zero.
+            </exception>
+    </member>
+    <member name="M:WikiClientLibrary.MediaWikiVersion.#ctor(System.Int32,System.Int32,WikiClientLibrary.MediaWikiDevChannel,System.Int32)">
+      <summary>
+            Initializes a new <seealso cref="T:WikiClientLibrary.MediaWikiVersion" /> instance with major, minor versions and
+            dev-version.
+            </summary>
+      <param name="major">Major version. Should be between 0 and 32767.</param>
+      <param name="minor">Minor version. Should be between 0 and 32767.</param>
+      <param name="revision">Revision number. Should be between 0 and 32767.</param>
+      <param name="devChannel">Channel of development.</param>
+      <param name="devVersion">DevVersion. Should be between 0 and 4095.</param>
+      <exception cref="T:System.ArgumentOutOfRangeException">Any one of the version numbers is out of range.</exception>
+      <exception cref="T:System.ArgumentException">
+        <paramref name="devChannel" /> is <see cref="F:WikiClientLibrary.MediaWikiDevChannel.None" />,
+            but <paramref name="devVersion" /> is non-zero.
+            </exception>
+    </member>
+    <member name="M:WikiClientLibrary.MediaWikiVersion.CompareTo(System.Object)">
+      <summary>Compares the current instance with another object of the same type and returns an integer that indicates whether the current instance precedes, follows, or occurs in the same position in the sort order as the other object.</summary>
+      <param name="obj">An object to compare with this instance. </param>
+      <returns>A value that indicates the relative order of the objects being compared. The return value has these meanings: Value Meaning Less than zero This instance precedes <paramref name="obj" /> in the sort order. Zero This instance occurs in the same position in the sort order as <paramref name="obj" />. Greater than zero This instance follows <paramref name="obj" /> in the sort order. </returns>
+      <exception cref="T:System.ArgumentException">
+        <paramref name="obj" /> is not the same type as this instance. </exception>
+    </member>
+    <member name="M:WikiClientLibrary.MediaWikiVersion.CompareTo(WikiClientLibrary.MediaWikiVersion)">
+      <summary>Compares the current instance with another object of the same type and returns an integer that indicates whether the current instance precedes, follows, or occurs in the same position in the sort order as the other object. </summary>
+      <param name="other">An object to compare with this instance. </param>
+      <returns>A value that indicates the relative order of the objects being compared. The return value has these meanings: Value Meaning Less than zero This instance precedes <paramref name="other" /> in the sort order.  Zero This instance occurs in the same position in the sort order as <paramref name="other" />. Greater than zero This instance follows <paramref name="other" /> in the sort order. </returns>
+    </member>
+    <member name="P:WikiClientLibrary.MediaWikiVersion.DevChannel">
+      <summary>
+            Development channel.
+            </summary>
+    </member>
+    <member name="P:WikiClientLibrary.MediaWikiVersion.DevVersion">
+      <summary>
+            Version in development channel.
+            </summary>
+    </member>
+    <member name="M:WikiClientLibrary.MediaWikiVersion.Equals(System.Object)">
+      <summary>Indicates whether this instance and a specified object are equal.</summary>
+      <param name="obj">The object to compare with the current instance. </param>
+      <returns>true if <paramref name="obj" /> and this instance are the same type and represent the same value; otherwise, false. </returns>
+    </member>
+    <member name="M:WikiClientLibrary.MediaWikiVersion.Equals(WikiClientLibrary.MediaWikiVersion)">
+      <summary>Indicates whether the current object is equal to another object of the same type.</summary>
+      <param name="other">An object to compare with this object.</param>
+      <returns>true if the current object is equal to the <paramref name="other" /> parameter; otherwise, false.</returns>
+    </member>
+    <member name="M:WikiClientLibrary.MediaWikiVersion.GetHashCode">
+      <summary>Returns the hash code for this instance.</summary>
+      <returns>A 32-bit signed integer that is the hash code for this instance.</returns>
+    </member>
+    <member name="P:WikiClientLibrary.MediaWikiVersion.Major">
+      <summary>
+            Major version.
+            </summary>
+    </member>
+    <member name="P:WikiClientLibrary.MediaWikiVersion.Minor">
+      <summary>
+            Minor version.
+            </summary>
+    </member>
+    <member name="M:WikiClientLibrary.MediaWikiVersion.op_Equality(WikiClientLibrary.MediaWikiVersion,WikiClientLibrary.MediaWikiVersion)">
+      <summary>
+        <markup>
+          <include item="SMCMissingTag">
+            <parameter>summary</parameter>
+            <parameter>M:WikiClientLibrary.MediaWikiVersion.op_Equality(WikiClientLibrary.MediaWikiVersion,WikiClientLibrary.MediaWikiVersion)</parameter>
+          </include>
+        </markup>
+      </summary>
+      <param name="left">
+        <markup>
+          <include item="SMCMissingParamTag">
+            <parameter>param</parameter>
+            <parameter>left</parameter>
+            <parameter>M:WikiClientLibrary.MediaWikiVersion.op_Equality(WikiClientLibrary.MediaWikiVersion,WikiClientLibrary.MediaWikiVersion)</parameter>
+          </include>
+        </markup>
+      </param>
+      <param name="right">
+        <markup>
+          <include item="SMCMissingParamTag">
+            <parameter>param</parameter>
+            <parameter>right</parameter>
+            <parameter>M:WikiClientLibrary.MediaWikiVersion.op_Equality(WikiClientLibrary.MediaWikiVersion,WikiClientLibrary.MediaWikiVersion)</parameter>
+          </include>
+        </markup>
+      </param>
+    </member>
+    <member name="M:WikiClientLibrary.MediaWikiVersion.op_GreaterThan(WikiClientLibrary.MediaWikiVersion,WikiClientLibrary.MediaWikiVersion)">
+      <summary>
+        <markup>
+          <include item="SMCMissingTag">
+            <parameter>summary</parameter>
+            <parameter>M:WikiClientLibrary.MediaWikiVersion.op_GreaterThan(WikiClientLibrary.MediaWikiVersion,WikiClientLibrary.MediaWikiVersion)</parameter>
+          </include>
+        </markup>
+      </summary>
+      <param name="left">
+        <markup>
+          <include item="SMCMissingParamTag">
+            <parameter>param</parameter>
+            <parameter>left</parameter>
+            <parameter>M:WikiClientLibrary.MediaWikiVersion.op_GreaterThan(WikiClientLibrary.MediaWikiVersion,WikiClientLibrary.MediaWikiVersion)</parameter>
+          </include>
+        </markup>
+      </param>
+      <param name="right">
+        <markup>
+          <include item="SMCMissingParamTag">
+            <parameter>param</parameter>
+            <parameter>right</parameter>
+            <parameter>M:WikiClientLibrary.MediaWikiVersion.op_GreaterThan(WikiClientLibrary.MediaWikiVersion,WikiClientLibrary.MediaWikiVersion)</parameter>
+          </include>
+        </markup>
+      </param>
+    </member>
+    <member name="M:WikiClientLibrary.MediaWikiVersion.op_GreaterThanOrEqual(WikiClientLibrary.MediaWikiVersion,WikiClientLibrary.MediaWikiVersion)">
+      <summary>
+        <markup>
+          <include item="SMCMissingTag">
+            <parameter>summary</parameter>
+            <parameter>M:WikiClientLibrary.MediaWikiVersion.op_GreaterThanOrEqual(WikiClientLibrary.MediaWikiVersion,WikiClientLibrary.MediaWikiVersion)</parameter>
+          </include>
+        </markup>
+      </summary>
+      <param name="left">
+        <markup>
+          <include item="SMCMissingParamTag">
+            <parameter>param</parameter>
+            <parameter>left</parameter>
+            <parameter>M:WikiClientLibrary.MediaWikiVersion.op_GreaterThanOrEqual(WikiClientLibrary.MediaWikiVersion,WikiClientLibrary.MediaWikiVersion)</parameter>
+          </include>
+        </markup>
+      </param>
+      <param name="right">
+        <markup>
+          <include item="SMCMissingParamTag">
+            <parameter>param</parameter>
+            <parameter>right</parameter>
+            <parameter>M:WikiClientLibrary.MediaWikiVersion.op_GreaterThanOrEqual(WikiClientLibrary.MediaWikiVersion,WikiClientLibrary.MediaWikiVersion)</parameter>
+          </include>
+        </markup>
+      </param>
+    </member>
+    <member name="M:WikiClientLibrary.MediaWikiVersion.op_Inequality(WikiClientLibrary.MediaWikiVersion,WikiClientLibrary.MediaWikiVersion)">
+      <summary>
+        <markup>
+          <include item="SMCMissingTag">
+            <parameter>summary</parameter>
+            <parameter>M:WikiClientLibrary.MediaWikiVersion.op_Inequality(WikiClientLibrary.MediaWikiVersion,WikiClientLibrary.MediaWikiVersion)</parameter>
+          </include>
+        </markup>
+      </summary>
+      <param name="left">
+        <markup>
+          <include item="SMCMissingParamTag">
+            <parameter>param</parameter>
+            <parameter>left</parameter>
+            <parameter>M:WikiClientLibrary.MediaWikiVersion.op_Inequality(WikiClientLibrary.MediaWikiVersion,WikiClientLibrary.MediaWikiVersion)</parameter>
+          </include>
+        </markup>
+      </param>
+      <param name="right">
+        <markup>
+          <include item="SMCMissingParamTag">
+            <parameter>param</parameter>
+            <parameter>right</parameter>
+            <parameter>M:WikiClientLibrary.MediaWikiVersion.op_Inequality(WikiClientLibrary.MediaWikiVersion,WikiClientLibrary.MediaWikiVersion)</parameter>
+          </include>
+        </markup>
+      </param>
+    </member>
+    <member name="M:WikiClientLibrary.MediaWikiVersion.op_LessThan(WikiClientLibrary.MediaWikiVersion,WikiClientLibrary.MediaWikiVersion)">
+      <summary>
+        <markup>
+          <include item="SMCMissingTag">
+            <parameter>summary</parameter>
+            <parameter>M:WikiClientLibrary.MediaWikiVersion.op_LessThan(WikiClientLibrary.MediaWikiVersion,WikiClientLibrary.MediaWikiVersion)</parameter>
+          </include>
+        </markup>
+      </summary>
+      <param name="left">
+        <markup>
+          <include item="SMCMissingParamTag">
+            <parameter>param</parameter>
+            <parameter>left</parameter>
+            <parameter>M:WikiClientLibrary.MediaWikiVersion.op_LessThan(WikiClientLibrary.MediaWikiVersion,WikiClientLibrary.MediaWikiVersion)</parameter>
+          </include>
+        </markup>
+      </param>
+      <param name="right">
+        <markup>
+          <include item="SMCMissingParamTag">
+            <parameter>param</parameter>
+            <parameter>right</parameter>
+            <parameter>M:WikiClientLibrary.MediaWikiVersion.op_LessThan(WikiClientLibrary.MediaWikiVersion,WikiClientLibrary.MediaWikiVersion)</parameter>
+          </include>
+        </markup>
+      </param>
+    </member>
+    <member name="M:WikiClientLibrary.MediaWikiVersion.op_LessThanOrEqual(WikiClientLibrary.MediaWikiVersion,WikiClientLibrary.MediaWikiVersion)">
+      <summary>
+        <markup>
+          <include item="SMCMissingTag">
+            <parameter>summary</parameter>
+            <parameter>M:WikiClientLibrary.MediaWikiVersion.op_LessThanOrEqual(WikiClientLibrary.MediaWikiVersion,WikiClientLibrary.MediaWikiVersion)</parameter>
+          </include>
+        </markup>
+      </summary>
+      <param name="left">
+        <markup>
+          <include item="SMCMissingParamTag">
+            <parameter>param</parameter>
+            <parameter>left</parameter>
+            <parameter>M:WikiClientLibrary.MediaWikiVersion.op_LessThanOrEqual(WikiClientLibrary.MediaWikiVersion,WikiClientLibrary.MediaWikiVersion)</parameter>
+          </include>
+        </markup>
+      </param>
+      <param name="right">
+        <markup>
+          <include item="SMCMissingParamTag">
+            <parameter>param</parameter>
+            <parameter>right</parameter>
+            <parameter>M:WikiClientLibrary.MediaWikiVersion.op_LessThanOrEqual(WikiClientLibrary.MediaWikiVersion,WikiClientLibrary.MediaWikiVersion)</parameter>
+          </include>
+        </markup>
+      </param>
+    </member>
+    <member name="M:WikiClientLibrary.MediaWikiVersion.Parse(System.String)">
+      <summary>
+            Parses a MediaWiki core version number from its string representation.
+            </summary>
+      <param name="version">The version to be parsed.</param>
+      <returns>The parsed version.</returns>
+      <exception cref="T:System.ArgumentException">
+        <paramref name="version" /> is not a valid version expression, such as
+            <list type="bullet"><item><description>is <c>null</c>, empty, or whitespace.</description></item><item><description>has more than 3 version components before the first dash, if any.</description></item><item><description>has invalid dev-channel suffix. See <seealso cref="T:WikiClientLibrary.MediaWikiDevChannel" /> for a list of valid dev-channel suffixes.</description></item><item><description>has invalid numeric version components, including failure to parse as number, or arithmetic overflow.</description></item></list></exception>
+    </member>
+    <member name="M:WikiClientLibrary.MediaWikiVersion.Parse(System.String,System.Boolean,WikiClientLibrary.MediaWikiVersion@)">
+      <summary>
+        <markup>
+          <include item="SMCMissingTag">
+            <parameter>summary</parameter>
+            <parameter>M:WikiClientLibrary.MediaWikiVersion.Parse(System.String,System.Boolean,WikiClientLibrary.MediaWikiVersion@)</parameter>
+          </include>
+        </markup>
+      </summary>
+      <param name="version">
+        <markup>
+          <include item="SMCMissingParamTag">
+            <parameter>param</parameter>
+            <parameter>version</parameter>
+            <parameter>M:WikiClientLibrary.MediaWikiVersion.Parse(System.String,System.Boolean,WikiClientLibrary.MediaWikiVersion@)</parameter>
+          </include>
+        </markup>
+      </param>
+      <param name="raiseError">
+        <markup>
+          <include item="SMCMissingParamTag">
+            <parameter>param</parameter>
+            <parameter>raiseError</parameter>
+            <parameter>M:WikiClientLibrary.MediaWikiVersion.Parse(System.String,System.Boolean,WikiClientLibrary.MediaWikiVersion@)</parameter>
+          </include>
+        </markup>
+      </param>
+      <param name="parsed">
+        <markup>
+          <include item="SMCMissingParamTag">
+            <parameter>param</parameter>
+            <parameter>parsed</parameter>
+            <parameter>M:WikiClientLibrary.MediaWikiVersion.Parse(System.String,System.Boolean,WikiClientLibrary.MediaWikiVersion@)</parameter>
+          </include>
+        </markup>
+      </param>
+    </member>
+    <member name="P:WikiClientLibrary.MediaWikiVersion.Revision">
+      <summary>
+            Revision number.
+            </summary>
+    </member>
+    <member name="M:WikiClientLibrary.MediaWikiVersion.ToString">
+      <summary>Returns the fully qualified type name of this instance.</summary>
+      <returns>A <see cref="T:System.String" /> containing a fully qualified type name.</returns>
+    </member>
+    <member name="M:WikiClientLibrary.MediaWikiVersion.TryParse(System.String,WikiClientLibrary.MediaWikiVersion@)">
+      <summary>
+            Tries to parse a MediaWiki core version number from its string representation.
+            </summary>
+      <param name="version">The version to be parsed.</param>
+      <param name="parsed">A variable to receive the parsed version value.</param>
+      <returns>Whether the parsing is successful.</returns>
+    </member>
+    <member name="P:WikiClientLibrary.MediaWikiVersion.Zero">
+      <summary>
+            Gets the default zero value of <see cref="T:WikiClientLibrary.MediaWikiVersion" />, i.e. <c>v0.0.0</c>.
             </summary>
     </member>
     <member name="T:WikiClientLibrary.OperationConflictException">
@@ -942,55 +1298,21 @@
       </summary>
     </member>
     <member name="M:WikiClientLibrary.UserStub.Equals(System.Object)">
-      <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>M:WikiClientLibrary.UserStub.Equals(System.Object)</parameter>
-          </include>
-        </markup>
-      </summary>
-      <param name="obj">
-        <markup>
-          <include item="SMCMissingParamTag">
-            <parameter>param</parameter>
-            <parameter>obj</parameter>
-            <parameter>M:WikiClientLibrary.UserStub.Equals(System.Object)</parameter>
-          </include>
-        </markup>
-      </param>
+      <summary>Indicates whether this instance and a specified object are equal.</summary>
+      <param name="obj">The object to compare with the current instance. </param>
+      <returns>true if <paramref name="obj" /> and this instance are the same type and represent the same value; otherwise, false. </returns>
     </member>
     <member name="M:WikiClientLibrary.UserStub.Equals(WikiClientLibrary.UserStub)">
-      <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>M:WikiClientLibrary.UserStub.Equals(WikiClientLibrary.UserStub)</parameter>
-          </include>
-        </markup>
-      </summary>
-      <param name="other">
-        <markup>
-          <include item="SMCMissingParamTag">
-            <parameter>param</parameter>
-            <parameter>other</parameter>
-            <parameter>M:WikiClientLibrary.UserStub.Equals(WikiClientLibrary.UserStub)</parameter>
-          </include>
-        </markup>
-      </param>
+      <summary>Indicates whether the current object is equal to another object of the same type.</summary>
+      <param name="other">An object to compare with this object.</param>
+      <returns>true if the current object is equal to the <paramref name="other" /> parameter; otherwise, false.</returns>
     </member>
     <member name="P:WikiClientLibrary.UserStub.Gender">
       <summary>Gets user's gender.</summary>
     </member>
     <member name="M:WikiClientLibrary.UserStub.GetHashCode">
-      <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>M:WikiClientLibrary.UserStub.GetHashCode</parameter>
-          </include>
-        </markup>
-      </summary>
+      <summary>Returns the hash code for this instance.</summary>
+      <returns>A 32-bit signed integer that is the hash code for this instance.</returns>
     </member>
     <member name="P:WikiClientLibrary.UserStub.HasId">
       <summary>Determines whether the user has ID.</summary>
@@ -1061,14 +1383,8 @@
       <summary>Gets the site name the user comes from.</summary>
     </member>
     <member name="M:WikiClientLibrary.UserStub.ToString">
-      <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>M:WikiClientLibrary.UserStub.ToString</parameter>
-          </include>
-        </markup>
-      </summary>
+      <summary>Returns the fully qualified type name of this instance.</summary>
+      <returns>A <see cref="T:System.String" /> containing a fully qualified type name.</returns>
     </member>
     <member name="T:WikiClientLibrary.WikiClientException">
       <summary>
@@ -1735,13 +2051,7 @@
       <returns>The actual <see cref="T:System.Net.Http.HttpRequestMessage" /> to be sent.</returns>
     </member>
     <member name="M:WikiClientLibrary.Client.WikiClient.Dispose">
-      <summary>
-        <markup>
-          <include item="SMCAutoDocDispose">
-            <parameter>WikiClientLibrary.Client.WikiClient</parameter>
-          </include>
-        </markup>
-      </summary>
+      <summary>Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.</summary>
     </member>
     <member name="M:WikiClientLibrary.Client.WikiClient.Dispose(System.Boolean)">
       <summary>
@@ -1810,14 +2120,8 @@
             </summary>
     </member>
     <member name="M:WikiClientLibrary.Client.WikiClient.ToString">
-      <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>M:WikiClientLibrary.Client.WikiClient.ToString</parameter>
-          </include>
-        </markup>
-      </summary>
+      <summary>Returns a string that represents the current object.</summary>
+      <returns>A string that represents the current object.</returns>
     </member>
     <member name="F:WikiClientLibrary.Client.WikiClient.WikiClientUserAgent">
       <summary>
@@ -1860,14 +2164,8 @@
             </summary>
     </member>
     <member name="M:WikiClientLibrary.Client.WikiRequestMessage.ToString">
-      <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>M:WikiClientLibrary.Client.WikiRequestMessage.ToString</parameter>
-          </include>
-        </markup>
-      </summary>
+      <summary>Returns a string that represents the current object.</summary>
+      <returns>A string that represents the current object.</returns>
     </member>
     <member name="T:WikiClientLibrary.Client.WikiResponseMessageParser`1">
       <summary>
@@ -2108,14 +2406,8 @@
       </param>
     </member>
     <member name="M:WikiClientLibrary.Files.ChunkedUploadSource.ToString">
-      <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>M:WikiClientLibrary.Files.ChunkedUploadSource.ToString</parameter>
-          </include>
-        </markup>
-      </summary>
+      <summary>Returns a string that represents the current object.</summary>
+      <returns>A string that represents the current object.</returns>
     </member>
     <member name="P:WikiClientLibrary.Files.ChunkedUploadSource.TotalSize">
       <summary>
@@ -2160,14 +2452,8 @@
       <summary>The URL of the file to be uploaded.</summary>
     </member>
     <member name="M:WikiClientLibrary.Files.ExternalFileUploadSource.ToString">
-      <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>M:WikiClientLibrary.Files.ExternalFileUploadSource.ToString</parameter>
-          </include>
-        </markup>
-      </summary>
+      <summary>Returns a string that represents the current object.</summary>
+      <returns>A string that represents the current object.</returns>
     </member>
     <member name="T:WikiClientLibrary.Files.FileKeyUploadSource">
       <summary>
@@ -2202,14 +2488,8 @@
       </param>
     </member>
     <member name="M:WikiClientLibrary.Files.FileKeyUploadSource.ToString">
-      <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>M:WikiClientLibrary.Files.FileKeyUploadSource.ToString</parameter>
-          </include>
-        </markup>
-      </summary>
+      <summary>Returns a string that represents the current object.</summary>
+      <returns>A string that represents the current object.</returns>
     </member>
     <member name="T:WikiClientLibrary.Files.FileRevision">
       <summary>
@@ -2338,14 +2618,8 @@
       <summary>Stream content of the file to be uploaded.</summary>
     </member>
     <member name="M:WikiClientLibrary.Files.StreamUploadSource.ToString">
-      <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>M:WikiClientLibrary.Files.StreamUploadSource.ToString</parameter>
-          </include>
-        </markup>
-      </summary>
+      <summary>Returns a string that represents the current object.</summary>
+      <returns>A string that represents the current object.</returns>
     </member>
     <member name="T:WikiClientLibrary.Files.UploadResult">
       <summary>
@@ -3186,14 +3460,8 @@
       <summary>Full title of the page affected by this item.</summary>
     </member>
     <member name="M:WikiClientLibrary.Generators.LogEventItem.ToString">
-      <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>M:WikiClientLibrary.Generators.LogEventItem.ToString</parameter>
-          </include>
-        </markup>
-      </summary>
+      <summary>Returns a string that represents the current object.</summary>
+      <returns>A string that represents the current object.</returns>
     </member>
     <member name="P:WikiClientLibrary.Generators.LogEventItem.Type">
       <summary>Gets log type name.</summary>
@@ -3541,14 +3809,8 @@
             </summary>
     </member>
     <member name="M:WikiClientLibrary.Generators.QueryPageGenerator.ToString">
-      <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>M:WikiClientLibrary.Generators.QueryPageGenerator.ToString</parameter>
-          </include>
-        </markup>
-      </summary>
+      <summary>Returns a string that represents the current object.</summary>
+      <returns>A string that represents the current object.</returns>
     </member>
     <member name="T:WikiClientLibrary.Generators.RandomPageGenerator">
       <summary>
@@ -3722,14 +3984,8 @@
         <see cref="P:WikiClientLibrary.Generators.RecentChangeItem.Type" /> is not <see cref="F:WikiClientLibrary.Generators.RecentChangesType.Log" />.</exception>
     </member>
     <member name="M:WikiClientLibrary.Generators.RecentChangeItem.ToString">
-      <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>M:WikiClientLibrary.Generators.RecentChangeItem.ToString</parameter>
-          </include>
-        </markup>
-      </summary>
+      <summary>Returns a string that represents the current object.</summary>
+      <returns>A string that represents the current object.</returns>
     </member>
     <member name="P:WikiClientLibrary.Generators.RecentChangeItem.Type">
       <summary>Recent change type.</summary>
@@ -4194,14 +4450,8 @@
             </summary>
     </member>
     <member name="M:WikiClientLibrary.Generators.SearchResultItem.ToString">
-      <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>M:WikiClientLibrary.Generators.SearchResultItem.ToString</parameter>
-          </include>
-        </markup>
-      </summary>
+      <summary>Returns a string that represents the current object.</summary>
+      <returns>A string that represents the current object.</returns>
     </member>
     <member name="P:WikiClientLibrary.Generators.SearchResultItem.WordCount">
       <summary>
@@ -4658,14 +4908,8 @@
       <summary>Gets the MediaWiki site this instance applies to.</summary>
     </member>
     <member name="M:WikiClientLibrary.Generators.Primitive.WikiPagePropertyList`1.ToString">
-      <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>M:WikiClientLibrary.Generators.Primitive.WikiPagePropertyList`1.ToString</parameter>
-          </include>
-        </markup>
-      </summary>
+      <summary>Returns a string that represents the current object.</summary>
+      <returns>A string that represents the current object.</returns>
     </member>
     <member name="T:WikiClientLibrary.Infrastructures.AsyncInitializationHelper">
       <summary>
@@ -5200,23 +5444,11 @@
       </summary>
     </member>
     <member name="M:WikiClientLibrary.Infrastructures.WikiReadOnlyDictionary.ContainsKey(System.String)">
-      <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>M:WikiClientLibrary.Infrastructures.WikiReadOnlyDictionary.ContainsKey(System.String)</parameter>
-          </include>
-        </markup>
-      </summary>
-      <param name="key">
-        <markup>
-          <include item="SMCMissingParamTag">
-            <parameter>param</parameter>
-            <parameter>key</parameter>
-            <parameter>M:WikiClientLibrary.Infrastructures.WikiReadOnlyDictionary.ContainsKey(System.String)</parameter>
-          </include>
-        </markup>
-      </param>
+      <summary>Determines whether the <see cref="T:System.Collections.Generic.IDictionary`2" /> contains an element with the specified key.</summary>
+      <param name="key">The key to locate in the <see cref="T:System.Collections.Generic.IDictionary`2" />.</param>
+      <returns>true if the <see cref="T:System.Collections.Generic.IDictionary`2" /> contains an element with the key; otherwise, false.</returns>
+      <exception cref="T:System.ArgumentNullException">
+        <paramref name="key" /> is null.</exception>
     </member>
     <member name="P:WikiClientLibrary.Infrastructures.WikiReadOnlyDictionary.Count">
       <summary>
@@ -5276,14 +5508,8 @@
       <returns>A clone of property value, OR <c>null</c> if such property cannot be found.</returns>
     </member>
     <member name="P:WikiClientLibrary.Infrastructures.WikiReadOnlyDictionary.Keys">
-      <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>P:WikiClientLibrary.Infrastructures.WikiReadOnlyDictionary.Keys</parameter>
-          </include>
-        </markup>
-      </summary>
+      <summary>Gets an <see cref="T:System.Collections.Generic.ICollection`1" /> containing the keys of the <see cref="T:System.Collections.Generic.IDictionary`2" />.</summary>
+      <returns>An <see cref="T:System.Collections.Generic.ICollection`1" /> containing the keys of the object that implements <see cref="T:System.Collections.Generic.IDictionary`2" />.</returns>
     </member>
     <member name="M:WikiClientLibrary.Infrastructures.WikiReadOnlyDictionary.MakeReadonly">
       <summary>
@@ -5296,214 +5522,75 @@
       </summary>
     </member>
     <member name="M:WikiClientLibrary.Infrastructures.WikiReadOnlyDictionary.System#Collections#Generic#ICollection{System#Collections#Generic#KeyValuePair{System#String@Newtonsoft#Json#Linq#JToken}}#Add(System.Collections.Generic.KeyValuePair{System.String,Newtonsoft.Json.Linq.JToken})">
-      <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>M:WikiClientLibrary.Infrastructures.WikiReadOnlyDictionary.System#Collections#Generic#ICollection{System#Collections#Generic#KeyValuePair{System#String@Newtonsoft#Json#Linq#JToken}}#Add(System.Collections.Generic.KeyValuePair{System.String,Newtonsoft.Json.Linq.JToken})</parameter>
-          </include>
-        </markup>
-      </summary>
-      <param name="item">
-        <markup>
-          <include item="SMCMissingParamTag">
-            <parameter>param</parameter>
-            <parameter>item</parameter>
-            <parameter>M:WikiClientLibrary.Infrastructures.WikiReadOnlyDictionary.System#Collections#Generic#ICollection{System#Collections#Generic#KeyValuePair{System#String@Newtonsoft#Json#Linq#JToken}}#Add(System.Collections.Generic.KeyValuePair{System.String,Newtonsoft.Json.Linq.JToken})</parameter>
-          </include>
-        </markup>
-      </param>
+      <summary>Adds an item to the <see cref="T:System.Collections.Generic.ICollection`1" />.</summary>
+      <param name="item">The object to add to the <see cref="T:System.Collections.Generic.ICollection`1" />.</param>
+      <exception cref="T:System.NotSupportedException">The <see cref="T:System.Collections.Generic.ICollection`1" /> is read-only.</exception>
     </member>
     <member name="M:WikiClientLibrary.Infrastructures.WikiReadOnlyDictionary.System#Collections#Generic#ICollection{System#Collections#Generic#KeyValuePair{System#String@Newtonsoft#Json#Linq#JToken}}#Clear">
-      <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>M:WikiClientLibrary.Infrastructures.WikiReadOnlyDictionary.System#Collections#Generic#ICollection{System#Collections#Generic#KeyValuePair{System#String@Newtonsoft#Json#Linq#JToken}}#Clear</parameter>
-          </include>
-        </markup>
-      </summary>
+      <summary>Removes all items from the <see cref="T:System.Collections.Generic.ICollection`1" />.</summary>
+      <exception cref="T:System.NotSupportedException">The <see cref="T:System.Collections.Generic.ICollection`1" /> is read-only. </exception>
     </member>
     <member name="M:WikiClientLibrary.Infrastructures.WikiReadOnlyDictionary.System#Collections#Generic#ICollection{System#Collections#Generic#KeyValuePair{System#String@Newtonsoft#Json#Linq#JToken}}#Contains(System.Collections.Generic.KeyValuePair{System.String,Newtonsoft.Json.Linq.JToken})">
-      <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>M:WikiClientLibrary.Infrastructures.WikiReadOnlyDictionary.System#Collections#Generic#ICollection{System#Collections#Generic#KeyValuePair{System#String@Newtonsoft#Json#Linq#JToken}}#Contains(System.Collections.Generic.KeyValuePair{System.String,Newtonsoft.Json.Linq.JToken})</parameter>
-          </include>
-        </markup>
-      </summary>
-      <param name="item">
-        <markup>
-          <include item="SMCMissingParamTag">
-            <parameter>param</parameter>
-            <parameter>item</parameter>
-            <parameter>M:WikiClientLibrary.Infrastructures.WikiReadOnlyDictionary.System#Collections#Generic#ICollection{System#Collections#Generic#KeyValuePair{System#String@Newtonsoft#Json#Linq#JToken}}#Contains(System.Collections.Generic.KeyValuePair{System.String,Newtonsoft.Json.Linq.JToken})</parameter>
-          </include>
-        </markup>
-      </param>
+      <summary>Determines whether the <see cref="T:System.Collections.Generic.ICollection`1" /> contains a specific value.</summary>
+      <param name="item">The object to locate in the <see cref="T:System.Collections.Generic.ICollection`1" />.</param>
+      <returns>true if <paramref name="item" /> is found in the <see cref="T:System.Collections.Generic.ICollection`1" />; otherwise, false.</returns>
     </member>
     <member name="M:WikiClientLibrary.Infrastructures.WikiReadOnlyDictionary.System#Collections#Generic#ICollection{System#Collections#Generic#KeyValuePair{System#String@Newtonsoft#Json#Linq#JToken}}#CopyTo(System.Collections.Generic.KeyValuePair{System.String,Newtonsoft.Json.Linq.JToken}[],System.Int32)">
-      <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>M:WikiClientLibrary.Infrastructures.WikiReadOnlyDictionary.System#Collections#Generic#ICollection{System#Collections#Generic#KeyValuePair{System#String@Newtonsoft#Json#Linq#JToken}}#CopyTo(System.Collections.Generic.KeyValuePair{System.String,Newtonsoft.Json.Linq.JToken}[],System.Int32)</parameter>
-          </include>
-        </markup>
-      </summary>
-      <param name="array">
-        <markup>
-          <include item="SMCMissingParamTag">
-            <parameter>param</parameter>
-            <parameter>array</parameter>
-            <parameter>M:WikiClientLibrary.Infrastructures.WikiReadOnlyDictionary.System#Collections#Generic#ICollection{System#Collections#Generic#KeyValuePair{System#String@Newtonsoft#Json#Linq#JToken}}#CopyTo(System.Collections.Generic.KeyValuePair{System.String,Newtonsoft.Json.Linq.JToken}[],System.Int32)</parameter>
-          </include>
-        </markup>
-      </param>
-      <param name="arrayIndex">
-        <markup>
-          <include item="SMCMissingParamTag">
-            <parameter>param</parameter>
-            <parameter>arrayIndex</parameter>
-            <parameter>M:WikiClientLibrary.Infrastructures.WikiReadOnlyDictionary.System#Collections#Generic#ICollection{System#Collections#Generic#KeyValuePair{System#String@Newtonsoft#Json#Linq#JToken}}#CopyTo(System.Collections.Generic.KeyValuePair{System.String,Newtonsoft.Json.Linq.JToken}[],System.Int32)</parameter>
-          </include>
-        </markup>
-      </param>
+      <summary>Copies the elements of the <see cref="T:System.Collections.Generic.ICollection`1" /> to an <see cref="T:System.Array" />, starting at a particular <see cref="T:System.Array" /> index.</summary>
+      <param name="array">The one-dimensional <see cref="T:System.Array" /> that is the destination of the elements copied from <see cref="T:System.Collections.Generic.ICollection`1" />. The <see cref="T:System.Array" /> must have zero-based indexing.</param>
+      <param name="arrayIndex">The zero-based index in <paramref name="array" /> at which copying begins.</param>
+      <exception cref="T:System.ArgumentNullException">
+        <paramref name="array" /> is null.</exception>
+      <exception cref="T:System.ArgumentOutOfRangeException">
+        <paramref name="arrayIndex" /> is less than 0.</exception>
+      <exception cref="T:System.ArgumentException">The number of elements in the source <see cref="T:System.Collections.Generic.ICollection`1" /> is greater than the available space from <paramref name="arrayIndex" /> to the end of the destination <paramref name="array" />.</exception>
     </member>
     <member name="P:WikiClientLibrary.Infrastructures.WikiReadOnlyDictionary.System#Collections#Generic#ICollection{System#Collections#Generic#KeyValuePair{System#String@Newtonsoft#Json#Linq#JToken}}#IsReadOnly">
-      <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>P:WikiClientLibrary.Infrastructures.WikiReadOnlyDictionary.System#Collections#Generic#ICollection{System#Collections#Generic#KeyValuePair{System#String@Newtonsoft#Json#Linq#JToken}}#IsReadOnly</parameter>
-          </include>
-        </markup>
-      </summary>
+      <summary>Gets a value indicating whether the <see cref="T:System.Collections.Generic.ICollection`1" /> is read-only.</summary>
+      <returns>true if the <see cref="T:System.Collections.Generic.ICollection`1" /> is read-only; otherwise, false.</returns>
     </member>
     <member name="M:WikiClientLibrary.Infrastructures.WikiReadOnlyDictionary.System#Collections#Generic#ICollection{System#Collections#Generic#KeyValuePair{System#String@Newtonsoft#Json#Linq#JToken}}#Remove(System.Collections.Generic.KeyValuePair{System.String,Newtonsoft.Json.Linq.JToken})">
-      <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>M:WikiClientLibrary.Infrastructures.WikiReadOnlyDictionary.System#Collections#Generic#ICollection{System#Collections#Generic#KeyValuePair{System#String@Newtonsoft#Json#Linq#JToken}}#Remove(System.Collections.Generic.KeyValuePair{System.String,Newtonsoft.Json.Linq.JToken})</parameter>
-          </include>
-        </markup>
-      </summary>
-      <param name="item">
-        <markup>
-          <include item="SMCMissingParamTag">
-            <parameter>param</parameter>
-            <parameter>item</parameter>
-            <parameter>M:WikiClientLibrary.Infrastructures.WikiReadOnlyDictionary.System#Collections#Generic#ICollection{System#Collections#Generic#KeyValuePair{System#String@Newtonsoft#Json#Linq#JToken}}#Remove(System.Collections.Generic.KeyValuePair{System.String,Newtonsoft.Json.Linq.JToken})</parameter>
-          </include>
-        </markup>
-      </param>
+      <summary>Removes the first occurrence of a specific object from the <see cref="T:System.Collections.Generic.ICollection`1" />.</summary>
+      <param name="item">The object to remove from the <see cref="T:System.Collections.Generic.ICollection`1" />.</param>
+      <returns>true if <paramref name="item" /> was successfully removed from the <see cref="T:System.Collections.Generic.ICollection`1" />; otherwise, false. This method also returns false if <paramref name="item" /> is not found in the original <see cref="T:System.Collections.Generic.ICollection`1" />.</returns>
+      <exception cref="T:System.NotSupportedException">The <see cref="T:System.Collections.Generic.ICollection`1" /> is read-only.</exception>
     </member>
     <member name="M:WikiClientLibrary.Infrastructures.WikiReadOnlyDictionary.System#Collections#Generic#IDictionary{System#String@Newtonsoft#Json#Linq#JToken}#Add(System.String,Newtonsoft.Json.Linq.JToken)">
-      <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>M:WikiClientLibrary.Infrastructures.WikiReadOnlyDictionary.System#Collections#Generic#IDictionary{System#String@Newtonsoft#Json#Linq#JToken}#Add(System.String,Newtonsoft.Json.Linq.JToken)</parameter>
-          </include>
-        </markup>
-      </summary>
-      <param name="key">
-        <markup>
-          <include item="SMCMissingParamTag">
-            <parameter>param</parameter>
-            <parameter>key</parameter>
-            <parameter>M:WikiClientLibrary.Infrastructures.WikiReadOnlyDictionary.System#Collections#Generic#IDictionary{System#String@Newtonsoft#Json#Linq#JToken}#Add(System.String,Newtonsoft.Json.Linq.JToken)</parameter>
-          </include>
-        </markup>
-      </param>
-      <param name="value">
-        <markup>
-          <include item="SMCMissingParamTag">
-            <parameter>param</parameter>
-            <parameter>value</parameter>
-            <parameter>M:WikiClientLibrary.Infrastructures.WikiReadOnlyDictionary.System#Collections#Generic#IDictionary{System#String@Newtonsoft#Json#Linq#JToken}#Add(System.String,Newtonsoft.Json.Linq.JToken)</parameter>
-          </include>
-        </markup>
-      </param>
+      <summary>Adds an element with the provided key and value to the <see cref="T:System.Collections.Generic.IDictionary`2" />.</summary>
+      <param name="key">The object to use as the key of the element to add.</param>
+      <param name="value">The object to use as the value of the element to add.</param>
+      <exception cref="T:System.ArgumentNullException">
+        <paramref name="key" /> is null.</exception>
+      <exception cref="T:System.ArgumentException">An element with the same key already exists in the <see cref="T:System.Collections.Generic.IDictionary`2" />.</exception>
+      <exception cref="T:System.NotSupportedException">The <see cref="T:System.Collections.Generic.IDictionary`2" /> is read-only.</exception>
     </member>
     <member name="M:WikiClientLibrary.Infrastructures.WikiReadOnlyDictionary.System#Collections#Generic#IDictionary{System#String@Newtonsoft#Json#Linq#JToken}#Remove(System.String)">
-      <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>M:WikiClientLibrary.Infrastructures.WikiReadOnlyDictionary.System#Collections#Generic#IDictionary{System#String@Newtonsoft#Json#Linq#JToken}#Remove(System.String)</parameter>
-          </include>
-        </markup>
-      </summary>
-      <param name="key">
-        <markup>
-          <include item="SMCMissingParamTag">
-            <parameter>param</parameter>
-            <parameter>key</parameter>
-            <parameter>M:WikiClientLibrary.Infrastructures.WikiReadOnlyDictionary.System#Collections#Generic#IDictionary{System#String@Newtonsoft#Json#Linq#JToken}#Remove(System.String)</parameter>
-          </include>
-        </markup>
-      </param>
+      <summary>Removes the element with the specified key from the <see cref="T:System.Collections.Generic.IDictionary`2" />.</summary>
+      <param name="key">The key of the element to remove.</param>
+      <returns>true if the element is successfully removed; otherwise, false.  This method also returns false if <paramref name="key" /> was not found in the original <see cref="T:System.Collections.Generic.IDictionary`2" />.</returns>
+      <exception cref="T:System.ArgumentNullException">
+        <paramref name="key" /> is null.</exception>
+      <exception cref="T:System.NotSupportedException">The <see cref="T:System.Collections.Generic.IDictionary`2" /> is read-only.</exception>
     </member>
     <member name="M:WikiClientLibrary.Infrastructures.WikiReadOnlyDictionary.System#Collections#Generic#IEnumerable{System#Collections#Generic#KeyValuePair{System#String@Newtonsoft#Json#Linq#JToken}}#GetEnumerator">
-      <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>M:WikiClientLibrary.Infrastructures.WikiReadOnlyDictionary.System#Collections#Generic#IEnumerable{System#Collections#Generic#KeyValuePair{System#String@Newtonsoft#Json#Linq#JToken}}#GetEnumerator</parameter>
-          </include>
-        </markup>
-      </summary>
+      <summary>Returns an enumerator that iterates through the collection.</summary>
+      <returns>An enumerator that can be used to iterate through the collection.</returns>
     </member>
     <member name="M:WikiClientLibrary.Infrastructures.WikiReadOnlyDictionary.System#Collections#IEnumerable#GetEnumerator">
-      <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>M:WikiClientLibrary.Infrastructures.WikiReadOnlyDictionary.System#Collections#IEnumerable#GetEnumerator</parameter>
-          </include>
-        </markup>
-      </summary>
+      <summary>Returns an enumerator that iterates through a collection.</summary>
+      <returns>An <see cref="T:System.Collections.IEnumerator" /> object that can be used to iterate through the collection.</returns>
     </member>
     <member name="M:WikiClientLibrary.Infrastructures.WikiReadOnlyDictionary.TryGetValue(System.String,Newtonsoft.Json.Linq.JToken@)">
-      <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>M:WikiClientLibrary.Infrastructures.WikiReadOnlyDictionary.TryGetValue(System.String,Newtonsoft.Json.Linq.JToken@)</parameter>
-          </include>
-        </markup>
-      </summary>
-      <param name="key">
-        <markup>
-          <include item="SMCMissingParamTag">
-            <parameter>param</parameter>
-            <parameter>key</parameter>
-            <parameter>M:WikiClientLibrary.Infrastructures.WikiReadOnlyDictionary.TryGetValue(System.String,Newtonsoft.Json.Linq.JToken@)</parameter>
-          </include>
-        </markup>
-      </param>
-      <param name="value">
-        <markup>
-          <include item="SMCMissingParamTag">
-            <parameter>param</parameter>
-            <parameter>value</parameter>
-            <parameter>M:WikiClientLibrary.Infrastructures.WikiReadOnlyDictionary.TryGetValue(System.String,Newtonsoft.Json.Linq.JToken@)</parameter>
-          </include>
-        </markup>
-      </param>
+      <summary>Gets the value associated with the specified key.</summary>
+      <param name="key">The key whose value to get.</param>
+      <param name="value">When this method returns, the value associated with the specified key, if the key is found; otherwise, the default value for the type of the <paramref name="value" /> parameter. This parameter is passed uninitialized.</param>
+      <returns>true if the object that implements <see cref="T:System.Collections.Generic.IDictionary`2" /> contains an element with the specified key; otherwise, false.</returns>
+      <exception cref="T:System.ArgumentNullException">
+        <paramref name="key" /> is null.</exception>
     </member>
     <member name="P:WikiClientLibrary.Infrastructures.WikiReadOnlyDictionary.Values">
-      <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>P:WikiClientLibrary.Infrastructures.WikiReadOnlyDictionary.Values</parameter>
-          </include>
-        </markup>
-      </summary>
+      <summary>Gets an <see cref="T:System.Collections.Generic.ICollection`1" /> containing the values in the <see cref="T:System.Collections.Generic.IDictionary`2" />.</summary>
+      <returns>An <see cref="T:System.Collections.Generic.ICollection`1" /> containing the values in the object that implements <see cref="T:System.Collections.Generic.IDictionary`2" />.</returns>
     </member>
     <member name="T:WikiClientLibrary.Infrastructures.WikiStringEnumJsonConverter">
       <summary>
@@ -6076,14 +6163,8 @@
       </summary>
     </member>
     <member name="M:WikiClientLibrary.Pages.PurgeFailureInfo.ToString">
-      <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>M:WikiClientLibrary.Pages.PurgeFailureInfo.ToString</parameter>
-          </include>
-        </markup>
-      </summary>
+      <summary>Returns a string that represents the current object.</summary>
+      <returns>A string that represents the current object.</returns>
     </member>
     <member name="T:WikiClientLibrary.Pages.Revision">
       <summary>
@@ -6244,6 +6325,11 @@
             SHA-1 (base 16) of the revision.
             </summary>
     </member>
+    <member name="P:WikiClientLibrary.Pages.Revision.Slots">
+      <summary>
+            Revision slots. (MW 1.32+)
+            </summary>
+    </member>
     <member name="P:WikiClientLibrary.Pages.Revision.Tags">
       <summary>
             Any tags for this revision, such as those added by <a href="https://www.mediawiki.org/wiki/Extension:AbuseFilter">AbuseFilter</a>.
@@ -6255,14 +6341,8 @@
             </summary>
     </member>
     <member name="M:WikiClientLibrary.Pages.Revision.ToString">
-      <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>M:WikiClientLibrary.Pages.Revision.ToString</parameter>
-          </include>
-        </markup>
-      </summary>
+      <summary>Returns a string that represents the current object.</summary>
+      <returns>A string that represents the current object.</returns>
     </member>
     <member name="P:WikiClientLibrary.Pages.Revision.UserId">
       <summary>
@@ -6318,6 +6398,60 @@
     <member name="F:WikiClientLibrary.Pages.RevisionHiddenFields.User">
       <summary>
             The editor's name has been hidden.
+            </summary>
+    </member>
+    <member name="T:WikiClientLibrary.Pages.RevisionSlot">
+      <summary>
+            Represents a slot in a revision. (MW 1.32+)
+            </summary>
+    </member>
+    <member name="M:WikiClientLibrary.Pages.RevisionSlot.#ctor">
+      <summary>
+        <markup>
+          <include item="SMCAutoDocConstructor">
+            <parameter>WikiClientLibrary.Pages.RevisionSlot</parameter>
+          </include>
+        </markup>
+      </summary>
+    </member>
+    <member name="P:WikiClientLibrary.Pages.RevisionSlot.Content">
+      <summary>
+        <markup>
+          <include item="SMCMissingTag">
+            <parameter>summary</parameter>
+            <parameter>P:WikiClientLibrary.Pages.RevisionSlot.Content</parameter>
+          </include>
+        </markup>
+      </summary>
+    </member>
+    <member name="P:WikiClientLibrary.Pages.RevisionSlot.ContentFormat">
+      <summary>
+            Content serialization format used for the revision slot. 
+            </summary>
+    </member>
+    <member name="P:WikiClientLibrary.Pages.RevisionSlot.ContentLength">
+      <summary>
+            Content length (in bytes) of the revision slot.
+            </summary>
+    </member>
+    <member name="P:WikiClientLibrary.Pages.RevisionSlot.ContentModel">
+      <summary>
+            Content model of the revision slot.
+            </summary>
+    </member>
+    <member name="F:WikiClientLibrary.Pages.RevisionSlot.DocumentationSlotName">
+      <summary>
+            Revision slot name intended for template documentations in future MediaWiki releases.
+            </summary>
+    </member>
+    <member name="F:WikiClientLibrary.Pages.RevisionSlot.MainSlotName">
+      <summary>
+            Revision slot name for main revisions.
+            </summary>
+    </member>
+    <member name="P:WikiClientLibrary.Pages.RevisionSlot.Sha1">
+      <summary>
+            SHA-1 (base 16) of the revision slot.
             </summary>
     </member>
     <member name="T:WikiClientLibrary.Pages.WikiPage">
@@ -6802,14 +6936,8 @@
             </summary>
     </member>
     <member name="M:WikiClientLibrary.Pages.WikiPage.ToString">
-      <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>M:WikiClientLibrary.Pages.WikiPage.ToString</parameter>
-          </include>
-        </markup>
-      </summary>
+      <summary>Returns a string that represents the current object.</summary>
+      <returns>A string that represents the current object.</returns>
     </member>
     <member name="M:WikiClientLibrary.Pages.WikiPage.UpdateContentAsync(System.String)">
       <summary>
@@ -7049,42 +7177,14 @@
             </summary>
     </member>
     <member name="M:WikiClientLibrary.Pages.WikiPageStub.Equals(System.Object)">
-      <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>M:WikiClientLibrary.Pages.WikiPageStub.Equals(System.Object)</parameter>
-          </include>
-        </markup>
-      </summary>
-      <param name="obj">
-        <markup>
-          <include item="SMCMissingParamTag">
-            <parameter>param</parameter>
-            <parameter>obj</parameter>
-            <parameter>M:WikiClientLibrary.Pages.WikiPageStub.Equals(System.Object)</parameter>
-          </include>
-        </markup>
-      </param>
+      <summary>Indicates whether this instance and a specified object are equal.</summary>
+      <param name="obj">The object to compare with the current instance. </param>
+      <returns>true if <paramref name="obj" /> and this instance are the same type and represent the same value; otherwise, false. </returns>
     </member>
     <member name="M:WikiClientLibrary.Pages.WikiPageStub.Equals(WikiClientLibrary.Pages.WikiPageStub)">
-      <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>M:WikiClientLibrary.Pages.WikiPageStub.Equals(WikiClientLibrary.Pages.WikiPageStub)</parameter>
-          </include>
-        </markup>
-      </summary>
-      <param name="other">
-        <markup>
-          <include item="SMCMissingParamTag">
-            <parameter>param</parameter>
-            <parameter>other</parameter>
-            <parameter>M:WikiClientLibrary.Pages.WikiPageStub.Equals(WikiClientLibrary.Pages.WikiPageStub)</parameter>
-          </include>
-        </markup>
-      </param>
+      <summary>Indicates whether the current object is equal to another object of the same type.</summary>
+      <param name="other">An object to compare with this object.</param>
+      <returns>true if the current object is equal to the <paramref name="other" /> parameter; otherwise, false.</returns>
     </member>
     <member name="M:WikiClientLibrary.Pages.WikiPageStub.FromPageIds(WikiClientLibrary.Sites.WikiSite,System.Collections.Generic.IEnumerable{System.Int32})">
       <summary>
@@ -7105,14 +7205,8 @@
       <exception cref="T:System.ArgumentNullException">Either <paramref name="site" /> or <paramref name="titles" /> is <c>null</c>.</exception>
     </member>
     <member name="M:WikiClientLibrary.Pages.WikiPageStub.GetHashCode">
-      <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>M:WikiClientLibrary.Pages.WikiPageStub.GetHashCode</parameter>
-          </include>
-        </markup>
-      </summary>
+      <summary>Returns the hash code for this instance.</summary>
+      <returns>A 32-bit signed integer that is the hash code for this instance.</returns>
     </member>
     <member name="P:WikiClientLibrary.Pages.WikiPageStub.HasId">
       <summary>
@@ -7352,14 +7446,8 @@
       <summary>Gets the full title of the page.</summary>
     </member>
     <member name="M:WikiClientLibrary.Pages.WikiPageStub.ToString">
-      <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>M:WikiClientLibrary.Pages.WikiPageStub.ToString</parameter>
-          </include>
-        </markup>
-      </summary>
+      <summary>Returns the fully qualified type name of this instance.</summary>
+      <returns>A <see cref="T:System.String" /> containing a fully qualified type name.</returns>
     </member>
     <member name="F:WikiClientLibrary.Pages.WikiPageStub.UnknownNamespaceId">
       <summary>The <see cref="P:WikiClientLibrary.Pages.WikiPageStub.NamespaceId" /> used when the constructor do not have namespace information about the page.</summary>
@@ -7409,14 +7497,8 @@
       </summary>
     </member>
     <member name="M:WikiClientLibrary.Pages.Parsing.ContentCategoryInfo.ToString">
-      <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>M:WikiClientLibrary.Pages.Parsing.ContentCategoryInfo.ToString</parameter>
-          </include>
-        </markup>
-      </summary>
+      <summary>Returns a string that represents the current object.</summary>
+      <returns>A string that represents the current object.</returns>
     </member>
     <member name="T:WikiClientLibrary.Pages.Parsing.ContentPropertyInfo">
       <summary>
@@ -7448,14 +7530,8 @@
       </summary>
     </member>
     <member name="M:WikiClientLibrary.Pages.Parsing.ContentPropertyInfo.ToString">
-      <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>M:WikiClientLibrary.Pages.Parsing.ContentPropertyInfo.ToString</parameter>
-          </include>
-        </markup>
-      </summary>
+      <summary>Returns a string that represents the current object.</summary>
+      <returns>A string that represents the current object.</returns>
     </member>
     <member name="P:WikiClientLibrary.Pages.Parsing.ContentPropertyInfo.Value">
       <summary>
@@ -7603,14 +7679,8 @@
             </summary>
     </member>
     <member name="M:WikiClientLibrary.Pages.Parsing.ContentTransclusionInfo.ToString">
-      <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>M:WikiClientLibrary.Pages.Parsing.ContentTransclusionInfo.ToString</parameter>
-          </include>
-        </markup>
-      </summary>
+      <summary>Returns a string that represents the current object.</summary>
+      <returns>A string that represents the current object.</returns>
     </member>
     <member name="T:WikiClientLibrary.Pages.Parsing.InterlanguageInfo">
       <summary>
@@ -7652,14 +7722,8 @@
             </summary>
     </member>
     <member name="M:WikiClientLibrary.Pages.Parsing.InterlanguageInfo.ToString">
-      <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>M:WikiClientLibrary.Pages.Parsing.InterlanguageInfo.ToString</parameter>
-          </include>
-        </markup>
-      </summary>
+      <summary>Returns a string that represents the current object.</summary>
+      <returns>A string that represents the current object.</returns>
     </member>
     <member name="P:WikiClientLibrary.Pages.Parsing.InterlanguageInfo.Url">
       <summary>
@@ -7817,14 +7881,8 @@
             </summary>
     </member>
     <member name="M:WikiClientLibrary.Pages.Parsing.ParserLimitReport.ToString">
-      <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>M:WikiClientLibrary.Pages.Parsing.ParserLimitReport.ToString</parameter>
-          </include>
-        </markup>
-      </summary>
+      <summary>Returns a string that represents the current object.</summary>
+      <returns>A string that represents the current object.</returns>
     </member>
     <member name="P:WikiClientLibrary.Pages.Parsing.ParserLimitReport.Value">
       <summary>
@@ -8153,15 +8211,25 @@
             or <c>action=query&amp;pageids=</c> requests.
             </summary>
     </member>
-    <member name="M:WikiClientLibrary.Pages.Queries.IWikiPageQueryProvider.EnumParameters">
+    <member name="M:WikiClientLibrary.Pages.Queries.IWikiPageQueryProvider.EnumParameters(WikiClientLibrary.MediaWikiVersion)">
       <summary>
             Enumerates the MediaWiki API request parameters for <c>action=query</c> request.
             </summary>
+      <param name="version">
+        <markup>
+          <include item="SMCMissingParamTag">
+            <parameter>param</parameter>
+            <parameter>version</parameter>
+            <parameter>M:WikiClientLibrary.Pages.Queries.IWikiPageQueryProvider.EnumParameters(WikiClientLibrary.MediaWikiVersion)</parameter>
+          </include>
+        </markup>
+      </param>
     </member>
-    <member name="M:WikiClientLibrary.Pages.Queries.IWikiPageQueryProvider.GetMaxPaginationSize(System.Boolean)">
+    <member name="M:WikiClientLibrary.Pages.Queries.IWikiPageQueryProvider.GetMaxPaginationSize(WikiClientLibrary.MediaWikiVersion,System.Boolean)">
       <summary>
             Gets the maximum allowed count of titles in each MediaWiki API request.
             </summary>
+      <param name="version">MediaWiki API version. Use <seealso cref="P:WikiClientLibrary.MediaWikiVersion.Zero" /> for unknown version or compatible mode.</param>
       <param name="apiHighLimits">Whether the account has <c>api-highlimits</c> right.</param>
       <returns>
             The maximum allowed count of titles in each MediaWiki API request.
@@ -8194,10 +8262,11 @@
         </markup>
       </summary>
     </member>
-    <member name="M:WikiClientLibrary.Pages.Queries.WikiPageQueryProvider.EnumParameters">
+    <member name="M:WikiClientLibrary.Pages.Queries.WikiPageQueryProvider.EnumParameters(WikiClientLibrary.MediaWikiVersion)">
       <summary>
             Enumerates the MediaWiki API request parameters for <c>action=query</c> request.
             </summary>
+      <param name="version"></param>
     </member>
     <member name="M:WikiClientLibrary.Pages.Queries.WikiPageQueryProvider.FromOptions(WikiClientLibrary.Pages.PageQueryOptions)">
       <summary>
@@ -8206,10 +8275,11 @@
       <param name="options">The page query options.</param>
       <returns>The equavalent <see cref="T:WikiClientLibrary.Pages.Queries.WikiPageQueryProvider" /> that can be further modified by the caller.</returns>
     </member>
-    <member name="M:WikiClientLibrary.Pages.Queries.WikiPageQueryProvider.GetMaxPaginationSize(System.Boolean)">
+    <member name="M:WikiClientLibrary.Pages.Queries.WikiPageQueryProvider.GetMaxPaginationSize(WikiClientLibrary.MediaWikiVersion,System.Boolean)">
       <summary>
             Gets the maximum allowed count of titles in each MediaWiki API request.
             </summary>
+      <param name="version">MediaWiki API version. Use <seealso cref="P:WikiClientLibrary.MediaWikiVersion.Zero" /> for unknown version or compatible mode.</param>
       <param name="apiHighLimits">Whether the account has <c>api-highlimits</c> right.</param>
       <returns>
             The maximum allowed count of titles in each MediaWiki API request.
@@ -8275,14 +8345,8 @@
       <summary>Count of sub-categories in this category.</summary>
     </member>
     <member name="M:WikiClientLibrary.Pages.Queries.Properties.CategoryInfoPropertyGroup.ToString">
-      <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>M:WikiClientLibrary.Pages.Queries.Properties.CategoryInfoPropertyGroup.ToString</parameter>
-          </include>
-        </markup>
-      </summary>
+      <summary>Returns a string that represents the current object.</summary>
+      <returns>A string that represents the current object.</returns>
     </member>
     <member name="T:WikiClientLibrary.Pages.Queries.Properties.CategoryInfoPropertyProvider">
       <summary>
@@ -8299,10 +8363,11 @@
         </markup>
       </summary>
     </member>
-    <member name="M:WikiClientLibrary.Pages.Queries.Properties.CategoryInfoPropertyProvider.EnumParameters">
+    <member name="M:WikiClientLibrary.Pages.Queries.Properties.CategoryInfoPropertyProvider.EnumParameters(WikiClientLibrary.MediaWikiVersion)">
       <summary>
             Enumerates the MediaWiki API request parameters for <c>action=query</c> request.
             </summary>
+      <param name="version">MediaWiki API version. Use <seealso cref="P:WikiClientLibrary.MediaWikiVersion.Zero" /> for unknown version or compatible mode.</param>
     </member>
     <member name="M:WikiClientLibrary.Pages.Queries.Properties.CategoryInfoPropertyProvider.ParsePropertyGroup(Newtonsoft.Json.Linq.JObject)">
       <summary>
@@ -8353,15 +8418,17 @@
             Return extracts as plain text instead of limited HTML.
             </summary>
     </member>
-    <member name="M:WikiClientLibrary.Pages.Queries.Properties.ExtractsPropertyProvider.EnumParameters">
+    <member name="M:WikiClientLibrary.Pages.Queries.Properties.ExtractsPropertyProvider.EnumParameters(WikiClientLibrary.MediaWikiVersion)">
       <summary>
             Enumerates the MediaWiki API request parameters for <c>action=query</c> request.
             </summary>
+      <param name="version">MediaWiki API version. Use <seealso cref="P:WikiClientLibrary.MediaWikiVersion.Zero" /> for unknown version or compatible mode.</param>
     </member>
-    <member name="M:WikiClientLibrary.Pages.Queries.Properties.ExtractsPropertyProvider.GetMaxPaginationSize(System.Boolean)">
+    <member name="M:WikiClientLibrary.Pages.Queries.Properties.ExtractsPropertyProvider.GetMaxPaginationSize(WikiClientLibrary.MediaWikiVersion,System.Boolean)">
       <summary>
             Gets the maximum allowed count of titles in each MediaWiki API request.
             </summary>
+      <param name="version">MediaWiki API version. Use <seealso cref="P:WikiClientLibrary.MediaWikiVersion.Zero" /> for unknown version or compatible mode.</param>
       <param name="apiHighLimits">Whether the account has <c>api-highlimits</c> right.</param>
       <returns>
             The maximum allowed count of titles in each MediaWiki API request.
@@ -8435,10 +8502,11 @@
         </markup>
       </summary>
     </member>
-    <member name="M:WikiClientLibrary.Pages.Queries.Properties.FileInfoPropertyProvider.EnumParameters">
+    <member name="M:WikiClientLibrary.Pages.Queries.Properties.FileInfoPropertyProvider.EnumParameters(WikiClientLibrary.MediaWikiVersion)">
       <summary>
             Enumerates the MediaWiki API request parameters for <c>action=query</c> request.
             </summary>
+      <param name="version">MediaWiki API version. Use <seealso cref="P:WikiClientLibrary.MediaWikiVersion.Zero" /> for unknown version or compatible mode.</param>
     </member>
     <member name="M:WikiClientLibrary.Pages.Queries.Properties.FileInfoPropertyProvider.ParsePropertyGroup(Newtonsoft.Json.Linq.JObject)">
       <summary>
@@ -8500,10 +8568,11 @@
         </markup>
       </summary>
     </member>
-    <member name="M:WikiClientLibrary.Pages.Queries.Properties.GeoCoordinatesPropertyProvider.EnumParameters">
+    <member name="M:WikiClientLibrary.Pages.Queries.Properties.GeoCoordinatesPropertyProvider.EnumParameters(WikiClientLibrary.MediaWikiVersion)">
       <summary>
             Enumerates the MediaWiki API request parameters for <c>action=query</c> request.
             </summary>
+      <param name="version">MediaWiki API version. Use <seealso cref="P:WikiClientLibrary.MediaWikiVersion.Zero" /> for unknown version or compatible mode.</param>
     </member>
     <member name="M:WikiClientLibrary.Pages.Queries.Properties.GeoCoordinatesPropertyProvider.ParsePropertyGroup(Newtonsoft.Json.Linq.JObject)">
       <summary>
@@ -8554,15 +8623,17 @@
             </summary>
       <typeparam name="T">The type of property group that will be attached to every processed <see cref="T:WikiClientLibrary.Pages.WikiPage" />.</typeparam>
     </member>
-    <member name="M:WikiClientLibrary.Pages.Queries.Properties.IWikiPagePropertyProvider`1.EnumParameters">
+    <member name="M:WikiClientLibrary.Pages.Queries.Properties.IWikiPagePropertyProvider`1.EnumParameters(WikiClientLibrary.MediaWikiVersion)">
       <summary>
             Enumerates the MediaWiki API request parameters for <c>action=query</c> request.
             </summary>
+      <param name="version">MediaWiki API version. Use <seealso cref="P:WikiClientLibrary.MediaWikiVersion.Zero" /> for unknown version or compatible mode.</param>
     </member>
-    <member name="M:WikiClientLibrary.Pages.Queries.Properties.IWikiPagePropertyProvider`1.GetMaxPaginationSize(System.Boolean)">
+    <member name="M:WikiClientLibrary.Pages.Queries.Properties.IWikiPagePropertyProvider`1.GetMaxPaginationSize(WikiClientLibrary.MediaWikiVersion,System.Boolean)">
       <summary>
             Gets the maximum allowed count of titles in each MediaWiki API request.
             </summary>
+      <param name="version">MediaWiki API version. Use <seealso cref="P:WikiClientLibrary.MediaWikiVersion.Zero" /> for unknown version or compatible mode.</param>
       <param name="apiHighLimits">Whether the account has <c>api-highlimits</c> right.</param>
       <returns>
             The maximum allowed count of titles in each MediaWiki API request.
@@ -8637,52 +8708,18 @@
       </summary>
     </member>
     <member name="M:WikiClientLibrary.Pages.Queries.Properties.PageImageInfo.Equals(System.Object)">
-      <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>M:WikiClientLibrary.Pages.Queries.Properties.PageImageInfo.Equals(System.Object)</parameter>
-          </include>
-        </markup>
-      </summary>
-      <param name="obj">
-        <markup>
-          <include item="SMCMissingParamTag">
-            <parameter>param</parameter>
-            <parameter>obj</parameter>
-            <parameter>M:WikiClientLibrary.Pages.Queries.Properties.PageImageInfo.Equals(System.Object)</parameter>
-          </include>
-        </markup>
-      </param>
+      <summary>Indicates whether this instance and a specified object are equal.</summary>
+      <param name="obj">The object to compare with the current instance. </param>
+      <returns>true if <paramref name="obj" /> and this instance are the same type and represent the same value; otherwise, false. </returns>
     </member>
     <member name="M:WikiClientLibrary.Pages.Queries.Properties.PageImageInfo.Equals(WikiClientLibrary.Pages.Queries.Properties.PageImageInfo)">
-      <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>M:WikiClientLibrary.Pages.Queries.Properties.PageImageInfo.Equals(WikiClientLibrary.Pages.Queries.Properties.PageImageInfo)</parameter>
-          </include>
-        </markup>
-      </summary>
-      <param name="other">
-        <markup>
-          <include item="SMCMissingParamTag">
-            <parameter>param</parameter>
-            <parameter>other</parameter>
-            <parameter>M:WikiClientLibrary.Pages.Queries.Properties.PageImageInfo.Equals(WikiClientLibrary.Pages.Queries.Properties.PageImageInfo)</parameter>
-          </include>
-        </markup>
-      </param>
+      <summary>Indicates whether the current object is equal to another object of the same type.</summary>
+      <param name="other">An object to compare with this object.</param>
+      <returns>true if the current object is equal to the <paramref name="other" /> parameter; otherwise, false.</returns>
     </member>
     <member name="M:WikiClientLibrary.Pages.Queries.Properties.PageImageInfo.GetHashCode">
-      <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>M:WikiClientLibrary.Pages.Queries.Properties.PageImageInfo.GetHashCode</parameter>
-          </include>
-        </markup>
-      </summary>
+      <summary>Returns the hash code for this instance.</summary>
+      <returns>A 32-bit signed integer that is the hash code for this instance.</returns>
     </member>
     <member name="P:WikiClientLibrary.Pages.Queries.Properties.PageImageInfo.Height">
       <summary>Image height, in pixel.</summary>
@@ -8744,14 +8781,8 @@
       </param>
     </member>
     <member name="M:WikiClientLibrary.Pages.Queries.Properties.PageImageInfo.ToString">
-      <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>M:WikiClientLibrary.Pages.Queries.Properties.PageImageInfo.ToString</parameter>
-          </include>
-        </markup>
-      </summary>
+      <summary>Returns the fully qualified type name of this instance.</summary>
+      <returns>A <see cref="T:System.String" /> containing a fully qualified type name.</returns>
     </member>
     <member name="P:WikiClientLibrary.Pages.Queries.Properties.PageImageInfo.Url">
       <summary>Image URL.</summary>
@@ -8789,15 +8820,17 @@
         </markup>
       </summary>
     </member>
-    <member name="M:WikiClientLibrary.Pages.Queries.Properties.PageImagesPropertyProvider.EnumParameters">
+    <member name="M:WikiClientLibrary.Pages.Queries.Properties.PageImagesPropertyProvider.EnumParameters(WikiClientLibrary.MediaWikiVersion)">
       <summary>
             Enumerates the MediaWiki API request parameters for <c>action=query</c> request.
             </summary>
+      <param name="version">MediaWiki API version. Use <seealso cref="P:WikiClientLibrary.MediaWikiVersion.Zero" /> for unknown version or compatible mode.</param>
     </member>
-    <member name="M:WikiClientLibrary.Pages.Queries.Properties.PageImagesPropertyProvider.GetMaxPaginationSize(System.Boolean)">
+    <member name="M:WikiClientLibrary.Pages.Queries.Properties.PageImagesPropertyProvider.GetMaxPaginationSize(WikiClientLibrary.MediaWikiVersion,System.Boolean)">
       <summary>
             Gets the maximum allowed count of titles in each MediaWiki API request.
             </summary>
+      <param name="version">MediaWiki API version. Use <seealso cref="P:WikiClientLibrary.MediaWikiVersion.Zero" /> for unknown version or compatible mode.</param>
       <param name="apiHighLimits">Whether the account has <c>api-highlimits</c> right.</param>
       <returns>
             The maximum allowed count of titles in each MediaWiki API request.
@@ -8962,10 +8995,11 @@
         </markup>
       </summary>
     </member>
-    <member name="M:WikiClientLibrary.Pages.Queries.Properties.PageInfoPropertyProvider.EnumParameters">
+    <member name="M:WikiClientLibrary.Pages.Queries.Properties.PageInfoPropertyProvider.EnumParameters(WikiClientLibrary.MediaWikiVersion)">
       <summary>
             Enumerates the MediaWiki API request parameters for <c>action=query</c> request.
             </summary>
+      <param name="version">MediaWiki API version. Use <seealso cref="P:WikiClientLibrary.MediaWikiVersion.Zero" /> for unknown version or compatible mode.</param>
     </member>
     <member name="M:WikiClientLibrary.Pages.Queries.Properties.PageInfoPropertyProvider.ParsePropertyGroup(Newtonsoft.Json.Linq.JObject)">
       <summary>
@@ -8998,14 +9032,8 @@
             </summary>
     </member>
     <member name="M:WikiClientLibrary.Pages.Queries.Properties.PagePropertiesPropertyGroup.ToString">
-      <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>M:WikiClientLibrary.Pages.Queries.Properties.PagePropertiesPropertyGroup.ToString</parameter>
-          </include>
-        </markup>
-      </summary>
+      <summary>Returns a string that represents the current object.</summary>
+      <returns>A string that represents the current object.</returns>
     </member>
     <member name="T:WikiClientLibrary.Pages.Queries.Properties.PagePropertiesPropertyProvider">
       <summary>
@@ -9026,10 +9054,11 @@
         </markup>
       </summary>
     </member>
-    <member name="M:WikiClientLibrary.Pages.Queries.Properties.PagePropertiesPropertyProvider.EnumParameters">
+    <member name="M:WikiClientLibrary.Pages.Queries.Properties.PagePropertiesPropertyProvider.EnumParameters(WikiClientLibrary.MediaWikiVersion)">
       <summary>
             Enumerates the MediaWiki API request parameters for <c>action=query</c> request.
             </summary>
+      <param name="version">MediaWiki API version. Use <seealso cref="P:WikiClientLibrary.MediaWikiVersion.Zero" /> for unknown version or compatible mode.</param>
     </member>
     <member name="M:WikiClientLibrary.Pages.Queries.Properties.PagePropertiesPropertyProvider.ParsePropertyGroup(Newtonsoft.Json.Linq.JObject)">
       <summary>
@@ -9097,15 +9126,11 @@
         </markup>
       </summary>
     </member>
-    <member name="F:WikiClientLibrary.Pages.Queries.Properties.RevisionsPropertyProvider.DocumentationSlotName">
-      <summary>
-            Revision slot name intended for template documentations in future MediaWiki releases.
-            </summary>
-    </member>
-    <member name="M:WikiClientLibrary.Pages.Queries.Properties.RevisionsPropertyProvider.EnumParameters">
+    <member name="M:WikiClientLibrary.Pages.Queries.Properties.RevisionsPropertyProvider.EnumParameters(WikiClientLibrary.MediaWikiVersion)">
       <summary>
             Enumerates the MediaWiki API request parameters for <c>action=query</c> request.
             </summary>
+      <param name="version">MediaWiki API version. Use <seealso cref="P:WikiClientLibrary.MediaWikiVersion.Zero" /> for unknown version or compatible mode.</param>
     </member>
     <member name="P:WikiClientLibrary.Pages.Queries.Properties.RevisionsPropertyProvider.FetchContent">
       <summary>
@@ -9114,21 +9139,17 @@
             (Note: If you want HTML rather than wikitext, use action=parse instead.)
             </summary>
     </member>
-    <member name="M:WikiClientLibrary.Pages.Queries.Properties.RevisionsPropertyProvider.GetMaxPaginationSize(System.Boolean)">
+    <member name="M:WikiClientLibrary.Pages.Queries.Properties.RevisionsPropertyProvider.GetMaxPaginationSize(WikiClientLibrary.MediaWikiVersion,System.Boolean)">
       <summary>
             Gets the maximum allowed count of titles in each MediaWiki API request.
             </summary>
+      <param name="version">MediaWiki API version. Use <seealso cref="P:WikiClientLibrary.MediaWikiVersion.Zero" /> for unknown version or compatible mode.</param>
       <param name="apiHighLimits">Whether the account has <c>api-highlimits</c> right.</param>
       <returns>
             The maximum allowed count of titles in each MediaWiki API request.
             This applies to the values of <c>ids=</c> and <c>titles=</c> parameters
             for <c>action=query</c> request.
             </returns>
-    </member>
-    <member name="F:WikiClientLibrary.Pages.Queries.Properties.RevisionsPropertyProvider.MainSlotName">
-      <summary>
-            Revision slot name for main revisions.
-            </summary>
     </member>
     <member name="M:WikiClientLibrary.Pages.Queries.Properties.RevisionsPropertyProvider.ParsePropertyGroup(Newtonsoft.Json.Linq.JObject)">
       <summary>
@@ -9145,15 +9166,10 @@
             in the MediaWiki API request.
             </summary>
     </member>
-    <member name="P:WikiClientLibrary.Pages.Queries.Properties.RevisionsPropertyProvider.SlotName">
+    <member name="P:WikiClientLibrary.Pages.Queries.Properties.RevisionsPropertyProvider.Slots">
       <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>P:WikiClientLibrary.Pages.Queries.Properties.RevisionsPropertyProvider.SlotName</parameter>
-          </include>
-        </markup>
-      </summary>
+            Gets/sets the names of the revision slot from which to retrieve the revisions. (MediaWiki 1.32+)
+            </summary>
     </member>
     <member name="T:WikiClientLibrary.Pages.Queries.Properties.WikiPageCategoryInfo">
       <summary>
@@ -9237,14 +9253,8 @@
             </summary>
     </member>
     <member name="M:WikiClientLibrary.Pages.Queries.Properties.WikiPageCategoryInfo.ToString">
-      <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>M:WikiClientLibrary.Pages.Queries.Properties.WikiPageCategoryInfo.ToString</parameter>
-          </include>
-        </markup>
-      </summary>
+      <summary>Returns the fully qualified type name of this instance.</summary>
+      <returns>A <see cref="T:System.String" /> containing a fully qualified type name.</returns>
     </member>
     <member name="T:WikiClientLibrary.Pages.Queries.Properties.WikiPagePropertyGroup">
       <summary>
@@ -9276,15 +9286,17 @@
         </markup>
       </summary>
     </member>
-    <member name="M:WikiClientLibrary.Pages.Queries.Properties.WikiPagePropertyProvider`1.EnumParameters">
+    <member name="M:WikiClientLibrary.Pages.Queries.Properties.WikiPagePropertyProvider`1.EnumParameters(WikiClientLibrary.MediaWikiVersion)">
       <summary>
             Enumerates the MediaWiki API request parameters for <c>action=query</c> request.
             </summary>
+      <param name="version">MediaWiki API version. Use <seealso cref="P:WikiClientLibrary.MediaWikiVersion.Zero" /> for unknown version or compatible mode.</param>
     </member>
-    <member name="M:WikiClientLibrary.Pages.Queries.Properties.WikiPagePropertyProvider`1.GetMaxPaginationSize(System.Boolean)">
+    <member name="M:WikiClientLibrary.Pages.Queries.Properties.WikiPagePropertyProvider`1.GetMaxPaginationSize(WikiClientLibrary.MediaWikiVersion,System.Boolean)">
       <summary>
             Gets the maximum allowed count of titles in each MediaWiki API request.
             </summary>
+      <param name="version">MediaWiki API version. Use <seealso cref="P:WikiClientLibrary.MediaWikiVersion.Zero" /> for unknown version or compatible mode.</param>
       <param name="apiHighLimits">Whether the account has <c>api-highlimits</c> right.</param>
       <returns>
             The maximum allowed count of titles in each MediaWiki API request.
@@ -9306,6 +9318,669 @@
             Gets the property name, when this property is needed to be included in the <c>prop=</c> parameter
             in the MediaWiki API request.
             </summary>
+    </member>
+    <member name="T:WikiClientLibrary.Scribunto.ScribuntoConsole">
+      <summary>
+            Represents a Scribunto Lua console. (<c>action=scribunto-console</c>)
+            </summary>
+    </member>
+    <member name="M:WikiClientLibrary.Scribunto.ScribuntoConsole.#ctor(WikiClientLibrary.Sites.WikiSite)">
+      <summary>
+            Creates a new Scribunto Lua evaluation console.
+            </summary>
+      <param name="site">The MediaWiki site on which to evaluate Lua scripts.</param>
+    </member>
+    <member name="M:WikiClientLibrary.Scribunto.ScribuntoConsole.EvaluateAsync(System.String)">
+      <summary>
+            Evaluates the specified Lua expression in the console.
+            </summary>
+      <param name="expression">The Lua expression to be evaluated.</param>
+      <param name="cancellationToken">A token used to cancel the operation.</param>
+      <returns>The console evaluation result.</returns>
+      <exception cref="T:WikiClientLibrary.Scribunto.ScribuntoConsoleException">There is Scribunto console error evaluating module content.</exception>
+    </member>
+    <member name="M:WikiClientLibrary.Scribunto.ScribuntoConsole.EvaluateAsync(System.String,System.Threading.CancellationToken)">
+      <summary>
+            Evaluates the specified Lua expression in the console.
+            </summary>
+      <param name="expression">The Lua expression to be evaluated.</param>
+      <param name="cancellationToken">A token used to cancel the operation.</param>
+      <returns>The console evaluation result.</returns>
+      <exception cref="T:WikiClientLibrary.Scribunto.ScribuntoConsoleException">There is Scribunto console error evaluating module content.</exception>
+    </member>
+    <member name="P:WikiClientLibrary.Scribunto.ScribuntoConsole.ModuleTitle">
+      <summary>
+            Gets the currently used full module title.
+            </summary>
+    </member>
+    <member name="M:WikiClientLibrary.Scribunto.ScribuntoConsole.ResetAsync">
+      <summary>
+            Resets the current Lua evaluation session with empty module content and dummy module title.
+            </summary>
+      <param name="moduleContent">Lua module content. The return value of the expression will be the return value of the module.</param>
+      <param name="moduleTitle">Title of the Lua module, or <c>null</c> to use a dummy module name. To properly evaluate Lua modules, the title should start with <c>Module:</c> namespace prefix.</param>
+      <param name="cancellationToken">A token used to cancel the operation.</param>
+      <exception cref="T:WikiClientLibrary.Scribunto.ScribuntoConsoleException">There is Scribunto console error evaluating module content.</exception>
+      <exception cref="T:WikiClientLibrary.UnexpectedDataException">Cannot validate Scribunto console working properly. The sanity test does not pass.</exception>
+      <exception cref="T:System.NotSupportedException">The MediaWiki site does not support Scribunto console.</exception>
+    </member>
+    <member name="M:WikiClientLibrary.Scribunto.ScribuntoConsole.ResetAsync(System.String)">
+      <summary>
+            Resets the current Lua evaluation session with the specified module content and dummy module title.
+            </summary>
+      <param name="moduleContent">Lua module content. The return value of the expression will be the return value of the module.</param>
+      <param name="moduleTitle">Title of the Lua module, or <c>null</c> to use a dummy module name. To properly evaluate Lua modules, the title should start with <c>Module:</c> namespace prefix.</param>
+      <param name="cancellationToken">A token used to cancel the operation.</param>
+      <exception cref="T:WikiClientLibrary.Scribunto.ScribuntoConsoleException">There is Scribunto console error evaluating module content.</exception>
+      <exception cref="T:WikiClientLibrary.UnexpectedDataException">Cannot validate Scribunto console working properly. The sanity test does not pass.</exception>
+      <exception cref="T:System.NotSupportedException">The MediaWiki site does not support Scribunto console.</exception>
+    </member>
+    <member name="M:WikiClientLibrary.Scribunto.ScribuntoConsole.ResetAsync(System.String,System.String,System.Threading.CancellationToken)">
+      <summary>
+            Resets the current Lua evaluation session with the specified module content and module title.
+            </summary>
+      <param name="moduleContent">Lua module content. The return value of the expression will be the return value of the module.</param>
+      <param name="moduleTitle">Title of the Lua module, or <c>null</c> to use a dummy module name. To properly evaluate Lua modules, the title should start with <c>Module:</c> namespace prefix.</param>
+      <param name="cancellationToken">A token used to cancel the operation.</param>
+      <exception cref="T:WikiClientLibrary.Scribunto.ScribuntoConsoleException">There is Scribunto console error evaluating module content.</exception>
+      <exception cref="T:WikiClientLibrary.UnexpectedDataException">Cannot validate Scribunto console working properly. The sanity test does not pass.</exception>
+      <exception cref="T:System.NotSupportedException">The MediaWiki site does not support Scribunto console.</exception>
+    </member>
+    <member name="M:WikiClientLibrary.Scribunto.ScribuntoConsole.ResetAsync(System.String,System.Threading.CancellationToken)">
+      <summary>
+            Resets the current Lua evaluation session with the specified module content and dummy module title.
+            </summary>
+      <param name="moduleContent">Lua module content. The return value of the expression will be the return value of the module.</param>
+      <param name="moduleTitle">Title of the Lua module, or <c>null</c> to use a dummy module name. To properly evaluate Lua modules, the title should start with <c>Module:</c> namespace prefix.</param>
+      <param name="cancellationToken">A token used to cancel the operation.</param>
+      <exception cref="T:WikiClientLibrary.Scribunto.ScribuntoConsoleException">There is Scribunto console error evaluating module content.</exception>
+      <exception cref="T:WikiClientLibrary.UnexpectedDataException">Cannot validate Scribunto console working properly. The sanity test does not pass.</exception>
+      <exception cref="T:System.NotSupportedException">The MediaWiki site does not support Scribunto console.</exception>
+    </member>
+    <member name="P:WikiClientLibrary.Scribunto.ScribuntoConsole.SessionId">
+      <summary>
+            Gets the current evaluation session ID.
+            </summary>
+    </member>
+    <member name="P:WikiClientLibrary.Scribunto.ScribuntoConsole.SessionMaxSize">
+      <summary>
+            Gets the maximum allowed server memory consumption of the current evaluation session.
+            </summary>
+    </member>
+    <member name="P:WikiClientLibrary.Scribunto.ScribuntoConsole.SessionSize">
+      <summary>
+            Gets the server memory consumption of the current evaluation session.
+            </summary>
+    </member>
+    <member name="P:WikiClientLibrary.Scribunto.ScribuntoConsole.Site">
+      <summary>
+        <markup>
+          <include item="SMCMissingTag">
+            <parameter>summary</parameter>
+            <parameter>P:WikiClientLibrary.Scribunto.ScribuntoConsole.Site</parameter>
+          </include>
+        </markup>
+      </summary>
+    </member>
+    <member name="T:WikiClientLibrary.Scribunto.ScribuntoConsoleException">
+      <summary>
+            Represents an error response from Scribunto Lua console.
+            </summary>
+    </member>
+    <member name="M:WikiClientLibrary.Scribunto.ScribuntoConsoleException.#ctor">
+      <summary>
+        <markup>
+          <include item="SMCAutoDocConstructor">
+            <parameter>WikiClientLibrary.Scribunto.ScribuntoConsoleException</parameter>
+          </include>
+        </markup>
+      </summary>
+    </member>
+    <member name="M:WikiClientLibrary.Scribunto.ScribuntoConsoleException.#ctor(System.String)">
+      <summary>
+        <markup>
+          <include item="SMCAutoDocConstructor">
+            <parameter>WikiClientLibrary.Scribunto.ScribuntoConsoleException</parameter>
+          </include>
+        </markup>
+      </summary>
+      <param name="message">
+        <markup>
+          <include item="SMCMissingParamTag">
+            <parameter>param</parameter>
+            <parameter>message</parameter>
+            <parameter>M:WikiClientLibrary.Scribunto.ScribuntoConsoleException.#ctor(System.String)</parameter>
+          </include>
+        </markup>
+      </param>
+    </member>
+    <member name="M:WikiClientLibrary.Scribunto.ScribuntoConsoleException.#ctor(System.String,System.String)">
+      <summary>
+        <markup>
+          <include item="SMCAutoDocConstructor">
+            <parameter>WikiClientLibrary.Scribunto.ScribuntoConsoleException</parameter>
+          </include>
+        </markup>
+      </summary>
+      <param name="errorCode">
+        <markup>
+          <include item="SMCMissingParamTag">
+            <parameter>param</parameter>
+            <parameter>errorCode</parameter>
+            <parameter>M:WikiClientLibrary.Scribunto.ScribuntoConsoleException.#ctor(System.String,System.String)</parameter>
+          </include>
+        </markup>
+      </param>
+      <param name="errorMessage">
+        <markup>
+          <include item="SMCMissingParamTag">
+            <parameter>param</parameter>
+            <parameter>errorMessage</parameter>
+            <parameter>M:WikiClientLibrary.Scribunto.ScribuntoConsoleException.#ctor(System.String,System.String)</parameter>
+          </include>
+        </markup>
+      </param>
+    </member>
+    <member name="M:WikiClientLibrary.Scribunto.ScribuntoConsoleException.#ctor(System.String,System.String,WikiClientLibrary.Scribunto.ScribuntoEvaluationResult)">
+      <summary>
+        <markup>
+          <include item="SMCAutoDocConstructor">
+            <parameter>WikiClientLibrary.Scribunto.ScribuntoConsoleException</parameter>
+          </include>
+        </markup>
+      </summary>
+      <param name="errorCode">
+        <markup>
+          <include item="SMCMissingParamTag">
+            <parameter>param</parameter>
+            <parameter>errorCode</parameter>
+            <parameter>M:WikiClientLibrary.Scribunto.ScribuntoConsoleException.#ctor(System.String,System.String,WikiClientLibrary.Scribunto.ScribuntoEvaluationResult)</parameter>
+          </include>
+        </markup>
+      </param>
+      <param name="errorMessage">
+        <markup>
+          <include item="SMCMissingParamTag">
+            <parameter>param</parameter>
+            <parameter>errorMessage</parameter>
+            <parameter>M:WikiClientLibrary.Scribunto.ScribuntoConsoleException.#ctor(System.String,System.String,WikiClientLibrary.Scribunto.ScribuntoEvaluationResult)</parameter>
+          </include>
+        </markup>
+      </param>
+      <param name="evaluationResult">
+        <markup>
+          <include item="SMCMissingParamTag">
+            <parameter>param</parameter>
+            <parameter>evaluationResult</parameter>
+            <parameter>M:WikiClientLibrary.Scribunto.ScribuntoConsoleException.#ctor(System.String,System.String,WikiClientLibrary.Scribunto.ScribuntoEvaluationResult)</parameter>
+          </include>
+        </markup>
+      </param>
+    </member>
+    <member name="M:WikiClientLibrary.Scribunto.ScribuntoConsoleException.#ctor(System.String,System.String,WikiClientLibrary.Scribunto.ScribuntoEvaluationResult,System.String)">
+      <summary>
+        <markup>
+          <include item="SMCAutoDocConstructor">
+            <parameter>WikiClientLibrary.Scribunto.ScribuntoConsoleException</parameter>
+          </include>
+        </markup>
+      </summary>
+      <param name="errorCode">
+        <markup>
+          <include item="SMCMissingParamTag">
+            <parameter>param</parameter>
+            <parameter>errorCode</parameter>
+            <parameter>M:WikiClientLibrary.Scribunto.ScribuntoConsoleException.#ctor(System.String,System.String,WikiClientLibrary.Scribunto.ScribuntoEvaluationResult,System.String)</parameter>
+          </include>
+        </markup>
+      </param>
+      <param name="errorMessage">
+        <markup>
+          <include item="SMCMissingParamTag">
+            <parameter>param</parameter>
+            <parameter>errorMessage</parameter>
+            <parameter>M:WikiClientLibrary.Scribunto.ScribuntoConsoleException.#ctor(System.String,System.String,WikiClientLibrary.Scribunto.ScribuntoEvaluationResult,System.String)</parameter>
+          </include>
+        </markup>
+      </param>
+      <param name="evaluationResult">
+        <markup>
+          <include item="SMCMissingParamTag">
+            <parameter>param</parameter>
+            <parameter>evaluationResult</parameter>
+            <parameter>M:WikiClientLibrary.Scribunto.ScribuntoConsoleException.#ctor(System.String,System.String,WikiClientLibrary.Scribunto.ScribuntoEvaluationResult,System.String)</parameter>
+          </include>
+        </markup>
+      </param>
+      <param name="message">
+        <markup>
+          <include item="SMCMissingParamTag">
+            <parameter>param</parameter>
+            <parameter>message</parameter>
+            <parameter>M:WikiClientLibrary.Scribunto.ScribuntoConsoleException.#ctor(System.String,System.String,WikiClientLibrary.Scribunto.ScribuntoEvaluationResult,System.String)</parameter>
+          </include>
+        </markup>
+      </param>
+    </member>
+    <member name="P:WikiClientLibrary.Scribunto.ScribuntoConsoleException.ErrorCode">
+      <summary>
+            The error code (<c>messagename</c>) received from server.
+            </summary>
+    </member>
+    <member name="P:WikiClientLibrary.Scribunto.ScribuntoConsoleException.ErrorMessage">
+      <summary>
+            The error description (<c>message</c>) received from server.
+            </summary>
+    </member>
+    <member name="P:WikiClientLibrary.Scribunto.ScribuntoConsoleException.EvaluationResult">
+      <summary>
+            The evaluation result that causes the exception.
+            </summary>
+    </member>
+    <member name="T:WikiClientLibrary.Scribunto.ScribuntoEvaluationResult">
+      <summary>
+        <markup>
+          <include item="SMCMissingTag">
+            <parameter>summary</parameter>
+            <parameter>T:WikiClientLibrary.Scribunto.ScribuntoEvaluationResult</parameter>
+          </include>
+        </markup>
+      </summary>
+    </member>
+    <member name="M:WikiClientLibrary.Scribunto.ScribuntoEvaluationResult.#ctor">
+      <summary>
+        <markup>
+          <include item="SMCAutoDocConstructor">
+            <parameter>WikiClientLibrary.Scribunto.ScribuntoEvaluationResult</parameter>
+          </include>
+        </markup>
+      </summary>
+    </member>
+    <member name="P:WikiClientLibrary.Scribunto.ScribuntoEvaluationResult.IsNewSession">
+      <summary>Whether the server indicates this session ID is new.</summary>
+    </member>
+    <member name="P:WikiClientLibrary.Scribunto.ScribuntoEvaluationResult.Output">
+      <summary>The text outputted to the console using <c>mw.log</c>.</summary>
+    </member>
+    <member name="P:WikiClientLibrary.Scribunto.ScribuntoEvaluationResult.ReturnValue">
+      <summary>The string representation of the evaluation return value.</summary>
+    </member>
+    <member name="P:WikiClientLibrary.Scribunto.ScribuntoEvaluationResult.SessionId">
+      <summary>The current Scribunto console session ID.</summary>
+    </member>
+    <member name="P:WikiClientLibrary.Scribunto.ScribuntoEvaluationResult.SessionMaxSize">
+      <summary>Maximum allowed server memory consumption of the current evaluation session.</summary>
+    </member>
+    <member name="P:WikiClientLibrary.Scribunto.ScribuntoEvaluationResult.SessionSize">
+      <summary>Server memory consumption of the current evaluation session.</summary>
+    </member>
+    <member name="P:WikiClientLibrary.Scribunto.ScribuntoEvaluationResult.Type">
+      <summary>The evaluation result type.</summary>
+    </member>
+    <member name="T:WikiClientLibrary.Scribunto.ScribuntoEvaluationResultType">
+      <summary>
+            The type of Scribunto console evaluation result.
+            </summary>
+    </member>
+    <member name="F:WikiClientLibrary.Scribunto.ScribuntoEvaluationResultType.Unknown">
+      <summary>Unknown / invalid evaluation result type.</summary>
+    </member>
+    <member name="F:WikiClientLibrary.Scribunto.ScribuntoEvaluationResultType.Normal">
+      <summary>Normal evaluation result. Evaluation completed successfully.</summary>
+    </member>
+    <member name="F:WikiClientLibrary.Scribunto.ScribuntoEvaluationResultType.Error">
+      <summary>Evaluation error received from server. It will cause <seealso cref="T:WikiClientLibrary.Scribunto.ScribuntoConsoleException" />.</summary>
+    </member>
+    <member name="T:WikiClientLibrary.Scribunto.ScribuntoLuaErrorCodes">
+      <summary>
+            A list of predefined Scribunto Lua error codes.
+            </summary>
+    </member>
+    <member name="F:WikiClientLibrary.Scribunto.ScribuntoLuaErrorCodes.EvaluationOutOfMemory">
+      <summary>The amount of memory allowed for running scripts has been exceeded.</summary>
+    </member>
+    <member name="F:WikiClientLibrary.Scribunto.ScribuntoLuaErrorCodes.EvaluationTimeout">
+      <summary>The time allocated for running scripts has expired.</summary>
+    </member>
+    <member name="F:WikiClientLibrary.Scribunto.ScribuntoLuaErrorCodes.NoFunction">
+      <summary>Script error: You must specify a function to call.</summary>
+    </member>
+    <member name="F:WikiClientLibrary.Scribunto.ScribuntoLuaErrorCodes.NoSuchFunction">
+      <summary>Script error: The function '$2' does not exist.</summary>
+    </member>
+    <member name="F:WikiClientLibrary.Scribunto.ScribuntoLuaErrorCodes.NoSuchModule">
+      <summary>Script error: No such module '$2'.</summary>
+    </member>
+    <member name="F:WikiClientLibrary.Scribunto.ScribuntoLuaErrorCodes.NotAFunction">
+      <summary>Script error: '$2' is not a function.</summary>
+    </member>
+    <member name="T:WikiClientLibrary.Scribunto.ScribuntoWikiSiteExtensions">
+      <summary>
+        <markup>
+          <include item="SMCMissingTag">
+            <parameter>summary</parameter>
+            <parameter>T:WikiClientLibrary.Scribunto.ScribuntoWikiSiteExtensions</parameter>
+          </include>
+        </markup>
+      </summary>
+    </member>
+    <member name="M:WikiClientLibrary.Scribunto.ScribuntoWikiSiteExtensions.ScribuntoExecuteLuaAsync``1(WikiClientLibrary.Sites.WikiSite,System.String)">
+      <summary>
+            Evaluates an ad-hoc Lua module with the specified module content in Scribunto Lua console, and gets the returned value.
+            </summary>
+      <param name="site">The MediaWiki site on which to evaluate the module.</param>
+      <param name="moduleContent">The module content to be evaluated. You need to use <c>return</c> statement to return any value from the module.</param>
+      <param name="serializer">The JsonSerializer used to deserialize the return value from JSON, or <c>null</c> to use default JSON serializer.</param>
+      <param name="cancellationToken">A token used to cancel the operation.</param>
+      <typeparam name="T">The expected evaluation return value type.</typeparam>
+      <returns>The deserialized Lua evaluation result.</returns>
+    </member>
+    <member name="M:WikiClientLibrary.Scribunto.ScribuntoWikiSiteExtensions.ScribuntoExecuteLuaAsync``1(WikiClientLibrary.Sites.WikiSite,System.String,Newtonsoft.Json.JsonSerializer)">
+      <summary>
+            Evaluates an ad-hoc Lua module with the specified module content in Scribunto Lua console, and gets the returned value.
+            </summary>
+      <param name="site">The MediaWiki site on which to evaluate the module.</param>
+      <param name="moduleContent">The module content to be evaluated. You need to use <c>return</c> statement to return any value from the module.</param>
+      <param name="serializer">The JsonSerializer used to deserialize the return value from JSON, or <c>null</c> to use default JSON serializer.</param>
+      <param name="cancellationToken">A token used to cancel the operation.</param>
+      <typeparam name="T">The expected evaluation return value type.</typeparam>
+      <returns>The deserialized Lua evaluation result.</returns>
+    </member>
+    <member name="M:WikiClientLibrary.Scribunto.ScribuntoWikiSiteExtensions.ScribuntoExecuteLuaAsync``1(WikiClientLibrary.Sites.WikiSite,System.String,Newtonsoft.Json.JsonSerializer,System.Threading.CancellationToken)">
+      <summary>
+            Evaluates an ad-hoc Lua module with the specified module content in Scribunto Lua console, and gets the returned value.
+            </summary>
+      <param name="site">The MediaWiki site on which to evaluate the module.</param>
+      <param name="moduleContent">The module content to be evaluated. You need to use <c>return</c> statement to return any value from the module.</param>
+      <param name="serializer">The JsonSerializer used to deserialize the return value from JSON, or <c>null</c> to use default JSON serializer.</param>
+      <param name="cancellationToken">A token used to cancel the operation.</param>
+      <typeparam name="T">The expected evaluation return value type.</typeparam>
+      <returns>The deserialized Lua evaluation result.</returns>
+    </member>
+    <member name="M:WikiClientLibrary.Scribunto.ScribuntoWikiSiteExtensions.ScribuntoExecuteLuaAsync``1(WikiClientLibrary.Sites.WikiSite,System.String,System.Threading.CancellationToken)">
+      <summary>
+            Evaluates an ad-hoc Lua module with the specified module content in Scribunto Lua console, and gets the returned value.
+            </summary>
+      <param name="site">The MediaWiki site on which to evaluate the module.</param>
+      <param name="moduleContent">The module content to be evaluated. You need to use <c>return</c> statement to return any value from the module.</param>
+      <param name="serializer">The JsonSerializer used to deserialize the return value from JSON, or <c>null</c> to use default JSON serializer.</param>
+      <param name="cancellationToken">A token used to cancel the operation.</param>
+      <typeparam name="T">The expected evaluation return value type.</typeparam>
+      <returns>The deserialized Lua evaluation result.</returns>
+    </member>
+    <member name="M:WikiClientLibrary.Scribunto.ScribuntoWikiSiteExtensions.ScribuntoLoadDataAsync``1(WikiClientLibrary.Sites.WikiSite,System.String)">
+      <summary>
+            Imports the Lua module with the specified name and gets the module content.
+            </summary>
+      <param name="site">
+        <markup>
+          <include item="SMCMissingParamTag">
+            <parameter>param</parameter>
+            <parameter>site</parameter>
+            <parameter>M:WikiClientLibrary.Scribunto.ScribuntoWikiSiteExtensions.ScribuntoLoadDataAsync``1(WikiClientLibrary.Sites.WikiSite,System.String)</parameter>
+          </include>
+        </markup>
+      </param>
+      <param name="moduleName">
+        <markup>
+          <include item="SMCMissingParamTag">
+            <parameter>param</parameter>
+            <parameter>moduleName</parameter>
+            <parameter>M:WikiClientLibrary.Scribunto.ScribuntoWikiSiteExtensions.ScribuntoLoadDataAsync``1(WikiClientLibrary.Sites.WikiSite,System.String)</parameter>
+          </include>
+        </markup>
+      </param>
+      <typeparam name="T">
+        <markup>
+          <include item="SMCMissingParamTag">
+            <parameter>typeparam</parameter>
+            <parameter>T</parameter>
+            <parameter>M:WikiClientLibrary.Scribunto.ScribuntoWikiSiteExtensions.ScribuntoLoadDataAsync``1(WikiClientLibrary.Sites.WikiSite,System.String)</parameter>
+          </include>
+        </markup>
+      </typeparam>
+      <returns>The deserialized Lua evaluation result of the module.</returns>
+    </member>
+    <member name="M:WikiClientLibrary.Scribunto.ScribuntoWikiSiteExtensions.ScribuntoLoadDataAsync``1(WikiClientLibrary.Sites.WikiSite,System.String,Newtonsoft.Json.JsonSerializer)">
+      <summary>
+            Imports the Lua module with the specified name and gets the module content.
+            </summary>
+      <param name="site">
+        <markup>
+          <include item="SMCMissingParamTag">
+            <parameter>param</parameter>
+            <parameter>site</parameter>
+            <parameter>M:WikiClientLibrary.Scribunto.ScribuntoWikiSiteExtensions.ScribuntoLoadDataAsync``1(WikiClientLibrary.Sites.WikiSite,System.String,Newtonsoft.Json.JsonSerializer)</parameter>
+          </include>
+        </markup>
+      </param>
+      <param name="moduleName">
+        <markup>
+          <include item="SMCMissingParamTag">
+            <parameter>param</parameter>
+            <parameter>moduleName</parameter>
+            <parameter>M:WikiClientLibrary.Scribunto.ScribuntoWikiSiteExtensions.ScribuntoLoadDataAsync``1(WikiClientLibrary.Sites.WikiSite,System.String,Newtonsoft.Json.JsonSerializer)</parameter>
+          </include>
+        </markup>
+      </param>
+      <param name="serializer">
+        <markup>
+          <include item="SMCMissingParamTag">
+            <parameter>param</parameter>
+            <parameter>serializer</parameter>
+            <parameter>M:WikiClientLibrary.Scribunto.ScribuntoWikiSiteExtensions.ScribuntoLoadDataAsync``1(WikiClientLibrary.Sites.WikiSite,System.String,Newtonsoft.Json.JsonSerializer)</parameter>
+          </include>
+        </markup>
+      </param>
+      <typeparam name="T">
+        <markup>
+          <include item="SMCMissingParamTag">
+            <parameter>typeparam</parameter>
+            <parameter>T</parameter>
+            <parameter>M:WikiClientLibrary.Scribunto.ScribuntoWikiSiteExtensions.ScribuntoLoadDataAsync``1(WikiClientLibrary.Sites.WikiSite,System.String,Newtonsoft.Json.JsonSerializer)</parameter>
+          </include>
+        </markup>
+      </typeparam>
+      <returns>The deserialized Lua evaluation result of the module.</returns>
+    </member>
+    <member name="M:WikiClientLibrary.Scribunto.ScribuntoWikiSiteExtensions.ScribuntoLoadDataAsync``1(WikiClientLibrary.Sites.WikiSite,System.String,Newtonsoft.Json.JsonSerializer,System.Threading.CancellationToken)">
+      <summary>
+            Imports the Lua module with the specified name and gets the module content.
+            </summary>
+      <param name="site">
+        <markup>
+          <include item="SMCMissingParamTag">
+            <parameter>param</parameter>
+            <parameter>site</parameter>
+            <parameter>M:WikiClientLibrary.Scribunto.ScribuntoWikiSiteExtensions.ScribuntoLoadDataAsync``1(WikiClientLibrary.Sites.WikiSite,System.String,Newtonsoft.Json.JsonSerializer,System.Threading.CancellationToken)</parameter>
+          </include>
+        </markup>
+      </param>
+      <param name="moduleName">
+        <markup>
+          <include item="SMCMissingParamTag">
+            <parameter>param</parameter>
+            <parameter>moduleName</parameter>
+            <parameter>M:WikiClientLibrary.Scribunto.ScribuntoWikiSiteExtensions.ScribuntoLoadDataAsync``1(WikiClientLibrary.Sites.WikiSite,System.String,Newtonsoft.Json.JsonSerializer,System.Threading.CancellationToken)</parameter>
+          </include>
+        </markup>
+      </param>
+      <param name="serializer">
+        <markup>
+          <include item="SMCMissingParamTag">
+            <parameter>param</parameter>
+            <parameter>serializer</parameter>
+            <parameter>M:WikiClientLibrary.Scribunto.ScribuntoWikiSiteExtensions.ScribuntoLoadDataAsync``1(WikiClientLibrary.Sites.WikiSite,System.String,Newtonsoft.Json.JsonSerializer,System.Threading.CancellationToken)</parameter>
+          </include>
+        </markup>
+      </param>
+      <param name="cancellationToken">
+        <markup>
+          <include item="SMCMissingParamTag">
+            <parameter>param</parameter>
+            <parameter>cancellationToken</parameter>
+            <parameter>M:WikiClientLibrary.Scribunto.ScribuntoWikiSiteExtensions.ScribuntoLoadDataAsync``1(WikiClientLibrary.Sites.WikiSite,System.String,Newtonsoft.Json.JsonSerializer,System.Threading.CancellationToken)</parameter>
+          </include>
+        </markup>
+      </param>
+      <typeparam name="T">
+        <markup>
+          <include item="SMCMissingParamTag">
+            <parameter>typeparam</parameter>
+            <parameter>T</parameter>
+            <parameter>M:WikiClientLibrary.Scribunto.ScribuntoWikiSiteExtensions.ScribuntoLoadDataAsync``1(WikiClientLibrary.Sites.WikiSite,System.String,Newtonsoft.Json.JsonSerializer,System.Threading.CancellationToken)</parameter>
+          </include>
+        </markup>
+      </typeparam>
+      <returns>The deserialized Lua evaluation result of the module.</returns>
+    </member>
+    <member name="M:WikiClientLibrary.Scribunto.ScribuntoWikiSiteExtensions.ScribuntoLoadDataAsync``1(WikiClientLibrary.Sites.WikiSite,System.String,System.String)">
+      <summary>
+            Imports the Lua module with the specified name and gets the module content.
+            </summary>
+      <param name="site">
+        <markup>
+          <include item="SMCMissingParamTag">
+            <parameter>param</parameter>
+            <parameter>site</parameter>
+            <parameter>M:WikiClientLibrary.Scribunto.ScribuntoWikiSiteExtensions.ScribuntoLoadDataAsync``1(WikiClientLibrary.Sites.WikiSite,System.String,System.String)</parameter>
+          </include>
+        </markup>
+      </param>
+      <param name="moduleName">
+        <markup>
+          <include item="SMCMissingParamTag">
+            <parameter>param</parameter>
+            <parameter>moduleName</parameter>
+            <parameter>M:WikiClientLibrary.Scribunto.ScribuntoWikiSiteExtensions.ScribuntoLoadDataAsync``1(WikiClientLibrary.Sites.WikiSite,System.String,System.String)</parameter>
+          </include>
+        </markup>
+      </param>
+      <param name="epilog">
+        <markup>
+          <include item="SMCMissingParamTag">
+            <parameter>param</parameter>
+            <parameter>epilog</parameter>
+            <parameter>M:WikiClientLibrary.Scribunto.ScribuntoWikiSiteExtensions.ScribuntoLoadDataAsync``1(WikiClientLibrary.Sites.WikiSite,System.String,System.String)</parameter>
+          </include>
+        </markup>
+      </param>
+      <typeparam name="T">
+        <markup>
+          <include item="SMCMissingParamTag">
+            <parameter>typeparam</parameter>
+            <parameter>T</parameter>
+            <parameter>M:WikiClientLibrary.Scribunto.ScribuntoWikiSiteExtensions.ScribuntoLoadDataAsync``1(WikiClientLibrary.Sites.WikiSite,System.String,System.String)</parameter>
+          </include>
+        </markup>
+      </typeparam>
+      <returns>The deserialized Lua evaluation result of the module.</returns>
+    </member>
+    <member name="M:WikiClientLibrary.Scribunto.ScribuntoWikiSiteExtensions.ScribuntoLoadDataAsync``1(WikiClientLibrary.Sites.WikiSite,System.String,System.String,Newtonsoft.Json.JsonSerializer,System.Threading.CancellationToken)">
+      <summary>
+            Imports the Lua module with the specified name and evaluates the specified Lua code with it.
+            </summary>
+      <param name="site">The MediaWiki site on which to evaluate the module.</param>
+      <param name="moduleName">Name of the module to be imported, with or without <c>Module:</c> prefix.</param>
+      <param name="epilog">The Lua code snippet used to return value from the imported module (denoted as <c>p</c> in Lua),
+            or <c>null</c> to use default epilog (<c>return p</c>).</param>
+      <param name="serializer">The JsonSerializer used to deserialize the return value from JSON, or <c>null</c> to use default JSON serializer.</param>
+      <param name="cancellationToken">A token used to cancel the operation.</param>
+      <typeparam name="T">The expected evaluation return value type.</typeparam>
+      <returns>The deserialized Lua evaluation result.</returns>
+    </member>
+    <member name="M:WikiClientLibrary.Scribunto.ScribuntoWikiSiteExtensions.ScribuntoLoadDataAsync``1(WikiClientLibrary.Sites.WikiSite,System.String,System.String,System.Threading.CancellationToken)">
+      <summary>
+            Imports the Lua module with the specified name and gets the module content.
+            </summary>
+      <param name="site">
+        <markup>
+          <include item="SMCMissingParamTag">
+            <parameter>param</parameter>
+            <parameter>site</parameter>
+            <parameter>M:WikiClientLibrary.Scribunto.ScribuntoWikiSiteExtensions.ScribuntoLoadDataAsync``1(WikiClientLibrary.Sites.WikiSite,System.String,System.String,System.Threading.CancellationToken)</parameter>
+          </include>
+        </markup>
+      </param>
+      <param name="moduleName">
+        <markup>
+          <include item="SMCMissingParamTag">
+            <parameter>param</parameter>
+            <parameter>moduleName</parameter>
+            <parameter>M:WikiClientLibrary.Scribunto.ScribuntoWikiSiteExtensions.ScribuntoLoadDataAsync``1(WikiClientLibrary.Sites.WikiSite,System.String,System.String,System.Threading.CancellationToken)</parameter>
+          </include>
+        </markup>
+      </param>
+      <param name="epilog">
+        <markup>
+          <include item="SMCMissingParamTag">
+            <parameter>param</parameter>
+            <parameter>epilog</parameter>
+            <parameter>M:WikiClientLibrary.Scribunto.ScribuntoWikiSiteExtensions.ScribuntoLoadDataAsync``1(WikiClientLibrary.Sites.WikiSite,System.String,System.String,System.Threading.CancellationToken)</parameter>
+          </include>
+        </markup>
+      </param>
+      <param name="cancellationToken">
+        <markup>
+          <include item="SMCMissingParamTag">
+            <parameter>param</parameter>
+            <parameter>cancellationToken</parameter>
+            <parameter>M:WikiClientLibrary.Scribunto.ScribuntoWikiSiteExtensions.ScribuntoLoadDataAsync``1(WikiClientLibrary.Sites.WikiSite,System.String,System.String,System.Threading.CancellationToken)</parameter>
+          </include>
+        </markup>
+      </param>
+      <typeparam name="T">
+        <markup>
+          <include item="SMCMissingParamTag">
+            <parameter>typeparam</parameter>
+            <parameter>T</parameter>
+            <parameter>M:WikiClientLibrary.Scribunto.ScribuntoWikiSiteExtensions.ScribuntoLoadDataAsync``1(WikiClientLibrary.Sites.WikiSite,System.String,System.String,System.Threading.CancellationToken)</parameter>
+          </include>
+        </markup>
+      </typeparam>
+      <returns>The deserialized Lua evaluation result of the module.</returns>
+    </member>
+    <member name="M:WikiClientLibrary.Scribunto.ScribuntoWikiSiteExtensions.ScribuntoLoadDataAsync``1(WikiClientLibrary.Sites.WikiSite,System.String,System.Threading.CancellationToken)">
+      <summary>
+            Imports the Lua module with the specified name and gets the module content.
+            </summary>
+      <param name="site">
+        <markup>
+          <include item="SMCMissingParamTag">
+            <parameter>param</parameter>
+            <parameter>site</parameter>
+            <parameter>M:WikiClientLibrary.Scribunto.ScribuntoWikiSiteExtensions.ScribuntoLoadDataAsync``1(WikiClientLibrary.Sites.WikiSite,System.String,System.Threading.CancellationToken)</parameter>
+          </include>
+        </markup>
+      </param>
+      <param name="moduleName">
+        <markup>
+          <include item="SMCMissingParamTag">
+            <parameter>param</parameter>
+            <parameter>moduleName</parameter>
+            <parameter>M:WikiClientLibrary.Scribunto.ScribuntoWikiSiteExtensions.ScribuntoLoadDataAsync``1(WikiClientLibrary.Sites.WikiSite,System.String,System.Threading.CancellationToken)</parameter>
+          </include>
+        </markup>
+      </param>
+      <param name="cancellationToken">
+        <markup>
+          <include item="SMCMissingParamTag">
+            <parameter>param</parameter>
+            <parameter>cancellationToken</parameter>
+            <parameter>M:WikiClientLibrary.Scribunto.ScribuntoWikiSiteExtensions.ScribuntoLoadDataAsync``1(WikiClientLibrary.Sites.WikiSite,System.String,System.Threading.CancellationToken)</parameter>
+          </include>
+        </markup>
+      </param>
+      <typeparam name="T">
+        <markup>
+          <include item="SMCMissingParamTag">
+            <parameter>typeparam</parameter>
+            <parameter>T</parameter>
+            <parameter>M:WikiClientLibrary.Scribunto.ScribuntoWikiSiteExtensions.ScribuntoLoadDataAsync``1(WikiClientLibrary.Sites.WikiSite,System.String,System.Threading.CancellationToken)</parameter>
+          </include>
+        </markup>
+      </typeparam>
+      <returns>The deserialized Lua evaluation result of the module.</returns>
     </member>
     <member name="T:WikiClientLibrary.Sites.AccountAssertionBehavior">
       <summary>
@@ -9492,14 +10167,8 @@
       </summary>
     </member>
     <member name="M:WikiClientLibrary.Sites.AccountInfo.ToString">
-      <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>M:WikiClientLibrary.Sites.AccountInfo.ToString</parameter>
-          </include>
-        </markup>
-      </summary>
+      <summary>Returns a string that represents the current object.</summary>
+      <returns>A string that represents the current object.</returns>
     </member>
     <member name="M:WikiClientLibrary.Sites.AccountInfo.ToUserStub">
       <summary>
@@ -10479,7 +11148,7 @@
     </member>
     <member name="P:WikiClientLibrary.Sites.SiteInfo.Version">
       <summary>
-            Gets main part of API version. E.g. 1.28.0 for MediaWiki 1.28.0-wmf.15 .
+            Gets MediaWiki API version.
             </summary>
     </member>
     <member name="T:WikiClientLibrary.Sites.SiteOptions">
@@ -10748,14 +11417,8 @@
         <paramref name="wikiClient" /> is <c>null</c>.</exception>
     </member>
     <member name="P:WikiClientLibrary.Sites.WikiFamily.Count">
-      <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>P:WikiClientLibrary.Sites.WikiFamily.Count</parameter>
-          </include>
-        </markup>
-      </summary>
+      <summary>Gets the number of elements in the collection.</summary>
+      <returns>The number of elements in the collection. </returns>
     </member>
     <member name="M:WikiClientLibrary.Sites.WikiFamily.CreateSiteAsync(System.String,System.String)">
       <summary>
@@ -10766,14 +11429,8 @@
       <returns>A <see cref="T:WikiClientLibrary.Sites.WikiSite" /> instance.</returns>
     </member>
     <member name="M:WikiClientLibrary.Sites.WikiFamily.GetEnumerator">
-      <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>M:WikiClientLibrary.Sites.WikiFamily.GetEnumerator</parameter>
-          </include>
-        </markup>
-      </summary>
+      <summary>Returns an enumerator that iterates through the collection.</summary>
+      <returns>An enumerator that can be used to iterate through the collection.</returns>
     </member>
     <member name="M:WikiClientLibrary.Sites.WikiFamily.GetSiteAsync(System.String)">
       <summary>
@@ -10817,14 +11474,8 @@
             </summary>
     </member>
     <member name="M:WikiClientLibrary.Sites.WikiFamily.System#Collections#IEnumerable#GetEnumerator">
-      <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>M:WikiClientLibrary.Sites.WikiFamily.System#Collections#IEnumerable#GetEnumerator</parameter>
-          </include>
-        </markup>
-      </summary>
+      <summary>Returns an enumerator that iterates through a collection.</summary>
+      <returns>An <see cref="T:System.Collections.IEnumerator" /> object that can be used to iterate through the collection.</returns>
     </member>
     <member name="M:WikiClientLibrary.Sites.WikiFamily.TryNormalize(System.String)">
       <summary>
@@ -11326,14 +11977,8 @@
             </summary>
     </member>
     <member name="M:WikiClientLibrary.Sites.WikiSite.ToString">
-      <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>M:WikiClientLibrary.Sites.WikiSite.ToString</parameter>
-          </include>
-        </markup>
-      </summary>
+      <summary>Returns a string that represents the current object.</summary>
+      <returns>A string that represents the current object.</returns>
     </member>
     <member name="P:WikiClientLibrary.Sites.WikiSite.WikiClient">
       <summary>

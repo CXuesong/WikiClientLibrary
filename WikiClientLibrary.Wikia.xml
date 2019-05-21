@@ -235,14 +235,8 @@
       <summary>Wikia Exception type.</summary>
     </member>
     <member name="P:WikiClientLibrary.Wikia.WikiaApiException.Message">
-      <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>P:WikiClientLibrary.Wikia.WikiaApiException.Message</parameter>
-          </include>
-        </markup>
-      </summary>
+      <summary>Gets a message that describes the current exception.</summary>
+      <returns>The error message that explains the reason for the exception, or an empty string ("").</returns>
     </member>
     <member name="P:WikiClientLibrary.Wikia.WikiaApiException.TraceId">
       <summary>Wikia error trace ID.</summary>
@@ -673,14 +667,8 @@
       <summary>Gets the Wikia site.</summary>
     </member>
     <member name="M:WikiClientLibrary.Wikia.Discussions.Board.ToString">
-      <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>M:WikiClientLibrary.Wikia.Discussions.Board.ToString</parameter>
-          </include>
-        </markup>
-      </summary>
+      <summary>Returns a string that represents the current object.</summary>
+      <returns>A string that represents the current object.</returns>
     </member>
     <member name="T:WikiClientLibrary.Wikia.Discussions.DiscussionsExtensions">
       <summary>
@@ -820,11 +808,6 @@
             Provides options for creating or repying to a post.
             </summary>
     </member>
-    <member name="F:WikiClientLibrary.Wikia.Discussions.PostCreationOptions.None">
-      <summary>
-            No options.
-            </summary>
-    </member>
     <member name="F:WikiClientLibrary.Wikia.Discussions.PostCreationOptions.AsArticleComment">
       <summary>
             Creates the new post using article comment API,
@@ -837,19 +820,44 @@
             regardless of the current namespace.
             </summary>
     </member>
+    <member name="F:WikiClientLibrary.Wikia.Discussions.PostCreationOptions.None">
+      <summary>
+            No options.
+            </summary>
+    </member>
+    <member name="F:WikiClientLibrary.Wikia.Discussions.PostCreationOptions.value__">
+      <summary>
+        <markup>
+          <include item="SMCMissingTag">
+            <parameter>summary</parameter>
+            <parameter>F:WikiClientLibrary.Wikia.Discussions.PostCreationOptions.value__</parameter>
+          </include>
+        </markup>
+      </summary>
+    </member>
     <member name="T:WikiClientLibrary.Wikia.Discussions.PostQueryOptions">
       <summary>
             Provides options for fetching a post from the server.
             </summary>
-    </member>
-    <member name="F:WikiClientLibrary.Wikia.Discussions.PostQueryOptions.None">
-      <summary>No options.</summary>
     </member>
     <member name="F:WikiClientLibrary.Wikia.Discussions.PostQueryOptions.ExactAuthoringInformation">
       <summary>
             Asks for exact author information, even if we are fetching for multiple
             comments at one time.
             </summary>
+    </member>
+    <member name="F:WikiClientLibrary.Wikia.Discussions.PostQueryOptions.None">
+      <summary>No options.</summary>
+    </member>
+    <member name="F:WikiClientLibrary.Wikia.Discussions.PostQueryOptions.value__">
+      <summary>
+        <markup>
+          <include item="SMCMissingTag">
+            <parameter>summary</parameter>
+            <parameter>F:WikiClientLibrary.Wikia.Discussions.PostQueryOptions.value__</parameter>
+          </include>
+        </markup>
+      </summary>
     </member>
     <member name="T:WikiClientLibrary.Wikia.Sites.AppleTouchIconInfo">
       <summary>
@@ -935,14 +943,8 @@
       </summary>
     </member>
     <member name="M:WikiClientLibrary.Wikia.Sites.NavigationItem.ToString">
-      <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>M:WikiClientLibrary.Wikia.Sites.NavigationItem.ToString</parameter>
-          </include>
-        </markup>
-      </summary>
+      <summary>Returns a string that represents the current object.</summary>
+      <returns>A string that represents the current object.</returns>
     </member>
     <member name="P:WikiClientLibrary.Wikia.Sites.NavigationItem.Url">
       <summary>
@@ -984,14 +986,8 @@
       </summary>
     </member>
     <member name="M:WikiClientLibrary.Wikia.Sites.SiteHtmlTitleInfo.ToString">
-      <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>M:WikiClientLibrary.Wikia.Sites.SiteHtmlTitleInfo.ToString</parameter>
-          </include>
-        </markup>
-      </summary>
+      <summary>Returns a string that represents the current object.</summary>
+      <returns>A string that represents the current object.</returns>
     </member>
     <member name="T:WikiClientLibrary.Wikia.Sites.SiteLanguageInfo">
       <summary>
@@ -1028,14 +1024,8 @@
       </summary>
     </member>
     <member name="M:WikiClientLibrary.Wikia.Sites.SiteLanguageInfo.ToString">
-      <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>M:WikiClientLibrary.Wikia.Sites.SiteLanguageInfo.ToString</parameter>
-          </include>
-        </markup>
-      </summary>
+      <summary>Returns a string that represents the current object.</summary>
+      <returns>A string that represents the current object.</returns>
     </member>
     <member name="T:WikiClientLibrary.Wikia.Sites.SiteThemeInfo">
       <summary>
@@ -1504,14 +1494,8 @@
       </summary>
     </member>
     <member name="M:WikiClientLibrary.Wikia.Sites.SiteVariableData.ToString">
-      <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>M:WikiClientLibrary.Wikia.Sites.SiteVariableData.ToString</parameter>
-          </include>
-        </markup>
-      </summary>
+      <summary>Returns a string that represents the current object.</summary>
+      <returns>A string that represents the current object.</returns>
     </member>
     <member name="P:WikiClientLibrary.Wikia.Sites.SiteVariableData.TrackingInfo">
       <summary>
@@ -1564,7 +1548,7 @@
     </member>
     <member name="T:WikiClientLibrary.Wikia.Sites.WikiaSite">
       <summary>
-            The encapsulated Wikia site endpoint.
+            Represents a Wikia site endpoint.
             </summary>
     </member>
     <member name="M:WikiClientLibrary.Wikia.Sites.WikiaSite.#ctor(WikiClientLibrary.Client.IWikiClient,System.String)">
@@ -1873,14 +1857,8 @@
             </summary>
     </member>
     <member name="M:WikiClientLibrary.Wikia.WikiaApi.LocalWikiSearchResultItem.ToString">
-      <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>M:WikiClientLibrary.Wikia.WikiaApi.LocalWikiSearchResultItem.ToString</parameter>
-          </include>
-        </markup>
-      </summary>
+      <summary>Returns a string that represents the current object.</summary>
+      <returns>A string that represents the current object.</returns>
     </member>
     <member name="P:WikiClientLibrary.Wikia.WikiaApi.LocalWikiSearchResultItem.Url">
       <summary>
@@ -1936,14 +1914,8 @@
       <summary>Full title of the page.</summary>
     </member>
     <member name="M:WikiClientLibrary.Wikia.WikiaApi.RelatedPageItem.ToString">
-      <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>M:WikiClientLibrary.Wikia.WikiaApi.RelatedPageItem.ToString</parameter>
-          </include>
-        </markup>
-      </summary>
+      <summary>Returns a string that represents the current object.</summary>
+      <returns>A string that represents the current object.</returns>
     </member>
     <member name="P:WikiClientLibrary.Wikia.WikiaApi.RelatedPageItem.Url">
       <summary>Absolute URL of the page.</summary>
@@ -1954,6 +1926,96 @@
           <include item="SMCMissingTag">
             <parameter>summary</parameter>
             <parameter>T:WikiClientLibrary.Wikia.WikiaApi.SearchRankingType</parameter>
+          </include>
+        </markup>
+      </summary>
+    </member>
+    <member name="F:WikiClientLibrary.Wikia.WikiaApi.SearchRankingType.Default">
+      <summary>
+        <markup>
+          <include item="SMCMissingTag">
+            <parameter>summary</parameter>
+            <parameter>F:WikiClientLibrary.Wikia.WikiaApi.SearchRankingType.Default</parameter>
+          </include>
+        </markup>
+      </summary>
+    </member>
+    <member name="F:WikiClientLibrary.Wikia.WikiaApi.SearchRankingType.Freshest">
+      <summary>
+        <markup>
+          <include item="SMCMissingTag">
+            <parameter>summary</parameter>
+            <parameter>F:WikiClientLibrary.Wikia.WikiaApi.SearchRankingType.Freshest</parameter>
+          </include>
+        </markup>
+      </summary>
+    </member>
+    <member name="F:WikiClientLibrary.Wikia.WikiaApi.SearchRankingType.MostViewed">
+      <summary>
+        <markup>
+          <include item="SMCMissingTag">
+            <parameter>summary</parameter>
+            <parameter>F:WikiClientLibrary.Wikia.WikiaApi.SearchRankingType.MostViewed</parameter>
+          </include>
+        </markup>
+      </summary>
+    </member>
+    <member name="F:WikiClientLibrary.Wikia.WikiaApi.SearchRankingType.Newest">
+      <summary>
+        <markup>
+          <include item="SMCMissingTag">
+            <parameter>summary</parameter>
+            <parameter>F:WikiClientLibrary.Wikia.WikiaApi.SearchRankingType.Newest</parameter>
+          </include>
+        </markup>
+      </summary>
+    </member>
+    <member name="F:WikiClientLibrary.Wikia.WikiaApi.SearchRankingType.Oldest">
+      <summary>
+        <markup>
+          <include item="SMCMissingTag">
+            <parameter>summary</parameter>
+            <parameter>F:WikiClientLibrary.Wikia.WikiaApi.SearchRankingType.Oldest</parameter>
+          </include>
+        </markup>
+      </summary>
+    </member>
+    <member name="F:WikiClientLibrary.Wikia.WikiaApi.SearchRankingType.RecentlyModified">
+      <summary>
+        <markup>
+          <include item="SMCMissingTag">
+            <parameter>summary</parameter>
+            <parameter>F:WikiClientLibrary.Wikia.WikiaApi.SearchRankingType.RecentlyModified</parameter>
+          </include>
+        </markup>
+      </summary>
+    </member>
+    <member name="F:WikiClientLibrary.Wikia.WikiaApi.SearchRankingType.Stable">
+      <summary>
+        <markup>
+          <include item="SMCMissingTag">
+            <parameter>summary</parameter>
+            <parameter>F:WikiClientLibrary.Wikia.WikiaApi.SearchRankingType.Stable</parameter>
+          </include>
+        </markup>
+      </summary>
+    </member>
+    <member name="F:WikiClientLibrary.Wikia.WikiaApi.SearchRankingType.Stalest">
+      <summary>
+        <markup>
+          <include item="SMCMissingTag">
+            <parameter>summary</parameter>
+            <parameter>F:WikiClientLibrary.Wikia.WikiaApi.SearchRankingType.Stalest</parameter>
+          </include>
+        </markup>
+      </summary>
+    </member>
+    <member name="F:WikiClientLibrary.Wikia.WikiaApi.SearchRankingType.value__">
+      <summary>
+        <markup>
+          <include item="SMCMissingTag">
+            <parameter>summary</parameter>
+            <parameter>F:WikiClientLibrary.Wikia.WikiaApi.SearchRankingType.value__</parameter>
           </include>
         </markup>
       </summary>
@@ -2003,14 +2065,8 @@
       <summary>User title. (Often the same as <see cref="P:WikiClientLibrary.Wikia.WikiaApi.UserInfo.Name" />.)</summary>
     </member>
     <member name="M:WikiClientLibrary.Wikia.WikiaApi.UserInfo.ToString">
-      <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>M:WikiClientLibrary.Wikia.WikiaApi.UserInfo.ToString</parameter>
-          </include>
-        </markup>
-      </summary>
+      <summary>Returns a string that represents the current object.</summary>
+      <returns>A string that represents the current object.</returns>
     </member>
     <member name="M:WikiClientLibrary.Wikia.WikiaApi.UserInfo.ToUserStub">
       <summary>Creates a <see cref="T:WikiClientLibrary.UserStub" /> from the current user information.</summary>

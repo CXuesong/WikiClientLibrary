@@ -57,14 +57,8 @@
             </summary>
     </member>
     <member name="M:WikiClientLibrary.Wikibase.Claim.ToString">
-      <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>M:WikiClientLibrary.Wikibase.Claim.ToString</parameter>
-          </include>
-        </markup>
-      </summary>
+      <summary>Returns a string that represents the current object.</summary>
+      <returns>A string that represents the current object.</returns>
     </member>
     <member name="P:WikiClientLibrary.Wikibase.Claim.Type">
       <summary>The type of the claim.</summary>
@@ -373,14 +367,8 @@
             </summary>
     </member>
     <member name="M:WikiClientLibrary.Wikibase.Entity.ToString">
-      <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>M:WikiClientLibrary.Wikibase.Entity.ToString</parameter>
-          </include>
-        </markup>
-      </summary>
+      <summary>Returns a string that represents the current object.</summary>
+      <returns>A string that represents the current object.</returns>
     </member>
     <member name="P:WikiClientLibrary.Wikibase.Entity.Type">
       <summary>Wikibase entity type.</summary>
@@ -1143,14 +1131,8 @@
       <summary>Snak type.</summary>
     </member>
     <member name="M:WikiClientLibrary.Wikibase.Snak.ToString">
-      <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>M:WikiClientLibrary.Wikibase.Snak.ToString</parameter>
-          </include>
-        </markup>
-      </summary>
+      <summary>Returns a string that represents the current object.</summary>
+      <returns>A string that represents the current object.</returns>
     </member>
     <member name="T:WikiClientLibrary.Wikibase.SnakType">
       <summary>
@@ -1389,52 +1371,18 @@
       <param name="globe">Entity URI of the globe.</param>
     </member>
     <member name="M:WikiClientLibrary.Wikibase.DataTypes.WbGlobeCoordinate.Equals(System.Object)">
-      <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>M:WikiClientLibrary.Wikibase.DataTypes.WbGlobeCoordinate.Equals(System.Object)</parameter>
-          </include>
-        </markup>
-      </summary>
-      <param name="obj">
-        <markup>
-          <include item="SMCMissingParamTag">
-            <parameter>param</parameter>
-            <parameter>obj</parameter>
-            <parameter>M:WikiClientLibrary.Wikibase.DataTypes.WbGlobeCoordinate.Equals(System.Object)</parameter>
-          </include>
-        </markup>
-      </param>
+      <summary>Indicates whether this instance and a specified object are equal.</summary>
+      <param name="obj">The object to compare with the current instance. </param>
+      <returns>true if <paramref name="obj" /> and this instance are the same type and represent the same value; otherwise, false. </returns>
     </member>
     <member name="M:WikiClientLibrary.Wikibase.DataTypes.WbGlobeCoordinate.Equals(WikiClientLibrary.Wikibase.DataTypes.WbGlobeCoordinate)">
-      <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>M:WikiClientLibrary.Wikibase.DataTypes.WbGlobeCoordinate.Equals(WikiClientLibrary.Wikibase.DataTypes.WbGlobeCoordinate)</parameter>
-          </include>
-        </markup>
-      </summary>
-      <param name="other">
-        <markup>
-          <include item="SMCMissingParamTag">
-            <parameter>param</parameter>
-            <parameter>other</parameter>
-            <parameter>M:WikiClientLibrary.Wikibase.DataTypes.WbGlobeCoordinate.Equals(WikiClientLibrary.Wikibase.DataTypes.WbGlobeCoordinate)</parameter>
-          </include>
-        </markup>
-      </param>
+      <summary>Indicates whether the current object is equal to another object of the same type.</summary>
+      <param name="other">An object to compare with this object.</param>
+      <returns>true if the current object is equal to the <paramref name="other" /> parameter; otherwise, false.</returns>
     </member>
     <member name="M:WikiClientLibrary.Wikibase.DataTypes.WbGlobeCoordinate.GetHashCode">
-      <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>M:WikiClientLibrary.Wikibase.DataTypes.WbGlobeCoordinate.GetHashCode</parameter>
-          </include>
-        </markup>
-      </summary>
+      <summary>Returns the hash code for this instance.</summary>
+      <returns>A 32-bit signed integer that is the hash code for this instance.</returns>
     </member>
     <member name="P:WikiClientLibrary.Wikibase.DataTypes.WbGlobeCoordinate.Globe">
       <summary>Entity URI of the globe.</summary>
@@ -1505,14 +1453,8 @@
       <summary>Precision, in degrees.</summary>
     </member>
     <member name="M:WikiClientLibrary.Wikibase.DataTypes.WbGlobeCoordinate.ToString">
-      <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>M:WikiClientLibrary.Wikibase.DataTypes.WbGlobeCoordinate.ToString</parameter>
-          </include>
-        </markup>
-      </summary>
+      <summary>Returns the fully qualified type name of this instance.</summary>
+      <returns>A <see cref="T:System.String" /> containing a fully qualified type name.</returns>
     </member>
     <member name="T:WikiClientLibrary.Wikibase.DataTypes.WbMonolingualText">
       <summary>
@@ -1528,52 +1470,18 @@
       <exception cref="T:System.ArgumentNullException">Either <paramref name="language" /> or <paramref name="text" /> is <c>null</c>.</exception>
     </member>
     <member name="M:WikiClientLibrary.Wikibase.DataTypes.WbMonolingualText.Equals(System.Object)">
-      <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>M:WikiClientLibrary.Wikibase.DataTypes.WbMonolingualText.Equals(System.Object)</parameter>
-          </include>
-        </markup>
-      </summary>
-      <param name="obj">
-        <markup>
-          <include item="SMCMissingParamTag">
-            <parameter>param</parameter>
-            <parameter>obj</parameter>
-            <parameter>M:WikiClientLibrary.Wikibase.DataTypes.WbMonolingualText.Equals(System.Object)</parameter>
-          </include>
-        </markup>
-      </param>
+      <summary>Indicates whether this instance and a specified object are equal.</summary>
+      <param name="obj">The object to compare with the current instance. </param>
+      <returns>true if <paramref name="obj" /> and this instance are the same type and represent the same value; otherwise, false. </returns>
     </member>
     <member name="M:WikiClientLibrary.Wikibase.DataTypes.WbMonolingualText.Equals(WikiClientLibrary.Wikibase.DataTypes.WbMonolingualText)">
-      <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>M:WikiClientLibrary.Wikibase.DataTypes.WbMonolingualText.Equals(WikiClientLibrary.Wikibase.DataTypes.WbMonolingualText)</parameter>
-          </include>
-        </markup>
-      </summary>
-      <param name="other">
-        <markup>
-          <include item="SMCMissingParamTag">
-            <parameter>param</parameter>
-            <parameter>other</parameter>
-            <parameter>M:WikiClientLibrary.Wikibase.DataTypes.WbMonolingualText.Equals(WikiClientLibrary.Wikibase.DataTypes.WbMonolingualText)</parameter>
-          </include>
-        </markup>
-      </param>
+      <summary>Indicates whether the current object is equal to another object of the same type.</summary>
+      <param name="other">An object to compare with this object.</param>
+      <returns>true if the current object is equal to the <paramref name="other" /> parameter; otherwise, false.</returns>
     </member>
     <member name="M:WikiClientLibrary.Wikibase.DataTypes.WbMonolingualText.GetHashCode">
-      <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>M:WikiClientLibrary.Wikibase.DataTypes.WbMonolingualText.GetHashCode</parameter>
-          </include>
-        </markup>
-      </summary>
+      <summary>Returns the hash code for this instance.</summary>
+      <returns>A 32-bit signed integer that is the hash code for this instance.</returns>
     </member>
     <member name="P:WikiClientLibrary.Wikibase.DataTypes.WbMonolingualText.Language">
       <summary>The language code.</summary>
@@ -1648,14 +1556,8 @@
       <summary>The text.</summary>
     </member>
     <member name="M:WikiClientLibrary.Wikibase.DataTypes.WbMonolingualText.ToString">
-      <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>M:WikiClientLibrary.Wikibase.DataTypes.WbMonolingualText.ToString</parameter>
-          </include>
-        </markup>
-      </summary>
+      <summary>Returns the fully qualified type name of this instance.</summary>
+      <returns>A <see cref="T:System.String" /> containing a fully qualified type name.</returns>
     </member>
     <member name="T:WikiClientLibrary.Wikibase.DataTypes.WbMonolingualTextCollection">
       <summary>
@@ -1718,35 +1620,15 @@
       </param>
     </member>
     <member name="M:WikiClientLibrary.Wikibase.DataTypes.WbMonolingualTextCollection.Add(WikiClientLibrary.Wikibase.DataTypes.WbMonolingualText)">
-      <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>M:WikiClientLibrary.Wikibase.DataTypes.WbMonolingualTextCollection.Add(WikiClientLibrary.Wikibase.DataTypes.WbMonolingualText)</parameter>
-          </include>
-        </markup>
-      </summary>
-      <param name="item">
-        <markup>
-          <include item="SMCMissingParamTag">
-            <parameter>param</parameter>
-            <parameter>item</parameter>
-            <parameter>M:WikiClientLibrary.Wikibase.DataTypes.WbMonolingualTextCollection.Add(WikiClientLibrary.Wikibase.DataTypes.WbMonolingualText)</parameter>
-          </include>
-        </markup>
-      </param>
+      <summary>Adds an item to the <see cref="T:System.Collections.Generic.ICollection`1" />.</summary>
+      <param name="item">The object to add to the <see cref="T:System.Collections.Generic.ICollection`1" />.</param>
       <exception cref="T:System.ArgumentException">
         <paramref name="item" /> is <see cref="F:WikiClientLibrary.Wikibase.DataTypes.WbMonolingualText.Null" />.</exception>
+      <exception cref="T:System.NotSupportedException">The <see cref="T:System.Collections.Generic.ICollection`1" /> is read-only.</exception>
     </member>
     <member name="M:WikiClientLibrary.Wikibase.DataTypes.WbMonolingualTextCollection.Clear">
-      <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>M:WikiClientLibrary.Wikibase.DataTypes.WbMonolingualTextCollection.Clear</parameter>
-          </include>
-        </markup>
-      </summary>
+      <summary>Removes all items from the <see cref="T:System.Collections.Generic.ICollection`1" />.</summary>
+      <exception cref="T:System.NotSupportedException">The <see cref="T:System.Collections.Generic.ICollection`1" /> is read-only. </exception>
     </member>
     <member name="M:WikiClientLibrary.Wikibase.DataTypes.WbMonolingualTextCollection.ContainsLanguage(System.String)">
       <summary>
@@ -1768,34 +1650,16 @@
       </param>
     </member>
     <member name="P:WikiClientLibrary.Wikibase.DataTypes.WbMonolingualTextCollection.Count">
-      <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>P:WikiClientLibrary.Wikibase.DataTypes.WbMonolingualTextCollection.Count</parameter>
-          </include>
-        </markup>
-      </summary>
+      <summary>Gets the number of elements contained in the <see cref="T:System.Collections.Generic.ICollection`1" />.</summary>
+      <returns>The number of elements contained in the <see cref="T:System.Collections.Generic.ICollection`1" />.</returns>
     </member>
     <member name="M:WikiClientLibrary.Wikibase.DataTypes.WbMonolingualTextCollection.GetEnumerator">
-      <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>M:WikiClientLibrary.Wikibase.DataTypes.WbMonolingualTextCollection.GetEnumerator</parameter>
-          </include>
-        </markup>
-      </summary>
+      <summary>Returns an enumerator that iterates through the collection.</summary>
+      <returns>An enumerator that can be used to iterate through the collection.</returns>
     </member>
     <member name="P:WikiClientLibrary.Wikibase.DataTypes.WbMonolingualTextCollection.IsReadOnly">
-      <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>P:WikiClientLibrary.Wikibase.DataTypes.WbMonolingualTextCollection.IsReadOnly</parameter>
-          </include>
-        </markup>
-      </summary>
+      <summary>Gets a value indicating whether the <see cref="T:System.Collections.Generic.ICollection`1" /> is read-only.</summary>
+      <returns>true if the <see cref="T:System.Collections.Generic.ICollection`1" /> is read-only; otherwise, false.</returns>
     </member>
     <member name="P:WikiClientLibrary.Wikibase.DataTypes.WbMonolingualTextCollection.Item(System.String)">
       <summary>
@@ -1835,80 +1699,29 @@
         <paramref name="item" /> is <see cref="F:WikiClientLibrary.Wikibase.DataTypes.WbMonolingualText.Null" />.</exception>
     </member>
     <member name="M:WikiClientLibrary.Wikibase.DataTypes.WbMonolingualTextCollection.System#Collections#Generic#ICollection{WikiClientLibrary#Wikibase#DataTypes#WbMonolingualText}#Contains(WikiClientLibrary.Wikibase.DataTypes.WbMonolingualText)">
-      <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>M:WikiClientLibrary.Wikibase.DataTypes.WbMonolingualTextCollection.System#Collections#Generic#ICollection{WikiClientLibrary#Wikibase#DataTypes#WbMonolingualText}#Contains(WikiClientLibrary.Wikibase.DataTypes.WbMonolingualText)</parameter>
-          </include>
-        </markup>
-      </summary>
-      <param name="item">
-        <markup>
-          <include item="SMCMissingParamTag">
-            <parameter>param</parameter>
-            <parameter>item</parameter>
-            <parameter>M:WikiClientLibrary.Wikibase.DataTypes.WbMonolingualTextCollection.System#Collections#Generic#ICollection{WikiClientLibrary#Wikibase#DataTypes#WbMonolingualText}#Contains(WikiClientLibrary.Wikibase.DataTypes.WbMonolingualText)</parameter>
-          </include>
-        </markup>
-      </param>
+      <summary>Determines whether the <see cref="T:System.Collections.Generic.ICollection`1" /> contains a specific value.</summary>
+      <param name="item">The object to locate in the <see cref="T:System.Collections.Generic.ICollection`1" />.</param>
+      <returns>true if <paramref name="item" /> is found in the <see cref="T:System.Collections.Generic.ICollection`1" />; otherwise, false.</returns>
     </member>
     <member name="M:WikiClientLibrary.Wikibase.DataTypes.WbMonolingualTextCollection.System#Collections#Generic#ICollection{WikiClientLibrary#Wikibase#DataTypes#WbMonolingualText}#CopyTo(WikiClientLibrary.Wikibase.DataTypes.WbMonolingualText[],System.Int32)">
-      <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>M:WikiClientLibrary.Wikibase.DataTypes.WbMonolingualTextCollection.System#Collections#Generic#ICollection{WikiClientLibrary#Wikibase#DataTypes#WbMonolingualText}#CopyTo(WikiClientLibrary.Wikibase.DataTypes.WbMonolingualText[],System.Int32)</parameter>
-          </include>
-        </markup>
-      </summary>
-      <param name="array">
-        <markup>
-          <include item="SMCMissingParamTag">
-            <parameter>param</parameter>
-            <parameter>array</parameter>
-            <parameter>M:WikiClientLibrary.Wikibase.DataTypes.WbMonolingualTextCollection.System#Collections#Generic#ICollection{WikiClientLibrary#Wikibase#DataTypes#WbMonolingualText}#CopyTo(WikiClientLibrary.Wikibase.DataTypes.WbMonolingualText[],System.Int32)</parameter>
-          </include>
-        </markup>
-      </param>
-      <param name="arrayIndex">
-        <markup>
-          <include item="SMCMissingParamTag">
-            <parameter>param</parameter>
-            <parameter>arrayIndex</parameter>
-            <parameter>M:WikiClientLibrary.Wikibase.DataTypes.WbMonolingualTextCollection.System#Collections#Generic#ICollection{WikiClientLibrary#Wikibase#DataTypes#WbMonolingualText}#CopyTo(WikiClientLibrary.Wikibase.DataTypes.WbMonolingualText[],System.Int32)</parameter>
-          </include>
-        </markup>
-      </param>
+      <summary>Copies the elements of the <see cref="T:System.Collections.Generic.ICollection`1" /> to an <see cref="T:System.Array" />, starting at a particular <see cref="T:System.Array" /> index.</summary>
+      <param name="array">The one-dimensional <see cref="T:System.Array" /> that is the destination of the elements copied from <see cref="T:System.Collections.Generic.ICollection`1" />. The <see cref="T:System.Array" /> must have zero-based indexing.</param>
+      <param name="arrayIndex">The zero-based index in <paramref name="array" /> at which copying begins.</param>
+      <exception cref="T:System.ArgumentNullException">
+        <paramref name="array" /> is null.</exception>
+      <exception cref="T:System.ArgumentOutOfRangeException">
+        <paramref name="arrayIndex" /> is less than 0.</exception>
+      <exception cref="T:System.ArgumentException">The number of elements in the source <see cref="T:System.Collections.Generic.ICollection`1" /> is greater than the available space from <paramref name="arrayIndex" /> to the end of the destination <paramref name="array" />.</exception>
     </member>
     <member name="M:WikiClientLibrary.Wikibase.DataTypes.WbMonolingualTextCollection.System#Collections#Generic#ICollection{WikiClientLibrary#Wikibase#DataTypes#WbMonolingualText}#Remove(WikiClientLibrary.Wikibase.DataTypes.WbMonolingualText)">
-      <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>M:WikiClientLibrary.Wikibase.DataTypes.WbMonolingualTextCollection.System#Collections#Generic#ICollection{WikiClientLibrary#Wikibase#DataTypes#WbMonolingualText}#Remove(WikiClientLibrary.Wikibase.DataTypes.WbMonolingualText)</parameter>
-          </include>
-        </markup>
-      </summary>
-      <param name="item">
-        <markup>
-          <include item="SMCMissingParamTag">
-            <parameter>param</parameter>
-            <parameter>item</parameter>
-            <parameter>M:WikiClientLibrary.Wikibase.DataTypes.WbMonolingualTextCollection.System#Collections#Generic#ICollection{WikiClientLibrary#Wikibase#DataTypes#WbMonolingualText}#Remove(WikiClientLibrary.Wikibase.DataTypes.WbMonolingualText)</parameter>
-          </include>
-        </markup>
-      </param>
+      <summary>Removes the first occurrence of a specific object from the <see cref="T:System.Collections.Generic.ICollection`1" />.</summary>
+      <param name="item">The object to remove from the <see cref="T:System.Collections.Generic.ICollection`1" />.</param>
+      <returns>true if <paramref name="item" /> was successfully removed from the <see cref="T:System.Collections.Generic.ICollection`1" />; otherwise, false. This method also returns false if <paramref name="item" /> is not found in the original <see cref="T:System.Collections.Generic.ICollection`1" />.</returns>
+      <exception cref="T:System.NotSupportedException">The <see cref="T:System.Collections.Generic.ICollection`1" /> is read-only.</exception>
     </member>
     <member name="M:WikiClientLibrary.Wikibase.DataTypes.WbMonolingualTextCollection.System#Collections#IEnumerable#GetEnumerator">
-      <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>M:WikiClientLibrary.Wikibase.DataTypes.WbMonolingualTextCollection.System#Collections#IEnumerable#GetEnumerator</parameter>
-          </include>
-        </markup>
-      </summary>
+      <summary>Returns an enumerator that iterates through a collection.</summary>
+      <returns>An <see cref="T:System.Collections.IEnumerator" /> object that can be used to iterate through the collection.</returns>
     </member>
     <member name="M:WikiClientLibrary.Wikibase.DataTypes.WbMonolingualTextCollection.TryGetMonolingualText(System.String)">
       <summary>
@@ -2020,14 +1833,8 @@
         <paramref name="item" /> is <see cref="F:WikiClientLibrary.Wikibase.DataTypes.WbMonolingualText.Null" />.</exception>
     </member>
     <member name="M:WikiClientLibrary.Wikibase.DataTypes.WbMonolingualTextsCollection.Clear">
-      <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>M:WikiClientLibrary.Wikibase.DataTypes.WbMonolingualTextsCollection.Clear</parameter>
-          </include>
-        </markup>
-      </summary>
+      <summary>Removes all items from the <see cref="T:System.Collections.Generic.ICollection`1" />.</summary>
+      <exception cref="T:System.NotSupportedException">The <see cref="T:System.Collections.Generic.ICollection`1" /> is read-only. </exception>
     </member>
     <member name="M:WikiClientLibrary.Wikibase.DataTypes.WbMonolingualTextsCollection.ContainsLanguage(System.String)">
       <summary>
@@ -2049,34 +1856,16 @@
       </param>
     </member>
     <member name="P:WikiClientLibrary.Wikibase.DataTypes.WbMonolingualTextsCollection.Count">
-      <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>P:WikiClientLibrary.Wikibase.DataTypes.WbMonolingualTextsCollection.Count</parameter>
-          </include>
-        </markup>
-      </summary>
+      <summary>Gets the number of elements contained in the <see cref="T:System.Collections.Generic.ICollection`1" />.</summary>
+      <returns>The number of elements contained in the <see cref="T:System.Collections.Generic.ICollection`1" />.</returns>
     </member>
     <member name="M:WikiClientLibrary.Wikibase.DataTypes.WbMonolingualTextsCollection.GetEnumerator">
-      <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>M:WikiClientLibrary.Wikibase.DataTypes.WbMonolingualTextsCollection.GetEnumerator</parameter>
-          </include>
-        </markup>
-      </summary>
+      <summary>Returns an enumerator that iterates through the collection.</summary>
+      <returns>An enumerator that can be used to iterate through the collection.</returns>
     </member>
     <member name="P:WikiClientLibrary.Wikibase.DataTypes.WbMonolingualTextsCollection.IsReadOnly">
-      <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>P:WikiClientLibrary.Wikibase.DataTypes.WbMonolingualTextsCollection.IsReadOnly</parameter>
-          </include>
-        </markup>
-      </summary>
+      <summary>Gets a value indicating whether the <see cref="T:System.Collections.Generic.ICollection`1" /> is read-only.</summary>
+      <returns>true if the <see cref="T:System.Collections.Generic.ICollection`1" /> is read-only; otherwise, false.</returns>
     </member>
     <member name="P:WikiClientLibrary.Wikibase.DataTypes.WbMonolingualTextsCollection.Item(System.String)">
       <summary>
@@ -2111,101 +1900,36 @@
       <returns>Whether one or more text entries has been removed.</returns>
     </member>
     <member name="M:WikiClientLibrary.Wikibase.DataTypes.WbMonolingualTextsCollection.Remove(WikiClientLibrary.Wikibase.DataTypes.WbMonolingualText)">
-      <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>M:WikiClientLibrary.Wikibase.DataTypes.WbMonolingualTextsCollection.Remove(WikiClientLibrary.Wikibase.DataTypes.WbMonolingualText)</parameter>
-          </include>
-        </markup>
-      </summary>
-      <param name="item">
-        <markup>
-          <include item="SMCMissingParamTag">
-            <parameter>param</parameter>
-            <parameter>item</parameter>
-            <parameter>M:WikiClientLibrary.Wikibase.DataTypes.WbMonolingualTextsCollection.Remove(WikiClientLibrary.Wikibase.DataTypes.WbMonolingualText)</parameter>
-          </include>
-        </markup>
-      </param>
+      <summary>Removes the first occurrence of a specific object from the <see cref="T:System.Collections.Generic.ICollection`1" />.</summary>
+      <param name="item">The object to remove from the <see cref="T:System.Collections.Generic.ICollection`1" />.</param>
+      <returns>true if <paramref name="item" /> was successfully removed from the <see cref="T:System.Collections.Generic.ICollection`1" />; otherwise, false. This method also returns false if <paramref name="item" /> is not found in the original <see cref="T:System.Collections.Generic.ICollection`1" />.</returns>
       <exception cref="T:System.ArgumentException">
         <paramref name="item" /> is <see cref="F:WikiClientLibrary.Wikibase.DataTypes.WbMonolingualText.Null" />.</exception>
+      <exception cref="T:System.NotSupportedException">The <see cref="T:System.Collections.Generic.ICollection`1" /> is read-only.</exception>
     </member>
     <member name="M:WikiClientLibrary.Wikibase.DataTypes.WbMonolingualTextsCollection.System#Collections#Generic#ICollection{WikiClientLibrary#Wikibase#DataTypes#WbMonolingualText}#Add(WikiClientLibrary.Wikibase.DataTypes.WbMonolingualText)">
-      <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>M:WikiClientLibrary.Wikibase.DataTypes.WbMonolingualTextsCollection.System#Collections#Generic#ICollection{WikiClientLibrary#Wikibase#DataTypes#WbMonolingualText}#Add(WikiClientLibrary.Wikibase.DataTypes.WbMonolingualText)</parameter>
-          </include>
-        </markup>
-      </summary>
-      <param name="item">
-        <markup>
-          <include item="SMCMissingParamTag">
-            <parameter>param</parameter>
-            <parameter>item</parameter>
-            <parameter>M:WikiClientLibrary.Wikibase.DataTypes.WbMonolingualTextsCollection.System#Collections#Generic#ICollection{WikiClientLibrary#Wikibase#DataTypes#WbMonolingualText}#Add(WikiClientLibrary.Wikibase.DataTypes.WbMonolingualText)</parameter>
-          </include>
-        </markup>
-      </param>
+      <summary>Adds an item to the <see cref="T:System.Collections.Generic.ICollection`1" />.</summary>
+      <param name="item">The object to add to the <see cref="T:System.Collections.Generic.ICollection`1" />.</param>
+      <exception cref="T:System.NotSupportedException">The <see cref="T:System.Collections.Generic.ICollection`1" /> is read-only.</exception>
     </member>
     <member name="M:WikiClientLibrary.Wikibase.DataTypes.WbMonolingualTextsCollection.System#Collections#Generic#ICollection{WikiClientLibrary#Wikibase#DataTypes#WbMonolingualText}#Contains(WikiClientLibrary.Wikibase.DataTypes.WbMonolingualText)">
-      <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>M:WikiClientLibrary.Wikibase.DataTypes.WbMonolingualTextsCollection.System#Collections#Generic#ICollection{WikiClientLibrary#Wikibase#DataTypes#WbMonolingualText}#Contains(WikiClientLibrary.Wikibase.DataTypes.WbMonolingualText)</parameter>
-          </include>
-        </markup>
-      </summary>
-      <param name="item">
-        <markup>
-          <include item="SMCMissingParamTag">
-            <parameter>param</parameter>
-            <parameter>item</parameter>
-            <parameter>M:WikiClientLibrary.Wikibase.DataTypes.WbMonolingualTextsCollection.System#Collections#Generic#ICollection{WikiClientLibrary#Wikibase#DataTypes#WbMonolingualText}#Contains(WikiClientLibrary.Wikibase.DataTypes.WbMonolingualText)</parameter>
-          </include>
-        </markup>
-      </param>
+      <summary>Determines whether the <see cref="T:System.Collections.Generic.ICollection`1" /> contains a specific value.</summary>
+      <param name="item">The object to locate in the <see cref="T:System.Collections.Generic.ICollection`1" />.</param>
+      <returns>true if <paramref name="item" /> is found in the <see cref="T:System.Collections.Generic.ICollection`1" />; otherwise, false.</returns>
     </member>
     <member name="M:WikiClientLibrary.Wikibase.DataTypes.WbMonolingualTextsCollection.System#Collections#Generic#ICollection{WikiClientLibrary#Wikibase#DataTypes#WbMonolingualText}#CopyTo(WikiClientLibrary.Wikibase.DataTypes.WbMonolingualText[],System.Int32)">
-      <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>M:WikiClientLibrary.Wikibase.DataTypes.WbMonolingualTextsCollection.System#Collections#Generic#ICollection{WikiClientLibrary#Wikibase#DataTypes#WbMonolingualText}#CopyTo(WikiClientLibrary.Wikibase.DataTypes.WbMonolingualText[],System.Int32)</parameter>
-          </include>
-        </markup>
-      </summary>
-      <param name="array">
-        <markup>
-          <include item="SMCMissingParamTag">
-            <parameter>param</parameter>
-            <parameter>array</parameter>
-            <parameter>M:WikiClientLibrary.Wikibase.DataTypes.WbMonolingualTextsCollection.System#Collections#Generic#ICollection{WikiClientLibrary#Wikibase#DataTypes#WbMonolingualText}#CopyTo(WikiClientLibrary.Wikibase.DataTypes.WbMonolingualText[],System.Int32)</parameter>
-          </include>
-        </markup>
-      </param>
-      <param name="arrayIndex">
-        <markup>
-          <include item="SMCMissingParamTag">
-            <parameter>param</parameter>
-            <parameter>arrayIndex</parameter>
-            <parameter>M:WikiClientLibrary.Wikibase.DataTypes.WbMonolingualTextsCollection.System#Collections#Generic#ICollection{WikiClientLibrary#Wikibase#DataTypes#WbMonolingualText}#CopyTo(WikiClientLibrary.Wikibase.DataTypes.WbMonolingualText[],System.Int32)</parameter>
-          </include>
-        </markup>
-      </param>
+      <summary>Copies the elements of the <see cref="T:System.Collections.Generic.ICollection`1" /> to an <see cref="T:System.Array" />, starting at a particular <see cref="T:System.Array" /> index.</summary>
+      <param name="array">The one-dimensional <see cref="T:System.Array" /> that is the destination of the elements copied from <see cref="T:System.Collections.Generic.ICollection`1" />. The <see cref="T:System.Array" /> must have zero-based indexing.</param>
+      <param name="arrayIndex">The zero-based index in <paramref name="array" /> at which copying begins.</param>
+      <exception cref="T:System.ArgumentNullException">
+        <paramref name="array" /> is null.</exception>
+      <exception cref="T:System.ArgumentOutOfRangeException">
+        <paramref name="arrayIndex" /> is less than 0.</exception>
+      <exception cref="T:System.ArgumentException">The number of elements in the source <see cref="T:System.Collections.Generic.ICollection`1" /> is greater than the available space from <paramref name="arrayIndex" /> to the end of the destination <paramref name="array" />.</exception>
     </member>
     <member name="M:WikiClientLibrary.Wikibase.DataTypes.WbMonolingualTextsCollection.System#Collections#IEnumerable#GetEnumerator">
-      <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>M:WikiClientLibrary.Wikibase.DataTypes.WbMonolingualTextsCollection.System#Collections#IEnumerable#GetEnumerator</parameter>
-          </include>
-        </markup>
-      </summary>
+      <summary>Returns an enumerator that iterates through a collection.</summary>
+      <returns>An <see cref="T:System.Collections.IEnumerator" /> object that can be used to iterate through the collection.</returns>
     </member>
     <member name="M:WikiClientLibrary.Wikibase.DataTypes.WbMonolingualTextsCollection.TryGetMonolingualTexts(System.String)">
       <summary>
@@ -2278,14 +2002,8 @@
             </summary>
     </member>
     <member name="M:WikiClientLibrary.Wikibase.DataTypes.WbQuantity.ToString">
-      <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>M:WikiClientLibrary.Wikibase.DataTypes.WbQuantity.ToString</parameter>
-          </include>
-        </markup>
-      </summary>
+      <summary>Returns the fully qualified type name of this instance.</summary>
+      <returns>A <see cref="T:System.String" /> containing a fully qualified type name.</returns>
     </member>
     <member name="P:WikiClientLibrary.Wikibase.DataTypes.WbQuantity.Unit">
       <summary>
@@ -2351,42 +2069,14 @@
       </summary>
     </member>
     <member name="M:WikiClientLibrary.Wikibase.DataTypes.WbTime.Equals(System.Object)">
-      <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>M:WikiClientLibrary.Wikibase.DataTypes.WbTime.Equals(System.Object)</parameter>
-          </include>
-        </markup>
-      </summary>
-      <param name="obj">
-        <markup>
-          <include item="SMCMissingParamTag">
-            <parameter>param</parameter>
-            <parameter>obj</parameter>
-            <parameter>M:WikiClientLibrary.Wikibase.DataTypes.WbTime.Equals(System.Object)</parameter>
-          </include>
-        </markup>
-      </param>
+      <summary>Indicates whether this instance and a specified object are equal.</summary>
+      <param name="obj">The object to compare with the current instance. </param>
+      <returns>true if <paramref name="obj" /> and this instance are the same type and represent the same value; otherwise, false. </returns>
     </member>
     <member name="M:WikiClientLibrary.Wikibase.DataTypes.WbTime.Equals(WikiClientLibrary.Wikibase.DataTypes.WbTime)">
-      <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>M:WikiClientLibrary.Wikibase.DataTypes.WbTime.Equals(WikiClientLibrary.Wikibase.DataTypes.WbTime)</parameter>
-          </include>
-        </markup>
-      </summary>
-      <param name="other">
-        <markup>
-          <include item="SMCMissingParamTag">
-            <parameter>param</parameter>
-            <parameter>other</parameter>
-            <parameter>M:WikiClientLibrary.Wikibase.DataTypes.WbTime.Equals(WikiClientLibrary.Wikibase.DataTypes.WbTime)</parameter>
-          </include>
-        </markup>
-      </param>
+      <summary>Indicates whether the current object is equal to another object of the same type.</summary>
+      <param name="other">An object to compare with this object.</param>
+      <returns>true if the current object is equal to the <paramref name="other" /> parameter; otherwise, false.</returns>
     </member>
     <member name="M:WikiClientLibrary.Wikibase.DataTypes.WbTime.FromDateTime(System.DateTime,System.Int32,System.Int32,WikiClientLibrary.Wikibase.DataTypes.WikibaseTimePrecision)">
       <summary>Constructs a <see cref="T:WikiClientLibrary.Wikibase.DataTypes.WbTime" /> instance from <see cref="T:System.DateTime" />.</summary>
@@ -2503,14 +2193,8 @@
       <exception cref="T:System.ArgumentOutOfRangeException">One or more numeric parameters are out of range.</exception>
     </member>
     <member name="M:WikiClientLibrary.Wikibase.DataTypes.WbTime.GetHashCode">
-      <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>M:WikiClientLibrary.Wikibase.DataTypes.WbTime.GetHashCode</parameter>
-          </include>
-        </markup>
-      </summary>
+      <summary>Returns the hash code for this instance.</summary>
+      <returns>A 32-bit signed integer that is the hash code for this instance.</returns>
     </member>
     <member name="P:WikiClientLibrary.Wikibase.DataTypes.WbTime.GregorianCalendar">
       <summary>
@@ -2657,14 +2341,8 @@
             </summary>
     </member>
     <member name="M:WikiClientLibrary.Wikibase.DataTypes.WbTime.ToString">
-      <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>M:WikiClientLibrary.Wikibase.DataTypes.WbTime.ToString</parameter>
-          </include>
-        </markup>
-      </summary>
+      <summary>Returns the fully qualified type name of this instance.</summary>
+      <returns>A <see cref="T:System.String" /> containing a fully qualified type name.</returns>
     </member>
     <member name="P:WikiClientLibrary.Wikibase.DataTypes.WbTime.Year">
       <summary>
@@ -2729,14 +2407,8 @@
       </param>
     </member>
     <member name="M:WikiClientLibrary.Wikibase.DataTypes.WikibaseDataType.ToString">
-      <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>M:WikiClientLibrary.Wikibase.DataTypes.WikibaseDataType.ToString</parameter>
-          </include>
-        </markup>
-      </summary>
+      <summary>Returns a string that represents the current object.</summary>
+      <returns>A string that represents the current object.</returns>
     </member>
     <member name="P:WikiClientLibrary.Wikibase.DataTypes.WikibaseDataType.ValueTypeName">
       <summary>
@@ -2828,23 +2500,9 @@
       </param>
     </member>
     <member name="M:WikiClientLibrary.Wikibase.Infrastructures.UnorderedKeyedCollection`2.Add(`1)">
-      <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>M:WikiClientLibrary.Wikibase.Infrastructures.UnorderedKeyedCollection`2.Add(`1)</parameter>
-          </include>
-        </markup>
-      </summary>
-      <param name="item">
-        <markup>
-          <include item="SMCMissingParamTag">
-            <parameter>param</parameter>
-            <parameter>item</parameter>
-            <parameter>M:WikiClientLibrary.Wikibase.Infrastructures.UnorderedKeyedCollection`2.Add(`1)</parameter>
-          </include>
-        </markup>
-      </param>
+      <summary>Adds an item to the <see cref="T:System.Collections.Generic.ICollection`1" />.</summary>
+      <param name="item">The object to add to the <see cref="T:System.Collections.Generic.ICollection`1" />.</param>
+      <exception cref="T:System.NotSupportedException">The <see cref="T:System.Collections.Generic.ICollection`1" /> is read-only.</exception>
     </member>
     <member name="M:WikiClientLibrary.Wikibase.Infrastructures.UnorderedKeyedCollection`2.AssertMutable">
       <summary>
@@ -2885,33 +2543,13 @@
       </param>
     </member>
     <member name="M:WikiClientLibrary.Wikibase.Infrastructures.UnorderedKeyedCollection`2.Clear">
-      <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>M:WikiClientLibrary.Wikibase.Infrastructures.UnorderedKeyedCollection`2.Clear</parameter>
-          </include>
-        </markup>
-      </summary>
+      <summary>Removes all items from the <see cref="T:System.Collections.Generic.ICollection`1" />.</summary>
+      <exception cref="T:System.NotSupportedException">The <see cref="T:System.Collections.Generic.ICollection`1" /> is read-only. </exception>
     </member>
     <member name="M:WikiClientLibrary.Wikibase.Infrastructures.UnorderedKeyedCollection`2.Contains(`1)">
-      <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>M:WikiClientLibrary.Wikibase.Infrastructures.UnorderedKeyedCollection`2.Contains(`1)</parameter>
-          </include>
-        </markup>
-      </summary>
-      <param name="item">
-        <markup>
-          <include item="SMCMissingParamTag">
-            <parameter>param</parameter>
-            <parameter>item</parameter>
-            <parameter>M:WikiClientLibrary.Wikibase.Infrastructures.UnorderedKeyedCollection`2.Contains(`1)</parameter>
-          </include>
-        </markup>
-      </param>
+      <summary>Determines whether the <see cref="T:System.Collections.Generic.ICollection`1" /> contains a specific value.</summary>
+      <param name="item">The object to locate in the <see cref="T:System.Collections.Generic.ICollection`1" />.</param>
+      <returns>true if <paramref name="item" /> is found in the <see cref="T:System.Collections.Generic.ICollection`1" />; otherwise, false.</returns>
     </member>
     <member name="M:WikiClientLibrary.Wikibase.Infrastructures.UnorderedKeyedCollection`2.ContainsKey(`0)">
       <summary>
@@ -2933,80 +2571,33 @@
       </param>
     </member>
     <member name="M:WikiClientLibrary.Wikibase.Infrastructures.UnorderedKeyedCollection`2.CopyTo(System.Array,System.Int32)">
-      <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>M:WikiClientLibrary.Wikibase.Infrastructures.UnorderedKeyedCollection`2.CopyTo(System.Array,System.Int32)</parameter>
-          </include>
-        </markup>
-      </summary>
-      <param name="array">
-        <markup>
-          <include item="SMCMissingParamTag">
-            <parameter>param</parameter>
-            <parameter>array</parameter>
-            <parameter>M:WikiClientLibrary.Wikibase.Infrastructures.UnorderedKeyedCollection`2.CopyTo(System.Array,System.Int32)</parameter>
-          </include>
-        </markup>
-      </param>
-      <param name="index">
-        <markup>
-          <include item="SMCMissingParamTag">
-            <parameter>param</parameter>
-            <parameter>index</parameter>
-            <parameter>M:WikiClientLibrary.Wikibase.Infrastructures.UnorderedKeyedCollection`2.CopyTo(System.Array,System.Int32)</parameter>
-          </include>
-        </markup>
-      </param>
+      <summary>Copies the elements of the <see cref="T:System.Collections.ICollection" /> to an <see cref="T:System.Array" />, starting at a particular <see cref="T:System.Array" /> index.</summary>
+      <param name="array">The one-dimensional <see cref="T:System.Array" /> that is the destination of the elements copied from <see cref="T:System.Collections.ICollection" />. The <see cref="T:System.Array" /> must have zero-based indexing. </param>
+      <param name="index">The zero-based index in <paramref name="array" /> at which copying begins. </param>
+      <exception cref="T:System.ArgumentNullException">
+        <paramref name="array" /> is null. </exception>
+      <exception cref="T:System.ArgumentOutOfRangeException">
+        <paramref name="index" /> is less than zero. </exception>
+      <exception cref="T:System.ArgumentException">
+        <paramref name="array" /> is multidimensional.-or- The number of elements in the source <see cref="T:System.Collections.ICollection" /> is greater than the available space from <paramref name="index" /> to the end of the destination <paramref name="array" />.-or-The type of the source <see cref="T:System.Collections.ICollection" /> cannot be cast automatically to the type of the destination <paramref name="array" />.</exception>
     </member>
     <member name="M:WikiClientLibrary.Wikibase.Infrastructures.UnorderedKeyedCollection`2.CopyTo(`1[],System.Int32)">
-      <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>M:WikiClientLibrary.Wikibase.Infrastructures.UnorderedKeyedCollection`2.CopyTo(`1[],System.Int32)</parameter>
-          </include>
-        </markup>
-      </summary>
-      <param name="array">
-        <markup>
-          <include item="SMCMissingParamTag">
-            <parameter>param</parameter>
-            <parameter>array</parameter>
-            <parameter>M:WikiClientLibrary.Wikibase.Infrastructures.UnorderedKeyedCollection`2.CopyTo(`1[],System.Int32)</parameter>
-          </include>
-        </markup>
-      </param>
-      <param name="arrayIndex">
-        <markup>
-          <include item="SMCMissingParamTag">
-            <parameter>param</parameter>
-            <parameter>arrayIndex</parameter>
-            <parameter>M:WikiClientLibrary.Wikibase.Infrastructures.UnorderedKeyedCollection`2.CopyTo(`1[],System.Int32)</parameter>
-          </include>
-        </markup>
-      </param>
+      <summary>Copies the elements of the <see cref="T:System.Collections.Generic.ICollection`1" /> to an <see cref="T:System.Array" />, starting at a particular <see cref="T:System.Array" /> index.</summary>
+      <param name="array">The one-dimensional <see cref="T:System.Array" /> that is the destination of the elements copied from <see cref="T:System.Collections.Generic.ICollection`1" />. The <see cref="T:System.Array" /> must have zero-based indexing.</param>
+      <param name="arrayIndex">The zero-based index in <paramref name="array" /> at which copying begins.</param>
+      <exception cref="T:System.ArgumentNullException">
+        <paramref name="array" /> is null.</exception>
+      <exception cref="T:System.ArgumentOutOfRangeException">
+        <paramref name="arrayIndex" /> is less than 0.</exception>
+      <exception cref="T:System.ArgumentException">The number of elements in the source <see cref="T:System.Collections.Generic.ICollection`1" /> is greater than the available space from <paramref name="arrayIndex" /> to the end of the destination <paramref name="array" />.</exception>
     </member>
     <member name="P:WikiClientLibrary.Wikibase.Infrastructures.UnorderedKeyedCollection`2.Count">
-      <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>P:WikiClientLibrary.Wikibase.Infrastructures.UnorderedKeyedCollection`2.Count</parameter>
-          </include>
-        </markup>
-      </summary>
+      <summary>Gets the number of elements contained in the <see cref="T:System.Collections.Generic.ICollection`1" />.</summary>
+      <returns>The number of elements contained in the <see cref="T:System.Collections.Generic.ICollection`1" />.</returns>
     </member>
     <member name="M:WikiClientLibrary.Wikibase.Infrastructures.UnorderedKeyedCollection`2.GetEnumerator">
-      <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>M:WikiClientLibrary.Wikibase.Infrastructures.UnorderedKeyedCollection`2.GetEnumerator</parameter>
-          </include>
-        </markup>
-      </summary>
+      <summary>Returns an enumerator that iterates through the collection.</summary>
+      <returns>An enumerator that can be used to iterate through the collection.</returns>
     </member>
     <member name="M:WikiClientLibrary.Wikibase.Infrastructures.UnorderedKeyedCollection`2.GetKeyForItem(`1)">
       <summary>
@@ -3028,14 +2619,8 @@
       </param>
     </member>
     <member name="P:WikiClientLibrary.Wikibase.Infrastructures.UnorderedKeyedCollection`2.IsReadOnly">
-      <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>P:WikiClientLibrary.Wikibase.Infrastructures.UnorderedKeyedCollection`2.IsReadOnly</parameter>
-          </include>
-        </markup>
-      </summary>
+      <summary>Gets a value indicating whether the <see cref="T:System.Collections.Generic.ICollection`1" /> is read-only.</summary>
+      <returns>true if the <see cref="T:System.Collections.Generic.ICollection`1" /> is read-only; otherwise, false.</returns>
     </member>
     <member name="P:WikiClientLibrary.Wikibase.Infrastructures.UnorderedKeyedCollection`2.Item(`0)">
       <summary>
@@ -3048,53 +2633,22 @@
       </summary>
     </member>
     <member name="M:WikiClientLibrary.Wikibase.Infrastructures.UnorderedKeyedCollection`2.Remove(`1)">
-      <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>M:WikiClientLibrary.Wikibase.Infrastructures.UnorderedKeyedCollection`2.Remove(`1)</parameter>
-          </include>
-        </markup>
-      </summary>
-      <param name="item">
-        <markup>
-          <include item="SMCMissingParamTag">
-            <parameter>param</parameter>
-            <parameter>item</parameter>
-            <parameter>M:WikiClientLibrary.Wikibase.Infrastructures.UnorderedKeyedCollection`2.Remove(`1)</parameter>
-          </include>
-        </markup>
-      </param>
+      <summary>Removes the first occurrence of a specific object from the <see cref="T:System.Collections.Generic.ICollection`1" />.</summary>
+      <param name="item">The object to remove from the <see cref="T:System.Collections.Generic.ICollection`1" />.</param>
+      <returns>true if <paramref name="item" /> was successfully removed from the <see cref="T:System.Collections.Generic.ICollection`1" />; otherwise, false. This method also returns false if <paramref name="item" /> is not found in the original <see cref="T:System.Collections.Generic.ICollection`1" />.</returns>
+      <exception cref="T:System.NotSupportedException">The <see cref="T:System.Collections.Generic.ICollection`1" /> is read-only.</exception>
     </member>
     <member name="P:WikiClientLibrary.Wikibase.Infrastructures.UnorderedKeyedCollection`2.System#Collections#ICollection#IsSynchronized">
-      <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>P:WikiClientLibrary.Wikibase.Infrastructures.UnorderedKeyedCollection`2.System#Collections#ICollection#IsSynchronized</parameter>
-          </include>
-        </markup>
-      </summary>
+      <summary>Gets a value indicating whether access to the <see cref="T:System.Collections.ICollection" /> is synchronized (thread safe).</summary>
+      <returns>true if access to the <see cref="T:System.Collections.ICollection" /> is synchronized (thread safe); otherwise, false.</returns>
     </member>
     <member name="P:WikiClientLibrary.Wikibase.Infrastructures.UnorderedKeyedCollection`2.System#Collections#ICollection#SyncRoot">
-      <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>P:WikiClientLibrary.Wikibase.Infrastructures.UnorderedKeyedCollection`2.System#Collections#ICollection#SyncRoot</parameter>
-          </include>
-        </markup>
-      </summary>
+      <summary>Gets an object that can be used to synchronize access to the <see cref="T:System.Collections.ICollection" />.</summary>
+      <returns>An object that can be used to synchronize access to the <see cref="T:System.Collections.ICollection" />.</returns>
     </member>
     <member name="M:WikiClientLibrary.Wikibase.Infrastructures.UnorderedKeyedCollection`2.System#Collections#IEnumerable#GetEnumerator">
-      <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>M:WikiClientLibrary.Wikibase.Infrastructures.UnorderedKeyedCollection`2.System#Collections#IEnumerable#GetEnumerator</parameter>
-          </include>
-        </markup>
-      </summary>
+      <summary>Returns an enumerator that iterates through a collection.</summary>
+      <returns>An <see cref="T:System.Collections.IEnumerator" /> object that can be used to iterate through the collection.</returns>
     </member>
     <member name="T:WikiClientLibrary.Wikibase.Infrastructures.UnorderedKeyedMultiCollection`2">
       <summary>
@@ -3131,23 +2685,9 @@
       </param>
     </member>
     <member name="M:WikiClientLibrary.Wikibase.Infrastructures.UnorderedKeyedMultiCollection`2.Add(`1)">
-      <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>M:WikiClientLibrary.Wikibase.Infrastructures.UnorderedKeyedMultiCollection`2.Add(`1)</parameter>
-          </include>
-        </markup>
-      </summary>
-      <param name="item">
-        <markup>
-          <include item="SMCMissingParamTag">
-            <parameter>param</parameter>
-            <parameter>item</parameter>
-            <parameter>M:WikiClientLibrary.Wikibase.Infrastructures.UnorderedKeyedMultiCollection`2.Add(`1)</parameter>
-          </include>
-        </markup>
-      </param>
+      <summary>Adds an item to the <see cref="T:System.Collections.Generic.ICollection`1" />.</summary>
+      <param name="item">The object to add to the <see cref="T:System.Collections.Generic.ICollection`1" />.</param>
+      <exception cref="T:System.NotSupportedException">The <see cref="T:System.Collections.Generic.ICollection`1" /> is read-only.</exception>
     </member>
     <member name="M:WikiClientLibrary.Wikibase.Infrastructures.UnorderedKeyedMultiCollection`2.AssertMutable">
       <summary>
@@ -3188,33 +2728,13 @@
       </param>
     </member>
     <member name="M:WikiClientLibrary.Wikibase.Infrastructures.UnorderedKeyedMultiCollection`2.Clear">
-      <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>M:WikiClientLibrary.Wikibase.Infrastructures.UnorderedKeyedMultiCollection`2.Clear</parameter>
-          </include>
-        </markup>
-      </summary>
+      <summary>Removes all items from the <see cref="T:System.Collections.Generic.ICollection`1" />.</summary>
+      <exception cref="T:System.NotSupportedException">The <see cref="T:System.Collections.Generic.ICollection`1" /> is read-only. </exception>
     </member>
     <member name="M:WikiClientLibrary.Wikibase.Infrastructures.UnorderedKeyedMultiCollection`2.Contains(`1)">
-      <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>M:WikiClientLibrary.Wikibase.Infrastructures.UnorderedKeyedMultiCollection`2.Contains(`1)</parameter>
-          </include>
-        </markup>
-      </summary>
-      <param name="item">
-        <markup>
-          <include item="SMCMissingParamTag">
-            <parameter>param</parameter>
-            <parameter>item</parameter>
-            <parameter>M:WikiClientLibrary.Wikibase.Infrastructures.UnorderedKeyedMultiCollection`2.Contains(`1)</parameter>
-          </include>
-        </markup>
-      </param>
+      <summary>Determines whether the <see cref="T:System.Collections.Generic.ICollection`1" /> contains a specific value.</summary>
+      <param name="item">The object to locate in the <see cref="T:System.Collections.Generic.ICollection`1" />.</param>
+      <returns>true if <paramref name="item" /> is found in the <see cref="T:System.Collections.Generic.ICollection`1" />; otherwise, false.</returns>
     </member>
     <member name="M:WikiClientLibrary.Wikibase.Infrastructures.UnorderedKeyedMultiCollection`2.ContainsKey(`0)">
       <summary>
@@ -3236,70 +2756,29 @@
       </param>
     </member>
     <member name="M:WikiClientLibrary.Wikibase.Infrastructures.UnorderedKeyedMultiCollection`2.CopyTo(System.Array,System.Int32)">
-      <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>M:WikiClientLibrary.Wikibase.Infrastructures.UnorderedKeyedMultiCollection`2.CopyTo(System.Array,System.Int32)</parameter>
-          </include>
-        </markup>
-      </summary>
-      <param name="array">
-        <markup>
-          <include item="SMCMissingParamTag">
-            <parameter>param</parameter>
-            <parameter>array</parameter>
-            <parameter>M:WikiClientLibrary.Wikibase.Infrastructures.UnorderedKeyedMultiCollection`2.CopyTo(System.Array,System.Int32)</parameter>
-          </include>
-        </markup>
-      </param>
-      <param name="index">
-        <markup>
-          <include item="SMCMissingParamTag">
-            <parameter>param</parameter>
-            <parameter>index</parameter>
-            <parameter>M:WikiClientLibrary.Wikibase.Infrastructures.UnorderedKeyedMultiCollection`2.CopyTo(System.Array,System.Int32)</parameter>
-          </include>
-        </markup>
-      </param>
+      <summary>Copies the elements of the <see cref="T:System.Collections.ICollection" /> to an <see cref="T:System.Array" />, starting at a particular <see cref="T:System.Array" /> index.</summary>
+      <param name="array">The one-dimensional <see cref="T:System.Array" /> that is the destination of the elements copied from <see cref="T:System.Collections.ICollection" />. The <see cref="T:System.Array" /> must have zero-based indexing. </param>
+      <param name="index">The zero-based index in <paramref name="array" /> at which copying begins. </param>
+      <exception cref="T:System.ArgumentNullException">
+        <paramref name="array" /> is null. </exception>
+      <exception cref="T:System.ArgumentOutOfRangeException">
+        <paramref name="index" /> is less than zero. </exception>
+      <exception cref="T:System.ArgumentException">
+        <paramref name="array" /> is multidimensional.-or- The number of elements in the source <see cref="T:System.Collections.ICollection" /> is greater than the available space from <paramref name="index" /> to the end of the destination <paramref name="array" />.-or-The type of the source <see cref="T:System.Collections.ICollection" /> cannot be cast automatically to the type of the destination <paramref name="array" />.</exception>
     </member>
     <member name="M:WikiClientLibrary.Wikibase.Infrastructures.UnorderedKeyedMultiCollection`2.CopyTo(`1[],System.Int32)">
-      <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>M:WikiClientLibrary.Wikibase.Infrastructures.UnorderedKeyedMultiCollection`2.CopyTo(`1[],System.Int32)</parameter>
-          </include>
-        </markup>
-      </summary>
-      <param name="array">
-        <markup>
-          <include item="SMCMissingParamTag">
-            <parameter>param</parameter>
-            <parameter>array</parameter>
-            <parameter>M:WikiClientLibrary.Wikibase.Infrastructures.UnorderedKeyedMultiCollection`2.CopyTo(`1[],System.Int32)</parameter>
-          </include>
-        </markup>
-      </param>
-      <param name="arrayIndex">
-        <markup>
-          <include item="SMCMissingParamTag">
-            <parameter>param</parameter>
-            <parameter>arrayIndex</parameter>
-            <parameter>M:WikiClientLibrary.Wikibase.Infrastructures.UnorderedKeyedMultiCollection`2.CopyTo(`1[],System.Int32)</parameter>
-          </include>
-        </markup>
-      </param>
+      <summary>Copies the elements of the <see cref="T:System.Collections.Generic.ICollection`1" /> to an <see cref="T:System.Array" />, starting at a particular <see cref="T:System.Array" /> index.</summary>
+      <param name="array">The one-dimensional <see cref="T:System.Array" /> that is the destination of the elements copied from <see cref="T:System.Collections.Generic.ICollection`1" />. The <see cref="T:System.Array" /> must have zero-based indexing.</param>
+      <param name="arrayIndex">The zero-based index in <paramref name="array" /> at which copying begins.</param>
+      <exception cref="T:System.ArgumentNullException">
+        <paramref name="array" /> is null.</exception>
+      <exception cref="T:System.ArgumentOutOfRangeException">
+        <paramref name="arrayIndex" /> is less than 0.</exception>
+      <exception cref="T:System.ArgumentException">The number of elements in the source <see cref="T:System.Collections.Generic.ICollection`1" /> is greater than the available space from <paramref name="arrayIndex" /> to the end of the destination <paramref name="array" />.</exception>
     </member>
     <member name="P:WikiClientLibrary.Wikibase.Infrastructures.UnorderedKeyedMultiCollection`2.Count">
-      <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>P:WikiClientLibrary.Wikibase.Infrastructures.UnorderedKeyedMultiCollection`2.Count</parameter>
-          </include>
-        </markup>
-      </summary>
+      <summary>Gets the number of elements contained in the <see cref="T:System.Collections.Generic.ICollection`1" />.</summary>
+      <returns>The number of elements contained in the <see cref="T:System.Collections.Generic.ICollection`1" />.</returns>
     </member>
     <member name="M:WikiClientLibrary.Wikibase.Infrastructures.UnorderedKeyedMultiCollection`2.EnumItems">
       <summary>
@@ -3312,14 +2791,8 @@
       </summary>
     </member>
     <member name="M:WikiClientLibrary.Wikibase.Infrastructures.UnorderedKeyedMultiCollection`2.GetEnumerator">
-      <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>M:WikiClientLibrary.Wikibase.Infrastructures.UnorderedKeyedMultiCollection`2.GetEnumerator</parameter>
-          </include>
-        </markup>
-      </summary>
+      <summary>Returns an enumerator that iterates through the collection.</summary>
+      <returns>An enumerator that can be used to iterate through the collection.</returns>
     </member>
     <member name="M:WikiClientLibrary.Wikibase.Infrastructures.UnorderedKeyedMultiCollection`2.GetKeyForItem(`1)">
       <summary>
@@ -3341,14 +2814,8 @@
       </param>
     </member>
     <member name="P:WikiClientLibrary.Wikibase.Infrastructures.UnorderedKeyedMultiCollection`2.IsReadOnly">
-      <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>P:WikiClientLibrary.Wikibase.Infrastructures.UnorderedKeyedMultiCollection`2.IsReadOnly</parameter>
-          </include>
-        </markup>
-      </summary>
+      <summary>Gets a value indicating whether the <see cref="T:System.Collections.Generic.ICollection`1" /> is read-only.</summary>
+      <returns>true if the <see cref="T:System.Collections.Generic.ICollection`1" /> is read-only; otherwise, false.</returns>
     </member>
     <member name="P:WikiClientLibrary.Wikibase.Infrastructures.UnorderedKeyedMultiCollection`2.Item(`0)">
       <summary>
@@ -3363,23 +2830,10 @@
             </summary>
     </member>
     <member name="M:WikiClientLibrary.Wikibase.Infrastructures.UnorderedKeyedMultiCollection`2.Remove(`1)">
-      <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>M:WikiClientLibrary.Wikibase.Infrastructures.UnorderedKeyedMultiCollection`2.Remove(`1)</parameter>
-          </include>
-        </markup>
-      </summary>
-      <param name="item">
-        <markup>
-          <include item="SMCMissingParamTag">
-            <parameter>param</parameter>
-            <parameter>item</parameter>
-            <parameter>M:WikiClientLibrary.Wikibase.Infrastructures.UnorderedKeyedMultiCollection`2.Remove(`1)</parameter>
-          </include>
-        </markup>
-      </param>
+      <summary>Removes the first occurrence of a specific object from the <see cref="T:System.Collections.Generic.ICollection`1" />.</summary>
+      <param name="item">The object to remove from the <see cref="T:System.Collections.Generic.ICollection`1" />.</param>
+      <returns>true if <paramref name="item" /> was successfully removed from the <see cref="T:System.Collections.Generic.ICollection`1" />; otherwise, false. This method also returns false if <paramref name="item" /> is not found in the original <see cref="T:System.Collections.Generic.ICollection`1" />.</returns>
+      <exception cref="T:System.NotSupportedException">The <see cref="T:System.Collections.Generic.ICollection`1" /> is read-only.</exception>
     </member>
     <member name="M:WikiClientLibrary.Wikibase.Infrastructures.UnorderedKeyedMultiCollection`2.Remove(`0)">
       <summary>
@@ -3397,34 +2851,16 @@
       <returns>Whether one or more items has been removed.</returns>
     </member>
     <member name="P:WikiClientLibrary.Wikibase.Infrastructures.UnorderedKeyedMultiCollection`2.System#Collections#ICollection#IsSynchronized">
-      <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>P:WikiClientLibrary.Wikibase.Infrastructures.UnorderedKeyedMultiCollection`2.System#Collections#ICollection#IsSynchronized</parameter>
-          </include>
-        </markup>
-      </summary>
+      <summary>Gets a value indicating whether access to the <see cref="T:System.Collections.ICollection" /> is synchronized (thread safe).</summary>
+      <returns>true if access to the <see cref="T:System.Collections.ICollection" /> is synchronized (thread safe); otherwise, false.</returns>
     </member>
     <member name="P:WikiClientLibrary.Wikibase.Infrastructures.UnorderedKeyedMultiCollection`2.System#Collections#ICollection#SyncRoot">
-      <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>P:WikiClientLibrary.Wikibase.Infrastructures.UnorderedKeyedMultiCollection`2.System#Collections#ICollection#SyncRoot</parameter>
-          </include>
-        </markup>
-      </summary>
+      <summary>Gets an object that can be used to synchronize access to the <see cref="T:System.Collections.ICollection" />.</summary>
+      <returns>An object that can be used to synchronize access to the <see cref="T:System.Collections.ICollection" />.</returns>
     </member>
     <member name="M:WikiClientLibrary.Wikibase.Infrastructures.UnorderedKeyedMultiCollection`2.System#Collections#IEnumerable#GetEnumerator">
-      <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>M:WikiClientLibrary.Wikibase.Infrastructures.UnorderedKeyedMultiCollection`2.System#Collections#IEnumerable#GetEnumerator</parameter>
-          </include>
-        </markup>
-      </summary>
+      <summary>Returns an enumerator that iterates through a collection.</summary>
+      <returns>An <see cref="T:System.Collections.IEnumerator" /> object that can be used to iterate through the collection.</returns>
     </member>
   </members>
 </doc>
