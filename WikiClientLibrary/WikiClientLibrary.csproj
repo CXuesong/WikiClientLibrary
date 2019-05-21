@@ -26,7 +26,7 @@
     <PackageReleaseNotes>See https://github.com/CXuesong/WikiClientLibrary/releases .</PackageReleaseNotes>
     <PackageTags>MediaWiki API Client</PackageTags>
     <NeutralLanguage>en-us</NeutralLanguage>
-    <PackageLicenseUrl>http://www.apache.org/licenses/LICENSE-2.0</PackageLicenseUrl>
+    <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
     <PackageProjectUrl>https://github.com/CXuesong/WikiClientLibrary</PackageProjectUrl>
     <RepositoryUrl>https://github.com/CXuesong/WikiClientLibrary</RepositoryUrl>
     <RepositoryType>Git</RepositoryType>

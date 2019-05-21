@@ -43,8 +43,7 @@
       <ComponentConfig id="API Token Resolution" enabled="True">
         <component id="API Token Resolution">
           {@TokenFiles}
-          <replace elements="/*//token" item="string(.)" />
-        </component>
+          <replace elements="/*//token" item="string(.)" /></component>
       </ComponentConfig>
       <ComponentConfig id="Code Block Component" enabled="True">
         <component id="Code Block Component">
