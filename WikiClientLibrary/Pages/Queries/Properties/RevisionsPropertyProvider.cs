@@ -43,15 +43,20 @@ namespace WikiClientLibrary.Pages.Queries.Properties
         /// <inheritdoc />
         public override IEnumerable<KeyValuePair<string, object>> EnumParameters(MediaWikiVersion version)
         {
-            return new OrderedKeyValuePairs<string, object>
+            var p = new OrderedKeyValuePairs<string, object>
             {
                 {
                     "rvprop", FetchContent
                         ? "ids|timestamp|flags|comment|user|userid|contentmodel|sha1|tags|size|content"
                         : "ids|timestamp|flags|comment|user|userid|contentmodel|sha1|tags|size"
-                },
-                { "rvslots", Slots == null ? "main" : MediaWikiHelper.JoinValues(Slots) }
+                }
             };
+            if (Slots != null || version >= new MediaWikiVersion(1, 32))
+            {
+                // If user specified Slots explicitly, then we will respect it regardless of MW version.
+                p.Add("rvslots", Slots == null ? RevisionSlot.MainSlotName : MediaWikiHelper.JoinValues(Slots));
+            }
+            return p;
         }
 
         /// <inheritdoc />
