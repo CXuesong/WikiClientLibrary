@@ -14,9 +14,16 @@ using WikiClientLibrary.Sites;
 namespace WikiClientLibrary.Wikia.Sites
 {
     /// <summary>
-    /// The encapsulated Wikia site endpoint.
+    /// Represents a Wikia site endpoint.
     /// </summary>
-    /// <remarks>See <see cref="WikiClientLibrary.Wikia.Sites"/> for a summary on Wikia(FANDOM)-specific APIs.</remarks>
+    /// <remarks>
+    /// <para>
+    /// For FANDOM/Wikia specific site access, use this instead of <see cref="WikiSite"/> base class,
+    /// because this class contains more Wikia-specific APIs, and properly handles Wikia-specific API peculiarities
+    /// (such as user logout).
+    /// </para>
+    /// <para>See <see cref="WikiClientLibrary.Wikia.Sites"/> for a summary on FANDOM-and-Wikia.org-specific APIs.</para>
+    /// </remarks>
     public class WikiaSite : WikiSite
     {
 

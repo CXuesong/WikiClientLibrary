@@ -18,6 +18,9 @@ namespace WikiClientLibrary.Sites
     /// <summary>
     /// Represents a MediaWiki site.
     /// </summary>
+    /// <remarks>
+    /// <para>For FANDOM/Wikia specific site access, use <see cref="T:WikiClientLibrary.Wikia.Sites.WikiaSite"/> instead of this class.</para>
+    /// </remarks>
     public partial class WikiSite : IWikiClientLoggable, IWikiClientAsyncInitialization
     {
 

@@ -4,10 +4,10 @@
     <TargetFrameworks>netstandard1.1;netstandard2.0</TargetFrameworks>
     <AssemblyName>WikiClientLibrary</AssemblyName>
     <PackageId>CXuesong.MW.WikiClientLibrary</PackageId>
-    <Version>0.6.5</Version>
-    <AssemblyVersion>0.6.5.0</AssemblyVersion>
-    <FileVersion>0.6.5.0</FileVersion>
-    <Copyright>Copyright (C) CXuesong 2018</Copyright>
+    <Version>0.7.0-int1</Version>
+    <AssemblyVersion>0.7.0.1</AssemblyVersion>
+    <FileVersion>0.7.0.1</FileVersion>
+    <Copyright>Copyright (C) CXuesong 2019</Copyright>
     <Description>
       Wiki Client Library is a .NET Standard &amp; asynchronous client library for MediaWiki sites.
 
@@ -21,6 +21,7 @@
       * Tokens are hidden in the library functions, so that client won't bother to retrieve them over and over again.
       * Query continuations are hidden by IAsyncEnumerable, which will ease the pain when using page generators.
       * Other miscellaneous MediaWiki API, such as OpenSearch, Page parsing, and Patrol.
+      * Scribunto Lua console and server-side module execution support
     </Description>
     <PackageReleaseNotes>See https://github.com/CXuesong/WikiClientLibrary/releases .</PackageReleaseNotes>
     <PackageTags>MediaWiki API Client</PackageTags>

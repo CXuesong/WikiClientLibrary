@@ -4,7 +4,9 @@ namespace WikiClientLibrary.Wikia
 {
     /// <summary>
     /// The root namespace for
-    /// <a href="http://community.wikia.com/">Wikia</a>
+    /// <a href="https://community.fandom.com/wiki/Community_Central">FANDOM</a>
+    /// and
+    /// <a href="https://www.wikia.org/">Wikia.org</a>
     /// site-specific support.
     /// </summary>
     /// <remarks>
@@ -15,7 +17,7 @@ namespace WikiClientLibrary.Wikia
     /// <list type="bullet">
     /// <item>
     /// <term>Wikia API v1</term>
-    /// <description>This is the only publicized API. See its documentation at <a href="http://dev.wikia.com/api/v1">http://dev.wikia.com/api/v1</a>.</description>
+    /// <description>This is the only publicized API. See its documentation at <a href="https://dev.fandom.com/api/v1">https://dev.fandom.com/api/v1</a>.</description>
     /// </item>
     /// <item>
     /// <term>Nirvana API</term>
@@ -27,7 +29,7 @@ namespace WikiClientLibrary.Wikia
     /// </item>
     /// </list>
     /// <para>For more information on these Wikia-specific API endpoints,
-    /// see <a href="http://dev.wikia.com/wiki/Nirvana">wikia:dev:Nirvana</a>.
+    /// see <a href="https://dev.fandom.com/wiki/Nirvana">wikia:dev:Nirvana</a>.
     /// </para>
     /// </remarks>
     [CompilerGenerated]
