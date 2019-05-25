@@ -250,7 +250,7 @@ namespace WikiClientLibrary.Pages
             // Check whether the page has transcluded one of the DAB templates.
             var dabt = await Site.DisambiguationTemplatesAsync;
             var dabp = await RequestHelper.EnumTransclusionsAsync(Site, Title,
-                new[] { BuiltInNamespaces.Template }, dabt, 1).Any();
+                new[] { BuiltInNamespaces.Template }, dabt, 1).AnyAsync();
             return dabp;
         }
 

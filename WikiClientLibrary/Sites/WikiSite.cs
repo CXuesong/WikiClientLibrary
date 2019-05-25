@@ -132,7 +132,7 @@ namespace WikiClientLibrary.Sites
                 {
                     var dabPages = await RequestHelper
                         .EnumLinksAsync(this, "MediaWiki:Disambiguationspage", new[] { BuiltInNamespaces.Template })
-                        .ToList();
+                        .ToListAsync();
                     if (dabPages.Count == 0)
                     {
                         // Try to fetch from mw messages

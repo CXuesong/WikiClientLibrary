@@ -73,7 +73,7 @@ namespace WikiClientLibrary.Infrastructures
 
         }
 
-#if NETSTANDARD1_1
+#if BCL_FEATURE_DISPOSE_HTTPCONTENT
 
         // Workaround for https://github.com/dotnet/corefx/pull/19082
         // This PR hasn't been merged until .NET Core 2.0.

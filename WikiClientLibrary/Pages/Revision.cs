@@ -35,7 +35,7 @@ namespace WikiClientLibrary.Pages
         /// <exception cref="ArgumentException"><paramref name="revisionId"/> is not an existing revision id.</exception>
         public static Task<Revision> FetchRevisionAsync(WikiSite site, int revisionId)
         {
-            return FetchRevisionsAsync(site, new[] { revisionId }, PageQueryOptions.FetchContent).First();
+            return FetchRevisionsAsync(site, new[] { revisionId }, PageQueryOptions.FetchContent).FirstAsync();
         }
 
         /// <inheritdoc cref="FetchRevisionsAsync(WikiSite,IEnumerable{int},IWikiPageQueryProvider,CancellationToken)"/>
