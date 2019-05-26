@@ -1,13 +1,9 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-  <Import Project="../WikiClientLibrary.Commons/WikiClientLibrary.Commons.props" />
+  <Import Project="../WikiClientLibrary.Commons/WikiClientLibrary.Packages.props" />
   <PropertyGroup>
     <TargetFrameworks>netstandard1.1;netstandard2.0;netstandard2.1</TargetFrameworks>
     <AssemblyName>WikiClientLibrary</AssemblyName>
     <PackageId>CXuesong.MW.WikiClientLibrary</PackageId>
-    <Version>0.7.0-int1</Version>
-    <AssemblyVersion>0.7.0.1</AssemblyVersion>
-    <FileVersion>0.7.0.1</FileVersion>
-    <Copyright>Copyright (C) CXuesong 2019</Copyright>
     <Description>
       Wiki Client Library is a .NET Standard &amp; asynchronous client library for MediaWiki sites.
 
@@ -23,22 +19,6 @@
       * Other miscellaneous MediaWiki API, such as OpenSearch, Page parsing, and Patrol.
       * Scribunto Lua console and server-side module execution support
     </Description>
-    <PackageReleaseNotes>See https://github.com/CXuesong/WikiClientLibrary/releases .</PackageReleaseNotes>
-    <PackageTags>MediaWiki API Client</PackageTags>
-    <NeutralLanguage>en-us</NeutralLanguage>
-    <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
-    <PackageProjectUrl>https://github.com/CXuesong/WikiClientLibrary</PackageProjectUrl>
-    <RepositoryUrl>https://github.com/CXuesong/WikiClientLibrary</RepositoryUrl>
-    <RepositoryType>Git</RepositoryType>
-    <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
-    <GenerateDocumentationFile>True</GenerateDocumentationFile>
-    <Authors>CXuesong</Authors>
-    <Company />
-    <NoWarn>1701;1702;1705;1573;1591</NoWarn>
-    <SignAssembly>true</SignAssembly>
-    <AssemblyOriginatorKeyFile>../WikiClientLibrary.snk</AssemblyOriginatorKeyFile>
-    <PublishRepositoryUrl>True</PublishRepositoryUrl>
-    <AllowedOutputExtensionsInPackageBuildOutputFolder>$(AllowedOutputExtensionsInPackageBuildOutputFolder);.pdb</AllowedOutputExtensionsInPackageBuildOutputFolder>
   </PropertyGroup>
 
   <ItemGroup>
@@ -55,7 +35,4 @@
     <PackageReference Include="System.Linq.Async" Version="4.0.0-preview.1.build.745" />
   </ItemGroup>
 
-  <ItemGroup>
-    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0-beta-63127-02" PrivateAssets="All" />
-  </ItemGroup>
 </Project>
