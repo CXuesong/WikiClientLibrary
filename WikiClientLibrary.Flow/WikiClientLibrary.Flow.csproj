@@ -7,7 +7,7 @@
     <Description>
       WikiClientLibrary.Flow is a .NET Standard &amp; asynchronous client library for MediaWiki sites with Structured Discussions (aka. Flow) support.
     </Description>
-    <PackageTags>$(PackageTags) Wikia FANDOM</PackageTags>
+    <PackageTags>$(PackageTags) Flow StructuredDiscussions</PackageTags>
   </PropertyGroup>
 
   <ItemGroup>
