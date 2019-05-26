@@ -144,7 +144,7 @@ namespace WikiClientLibrary.Wikia
                                     PaginationSize = 1,
                                     PropertyProvider = postRevisionWithContentProvider
                                 };
-                                var rev = await generator.EnumItemsAsync().First(cancellationToken);
+                                var rev = await generator.EnumItemsAsync().FirstAsync(cancellationToken);
                                 firstRevisionDict[post.Id] = rev;
                             }
                         }
@@ -331,7 +331,7 @@ namespace WikiClientLibrary.Wikia
                     if (boardsWithTitle.Count > 0)
                     {
                         var stubs = await WikiPageStub.FromPageTitles(site, boardsWithTitle.Select(b => b.Page.Title))
-                            .ToList(cancellationToken);
+                            .ToListAsync(cancellationToken);
                         for (int i = 0; i < boardsWithTitle.Count; i++)
                         {
                             boardsWithTitle[i].LoadFromPageStub(stubs[i]);
@@ -341,7 +341,7 @@ namespace WikiClientLibrary.Wikia
                     if (boardsWithId.Count > 0)
                     {
                         var stubs = await WikiPageStub.FromPageTitles(site, boardsWithId.Select(b => b.Page.Title))
-                            .ToList(cancellationToken);
+                            .ToListAsync(cancellationToken);
                         for (int i = 0; i < boardsWithId.Count; i++)
                         {
                             boardsWithId[i].LoadFromPageStub(stubs[i]);

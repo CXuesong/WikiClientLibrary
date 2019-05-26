@@ -111,7 +111,7 @@ namespace UnitTestProject1.Tests
         {
             var site = await WikidataSiteAsync;
             var links = new[] {"Mount Everest", "Test_(Unix)", "Inexistent title", "Earth"};
-            var ids = await Entity.IdsFromSiteLinksAsync(site, "enwiki", links).ToList();
+            var ids = await Entity.IdsFromSiteLinksAsync(site, "enwiki", links).ToListAsync();
             Output.WriteLine(string.Join(", ", ids));
             Assert.Equal(new[] {"Q513", "Q257491", null, "Q2"}, ids);
         }

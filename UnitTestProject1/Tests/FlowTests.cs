@@ -42,13 +42,13 @@ namespace UnitTestProject1.Tests
             var board = new Board(await WpBetaSiteAsync, "Talk:Flow QA");
             await board.RefreshAsync();
             ShallowTrace(board);
-            var topics = await board.EnumTopicsAsync(TopicListingOptions.OrderByPosted, 4).Take(10).ToArray();
+            var topics = await board.EnumTopicsAsync(TopicListingOptions.OrderByPosted, 4).Take(10).ToArrayAsync();
             ShallowTrace(topics, 3);
             Assert.DoesNotContain(null, topics);
             for (int i = 1; i < topics.Length; i++)
                 Assert.True(topics[i - 1].TopicTitleRevision.TimeStamp >= topics[i].TopicTitleRevision.TimeStamp,
                     "Topic list is not sorted in posted order as expectation.");
-            topics = await board.EnumTopicsAsync(TopicListingOptions.OrderByUpdated, 5).Take(10).ToArray();
+            topics = await board.EnumTopicsAsync(TopicListingOptions.OrderByUpdated, 5).Take(10).ToArrayAsync();
             for (int i = 1; i < topics.Length; i++)
                 Assert.True(ExpandPosts(topics[i - 1].Posts).Select(p => p.LastRevision.TimeStamp).Max()
                             >= ExpandPosts(topics[i].Posts).Select(p => p.LastRevision.TimeStamp).Max(),
@@ -69,7 +69,7 @@ namespace UnitTestProject1.Tests
             // Check if the post can be seen in the board,
             // assuming there's no other users posting too many new topics concurrently.
             Assert.True(await board.EnumTopicsAsync(TopicListingOptions.OrderByPosted, 4).Take(32)
-                .Any(t => t.WorkflowId == topic1.WorkflowId));
+                .AnyAsync(t => t.WorkflowId == topic1.WorkflowId));
             // Re-fetch the topic. Keep topic1 intact, as reference.
             var topic = new Topic(topic1.Site, topic1.Title);
             await topic.RefreshAsync();

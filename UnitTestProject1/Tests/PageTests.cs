@@ -163,7 +163,7 @@ namespace UnitTestProject1.Tests
             var site = await WpLzhSiteAsync;
             var revIds = new[] { 248199, 248197, 255289 };
             var pageTitles = new[] { "清", "清", "香草" };
-            var rev = await Revision.FetchRevisionsAsync(site, revIds).ToList();
+            var rev = await Revision.FetchRevisionsAsync(site, revIds).ToListAsync();
             ShallowTrace(rev);
             Assert.Equal(revIds, rev.Select(r => r.Id));
             Assert.Equal(pageTitles, rev.Select(r => r.Page.Title));
@@ -270,7 +270,7 @@ namespace UnitTestProject1.Tests
             AssertModify();
             var site = await WpTest2SiteAsync;
             // Usually 500 is the limit for normal users.
-            var pages = await new AllPagesGenerator(site) { PaginationSize = 300 }.EnumPagesAsync().Take(300).ToList();
+            var pages = await new AllPagesGenerator(site) { PaginationSize = 300 }.EnumPagesAsync().Take(300).ToListAsync();
             var badPage = new WikiPage(site, "Inexistent page title");
             pages.Insert(pages.Count / 2, badPage);
             Output.WriteLine("Attempt to purge: ");

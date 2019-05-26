@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-
+  <Import Project="../WikiClientLibrary.Commons/WikiClientLibrary.Commons.props" />
   <PropertyGroup>
-    <TargetFrameworks>netstandard1.1;netstandard1.3</TargetFrameworks>
+    <TargetFrameworks>netstandard1.1;netstandard1.3;netstandard2.1</TargetFrameworks>
     <AssemblyName>WikiClientLibrary.Wikibase</AssemblyName>
     <PackageId>CXuesong.MW.WikiClientLibrary.Wikibase</PackageId>
     <Version>0.6.0</Version>

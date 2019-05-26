@@ -22,7 +22,7 @@ namespace UnitTestProject1.Tests
         {
             var site = await WpTest2SiteAsync;
             var aflist = new AbuseFilterList(site) {PaginationSize = 30};
-            var items = await aflist.EnumItemsAsync().ToList();
+            var items = await aflist.EnumItemsAsync().ToListAsync();
             ShallowTrace(items);
             Assert.Contains(items, f => f.LastEditor == "Luke081515");
         }

@@ -1,9 +1,9 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-
+  <Import Project="../WikiClientLibrary.Commons/WikiClientLibrary.Commons.props" />
   <PropertyGroup>
-    <TargetFrameworks>netcoreapp2.0;net46</TargetFrameworks>
-    <DebugType>full</DebugType>
+    <TargetFrameworks>netcoreapp1.1;netcoreapp3.0</TargetFrameworks>
     <ProjectTypeGuids>{3AC096D0-A1C2-E12C-1390-A8335801FDAB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+    <DefineConstants>$(DefineConstants);UNIT_TEST_PROJECT1</DefineConstants>
   </PropertyGroup>
 
   <ItemGroup>
@@ -30,6 +30,14 @@
     <ProjectReference Include="..\WikiClientLibrary.Wikibase\WikiClientLibrary.Wikibase.csproj" />
     <ProjectReference Include="..\WikiClientLibrary\WikiClientLibrary.csproj" />
   </ItemGroup>
+
+  <ItemGroup Condition=" '$(TargetFramework)' == 'netcoreapp3.0' ">
+    <PackageReference Include="System.Linq.Async" Version="4.0.0-preview.1.build.745" />
+  </ItemGroup>
+
+  <PropertyGroup Condition=" '$(TargetFramework)' == 'netcoreapp3.0' ">
+    <DefineConstants>$(DefineConstants);BCL_FEATURE_ASYNC_ENUMERABLE</DefineConstants>
+  </PropertyGroup>
   
   <ItemGroup>
     <Compile Update="Properties\Resources.Designer.cs">

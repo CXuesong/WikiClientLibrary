@@ -35,7 +35,7 @@ namespace UnitTestProject1
             {
                 sb.Append(obj);
             }
-            if (maxDepth < 1 || obj.GetType().IsPrimitive || obj is string || obj is Uri)
+            if (maxDepth < 1 || obj.GetType().GetTypeInfo().IsPrimitive || obj is string || obj is Uri)
             {
                 var s = sb.ToString();
                 if (s.Length > 1024) s = s.Substring(0, 1024) + "...";

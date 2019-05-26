@@ -26,7 +26,7 @@ namespace UnitTestProject1.Tests
         public async Task FetchUsersTest()
         {
             var site = await WikiaTestSiteAsync;
-            var users = await site.FetchUsersAsync(new[] { "Jasonr", "angela", "user_not_exist" }).ToArray();
+            var users = await site.FetchUsersAsync(new[] { "Jasonr", "angela", "user_not_exist" }).ToArrayAsync();
             ShallowTrace(users);
             Assert.Equal(2, users.Length);
             Assert.Equal("Jasonr", users[0].Name);
@@ -81,7 +81,7 @@ namespace UnitTestProject1.Tests
             {
                 PaginationSize = 10,
             };
-            var results = await list.EnumItemsAsync().Take(30).ToList();
+            var results = await list.EnumItemsAsync().Take(30).ToListAsync();
             ShallowTrace(results);
             Assert.NotEmpty(results);
             Assert.All(results, p => Assert.True(p.Quality >= list.MinimumArticleQuality));
@@ -102,7 +102,7 @@ namespace UnitTestProject1.Tests
             await commentArea.RefreshAsync();
             Skip.IfNot(commentArea.Exists, $"Page [[{commentArea}]] is gone. There is nothing we can do for it.");
             // [[w:c:mediawiki119:1WEPN1UE18M6N]]
-            var comments = await commentArea.EnumPostsAsync().ToList();
+            var comments = await commentArea.EnumPostsAsync().ToListAsync();
             ShallowTrace(comments);
             Assert.True(comments.Count >= 90);
             var exactComments = comments.Take(10).Select(p => new Post(site, p.OwnerPage, p.Id)).ToList();
@@ -143,7 +143,7 @@ namespace UnitTestProject1.Tests
             var commentArea = new Board(site, "Message Wall:QATestsUser");
             await commentArea.RefreshAsync();
             Skip.IfNot(commentArea.Exists, $"Page [[{commentArea}]] is gone. There is nothing we can do for it.");
-            var comments = await commentArea.EnumPostsAsync().Take(100).ToList();
+            var comments = await commentArea.EnumPostsAsync().Take(100).ToListAsync();
             ShallowTrace(comments);
             // There are a lot of comments there...
             Assert.Equal(100, comments.Count);
@@ -170,7 +170,7 @@ namespace UnitTestProject1.Tests
             var commentArea = new Board(site, "Board:ForumBoard1509020771711");
             await commentArea.RefreshAsync();
             Skip.IfNot(commentArea.Exists, $"Page [[{commentArea}]] is gone. There is nothing we can do for it.");
-            var comments = await commentArea.EnumPostsAsync().Take(100).ToList();
+            var comments = await commentArea.EnumPostsAsync().Take(100).ToListAsync();
             ShallowTrace(comments);
             Assert.True(comments.Count >= 2);
         }
