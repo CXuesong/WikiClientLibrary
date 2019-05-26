@@ -2,9 +2,9 @@
   <Import Project="../WikiClientLibrary.Commons/WikiClientLibrary.Commons.props" />
 
   <PropertyGroup>
-    <Version>0.7.0-int2</Version>
-    <AssemblyVersion>0.7.0.2</AssemblyVersion>
-    <FileVersion>0.7.0.2</FileVersion>
+    <Version>0.7.0-int.3</Version>
+    <AssemblyVersion>0.7.0.3</AssemblyVersion>
+    <FileVersion>0.7.0.3</FileVersion>
     <Copyright>Copyright (C) CXuesong 2019</Copyright>
     <PackageReleaseNotes>See https://github.com/CXuesong/WikiClientLibrary/releases .</PackageReleaseNotes>
     <PackageTags>MediaWiki API Client</PackageTags>
@@ -22,6 +22,10 @@
     <AssemblyOriginatorKeyFile>$(MSBuildThisFileDirectory)\WikiClientLibrary.snk</AssemblyOriginatorKeyFile>
     <PublishRepositoryUrl>True</PublishRepositoryUrl>
     <AllowedOutputExtensionsInPackageBuildOutputFolder>$(AllowedOutputExtensionsInPackageBuildOutputFolder);.pdb</AllowedOutputExtensionsInPackageBuildOutputFolder>
+  </PropertyGroup>
+
+  <PropertyGroup Condition=" $(TargetFramework.CompareTo('netstandard2.0')) &lt; 0 ">
+    <DisableImplicitFrameworkReferences>true</DisableImplicitFrameworkReferences>
   </PropertyGroup>
 
   <ItemGroup>

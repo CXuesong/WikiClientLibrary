@@ -1,9 +1,5 @@
 <Project>
   <PropertyGroup Condition=" '$(TargetFramework)' == 'netstandard1.1' ">
-    <DisableImplicitFrameworkReferences>true</DisableImplicitFrameworkReferences>
-  </PropertyGroup>
-
-  <PropertyGroup Condition=" '$(TargetFramework)' == 'netstandard1.1' ">
     <DefineConstants>$(DefineConstants);BCL_FEATURE_DISPOSE_HTTPCONTENT</DefineConstants>
   </PropertyGroup>
 
