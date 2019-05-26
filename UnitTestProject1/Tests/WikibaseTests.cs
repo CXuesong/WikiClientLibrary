@@ -5,13 +5,13 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using UnitTestProject1.Properties;
+using WikiClientLibrary.Tests.UnitTestProject1.Properties;
 using WikiClientLibrary.Wikibase;
 using WikiClientLibrary.Wikibase.DataTypes;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace UnitTestProject1.Tests
+namespace WikiClientLibrary.Tests.UnitTestProject1.Tests
 {
     public class WikibaseTests : WikiSiteTestsBase
     {

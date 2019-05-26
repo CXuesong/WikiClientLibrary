@@ -9,7 +9,7 @@ using WikiClientLibrary;
 using WikiClientLibrary.Client;
 using WikiClientLibrary.Sites;
 
-namespace UnitTestProject1
+namespace WikiClientLibrary.Tests.UnitTestProject1
 {
     internal static partial class CredentialManager
     {

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace UnitTestProject1
+namespace WikiClientLibrary.Tests.UnitTestProject1
 {
     public static class Endpoints
     {

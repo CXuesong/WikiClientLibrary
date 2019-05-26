@@ -11,7 +11,7 @@ using WikiClientLibrary.Sites;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace UnitTestProject1.Tests
+namespace WikiClientLibrary.Tests.UnitTestProject1.Tests
 {
     /// <summary>
     /// The tests in this class requires a site administrator (i.e. sysop) account.

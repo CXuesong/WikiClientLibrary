@@ -7,7 +7,7 @@ using WikiClientLibrary.Flow;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace UnitTestProject1.Tests
+namespace WikiClientLibrary.Tests.UnitTestProject1.Tests
 {
     /// <summary>
     /// FlowTests 的摘要说明

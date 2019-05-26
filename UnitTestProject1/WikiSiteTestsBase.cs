@@ -17,7 +17,7 @@ using WikiClientLibrary.Wikia.Sites;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace UnitTestProject1
+namespace WikiClientLibrary.Tests.UnitTestProject1
 {
 
     public class UnitTestsBase : IDisposable

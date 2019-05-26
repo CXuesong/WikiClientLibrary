@@ -6,7 +6,7 @@ using System.Threading;
 using Microsoft.Extensions.Logging;
 using Xunit.Abstractions;
 
-namespace UnitTestProject1
+namespace WikiClientLibrary.Tests.UnitTestProject1
 {
     public class TestOutputLogger : ILogger
     {

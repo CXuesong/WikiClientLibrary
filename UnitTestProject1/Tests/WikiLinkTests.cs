@@ -4,7 +4,7 @@ using WikiClientLibrary;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace UnitTestProject1.Tests
+namespace WikiClientLibrary.Tests.UnitTestProject1.Tests
 {
 
     public class WikiLinkTests : WikiSiteTestsBase

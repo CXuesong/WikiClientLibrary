@@ -7,11 +7,7 @@ using System.Threading.Tasks;
 
 // Use WikiClientLibrary instead of WikiClientLibrary.Commons to let compiler prefer extension methods
 // defined in this file when there is ambiguation resolving the extension method.
-#if UNIT_TEST_PROJECT1
-namespace UnitTestProject1
-#else
 namespace WikiClientLibrary
-#endif
 {
 
     /// <summary>

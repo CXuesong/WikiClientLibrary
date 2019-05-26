@@ -15,7 +15,7 @@ using WikiClientLibrary.Sites;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace UnitTestProject1
+namespace WikiClientLibrary.Tests.UnitTestProject1
 {
     internal static class Utility
     {

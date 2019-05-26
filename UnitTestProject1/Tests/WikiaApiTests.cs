@@ -12,7 +12,7 @@ using WikiClientLibrary.Wikia.WikiaApi;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace UnitTestProject1.Tests
+namespace WikiClientLibrary.Tests.UnitTestProject1.Tests
 {
     public class WikiaApiTests : WikiSiteTestsBase
     {
