@@ -114,10 +114,6 @@ namespace WikiClientLibrary.Infrastructures
                    select new KeyValuePair<string, object>(p.Name, value);
         }
 
-        private const string JsonHtmlResponseHint =
-            "This usually indicates the server response is HTML rather than JSON. "
-            + "See https://github.com/CXuesong/WikiClientLibrary/wiki/Troubleshooting for more information.";
-
         private const string JsonHtmlResponseHelpLink = "https://github.com/CXuesong/WikiClientLibrary/wiki/Troubleshooting";
 
         /// <summary>
@@ -133,9 +129,9 @@ namespace WikiClientLibrary.Infrastructures
             // TODO buffer stream, instead of reading all
             var content = await stream.ReadAllStringAsync(cancellationToken);
             if (string.IsNullOrEmpty(content))
-                throw new UnexpectedDataException("Cannot parse JSON from an empty stream.");
+                throw new UnexpectedDataException(Prompts.ExceptionJsonEmptyInput);
             if (content[0] == '<')
-                throw new UnexpectedDataException("Stream content starts with '<'. " + JsonHtmlResponseHint)
+                throw new UnexpectedDataException(Prompts.ExceptionHtmlResponseHint)
                 {
                     HelpLink = JsonHtmlResponseHelpLink
                 };
@@ -145,10 +141,10 @@ namespace WikiClientLibrary.Infrastructures
             }
             catch (Exception ex)
             {
-                var message = "Error while parsing JSON out of the stream content. ";
-                if (ex is JsonException && !string.IsNullOrEmpty(ex.Message) && ex.Message.Contains("'<'"))
-                    message += JsonHtmlResponseHint + " ";
+                var message = Prompts.ExceptionJsonParsingFailed;
                 message += ex.Message;
+                if (ex is JsonException && !string.IsNullOrEmpty(ex.Message) && ex.Message.Contains("'<'"))
+                    message += Prompts.ExceptionJsonEmptyInput;
                 throw new UnexpectedDataException(message, ex);
             }
         }
@@ -201,7 +197,7 @@ namespace WikiClientLibrary.Infrastructures
             }
             if (jPage["title"] != null)
                 return new WikiPageStub((string)jPage["title"], (int)jPage["ns"]);
-            throw new ArgumentException("The specified JSON object does not contain MediaWiki page information.", nameof(jPage));
+            throw new ArgumentException(Prompts.ExceptionInvalidPageJson, nameof(jPage));
         }
 
         public static Revision RevisionFromJson(JObject jRevision, WikiPageStub pageStub)
@@ -286,7 +282,7 @@ namespace WikiClientLibrary.Infrastructures
                         }
                     } else if (/* delimiter == '\u001F' && */ str.IndexOf('\u001F') >= 0)
                     {
-                        throw new ArgumentException("values cannot contain pipe character '|' and Unit Separator '\\u001F' at the same time.");
+                        throw new ArgumentException(Prompts.ExceptionJoinValuesCannotContainPipeAndSeparator);
                     }
                     sb.Append(str);
                 }

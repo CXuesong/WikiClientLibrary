@@ -73,7 +73,8 @@ namespace WikiClientLibrary.Generators
         /// <inheritdoc/>
         public override IEnumerable<KeyValuePair<string, object>> EnumListParameters()
         {
-            if (string.IsNullOrEmpty(CategoryTitle)) throw new InvalidOperationException("CateogryTitle is empty.");
+            if (string.IsNullOrEmpty(CategoryTitle))
+                throw new InvalidOperationException(string.Format(Prompts.ExceptionArgumentIsEmpty, nameof(CategoryTitle)));
             return new Dictionary<string, object>
             {
                 {"cmtitle", CategoryTitle},

@@ -12,7 +12,7 @@ namespace WikiClientLibrary
     /// </summary>
     public class WikiClientException : Exception
     {
-        public WikiClientException() : base("An error has occurred performing MediaWiki operation.")
+        public WikiClientException() : base(Prompts.ExceptionWikiClientGeneral)
         {
 
         }
@@ -45,7 +45,7 @@ namespace WikiClientLibrary
         public string ErrorMessage { get; }
 
         public OperationFailedException()
-            : this("The requested operation has failed.")
+            : this(Prompts.ExceptionRequestFailed)
         { }
 
         public OperationFailedException(string errorCode, string errorMessage)
@@ -154,7 +154,7 @@ namespace WikiClientLibrary
     public class UnexpectedDataException : WikiClientException
     {
         public UnexpectedDataException()
-            : this("Unexpected data received.")
+            : this(Prompts.ExceptionUnexpectedData)
         { }
 
         public UnexpectedDataException(string message)

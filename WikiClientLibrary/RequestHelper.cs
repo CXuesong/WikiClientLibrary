@@ -191,7 +191,7 @@ namespace WikiClientLibrary
                                     redirectTrace.Add(title); // Adds the last title
                                     var next = redirects[title];
                                     if (redirectTrace.Contains(next))
-                                        throw new InvalidOperationException($"Cannot resolve circular redirect: {string.Join("->", redirectTrace)}.");
+                                        throw new InvalidOperationException(string.Format(Prompts.ExceptionWikiPageResolveCircularRedirect1, string.Join("->", redirectTrace)));
                                     title = next;
                                 }
                                 // Finally, get the page.
@@ -341,7 +341,7 @@ namespace WikiClientLibrary
             //if (recentChangeId != null && revisionId != null)
             //    throw new ArgumentException("Either recentChangeId or revisionId should be set, not both.");
             if (revisionId != null && site.SiteInfo.Version < new MediaWikiVersion(1, 22))
-                throw new InvalidOperationException("Current version of site does not support patrol by RevisionId.");
+                throw new InvalidOperationException(Prompts.ExceptionPatrolledByRevisionNotSupported);
             var token = await site.GetTokenAsync("patrol");
             try
             {
@@ -359,11 +359,11 @@ namespace WikiClientLibrary
                 switch (ex.ErrorCode)
                 {
                     case "nosuchrcid":
-                        throw new ArgumentException($"There is no change with rcid {recentChangeId}.", ex);
+                        throw new ArgumentException(string.Format(Prompts.ExceptionPatrolNoSuchRcid, recentChangeId), ex);
                     case "patroldisabled":
-                        throw new NotSupportedException("Patrolling is disabled on this wiki.", ex);
+                        throw new NotSupportedException(Prompts.ExceptionPatrolDisabled, ex);
                     case "noautopatrol":
-                        throw new UnauthorizedOperationException("You don't have permission to patrol your own changes. Only users with the autopatrol right can do this.", ex);
+                        throw new UnauthorizedOperationException(Prompts.ExceptionPatrolNoAutoPatrol, ex);
                 }
                 throw;
             }

@@ -35,4 +35,19 @@
     <PackageReference Include="System.Linq.Async" Version="4.0.0-preview.1.build.745" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Compile Update="Prompts.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Prompts.resx</DependentUpon>
+    </Compile>
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Update="Prompts.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Prompts.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+  </ItemGroup>
+
 </Project>

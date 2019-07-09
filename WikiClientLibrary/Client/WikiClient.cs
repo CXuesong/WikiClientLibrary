@@ -128,7 +128,7 @@ namespace WikiClientLibrary.Client
             set
             {
                 if (_HttpClientHandler == null)
-                    throw new NotSupportedException("Not supported when working with a HttpMessageHandler that is not a HttpClientHandler.");
+                    throw new NotSupportedException(Prompts.ExceptionWikiClientNonHttpClientHandler);
                 _HttpClientHandler.CookieContainer = value;
             }
         }
@@ -266,7 +266,7 @@ namespace WikiClientLibrary.Client
                     if (context.NeedRetry)
                     {
                         if (await PrepareForRetry(localRetryDelay)) goto RETRY;
-                        throw new InvalidOperationException("Reached maximum count of retries.");
+                        throw new InvalidOperationException(Prompts.ExceptionWikiClientReachedMaxRetries);
                     }
                     return (T)parsed;
                 }

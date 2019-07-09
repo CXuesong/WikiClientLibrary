@@ -103,7 +103,7 @@ namespace WikiClientLibrary
             if (string.IsNullOrEmpty(version))
             {
                 if (!raiseError) goto SILENT_FAIL;
-                throw new ArgumentException("Value cannot be null or empty.", nameof(version));
+                throw new ArgumentException(Prompts.ExceptionArgumentNullOrEmpty, nameof(version));
             }
             // 1.0.0-rc-1
             var components1 = version.Split(dashCharArray, 2);
@@ -111,7 +111,7 @@ namespace WikiClientLibrary
             if (components2.Length > 3)
             {
                 if (!raiseError) goto SILENT_FAIL;
-                throw new ArgumentException("Version has too many components.", nameof(version));
+                throw new ArgumentException(Prompts.ExceptionVersionTooManyComponents, nameof(version));
             }
             short major;
             short minor = 0, revision = 0;
@@ -128,7 +128,7 @@ namespace WikiClientLibrary
             catch (Exception ex)
             {
                 if (!raiseError) goto SILENT_FAIL;
-                throw new ArgumentException("Invalid version number component.", nameof(version), ex);
+                throw new ArgumentException(Prompts.ExceptionVersionInvalidNumber, nameof(version), ex);
             }
 
             if (components1.Length > 1)
@@ -159,7 +159,7 @@ namespace WikiClientLibrary
                 else
                 {
                     if (!raiseError) goto SILENT_FAIL;
-                    throw new ArgumentException($"Unrecognizable DevVersion prefix: {devFullVersion}.");
+                    throw new ArgumentException(string.Format(Prompts.ExceptionVersionUnknownDevVersionPrefix1, devFullVersion));
                 }
                 // Parse version.
                 if (devFullVersion.Length == devVersionStartsAt)
@@ -174,7 +174,7 @@ namespace WikiClientLibrary
                     if (devFullVersion.Length <= devVersionStartsAt)
                     {
                         if (!raiseError) goto SILENT_FAIL;
-                        throw new ArgumentException("Incomplete DevVersion expression.", nameof(version));
+                        throw new ArgumentException(Prompts.ExceptionVersionIncompleteDevVersion, nameof(version));
                     }
                     try
                     {
@@ -183,7 +183,7 @@ namespace WikiClientLibrary
                     catch (Exception ex)
                     {
                         if (!raiseError) goto SILENT_FAIL;
-                        throw new ArgumentException("Invalid DevVersion number.", nameof(version), ex);
+                        throw new ArgumentException(Prompts.ExceptionVersionInvalidDevVersion, nameof(version), ex);
                     }
                 }
             }
@@ -280,7 +280,7 @@ namespace WikiClientLibrary
             if (devChannel == MediaWikiDevChannel.None)
             {
                 if (devVersion != 0)
-                    throw new ArgumentException("When devChannel is None, devVersion must be 0.", nameof(devVersion));
+                    throw new ArgumentException(Prompts.ExceptionDevVersionRequiresDevChannel, nameof(devVersion));
                 fullDevVersion = 0;
             }
             else

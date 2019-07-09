@@ -43,7 +43,7 @@ namespace WikiClientLibrary.Infrastructures
             }
             set
             {
-                if (_IsReadOnly) throw new NotSupportedException("Collection is read-only.");
+                if (_IsReadOnly) throw new NotSupportedException(Prompts.ExceptionCollectionReadOnly);
                 myDict[key] = value;
             }
         }

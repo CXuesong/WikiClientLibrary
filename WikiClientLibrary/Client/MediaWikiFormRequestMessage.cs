@@ -161,7 +161,7 @@ namespace WikiClientLibrary.Client
                     }
                     break;
                 case STATUS_UNRECOVERABLE:
-                    throw new InvalidOperationException("Cannot recover the field state (e.g. Stream position).");
+                    throw new InvalidOperationException(Prompts.ExceptionMediaWikiFormCannotRecoverState);
             }
             MAIN:
             if (AsMultipartFormData)

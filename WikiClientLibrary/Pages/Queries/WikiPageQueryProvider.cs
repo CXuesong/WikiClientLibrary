@@ -64,7 +64,7 @@ namespace WikiClientLibrary.Pages.Queries
         public static WikiPageQueryProvider FromOptions(PageQueryOptions options)
         {
             if ((options & (PageQueryOptions.FetchContent | PageQueryOptions.ResolveRedirects)) != options)
-                throw new ArgumentException("Invalid PageQueryOptions enumeration value.", nameof(options));
+                throw new ArgumentException(Prompts.ExceptionInvalidEnumValue, nameof(options));
             var provider = new WikiPageQueryProvider
             {
                 Properties = new List<IWikiPagePropertyProvider<IWikiPagePropertyGroup>>

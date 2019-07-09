@@ -59,7 +59,7 @@ namespace WikiClientLibrary.Generators
         public override IEnumerable<KeyValuePair<string, object>> EnumListParameters()
         {
             if ((TargetTitle != null) == (TargetPageId != null))
-                throw new ArgumentException("Either TargetTitle and TargetPageId should be null, not both, nor none.");
+                throw new ArgumentException(string.Format(Prompts.ExceptionArgumentExpectEitherNull2, nameof(TargetTitle), nameof(TargetPageId)));
             var actualPaginationSize = PaginationSize;
             if (AllowRedirectedLinks)
             {

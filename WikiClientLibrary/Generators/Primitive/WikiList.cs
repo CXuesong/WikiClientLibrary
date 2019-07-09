@@ -117,7 +117,7 @@ namespace WikiClientLibrary.Generators.Primitive
                     if (listNode == null)
                     {
                         if (queryNode.Count > 1)
-                            throw new UnexpectedDataException("Cannot detect the JSON node containing list result.");
+                            throw new UnexpectedDataException(Prompts.ExceptionWikiListCannotFindResultRoot);
                         listNode = ((JProperty)queryNode.First).Value;
                     }
                     await sink.YieldAndWait(listNode.Select(ItemFromJson));

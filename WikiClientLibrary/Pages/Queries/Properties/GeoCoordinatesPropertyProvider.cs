@@ -54,13 +54,15 @@ namespace WikiClientLibrary.Pages.Queries.Properties
             else if (QuerySecondaryCoordinate)
                 p.Add("coprimary", "secondary");
             else
-                throw new ArgumentException("Either QueryPrimaryCoordinate or QuerySecondaryCoordinate should be true.");
+                throw new ArgumentException(string.Format(Prompts.ExceptionArgumentExpectEitherBothTrue, nameof(QueryPrimaryCoordinate), nameof(QuerySecondaryCoordinate)));
+
             if (!QueryDistanceFromPoint.IsEmpty && QueryDistanceFromPage == null)
-                throw new ArgumentException("Either QueryDistanceFromPoint or QueryDistanceFromPage should be non-set.");
+                throw new ArgumentException(string.Format(Prompts.ExceptionArgumentExpectEitherDefault2, nameof(QueryDistanceFromPoint), nameof(QueryDistanceFromPage)));
             if (!QueryDistanceFromPoint.IsEmpty)
                 p.Add("codistancefrompoint", QueryDistanceFromPoint.Latitude + "|" + QueryDistanceFromPoint.Longitude);
             if (QueryDistanceFromPage != null)
                 p.Add("codistancefrompage", QueryDistanceFromPage);
+
             return p;
         }
 
@@ -131,7 +133,7 @@ namespace WikiClientLibrary.Pages.Queries.Properties
             {
                 if (_Coordinates != null) return _Coordinates;
                 if (PrimaryCoordinate.IsEmpty) _Coordinates = emptyCoordinates;
-                _Coordinates = new ReadOnlyCollection<GeoCoordinate>(new[] {PrimaryCoordinate});
+                _Coordinates = new ReadOnlyCollection<GeoCoordinate>(new[] { PrimaryCoordinate });
                 return _Coordinates;
             }
         }

@@ -58,7 +58,7 @@ namespace WikiClientLibrary.Generators
 #pragma warning restore 612
                         break;
                     default:
-                        throw new ArgumentOutOfRangeException(nameof(value), value, "Invalid type name of change.");
+                        throw new UnexpectedDataException(string.Format(Prompts.ExceptionUnexpectedParamValue2, nameof(TypeName), value));
                 }
             }
         }
@@ -206,14 +206,14 @@ namespace WikiClientLibrary.Generators
         /// <param name="cancellationToken">The cancellation token that will be checked prior to completing the returned task.</param>
         /// <exception cref="UnauthorizedOperationException">
         /// <para>You don't have permission to patrol changes. Only users with the patrol right can do this.</para>
-        /// <para>OR You don't have permission to patrol your own changes. Only users with the autopatrol right can do this.</para>
+        /// <para>OR You don't have permission to patrol your own changes. Only users with the <c>autopatrol</c> right can do this.</para>
         /// </exception>
         /// <remarks>It's suggested that the caller only patrol the pages whose <see cref="PatrolStatus"/> is <see cref="Generators.PatrolStatus.Unpatrolled"/>.</remarks>
         /// <exception cref="NotSupportedException">Patrolling is disabled on this wiki.</exception>
         public Task PatrolAsync(CancellationToken cancellationToken)
         {
             if (PatrolStatus == PatrolStatus.Patrolled)
-                throw new InvalidOperationException("The change has already been patrolled.");
+                throw new InvalidOperationException(Prompts.ExceptionChangePatrolled);
             Site.AccountInfo.AssertRight(UserRights.Patrol);
             return RequestHelper.PatrolAsync(Site, Id, null, cancellationToken);
         }
@@ -226,7 +226,8 @@ namespace WikiClientLibrary.Generators
         public LogEventItem ToLogEventItem()
         {
             if (Type != RecentChangesType.Log)
-                throw new InvalidOperationException("The Type of the RecentChangeItem should be RecentChangesType.Log to acquire the LogEventItem.");
+                throw new InvalidOperationException(string.Format(Prompts.ExceptionRequireParamValue2,
+                    nameof(RecentChangeItem) + "." + nameof(Type), RecentChangesType.Log));
             return LogEventItem.FromRecentChangeItem(this);
         }
 

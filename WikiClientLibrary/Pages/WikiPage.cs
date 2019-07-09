@@ -304,7 +304,7 @@ namespace WikiClientLibrary.Pages
 
         protected void AssertExists()
         {
-            if (!Exists) throw new InvalidOperationException($"The page {this} does not exist.");
+            if (!Exists) throw new InvalidOperationException(string.Format(Prompts.ExceptionWikiPageNotExists, this));
         }
 
         protected internal virtual void OnLoadPageInfo(JObject jpage, IWikiPageQueryProvider options)
@@ -809,12 +809,7 @@ namespace WikiClientLibrary.Pages
             set { Expiry = MediaWikiUtility.ParseDateTimeOffset(value); }
         }
 
-        /// <summary>
-        /// 返回该实例的完全限定类型名。
-        /// </summary>
-        /// <returns>
-        /// 包含完全限定类型名的 <see cref="T:System.String"/>。
-        /// </returns>
+        /// <inheritdoc/>
         public override string ToString()
         {
             return $"{Type}, {Level}, {Expiry}, {(Cascade ? "Cascade" : "")}";

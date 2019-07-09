@@ -78,7 +78,7 @@ namespace WikiClientLibrary.Scribunto
             if (site == null)
                 throw new ArgumentNullException(nameof(site));
             if (string.IsNullOrEmpty(moduleName))
-                throw new ArgumentException("Value cannot be null or empty.", nameof(moduleName));
+                throw new ArgumentException(Prompts.ExceptionArgumentNullOrEmpty, nameof(moduleName));
             cancellationToken.ThrowIfCancellationRequested();
             var moduleLink = WikiLink.Parse(site, moduleName);
             var normalizedModuleName = moduleLink.FullTitle;
@@ -138,13 +138,13 @@ namespace WikiClientLibrary.Scribunto
             if (site == null)
                 throw new ArgumentNullException(nameof(site));
             if (string.IsNullOrEmpty(moduleContent))
-                throw new ArgumentException("Value cannot be null or empty.", nameof(moduleContent));
+                throw new ArgumentException(Prompts.ExceptionArgumentNullOrEmpty, nameof(moduleContent));
             cancellationToken.ThrowIfCancellationRequested();
             if (serializer == null) serializer = defaultJsonSerializer;
             var result = await ScribuntoConsole.InvokeApiAsync(site, null, ScribuntoConsole.AdhocModuleTitlePrefix,
                 moduleContent, "=mw.text.jsonEncode(p)", true, cancellationToken);
             if (string.IsNullOrEmpty(result.ReturnValue))
-                throw new UnexpectedDataException("Scribunto console execution returned empty expression.");
+                throw new UnexpectedDataException(Prompts.ExceptionScribuntoConsoleReturnEmpty);
             using (var sr = new StringReader(result.ReturnValue))
             using (var jr = new JsonTextReader(sr))
                 return serializer.Deserialize<T>(jr);

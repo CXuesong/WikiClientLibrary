@@ -66,7 +66,7 @@ namespace WikiClientLibrary.Generators
         public override IEnumerable<KeyValuePair<string, object>> EnumListParameters()
         {
             if (string.IsNullOrWhiteSpace(QueryPageName))
-                throw new InvalidOperationException("Invalid QueryPageName.");
+                throw new InvalidOperationException(string.Format(Prompts.ExceptionArgumentNullOrWhitespace1, nameof(QueryPageName)));
             return new Dictionary<string, object>
             {
                 {"qppage", QueryPageName},

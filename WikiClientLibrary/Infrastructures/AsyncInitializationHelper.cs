@@ -37,11 +37,11 @@ namespace WikiClientLibrary.Infrastructures
             switch (initializationTask.Status)
             {
                 case TaskStatus.Canceled:
-                    throw new InvalidOperationException($"The asynchronous initialization of {name} has been cancelled.");
+                    throw new InvalidOperationException(string.Format(Prompts.ExceptionAsyncInitCancelled, name));
                 case TaskStatus.Faulted:
-                    throw new InvalidOperationException($"The asynchronous initialization of {name} throws an Exception: {initializationTask.Exception}", initializationTask.Exception);
+                    throw new InvalidOperationException(string.Format(Prompts.ExceptionAsyncInitFaulted, name, initializationTask.Exception), initializationTask.Exception);
                 default:
-                    throw new InvalidOperationException($"The asynchronous initialization of {name} has not completed.");
+                    throw new InvalidOperationException(string.Format(Prompts.ExceptionAsyncInitNotComplete, name));
             }
         }
 

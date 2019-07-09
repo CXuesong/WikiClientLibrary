@@ -98,9 +98,9 @@ namespace WikiClientLibrary.Infrastructures
         public async Task<string> GetTokenAsync(string tokenType, bool forceRefetch, CancellationToken cancellationToken)
         {
             if (string.IsNullOrEmpty(tokenType))
-                throw new ArgumentException("Value cannot be null or empty.", nameof(tokenType));
+                throw new ArgumentException(Prompts.ExceptionArgumentNullOrEmpty, nameof(tokenType));
             if (tokenType.Contains("|"))
-                throw new ArgumentException("Pipe character detected in token type name.", nameof(tokenType));
+                throw new ArgumentException(Prompts.ExceptionArgumentContainsPipe, nameof(tokenType));
             cancellationToken.ThrowIfCancellationRequested();
             tokenType = tokenType.Trim();
             // Tokens that does not exist in local cache.

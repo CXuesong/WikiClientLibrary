@@ -164,8 +164,7 @@ namespace WikiClientLibrary
             if (title.IndexOf('\ufffd') >= 0)
             {
                 if (exceptionOnFailure)
-                    throw new ArgumentException("Title contains illegal char (\\uFFFD 'REPLACEMENT CHARACTER')",
-                        nameof(text));
+                    throw new ArgumentException(string.Format(Prompts.ExceptionTitleIllegalCharacter, "\uFFFD 'REPLACEMENT CHARACTER'"), nameof(text));
                 return null;
             }
             parts = title.Split(new[] { '#' }, 2);
@@ -175,7 +174,7 @@ namespace WikiClientLibrary
             if (match.Success)
             {
                 if (exceptionOnFailure)
-                    throw new ArgumentException($"Title contains illegal char sequence: {match.Value} .");
+                    throw new ArgumentException(string.Format(Prompts.ExceptionTitleIllegalCharacterSequence, match.Value));
                 return null;
             }
             //Parse title parts.
@@ -249,7 +248,7 @@ namespace WikiClientLibrary
             this.Site = site;
             this.OriginalText = originalText;
         }
-        
+
         private static async Task<Tuple<string, string, string>> TitlePartitionAsync(WikiSite site, IWikiFamily family, string rawTitle, int defaultNamespace)
         {
             // Tuple<interwiki, namespace, title>
@@ -267,7 +266,7 @@ namespace WikiClientLibrary
             string interwiki = null, nsname = null, pagetitle = null;
             while (title != null)
             {
-                var parts = title.Split(new[] {':'}, 2);
+                var parts = title.Split(new[] { ':' }, 2);
                 var part = parts[0].Trim(' ', '_');
                 switch (state)
                 {
@@ -303,7 +302,8 @@ namespace WikiClientLibrary
                                         // state will still be 1, to parse namespace or other interwikis (rare)
                                     }
                                 }
-                            } else if (site.InterwikiMap.Contains(part))
+                            }
+                            else if (site.InterwikiMap.Contains(part))
                             {
                                 // Otherwise, check whether this is an interwiki prefix.
                                 interwiki = part.ToLowerInvariant();
@@ -325,15 +325,15 @@ namespace WikiClientLibrary
                 }
                 title = parts[1];
             }
-            END_OF_PARSING:
+        END_OF_PARSING:
             Debug.Assert(pagetitle != null, "pagetitle != null");
             if (pagetitle.Length == 0) goto EMPTY_TITLE;
             // nsname == null means that the expression has interwiki prefix, while family == null
             if (nsname == null && interwiki == null)
                 nsname = site.Namespaces[defaultNamespace].CustomName;
             return Tuple.Create(interwiki, nsname, pagetitle);
-            EMPTY_TITLE:
-            throw new ArgumentException($"The title \"{rawTitle}\" does not contain page title.");
+        EMPTY_TITLE:
+            throw new ArgumentException(string.Format(Prompts.ExceptionTitleIsEmpty, rawTitle));
         }
 
         /// <summary>

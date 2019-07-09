@@ -122,7 +122,7 @@ namespace WikiClientLibrary.Sites
             if (wikiClient == null) throw new ArgumentNullException(nameof(wikiClient));
             if (options == null) throw new ArgumentNullException(nameof(options));
             if (string.IsNullOrEmpty(options.ApiEndpoint))
-                throw new ArgumentException("Invalid API endpoint url.", nameof(options));
+                throw new ArgumentException(Prompts.ExceptionInvalidMediaWikiApiEndpointUrl, nameof(options));
             WikiClient = wikiClient;
             this.options = options.Clone();
             tokensManager = new TokensManager(this);
@@ -526,7 +526,7 @@ namespace WikiClientLibrary.Sites
             if (string.IsNullOrEmpty(userName)) throw new ArgumentNullException(nameof(userName));
             if (string.IsNullOrEmpty(password)) throw new ArgumentNullException(nameof(password));
             if (Interlocked.Exchange(ref isLoggingInOut, 1) != 0)
-                throw new InvalidOperationException("Cannot login/logout concurrently.");
+                throw new InvalidOperationException(Prompts.ExceptionCannotLoginLogoutConcurrently);
             using (this.BeginActionScope(null, (object)userName))
             {
                 try
@@ -560,8 +560,7 @@ namespace WikiClientLibrary.Sites
                                 "API result indicates the login is successful, but you are not currently in \"user\" group. Are you logging out on the other Site instance with the same API endpoint and the same WikiClient?");
                             return;
                         case "Aborted":
-                            message =
-                                "The login using the main account password (rather than a bot password) cannot proceed because user interaction is required. The clientlogin action should be used instead.";
+                            message = Prompts.ExceptionLoginAborted;
                             break;
                         case "Throttled":
                             var time = (int)jobj["login"]["wait"];
@@ -572,7 +571,7 @@ namespace WikiClientLibrary.Sites
                             token = (string)jobj["login"]["token"];
                             goto RETRY;
                         case "WrongToken": // We should have got correct token.
-                            throw new UnexpectedDataException($"Unexpected login result: {result} .");
+                            throw new UnexpectedDataException(string.Format(Prompts.ExceptionUnexpectedLoginResult, result));
                     }
                     message = (string)jobj["login"]["reason"] ?? message;
                     throw new OperationFailedException(result, message);
@@ -604,7 +603,7 @@ namespace WikiClientLibrary.Sites
         public async Task LogoutAsync(bool invalidateAccountInfo)
         {
             if (Interlocked.Exchange(ref isLoggingInOut, 1) != 0)
-                throw new InvalidOperationException("Cannot login/logout concurrently.");
+                throw new InvalidOperationException(Prompts.ExceptionCannotLoginLogoutConcurrently);
             using (this.BeginActionScope(null))
             {
                 try

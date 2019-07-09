@@ -75,16 +75,16 @@ namespace WikiClientLibrary.Files
             Site = site ?? throw new ArgumentNullException(nameof(site));
             SourceStream = sourceStream ?? throw new ArgumentNullException(nameof(sourceStream));
             if (!sourceStream.CanSeek)
-                throw new ArgumentException("The stream does not support seeking.", nameof(sourceStream));
+                throw new ArgumentException(Prompts.ExceptionStreamCannotSeek, nameof(sourceStream));
             originalSourceStreamPosition = SourceStream.Position;
-            TotalSize = (int) (SourceStream.Length - originalSourceStreamPosition);
-            if (TotalSize == 0) throw new ArgumentException("Cannot upload empty stream.");
+            TotalSize = (int)(SourceStream.Length - originalSourceStreamPosition);
+            if (TotalSize == 0) throw new ArgumentException(Prompts.ExceptionCannotUploadEmptyStream);
             // Upload 1MB chunks by default.
             DefaultChunkSize = 1024 * 1024;
             if (site.SiteInfo.MinUploadChunkSize > 0 && site.SiteInfo.MinUploadChunkSize > DefaultChunkSize)
                 DefaultChunkSize = site.SiteInfo.MinUploadChunkSize;
             else if (site.SiteInfo.MaxUploadSize > 0 && site.SiteInfo.MaxUploadSize < DefaultChunkSize)
-                DefaultChunkSize = (int) site.SiteInfo.MaxUploadSize;
+                DefaultChunkSize = (int)site.SiteInfo.MaxUploadSize;
             FileName = fileName ?? "Dummy";
         }
 
@@ -144,7 +144,7 @@ namespace WikiClientLibrary.Files
         {
             if (siteInfo == null) throw new ArgumentNullException(nameof(siteInfo));
             if (state != STATE_ALL_STASHED)
-                throw new InvalidOperationException("Cannot upload the file before all the chunks has been stashed.");
+                throw new InvalidOperationException(Prompts.ExceptionCannotUploadBeforeStash);
             Debug.Assert(FileKey != null);
             return new[]
             {
@@ -212,9 +212,9 @@ namespace WikiClientLibrary.Files
             switch (lastState)
             {
                 case STATE_CHUNK_STASHING:
-                    throw new InvalidOperationException("Cannot concurrently upload two chunks.");
+                    throw new InvalidOperationException(Prompts.ExceptionConcurrentStashing);
                 case STATE_ALL_STASHED:
-                    throw new InvalidOperationException("The content has been uploaded.");
+                    throw new InvalidOperationException(Prompts.ExceptionStashingComplete);
             }
             var startingPos = SourceStream.Position;
             using (Site.BeginActionScope(this, chunkSize))
@@ -230,7 +230,7 @@ namespace WikiClientLibrary.Files
                         var copiedSize = await SourceStream.CopyRangeToAsync(chunkStream, chunkSize, cancellationToken);
                         // If someone has messed with the SourceStream, this can happen.
                         if (copiedSize == 0)
-                            throw new InvalidOperationException("Unexpected stream EOF met.");
+                            throw new InvalidOperationException(Prompts.ExceptionUnexpectedStreamEof);
                         chunkStream.Position = 0;
                         var jparams = new Dictionary<string, object>
                         {
@@ -262,7 +262,7 @@ namespace WikiClientLibrary.Files
                         if (result.FileKey == null)
                         {
                             Debug.Assert(result.ResultCode != UploadResultCode.Warning);
-                            throw new UnexpectedDataException("Expect [filekey] or [sessionkey] in upload result. Found none.");
+                            throw new UnexpectedDataException(Prompts.ExceptionStashingNoFileKey);
                         }
                         // Note the fileKey changes after each upload.
                         lastStashingFileKey = result.FileKey;
@@ -322,6 +322,6 @@ namespace WikiClientLibrary.Files
                 base.OnApiError(errorCode, errorMessage, errorNode, responseNode, context);
             }
         }
-        
+
     }
 }

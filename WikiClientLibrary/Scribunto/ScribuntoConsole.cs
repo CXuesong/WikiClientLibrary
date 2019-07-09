@@ -89,7 +89,7 @@ namespace WikiClientLibrary.Scribunto
             {
                 result = await InvokeApiAsync(Site, _SessionId, moduleTitle, moduleContent, "=_VERSION", true, cancellationToken);
                 if (string.IsNullOrEmpty(result.ReturnValue))
-                    throw new UnexpectedDataException("Cannot validate Scribunto console properly. Lua _VERSION value is empty.");
+                    throw new UnexpectedDataException(Prompts.ExceptionScribuntoResetCannotValidate);
             }
             catch (ScribuntoConsoleException ex)
             {
