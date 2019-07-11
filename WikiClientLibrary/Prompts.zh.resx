@@ -1,0 +1,291 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="ExceptionArgumentContainsPipe" xml:space="preserve">
+    <value>参数不应包含管道符号（|）。</value>
+  </data>
+  <data name="ExceptionArgumentExpectEitherBothTrue" xml:space="preserve">
+    <value>{0}和{1}应当至少有一者为true。</value>
+  </data>
+  <data name="ExceptionArgumentExpectEitherDefault2" xml:space="preserve">
+    <value>{0}和{1}应当至少有一者设为默认值（null或default(T)）。</value>
+  </data>
+  <data name="ExceptionArgumentExpectEitherNull2" xml:space="preserve">
+    <value>{0}和{1}之间应当恰好有一者为null。</value>
+  </data>
+  <data name="ExceptionArgumentIsEmpty" xml:space="preserve">
+    <value>{0}为空白。</value>
+  </data>
+  <data name="ExceptionArgumentNullOrEmpty" xml:space="preserve">
+    <value>参数不应为null或空白。</value>
+  </data>
+  <data name="ExceptionArgumentNullOrWhitespace1" xml:space="preserve">
+    <value>{0}是空白或仅包含空白字符。</value>
+  </data>
+  <data name="ExceptionAsyncInitCancelled" xml:space="preserve">
+    <value>{0}的异步初始化已经被取消。</value>
+  </data>
+  <data name="ExceptionAsyncInitFaulted" xml:space="preserve">
+    <value>{0}的异步初始化发生异常：{1}</value>
+  </data>
+  <data name="ExceptionAsyncInitNotComplete" xml:space="preserve">
+    <value>{0}的异步初始化尚未完成。</value>
+  </data>
+  <data name="ExceptionCannotLoginLogoutConcurrently" xml:space="preserve">
+    <value>不允许并发登陆或注销用户。</value>
+  </data>
+  <data name="ExceptionCannotUploadBeforeStash" xml:space="preserve">
+    <value>在所有组成文件的区块上传完毕之前无法上传文件。</value>
+  </data>
+  <data name="ExceptionCannotUploadEmptyStream" xml:space="preserve">
+    <value>无法上传空白流。</value>
+  </data>
+  <data name="ExceptionChangePatrolled" xml:space="preserve">
+    <value>页面更改已经被巡查。</value>
+  </data>
+  <data name="ExceptionCollectionReadOnly" xml:space="preserve">
+    <value>集合只读。</value>
+  </data>
+  <data name="ExceptionConcurrentStashing" xml:space="preserve">
+    <value>不允许并发上传文件区块。</value>
+  </data>
+  <data name="ExceptionDevVersionRequiresDevChannel" xml:space="preserve">
+    <value>当devChanne为None时，devVersion必须为0。</value>
+  </data>
+  <data name="ExceptionHtmlResponseHint" xml:space="preserve">
+    <value>检测到流内容以尖括号（&lt;）开始。这通常意味着服务器返回了HTML而不是JSON。请参阅 https://github.com/CXuesong/WikiClientLibrary/wiki/Troubleshooting 以了解详情。</value>
+  </data>
+  <data name="ExceptionInvalidEnumValue" xml:space="preserve">
+    <value>枚举值无效。</value>
+  </data>
+  <data name="ExceptionInvalidMediaWikiApiEndpointUrl" xml:space="preserve">
+    <value>MediaWiki API终结点地址无效。</value>
+  </data>
+  <data name="ExceptionInvalidPageJson" xml:space="preserve">
+    <value>指定的JSON对象不包含MediaWiki页面信息。</value>
+  </data>
+  <data name="ExceptionJoinValuesCannotContainPipeAndSeparator" xml:space="preserve">
+    <value>值不能同时包含管道符号 ‘|’ 和Unit Separator '\u001F'。</value>
+  </data>
+  <data name="ExceptionJsonEmptyInput" xml:space="preserve">
+    <value>无法从空白流中解析JSON。</value>
+  </data>
+  <data name="ExceptionJsonParsingFailed" xml:space="preserve">
+    <value>从流中解析JSON时发生错误。</value>
+  </data>
+  <data name="ExceptionLoginAborted" xml:space="preserve">
+    <value>由于需要用户交互，无法使用主账户密码（而非机器人密码）进行登录。请使用clientlogin动作进行登录。</value>
+  </data>
+  <data name="ExceptionMediaWikiFormCannotRecoverState" xml:space="preserve">
+    <value>无法还原字段信息（如流的位置）。</value>
+  </data>
+  <data name="ExceptionPatrolDisabled" xml:space="preserve">
+    <value>此维基已禁用巡查。</value>
+  </data>
+  <data name="ExceptionPatrolledByRevisionNotSupported" xml:space="preserve">
+    <value>当前站点的MediaWiki版本过低，不支持指定RevisionId进行巡查。</value>
+  </data>
+  <data name="ExceptionPatrolNoAutoPatrol" xml:space="preserve">
+    <value>当前用户没有自巡查(autopatrol)权限，因此无法巡查自己的编辑。</value>
+  </data>
+  <data name="ExceptionPatrolNoSuchRcid" xml:space="preserve">
+    <value>找不到最近更改rcid {0}。</value>
+  </data>
+  <data name="ExceptionRequestFailed" xml:space="preserve">
+    <value>请求的操作已经被取消。</value>
+  </data>
+  <data name="ExceptionRequireParamValue2" xml:space="preserve">
+    <value>当前操作要求{0}设置为{1}。</value>
+  </data>
+  <data name="ExceptionScribuntoConsoleReturnEmpty" xml:space="preserve">
+    <value>Scribunto控制台执行返回了空白表达式。</value>
+  </data>
+  <data name="ExceptionScribuntoResetCannotValidate" xml:space="preserve">
+    <value>无法验证Scribunto控制台状态。Lua _VERSION值为空。</value>
+  </data>
+  <data name="ExceptionStashingComplete" xml:space="preserve">
+    <value>文件内容已经被上传。</value>
+  </data>
+  <data name="ExceptionStashingNoFileKey" xml:space="preserve">
+    <value>期望文件上传结果中包含[filekey]或[sessionkey]。二者均未找到。</value>
+  </data>
+  <data name="ExceptionStreamCannotSeek" xml:space="preserve">
+    <value>指定的流不支持寻址（seek）。</value>
+  </data>
+  <data name="ExceptionTitleIllegalCharacter" xml:space="preserve">
+    <value>标题包含非法字符：{0}。</value>
+  </data>
+  <data name="ExceptionTitleIllegalCharacterSequence" xml:space="preserve">
+    <value>页面标题包含非法字符序列：{0}。</value>
+  </data>
+  <data name="ExceptionTitleIsEmpty" xml:space="preserve">
+    <value>表达式"{0}"不包含页面标题。</value>
+  </data>
+  <data name="ExceptionUnexpectedData" xml:space="preserve">
+    <value>从服务器收到了预料外的数据。</value>
+  </data>
+  <data name="ExceptionUnexpectedLoginResult" xml:space="preserve">
+    <value>意外的登录结果：{0}。</value>
+  </data>
+  <data name="ExceptionUnexpectedParamValue2" xml:space="preserve">
+    <value>参数{0}接收到了意外的实参：{1}。</value>
+  </data>
+  <data name="ExceptionUnexpectedStreamEof" xml:space="preserve">
+    <value>流意外结束。</value>
+  </data>
+  <data name="ExceptionUserNotHaveRight1" xml:space="preserve">
+    <value>当前用户没有{0}权限。</value>
+  </data>
+  <data name="ExceptionUserNotInGroup1" xml:space="preserve">
+    <value>当前用户不在{0}用户组中。</value>
+  </data>
+  <data name="ExceptionVersionIncompleteDevVersion" xml:space="preserve">
+    <value>不完整的DevVersion表达式。</value>
+  </data>
+  <data name="ExceptionVersionInvalidDevVersion" xml:space="preserve">
+    <value>无效的DevVersion取值。</value>
+  </data>
+  <data name="ExceptionVersionInvalidNumber" xml:space="preserve">
+    <value>无效的版本号数值。</value>
+  </data>
+  <data name="ExceptionVersionTooManyComponents" xml:space="preserve">
+    <value>版本号的段位过多。</value>
+  </data>
+  <data name="ExceptionVersionUnknownDevVersionPrefix1" xml:space="preserve">
+    <value>未知的DevVersion前缀：{0}。</value>
+  </data>
+  <data name="ExceptionWikiClientGeneral" xml:space="preserve">
+    <value>在执行MediaWiki API操作时发生异常。</value>
+  </data>
+  <data name="ExceptionWikiClientNonHttpClientHandler" xml:space="preserve">
+    <value>当前使用的的HttpMessageHandler实现不是HttpClientHandler，因而不支持此操作。</value>
+  </data>
+  <data name="ExceptionWikiClientReachedMaxRetries" xml:space="preserve">
+    <value>重试次数已用尽。</value>
+  </data>
+  <data name="ExceptionWikiListCannotFindResultRoot" xml:space="preserve">
+    <value>在JSON中无法检测到包含MediaWiki列表（list）结果的节点。</value>
+  </data>
+  <data name="ExceptionWikiPageNotExists" xml:space="preserve">
+    <value>页面“{0}”不存在。</value>
+  </data>
+  <data name="ExceptionWikiPageResolveCircularRedirect1" xml:space="preserve">
+    <value>无法解析循环重定向：{0}。</value>
+  </data>
+</root>
