@@ -120,7 +120,7 @@
   <data name="ExceptionArgumentContainsPipe" xml:space="preserve">
     <value>参数不应包含管道符号（|）。</value>
   </data>
-  <data name="ExceptionArgumentExpectEitherBothTrue" xml:space="preserve">
+  <data name="ExceptionArgumentExpectEitherBothTrue2" xml:space="preserve">
     <value>{0}和{1}应当至少有一者为true。</value>
   </data>
   <data name="ExceptionArgumentExpectEitherDefault2" xml:space="preserve">
@@ -129,7 +129,7 @@
   <data name="ExceptionArgumentExpectEitherNull2" xml:space="preserve">
     <value>{0}和{1}之间应当恰好有一者为null。</value>
   </data>
-  <data name="ExceptionArgumentIsEmpty" xml:space="preserve">
+  <data name="ExceptionArgumentIsEmpty1" xml:space="preserve">
     <value>{0}为空白。</value>
   </data>
   <data name="ExceptionArgumentNullOrEmpty" xml:space="preserve">
@@ -138,13 +138,13 @@
   <data name="ExceptionArgumentNullOrWhitespace1" xml:space="preserve">
     <value>{0}是空白或仅包含空白字符。</value>
   </data>
-  <data name="ExceptionAsyncInitCancelled" xml:space="preserve">
+  <data name="ExceptionAsyncInitCancelled1" xml:space="preserve">
     <value>{0}的异步初始化已经被取消。</value>
   </data>
-  <data name="ExceptionAsyncInitFaulted" xml:space="preserve">
+  <data name="ExceptionAsyncInitFaulted2" xml:space="preserve">
     <value>{0}的异步初始化发生异常：{1}</value>
   </data>
-  <data name="ExceptionAsyncInitNotComplete" xml:space="preserve">
+  <data name="ExceptionAsyncInitNotComplete1" xml:space="preserve">
     <value>{0}的异步初始化尚未完成。</value>
   </data>
   <data name="ExceptionCannotLoginLogoutConcurrently" xml:space="preserve">
@@ -204,7 +204,7 @@
   <data name="ExceptionPatrolNoAutoPatrol" xml:space="preserve">
     <value>当前用户没有自巡查(autopatrol)权限，因此无法巡查自己的编辑。</value>
   </data>
-  <data name="ExceptionPatrolNoSuchRcid" xml:space="preserve">
+  <data name="ExceptionPatrolNoSuchRcid1" xml:space="preserve">
     <value>找不到最近更改rcid {0}。</value>
   </data>
   <data name="ExceptionRequestFailed" xml:space="preserve">
@@ -228,19 +228,19 @@
   <data name="ExceptionStreamCannotSeek" xml:space="preserve">
     <value>指定的流不支持寻址（seek）。</value>
   </data>
-  <data name="ExceptionTitleIllegalCharacter" xml:space="preserve">
+  <data name="ExceptionTitleIllegalCharacter1" xml:space="preserve">
     <value>标题包含非法字符：{0}。</value>
   </data>
-  <data name="ExceptionTitleIllegalCharacterSequence" xml:space="preserve">
+  <data name="ExceptionTitleIllegalCharacterSequence1" xml:space="preserve">
     <value>页面标题包含非法字符序列：{0}。</value>
   </data>
-  <data name="ExceptionTitleIsEmpty" xml:space="preserve">
+  <data name="ExceptionTitleIsEmpty1" xml:space="preserve">
     <value>表达式"{0}"不包含页面标题。</value>
   </data>
   <data name="ExceptionUnexpectedData" xml:space="preserve">
     <value>从服务器收到了预料外的数据。</value>
   </data>
-  <data name="ExceptionUnexpectedLoginResult" xml:space="preserve">
+  <data name="ExceptionUnexpectedLoginResult1" xml:space="preserve">
     <value>意外的登录结果：{0}。</value>
   </data>
   <data name="ExceptionUnexpectedParamValue2" xml:space="preserve">
@@ -282,7 +282,7 @@
   <data name="ExceptionWikiListCannotFindResultRoot" xml:space="preserve">
     <value>在JSON中无法检测到包含MediaWiki列表（list）结果的节点。</value>
   </data>
-  <data name="ExceptionWikiPageNotExists" xml:space="preserve">
+  <data name="ExceptionWikiPageNotExists1" xml:space="preserve">
     <value>页面“{0}”不存在。</value>
   </data>
   <data name="ExceptionWikiPageResolveCircularRedirect1" xml:space="preserve">

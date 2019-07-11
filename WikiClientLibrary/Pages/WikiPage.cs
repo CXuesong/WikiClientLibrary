@@ -304,7 +304,7 @@ namespace WikiClientLibrary.Pages
 
         protected void AssertExists()
         {
-            if (!Exists) throw new InvalidOperationException(string.Format(Prompts.ExceptionWikiPageNotExists, this));
+            if (!Exists) throw new InvalidOperationException(string.Format(Prompts.ExceptionWikiPageNotExists1, this));
         }
 
         protected internal virtual void OnLoadPageInfo(JObject jpage, IWikiPageQueryProvider options)

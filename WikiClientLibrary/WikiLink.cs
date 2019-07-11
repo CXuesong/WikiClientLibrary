@@ -164,7 +164,7 @@ namespace WikiClientLibrary
             if (title.IndexOf('\ufffd') >= 0)
             {
                 if (exceptionOnFailure)
-                    throw new ArgumentException(string.Format(Prompts.ExceptionTitleIllegalCharacter, "\uFFFD 'REPLACEMENT CHARACTER'"), nameof(text));
+                    throw new ArgumentException(string.Format(Prompts.ExceptionTitleIllegalCharacter1, "\uFFFD 'REPLACEMENT CHARACTER'"), nameof(text));
                 return null;
             }
             parts = title.Split(new[] { '#' }, 2);
@@ -174,7 +174,7 @@ namespace WikiClientLibrary
             if (match.Success)
             {
                 if (exceptionOnFailure)
-                    throw new ArgumentException(string.Format(Prompts.ExceptionTitleIllegalCharacterSequence, match.Value));
+                    throw new ArgumentException(string.Format(Prompts.ExceptionTitleIllegalCharacterSequence1, match.Value));
                 return null;
             }
             //Parse title parts.
@@ -333,7 +333,7 @@ namespace WikiClientLibrary
                 nsname = site.Namespaces[defaultNamespace].CustomName;
             return Tuple.Create(interwiki, nsname, pagetitle);
         EMPTY_TITLE:
-            throw new ArgumentException(string.Format(Prompts.ExceptionTitleIsEmpty, rawTitle));
+            throw new ArgumentException(string.Format(Prompts.ExceptionTitleIsEmpty1, rawTitle));
         }
 
         /// <summary>

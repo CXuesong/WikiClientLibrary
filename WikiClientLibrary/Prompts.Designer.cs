@@ -73,9 +73,9 @@ namespace WikiClientLibrary {
         /// <summary>
         ///   查找类似 Either {0} or {1} (or both) should be true. 的本地化字符串。
         /// </summary>
-        internal static string ExceptionArgumentExpectEitherBothTrue {
+        internal static string ExceptionArgumentExpectEitherBothTrue2 {
             get {
-                return ResourceManager.GetString("ExceptionArgumentExpectEitherBothTrue", resourceCulture);
+                return ResourceManager.GetString("ExceptionArgumentExpectEitherBothTrue2", resourceCulture);
             }
         }
         
@@ -100,9 +100,9 @@ namespace WikiClientLibrary {
         /// <summary>
         ///   查找类似 {0} is empty. 的本地化字符串。
         /// </summary>
-        internal static string ExceptionArgumentIsEmpty {
+        internal static string ExceptionArgumentIsEmpty1 {
             get {
-                return ResourceManager.GetString("ExceptionArgumentIsEmpty", resourceCulture);
+                return ResourceManager.GetString("ExceptionArgumentIsEmpty1", resourceCulture);
             }
         }
         
@@ -127,27 +127,27 @@ namespace WikiClientLibrary {
         /// <summary>
         ///   查找类似 The asynchronous initialization of {0} has been cancelled. 的本地化字符串。
         /// </summary>
-        internal static string ExceptionAsyncInitCancelled {
+        internal static string ExceptionAsyncInitCancelled1 {
             get {
-                return ResourceManager.GetString("ExceptionAsyncInitCancelled", resourceCulture);
+                return ResourceManager.GetString("ExceptionAsyncInitCancelled1", resourceCulture);
             }
         }
         
         /// <summary>
         ///   查找类似 The asynchronous initialization of {0} throws an Exception: {1} 的本地化字符串。
         /// </summary>
-        internal static string ExceptionAsyncInitFaulted {
+        internal static string ExceptionAsyncInitFaulted2 {
             get {
-                return ResourceManager.GetString("ExceptionAsyncInitFaulted", resourceCulture);
+                return ResourceManager.GetString("ExceptionAsyncInitFaulted2", resourceCulture);
             }
         }
         
         /// <summary>
         ///   查找类似 The asynchronous initialization of {0} has not completed. 的本地化字符串。
         /// </summary>
-        internal static string ExceptionAsyncInitNotComplete {
+        internal static string ExceptionAsyncInitNotComplete1 {
             get {
-                return ResourceManager.GetString("ExceptionAsyncInitNotComplete", resourceCulture);
+                return ResourceManager.GetString("ExceptionAsyncInitNotComplete1", resourceCulture);
             }
         }
         
@@ -325,9 +325,9 @@ namespace WikiClientLibrary {
         /// <summary>
         ///   查找类似 There is no change with rcid {0}. 的本地化字符串。
         /// </summary>
-        internal static string ExceptionPatrolNoSuchRcid {
+        internal static string ExceptionPatrolNoSuchRcid1 {
             get {
-                return ResourceManager.GetString("ExceptionPatrolNoSuchRcid", resourceCulture);
+                return ResourceManager.GetString("ExceptionPatrolNoSuchRcid1", resourceCulture);
             }
         }
         
@@ -397,27 +397,27 @@ namespace WikiClientLibrary {
         /// <summary>
         ///   查找类似 Title contains illegal character: {0}. 的本地化字符串。
         /// </summary>
-        internal static string ExceptionTitleIllegalCharacter {
+        internal static string ExceptionTitleIllegalCharacter1 {
             get {
-                return ResourceManager.GetString("ExceptionTitleIllegalCharacter", resourceCulture);
+                return ResourceManager.GetString("ExceptionTitleIllegalCharacter1", resourceCulture);
             }
         }
         
         /// <summary>
         ///   查找类似 Title contains illegal character sequence: {0} . 的本地化字符串。
         /// </summary>
-        internal static string ExceptionTitleIllegalCharacterSequence {
+        internal static string ExceptionTitleIllegalCharacterSequence1 {
             get {
-                return ResourceManager.GetString("ExceptionTitleIllegalCharacterSequence", resourceCulture);
+                return ResourceManager.GetString("ExceptionTitleIllegalCharacterSequence1", resourceCulture);
             }
         }
         
         /// <summary>
         ///   查找类似 The title &quot;{0}&quot; does not contain page title. 的本地化字符串。
         /// </summary>
-        internal static string ExceptionTitleIsEmpty {
+        internal static string ExceptionTitleIsEmpty1 {
             get {
-                return ResourceManager.GetString("ExceptionTitleIsEmpty", resourceCulture);
+                return ResourceManager.GetString("ExceptionTitleIsEmpty1", resourceCulture);
             }
         }
         
@@ -433,9 +433,9 @@ namespace WikiClientLibrary {
         /// <summary>
         ///   查找类似 Unexpected login result: {0} . 的本地化字符串。
         /// </summary>
-        internal static string ExceptionUnexpectedLoginResult {
+        internal static string ExceptionUnexpectedLoginResult1 {
             get {
-                return ResourceManager.GetString("ExceptionUnexpectedLoginResult", resourceCulture);
+                return ResourceManager.GetString("ExceptionUnexpectedLoginResult1", resourceCulture);
             }
         }
         
@@ -559,9 +559,9 @@ namespace WikiClientLibrary {
         /// <summary>
         ///   查找类似 The page {0} does not exist. 的本地化字符串。
         /// </summary>
-        internal static string ExceptionWikiPageNotExists {
+        internal static string ExceptionWikiPageNotExists1 {
             get {
-                return ResourceManager.GetString("ExceptionWikiPageNotExists", resourceCulture);
+                return ResourceManager.GetString("ExceptionWikiPageNotExists1", resourceCulture);
             }
         }
         

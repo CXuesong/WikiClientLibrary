@@ -359,7 +359,7 @@ namespace WikiClientLibrary
                 switch (ex.ErrorCode)
                 {
                     case "nosuchrcid":
-                        throw new ArgumentException(string.Format(Prompts.ExceptionPatrolNoSuchRcid, recentChangeId), ex);
+                        throw new ArgumentException(string.Format(Prompts.ExceptionPatrolNoSuchRcid1, recentChangeId), ex);
                     case "patroldisabled":
                         throw new NotSupportedException(Prompts.ExceptionPatrolDisabled, ex);
                     case "noautopatrol":

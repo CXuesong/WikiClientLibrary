@@ -54,7 +54,7 @@ namespace WikiClientLibrary.Pages.Queries.Properties
             else if (QuerySecondaryCoordinate)
                 p.Add("coprimary", "secondary");
             else
-                throw new ArgumentException(string.Format(Prompts.ExceptionArgumentExpectEitherBothTrue, nameof(QueryPrimaryCoordinate), nameof(QuerySecondaryCoordinate)));
+                throw new ArgumentException(string.Format(Prompts.ExceptionArgumentExpectEitherBothTrue2, nameof(QueryPrimaryCoordinate), nameof(QuerySecondaryCoordinate)));
 
             if (!QueryDistanceFromPoint.IsEmpty && QueryDistanceFromPage == null)
                 throw new ArgumentException(string.Format(Prompts.ExceptionArgumentExpectEitherDefault2, nameof(QueryDistanceFromPoint), nameof(QueryDistanceFromPage)));

@@ -126,13 +126,13 @@
   <data name="ExceptionUnexpectedData" xml:space="preserve">
     <value>Unexpected data received.</value>
   </data>
-  <data name="ExceptionTitleIllegalCharacter" xml:space="preserve">
+  <data name="ExceptionTitleIllegalCharacter1" xml:space="preserve">
     <value>Title contains illegal character: {0}.</value>
   </data>
-  <data name="ExceptionTitleIllegalCharacterSequence" xml:space="preserve">
+  <data name="ExceptionTitleIllegalCharacterSequence1" xml:space="preserve">
     <value>Title contains illegal character sequence: {0} .</value>
   </data>
-  <data name="ExceptionTitleIsEmpty" xml:space="preserve">
+  <data name="ExceptionTitleIsEmpty1" xml:space="preserve">
     <value>The title "{0}" does not contain page title.</value>
   </data>
   <data name="ExceptionCannotLoginLogoutConcurrently" xml:space="preserve">
@@ -141,10 +141,10 @@
   <data name="ExceptionLoginAborted" xml:space="preserve">
     <value>The login using the main account password (rather than a bot password) cannot proceed because user interaction is required. The clientlogin action should be used instead.</value>
   </data>
-  <data name="ExceptionUnexpectedLoginResult" xml:space="preserve">
+  <data name="ExceptionUnexpectedLoginResult1" xml:space="preserve">
     <value>Unexpected login result: {0} .</value>
   </data>
-  <data name="ExceptionWikiPageNotExists" xml:space="preserve">
+  <data name="ExceptionWikiPageNotExists1" xml:space="preserve">
     <value>The page {0} does not exist.</value>
   </data>
   <data name="ExceptionMediaWikiFormCannotRecoverState" xml:space="preserve">
@@ -177,7 +177,7 @@
   <data name="ExceptionArgumentExpectEitherNull2" xml:space="preserve">
     <value>Either {0} or {1} should be null. They cannot both, nor neither be null.</value>
   </data>
-  <data name="ExceptionArgumentIsEmpty" xml:space="preserve">
+  <data name="ExceptionArgumentIsEmpty1" xml:space="preserve">
     <value>{0} is empty.</value>
   </data>
   <data name="ExceptionWikiListCannotFindResultRoot" xml:space="preserve">
@@ -195,13 +195,13 @@
   <data name="ExceptionRequireParamValue2" xml:space="preserve">
     <value>Operation requires {0} to be {1}.</value>
   </data>
-  <data name="ExceptionAsyncInitCancelled" xml:space="preserve">
+  <data name="ExceptionAsyncInitCancelled1" xml:space="preserve">
     <value>The asynchronous initialization of {0} has been cancelled.</value>
   </data>
-  <data name="ExceptionAsyncInitFaulted" xml:space="preserve">
+  <data name="ExceptionAsyncInitFaulted2" xml:space="preserve">
     <value>The asynchronous initialization of {0} throws an Exception: {1}</value>
   </data>
-  <data name="ExceptionAsyncInitNotComplete" xml:space="preserve">
+  <data name="ExceptionAsyncInitNotComplete1" xml:space="preserve">
     <value>The asynchronous initialization of {0} has not completed.</value>
   </data>
   <data name="ExceptionHtmlResponseHint" xml:space="preserve">
@@ -228,7 +228,7 @@
   <data name="ExceptionDevVersionRequiresDevChannel" xml:space="preserve">
     <value>When devChannel is None, devVersion must be 0.</value>
   </data>
-  <data name="ExceptionArgumentExpectEitherBothTrue" xml:space="preserve">
+  <data name="ExceptionArgumentExpectEitherBothTrue2" xml:space="preserve">
     <value>Either {0} or {1} (or both) should be true.</value>
   </data>
   <data name="ExceptionArgumentExpectEitherDefault2" xml:space="preserve">
@@ -240,7 +240,7 @@
   <data name="ExceptionWikiPageResolveCircularRedirect1" xml:space="preserve">
     <value>Cannot resolve circular redirect: {0}.</value>
   </data>
-  <data name="ExceptionPatrolNoSuchRcid" xml:space="preserve">
+  <data name="ExceptionPatrolNoSuchRcid1" xml:space="preserve">
     <value>There is no change with rcid {0}.</value>
   </data>
   <data name="ExceptionPatrolDisabled" xml:space="preserve">

@@ -571,7 +571,7 @@ namespace WikiClientLibrary.Sites
                             token = (string)jobj["login"]["token"];
                             goto RETRY;
                         case "WrongToken": // We should have got correct token.
-                            throw new UnexpectedDataException(string.Format(Prompts.ExceptionUnexpectedLoginResult, result));
+                            throw new UnexpectedDataException(string.Format(Prompts.ExceptionUnexpectedLoginResult1, result));
                     }
                     message = (string)jobj["login"]["reason"] ?? message;
                     throw new OperationFailedException(result, message);
