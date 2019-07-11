@@ -573,5 +573,14 @@ namespace WikiClientLibrary {
                 return ResourceManager.GetString("ExceptionWikiPageResolveCircularRedirect1", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   查找类似 --- End of MediaWiki remote stack trace --- 的本地化字符串。
+        /// </summary>
+        internal static string MediaWikiRemoteStackTraceEnd {
+            get {
+                return ResourceManager.GetString("MediaWikiRemoteStackTraceEnd", resourceCulture);
+            }
+        }
     }
 }

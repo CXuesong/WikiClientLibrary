@@ -24,7 +24,7 @@ namespace WikiClientLibrary
 
         public WikiClientException(string message, Exception innerException) : base(message, innerException)
         {
-            
+
         }
     }
 
@@ -53,7 +53,7 @@ namespace WikiClientLibrary
                 string.Format(
                     string.IsNullOrEmpty(errorMessage)
                         ? "{0}"
-                        : "{0}:{1}",
+                        : "{0}: {1}",
                     errorCode, errorMessage))
         {
             ErrorCode = errorCode;
@@ -103,7 +103,27 @@ namespace WikiClientLibrary
     /// <summary>
     /// Raises when user has no rights for certain operations.
     /// </summary>
-    /// <remarks>This corresponds to <c>*conflict</c> MW API error.</remarks>
+    /// <remarks>
+    /// This exception corresponds to the following MW API errors:
+    /// <list type="bullet">
+    /// <item>
+    /// <term>readapidenied</term>
+    /// <description>You need read permission to use this module.</description>
+    /// </item>
+    /// <item><term>permissiondenied</term></item>
+    /// <item>
+    /// <term>mustbeloggedin</term>
+    /// <description>You must be logged in to upload this file.</description>
+    /// </item>
+    /// <item><term>readapidenied</term></item>
+    /// <item><term>permissions</term></item>
+    /// <item><term>cantpurge</term></item>
+    /// <item>
+    /// <term>(empty ErrorCode)</term>
+    /// <description>Other cases where the user does not have the rights to perform the operation.</description>
+    /// </item>
+    /// </list>
+    /// </remarks>
     public class UnauthorizedOperationException : OperationFailedException
     {
         public UnauthorizedOperationException(string errorCode, string message)
@@ -124,26 +144,71 @@ namespace WikiClientLibrary
     }
 
     /// <summary>
-    /// Raises when conflict detected performing the operation.
+    /// Raises when conflict detected performing the operation. (<c>*conflict</c>)
     /// </summary>
     /// <remarks>This corresponds to <c>*conflict</c> MW API error.</remarks>
     public class OperationConflictException : OperationFailedException
     {
+
         public OperationConflictException(string errorCode, string message)
             : base(errorCode, message)
         {
         }
+
     }
 
     /// <summary>
-    /// Raises when the token used to invoke MediaWiki API is invalid.
+    /// Raises when the token used to invoke MediaWiki API is invalid. (<c>badtoken</c>)
     /// </summary>
     /// <remarks>This corresponds to <c>badtoken</c> MW API error.</remarks>
     public class BadTokenException : OperationFailedException
     {
+
         public BadTokenException(string errorCode, string message)
             : base(errorCode, message)
         {
+        }
+
+    }
+
+    /// <summary>
+    /// Raises when the remote MediaWiki site has encountered an internal error. (<c>internal_api_error_*</c>)
+    /// </summary>
+    /// <remarks>This corresponds to <c>internal_api_error_*</c> MW API error.</remarks>
+    public class MediaWikiRemoteException : OperationFailedException
+    {
+
+        public virtual string ErrorClass { get; }
+
+        public virtual string RemoteStackTrace { get; }
+
+        public MediaWikiRemoteException(string errorCode, string message)
+            : this(errorCode, message, null, null)
+        {
+        }
+
+        public MediaWikiRemoteException(string errorCode, string message, string errorClass, string remoteStackTrace)
+            : base(errorCode, message)
+        {
+            ErrorClass = errorClass;
+            RemoteStackTrace = remoteStackTrace;
+        }
+
+        /// <inheritdoc />
+        public override string ToString()
+        {
+            var sb = new StringBuilder();
+            sb.Append(GetType());
+            sb.Append(": ");
+            sb.Append(Message);
+            sb.AppendLine();
+            if (!string.IsNullOrEmpty(RemoteStackTrace))
+            {
+                sb.AppendLine(RemoteStackTrace);
+                sb.AppendLine(Prompts.MediaWikiRemoteStackTraceEnd);
+            }
+            sb.Append(StackTrace);
+            return sb.ToString();
         }
     }
 
@@ -165,4 +230,5 @@ namespace WikiClientLibrary
             : base(message, inner)
         { }
     }
+
 }

@@ -288,4 +288,7 @@
   <data name="ExceptionPatrolledByRevisionNotSupported" xml:space="preserve">
     <value>Current version of site does not support patrol by RevisionId.</value>
   </data>
+  <data name="MediaWikiRemoteStackTraceEnd" xml:space="preserve">
+    <value>--- End of MediaWiki remote stack trace ---</value>
+  </data>
 </root>

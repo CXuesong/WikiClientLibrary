@@ -132,6 +132,10 @@ namespace WikiClientLibrary.Client
         /// <description><see cref="OperationConflictException"/></description>
         /// </item>
         /// <item>
+        /// <item>
+        /// <term><c>internal_api_error*</c></term>
+        /// <description><see cref="MediaWikiRemoteException"/></description>
+        /// </item>
         /// <term>others</term>
         /// <description><see cref="OperationFailedException"/></description>
         /// </item>
@@ -160,7 +164,7 @@ namespace WikiClientLibrary.Client
                 case "prev_revision":
                     throw new OperationConflictException(errorCode, errorMessage);
                 default:
-                    if (errorCode.EndsWith("conflict"))
+                    if (errorCode.EndsWith("conflict", StringComparison.OrdinalIgnoreCase))
                         throw new OperationConflictException(errorCode, errorMessage);
                     // "messages": [
                     // {
@@ -171,6 +175,11 @@ namespace WikiClientLibrary.Client
                     // }
                     // },
                     // ...]
+                    if (errorCode.StartsWith("internal_api_error", StringComparison.OrdinalIgnoreCase))
+                    {
+                        throw new MediaWikiRemoteException(errorCode, errorMessage, 
+                            (string)errorNode["errorclass"], (string)errorNode["*"]);
+                    }
                     var messages = (JArray)errorNode["messages"];
                     if (messages != null && messages.Count > 1 && messages[0]["html"] != null)
                     {

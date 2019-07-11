@@ -288,4 +288,7 @@
   <data name="ExceptionWikiPageResolveCircularRedirect1" xml:space="preserve">
     <value>无法解析循环重定向：{0}。</value>
   </data>
+  <data name="MediaWikiRemoteStackTraceEnd" xml:space="preserve">
+    <value>--- MediaWiki远程调用堆栈结束 ---</value>
+  </data>
 </root>
