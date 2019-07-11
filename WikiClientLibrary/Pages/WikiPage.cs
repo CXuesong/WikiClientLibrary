@@ -798,16 +798,11 @@ namespace WikiClientLibrary.Pages
         [JsonProperty]
         public string Level { get; private set; }
 
+        [JsonProperty("expiry")]
         public DateTime Expiry { get; private set; }
 
         [JsonProperty]
         public bool Cascade { get; private set; }
-
-        [JsonProperty("expiry")]
-        private string ExpiryProxy
-        {
-            set { Expiry = MediaWikiUtility.ParseDateTimeOffset(value); }
-        }
 
         /// <inheritdoc/>
         public override string ToString()

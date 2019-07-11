@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Dynamic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -39,10 +40,14 @@ namespace WikiClientLibrary
                     NullValueHandling = NullValueHandling.Ignore,
                     ContractResolver = new WikiJsonContractResolver(),
                     Formatting = Formatting.None,
+                    // https://github.com/JamesNK/Newtonsoft.Json/issues/862
+                    // https://github.com/CXuesong/WikiClientLibrary/issues/49
+                    DateParseHandling = DateParseHandling.None,
                     Converters =
                     {
                         new WikiBooleanJsonConverter(),
                         new WikiStringEnumJsonConverter(),
+                        new WikiDateTimeJsonConverter(),
                     },
                 };
             return JsonSerializer.CreateDefault(settings);
@@ -79,7 +84,7 @@ namespace WikiClientLibrary
             {
                 case null:
                 case string _:
-                    return (string) value;
+                    return (string)value;
                 case bool b:
                     return b ? "" : null;
                 case AutoWatchBehavior awb:
@@ -98,7 +103,9 @@ namespace WikiClientLibrary
                     }
                 case DateTime dt:
                     // ISO 8601
-                    return dt.ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ssK");
+                    return dt.ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ssK", CultureInfo.InvariantCulture);
+                case IFormattable fmt:
+                    return fmt.ToString(null, CultureInfo.InvariantCulture);
                 default:
                     return value.ToString();
             }
@@ -145,14 +152,14 @@ namespace WikiClientLibrary
         /// </summary>
         public static async Task<string> ReadAllStringAsync(this Stream stream, CancellationToken cancellationToken)
         {
-            const int BufferSize = 4*1024*1024;
+            const int BufferSize = 4 * 1024 * 1024;
             if (stream == null) throw new ArgumentNullException(nameof(stream));
             cancellationToken.ThrowIfCancellationRequested();
             var buffer = new char[BufferSize];
             var builder = new StringBuilder();
             using (var reader = new StreamReader(stream, Encoding.UTF8, false, BufferSize))
             {
-                int count ;
+                int count;
                 while ((count = await reader.ReadAsync(buffer, 0, BufferSize)) > 0)
                 {
                     cancellationToken.ThrowIfCancellationRequested();

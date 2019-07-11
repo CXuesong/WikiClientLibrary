@@ -1,4 +1,5 @@
 using System;
+using System.Globalization;
 using System.Reflection;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
@@ -21,7 +22,7 @@ namespace WikiClientLibrary.Infrastructures
         /// <param name="writer">The <see cref="T:Newtonsoft.Json.JsonWriter"/> to write to.</param><param name="value">The value.</param><param name="serializer">The calling serializer.</param>
         public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
         {
-            if ((bool) value) writer.WriteValue("");
+            if ((bool)value) writer.WriteValue("");
         }
 
         /// <summary>
@@ -59,7 +60,7 @@ namespace WikiClientLibrary.Infrastructures
         /// <inheritdoc />
         public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
         {
-            var ev = (Enum) value;
+            var ev = (Enum)value;
             writer.WriteValue(ev.ToString("G").ToLowerInvariant());
         }
 
@@ -67,7 +68,7 @@ namespace WikiClientLibrary.Infrastructures
         public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
         {
             if (reader.TokenType != JsonToken.String) throw new JsonException("Expect enum string.");
-            return Enum.Parse(objectType, (string) reader.Value, true);
+            return Enum.Parse(objectType, (string)reader.Value, true);
         }
 
         /// <inheritdoc />
@@ -76,6 +77,81 @@ namespace WikiClientLibrary.Infrastructures
             return objectType.GetTypeInfo().IsEnum;
         }
     }
+
+    /// <summary>
+    /// Handles the conversion between MediaWiki API timestamp and its CLR counterparts:
+    /// <see cref="DateTime"/> and <see cref="DateTimeOffset"/>.
+    /// </summary>
+    /// <remarks>
+    /// <para>This converter handles `"infinity"` as <see cref="DateTime.MaxValue"/> or <see cref="DateTimeOffset.MaxValue"/>.</para>
+    /// <para>For now this class only supports conversion of ISO 8601 format. If you are using this class
+    /// and need more support within the API specification linked below, please open an issue in WCL
+    /// repository.</para>
+    /// <para>See <a href="https://www.mediawiki.org/wiki/API:Data_formats#Timestamps">mw:API:Data formats#Timestamps</a>
+    /// for more information.</para>
+    /// </remarks>
+    public class WikiDateTimeJsonConverter : JsonConverter
+    {
+        /// <inheritdoc />
+        public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
+        {
+            // This function is actually not used. We use Utility.ToWikiQueryValue.
+            if (value is DateTimeOffset dto)
+            {
+                if (dto == DateTimeOffset.MaxValue)
+                    writer.WriteValue("infinity");
+                else
+                    writer.WriteValue(dto.ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ssK", CultureInfo.InvariantCulture));
+                return;
+            }
+            if (value is DateTime dt)
+            {
+                if (dt == DateTime.MaxValue)
+                    writer.WriteValue("infinity");
+                else
+                    writer.WriteValue(dt.ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ssK", CultureInfo.InvariantCulture));
+                return;
+            }
+            throw new NotSupportedException();
+        }
+
+        /// <inheritdoc />
+        public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
+        {
+            if (reader.TokenType == JsonToken.String)
+            {
+                var expr = (string)reader.Value;
+                if (objectType == typeof(DateTimeOffset))
+                {
+                    if (string.Equals(expr, "infinity", StringComparison.OrdinalIgnoreCase))
+                        return DateTimeOffset.MaxValue;
+                    // quote Timestamps are always output in ISO 8601 format. endquote
+                    if (DateTimeOffset.TryParseExact(expr, "yyyy-MM-ddTHH:mm:ssK", CultureInfo.InvariantCulture,
+                        DateTimeStyles.RoundtripKind, out var result))
+                        return result;
+                    // backup plan
+                    return DateTimeOffset.Parse(expr, CultureInfo.InvariantCulture, DateTimeStyles.RoundtripKind);
+                }
+                if (objectType == typeof(DateTime))
+                {
+                    if (string.Equals(expr, "infinity", StringComparison.OrdinalIgnoreCase))
+                        return DateTime.MaxValue;
+                    if (DateTime.TryParseExact(expr, "yyyy-MM-ddTHH:mm:ssK", CultureInfo.InvariantCulture,
+                        DateTimeStyles.RoundtripKind, out var result))
+                        return result;
+                    return DateTime.Parse(expr, CultureInfo.InvariantCulture, DateTimeStyles.RoundtripKind);
+                }
+            }
+            throw new NotSupportedException();
+        }
+
+        /// <inheritdoc />
+        public override bool CanConvert(Type objectType)
+        {
+            return objectType == typeof(DateTime) || objectType == typeof(DateTimeOffset);
+        }
+    }
+
 
     /// <summary>
     /// All-lower-case property naming strategy as used in MediaWiki API response.
@@ -94,7 +170,7 @@ namespace WikiClientLibrary.Infrastructures
             return name.ToLowerInvariant();
         }
     }
-    
+
     public class WikiJsonContractResolver : DefaultContractResolver
     {
 
@@ -117,7 +193,7 @@ namespace WikiClientLibrary.Infrastructures
         protected override JsonProperty CreateProperty(MemberInfo member, MemberSerialization memberSerialization)
         {
             var prop = base.CreateProperty(member, memberSerialization);
-            // For boolean values, omit the default value at all. (no "boolvalue": null in this case)
+            // For boolean values, omit the default value at all. (no `"boolvalue": null` in this case)
             if (prop.PropertyType == typeof(bool))
             {
                 prop.DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate;

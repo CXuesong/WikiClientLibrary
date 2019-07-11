@@ -127,14 +127,5 @@ namespace WikiClientLibrary
             }
         }
 
-        /// <summary>
-        /// This version handles special expressions such as "infinity".
-        /// </summary>
-        public static DateTime ParseDateTimeOffset(string expression)
-        {
-            if (expression == null) throw new ArgumentNullException(nameof(expression));
-            if (expression == "infinity") return DateTime.MaxValue;
-            return DateTime.Parse(expression, null, DateTimeStyles.None);
-        }
     }
 }

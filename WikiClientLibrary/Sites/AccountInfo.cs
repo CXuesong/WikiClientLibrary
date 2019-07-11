@@ -58,13 +58,8 @@ namespace WikiClientLibrary.Sites
         [JsonProperty("blockedtimestamp")]
         public DateTime BlockedSince { get; private set; }
 
+        [JsonProperty]
         public DateTime BlockExpiry { get; private set; }
-
-        [JsonProperty("blockexpiry")]
-        private string BlockExpiryProxy
-        {
-            set => BlockExpiry = MediaWikiUtility.ParseDateTimeOffset(value);
-        }
 
         [JsonProperty]
         public IReadOnlyCollection<string> Groups { get; private set; }
@@ -73,7 +68,7 @@ namespace WikiClientLibrary.Sites
         public IReadOnlyCollection<string> Rights { get; private set; }
 
         /// <summary>
-        /// Determines whether the user is in certian group.
+        /// Determines whether the user is in certain group.
         /// </summary>
         /// <param name="groupName">The group user should be in.</param>
         /// <remarks>It's recommended to use this method instead of checking <see cref="Groups"/> manually.</remarks>

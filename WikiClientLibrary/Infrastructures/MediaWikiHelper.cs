@@ -116,6 +116,15 @@ namespace WikiClientLibrary.Infrastructures
 
         private const string JsonHtmlResponseHelpLink = "https://github.com/CXuesong/WikiClientLibrary/wiki/Troubleshooting";
 
+        // Disable automatic datetime detection for JValue.
+        // We are converting string to JObject, then from JObject to data model.
+        // If date time is already converted into JValue of type Date,
+        // we won't be easily recover the underlying string when converting to data model.
+        private static readonly JsonSerializer jTokenSerializer = new JsonSerializer
+        {
+            DateParseHandling = DateParseHandling.None
+        };
+
         /// <summary>
         /// Asynchronously parses JSON content from the specified stream.
         /// </summary>
@@ -137,7 +146,11 @@ namespace WikiClientLibrary.Infrastructures
                 };
             try
             {
-                return JToken.Parse(content);
+                using (var reader = new StringReader(content))
+                using (var jreader = new JsonTextReader(reader))
+                {
+                    return jTokenSerializer.Deserialize<JToken>(jreader);
+                }
             }
             catch (Exception ex)
             {

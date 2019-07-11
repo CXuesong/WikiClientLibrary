@@ -1,8 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
-using WikiClientLibrary.Wikibase;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using WikiClientLibrary.Infrastructures;
 using WikiClientLibrary.Wikibase.DataTypes;
 using Xunit;
 using Xunit.Abstractions;
@@ -17,10 +20,34 @@ namespace WikiClientLibrary.Tests.UnitTestProject1.Tests
         {
         }
 
+        private T DeserializeWith<T>(string json, JsonSerializer serializer)
+        {
+            using (var sr = new StringReader(json))
+            using (var jr = new JsonTextReader(sr))
+                return serializer.Deserialize<T>(jr);
+        }
+
+        [Fact]
+        public void JsonDataTimeTests()
+        {
+            var serializer = MediaWikiHelper.CreateWikiJsonSerializer();
+            var value = DeserializeWith<JValue>("\"2008-08-23T18:05:46Z\"", serializer);
+            // https://github.com/CXuesong/WikiClientLibrary/issues/49
+            // We want to keep string intact as JValue
+            Assert.Equal(JTokenType.String, value.Type);
+            // We want to allow it get parsed into DateTime at the same time.
+            Assert.Equal(new DateTime(2008, 08, 23, 18, 05, 46, DateTimeKind.Utc),
+                DeserializeWith<DateTime>("\"2008-08-23T18:05:46Z\"", serializer));
+            Assert.Equal(new DateTimeOffset(2008, 08, 23, 18, 05, 46, TimeSpan.Zero),
+                DeserializeWith<DateTimeOffset>("\"2008-08-23T18:05:46Z\"", serializer));
+            Assert.Equal(DateTime.MaxValue, DeserializeWith<DateTime>("\"infinity\"", serializer));
+            Assert.Equal(DateTimeOffset.MaxValue, DeserializeWith<DateTimeOffset>("\"infinity\"", serializer));
+        }
+
         [Fact]
         public void WbMonolingualTextCollectionTest()
         {
-            var collection = new WbMonolingualTextCollection(new[] {new WbMonolingualText("en", "Wikipedia"),})
+            var collection = new WbMonolingualTextCollection(new[] { new WbMonolingualText("en", "Wikipedia"), })
             {
                 {"zh-hans", "维基百科"},
                 {"zh-Hant", "維基百科"},
@@ -45,7 +72,7 @@ namespace WikiClientLibrary.Tests.UnitTestProject1.Tests
             Assert.True(collection.Add(new WbMonolingualText("ja", "ウィキペディア")));
             Assert.False(collection.Add("zh-hans", "维基百科"));
             Assert.True(collection.Add("en", "WP"));
-            collection["ru"] = new[] {"Википедия"};
+            collection["ru"] = new[] { "Википедия" };
             Assert.Equal(6, ((ICollection<WbMonolingualText>)collection).Count);
             Assert.True(collection.ContainsLanguage("zh-HANS"));
             Assert.Contains(new WbMonolingualText("zh-hanT", "維基百科"), collection);
