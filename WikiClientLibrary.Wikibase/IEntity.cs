@@ -8,8 +8,10 @@ namespace WikiClientLibrary.Wikibase
     /// <summary>
     /// Provides basic access to Wikibase entities.
     /// </summary>
+    /// <remarks>The most notable implementations of this interface are <see cref="Entity"/> and <see cref="SerializableEntity"/>.</remarks>
     public interface IEntity
     {
+
         /// <summary>
         /// Id of the entity.
         /// </summary>
@@ -39,5 +41,6 @@ namespace WikiClientLibrary.Wikibase
 
         /// <summary>Wikibase entity type.</summary>
         EntityType Type { get; }
+
     }
 }

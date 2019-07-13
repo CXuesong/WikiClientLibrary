@@ -11,15 +11,18 @@ namespace WikiClientLibrary.Wikibase.DataTypes
     /// Atomic instances indicating a Wikibase Property type.
     /// </summary>
     /// <remarks>
-    /// In Wikibase, there are two different notion of types: one is property type,
-    /// the other is value type. They follow n:1 relation, i.e. one property type corresponds to
-    /// one value type, but the same value type can represent different property types.
-    /// For example, <c>wikibase-item</c> property type corresponds to <c>wikibase-entityid</c> value type,
+    /// <para>In Wikibase, there are two different notion of types: one is "property type",
+    /// the other is "value type". They follow n:1 relation, i.e. one property type corresponds to
+    /// one value type, but the same value type can represent different property types.</para>
+    /// <para>For example, <c>wikibase-item</c> property type corresponds to <c>wikibase-entityid</c> value type,
     /// while <c>wikibase-property</c> property type also corresponds to <c>wikibase-entityid</c> value type.
     /// For a list of Wikibase built-in data types, see
-    /// <a href="https://www.wikidata.org/wiki/Special:ListDatatypes">d:Special:ListDatatypes</a>.
-    /// For a list of predefined <see cref="WikibaseDataType"/>s, see <see cref="BuiltInDataTypes"/>.
+    /// <a href="https://www.wikidata.org/wiki/Special:ListDatatypes">d:Special:ListDatatypes</a>.</para>
+    /// <para>
+    /// For a list of predefined <see cref="WikibaseDataType"/> instances, see <see cref="BuiltInDataTypes"/>.
+    /// </para>
     /// </remarks>
+    /// <seealso cref="BuiltInDataTypes"/>
     public abstract class WikibaseDataType
     {
 
@@ -139,6 +142,17 @@ namespace WikiClientLibrary.Wikibase.DataTypes
         }
     }
 
+    /// <summary>
+    /// Provides a list of predefined <see cref="WikibaseDataType"/> instances.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// For a list of Wikibase built-in data types, see the data type list:
+    /// <a href="https://www.wikidata.org/wiki/Special:ListDatatypes">d:Special:ListDatatypes</a>.
+    /// The description of the static properties in this class are mostly copied from the Wikidata data type list.
+    /// </para>
+    /// </remarks>
+    /// <seealso cref="WikibaseDataType"/>
     public static class BuiltInDataTypes
     {
 
@@ -195,10 +209,22 @@ namespace WikiClientLibrary.Wikibase.DataTypes
             return value;
         }
 
+        /// <summary>
+        /// Link to other Items on the project. When a value is entered, the project's "Item" namespace will be searched for matching Items.
+        /// </summary>
+        /// <remarks>
+        /// The value type for this data type is `wikibase-entityid`.
+        /// </remarks>
         public static WikibaseDataType WikibaseItem { get; }
             = new DelegatePropertyType<string>("wikibase-item", "wikibase-entityid",
                 EntityIdFromJson, EntityIdToJson);
 
+        /// <summary>
+        /// Link to Properties on the project. When a value is entered, the project's "Property" namespace will be searched for matching Properties.
+        /// </summary>
+        /// <remarks>
+        /// The value type for this data type is `wikibase-entityid`.
+        /// </remarks>
         public static WikibaseDataType WikibaseProperty { get; }
             = new DelegatePropertyType<string>("wikibase-property", "wikibase-entityid",
                 EntityIdFromJson, EntityIdToJson);
@@ -206,13 +232,32 @@ namespace WikiClientLibrary.Wikibase.DataTypes
         public static WikibaseDataType String { get; } = new DelegatePropertyType<string>("string",
             e => (string)e, v => v);
 
+        /// <summary>
+        /// Link to files stored at Wikimedia Commons. When a value is entered, the "File" namespace on Commons will be searched for matching files.
+        /// </summary>
+        /// <remarks>
+        /// The value type for this data type is `string`.
+        /// </remarks>
         public static WikibaseDataType CommonsMedia { get; }
             = new DelegatePropertyType<string>("commonsMedia", "string",
                 e => (string)e, v => v);
 
+        /// <summary>
+        /// Literal data field for a URL. URLs are restricted to the protocols also supported for external links in wikitext.
+        /// </summary>
+        /// <remarks>
+        /// The value type for this data type is `string`.
+        /// </remarks>
         public static WikibaseDataType Url { get; } = new DelegatePropertyType<string>("url", "string",
             e => (string)e, v => v);
 
+        /// <summary>
+        /// Literal data field for a point in time. Given as a date and time with some precision and boundaries.
+        /// The time is saved internally in the specified calendar model.
+        /// </summary>
+        /// <remarks>
+        /// The value type for this data type is `time`.
+        /// </remarks>
         public static WikibaseDataType Time { get; } = new DelegatePropertyType<WbTime>("time",
             e =>
             {
@@ -240,6 +285,11 @@ namespace WikiClientLibrary.Wikibase.DataTypes
         // No scientific notation. It's desirable.
         private const string SignedFloatFormat = "+0.#################;-0.#################;0";
 
+        /// <summary>
+        /// Literal data field for a quantity that relates to some kind of well-defined unit.
+        /// The actual unit goes in the data values that is entered.
+        /// </summary>
+        /// <remarks>The value type for this data type is `quantity`.</remarks>
         public static WikibaseDataType Quantity { get; } = new DelegatePropertyType<WbQuantity>("quantity",
             e =>
             {
@@ -266,13 +316,38 @@ namespace WikiClientLibrary.Wikibase.DataTypes
                 return obj;
             });
 
+        /// <summary>
+        /// Literal data field for a string that is not translated into other languages.
+        /// This type of string is defined once and reused across all languages.
+        /// Typical use is a geographical names written in the local language, an identifier of some kind,
+        /// a chemical formula or a Latin scientific name.
+        /// </summary>
+        /// <remarks>
+        /// The value type for this data type is `monolingualtext`.
+        /// </remarks>
         public static WikibaseDataType MonolingualText { get; }
             = new DelegatePropertyType<WbMonolingualText>("monolingualtext",
                 e => new WbMonolingualText((string)e["language"], (string)e["text"]),
                 v => new JObject { { "text", v.Text }, { "language", v.Language } });
 
+        /// <summary>
+        /// Literal data field for mathematical expressions, formula, equations and such, expressed in a variant of LaTeX.
+        /// </summary>
+        /// <remarks>
+        /// The value type for this data type is `string`.
+        /// </remarks>
         public static WikibaseDataType Math { get; }
             = new DelegatePropertyType<string>("math", "string",
+            e => (string)e, v => v);
+
+        /// <summary>
+        /// Literal data field for a musical score written in LilyPond notation.
+        /// </summary>
+        /// <remarks>
+        /// The value type for this data type is `string`.
+        /// </remarks>
+        public static WikibaseDataType MusicalNotation { get; }
+            = new DelegatePropertyType<string>("musical-notation", "string",
             e => (string)e, v => v);
 
         /// <summary>

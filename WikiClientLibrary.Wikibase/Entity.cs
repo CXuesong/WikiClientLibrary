@@ -24,16 +24,16 @@ namespace WikiClientLibrary.Wikibase
     public sealed partial class Entity : IEntity
     {
         internal static readonly WbMonolingualTextCollection emptyStringDict
-            = new WbMonolingualTextCollection {IsReadOnly = true};
+            = new WbMonolingualTextCollection { IsReadOnly = true };
 
         internal static readonly WbMonolingualTextsCollection emptyStringsDict
-            = new WbMonolingualTextsCollection {IsReadOnly = true};
+            = new WbMonolingualTextsCollection { IsReadOnly = true };
 
         internal static readonly EntitySiteLinkCollection emptySiteLinks
-            = new EntitySiteLinkCollection {IsReadOnly = true};
+            = new EntitySiteLinkCollection { IsReadOnly = true };
 
         internal static readonly ClaimCollection emptyClaims
-            = new ClaimCollection {IsReadOnly = true};
+            = new ClaimCollection { IsReadOnly = true };
 
         #region Static Methods
 
@@ -90,7 +90,7 @@ namespace WikiClientLibrary.Wikibase
         }
 
         public WikiSite Site { get; }
-        
+
         /// <summary>
         /// Id of the entity.
         /// </summary>
@@ -197,13 +197,13 @@ namespace WikiClientLibrary.Wikibase
         /// <param name="options">The options, including choosing the fields to fetch</param>
         /// <param name="languages">
         /// Filter down the internationalized values to the specified one or more language codes.
-        /// Set to <c>null</c> for all available languages.
+        /// Set to <c>null</c> to fetch for all available languages.
         /// </param>
         /// <param name="cancellationToken">The token used to cancel the operation.</param>
         /// <seealso cref="EntityExtensions.RefreshAsync(IEnumerable{Entity},EntityQueryOptions,ICollection{string},CancellationToken)"/>
         public Task RefreshAsync(EntityQueryOptions options, ICollection<string> languages, CancellationToken cancellationToken)
         {
-            return WikibaseRequestHelper.RefreshEntitiesAsync(new[] {this}, options, languages, cancellationToken);
+            return WikibaseRequestHelper.RefreshEntitiesAsync(new[] { this }, options, languages, cancellationToken);
         }
 
         private static readonly IDictionary<string, JToken> emptyExtensionData = new Dictionary<string, JToken>();
@@ -456,7 +456,7 @@ namespace WikiClientLibrary.Wikibase
 
         public ClaimCollection()
         {
-            
+
         }
 
         public ClaimCollection(IEnumerable<Claim> items)

@@ -9,7 +9,7 @@ namespace WikiClientLibrary.Files
     /// <summary>
     /// Base class for content that can be used for file-uploading.
     /// </summary>
-    /// <seealso cref="FilePage.UploadAsync(WikiClientLibrary.Files.WikiUploadSource,string,bool)"/>
+    /// <seealso cref="WikiSiteExtensions.UploadAsync(WikiSite,string,WikiUploadSource,string,bool)"/>
     public abstract class WikiUploadSource
     {
         /// <summary>

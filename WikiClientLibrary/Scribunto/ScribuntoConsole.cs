@@ -18,6 +18,8 @@ namespace WikiClientLibrary.Scribunto
     /// Lua module editor page.</para>
     /// <para>The MediaWiki site need to have <a href="https://www.mediawiki.org/wiki/Extension:Scribunto">Scribunto extension</a> installed
     /// to support this feature.</para>
+    /// <para>You need to call <see cref="ResetAsync(string,string,CancellationToken)"/> or its overload before
+    /// starting any evaluation operations.</para>
     /// </remarks>
     public class ScribuntoConsole
     {
@@ -31,7 +33,8 @@ namespace WikiClientLibrary.Scribunto
         /// </summary>
         /// <param name="site">The MediaWiki site on which to evaluate Lua scripts.</param>
         /// <remarks>
-        /// You need to call <see cref="ResetAsync(string,string,CancellationToken)"/> before starting any evaluation operations.
+        /// You need to call <see cref="ResetAsync(string,string,CancellationToken)"/> or its overload
+        /// before starting any evaluation operations.
         /// </remarks>
         public ScribuntoConsole(WikiSite site)
         {
@@ -41,11 +44,9 @@ namespace WikiClientLibrary.Scribunto
         public WikiSite Site { get; }
 
         /// <summary>
-        /// Gets the currently used full module title.
+        /// Gets the currently used full module title, including the <c>Module:</c> namespace prefix.
+        /// The title does not necessarily exist on the MediaWiki site.
         /// </summary>
-        /// <remarks>
-        /// To properly evaluate Lua modules, the title should start with <c>Module:</c> namespace prefix.
-        /// </remarks>
         public string ModuleTitle { get; private set; }
 
         /// <summary>

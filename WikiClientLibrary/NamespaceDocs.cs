@@ -189,9 +189,18 @@ namespace WikiClientLibrary.Infrastructures.Logging
 namespace WikiClientLibrary.Scribunto
 {
     /// <summary>
+    /// <para>
     /// This namespace contains classes that enables you to
     /// access to <a href="https://www.mediawiki.org/wiki/Extension:Scribunto">Scribunto</a> Lua console,
     /// and to evaluate the modules on the MediaWiki sites.
+    /// </para>
+    /// <para>
+    /// To execute multiple asks on the same code snippet, use <see cref="ScribuntoConsole"/>;
+    /// to execute Lua code, or to get the JSON-serialized result of a Scribunto module in an one-off fashion,
+    /// use <see cref="ScribuntoWikiSiteExtensions.ScribuntoExecuteLuaAsync{T}(WikiSite,string)"/>,
+    /// <see cref="ScribuntoWikiSiteExtensions.ScribuntoLoadDataAsync{T}(WikiSite,string)"/>,
+    /// or one of their overloads.
+    /// </para>
     /// </summary>
     [CompilerGenerated]
     internal class NamespaceDoc
