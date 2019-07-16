@@ -40,8 +40,12 @@ namespace WikiClientLibrary.Tests.UnitTestProject1.Tests
                 DeserializeWith<DateTime>("\"2008-08-23T18:05:46Z\"", serializer));
             Assert.Equal(new DateTimeOffset(2008, 08, 23, 18, 05, 46, TimeSpan.Zero),
                 DeserializeWith<DateTimeOffset>("\"2008-08-23T18:05:46Z\"", serializer));
-            Assert.Equal(DateTime.MaxValue, DeserializeWith<DateTime>("\"infinity\"", serializer));
-            Assert.Equal(DateTimeOffset.MaxValue, DeserializeWith<DateTimeOffset>("\"infinity\"", serializer));
+            string[] infinityValues = { "infinite", "indefinite", "infinity", "never" };
+            foreach (var iTest in infinityValues)
+            {
+                Assert.Equal(DateTime.MaxValue, DeserializeWith<DateTime>($"\"{iTest}\"", serializer));
+                Assert.Equal(DateTimeOffset.MaxValue, DeserializeWith<DateTimeOffset>($"\"{iTest}\"", serializer));
+            }
         }
 
         [Fact]
