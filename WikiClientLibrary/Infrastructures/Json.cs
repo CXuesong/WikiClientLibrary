@@ -1,5 +1,6 @@
 using System;
 using System.Globalization;
+using System.Linq;
 using System.Reflection;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
@@ -92,6 +93,9 @@ namespace WikiClientLibrary.Infrastructures
     /// </remarks>
     public class WikiDateTimeJsonConverter : JsonConverter
     {
+        // See includes/GlobalFunctions.php in mediawiki/core
+        private static readonly string[] infinityValues = { "infinite", "indefinite", "infinity", "never" };
+
         /// <inheritdoc />
         public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
         {
@@ -123,7 +127,7 @@ namespace WikiClientLibrary.Infrastructures
                 var expr = (string)reader.Value;
                 if (objectType == typeof(DateTimeOffset))
                 {
-                    if (string.Equals(expr, "infinity", StringComparison.OrdinalIgnoreCase))
+                    if (infinityValues.Contains(expr.ToLowerInvariant()))
                         return DateTimeOffset.MaxValue;
                     // quote Timestamps are always output in ISO 8601 format. endquote
                     if (DateTimeOffset.TryParseExact(expr, "yyyy-MM-ddTHH:mm:ssK", CultureInfo.InvariantCulture,
@@ -134,7 +138,7 @@ namespace WikiClientLibrary.Infrastructures
                 }
                 if (objectType == typeof(DateTime))
                 {
-                    if (string.Equals(expr, "infinity", StringComparison.OrdinalIgnoreCase))
+                    if (infinityValues.Contains(expr.ToLowerInvariant()))
                         return DateTime.MaxValue;
                     if (DateTime.TryParseExact(expr, "yyyy-MM-ddTHH:mm:ssK", CultureInfo.InvariantCulture,
                         DateTimeStyles.RoundtripKind, out var result))
