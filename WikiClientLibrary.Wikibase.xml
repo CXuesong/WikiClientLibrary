@@ -311,7 +311,7 @@
       <param name="options">The options, including choosing the fields to fetch</param>
       <param name="languages">
             Filter down the internationalized values to the specified one or more language codes.
-            Set to <c>null</c> for all available languages.
+            Set to <c>null</c> to fetch for all available languages.
             </param>
       <param name="cancellationToken">The token used to cancel the operation.</param>
     </member>
@@ -322,7 +322,7 @@
       <param name="options">The options, including choosing the fields to fetch</param>
       <param name="languages">
             Filter down the internationalized values to the specified one or more language codes.
-            Set to <c>null</c> for all available languages.
+            Set to <c>null</c> to fetch for all available languages.
             </param>
       <param name="cancellationToken">The token used to cancel the operation.</param>
     </member>
@@ -333,7 +333,7 @@
       <param name="options">The options, including choosing the fields to fetch</param>
       <param name="languages">
             Filter down the internationalized values to the specified one or more language codes.
-            Set to <c>null</c> for all available languages.
+            Set to <c>null</c> to fetch for all available languages.
             </param>
       <param name="cancellationToken">The token used to cancel the operation.</param>
     </member>
@@ -344,7 +344,7 @@
       <param name="options">The options, including choosing the fields to fetch</param>
       <param name="languages">
             Filter down the internationalized values to the specified one or more language codes.
-            Set to <c>null</c> for all available languages.
+            Set to <c>null</c> to fetch for all available languages.
             </param>
       <param name="cancellationToken">The token used to cancel the operation.</param>
     </member>
@@ -519,133 +519,51 @@
     </member>
     <member name="M:WikiClientLibrary.Wikibase.EntityExtensions.RefreshAsync(System.Collections.Generic.IEnumerable{WikiClientLibrary.Wikibase.Entity})">
       <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>M:WikiClientLibrary.Wikibase.EntityExtensions.RefreshAsync(System.Collections.Generic.IEnumerable{WikiClientLibrary.Wikibase.Entity})</parameter>
-          </include>
-        </markup>
-      </summary>
-      <param name="entities">
-        <markup>
-          <include item="SMCMissingParamTag">
-            <parameter>param</parameter>
-            <parameter>entities</parameter>
-            <parameter>M:WikiClientLibrary.Wikibase.EntityExtensions.RefreshAsync(System.Collections.Generic.IEnumerable{WikiClientLibrary.Wikibase.Entity})</parameter>
-          </include>
-        </markup>
-      </param>
+            Asynchronously fetch information for a sequence of entities.
+            </summary>
+      <param name="entities">A sequence of entities to be refreshed.</param>
+      <param name="options">Provides options when performing the query.</param>
+      <param name="languages">
+            Filter down the internationalized values to the specified one or more language codes.
+            Set to <c>null</c> to fetch for all available languages.
+            </param>
+      <param name="cancellationToken">The token used to cancel the operation.</param>
     </member>
     <member name="M:WikiClientLibrary.Wikibase.EntityExtensions.RefreshAsync(System.Collections.Generic.IEnumerable{WikiClientLibrary.Wikibase.Entity},WikiClientLibrary.Wikibase.EntityQueryOptions)">
       <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>M:WikiClientLibrary.Wikibase.EntityExtensions.RefreshAsync(System.Collections.Generic.IEnumerable{WikiClientLibrary.Wikibase.Entity},WikiClientLibrary.Wikibase.EntityQueryOptions)</parameter>
-          </include>
-        </markup>
-      </summary>
-      <param name="entities">
-        <markup>
-          <include item="SMCMissingParamTag">
-            <parameter>param</parameter>
-            <parameter>entities</parameter>
-            <parameter>M:WikiClientLibrary.Wikibase.EntityExtensions.RefreshAsync(System.Collections.Generic.IEnumerable{WikiClientLibrary.Wikibase.Entity},WikiClientLibrary.Wikibase.EntityQueryOptions)</parameter>
-          </include>
-        </markup>
-      </param>
-      <param name="options">
-        <markup>
-          <include item="SMCMissingParamTag">
-            <parameter>param</parameter>
-            <parameter>options</parameter>
-            <parameter>M:WikiClientLibrary.Wikibase.EntityExtensions.RefreshAsync(System.Collections.Generic.IEnumerable{WikiClientLibrary.Wikibase.Entity},WikiClientLibrary.Wikibase.EntityQueryOptions)</parameter>
-          </include>
-        </markup>
-      </param>
+            Asynchronously fetch information for a sequence of entities.
+            </summary>
+      <param name="entities">A sequence of entities to be refreshed.</param>
+      <param name="options">Provides options when performing the query.</param>
+      <param name="languages">
+            Filter down the internationalized values to the specified one or more language codes.
+            Set to <c>null</c> to fetch for all available languages.
+            </param>
+      <param name="cancellationToken">The token used to cancel the operation.</param>
     </member>
     <member name="M:WikiClientLibrary.Wikibase.EntityExtensions.RefreshAsync(System.Collections.Generic.IEnumerable{WikiClientLibrary.Wikibase.Entity},WikiClientLibrary.Wikibase.EntityQueryOptions,System.Collections.Generic.ICollection{System.String})">
       <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>M:WikiClientLibrary.Wikibase.EntityExtensions.RefreshAsync(System.Collections.Generic.IEnumerable{WikiClientLibrary.Wikibase.Entity},WikiClientLibrary.Wikibase.EntityQueryOptions,System.Collections.Generic.ICollection{System.String})</parameter>
-          </include>
-        </markup>
-      </summary>
-      <param name="entities">
-        <markup>
-          <include item="SMCMissingParamTag">
-            <parameter>param</parameter>
-            <parameter>entities</parameter>
-            <parameter>M:WikiClientLibrary.Wikibase.EntityExtensions.RefreshAsync(System.Collections.Generic.IEnumerable{WikiClientLibrary.Wikibase.Entity},WikiClientLibrary.Wikibase.EntityQueryOptions,System.Collections.Generic.ICollection{System.String})</parameter>
-          </include>
-        </markup>
-      </param>
-      <param name="options">
-        <markup>
-          <include item="SMCMissingParamTag">
-            <parameter>param</parameter>
-            <parameter>options</parameter>
-            <parameter>M:WikiClientLibrary.Wikibase.EntityExtensions.RefreshAsync(System.Collections.Generic.IEnumerable{WikiClientLibrary.Wikibase.Entity},WikiClientLibrary.Wikibase.EntityQueryOptions,System.Collections.Generic.ICollection{System.String})</parameter>
-          </include>
-        </markup>
-      </param>
+            Asynchronously fetch information for a sequence of entities.
+            </summary>
+      <param name="entities">A sequence of entities to be refreshed.</param>
+      <param name="options">Provides options when performing the query.</param>
       <param name="languages">
-        <markup>
-          <include item="SMCMissingParamTag">
-            <parameter>param</parameter>
-            <parameter>languages</parameter>
-            <parameter>M:WikiClientLibrary.Wikibase.EntityExtensions.RefreshAsync(System.Collections.Generic.IEnumerable{WikiClientLibrary.Wikibase.Entity},WikiClientLibrary.Wikibase.EntityQueryOptions,System.Collections.Generic.ICollection{System.String})</parameter>
-          </include>
-        </markup>
-      </param>
+            Filter down the internationalized values to the specified one or more language codes.
+            Set to <c>null</c> to fetch for all available languages.
+            </param>
+      <param name="cancellationToken">The token used to cancel the operation.</param>
     </member>
     <member name="M:WikiClientLibrary.Wikibase.EntityExtensions.RefreshAsync(System.Collections.Generic.IEnumerable{WikiClientLibrary.Wikibase.Entity},WikiClientLibrary.Wikibase.EntityQueryOptions,System.Collections.Generic.ICollection{System.String},System.Threading.CancellationToken)">
       <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>M:WikiClientLibrary.Wikibase.EntityExtensions.RefreshAsync(System.Collections.Generic.IEnumerable{WikiClientLibrary.Wikibase.Entity},WikiClientLibrary.Wikibase.EntityQueryOptions,System.Collections.Generic.ICollection{System.String},System.Threading.CancellationToken)</parameter>
-          </include>
-        </markup>
-      </summary>
-      <param name="entities">
-        <markup>
-          <include item="SMCMissingParamTag">
-            <parameter>param</parameter>
-            <parameter>entities</parameter>
-            <parameter>M:WikiClientLibrary.Wikibase.EntityExtensions.RefreshAsync(System.Collections.Generic.IEnumerable{WikiClientLibrary.Wikibase.Entity},WikiClientLibrary.Wikibase.EntityQueryOptions,System.Collections.Generic.ICollection{System.String},System.Threading.CancellationToken)</parameter>
-          </include>
-        </markup>
-      </param>
-      <param name="options">
-        <markup>
-          <include item="SMCMissingParamTag">
-            <parameter>param</parameter>
-            <parameter>options</parameter>
-            <parameter>M:WikiClientLibrary.Wikibase.EntityExtensions.RefreshAsync(System.Collections.Generic.IEnumerable{WikiClientLibrary.Wikibase.Entity},WikiClientLibrary.Wikibase.EntityQueryOptions,System.Collections.Generic.ICollection{System.String},System.Threading.CancellationToken)</parameter>
-          </include>
-        </markup>
-      </param>
+            Asynchronously fetch information for a sequence of entities.
+            </summary>
+      <param name="entities">A sequence of entities to be refreshed.</param>
+      <param name="options">Provides options when performing the query.</param>
       <param name="languages">
-        <markup>
-          <include item="SMCMissingParamTag">
-            <parameter>param</parameter>
-            <parameter>languages</parameter>
-            <parameter>M:WikiClientLibrary.Wikibase.EntityExtensions.RefreshAsync(System.Collections.Generic.IEnumerable{WikiClientLibrary.Wikibase.Entity},WikiClientLibrary.Wikibase.EntityQueryOptions,System.Collections.Generic.ICollection{System.String},System.Threading.CancellationToken)</parameter>
-          </include>
-        </markup>
-      </param>
-      <param name="cancellationToken">
-        <markup>
-          <include item="SMCMissingParamTag">
-            <parameter>param</parameter>
-            <parameter>cancellationToken</parameter>
-            <parameter>M:WikiClientLibrary.Wikibase.EntityExtensions.RefreshAsync(System.Collections.Generic.IEnumerable{WikiClientLibrary.Wikibase.Entity},WikiClientLibrary.Wikibase.EntityQueryOptions,System.Collections.Generic.ICollection{System.String},System.Threading.CancellationToken)</parameter>
-          </include>
-        </markup>
-      </param>
+            Filter down the internationalized values to the specified one or more language codes.
+            Set to <c>null</c> to fetch for all available languages.
+            </param>
+      <param name="cancellationToken">The token used to cancel the operation.</param>
     </member>
     <member name="T:WikiClientLibrary.Wikibase.EntityQueryOptions">
       <summary>
@@ -1223,23 +1141,13 @@
     </member>
     <member name="T:WikiClientLibrary.Wikibase.DataTypes.BuiltInDataTypes">
       <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>T:WikiClientLibrary.Wikibase.DataTypes.BuiltInDataTypes</parameter>
-          </include>
-        </markup>
-      </summary>
+            Provides a list of predefined <see cref="T:WikiClientLibrary.Wikibase.DataTypes.WikibaseDataType" /> instances.
+            </summary>
     </member>
     <member name="P:WikiClientLibrary.Wikibase.DataTypes.BuiltInDataTypes.CommonsMedia">
       <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>P:WikiClientLibrary.Wikibase.DataTypes.BuiltInDataTypes.CommonsMedia</parameter>
-          </include>
-        </markup>
-      </summary>
+            Link to files stored at Wikimedia Commons. When a value is entered, the "File" namespace on Commons will be searched for matching files.
+            </summary>
     </member>
     <member name="P:WikiClientLibrary.Wikibase.DataTypes.BuiltInDataTypes.ExternalId">
       <summary>
@@ -1274,33 +1182,27 @@
     </member>
     <member name="P:WikiClientLibrary.Wikibase.DataTypes.BuiltInDataTypes.Math">
       <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>P:WikiClientLibrary.Wikibase.DataTypes.BuiltInDataTypes.Math</parameter>
-          </include>
-        </markup>
-      </summary>
+            Literal data field for mathematical expressions, formula, equations and such, expressed in a variant of LaTeX.
+            </summary>
     </member>
     <member name="P:WikiClientLibrary.Wikibase.DataTypes.BuiltInDataTypes.MonolingualText">
       <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>P:WikiClientLibrary.Wikibase.DataTypes.BuiltInDataTypes.MonolingualText</parameter>
-          </include>
-        </markup>
-      </summary>
+            Literal data field for a string that is not translated into other languages.
+            This type of string is defined once and reused across all languages.
+            Typical use is a geographical names written in the local language, an identifier of some kind,
+            a chemical formula or a Latin scientific name.
+            </summary>
+    </member>
+    <member name="P:WikiClientLibrary.Wikibase.DataTypes.BuiltInDataTypes.MusicalNotation">
+      <summary>
+            Literal data field for a musical score written in LilyPond notation.
+            </summary>
     </member>
     <member name="P:WikiClientLibrary.Wikibase.DataTypes.BuiltInDataTypes.Quantity">
       <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>P:WikiClientLibrary.Wikibase.DataTypes.BuiltInDataTypes.Quantity</parameter>
-          </include>
-        </markup>
-      </summary>
+            Literal data field for a quantity that relates to some kind of well-defined unit.
+            The actual unit goes in the data values that is entered.
+            </summary>
     </member>
     <member name="P:WikiClientLibrary.Wikibase.DataTypes.BuiltInDataTypes.String">
       <summary>
@@ -1320,43 +1222,24 @@
     </member>
     <member name="P:WikiClientLibrary.Wikibase.DataTypes.BuiltInDataTypes.Time">
       <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>P:WikiClientLibrary.Wikibase.DataTypes.BuiltInDataTypes.Time</parameter>
-          </include>
-        </markup>
-      </summary>
+            Literal data field for a point in time. Given as a date and time with some precision and boundaries.
+            The time is saved internally in the specified calendar model.
+            </summary>
     </member>
     <member name="P:WikiClientLibrary.Wikibase.DataTypes.BuiltInDataTypes.Url">
       <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>P:WikiClientLibrary.Wikibase.DataTypes.BuiltInDataTypes.Url</parameter>
-          </include>
-        </markup>
-      </summary>
+            Literal data field for a URL. URLs are restricted to the protocols also supported for external links in wikitext.
+            </summary>
     </member>
     <member name="P:WikiClientLibrary.Wikibase.DataTypes.BuiltInDataTypes.WikibaseItem">
       <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>P:WikiClientLibrary.Wikibase.DataTypes.BuiltInDataTypes.WikibaseItem</parameter>
-          </include>
-        </markup>
-      </summary>
+            Link to other Items on the project. When a value is entered, the project's "Item" namespace will be searched for matching Items.
+            </summary>
     </member>
     <member name="P:WikiClientLibrary.Wikibase.DataTypes.BuiltInDataTypes.WikibaseProperty">
       <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>P:WikiClientLibrary.Wikibase.DataTypes.BuiltInDataTypes.WikibaseProperty</parameter>
-          </include>
-        </markup>
-      </summary>
+            Link to Properties on the project. When a value is entered, the project's "Property" namespace will be searched for matching Properties.
+            </summary>
     </member>
     <member name="T:WikiClientLibrary.Wikibase.DataTypes.WbGlobeCoordinate">
       <summary>In Wikibase, represents a point on the globe.</summary>
