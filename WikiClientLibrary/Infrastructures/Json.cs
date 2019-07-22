@@ -84,7 +84,13 @@ namespace WikiClientLibrary.Infrastructures
     /// <see cref="DateTime"/> and <see cref="DateTimeOffset"/>.
     /// </summary>
     /// <remarks>
-    /// <para>This converter handles `"infinity"` as <see cref="DateTime.MaxValue"/> or <see cref="DateTimeOffset.MaxValue"/>.</para>
+    /// <para>This converter handles the following JSON string values as <see cref="DateTime.MaxValue"/> or <see cref="DateTimeOffset.MaxValue"/>:</para>
+    /// <list type="bullet">
+    /// <item><description><c>infinity</c></description></item>
+    /// <item><description><c>infinite</c></description></item>
+    /// <item><description><c>indefinite</c></description></item>
+    /// <item><description><c>never</c></description></item>
+    /// </list>
     /// <para>For now this class only supports conversion of ISO 8601 format. If you are using this class
     /// and need more support within the API specification linked below, please open an issue in WCL
     /// repository.</para>
@@ -93,8 +99,10 @@ namespace WikiClientLibrary.Infrastructures
     /// </remarks>
     public class WikiDateTimeJsonConverter : JsonConverter
     {
+
         // See includes/GlobalFunctions.php in mediawiki/core
         private static readonly string[] infinityValues = { "infinite", "indefinite", "infinity", "never" };
+        private const int infinityExpressionMaxLength = 10;     // "indefinite"
 
         /// <inheritdoc />
         public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
@@ -127,7 +135,7 @@ namespace WikiClientLibrary.Infrastructures
                 var expr = (string)reader.Value;
                 if (objectType == typeof(DateTimeOffset))
                 {
-                    if (infinityValues.Contains(expr.ToLowerInvariant()))
+                    if (expr.Length <= infinityExpressionMaxLength && infinityValues.Contains(expr.ToLowerInvariant()))
                         return DateTimeOffset.MaxValue;
                     // quote Timestamps are always output in ISO 8601 format. endquote
                     if (DateTimeOffset.TryParseExact(expr, "yyyy-MM-ddTHH:mm:ssK", CultureInfo.InvariantCulture,
@@ -138,7 +146,7 @@ namespace WikiClientLibrary.Infrastructures
                 }
                 if (objectType == typeof(DateTime))
                 {
-                    if (infinityValues.Contains(expr.ToLowerInvariant()))
+                    if (expr.Length <= infinityExpressionMaxLength && infinityValues.Contains(expr.ToLowerInvariant()))
                         return DateTime.MaxValue;
                     if (DateTime.TryParseExact(expr, "yyyy-MM-ddTHH:mm:ssK", CultureInfo.InvariantCulture,
                         DateTimeStyles.RoundtripKind, out var result))
