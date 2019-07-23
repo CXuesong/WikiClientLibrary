@@ -5,3 +5,7 @@ matrix:
   include:
     - mono: none
       dotnet: 2.2.108
+install:
+  - nuget restore WikiClientLibrary.sln
+script:
+  - msbuild /p:Configuration=Release WikiClientLibrary.sln
