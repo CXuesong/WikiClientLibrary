@@ -1,0 +1,7 @@
+language: csharp
+solution: WikiClientLibrary.sln
+
+matrix:
+  include:
+    - mono: none
+      dotnet: 2.2.108
