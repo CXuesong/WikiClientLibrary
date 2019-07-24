@@ -3,9 +3,17 @@ solution: WikiClientLibrary.sln
 
 matrix:
   include:
-    - mono: none
+    - os: linux
+      mono: none
       dotnet: 2.2.108
+      addons:
+        apt:
+          sources:
+            - sourceline: "deb [arch=amd64] https://packages.microsoft.com/ubuntu/16.04/prod trusty main"
+              key_url: "https://packages.microsoft.com/keys/microsoft.asc"
+          packages:
+            - powershell
 install:
-  - nuget restore WikiClientLibrary.sln
+  - pwsh -f ./WikiClientLibrary.Commons/CI/Install.ps1
 script:
-  - pwsh ./WikiClientLibrary.Commons/CI/Build.ps1
+  - pwsh -f ./WikiClientLibrary.Commons/CI/Build.ps1
