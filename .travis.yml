@@ -1,6 +1,10 @@
 language: csharp
 solution: WikiClientLibrary.sln
 
+branches:
+  only:
+  - master
+
 matrix:
   include:
     - os: linux
