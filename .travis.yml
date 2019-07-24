@@ -8,4 +8,4 @@ matrix:
 install:
   - nuget restore WikiClientLibrary.sln
 script:
-  - msbuild /p:Configuration=Release WikiClientLibrary.sln
+  - pwsh ./WikiClientLibrary.Commons/CI/Build.ps1
