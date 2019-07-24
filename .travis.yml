@@ -17,7 +17,6 @@ matrix:
               key_url: "https://packages.microsoft.com/keys/microsoft.asc"
           packages:
             - powershell
-            - dotnet-dev-1.1.14
 install:
   - curl -SL -o dotnet.tar.gz https://dotnetcli.blob.core.windows.net/dotnet/Sdk/master/dotnet-sdk-latest-linux-x64.tar.gz
   - sudo mkdir -p /usr/share/dotnet
