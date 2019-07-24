@@ -4,13 +4,14 @@ solution: WikiClientLibrary.sln
 matrix:
   include:
     - os: linux
+      dist: xenial
       mono: none
       # dotnet: 2.2.108
       dotnet: none
       addons:
         apt:
           sources:
-            - sourceline: "deb [arch=amd64] https://packages.microsoft.com/ubuntu/16.04/prod trusty main"
+            - sourceline: "deb [arch=amd64] https://packages.microsoft.com/ubuntu/16.04/prod xenial main"
               key_url: "https://packages.microsoft.com/keys/microsoft.asc"
           packages:
             - powershell
