@@ -8,6 +8,8 @@ matrix:
       mono: none
       # dotnet: 2.2.108
       dotnet: none
+      env:
+        - DOTNET_CLI_TELEMETRY_OPTOUT=1
       addons:
         apt:
           sources:
@@ -20,6 +22,7 @@ install:
   - sudo mkdir -p /usr/share/dotnet
   - sudo tar -zxf dotnet.tar.gz -C /usr/share/dotnet
   - sudo ln -s /usr/share/dotnet/dotnet /usr/bin/dotnet
+  - dotnet --info
   - pwsh -f ./WikiClientLibrary.Commons/CI/Install.ps1
 script:
   - pwsh -f ./WikiClientLibrary.Commons/CI/Build.ps1
