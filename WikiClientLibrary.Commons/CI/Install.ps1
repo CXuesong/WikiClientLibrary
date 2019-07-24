@@ -3,3 +3,4 @@ trap {
     Exit 1
 }
 # Assumes $PWD is the repo root
+return $LASTEXITCODE
