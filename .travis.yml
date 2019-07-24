@@ -26,3 +26,4 @@ install:
   - pwsh -f ./WikiClientLibrary.Commons/CI/Install.ps1
 script:
   - pwsh -f ./WikiClientLibrary.Commons/CI/Build.ps1
+  - pwsh -f ./WikiClientLibrary.Commons/CI/Test.ps1
