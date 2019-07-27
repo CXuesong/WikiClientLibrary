@@ -71,12 +71,14 @@ The original title of the page is '''{title}'''.
         [SkippableFact]
         public async Task PageMoveAndDeleteTest1()
         {
-            Skip.IfNot((await SiteAsync).AccountInfo.IsInGroup(UserGroups.SysOp),
+            var site = await SiteAsync;
+            Skip.IfNot(site.AccountInfo.IsInGroup(UserGroups.SysOp),
                 "The user is not in sysop group and cannot delete the pages.");
-            var page1 = new WikiPage(await SiteAsync, TestPage11Title);
-            var page2 = new WikiPage(await SiteAsync, TestPage12Title);
+            var page1 = await GetOrCreatePage(site, TestPage11Title);
+            var page2 = new WikiPage(site, TestPage12Title);
             WriteOutput("Deleted: {0}", await page2.DeleteAsync(SummaryPrefix + "Delete the move destination."));
             await page1.MoveAsync(TestPage12Title, SummaryPrefix + "Move a page.", PageMovingOptions.IgnoreWarnings);
+            WriteOutput("Moved {0} to {1}.", page1, page2);
             await page2.DeleteAsync(SummaryPrefix + "Delete the moved page.");
         }
 
