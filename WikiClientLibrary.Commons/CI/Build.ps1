@@ -1,5 +1,6 @@
 trap {
     Write-Error $_
+    Write-Host $_.ScriptStackTrace
     Exit 1
 }
 # Assumes $PWD is the repo root
