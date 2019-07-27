@@ -54,7 +54,7 @@ namespace WikiClientLibrary.Tests.UnitTestProject1
                 sb.Append(' ', leftMargin);
                 sb.Append(exception);
             }
-            TraceOutput(sb);
+            Output.WriteLine(sb.ToString());
         }
 
         public bool IsEnabled(LogLevel logLevel)
