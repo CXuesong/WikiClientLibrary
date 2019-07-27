@@ -116,7 +116,7 @@ namespace WikiClientLibrary.Tests.UnitTestProject1.Tests
             Assert.Equal(new[] { "Q513", "Q257491", null, "Q2" }, ids);
         }
 
-        [Theory]
+        [SkippableTheory]
         [InlineData(EntityEditOptions.Progressive)]
         [InlineData(EntityEditOptions.Bulk)]
         public async Task EditEntityTest1(EntityEditOptions options)

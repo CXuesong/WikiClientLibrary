@@ -150,6 +150,7 @@ namespace WikiClientLibrary.Tests.UnitTestProject1.Tests
         }
 
         [Fact]
+        [CISkipped]
         public async Task LoginWikiaTest_1()
         {
             var site = await CreateIsolatedWikiSiteAsync(Endpoints.WikiaTest);
