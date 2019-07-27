@@ -28,6 +28,8 @@ namespace WikiClientLibrary.Tests.UnitTestProject1
         public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception exception, Func<TState, Exception, string> formatter)
         {
             if (formatter == null) throw new ArgumentNullException(nameof(formatter));
+            if (logLevel < minLogLevel)
+                return;
             var message = formatter(state, exception);
             if (string.IsNullOrEmpty(message)) return;
             var sb = new StringBuilder();
