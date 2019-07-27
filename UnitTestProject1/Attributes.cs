@@ -11,6 +11,7 @@ namespace WikiClientLibrary.Tests.UnitTestProject1
 
     /// <summary>
     /// Mark the unit test with <c>CI=Skipped</c> trait.
+    /// This will cause the test not being executed in CI environment.
     /// </summary>
     [AttributeUsage(AttributeTargets.Class | AttributeTargets.Method, AllowMultiple = false, Inherited = true)]
     [TraitDiscoverer("WikiClientLibrary.Tests.UnitTestProject1." + nameof(CISkippedTraitDiscoverer), "UnitTestProject1")]

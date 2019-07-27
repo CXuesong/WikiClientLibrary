@@ -24,7 +24,7 @@ namespace WikiClientLibrary.Tests.UnitTestProject1.Tests
         public async Task TokenTest(string testSiteName)
         {
             var site = await WikiSiteFromNameAsync(testSiteName);
-            foreach (var tokenType in new[] {"edit", "move", "patrol"})
+            foreach (var tokenType in new[] { "edit", "move", "patrol" })
             {
                 // Fetch twice at a time...
                 var tokenValueTask1 = site.GetTokenAsync(tokenType);
@@ -55,6 +55,8 @@ namespace WikiClientLibrary.Tests.UnitTestProject1.Tests
         }
 
         [SkippableTheory]
+        // Our IP is blocked on CI!
+        [CISkipped]
         [InlineData(Endpoints.WikipediaTest2, "Project:Sandbox")]
         [InlineData(Endpoints.WikiaTest, "Project:Sandbox")]
         public async Task BadTokenTest(string endpointUrl, string sandboxPageTitle)
@@ -66,7 +68,7 @@ namespace WikiClientLibrary.Tests.UnitTestProject1.Tests
             Skip.IfNot(page.Exists, $"The page {sandboxPageTitle} doesn't exist on {site}.");
             var tokensManager = typeof(WikiSite)
                 .GetField("tokensManager", BindingFlags.Instance | BindingFlags.NonPublic).GetValue(site);
-            var tokensCache = (IDictionary<string, object>) tokensManager.GetType()
+            var tokensCache = (IDictionary<string, object>)tokensManager.GetType()
                 .GetField("tokensCache", BindingFlags.Instance | BindingFlags.NonPublic).GetValue(tokensManager);
             // Place an invalid token in the cache.
             tokensCache["edit"] = invalidToken;
