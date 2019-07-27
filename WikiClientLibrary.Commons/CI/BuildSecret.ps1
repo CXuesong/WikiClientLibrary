@@ -32,7 +32,7 @@ $FileList = @("UnitTestProject1/_private/Credentials.cs")
 
 if ($Restore) {
     $WorkDir = Join-Path ([System.IO.Path]::GetTempPath()) ([System.IO.Path]::GetRandomFileName())
-    mkdir $WorkDir | Out-Null
+    New-Item $WorkDir -ItemType Directory | Out-Null
     try {
         Write-Host "Work dir: $WorkDir"
         $KeyBytes = [System.Convert]::FromBase64String($Key)
@@ -70,18 +70,18 @@ if ($Restore) {
 }
 else {
     $WorkDir = Join-Path ([System.IO.Path]::GetTempPath()) ([System.IO.Path]::GetRandomFileName())
-    mkdir $WorkDir | Out-Null
+    New-Item $WorkDir -ItemType Directory | Out-Null
     try {
         Write-Host "Work dir: $WorkDir"
         $ArchiveSourceDir = Join-Path $WorkDir $ArchiveRootFolder
         $ArchiveDir = Join-Path $WorkDir "Archive.zip"
-        mkdir $ArchiveSourceDir | Out-Null
+        New-Item $ArchiveSourceDir -ItemType Directory | Out-Null
         foreach ($FileName in $FileList) {
             $FullPath = Join-Path $SourceRootPath $FileName | Resolve-Path
             Write-Host "Copy: $FullPath"
             $TargetPath = Join-Path $ArchiveSourceDir $FileName
             $TargetFolder = (Join-Path $TargetPath ..)
-            mkdir $TargetFolder -Force | Out-Null
+            New-Item $TargetFolder -ItemType Directory -Force | Out-Null
             Copy-Item $FullPath $TargetPath
         }
         Compress-Archive $ArchiveSourceDir $ArchiveDir
