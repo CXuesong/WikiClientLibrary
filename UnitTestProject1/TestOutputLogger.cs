@@ -130,11 +130,11 @@ namespace WikiClientLibrary.Tests.UnitTestProject1
 
         public ILogger CreateLogger(string categoryName)
         {
-#if !ENV_CI_BUILD
+#if ENV_CI_BUILD
             // Do not abuse CI output ^_^
             return new TestOutputLogger(Output, categoryName, LogLevel.Warning);
 #else
-            return new TestOutputLogger(Output, categoryName, LogLevel.Trace)
+            return new TestOutputLogger(Output, categoryName, LogLevel.Trace);
 #endif
         }
     }
