@@ -5,6 +5,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Reflection;
 using System.Text;
 using System.Threading;
@@ -35,9 +36,53 @@ namespace WikiClientLibrary.Tests.UnitTestProject1
 
         public ITestOutputHelper Output { get; }
 
+        protected void TraceOutput(object value)
+        {
+#if !ENV_CI_BUILD
+            WriteOutput(value);
+#endif
+        }
+
+        protected void TraceOutput(string message)
+        {
+#if !ENV_CI_BUILD
+            WriteOutput(message);
+#endif
+        }
+
+        protected void TraceOutput(string format, params object[] args)
+        {
+#if !ENV_CI_BUILD
+            WriteOutput(format, args);
+#endif
+        }
+
+        protected void WriteOutput(object value)
+        {
+            WriteOutput(value == null ? "<null>" : value.ToString());
+        }
+
+        protected void WriteOutput(string message)
+        {
+            Output.WriteLine(message);
+        }
+
+        protected void WriteOutput(string format, params object[] args)
+        {
+            WriteOutput(string.Format(format, args));
+        }
+
         protected void ShallowTrace(object obj, int depth = 2)
         {
-            Output.WriteLine(Utility.DumpObject(obj, depth));
+            var rawTrace = Utility.DumpObject(obj, depth);
+#if ENV_CI_BUILD
+            const int MAX_TRACE_LENGTH = 500;
+            if (rawTrace.Length > MAX_TRACE_LENGTH)
+            {
+                rawTrace = rawTrace.Substring(0, MAX_TRACE_LENGTH) + "… [+" + (rawTrace.Length - MAX_TRACE_LENGTH) + " chars]";
+            }
+#endif
+            Output.WriteLine(rawTrace);
         }
 
         protected virtual void Dispose(bool disposing)

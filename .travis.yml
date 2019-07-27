@@ -14,6 +14,7 @@ matrix:
       dotnet: none
       env:
         - DOTNET_CLI_TELEMETRY_OPTOUT=1
+        - WCL_IS_CI_BUILD=1
       addons:
         apt:
           sources:

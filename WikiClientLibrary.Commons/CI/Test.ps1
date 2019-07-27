@@ -4,7 +4,7 @@ trap {
 }
 # Assumes $PWD is the repo root
 if ($env:BUILD_SECRET_KEY) {
-    dotnet test ./UnitTestProject1/UnitTestProject1.csproj -c Release -- -stoponfail
+    dotnet test ./UnitTestProject1/UnitTestProject1.csproj --no-build -c Release -- TestSessionTimeout=3600000 StopOnFail=True
     Exit $LASTEXITCODE
 }
 else {

@@ -49,7 +49,7 @@ namespace WikiClientLibrary.Tests.UnitTestProject1.Tests
             await page.RefreshAsync();
             if (!page.Exists)
             {
-                Output.WriteLine("Creating page: " + page);
+                WriteOutput("Creating page: {0}", page);
                 page.Content = $@"<big>This is a test page for '''WikiClientLibrary'''.</big>
 
 This page is created by an automated program for unit test purposes.
@@ -75,7 +75,7 @@ The original title of the page is '''{title}'''.
                 "The user is not in sysop group and cannot delete the pages.");
             var page1 = new WikiPage(await SiteAsync, TestPage11Title);
             var page2 = new WikiPage(await SiteAsync, TestPage12Title);
-            Output.WriteLine("Deleted:" + await page2.DeleteAsync(SummaryPrefix + "Delete the move destination."));
+            WriteOutput("Deleted: {0}", await page2.DeleteAsync(SummaryPrefix + "Delete the move destination."));
             await page1.MoveAsync(TestPage12Title, SummaryPrefix + "Move a page.", PageMovingOptions.IgnoreWarnings);
             await page2.DeleteAsync(SummaryPrefix + "Delete the moved page.");
         }
@@ -102,7 +102,7 @@ The original title of the page is '''{title}'''.
             }
             catch (OperationFailedException ex) when (ex.ErrorCode == "fileexists-no-change")
             {
-                Output.WriteLine(ex.Message);
+                WriteOutput(ex.Message);
             }
             ShallowTrace(result);
             var page = new WikiPage(site, fileName, BuiltInNamespaces.File);
@@ -119,7 +119,7 @@ The original title of the page is '''{title}'''.
             var localSite = await CreateIsolatedWikiSiteAsync(CredentialManager.DirtyTestsEntryPointUrl);
             // Cache the token first so it won't be affected by the short timeout.
             await localSite.GetTokenAsync("edit");
-            Output.WriteLine("Try uploading…");
+            WriteOutput("Try uploading…");
             // We want to timeout and retry.
             var wikiClient = (WikiClient)localSite.WikiClient;
             wikiClient.Timeout = TimeSpan.FromSeconds(0.5);
@@ -206,7 +206,7 @@ JasonHise grants anyone the right to use this work for any purpose, without any 
             catch (OperationFailedException ex) when (ex.ErrorCode == "fileexists-no-change")
             {
                 // We cannot suppress this error by setting ignoreWarnings = true.
-                Output.WriteLine(ex.Message);
+                WriteOutput(ex.Message);
             }
         }
 

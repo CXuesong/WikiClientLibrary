@@ -7,6 +7,10 @@
     <DefineConstants>$(DefineConstants);BCL_FEATURE_ASYNC_ENUMERABLE</DefineConstants>
   </PropertyGroup>
 
+  <PropertyGroup Condition=" '$(WCL_IS_CI_BUILD)' == '1' Or '$(WCL_IS_CI_BUILD)' == 'True' Or '$(WCL_IS_CI_BUILD)' == 'On' Or '$(WCL_IS_CI_BUILD)' == 'Yes' ">
+    <DefineConstants>$(DefineConstants);ENV_CI_BUILD</DefineConstants>
+  </PropertyGroup>
+
   <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)\AsyncEnumerableExtensionFacade.cs" />
   </ItemGroup>

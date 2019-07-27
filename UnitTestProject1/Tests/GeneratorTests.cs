@@ -29,18 +29,26 @@ namespace WikiClientLibrary.Tests.UnitTestProject1.Tests
         private void TracePages(IReadOnlyCollection<WikiPage> pages)
         {
             const string lineFormat = "{0,-20} {1,10} {2,10} {3,10} {4,10}";
-            Output.WriteLine(pages.Count + " pages.");
-            Output.WriteLine(string.Format(lineFormat, "Title", "Length", "Last Revision", "Last Touched", "Children"));
-            foreach (var page in pages)
+#if ENV_CI_BUILD
+            const int ITEMS_LIMIT = 10;
+#else
+            const int ITEMS_LIMIT = int.MaxValue;
+#endif
+            WriteOutput("{0} pages.", pages.Count);
+            WriteOutput(lineFormat, "Title", "Length", "Last Revision", "Last Touched", "Children");
+            foreach (var page in pages.Take(ITEMS_LIMIT))
             {
                 var childrenField = "";
                 var cat = page.GetPropertyGroup<CategoryInfoPropertyGroup>();
                 if (cat != null)
                     childrenField = $"{cat.MembersCount}(sub:{cat.SubcategoriesCount})";
-                Output.WriteLine(string.Format(lineFormat, page.Title, page.ContentLength, page.LastRevisionId,
-                    page.LastTouched, childrenField));
+                WriteOutput(lineFormat, page.Title, page.ContentLength, page.LastRevisionId, page.LastTouched, childrenField);
                 if (page.Content != null)
-                    Output.WriteLine(page.Content.Length > 100 ? page.Content.Substring(0, 100) + "..." : page.Content);
+                    WriteOutput(page.Content.Length > 100 ? page.Content.Substring(0, 100) + "..." : page.Content);
+            }
+            if (pages.Count > ITEMS_LIMIT)
+            {
+                WriteOutput("[+{0} pages]", pages.Count - ITEMS_LIMIT);
             }
         }
 
@@ -48,7 +56,7 @@ namespace WikiClientLibrary.Tests.UnitTestProject1.Tests
         public async Task WpAllPagesGeneratorTest1()
         {
             var site = await WpTest2SiteAsync;
-            var generator = new AllPagesGenerator(site) {PaginationSize = 500};
+            var generator = new AllPagesGenerator(site) { PaginationSize = 500 };
             var pages = await generator.EnumPagesAsync().Take(2000).ToListAsync();
             TracePages(pages);
             AssertTitlesDistinct(pages);
@@ -58,7 +66,7 @@ namespace WikiClientLibrary.Tests.UnitTestProject1.Tests
         public async Task WpAllPagesGeneratorTest2()
         {
             var site = await WpTest2SiteAsync;
-            var generator = new AllPagesGenerator(site) {StartTitle = "W", PaginationSize = 20};
+            var generator = new AllPagesGenerator(site) { StartTitle = "W", PaginationSize = 20 };
             var pages = await generator.EnumPagesAsync(PageQueryOptions.FetchContent).Take(100).ToListAsync();
             TracePages(pages);
             Assert.True(pages[0].Title[0] == 'W');
@@ -69,7 +77,7 @@ namespace WikiClientLibrary.Tests.UnitTestProject1.Tests
         public async Task WikiaAllPagesGeneratorTest()
         {
             var site = await WikiaTestSiteAsync;
-            var generator = new AllPagesGenerator(site) {NamespaceId = BuiltInNamespaces.Template, PaginationSize = 500};
+            var generator = new AllPagesGenerator(site) { NamespaceId = BuiltInNamespaces.Template, PaginationSize = 500 };
             var pages = await generator.EnumPagesAsync().Take(2000).ToListAsync();
             TracePages(pages);
             AssertTitlesDistinct(pages);
@@ -79,10 +87,10 @@ namespace WikiClientLibrary.Tests.UnitTestProject1.Tests
         public async Task WpAllCategoriesGeneratorTest()
         {
             var site = await WpTest2SiteAsync;
-            var generator = new AllCategoriesGenerator(site) {PaginationSize = 500};
+            var generator = new AllCategoriesGenerator(site) { PaginationSize = 500 };
             var pages = await generator.EnumPagesAsync().Take(2000).ToListAsync();
             TracePages(pages);
-            generator = new AllCategoriesGenerator(site) {StartTitle = "C", PaginationSize = 20};
+            generator = new AllCategoriesGenerator(site) { StartTitle = "C", PaginationSize = 20 };
             pages = await generator.EnumPagesAsync(PageQueryOptions.FetchContent).Take(100).ToListAsync();
             TracePages(pages);
             AssertTitlesDistinct(pages);
@@ -92,7 +100,7 @@ namespace WikiClientLibrary.Tests.UnitTestProject1.Tests
         public async Task WikiaAllCategoriesGeneratorTest()
         {
             var site = await WikiaTestSiteAsync;
-            var generator = new AllCategoriesGenerator(site) {PaginationSize = 500};
+            var generator = new AllCategoriesGenerator(site) { PaginationSize = 500 };
             var pages = await generator.EnumPagesAsync().Take(2000).ToListAsync();
             TracePages(pages);
             AssertTitlesDistinct(pages);
@@ -104,8 +112,8 @@ namespace WikiClientLibrary.Tests.UnitTestProject1.Tests
             var site = await WpTest2SiteAsync;
             var cat = new WikiPage(site, "Category:Template documentation pages‏‎");
             await cat.RefreshAsync();
-            Output.WriteLine(cat.ToString());
-            var generator = new CategoryMembersGenerator(cat) {PaginationSize = 50};
+            WriteOutput(cat);
+            var generator = new CategoryMembersGenerator(cat) { PaginationSize = 50 };
             var pages = await generator.EnumPagesAsync().ToListAsync();
             TracePages(pages);
             AssertTitlesDistinct(pages);
@@ -119,8 +127,8 @@ namespace WikiClientLibrary.Tests.UnitTestProject1.Tests
             var site = await WikiaTestSiteAsync;
             var cat = new WikiPage(site, "Category:BlogListingPage‏‎‏‎");
             await cat.RefreshAsync();
-            Output.WriteLine(cat.ToString());
-            var generator = new CategoryMembersGenerator(cat) {PaginationSize = 50};
+            WriteOutput(cat);
+            var generator = new CategoryMembersGenerator(cat) { PaginationSize = 50 };
             var pages = await generator.EnumPagesAsync().ToListAsync();
             TracePages(pages);
             AssertTitlesDistinct(pages);
@@ -132,7 +140,7 @@ namespace WikiClientLibrary.Tests.UnitTestProject1.Tests
         public async Task WpTest2RecentChangesGeneratorTest1()
         {
             var site = await WpTest2SiteAsync;
-            var generator = new RecentChangesGenerator(site) {LastRevisionsOnly = true, PaginationSize = 20};
+            var generator = new RecentChangesGenerator(site) { LastRevisionsOnly = true, PaginationSize = 20 };
             var pages = await generator.EnumPagesAsync().Take(1000).ToListAsync();
             TracePages(pages);
             AssertTitlesDistinct(pages);
@@ -284,7 +292,7 @@ namespace WikiClientLibrary.Tests.UnitTestProject1.Tests
         public async Task WpQueryPageGeneratorTest1()
         {
             var site = await WpTest2SiteAsync;
-            var generator = new QueryPageGenerator(site, "Ancientpages") {PaginationSize = 500};
+            var generator = new QueryPageGenerator(site, "Ancientpages") { PaginationSize = 500 };
             var pages = await generator.EnumPagesAsync().Take(2000).ToListAsync();
             TracePages(pages);
             AssertTitlesDistinct(pages);
@@ -294,7 +302,7 @@ namespace WikiClientLibrary.Tests.UnitTestProject1.Tests
         public async Task WikiaQueryPageGeneratorTest1()
         {
             var site = await WikiaTestSiteAsync;
-            var generator = new QueryPageGenerator(site, "Ancientpages") {PaginationSize = 500};
+            var generator = new QueryPageGenerator(site, "Ancientpages") { PaginationSize = 500 };
             var pages = await generator.EnumPagesAsync().Take(2000).ToListAsync();
             TracePages(pages);
             AssertTitlesDistinct(pages);
@@ -313,7 +321,7 @@ namespace WikiClientLibrary.Tests.UnitTestProject1.Tests
         public async Task WpTestGetSearchTest()
         {
             var site = await WpTest2SiteAsync;
-            var generator = new SearchGenerator(site, "test") {PaginationSize = 20};
+            var generator = new SearchGenerator(site, "test") { PaginationSize = 20 };
             var pages = await generator.EnumPagesAsync().Take(100).ToListAsync();
             TracePages(pages);
             AssertTitlesDistinct(pages);
@@ -323,7 +331,7 @@ namespace WikiClientLibrary.Tests.UnitTestProject1.Tests
         public async Task WpLzhSearchTest()
         {
             var site = await WpLzhSiteAsync;
-            var generator = new SearchGenerator(site, "維基") {PaginationSize = 50};
+            var generator = new SearchGenerator(site, "維基") { PaginationSize = 50 };
             var searchResults = await generator.EnumItemsAsync().Take(50).ToListAsync();
             var pages = await generator.EnumPagesAsync().Take(50).ToListAsync();
             ShallowTrace(searchResults, 1);
@@ -356,7 +364,7 @@ namespace WikiClientLibrary.Tests.UnitTestProject1.Tests
         public async Task WpBackLinksGeneratorTest()
         {
             var site = await WpTest2SiteAsync;
-            var blg = new BacklinksGenerator(site, "Albert Einstein‏‎") {PaginationSize = 100};
+            var blg = new BacklinksGenerator(site, "Albert Einstein‏‎") { PaginationSize = 100 };
             var pages = await blg.EnumPagesAsync().Take(100).ToListAsync();
             ShallowTrace(pages, 1);
             Assert.Contains(pages, p => p.Title == "Judaism");
@@ -368,7 +376,7 @@ namespace WikiClientLibrary.Tests.UnitTestProject1.Tests
         public async Task WpTranscludedInGeneratorTest()
         {
             var site = await WpTest2SiteAsync;
-            var tig = new TranscludedInGenerator(site, "Module:Portal‏‎") {PaginationSize = 100};
+            var tig = new TranscludedInGenerator(site, "Module:Portal‏‎") { PaginationSize = 100 };
             var pages = await tig.EnumPagesAsync().Take(100).ToListAsync();
             ShallowTrace(pages, 1);
             Assert.Contains(pages, p => p.Title == "Template:Portal bar");
@@ -378,7 +386,7 @@ namespace WikiClientLibrary.Tests.UnitTestProject1.Tests
         public async Task WpLzhEnumPageLinksTest()
         {
             var site = await WpLzhSiteAsync;
-            var gen = new LinksGenerator(site, site.SiteInfo.MainPage) {PaginationSize = 20};
+            var gen = new LinksGenerator(site, site.SiteInfo.MainPage) { PaginationSize = 20 };
             Output.WriteLine(gen.PageTitle);
             var links = await gen.EnumItemsAsync().Select(stub => stub.Title).ToListAsync();
             var linkPages = await gen.EnumPagesAsync().Select(p => p.Title).ToListAsync();
@@ -394,7 +402,7 @@ namespace WikiClientLibrary.Tests.UnitTestProject1.Tests
         public async Task WpTest2GeoSearchTest()
         {
             var site = await WpTest2SiteAsync;
-            var gen = new GeoSearchGenerator(site) {TargetCoordinate = new GeoCoordinate(47.01, 2), Radius = 2000};
+            var gen = new GeoSearchGenerator(site) { TargetCoordinate = new GeoCoordinate(47.01, 2), Radius = 2000 };
             var result = await gen.EnumItemsAsync().FirstOrDefaultAsync();
             ShallowTrace(result);
             Assert.NotNull(result);
@@ -416,9 +424,9 @@ namespace WikiClientLibrary.Tests.UnitTestProject1.Tests
         }
 
         [Theory]
-        [InlineData(Endpoints.WikipediaBetaEn, new[] {  BuiltInNamespaces.Main })]
-        [InlineData(Endpoints.WikipediaBetaEn, new[] {  BuiltInNamespaces.Category })]
-        [InlineData(Endpoints.WikipediaBetaEn, new[] {  BuiltInNamespaces.Project, BuiltInNamespaces.Help })]
+        [InlineData(Endpoints.WikipediaBetaEn, new[] { BuiltInNamespaces.Main })]
+        [InlineData(Endpoints.WikipediaBetaEn, new[] { BuiltInNamespaces.Category })]
+        [InlineData(Endpoints.WikipediaBetaEn, new[] { BuiltInNamespaces.Project, BuiltInNamespaces.Help })]
         [InlineData(Endpoints.WikiaTest, new[] { BuiltInNamespaces.Main })]
         [InlineData(Endpoints.WikiaTest, new[] { BuiltInNamespaces.Category })]
         [InlineData(Endpoints.WikiaTest, new[] { BuiltInNamespaces.Project, BuiltInNamespaces.Help })]

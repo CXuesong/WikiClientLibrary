@@ -27,7 +27,7 @@ namespace WikiClientLibrary.Tests.UnitTestProject1
         public const string WikidataBeta = "https://wikidata.beta.wmflabs.org/w/api.php";
 
         // TODO This is a rather unofficial test site. Replace it in the future.
-
         public const string WikiaTest = "https://mediawiki119.wikia.org/api.php";
+
     }
 }
