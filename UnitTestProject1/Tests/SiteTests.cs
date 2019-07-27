@@ -10,6 +10,7 @@ using Xunit.Abstractions;
 namespace WikiClientLibrary.Tests.UnitTestProject1.Tests
 {
 
+    [Trait("Category", "SiteTests")]
     public class SiteTests : WikiSiteTestsBase
     {
 
