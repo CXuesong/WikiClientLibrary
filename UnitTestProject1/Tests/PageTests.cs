@@ -82,10 +82,10 @@ namespace WikiClientLibrary.Tests.UnitTestProject1.Tests
         }
 
         [Fact]
-        public async Task WpTest2PageGeoCoordinateTest()
+        public async Task WpEnPageGeoCoordinateTest()
         {
-            var site = await WpTest2SiteAsync;
-            var page = new WikiPage(site, "France");
+            var site = await WpEnSiteAsync;
+            var page = new WikiPage(site, "Paris");
             await page.RefreshAsync(new WikiPageQueryProvider
             {
                 Properties =
@@ -95,9 +95,11 @@ namespace WikiClientLibrary.Tests.UnitTestProject1.Tests
             });
             ShallowTrace(page);
             var coordinate = page.GetPropertyGroup<GeoCoordinatesPropertyGroup>();
+            Assert.NotNull(coordinate);
+            ShallowTrace(coordinate);
             Assert.False(coordinate.PrimaryCoordinate.IsEmpty);
-            Assert.Equal(47, coordinate.PrimaryCoordinate.Latitude, 12);
-            Assert.Equal(2, coordinate.PrimaryCoordinate.Longitude, 12);
+            Assert.Equal(48.8567, coordinate.PrimaryCoordinate.Latitude, 12);
+            Assert.Equal(2.3508, coordinate.PrimaryCoordinate.Longitude, 12);
             Assert.Equal(GeoCoordinate.Earth, coordinate.PrimaryCoordinate.Globe);
         }
 

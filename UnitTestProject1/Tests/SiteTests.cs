@@ -200,8 +200,8 @@ namespace WikiClientLibrary.Tests.UnitTestProject1.Tests
             Assert.Null(result);
         }
 
-        [Theory]
-        [InlineData(Endpoints.WikipediaTest2)]
+        // [Theory]
+        // [InlineData(Endpoints.WikipediaTest2)]
         public async Task InterlacingLoginLogoutTest(string endpointUrl)
         {
             // The two sites belong to different WikiClient instances.

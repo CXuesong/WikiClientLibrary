@@ -24,8 +24,7 @@ namespace WikiClientLibrary.Tests.UnitTestProject1
             if (obj == null) return "null";
             if ("".Equals(obj)) return "<String.Empty>";
             var sb = new StringBuilder();
-            if (obj.GetType().GetRuntimeMethod("ToString", Type.EmptyTypes).DeclaringType
-                == typeof(object))
+            if (obj.GetType().GetRuntimeMethod("ToString", Type.EmptyTypes).DeclaringType == typeof(object))
             {
                 sb.Append('{');
                 sb.Append(obj.GetType().Name);
@@ -35,7 +34,8 @@ namespace WikiClientLibrary.Tests.UnitTestProject1
             {
                 sb.Append(obj);
             }
-            if (maxDepth < 1 || obj.GetType().GetTypeInfo().IsPrimitive || obj is string || obj is Uri)
+            if (maxDepth < 1 || obj.GetType().GetTypeInfo().IsPrimitive 
+                             || obj is string || obj is Uri || obj is DateTime || obj is DateTimeOffset)
             {
                 var s = sb.ToString();
                 if (s.Length > 1024) s = s.Substring(0, 1024) + "...";

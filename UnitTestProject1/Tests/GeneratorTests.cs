@@ -399,7 +399,7 @@ namespace WikiClientLibrary.Tests.UnitTestProject1.Tests
         }
 
         [Fact]
-        public async Task WpTest2GeoSearchTest()
+        public async Task WpEnGeoSearchTest()
         {
             var site = await WpEnSiteAsync;
             var gen = new GeoSearchGenerator(site) { TargetCoordinate = new GeoCoordinate(47.01, 2), Radius = 2000 };
