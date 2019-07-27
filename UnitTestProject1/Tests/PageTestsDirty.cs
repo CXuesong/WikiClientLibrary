@@ -180,7 +180,7 @@ JasonHise grants anyone the right to use this work for any purpose, without any 
             }
             catch (OperationFailedException ex)
             {
-                Skip.If(ex.ErrorCode == "copyuploadbaddomain", ex.ErrorMessage);
+                Skip.If(ex.ErrorCode == "copyuploadbaddomain" || ex.ErrorCode == "copyuploaddisabled", ex.ErrorMessage);
                 throw;
             }
         }

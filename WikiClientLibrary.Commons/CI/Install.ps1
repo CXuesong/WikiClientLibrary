@@ -18,7 +18,7 @@ if ($IsLinux) {
     CheckLastExitCode
     if (-not (Get-Command dotnet))
     {
-        New-Item /usr/share/dotnet/dotnet -ItemType SymbolicLink -Value /usr/bin/dotnet
+        New-Item /usr/share/dotnet/dotnet -ItemType SymbolicLink -Value /usr/bin/dotnet | Out-Null
     }
     Write-Host "Installed .NET Core SDKs:"
     dotnet --list-sdks
