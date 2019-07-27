@@ -24,6 +24,9 @@ namespace WikiClientLibrary
         public static Task<TSource> FirstAsync<TSource>(this IAsyncEnumerable<TSource> source, CancellationToken cancellationToken = default)
             => AsyncEnumerable.FirstAsync(source, cancellationToken).AsTask();
 
+        public static Task<TSource> FirstOrDefaultAsync<TSource>(this IAsyncEnumerable<TSource> source, Func<TSource, bool> predicate, CancellationToken cancellationToken = default)
+            => AsyncEnumerable.FirstOrDefaultAsync(source, predicate, cancellationToken).AsTask();
+
         public static Task<TSource> FirstOrDefaultAsync<TSource>(this IAsyncEnumerable<TSource> source, CancellationToken cancellationToken = default)
             => AsyncEnumerable.FirstOrDefaultAsync(source, cancellationToken).AsTask();
 
@@ -44,6 +47,9 @@ namespace WikiClientLibrary
 
         public static Task<TSource> FirstAsync<TSource>(this IAsyncEnumerable<TSource> source, CancellationToken cancellationToken = default)
             => AsyncEnumerable.First(source, cancellationToken);
+
+        public static Task<TSource> FirstOrDefaultAsync<TSource>(this IAsyncEnumerable<TSource> source, Func<TSource, bool> predicate, CancellationToken cancellationToken = default)
+            => AsyncEnumerable.FirstOrDefault(source, predicate, cancellationToken);
 
         public static Task<TSource> FirstOrDefaultAsync<TSource>(this IAsyncEnumerable<TSource> source, CancellationToken cancellationToken = default)
             => AsyncEnumerable.FirstOrDefault(source, cancellationToken);

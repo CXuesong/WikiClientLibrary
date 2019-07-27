@@ -6,12 +6,18 @@ namespace WikiClientLibrary.Tests.UnitTestProject1
 {
     public static class Endpoints
     {
+
         public const string WikipediaTest2 = "https://test2.wikipedia.org/w/api.php";
 
         /// <summary>
         /// WMF beta test site. We only apply the tests that cannot be performed in test2.wikipedia.org (e.g. Flow boards).
         /// </summary>
         public const string WikipediaBetaEn = "https://en.wikipedia.beta.wmflabs.org/w/api.php";
+
+        /// <summary>
+        /// This is NOT a test site so do not make modifications to the site.
+        /// </summary>
+        public const string WikipediaEn = "https://en.wikipedia.org/w/api.php";
 
         /// <summary>
         /// This is NOT a test site so do not make modifications to the site.

@@ -191,6 +191,8 @@ namespace WikiClientLibrary.Tests.UnitTestProject1
 #endif
         }
 
+        protected Task<WikiSite> WpEnSiteAsync => GetWikiSiteAsync(Endpoints.WikipediaEn);
+
         protected Task<WikiSite> WpTest2SiteAsync => GetWikiSiteAsync(Endpoints.WikipediaTest2);
 
         protected Task<WikiaSite> WikiaTestSiteAsync

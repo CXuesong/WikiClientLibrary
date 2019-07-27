@@ -401,12 +401,11 @@ namespace WikiClientLibrary.Tests.UnitTestProject1.Tests
         [Fact]
         public async Task WpTest2GeoSearchTest()
         {
-            var site = await WpTest2SiteAsync;
+            var site = await WpEnSiteAsync;
             var gen = new GeoSearchGenerator(site) { TargetCoordinate = new GeoCoordinate(47.01, 2), Radius = 2000 };
-            var result = await gen.EnumItemsAsync().FirstOrDefaultAsync();
+            var result = await gen.EnumItemsAsync().Take(10).FirstOrDefaultAsync(r => r.Page.Title == "France");
             ShallowTrace(result);
             Assert.NotNull(result);
-            Assert.Equal("France", result.Page.Title);
             Assert.InRange(result.Distance, 1110, 1113);
             Assert.True(result.IsPrimaryCoordinate);
         }
