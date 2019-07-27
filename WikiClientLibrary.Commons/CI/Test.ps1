@@ -3,5 +3,11 @@ trap {
     Exit 1
 }
 # Assumes $PWD is the repo root
-dotnet test ./UnitTestProject1/UnitTestProject1.csproj -c Release
-Exit $LASTEXITCODE
+if ($env:BUILD_SECRET_KEY) {
+    dotnet test ./UnitTestProject1/UnitTestProject1.csproj -c Release
+    Exit $LASTEXITCODE
+}
+else {
+    Write-Warning "BUILD_SECRET_KEY is not available. Will not execute tests."
+    return 0
+}
