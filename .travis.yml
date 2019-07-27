@@ -5,10 +5,6 @@ branches:
   only:
     - master
 
-env:
-  global:
-    - secure: "RPlA+JVww+AXPRO+f3u7FS+cgqxm+nJwCJUnRfSdBUyejzw/WtjBYWcdjbjK0UkgM8+/mZoDPapXOAYhsoVtJNTaDNz/3ec6k8geWiWKrOV+R0xQaLvuwZ7Myvvw9njbPpNvLvfHEqghDv+UlG7+Yz9/lF3RL/MqeIDjjloCLCyN85T0ShD4bk8vBAeytpwv0VLvfWXEAMNglwuMgxBwpVz7qV9ayTh5Fi2r7Z976ZqJLhOS0qw8L2MwJ91fHuF8xWc0RKRqv4aSNlGwy9nLYtjrIGhmrjcl62Kf5wHcDTaZwZz0YDDRYZP8iUzppUe2s5hx3QMfknZgT7VH/ShvvSJ4OHKSe9hp/VQklAgUzo1lJxG22eirpJZCuOTi2G5omuKaevV4AUmYdVixfVi1o7nW2dK0lbfDMBiINWrmxbWWvQCzvJ06lSEfFkaibC3n9CpnPXupxezd7BFUFN3y6di0WNTdiewsA7VciWLVBAoesqA6x/27pBs9Que2hL5wliecVPN3/FfJDakK/ihQmYEj5wT3vXPdzGpG6p7IdSshHRKZlAqTSAMKPe43aVqxxK9MC1Jua5qwrH3eEIjmZ8qukGeu5e1jtF6cJBV0kTv4i5UBSnWiK6Knmun7NIxy59qrQMlHCAIqljJJDTtHJqvvKNhJpRsdr3uRv8t3crI="
-
 matrix:
   include:
     - os: linux
