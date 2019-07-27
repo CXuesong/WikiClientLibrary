@@ -5,7 +5,10 @@
     <ProjectTypeGuids>{3AC096D0-A1C2-E12C-1390-A8335801FDAB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <RootNamespace>WikiClientLibrary.Tests.UnitTestProject1</RootNamespace>
   </PropertyGroup>
-
+  <PropertyGroup Condition=" '$(WCL_IS_CI_BUILD)' == 'True' ">
+    <!-- CI environment is likely to be in an IP range that is blocked by WP. -->
+    <DefineConstants>$(DefineConstants);DRY_RUN</DefineConstants>
+  </PropertyGroup>
   <ItemGroup>
     <EmbeddedResource Include="DemoImages/*" />
   </ItemGroup>
@@ -23,7 +26,7 @@
     <PackageReference Include="Xunit.SkippableFact" Version="1.3.12" />
     <DotNetCliToolReference Include="dotnet-xunit" Version="2.3.0-beta5-build3769" />
   </ItemGroup>
-  
+
   <ItemGroup>
     <ProjectReference Include="..\WikiClientLibrary.Flow\WikiClientLibrary.Flow.csproj" />
     <ProjectReference Include="..\WikiClientLibrary.Wikia\WikiClientLibrary.Wikia.csproj" />
@@ -34,7 +37,7 @@
   <ItemGroup Condition=" '$(TargetFramework)' == 'netcoreapp3.0' ">
     <PackageReference Include="System.Linq.Async" Version="4.0.0-preview.1.build.745" />
   </ItemGroup>
-  
+
   <ItemGroup>
     <Compile Update="Properties\Resources.Designer.cs">
       <DesignTime>True</DesignTime>
@@ -42,7 +45,7 @@
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
   </ItemGroup>
-  
+
   <ItemGroup>
     <EmbeddedResource Update="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
