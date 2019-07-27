@@ -10,6 +10,7 @@ param (
     [string]
     $SecretPath = "./Secret.bin",
 
+    [Parameter(ParameterSetName="Build")]
     [Parameter(ParameterSetName="Restore", Mandatory=$true)]
     [string]
     $Key,
@@ -33,9 +34,9 @@ $FileList = @("UnitTestProject1/_private/Credentials.cs")
 if ($Restore) {
     $WorkDir = Join-Path ([System.IO.Path]::GetTempPath()) ([System.IO.Path]::GetRandomFileName())
     New-Item $WorkDir -ItemType Directory | Out-Null
+    $KeyBytes = if ($Key) { [System.Convert]::FromBase64String($Key) }
     try {
         Write-Host "Work dir: $WorkDir"
-        $KeyBytes = [System.Convert]::FromBase64String($Key)
         $Content = Get-Content $SecretPath -AsByteStream -Raw
 
         $Aes = [System.Security.Cryptography.Aes]::Create()
@@ -87,6 +88,9 @@ else {
         Compress-Archive $ArchiveSourceDir $ArchiveDir
 
         $Aes = [System.Security.Cryptography.Aes]::Create()
+        if ($KeyBytes) {
+            $Aes.Key = $KeyBytes
+        }
         try {
             Write-Host "Encryption key:" ([System.Convert]::ToBase64String($Aes.Key))
             $Content = Get-Content $ArchiveDir -AsByteStream -Raw
