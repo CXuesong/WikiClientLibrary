@@ -9,8 +9,12 @@ using Xunit.Abstractions;
 
 namespace WikiClientLibrary.Tests.UnitTestProject1.Tests
 {
+
+    // Our IP of CI is blocked from editing by WP and blocked from login by Wikia. Sad story.
+    [CISkipped]
     public class SiteTokenTests : WikiSiteTestsBase
     {
+
         /// <inheritdoc />
         public SiteTokenTests(ITestOutputHelper output) : base(output)
         {
@@ -55,8 +59,6 @@ namespace WikiClientLibrary.Tests.UnitTestProject1.Tests
         }
 
         [SkippableTheory]
-        // Our IP is blocked on CI!
-        [CISkipped]
         [InlineData(Endpoints.WikipediaTest2, "Project:Sandbox")]
         [InlineData(Endpoints.WikiaTest, "Project:Sandbox")]
         public async Task BadTokenTest(string endpointUrl, string sandboxPageTitle)
@@ -82,4 +84,5 @@ namespace WikiClientLibrary.Tests.UnitTestProject1.Tests
         }
 
     }
+
 }
