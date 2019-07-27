@@ -1,26 +1,33 @@
 param (
-    [Parameter(ParameterSetName="Build")]
-    [Parameter(ParameterSetName="Restore")]
-    [Parameter(ParameterSetName="Clear")]
+    [Parameter(ParameterSetName = "Build")]
+    [Parameter(ParameterSetName = "Restore")]
+    [Parameter(ParameterSetName = "Clear")]
     [string]
     $SourceRootPath = "../..",
 
-    [Parameter(ParameterSetName="Build")]
-    [Parameter(ParameterSetName="Restore")]
+    [Parameter(ParameterSetName = "Build")]
+    [Parameter(ParameterSetName = "Restore")]
     [string]
     $SecretPath = "./Secret.bin",
 
-    [Parameter(ParameterSetName="Build")]
-    [Parameter(ParameterSetName="Restore", Mandatory=$true)]
+    [Parameter(ParameterSetName = "Build")]
+    [Parameter(ParameterSetName = "Restore")]
     [string]
     $Key,
 
+    # Whether to keep the auto-generated key in current PSSession,
+    # and load it automatically if $Key is not specified explicitly next time.
+    [Parameter(ParameterSetName = "Build")]
+    [Parameter(ParameterSetName = "Restore")]
+    [switch]
+    $CacheAutoKey,
+
     # Whether we are restoring encrypted files
-    [Parameter(ParameterSetName="Restore", Mandatory=$true)]
+    [Parameter(ParameterSetName = "Restore", Mandatory = $true)]
     [switch]
     $Restore,
 
-    [Parameter(ParameterSetName="Clear", Mandatory=$true)]
+    [Parameter(ParameterSetName = "Clear", Mandatory = $true)]
     [switch]
     $Clear
 )
@@ -34,7 +41,13 @@ $FileList = @("UnitTestProject1/_private/Credentials.cs")
 if ($Restore) {
     $WorkDir = Join-Path ([System.IO.Path]::GetTempPath()) ([System.IO.Path]::GetRandomFileName())
     New-Item $WorkDir -ItemType Directory | Out-Null
-    $KeyBytes = if ($Key) { [System.Convert]::FromBase64String($Key) }
+    $KeyBytes = if ($Key) {
+        [System.Convert]::FromBase64String($Key)
+    }
+    elseif ($CacheAutoKey) {
+        Write-Host "Use cached key."
+        [System.Convert]::FromBase64String($_WCL_CI_Secret_LastKey)
+    }
     try {
         Write-Host "Work dir: $WorkDir"
         $Content = Get-Content $SecretPath -AsByteStream -Raw
@@ -62,7 +75,8 @@ if ($Restore) {
         Remove-Item $WorkDir -Recurse -Force
         Write-Host "Work dir deleted."
     }
-} elseif ($Clear) {
+}
+elseif ($Clear) {
     foreach ($FileName in $FileList) {
         $FullPath = Join-Path $SourceRootPath $FileName | Resolve-Path
         Remove-Item $FullPath -Force | Out-Null
@@ -90,6 +104,10 @@ else {
         $Aes = [System.Security.Cryptography.Aes]::Create()
         if ($KeyBytes) {
             $Aes.Key = $KeyBytes
+        }
+        elseif ($CacheAutoKey) {
+            Set-Variable -Name _WCL_CI_Secret_LastKey -Value ([System.Convert]::ToBase64String($Aes.Key)) -Visibility Private -Scope global
+            Write-Host "Cached auto-generated key."
         }
         try {
             Write-Host "Encryption key:" ([System.Convert]::ToBase64String($Aes.Key))
