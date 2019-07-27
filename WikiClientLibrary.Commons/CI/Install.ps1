@@ -13,7 +13,7 @@ function CheckLastExitCode() {
 if ($IsLinux) {
     # Install .NET Core 3.0 preview
     Invoke-WebRequest https://dotnetcli.blob.core.windows.net/dotnet/Sdk/release/3.0.1xx/dotnet-sdk-latest-linux-x64.tar.gz -OutFile dotnet.tar.gz
-    New-Item /usr/share/dotnet -ItemType Directory -Force
+    New-Item /usr/share/dotnet -ItemType Directory -Force | Out-Null
     tar -zxf dotnet.tar.gz -C /usr/share/dotnet
     CheckLastExitCode
     if (-not (Get-Command dotnet))
