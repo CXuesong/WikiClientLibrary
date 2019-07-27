@@ -11,4 +11,7 @@ if ($env:BUILD_SECRET_KEY) {
 }
 
 dotnet build WikiClientLibrary.sln -c CIRelease
-Exit $LASTEXITCODE
+$BuildResult = $LASTEXITCODE
+&"$PSScriptRoot/BuildSecret.ps1" -Clear -SourceRootPath .
+
+Exit $BuildResult

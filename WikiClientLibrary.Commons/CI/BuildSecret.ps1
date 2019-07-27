@@ -1,20 +1,27 @@
 param (
-    [Parameter()]
+    [Parameter(ParameterSetName="Build")]
+    [Parameter(ParameterSetName="Restore")]
+    [Parameter(ParameterSetName="Clear")]
     [string]
     $SourceRootPath = "../..",
 
-    [Parameter()]
+    [Parameter(ParameterSetName="Build")]
+    [Parameter(ParameterSetName="Restore")]
     [string]
     $SecretPath = "./Secret.bin",
 
-    [Parameter()]
+    [Parameter(ParameterSetName="Restore", Mandatory=$true)]
     [string]
     $Key,
 
     # Whether we are restoring encrypted files
-    [Parameter()]
+    [Parameter(ParameterSetName="Restore", Mandatory=$true)]
     [switch]
-    $Restore
+    $Restore,
+
+    [Parameter(ParameterSetName="Clear", Mandatory=$true)]
+    [switch]
+    $Clear
 )
 
 $ErrorActionPreference = "Stop"
@@ -54,6 +61,12 @@ if ($Restore) {
         Remove-Item $WorkDir -Recurse -Force
         Write-Host "Work dir deleted."
     }
+} elseif ($Clear) {
+    foreach ($FileName in $FileList) {
+        $FullPath = Join-Path $SourceRootPath $FileName | Resolve-Path
+        Remove-Item $TargetFolder -Force | Out-Null
+    }
+    Write-Host "Build secret cleared."
 }
 else {
     $WorkDir = Join-Path ([System.IO.Path]::GetTempPath()) ([System.IO.Path]::GetRandomFileName())
