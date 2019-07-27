@@ -64,7 +64,7 @@ if ($Restore) {
 } elseif ($Clear) {
     foreach ($FileName in $FileList) {
         $FullPath = Join-Path $SourceRootPath $FileName | Resolve-Path
-        Remove-Item $TargetFolder -Force | Out-Null
+        Remove-Item $FullPath -Force | Out-Null
     }
     Write-Host "Build secret cleared."
 }
