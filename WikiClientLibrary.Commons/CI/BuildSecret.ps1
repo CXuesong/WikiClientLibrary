@@ -38,16 +38,17 @@ $ArchiveRootFolder = "Root"
 $SaltLength = 100
 $FileList = @("UnitTestProject1/_private/Credentials.cs")
 
+$KeyBytes = if ($Key) {
+    [System.Convert]::FromBase64String($Key)
+}
+elseif ($CacheAutoKey) {
+    Write-Host "Use cached key."
+    [System.Convert]::FromBase64String($_WCL_CI_Secret_LastKey)
+}
+
 if ($Restore) {
     $WorkDir = Join-Path ([System.IO.Path]::GetTempPath()) ([System.IO.Path]::GetRandomFileName())
     New-Item $WorkDir -ItemType Directory | Out-Null
-    $KeyBytes = if ($Key) {
-        [System.Convert]::FromBase64String($Key)
-    }
-    elseif ($CacheAutoKey) {
-        Write-Host "Use cached key."
-        [System.Convert]::FromBase64String($_WCL_CI_Secret_LastKey)
-    }
     try {
         Write-Host "Work dir: $WorkDir"
         $Content = Get-Content $SecretPath -AsByteStream -Raw
