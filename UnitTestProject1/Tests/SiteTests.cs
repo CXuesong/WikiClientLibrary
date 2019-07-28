@@ -51,7 +51,7 @@ namespace WikiClientLibrary.Tests.UnitTestProject1.Tests
             Assert.Equal("Main Page", site.SiteInfo.MainPage);
             Assert.Equal("https://test2.wikipedia.org/wiki/test%20page", site.SiteInfo.MakeArticleUrl("test page"));
             Assert.Equal("https://test2.wikipedia.org/wiki/test%20page%20(DAB)", site.SiteInfo.MakeArticleUrl("test page (DAB)"));
-            var messages = await site.GetMessagesAsync(new[] {"august"});
+            var messages = await site.GetMessagesAsync(new[] { "august" });
             Assert.Equal("August", messages["august"]);
             ValidateNamespaces(site);
             //ShallowTrace(site.InterwikiMap);
@@ -143,7 +143,7 @@ namespace WikiClientLibrary.Tests.UnitTestProject1.Tests
             //      var site = new WikiSite(WikiClient, "api-endpoint");
             //      await site.Initialization;
             // The second statement will throw exception if you haven't logged in.
-            var site = await CredentialManager.EarlyLoginAsync(client, 
+            var site = await CredentialManager.EarlyLoginAsync(client,
                 new SiteOptions(CredentialManager.PrivateWikiTestsEntryPointUrl));
             ShallowTrace(site);
             await site.LogoutAsync();
@@ -201,9 +201,13 @@ namespace WikiClientLibrary.Tests.UnitTestProject1.Tests
             Assert.Null(result);
         }
 
-        // [Theory]
-        // [InlineData(Endpoints.WikipediaTest2)]
-        private async Task InterlacingLoginLogoutTest(string endpointUrl)
+        [Theory]
+        // Do not test this on CI, because this test is destined to fail if we are using Bot Password.
+        [CISkipped]
+        [InlineData(Endpoints.WikipediaEn)]
+        [InlineData(Endpoints.WikiaTest)]
+        [InlineData(Endpoints.WikipediaTest2)]
+        public async Task InterlacingLoginLogoutTest(string endpointUrl)
         {
             // The two sites belong to different WikiClient instances.
             var site1 = await CreateIsolatedWikiSiteAsync(endpointUrl);
@@ -215,7 +219,10 @@ namespace WikiClientLibrary.Tests.UnitTestProject1.Tests
             // This is a known issue of MediaWiki.
             // MediaWiki Phabricator Task T51890: Logging out on a different device logs me out everywhere else
             Assert.False(site1.AccountInfo.IsUser,
-                "T51890 seems have been resolved. If this test continue to fail, please re-open the issue: https://github.com/CXuesong/WikiClientLibrary/issues/11 .");
+                "If you are logged in with your normal password instead of Bot Password, " +
+                "this means T51890 seems have been resolved. " +
+                "If this test continue to fail, please re-open the issue: " +
+                "https://github.com/CXuesong/WikiClientLibrary/issues/11 .");
         }
 
         [Fact]
@@ -225,7 +232,7 @@ namespace WikiClientLibrary.Tests.UnitTestProject1.Tests
             var site = await CreateIsolatedWikiSiteAsync(Endpoints.WikipediaTest2);
             Assert.False(site.AccountInfo.IsUser, "You should have not logged in… Wierd.");
             // Make believe that we're bots…
-            typeof(AccountInfo).GetProperty(nameof(AccountInfo.Groups))!.SetValue(site.AccountInfo, new[] {"*", "user", "bot"});
+            typeof(AccountInfo).GetProperty(nameof(AccountInfo.Groups))!.SetValue(site.AccountInfo, new[] { "*", "user", "bot" });
             Assert.True(site.AccountInfo.IsUser, "Cannot militate user information.");
             // Send a request…
             await Assert.ThrowsAsync<AccountAssertionFailureException>(() => site.GetMessageAsync("edit"));
@@ -243,7 +250,7 @@ namespace WikiClientLibrary.Tests.UnitTestProject1.Tests
             });
             Assert.False(site.AccountInfo.IsUser, "You should have not logged in… Wierd.");
             // Make believe that we're bots…
-            typeof(AccountInfo).GetProperty(nameof(AccountInfo.Groups))!.SetValue(site.AccountInfo, new[] {"*", "user", "bot"});
+            typeof(AccountInfo).GetProperty(nameof(AccountInfo.Groups))!.SetValue(site.AccountInfo, new[] { "*", "user", "bot" });
             Assert.True(site.AccountInfo.IsUser, "Cannot militate user information.");
             // Send a request…
             var message = await site.GetMessageAsync("edit");
