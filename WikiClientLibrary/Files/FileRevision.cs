@@ -234,11 +234,6 @@ namespace WikiClientLibrary.Files
         /// <summary>
         /// A file with the same title already exists. (<c>exists</c>)
         /// </summary>
-        /// <remarks>
-        /// On some MediaWiki versions, if a file with the same content is uploaded to an existing title,
-        /// a <c>duplicate</c> warning will be received instead of <c>exists</c>.
-        /// Use <seealso cref="DuplicateTitles"/> in this case to detect whether the title exists in the list.
-        /// </remarks>
         public bool TitleExists => GetBooleanValue("exists");
 
         /// <summary>
@@ -272,7 +267,7 @@ namespace WikiClientLibrary.Files
         {
             if (GetValueDirect("duplicateversions") is JArray jversions && jversions.Count > 0)
             {
-                var versions = jversions.Select(v => MediaWikiHelper.ParseDateTime((string)v)).ToList();
+                var versions = jversions.Select(v => MediaWikiHelper.ParseDateTime((string)v["timestamp"])).ToList();
                 DuplicateVersions = new ReadOnlyCollection<DateTime>(versions);
             }
             else
@@ -291,7 +286,7 @@ namespace WikiClientLibrary.Files
         }
 
         /// <summary>
-        /// Uploaded file is a duplicate of these titles. (<c>duplicate</c>)
+        /// The uploaded file has duplicate content to these titles. (<c>duplicate</c>)
         /// </summary>
         /// <value><c>null</c> if there is no such warning in the response.</value>
         public IList<string> DuplicateTitles { get; private set; }
@@ -323,12 +318,12 @@ namespace WikiClientLibrary.Files
                     case "duplicateversions":
                         var timeStamps = context.Select(v => (DateTime)v["timestamp"]).Take(4).ToArray();
                         contextString = string.Join(",", timeStamps.Take(3));
-                        if (timeStamps.Length == 4) contextString += ", ...";
+                        if (timeStamps.Length > 3) contextString += ",…";
                         break;
                     case "duplicate":
                         var titles = context.Select(v => (string)v).Take(4).ToArray();
                         contextString = string.Join(",", titles.Take(3));
-                        if (titles.Length == 4) contextString += ", ...";
+                        if (titles.Length > 3) contextString += ",…";
                         break;
                     default:
                         contextString = context.ToString();

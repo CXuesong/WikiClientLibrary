@@ -99,25 +99,24 @@ The original title of the page is '''{title}'''.
                 // Usually we should notify the user, then perform the re-upload ignoring the warning.
                 try
                 {
-                    // Uploaded file is a duplicate of `fileName`
+                    // Uploaded file is a duplicate of `fileName`, or duplicate content detected.
                     Assert.Equal(UploadResultCode.Warning, result.ResultCode);
-                    Assert.True(result.Warnings.TitleExists
-                                || (result.Warnings.DuplicateTitles
-                                        ?.Any(t => t.Contains(fileName, StringComparison.OrdinalIgnoreCase))
-                                    ?? false));
-                    {
-                        WriteOutput("Title exists.");
-                        result = await site.UploadAsync(fileName,
-                            new FileKeyUploadSource(result.FileKey), file.Description + ReuploadSuffix, true);
-                        ShallowTrace(result);
-                    }
+                    Assert.True(result.Warnings.TitleExists || result.Warnings.DuplicateTitles != null);
+                    WriteOutput("Title exists.");
+                    result = await site.UploadAsync(fileName,
+                        new FileKeyUploadSource(result.FileKey), file.Description + ReuploadSuffix, true);
+                    ShallowTrace(result);
+                    Assert.Equal(UploadResultCode.Success, result.ResultCode);
                 }
                 catch (OperationFailedException ex) when (ex.ErrorCode == "fileexists-no-change")
                 {
                     WriteOutput(ex.Message);
                 }
             }
-            Assert.Equal(UploadResultCode.Success, result.ResultCode);
+            else
+            {
+                Assert.Equal(UploadResultCode.Success, result.ResultCode);
+            }
             var page = new WikiPage(site, fileName, BuiltInNamespaces.File);
             await page.RefreshAsync();
             ShallowTrace(page);
