@@ -24,8 +24,7 @@ namespace WikiClientLibrary.Tests.UnitTestProject1
             if (obj == null) return "null";
             if ("".Equals(obj)) return "<String.Empty>";
             var sb = new StringBuilder();
-            if (obj.GetType().GetRuntimeMethod("ToString", Type.EmptyTypes).DeclaringType
-                == typeof(object))
+            if (obj.GetType().GetRuntimeMethod("ToString", Type.EmptyTypes).DeclaringType == typeof(object))
             {
                 sb.Append('{');
                 sb.Append(obj.GetType().Name);
@@ -35,7 +34,8 @@ namespace WikiClientLibrary.Tests.UnitTestProject1
             {
                 sb.Append(obj);
             }
-            if (maxDepth < 1 || obj.GetType().GetTypeInfo().IsPrimitive || obj is string || obj is Uri)
+            if (maxDepth < 1 || obj.GetType().GetTypeInfo().IsPrimitive 
+                             || obj is string || obj is Uri || obj is DateTime || obj is DateTimeOffset)
             {
                 var s = sb.ToString();
                 if (s.Length > 1024) s = s.Substring(0, 1024) + "...";
@@ -101,9 +101,9 @@ namespace WikiClientLibrary.Tests.UnitTestProject1
         {
             // Load DemoImage.jpg
             var assembly = typeof(Utility).GetTypeInfo().Assembly;
-            var content = assembly.GetManifestResourceStream($"UnitTestProject1.DemoImages.{imageName}.jpg");
+            var content = assembly.GetManifestResourceStream($"WikiClientLibrary.Tests.UnitTestProject1.DemoImages.{imageName}.jpg");
             if (content == null) throw new ArgumentException("Invalid imageName.");
-            using (var r = new StreamReader(assembly.GetManifestResourceStream($"UnitTestProject1.DemoImages.{imageName}.txt")))
+            using (var r = new StreamReader(assembly.GetManifestResourceStream($"WikiClientLibrary.Tests.UnitTestProject1.DemoImages.{imageName}.txt")))
             {
                 var desc = r.ReadToEnd();
                 return new DemoFileInfo(content, desc);

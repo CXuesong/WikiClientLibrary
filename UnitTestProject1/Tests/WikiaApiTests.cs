@@ -14,6 +14,9 @@ using Xunit.Abstractions;
 
 namespace WikiClientLibrary.Tests.UnitTestProject1.Tests
 {
+
+    // Wikia doesn't allow us to login on CI environment.
+    [CISkipped]
     public class WikiaApiTests : WikiSiteTestsBase
     {
         /// <inheritdoc />

@@ -49,7 +49,7 @@ namespace WikiClientLibrary.Tests.UnitTestProject1.Tests
             await page.RefreshAsync();
             if (!page.Exists)
             {
-                Output.WriteLine("Creating page: " + page);
+                WriteOutput("Creating page: {0}", page);
                 page.Content = $@"<big>This is a test page for '''WikiClientLibrary'''.</big>
 
 This page is created by an automated program for unit test purposes.
@@ -71,12 +71,14 @@ The original title of the page is '''{title}'''.
         [SkippableFact]
         public async Task PageMoveAndDeleteTest1()
         {
-            Skip.IfNot((await SiteAsync).AccountInfo.IsInGroup(UserGroups.SysOp),
+            var site = await SiteAsync;
+            Skip.IfNot(site.AccountInfo.IsInGroup(UserGroups.SysOp),
                 "The user is not in sysop group and cannot delete the pages.");
-            var page1 = new WikiPage(await SiteAsync, TestPage11Title);
-            var page2 = new WikiPage(await SiteAsync, TestPage12Title);
-            Output.WriteLine("Deleted:" + await page2.DeleteAsync(SummaryPrefix + "Delete the move destination."));
+            var page1 = await GetOrCreatePage(site, TestPage11Title);
+            var page2 = new WikiPage(site, TestPage12Title);
+            WriteOutput("Deleted: {0}", await page2.DeleteAsync(SummaryPrefix + "Delete the move destination."));
             await page1.MoveAsync(TestPage12Title, SummaryPrefix + "Move a page.", PageMovingOptions.IgnoreWarnings);
+            WriteOutput("Moved {0} to {1}.", page1, page2);
             await page2.DeleteAsync(SummaryPrefix + "Delete the moved page.");
         }
 
@@ -90,21 +92,25 @@ The original title of the page is '''{title}'''.
             var site = await SiteAsync;
             var file = Utility.GetDemoImage(imageName);
             var result = await site.UploadAsync(fileName, new StreamUploadSource(file.ContentStream), file.Description, false);
+            ShallowTrace(result);
             // Usually we should notify the user, then perform the re-upload ignoring the warning.
             try
             {
-                if (result.Warnings.TitleExists)
+                // TODO Add more warning property
+                // Uploaded file is a duplicate of xxx
+                if (result.Warnings.TitleExists || result.Warnings.ContainsKey("duplicate"))
                 {
+                    WriteOutput("Title exists.");
                     result = await site.UploadAsync(fileName,
                         new FileKeyUploadSource(result.FileKey), file.Description + ReuploadSuffix, true);
+                    ShallowTrace(result);
                 }
                 Assert.Equal(UploadResultCode.Success, result.ResultCode);
             }
             catch (OperationFailedException ex) when (ex.ErrorCode == "fileexists-no-change")
             {
-                Output.WriteLine(ex.Message);
+                WriteOutput(ex.Message);
             }
-            ShallowTrace(result);
             var page = new WikiPage(site, fileName, BuiltInNamespaces.File);
             await page.RefreshAsync();
             ShallowTrace(page);
@@ -119,14 +125,14 @@ The original title of the page is '''{title}'''.
             var localSite = await CreateIsolatedWikiSiteAsync(CredentialManager.DirtyTestsEntryPointUrl);
             // Cache the token first so it won't be affected by the short timeout.
             await localSite.GetTokenAsync("edit");
-            Output.WriteLine("Try uploading…");
+            WriteOutput("Try uploading…");
             // We want to timeout and retry.
             var wikiClient = (WikiClient)localSite.WikiClient;
-            wikiClient.Timeout = TimeSpan.FromSeconds(0.5);
+            wikiClient.Timeout = TimeSpan.FromSeconds(0.1);
             wikiClient.RetryDelay = TimeSpan.FromSeconds(1);
             wikiClient.MaxRetries = 1;
             var buffer = new byte[1024 * 1024 * 2];     // 2MB, I think this size is fairly large.
-                                                        // If your connection speed is too fast then, well, throttle it plz.
+                                                        // If your connection speed is too fast (>20MB/s) then, well, throttle it plz.
             using (var ms = new MemoryStream(buffer))
             {
                 await Assert.ThrowsAsync<TimeoutException>(async () =>
@@ -178,7 +184,7 @@ JasonHise grants anyone the right to use this work for any purpose, without any 
             }
             catch (OperationFailedException ex)
             {
-                Skip.If(ex.ErrorCode == "copyuploadbaddomain", ex.ErrorMessage);
+                Skip.If(ex.ErrorCode == "copyuploadbaddomain" || ex.ErrorCode == "copyuploaddisabled", ex.ErrorMessage);
                 throw;
             }
         }
@@ -206,7 +212,7 @@ JasonHise grants anyone the right to use this work for any purpose, without any 
             catch (OperationFailedException ex) when (ex.ErrorCode == "fileexists-no-change")
             {
                 // We cannot suppress this error by setting ignoreWarnings = true.
-                Output.WriteLine(ex.Message);
+                WriteOutput(ex.Message);
             }
         }
 

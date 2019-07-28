@@ -10,6 +10,7 @@ using Xunit.Abstractions;
 namespace WikiClientLibrary.Tests.UnitTestProject1.Tests
 {
 
+    [Trait("Category", "SiteTests")]
     public class SiteTests : WikiSiteTestsBase
     {
 
@@ -149,6 +150,7 @@ namespace WikiClientLibrary.Tests.UnitTestProject1.Tests
         }
 
         [Fact]
+        [CISkipped]
         public async Task LoginWikiaTest_1()
         {
             var site = await CreateIsolatedWikiSiteAsync(Endpoints.WikiaTest);
@@ -199,8 +201,8 @@ namespace WikiClientLibrary.Tests.UnitTestProject1.Tests
             Assert.Null(result);
         }
 
-        [Theory]
-        [InlineData(Endpoints.WikipediaTest2)]
+        // [Theory]
+        // [InlineData(Endpoints.WikipediaTest2)]
         public async Task InterlacingLoginLogoutTest(string endpointUrl)
         {
             // The two sites belong to different WikiClient instances.

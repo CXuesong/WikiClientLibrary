@@ -73,17 +73,17 @@ namespace WikiClientLibrary.Tests.UnitTestProject1.Tests
             //Assert.Contains(WikidataItems.Asia, parts);
 
             claim = entity.Claims[WikidataProperties.CoordinateLocation].First();
-            var location = (WbGlobeCoordinate) claim.MainSnak.DataValue;
+            var location = (WbGlobeCoordinate)claim.MainSnak.DataValue;
             Assert.Equal(27.988055555556, location.Latitude, 12);
             Assert.Equal(86.925277777778, location.Longitude, 12);
 
             claim = entity.Claims[WikidataProperties.TopographicProminence].First();
-            var height = (WbQuantity) claim.MainSnak.DataValue;
+            var height = (WbQuantity)claim.MainSnak.DataValue;
             Assert.Equal(8848, height.Amount, 4);
             Assert.Equal(WikidataProperties.ReferenceUrl, claim.References[0].Snaks[0].PropertyId);
             Assert.Equal("http://www.peakbagger.com/peak.aspx?pid=10640", claim.References[0].Snaks[0].DataValue);
 
-            var topiso = (WbQuantity) entity.Claims[WikidataProperties.TopographicIsolation]
+            var topiso = (WbQuantity)entity.Claims[WikidataProperties.TopographicIsolation]
                 .First().MainSnak.DataValue;
             Assert.Equal(40008, topiso.Amount, 12);
             Assert.Equal(WikibaseUriFactory.Get(WikidataEntityUriPrefix + WikidataItems.Meter), topiso.Unit);
@@ -97,7 +97,7 @@ namespace WikiClientLibrary.Tests.UnitTestProject1.Tests
             var entity2 = new Entity(site, WikidataItems.Chumulangma);
             var entity3 = new Entity(site, WikidataItems.Earth);
             var entity4 = new Entity(site, WikidataProperties.PartOf);
-            await new[] {entity1, entity2, entity3, entity4}.RefreshAsync(EntityQueryOptions.FetchAllProperties);
+            await new[] { entity1, entity2, entity3, entity4 }.RefreshAsync(EntityQueryOptions.FetchAllProperties);
             CheckEntity(entity1, WikidataItems.Chumulangma, "Mount Everest");
             CheckEntity(entity2, WikidataItems.Chumulangma, "Mount Everest");
             CheckEntity(entity3, WikidataItems.Earth, "Earth");
@@ -110,17 +110,18 @@ namespace WikiClientLibrary.Tests.UnitTestProject1.Tests
         public async Task EntityFromSiteLinkTest()
         {
             var site = await WikidataSiteAsync;
-            var links = new[] {"Mount Everest", "Test_(Unix)", "Inexistent title", "Earth"};
+            var links = new[] { "Mount Everest", "Test_(Unix)", "Inexistent title", "Earth" };
             var ids = await Entity.IdsFromSiteLinksAsync(site, "enwiki", links).ToListAsync();
             Output.WriteLine(string.Join(", ", ids));
-            Assert.Equal(new[] {"Q513", "Q257491", null, "Q2"}, ids);
+            Assert.Equal(new[] { "Q513", "Q257491", null, "Q2" }, ids);
         }
 
-        [Theory]
+        [SkippableTheory]
         [InlineData(EntityEditOptions.Progressive)]
         [InlineData(EntityEditOptions.Bulk)]
         public async Task EditEntityTest1(EntityEditOptions options)
         {
+            AssertModify();
 
             const string ArbitaryItemEntityId = "Q487"; // An item ID that exists on test wiki site.
 
@@ -152,7 +153,7 @@ namespace WikiClientLibrary.Tests.UnitTestProject1.Tests
             Assert.Contains("This is a test entity", entity.Descriptions["en"]);
             Assert.Contains("此实体仅用于测试之用。", entity.Descriptions["zh"]);
             Assert.Equal("Foo", entity.SiteLinks["testwiki"].Title);
-            
+
             // General edit
             changelist = new[]
             {
@@ -207,7 +208,7 @@ namespace WikiClientLibrary.Tests.UnitTestProject1.Tests
             Assert.NotNull(claim2);
             Assert.Equal(entity.Id, claim2.References[0].Snaks[0].DataValue);
             ShallowTrace(entity);
-            
+
             // Remove a claim
             changelist = new[]
             {

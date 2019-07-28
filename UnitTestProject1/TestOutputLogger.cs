@@ -11,9 +11,12 @@ namespace WikiClientLibrary.Tests.UnitTestProject1
     public class TestOutputLogger : ILogger
     {
 
-        public TestOutputLogger(ITestOutputHelper output, string name)
+        private readonly LogLevel minLogLevel;
+
+        public TestOutputLogger(ITestOutputHelper output, string name, LogLevel minLogLevel)
         {
             if (output == null) throw new ArgumentNullException(nameof(output));
+            this.minLogLevel = minLogLevel;
             Output = output;
             Name = name;
         }
@@ -25,6 +28,8 @@ namespace WikiClientLibrary.Tests.UnitTestProject1
         public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception exception, Func<TState, Exception, string> formatter)
         {
             if (formatter == null) throw new ArgumentNullException(nameof(formatter));
+            if (logLevel < minLogLevel)
+                return;
             var message = formatter(state, exception);
             if (string.IsNullOrEmpty(message)) return;
             var sb = new StringBuilder();
@@ -56,7 +61,7 @@ namespace WikiClientLibrary.Tests.UnitTestProject1
 
         public bool IsEnabled(LogLevel logLevel)
         {
-            return true;
+            return logLevel >= minLogLevel;
         }
 
         public IDisposable BeginScope<TState>(TState state)
@@ -127,7 +132,12 @@ namespace WikiClientLibrary.Tests.UnitTestProject1
 
         public ILogger CreateLogger(string categoryName)
         {
-            return new TestOutputLogger(Output, categoryName);
+#if ENV_CI_BUILD
+            // Do not abuse CI output ^_^
+            return new TestOutputLogger(Output, categoryName, LogLevel.Warning);
+#else
+            return new TestOutputLogger(Output, categoryName, LogLevel.Trace);
+#endif
         }
     }
 }

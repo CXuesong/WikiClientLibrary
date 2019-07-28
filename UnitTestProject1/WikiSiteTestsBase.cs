@@ -5,6 +5,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Reflection;
 using System.Text;
 using System.Threading;
@@ -34,10 +35,34 @@ namespace WikiClientLibrary.Tests.UnitTestProject1
         public LoggerFactory OutputLoggerFactory { get; }
 
         public ITestOutputHelper Output { get; }
+        
+        protected void WriteOutput(object value)
+        {
+            WriteOutput(value == null ? "<null>" : value.ToString());
+        }
+
+        protected void WriteOutput(string message)
+        {
+            Output.WriteLine(message);
+        }
+
+        protected void WriteOutput(string format, params object[] args)
+        {
+            WriteOutput(string.Format(format, args));
+        }
 
         protected void ShallowTrace(object obj, int depth = 2)
         {
-            Output.WriteLine(Utility.DumpObject(obj, depth));
+            var rawTrace = Utility.DumpObject(obj, depth);
+#if ENV_CI_BUILD
+            // We don't want to abuse CI logs.
+            const int MAX_TRACE_LENGTH = 5000;
+            if (rawTrace.Length > MAX_TRACE_LENGTH)
+            {
+                rawTrace = rawTrace.Substring(0, MAX_TRACE_LENGTH) + "… [+" + (rawTrace.Length - MAX_TRACE_LENGTH) + " chars]";
+            }
+#endif
+            Output.WriteLine(rawTrace);
         }
 
         protected virtual void Dispose(bool disposing)
@@ -145,6 +170,8 @@ namespace WikiClientLibrary.Tests.UnitTestProject1
             throw new SkipException("Remove #define DRY_RUN to perform edit tests.");
 #endif
         }
+
+        protected Task<WikiSite> WpEnSiteAsync => GetWikiSiteAsync(Endpoints.WikipediaEn);
 
         protected Task<WikiSite> WpTest2SiteAsync => GetWikiSiteAsync(Endpoints.WikipediaTest2);
 
