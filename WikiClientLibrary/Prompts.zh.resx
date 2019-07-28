@@ -129,6 +129,9 @@
   <data name="ExceptionArgumentExpectEitherNull2" xml:space="preserve">
     <value>{0}和{1}之间应当恰好有一者为null。</value>
   </data>
+  <data name="ExceptionArgumentIsEmpty" xml:space="preserve">
+    <value>参数值不能为空白。</value>
+  </data>
   <data name="ExceptionArgumentIsEmpty1" xml:space="preserve">
     <value>{0}为空白。</value>
   </data>

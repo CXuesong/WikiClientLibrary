@@ -291,4 +291,7 @@
   <data name="MediaWikiRemoteStackTraceEnd" xml:space="preserve">
     <value>--- End of MediaWiki remote stack trace ---</value>
   </data>
+  <data name="ExceptionArgumentIsEmpty" xml:space="preserve">
+    <value>Value is empty.</value>
+  </data>
 </root>

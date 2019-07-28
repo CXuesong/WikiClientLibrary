@@ -98,6 +98,15 @@ namespace WikiClientLibrary {
         }
         
         /// <summary>
+        ///   查找类似 Value is empty. 的本地化字符串。
+        /// </summary>
+        internal static string ExceptionArgumentIsEmpty {
+            get {
+                return ResourceManager.GetString("ExceptionArgumentIsEmpty", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   查找类似 {0} is empty. 的本地化字符串。
         /// </summary>
         internal static string ExceptionArgumentIsEmpty1 {

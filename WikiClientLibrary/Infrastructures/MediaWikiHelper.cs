@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -237,7 +238,69 @@ namespace WikiClientLibrary.Infrastructures
                 Globe = (string)jcoordinate["globe"],
             };
         }
-        
+
+        // See includes/GlobalFunctions.php in mediawiki/core
+        private static readonly string[] infinityValues = { "infinite", "indefinite", "infinity", "never" };
+        private const int infinityExpressionMaxLength = 10;     // "indefinite"
+
+        /// <summary>
+        /// Parses a <see cref="DateTimeOffset"/> from MediaWiki API timestamp from the API response.
+        /// </summary>
+        /// <param name="expression">The timestamp expression to be parsed.</param>
+        /// <exception cref="ArgumentNullException"><paramref name="expression"/> is <c>null</c>.</exception>
+        /// <exception cref="ArgumentException"><paramref name="expression"/> is empty.</exception>
+        /// <exception cref="FormatException"><paramref name="expression"/> is not a valid timestamp expression.</exception>
+        /// <remarks>
+        /// <para>This converter handles the following JSON string values as <see cref="DateTime.MaxValue"/> or <see cref="DateTimeOffset.MaxValue"/>:</para>
+        /// <list type="bullet">
+        /// <item><description><c>infinity</c></description></item>
+        /// <item><description><c>infinite</c></description></item>
+        /// <item><description><c>indefinite</c></description></item>
+        /// <item><description><c>never</c></description></item>
+        /// </list>
+        /// <para>For now this method supports conversion of ISO 8601 format. If you are using this class
+        /// and need more support within the API specification linked below, please open an issue in WCL
+        /// repository.</para>
+        /// <para>See <a href="https://www.mediawiki.org/wiki/API:Data_formats#Timestamps">mw:API:Data formats#Timestamps</a>
+        /// for more information.</para>
+        /// </remarks>
+        /// <seealso cref="ParseDateTime"/>
+        /// <seealso cref="WikiDateTimeJsonConverter"/>
+        public static DateTimeOffset ParseDateTimeOffset(string expression)
+        {
+            if (expression == null)
+                throw new ArgumentNullException(nameof(expression));
+            if (expression.Length == 0)
+                throw new ArgumentException(Prompts.ExceptionArgumentIsEmpty, nameof(expression));
+            if (expression.Length <= infinityExpressionMaxLength && infinityValues.Contains(expression.ToLowerInvariant()))
+                return DateTimeOffset.MaxValue;
+            // quote Timestamps are always output in ISO 8601 format. endquote
+            if (DateTimeOffset.TryParseExact(expression, "yyyy-MM-ddTHH:mm:ssK", CultureInfo.InvariantCulture,
+                DateTimeStyles.RoundtripKind, out var result))
+                return result;
+            // backup plan
+            return DateTimeOffset.Parse(expression, CultureInfo.InvariantCulture, DateTimeStyles.RoundtripKind);
+        }
+
+        /// <summary>
+        /// Parses a <see cref="DateTime"/> from MediaWiki API timestamp from the API response.
+        /// </summary>
+        /// <inheritdoc cref="ParseDateTimeOffset"/>
+        /// <seealso cref="ParseDateTimeOffset"/>
+        public static DateTime ParseDateTime(string expression)
+        {
+            if (expression == null)
+                throw new ArgumentNullException(nameof(expression));
+            if (expression.Length == 0)
+                throw new ArgumentException(Prompts.ExceptionArgumentIsEmpty, nameof(expression));
+            if (expression.Length <= infinityExpressionMaxLength && infinityValues.Contains(expression.ToLowerInvariant()))
+                return DateTime.MaxValue;
+            if (DateTime.TryParseExact(expression, "yyyy-MM-ddTHH:mm:ssK", CultureInfo.InvariantCulture,
+                DateTimeStyles.RoundtripKind, out var result))
+                return result;
+            return DateTime.Parse(expression, CultureInfo.InvariantCulture, DateTimeStyles.RoundtripKind);
+        }
+
         private static readonly ConcurrentDictionary<PageQueryOptions, IWikiPageQueryProvider> queryProviderPresets
             = new ConcurrentDictionary<PageQueryOptions, IWikiPageQueryProvider>();
 
