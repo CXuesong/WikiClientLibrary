@@ -220,8 +220,6 @@ namespace WikiClientLibrary.Files
             {"filetype-unwanted-type", "File {0} type is unwanted type."},
             {"exists-normalized", "File exists with different extension as \"{0}\"."},
         };
-        private static readonly IList<DateTime> emptyDateTimeList = new DateTime[0];
-        private static readonly IList<string> emptyStringList = new string[0];
 
         static UploadWarningCollection()
         {
@@ -229,22 +227,28 @@ namespace WikiClientLibrary.Files
         }
 
         /// <summary>
-        /// The file content is empty.
+        /// The file content is empty. (<c>emptyfile</c>)
         /// </summary>
         public bool IsEmptyFile => GetBooleanValue("emptyfile");
 
         /// <summary>
-        /// The title exists.
+        /// A file with the same title already exists. (<c>exists</c>)
         /// </summary>
+        /// <remarks>
+        /// On some MediaWiki versions, if a file with the same content is uploaded to an existing title,
+        /// a <c>duplicate</c> warning will be received instead of <c>exists</c>.
+        /// Use <seealso cref="DuplicateTitles"/> in this case to detect whether the title exists in the list.
+        /// </remarks>
         public bool TitleExists => GetBooleanValue("exists");
 
         /// <summary>
-        /// File exists with different extension as…
+        /// File exists with different extension as the value of this property. (<c>exists-normalized</c>)
         /// </summary>
+        /// <value><c>null</c> if there is no such warning in the response.</value>
         public string ExistingAlternativeExtension => GetStringValue("exists-normalized");
 
         /// <summary>
-        /// Target filename is invalid.
+        /// Target filename is invalid. (<c>badfilename</c>)
         /// </summary>
         public bool IsBadFileName => GetBooleanValue("badfilename");
 
@@ -254,12 +258,12 @@ namespace WikiClientLibrary.Files
         public bool IsUnwantedType => GetBooleanValue("filetype-unwanted-type");
 
         /// <summary>
-        /// The file with the specified title was previously deleted.
+        /// The file with the specified title was previously deleted. (<c>was-deleted</c>)
         /// </summary>
         public bool WasTitleDeleted => GetBooleanValue("was-deleted");
 
         /// <summary>
-        /// The file content is a duplicate of a deleted file.
+        /// The file content is a duplicate of a deleted file. (<c>duplicate-archive</c>)
         /// </summary>
         public bool WasContentDeleted => GetBooleanValue("duplicate-archive");
 
@@ -268,35 +272,35 @@ namespace WikiClientLibrary.Files
         {
             if (GetValueDirect("duplicateversions") is JArray jversions && jversions.Count > 0)
             {
-                var versions = jversions.Select(v => (DateTime) v["timestamp"]).ToArray();
+                var versions = jversions.Select(v => MediaWikiHelper.ParseDateTime((string)v)).ToList();
                 DuplicateVersions = new ReadOnlyCollection<DateTime>(versions);
             }
             else
             {
-                DuplicateVersions = emptyDateTimeList;
+                DuplicateVersions = null;
             }
             if (GetValueDirect("duplicate") is JArray jdumplicates && jdumplicates.Count > 0)
             {
-                var titles = jdumplicates.Select(t => (string) t).ToArray();
+                var titles = jdumplicates.Select(t => (string)t).ToList();
                 DuplicateTitles = new ReadOnlyCollection<string>(titles);
             }
             else
             {
-                DuplicateTitles = emptyStringList;
+                DuplicateTitles = null;
             }
         }
 
         /// <summary>
-        /// Uploaded file is a duplicate of these titles.
+        /// Uploaded file is a duplicate of these titles. (<c>duplicate</c>)
         /// </summary>
-        /// <remarks>This property may return empty array, but not <c>null</c>.</remarks>
-        public IList<string> DuplicateTitles { get; private set; } = emptyStringList;
+        /// <value><c>null</c> if there is no such warning in the response.</value>
+        public IList<string> DuplicateTitles { get; private set; }
 
         /// <summary>
-        /// Uploaded file is duplicate of these versions .
+        /// Uploaded file is duplicate of these versions. (<c>duplicateversions</c>)
         /// </summary>
-        /// <remarks>This property may return empty array, but not <c>null</c>.</remarks>
-        public IList<DateTime> DuplicateVersions { get; private set; } = emptyDateTimeList;
+        /// <value><c>null</c> if there is no such warning in the response.</value>
+        public IList<DateTime> DuplicateVersions { get; private set; }
 
         /// <summary>
         /// Try to convert the specified warning code and context into a user-friendly
@@ -317,12 +321,12 @@ namespace WikiClientLibrary.Files
                 switch (warningCode)
                 {
                     case "duplicateversions":
-                        var timeStamps = context.Select(v => (DateTime) v["timestamp"]).Take(4).ToArray();
+                        var timeStamps = context.Select(v => (DateTime)v["timestamp"]).Take(4).ToArray();
                         contextString = string.Join(",", timeStamps.Take(3));
                         if (timeStamps.Length == 4) contextString += ", ...";
                         break;
                     case "duplicate":
-                        var titles = context.Select(v => (string) v).Take(4).ToArray();
+                        var titles = context.Select(v => (string)v).Take(4).ToArray();
                         contextString = string.Join(",", titles.Take(3));
                         if (titles.Length == 4) contextString += ", ...";
                         break;

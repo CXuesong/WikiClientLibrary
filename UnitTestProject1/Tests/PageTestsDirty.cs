@@ -2,6 +2,7 @@
 
 using System;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using WikiClientLibrary;
 using WikiClientLibrary.Client;
@@ -93,24 +94,30 @@ The original title of the page is '''{title}'''.
             var file = Utility.GetDemoImage(imageName);
             var result = await site.UploadAsync(fileName, new StreamUploadSource(file.ContentStream), file.Description, false);
             ShallowTrace(result);
-            // Usually we should notify the user, then perform the re-upload ignoring the warning.
-            try
+            if (result.ResultCode == UploadResultCode.Warning)
             {
-                // TODO Add more warning property
-                // Uploaded file is a duplicate of xxx
-                if (result.Warnings.TitleExists || result.Warnings.ContainsKey("duplicate"))
+                // Usually we should notify the user, then perform the re-upload ignoring the warning.
+                try
                 {
-                    WriteOutput("Title exists.");
-                    result = await site.UploadAsync(fileName,
-                        new FileKeyUploadSource(result.FileKey), file.Description + ReuploadSuffix, true);
-                    ShallowTrace(result);
+                    // Uploaded file is a duplicate of `fileName`
+                    Assert.Equal(UploadResultCode.Warning, result.ResultCode);
+                    Assert.True(result.Warnings.TitleExists
+                                || (result.Warnings.DuplicateTitles
+                                        ?.Any(t => t.Contains(fileName, StringComparison.OrdinalIgnoreCase))
+                                    ?? false));
+                    {
+                        WriteOutput("Title exists.");
+                        result = await site.UploadAsync(fileName,
+                            new FileKeyUploadSource(result.FileKey), file.Description + ReuploadSuffix, true);
+                        ShallowTrace(result);
+                    }
                 }
-                Assert.Equal(UploadResultCode.Success, result.ResultCode);
+                catch (OperationFailedException ex) when (ex.ErrorCode == "fileexists-no-change")
+                {
+                    WriteOutput(ex.Message);
+                }
             }
-            catch (OperationFailedException ex) when (ex.ErrorCode == "fileexists-no-change")
-            {
-                WriteOutput(ex.Message);
-            }
+            Assert.Equal(UploadResultCode.Success, result.ResultCode);
             var page = new WikiPage(site, fileName, BuiltInNamespaces.File);
             await page.RefreshAsync();
             ShallowTrace(page);
