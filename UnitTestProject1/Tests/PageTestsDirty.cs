@@ -92,13 +92,18 @@ The original title of the page is '''{title}'''.
             var site = await SiteAsync;
             var file = Utility.GetDemoImage(imageName);
             var result = await site.UploadAsync(fileName, new StreamUploadSource(file.ContentStream), file.Description, false);
+            ShallowTrace(result);
             // Usually we should notify the user, then perform the re-upload ignoring the warning.
             try
             {
-                if (result.Warnings.TitleExists)
+                // TODO Add more warning property
+                // Uploaded file is a duplicate of xxx
+                if (result.Warnings.TitleExists || result.Warnings.ContainsKey("duplicate"))
                 {
+                    WriteOutput("Title exists.");
                     result = await site.UploadAsync(fileName,
                         new FileKeyUploadSource(result.FileKey), file.Description + ReuploadSuffix, true);
+                    ShallowTrace(result);
                 }
                 Assert.Equal(UploadResultCode.Success, result.ResultCode);
             }
@@ -106,7 +111,6 @@ The original title of the page is '''{title}'''.
             {
                 WriteOutput(ex.Message);
             }
-            ShallowTrace(result);
             var page = new WikiPage(site, fileName, BuiltInNamespaces.File);
             await page.RefreshAsync();
             ShallowTrace(page);

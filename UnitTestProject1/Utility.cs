@@ -101,9 +101,9 @@ namespace WikiClientLibrary.Tests.UnitTestProject1
         {
             // Load DemoImage.jpg
             var assembly = typeof(Utility).GetTypeInfo().Assembly;
-            var content = assembly.GetManifestResourceStream($"UnitTestProject1.DemoImages.{imageName}.jpg");
+            var content = assembly.GetManifestResourceStream($"WikiClientLibrary.Tests.UnitTestProject1.DemoImages.{imageName}.jpg");
             if (content == null) throw new ArgumentException("Invalid imageName.");
-            using (var r = new StreamReader(assembly.GetManifestResourceStream($"UnitTestProject1.DemoImages.{imageName}.txt")))
+            using (var r = new StreamReader(assembly.GetManifestResourceStream($"WikiClientLibrary.Tests.UnitTestProject1.DemoImages.{imageName}.txt")))
             {
                 var desc = r.ReadToEnd();
                 return new DemoFileInfo(content, desc);
