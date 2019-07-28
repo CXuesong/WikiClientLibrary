@@ -128,11 +128,11 @@ The original title of the page is '''{title}'''.
             WriteOutput("Try uploading…");
             // We want to timeout and retry.
             var wikiClient = (WikiClient)localSite.WikiClient;
-            wikiClient.Timeout = TimeSpan.FromSeconds(0.5);
+            wikiClient.Timeout = TimeSpan.FromSeconds(0.1);
             wikiClient.RetryDelay = TimeSpan.FromSeconds(1);
             wikiClient.MaxRetries = 1;
             var buffer = new byte[1024 * 1024 * 2];     // 2MB, I think this size is fairly large.
-                                                        // If your connection speed is too fast then, well, throttle it plz.
+                                                        // If your connection speed is too fast (>20MB/s) then, well, throttle it plz.
             using (var ms = new MemoryStream(buffer))
             {
                 await Assert.ThrowsAsync<TimeoutException>(async () =>
