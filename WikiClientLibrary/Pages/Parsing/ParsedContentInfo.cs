@@ -44,7 +44,8 @@ namespace WikiClientLibrary.Pages.Parsing
         public string Summary { get; private set; }
 
         [JsonProperty("text")]
-        private JToken DummyText {
+        private JToken DummyText
+        {
             set { Content = (string)value["*"]; }
         }
 
@@ -282,16 +283,18 @@ namespace WikiClientLibrary.Pages.Parsing
 
         private static double? TryParseAsDouble(JToken token)
         {
-            var s = (string) token;
+            var s = (string)token;
             double v;
             if (double.TryParse(s, out v)) return v;
             return null;
         }
 
+#pragma warning disable CS0649  // Field is never assigned to, and will always have its default value null
         /// <summary>
         /// All the content of the report.
         /// </summary>
         [JsonExtensionData] private IDictionary<string, JToken> _Content;
+#pragma warning restore CS0649
 
         public IReadOnlyDictionary<string, JToken> Content { get; private set; }
 

@@ -17,7 +17,7 @@
     <GenerateDocumentationFile>True</GenerateDocumentationFile>
     <Authors>CXuesong</Authors>
     <Company />
-    <NoWarn>1701;1702;1705;1573;1591</NoWarn>
+    <NoWarn>$(NoWarn);1701;1702;1705;1573;1591;NU5105</NoWarn>
     <SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>$(MSBuildThisFileDirectory)\WikiClientLibrary.snk</AssemblyOriginatorKeyFile>
     <PublishRepositoryUrl>True</PublishRepositoryUrl>
