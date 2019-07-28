@@ -28,7 +28,7 @@ namespace WikiClientLibrary.Tests.UnitTestProject1.Tests
                 new MediaWikiFormRequestMessage(query, true),
                 MediaWikiJsonResponseParser.Default,
                 CancellationToken.None);
-            TraceOutput(json1);
+            WriteOutput(json1);
         }
 
         [Fact]

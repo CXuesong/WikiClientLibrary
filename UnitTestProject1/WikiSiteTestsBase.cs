@@ -35,28 +35,7 @@ namespace WikiClientLibrary.Tests.UnitTestProject1
         public LoggerFactory OutputLoggerFactory { get; }
 
         public ITestOutputHelper Output { get; }
-
-        protected void TraceOutput(object value)
-        {
-#if !ENV_CI_BUILD
-            WriteOutput(value);
-#endif
-        }
-
-        protected void TraceOutput(string message)
-        {
-#if !ENV_CI_BUILD
-            WriteOutput(message);
-#endif
-        }
-
-        protected void TraceOutput(string format, params object[] args)
-        {
-#if !ENV_CI_BUILD
-            WriteOutput(format, args);
-#endif
-        }
-
+        
         protected void WriteOutput(object value)
         {
             WriteOutput(value == null ? "<null>" : value.ToString());
@@ -76,7 +55,8 @@ namespace WikiClientLibrary.Tests.UnitTestProject1
         {
             var rawTrace = Utility.DumpObject(obj, depth);
 #if ENV_CI_BUILD
-            const int MAX_TRACE_LENGTH = 500;
+            // We don't want to abuse CI logs.
+            const int MAX_TRACE_LENGTH = 5000;
             if (rawTrace.Length > MAX_TRACE_LENGTH)
             {
                 rawTrace = rawTrace.Substring(0, MAX_TRACE_LENGTH) + "… [+" + (rawTrace.Length - MAX_TRACE_LENGTH) + " chars]";
