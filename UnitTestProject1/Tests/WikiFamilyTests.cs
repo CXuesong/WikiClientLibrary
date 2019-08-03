@@ -45,13 +45,21 @@ namespace WikiClientLibrary.Tests.UnitTestProject1.Tests
         public async Task InterwikiLinkTests()
         {
             // We will not login onto any site…
-            var homeSite = await Family.GetSiteAsync("test2");
-            var link = await WikiLink.ParseAsync(homeSite, Family, "WikiPedia:SANDBOX");
+            var originSite = await Family.GetSiteAsync("test2");
+            // With originating WikiSite
+            var link = await WikiLink.ParseAsync(originSite, Family, "WikiPedia:SANDBOX");
             AssertWikiLink(link, null, "Wikipedia", "SANDBOX");
-            link = await WikiLink.ParseAsync(homeSite, Family, "FR___:_ __Wp__ _:  SANDBOX");
+            link = await WikiLink.ParseAsync(originSite, Family, "FR___:_ __Wp__ _:  SANDBOX");
             AssertWikiLink(link, "fr", "Wikipédia", "SANDBOX");
-            link = await WikiLink.ParseAsync(homeSite, Family, "EN:fr:   LZH:Project:SANDBOX");
+            link = await WikiLink.ParseAsync(originSite, Family, "EN:fr:   LZH:Project:SANDBOX");
             AssertWikiLink(link, "lzh", "維基大典", "SANDBOX");
+            // Without originating WikiSite
+            await Assert.ThrowsAsync<ArgumentException>(() => WikiLink.ParseAsync(Family, "WikiPedia:SANDBOX"));
+            link = await WikiLink.ParseAsync(Family, "FR___:_ __Wp__ _:  SANDBOX");
+            AssertWikiLink(link, "fr", "Wikipédia", "SANDBOX");
+            link = await WikiLink.ParseAsync(Family, "EN:fr:   LZH:Project:SANDBOX");
+            AssertWikiLink(link, "lzh", "維基大典", "SANDBOX");
+            await Assert.ThrowsAsync<ArgumentException>(() => WikiLink.ParseAsync(Family, "unk:WikiPedia:SANDBOX"));
         }
 
     }

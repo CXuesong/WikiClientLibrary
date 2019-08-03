@@ -40,6 +40,12 @@ namespace WikiClientLibrary
             return ParseAsync(site, family, text, 0);
         }
 
+        /// <inheritdoc cref="ParseAsync(IWikiFamily,string,int)"/>
+        public static Task<WikiLink> ParseAsync(IWikiFamily family, string text)
+        {
+            return ParseAsync(family, text, 0);
+        }
+
         /// <inheritdoc cref="ParseAsync(WikiSite,IWikiFamily,string,int)"/>
         /// <summary>
         /// Parses a new instance from the a Wikilink expression on the specified Wiki family.
@@ -109,16 +115,22 @@ namespace WikiClientLibrary
             return TryParseAsync(site, family, text, 0);
         }
 
+        /// <inheritdoc cref="TryParseAsync(IWikiFamily,string,int)"/>
+        public static Task<WikiLink> TryParseAsync(IWikiFamily family, string text)
+        {
+            return TryParseAsync(family, text, 0);
+        }
+
         /// <inheritdoc cref="TryParseAsync(WikiSite,IWikiFamily,string,int)"/>
         /// <summary>
         /// Tries to parse a new instance from the a Wikilink expression on the specified Wiki family.
         /// This overload resolves the target interwiki site with the interwiki prefixes provided
         /// <seealso cref="IWikiFamily"/> instance, and requires <paramref name="text"/> to have interwiki prefix.
         /// </summary>
-        public static Task<WikiLink> TryParseAsync(IWikiFamily family, string text)
+        public static Task<WikiLink> TryParseAsync(IWikiFamily family, string text, int defaultNamespaceId)
         {
             if (family == null) throw new ArgumentNullException(nameof(family));
-            return TryParseAsync(null, family, text, 0);
+            return TryParseAsync(null, family, text, defaultNamespaceId);
         }
 
         /// <summary>
@@ -185,40 +197,45 @@ namespace WikiClientLibrary
             }
             //Parse title parts.
             var parsedTitle = await TitlePartitionAsync(site, family, title, defaultNamespaceId);
-            var targetSite = site;
-            if (parsedTitle.Item1 == null)
+            if (parsedTitle == null)
             {
-                // No interwiki prefix
-                if (site == null)
+                if (exceptionOnFailure)
+                    throw new ArgumentException(string.Format(Prompts.ExceptionTitleIsEmpty1, title));
+                return null;
+            }
+            var targetSite = parsedTitle.Item1;
+            var interwikiPrefix = parsedTitle.Item2;
+            var nsPrefix = parsedTitle.Item3;
+            var localTitle = parsedTitle.Item4;
+            if (targetSite == null)
+            {
+                if (interwikiPrefix == null)
                 {
+                    // No interwiki prefix
+                    // This means we are parsing WikiLink without originating WikiSite.
+                    Debug.Assert(site == null);
                     if (exceptionOnFailure)
                         throw new ArgumentException(Prompts.ExceptionWikiLinkRequireInterwikiPrefix, nameof(text));
                     return null;
                 }
-            }
-            else if (family != null)
-            {
-                targetSite = await family.GetSiteAsync(parsedTitle.Item1);
-                Debug.Assert(targetSite != null);
-            }
-            else
-            {
                 // If we do not have wiki family information, and there IS an interwiki prefix,
                 // subsequent namespace will not be parsed and will be left as a part of Name
-                Debug.Assert(parsedTitle.Item2 == null);
-                targetSite = null;
+                Debug.Assert(nsPrefix == null);
+                Debug.Assert(localTitle != null);
             }
             var link = new WikiLink(site, text)
             {
                 Anchor = anchor,
                 Section = section,
-                InterwikiPrefix = parsedTitle.Item1,
-                NamespaceName = parsedTitle.Item2,
-                Title = parsedTitle.Item3,
-                FullTitle = parsedTitle.Item3,
+                InterwikiPrefix = interwikiPrefix,
+                NamespaceName = nsPrefix,
+                Title = localTitle,
+                FullTitle = localTitle,
                 TargetSite = targetSite
             };
-            link.Namespace = parsedTitle.Item2 == null ? null : link.TargetSite.Namespaces[parsedTitle.Item2];
+            link.Namespace = nsPrefix != null && link.TargetSite != null
+                ? link.TargetSite.Namespaces[nsPrefix]
+                : null;
             //Format expression.
             var sb = new StringBuilder();
             if (link.InterwikiPrefix != null)
@@ -279,13 +296,14 @@ namespace WikiClientLibrary
             this.OriginalText = originalText;
         }
 
-        private static async Task<Tuple<string, string, string>> TitlePartitionAsync(WikiSite site, IWikiFamily family, string rawTitle, int defaultNamespace)
+        private static async Task<Tuple<WikiSite, string, string, string>> TitlePartitionAsync(WikiSite site, IWikiFamily family, string rawTitle, int defaultNamespace)
         {
             // Tuple<interwiki, namespace, title, targetSite>
             Debug.Assert(site != null || family != null);
             Debug.Assert(rawTitle != null);
             var title = rawTitle;
-            if (title.Length == 0) goto EMPTY_TITLE;
+            if (title.Length == 0)
+                return null;
             var state = 0;
             /*
              state  accepts
@@ -323,7 +341,12 @@ namespace WikiClientLibrary
                             if (normalizedPart != null)
                             {
                                 var nextSite = await family.GetSiteAsync(part);
-                                if (nextSite != null)
+                                if (nextSite == null)
+                                {
+                                    Debug.Assert(false, $"{family} returned null for prefix: {normalizedPart}. " +
+                                                        "IWikiFamily.TryNormalize should return null for in-existent interwiki prefixes.");
+                                }
+                                else
                                 {
                                     // We have bumped into another wiki, hooray!
                                     interwiki = normalizedPart;
@@ -332,7 +355,7 @@ namespace WikiClientLibrary
                                 }
                             }
                         }
-                        else if (site.InterwikiMap.Contains(part))
+                        else if (site != null && site.InterwikiMap.Contains(part))
                         {
                             // Otherwise, check whether this is an interwiki prefix.
                             interwiki = part.ToLowerInvariant();
@@ -348,20 +371,20 @@ namespace WikiClientLibrary
                         }
                         break;
                     case 2:
-                        pagetitle = Utility.NormalizeTitlePart(title, site.SiteInfo.IsTitleCaseSensitive);
+                        pagetitle = Utility.NormalizeTitlePart(title, site?.SiteInfo.IsTitleCaseSensitive ?? true);
                         goto END_OF_PARSING;
                 }
                 title = parts[1];
             }
         END_OF_PARSING:
             Debug.Assert(pagetitle != null, "pagetitle != null");
-            if (pagetitle.Length == 0) goto EMPTY_TITLE;
-            // nsname == null means that the expression has interwiki prefix, while family == null
+            if (pagetitle.Length == 0)
+                return null;
+            // nsname == null but interwiki != null means that the expression has interwiki prefix, while family == null
             if (nsname == null && interwiki == null)
-                nsname = site.Namespaces[defaultNamespace].CustomName;
-            return Tuple.Create(interwiki, nsname, pagetitle);
-        EMPTY_TITLE:
-            throw new ArgumentException(string.Format(Prompts.ExceptionTitleIsEmpty1, rawTitle));
+                // If site is (still) null, we will have error reported in the caller.
+                nsname = site?.Namespaces[defaultNamespace].CustomName;
+            return Tuple.Create(site, interwiki, nsname, pagetitle);
         }
 
         /// <summary>

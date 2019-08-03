@@ -18,12 +18,12 @@ namespace WikiClientLibrary.Tests.UnitTestProject1.Tests
         [Fact]
         public async Task WikiLinkTest1()
         {
-            var WpTestSite = await WpTest2SiteAsync;
-            var link1 = WikiLink.Parse(WpTestSite, "____proJEct__talk_:___sandbox_");
-            var link2 = WikiLink.Parse(WpTestSite, "__ _pROject_ _talk_:___sandbox_", BuiltInNamespaces.Category);
-            var link3 = WikiLink.Parse(WpTestSite, "___sandbox_  test__", BuiltInNamespaces.Category);
-            var link4 = WikiLink.Parse(WpTestSite, "__:   sandbox test  ", BuiltInNamespaces.Template);
-            var link5 = WikiLink.Parse(WpTestSite, "___lZh__:project:test|", BuiltInNamespaces.Template);
+            var wpTestSite = await WpTest2SiteAsync;
+            var link1 = WikiLink.Parse(wpTestSite, "____proJEct__talk_:___sandbox_");
+            var link2 = WikiLink.Parse(wpTestSite, "__ _pROject_ _talk_:___sandbox_", BuiltInNamespaces.Category);
+            var link3 = WikiLink.Parse(wpTestSite, "___sandbox_  test__", BuiltInNamespaces.Category);
+            var link4 = WikiLink.Parse(wpTestSite, "__:   sandbox test  ", BuiltInNamespaces.Template);
+            var link5 = WikiLink.Parse(wpTestSite, "___lZh__:project:test|", BuiltInNamespaces.Template);
             Assert.Equal("Wikipedia talk:Sandbox", link1.ToString());
             Assert.Equal("Wikipedia talk", link1.NamespaceName);
             Assert.Equal("Sandbox", link1.Title);
@@ -41,7 +41,7 @@ namespace WikiClientLibrary.Tests.UnitTestProject1.Tests
             Assert.Equal("lzh", link5.InterwikiPrefix);
             Assert.Equal("lzh:Project:test", link5.Target);
             Assert.Equal("", link5.Anchor);
-            var link6 = WikiLink.Parse(WpTestSite, "sandbox#sect|anchor", BuiltInNamespaces.Template);
+            var link6 = WikiLink.Parse(wpTestSite, "sandbox#sect|anchor", BuiltInNamespaces.Template);
             Assert.Equal("Template:Sandbox#sect|anchor", link6.ToString());
             Assert.Equal("Template:Sandbox#sect", link6.Target);
             Assert.Equal("sect", link6.Section);

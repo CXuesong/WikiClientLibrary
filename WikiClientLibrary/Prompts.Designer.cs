@@ -557,7 +557,7 @@ namespace WikiClientLibrary {
         }
         
         /// <summary>
-        ///   查找类似 Interwiki prefix is required when parsing WikiLink without specifying originating WikiSite. 的本地化字符串。
+        ///   查找类似 A valid interwiki prefix is required when parsing WikiLink without specifying originating WikiSite. 的本地化字符串。
         /// </summary>
         internal static string ExceptionWikiLinkRequireInterwikiPrefix {
             get {
