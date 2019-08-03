@@ -53,6 +53,10 @@ namespace WikiClientLibrary.Tests.UnitTestProject1.Tests
             AssertWikiLink(link, "fr", "Wikipédia", "SANDBOX");
             link = await WikiLink.ParseAsync(originSite, Family, "EN:fr:   LZH:Project:SANDBOX");
             AssertWikiLink(link, "lzh", "維基大典", "SANDBOX");
+            // We don't have de in WikiFamily, but WP has de in its inter-wiki table.
+            // Should works as if we haven't specified Family.
+            link = await WikiLink.ParseAsync(originSite, Family, "de:Project:SANDBOX");
+            AssertWikiLink(link, "de", null, "Project:SANDBOX");
             // Without originating WikiSite
             await Assert.ThrowsAsync<ArgumentException>(() => WikiLink.ParseAsync(Family, "WikiPedia:SANDBOX"));
             link = await WikiLink.ParseAsync(Family, "FR___:_ __Wp__ _:  SANDBOX");

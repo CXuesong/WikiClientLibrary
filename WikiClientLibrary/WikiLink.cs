@@ -327,32 +327,28 @@ namespace WikiClientLibrary
                     case 1:
                         // Make sure there's a colon ahead; otherwise we just treat it as a normal title.
                         if (parts.Length == 1) goto case 2;
-                        NamespaceInfo ns;
-                        if (site != null && site.Namespaces.TryGetValue(part, out ns))
+                        string normalizedInterwikiPrefix;
+                        if (site != null && site.Namespaces.TryGetValue(part, out var ns))
                         {
                             // This is a namespace name.
                             nsname = ns.CustomName;
                             state = 2;
                         }
-                        else if (family != null)
+                        else if (family != null && (normalizedInterwikiPrefix = family.TryNormalize(part)) != null)
                         {
-                            // Test whether this is an interwiki prefix.
-                            var normalizedPart = family.TryNormalize(part);
-                            if (normalizedPart != null)
+                            // This is a known prefix in the specified WikiFamily.
+                            var nextSite = await family.GetSiteAsync(part);
+                            if (nextSite == null)
                             {
-                                var nextSite = await family.GetSiteAsync(part);
-                                if (nextSite == null)
-                                {
-                                    Debug.Assert(false, $"{family} returned null for prefix: {normalizedPart}. " +
-                                                        "IWikiFamily.TryNormalize should return null for in-existent interwiki prefixes.");
-                                }
-                                else
-                                {
-                                    // We have bumped into another wiki, hooray!
-                                    interwiki = normalizedPart;
-                                    site = nextSite;
-                                    // state will still be 1, to parse namespace or other interwikis (rare)
-                                }
+                                Debug.Assert(false, $"{family} returned null for prefix: {normalizedInterwikiPrefix}. " +
+                                                    "IWikiFamily.TryNormalize should return null for in-existent interwiki prefixes.");
+                            }
+                            else
+                            {
+                                // We have bumped into another wiki, hooray!
+                                interwiki = normalizedInterwikiPrefix;
+                                site = nextSite;
+                                // state will still be 1, to parse namespace or other interwikis (rare)
                             }
                         }
                         else if (site != null && site.InterwikiMap.Contains(part))
