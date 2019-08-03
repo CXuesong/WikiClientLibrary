@@ -294,4 +294,7 @@
   <data name="ExceptionArgumentIsEmpty" xml:space="preserve">
     <value>Value is empty.</value>
   </data>
+  <data name="ExceptionWikiLinkRequireInterwikiPrefix" xml:space="preserve">
+    <value>Interwiki prefix is required when parsing WikiLink without specifying originating WikiSite.</value>
+  </data>
 </root>
