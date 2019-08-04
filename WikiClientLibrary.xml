@@ -1564,7 +1564,12 @@
     </member>
     <member name="P:WikiClientLibrary.WikiLink.FullTitle">
       <summary>
-            Title of the page, including namespace name, if exists.
+            Gets the full title of the target page. (<c>Namespace:Title</c>)
+            </summary>
+    </member>
+    <member name="P:WikiClientLibrary.WikiLink.FullTitleAndSection">
+      <summary>
+            Gets the full page title and section part of the wikilink. (<c>Namespace:Title#Section</c>)
             </summary>
     </member>
     <member name="F:WikiClientLibrary.WikiLink.IllegalTitlesPattern">
@@ -1574,20 +1579,17 @@
     </member>
     <member name="P:WikiClientLibrary.WikiLink.InterwikiPrefix">
       <summary>
-            Interwiki prefix of the wikilink. If this link is not an interwiki link,
-            the value is <c>null</c>.
+            Gets interwiki prefix of the wikilink.
             </summary>
     </member>
     <member name="P:WikiClientLibrary.WikiLink.Namespace">
       <summary>
-            The namespace information.
+            Gets the namespace information.
             </summary>
     </member>
     <member name="P:WikiClientLibrary.WikiLink.NamespaceName">
       <summary>
-            Namespace name. If the title is in main namespace, the value is empty string.
-            If this is not applicable (e.g. parsed a interwiki link without family information given),
-            the value is <c>null</c>.
+            Gets the namespace name.
             </summary>
     </member>
     <member name="M:WikiClientLibrary.WikiLink.NormalizeWikiLink(WikiClientLibrary.Sites.WikiSite,System.String)">
@@ -1624,6 +1626,7 @@
             </summary>
       <param name="site">Site instance.</param>
       <param name="text">Wikilink expression, without square brackets.</param>
+      <param name="defaultNamespaceId">Id of default namespace. See <see cref="T:WikiClientLibrary.BuiltInNamespaces" /> for a list of possible values.</param>
       <exception cref="T:System.ArgumentNullException">Either <paramref name="site" /> or <paramref name="text" /> is <c>null</c>.</exception>
       <exception cref="T:System.ArgumentException">
         <paramref name="text" /> does not contain a valid page title.</exception>
@@ -1639,32 +1642,97 @@
       <exception cref="T:System.ArgumentException">
         <paramref name="text" /> does not contain a valid page title.</exception>
     </member>
-    <member name="M:WikiClientLibrary.WikiLink.ParseAsync(WikiClientLibrary.Sites.WikiSite,WikiClientLibrary.Sites.IWikiFamily,System.String)">
+    <member name="M:WikiClientLibrary.WikiLink.ParseAsync(WikiClientLibrary.Sites.IWikiFamily,System.String)">
       <summary>
-            Parses a new instance using specified Wikilink expression.
-            </summary>
-      <param name="site">Site instance.</param>
-      <param name="family">Wiki family. You need to provide this argument if you want to parse into interwiki links.</param>
-      <param name="text">Wikilink expression, without square brackets.</param>
-      <exception cref="T:System.ArgumentNullException">Either <paramref name="site" /> or <paramref name="text" /> is <c>null</c>.</exception>
-      <exception cref="T:System.ArgumentException">
-        <paramref name="text" /> does not contain a valid page title.</exception>
-    </member>
-    <member name="M:WikiClientLibrary.WikiLink.ParseAsync(WikiClientLibrary.Sites.WikiSite,WikiClientLibrary.Sites.IWikiFamily,System.String,System.Int32)">
-      <summary>
-            Parses a new instance using specified Wikilink expression.
+            Parses a new instance from the a Wikilink expression on the specified Wiki family.
+            This overload resolves the target interwiki site with the interwiki prefixes provided
+            <seealso cref="T:WikiClientLibrary.Sites.IWikiFamily" /> instance, and requires <paramref name="text" /> to have interwiki prefix.
             </summary>
       <param name="site">Site instance.</param>
       <param name="family">Wiki family. You need to provide this argument if you want to parse into interwiki links.</param>
       <param name="text">Wikilink expression, without square brackets.</param>
       <param name="defaultNamespaceId">Id of default namespace. See <see cref="T:WikiClientLibrary.BuiltInNamespaces" /> for a list of possible values.</param>
-      <exception cref="T:System.ArgumentNullException">Either <paramref name="site" /> or <paramref name="text" /> is <c>null</c>.</exception>
+      <returns>The parsed <see cref="T:WikiClientLibrary.WikiLink" /> instance.</returns>
+      <exception cref="T:System.ArgumentNullException">
+            Both <paramref name="site" /> and <paramref name="family" /> is <c>null</c>.
+            -- or --
+            <paramref name="text" /> is <c>null</c>.
+            </exception>
       <exception cref="T:System.ArgumentException">
-        <paramref name="text" /> does not contain a valid page title.</exception>
+        <paramref name="text" /> does not contain a valid page title.
+            -- or --
+            <paramref name="site" /> is <c>null</c>, but <paramref name="text" /> does not contain any interwiki prefix.
+            </exception>
+    </member>
+    <member name="M:WikiClientLibrary.WikiLink.ParseAsync(WikiClientLibrary.Sites.IWikiFamily,System.String,System.Int32)">
+      <summary>
+            Parses a new instance from the a Wikilink expression on the specified Wiki family.
+            This overload resolves the target interwiki site with the interwiki prefixes provided
+            <seealso cref="T:WikiClientLibrary.Sites.IWikiFamily" /> instance, and requires <paramref name="text" /> to have interwiki prefix.
+            </summary>
+      <param name="site">Site instance.</param>
+      <param name="family">Wiki family. You need to provide this argument if you want to parse into interwiki links.</param>
+      <param name="text">Wikilink expression, without square brackets.</param>
+      <param name="defaultNamespaceId">Id of default namespace. See <see cref="T:WikiClientLibrary.BuiltInNamespaces" /> for a list of possible values.</param>
+      <returns>The parsed <see cref="T:WikiClientLibrary.WikiLink" /> instance.</returns>
+      <exception cref="T:System.ArgumentNullException">
+            Both <paramref name="site" /> and <paramref name="family" /> is <c>null</c>.
+            -- or --
+            <paramref name="text" /> is <c>null</c>.
+            </exception>
+      <exception cref="T:System.ArgumentException">
+        <paramref name="text" /> does not contain a valid page title.
+            -- or --
+            <paramref name="site" /> is <c>null</c>, but <paramref name="text" /> does not contain any interwiki prefix.
+            </exception>
+    </member>
+    <member name="M:WikiClientLibrary.WikiLink.ParseAsync(WikiClientLibrary.Sites.WikiSite,WikiClientLibrary.Sites.IWikiFamily,System.String)">
+      <summary>
+            Parses a new instance from the a Wikilink expression on the specified Wiki site and Wiki family.
+            This overload also resolves the target interwiki site with the interwiki prefixes provided
+            <seealso cref="T:WikiClientLibrary.Sites.IWikiFamily" /> instance.
+            </summary>
+      <param name="site">Site instance.</param>
+      <param name="family">Wiki family. You need to provide this argument if you want to parse into interwiki links.</param>
+      <param name="text">Wikilink expression, without square brackets.</param>
+      <param name="defaultNamespaceId">Id of default namespace. See <see cref="T:WikiClientLibrary.BuiltInNamespaces" /> for a list of possible values.</param>
+      <returns>The parsed <see cref="T:WikiClientLibrary.WikiLink" /> instance.</returns>
+      <exception cref="T:System.ArgumentNullException">
+            Both <paramref name="site" /> and <paramref name="family" /> is <c>null</c>.
+            -- or --
+            <paramref name="text" /> is <c>null</c>.
+            </exception>
+      <exception cref="T:System.ArgumentException">
+        <paramref name="text" /> does not contain a valid page title.
+            -- or --
+            <paramref name="site" /> is <c>null</c>, but <paramref name="text" /> does not contain any interwiki prefix.
+            </exception>
+    </member>
+    <member name="M:WikiClientLibrary.WikiLink.ParseAsync(WikiClientLibrary.Sites.WikiSite,WikiClientLibrary.Sites.IWikiFamily,System.String,System.Int32)">
+      <summary>
+            Parses a new instance from the a Wikilink expression on the specified Wiki site and Wiki family.
+            This overload also resolves the target interwiki site with the interwiki prefixes provided
+            <seealso cref="T:WikiClientLibrary.Sites.IWikiFamily" /> instance.
+            </summary>
+      <param name="site">Site instance.</param>
+      <param name="family">Wiki family. You need to provide this argument if you want to parse into interwiki links.</param>
+      <param name="text">Wikilink expression, without square brackets.</param>
+      <param name="defaultNamespaceId">Id of default namespace. See <see cref="T:WikiClientLibrary.BuiltInNamespaces" /> for a list of possible values.</param>
+      <returns>The parsed <see cref="T:WikiClientLibrary.WikiLink" /> instance.</returns>
+      <exception cref="T:System.ArgumentNullException">
+            Both <paramref name="site" /> and <paramref name="family" /> is <c>null</c>.
+            -- or --
+            <paramref name="text" /> is <c>null</c>.
+            </exception>
+      <exception cref="T:System.ArgumentException">
+        <paramref name="text" /> does not contain a valid page title.
+            -- or --
+            <paramref name="site" /> is <c>null</c>, but <paramref name="text" /> does not contain any interwiki prefix.
+            </exception>
     </member>
     <member name="P:WikiClientLibrary.WikiLink.Section">
       <summary>
-            The section title of a section on the page, without leading #.
+            Gets the section title of a section on the page. (<c>Section</c>)
             </summary>
     </member>
     <member name="P:WikiClientLibrary.WikiLink.Site">
@@ -1674,16 +1742,12 @@
     </member>
     <member name="P:WikiClientLibrary.WikiLink.Target">
       <summary>
-            For wikilink expression in the form <c>[[target|anchor]]</c>, excluding the square brackets,
-            gets the full page title and section title (<c>target</c>) for the link, including interwiki prefix.
+            Gets the full wikilink target expression. (<c>interwiki:Namespace:Title#Section</c>)
             </summary>
     </member>
     <member name="P:WikiClientLibrary.WikiLink.TargetSite">
       <summary>
-            Gets the wiki site containing the specified page title. If the parsed wikilink expression
-            does not contain interwiki prefix, this property is the same as <see cref="P:WikiClientLibrary.WikiLink.Site" />.
-            If this wikilink is parsed with no <see cref="T:WikiClientLibrary.Sites.IWikiFamily" /> provided, while it contains interwiki
-            prefix, this property will be <c>null</c>.
+            Gets the wiki site containing the specified page title, if such information is available.
             </summary>
     </member>
     <member name="P:WikiClientLibrary.WikiLink.TargetUrl">
@@ -1693,7 +1757,7 @@
     </member>
     <member name="P:WikiClientLibrary.WikiLink.Title">
       <summary>
-            Title, excluding namespace and section.
+            Gets the target page title, excluding all the prefix and section. (<c>Title</c>)
             </summary>
     </member>
     <member name="M:WikiClientLibrary.WikiLink.ToString">
@@ -1708,6 +1772,7 @@
             </summary>
       <param name="site">Site instance.</param>
       <param name="text">Wikilink expression, without square brackets.</param>
+      <param name="defaultNamespaceId">Id of default namespace. See <see cref="T:WikiClientLibrary.BuiltInNamespaces" /> for a list of possible values.</param>
       <returns>A <see cref="T:WikiClientLibrary.WikiLink" /> instance, or <c>null</c> if the parsing failed.</returns>
       <exception cref="T:System.ArgumentNullException">Either <paramref name="site" /> or <paramref name="text" /> is <c>null</c>.</exception>
       <exception cref="T:System.ArgumentException">
@@ -1725,34 +1790,73 @@
       <exception cref="T:System.ArgumentException">
         <paramref name="text" /> does not contain a valid page title.</exception>
     </member>
-    <member name="M:WikiClientLibrary.WikiLink.TryParseAsync(WikiClientLibrary.Sites.WikiSite,WikiClientLibrary.Sites.IWikiFamily,System.String)">
+    <member name="M:WikiClientLibrary.WikiLink.TryParseAsync(WikiClientLibrary.Sites.IWikiFamily,System.String)">
       <summary>
-            Tries to parse a new instance using specified Wikilink expression.
-            This overload also resolves the target interwiki site with the interwiki map provided by <paramref name="site" />,
-            and the specified <seealso cref="T:WikiClientLibrary.Sites.IWikiFamily" /> implementation.
-            </summary>
-      <param name="site">Site instance.</param>
-      <param name="family">Wiki family. You need to provide this argument if you want to parse into interwiki links.</param>
-      <param name="text">Wikilink expression, without square brackets.</param>
-      <returns>A <see cref="T:WikiClientLibrary.WikiLink" /> instance, or <c>null</c> if the parsing failed.</returns>
-      <exception cref="T:System.ArgumentNullException">Either <paramref name="site" /> or <paramref name="text" /> is <c>null</c>.</exception>
-      <exception cref="T:System.ArgumentException">
-        <paramref name="text" /> does not contain a valid page title.</exception>
-    </member>
-    <member name="M:WikiClientLibrary.WikiLink.TryParseAsync(WikiClientLibrary.Sites.WikiSite,WikiClientLibrary.Sites.IWikiFamily,System.String,System.Int32)">
-      <summary>
-            Tries to parse a new instance using specified Wikilink expression.
-            This overload also resolves the target interwiki site with the interwiki map provided by <paramref name="site" />,
-            and the specified <seealso cref="T:WikiClientLibrary.Sites.IWikiFamily" /> implementation.
+            Tries to parse a new instance from the a Wikilink expression on the specified Wiki family.
+            This overload resolves the target interwiki site with the interwiki prefixes provided
+            <seealso cref="T:WikiClientLibrary.Sites.IWikiFamily" /> instance, and requires <paramref name="text" /> to have interwiki prefix.
             </summary>
       <param name="site">Site instance.</param>
       <param name="family">Wiki family. You need to provide this argument if you want to parse into interwiki links.</param>
       <param name="text">Wikilink expression, without square brackets.</param>
       <param name="defaultNamespaceId">Id of default namespace. See <see cref="T:WikiClientLibrary.BuiltInNamespaces" /> for a list of possible values.</param>
       <returns>A <see cref="T:WikiClientLibrary.WikiLink" /> instance, or <c>null</c> if the parsing failed.</returns>
-      <exception cref="T:System.ArgumentNullException">Either <paramref name="site" /> or <paramref name="text" /> is <c>null</c>.</exception>
-      <exception cref="T:System.ArgumentException">
-        <paramref name="text" /> does not contain a valid page title.</exception>
+      <exception cref="T:System.ArgumentNullException">
+            Both <paramref name="site" /> and <paramref name="family" /> is <c>null</c>.
+            -- or --
+            <paramref name="text" /> is <c>null</c>.
+            </exception>
+    </member>
+    <member name="M:WikiClientLibrary.WikiLink.TryParseAsync(WikiClientLibrary.Sites.IWikiFamily,System.String,System.Int32)">
+      <summary>
+            Tries to parse a new instance from the a Wikilink expression on the specified Wiki family.
+            This overload resolves the target interwiki site with the interwiki prefixes provided
+            <seealso cref="T:WikiClientLibrary.Sites.IWikiFamily" /> instance, and requires <paramref name="text" /> to have interwiki prefix.
+            </summary>
+      <param name="site">Site instance.</param>
+      <param name="family">Wiki family. You need to provide this argument if you want to parse into interwiki links.</param>
+      <param name="text">Wikilink expression, without square brackets.</param>
+      <param name="defaultNamespaceId">Id of default namespace. See <see cref="T:WikiClientLibrary.BuiltInNamespaces" /> for a list of possible values.</param>
+      <returns>A <see cref="T:WikiClientLibrary.WikiLink" /> instance, or <c>null</c> if the parsing failed.</returns>
+      <exception cref="T:System.ArgumentNullException">
+            Both <paramref name="site" /> and <paramref name="family" /> is <c>null</c>.
+            -- or --
+            <paramref name="text" /> is <c>null</c>.
+            </exception>
+    </member>
+    <member name="M:WikiClientLibrary.WikiLink.TryParseAsync(WikiClientLibrary.Sites.WikiSite,WikiClientLibrary.Sites.IWikiFamily,System.String)">
+      <summary>
+            Parses a new instance from the a Wikilink expression on the specified Wiki site and Wiki family.
+            This overload also resolves the target interwiki site with the interwiki prefixes provided
+            <seealso cref="T:WikiClientLibrary.Sites.IWikiFamily" /> instance.
+            </summary>
+      <param name="site">Site instance.</param>
+      <param name="family">Wiki family. You need to provide this argument if you want to parse into interwiki links.</param>
+      <param name="text">Wikilink expression, without square brackets.</param>
+      <param name="defaultNamespaceId">Id of default namespace. See <see cref="T:WikiClientLibrary.BuiltInNamespaces" /> for a list of possible values.</param>
+      <returns>A <see cref="T:WikiClientLibrary.WikiLink" /> instance, or <c>null</c> if the parsing failed.</returns>
+      <exception cref="T:System.ArgumentNullException">
+            Both <paramref name="site" /> and <paramref name="family" /> is <c>null</c>.
+            -- or --
+            <paramref name="text" /> is <c>null</c>.
+            </exception>
+    </member>
+    <member name="M:WikiClientLibrary.WikiLink.TryParseAsync(WikiClientLibrary.Sites.WikiSite,WikiClientLibrary.Sites.IWikiFamily,System.String,System.Int32)">
+      <summary>
+            Parses a new instance from the a Wikilink expression on the specified Wiki site and Wiki family.
+            This overload also resolves the target interwiki site with the interwiki prefixes provided
+            <seealso cref="T:WikiClientLibrary.Sites.IWikiFamily" /> instance.
+            </summary>
+      <param name="site">Site instance.</param>
+      <param name="family">Wiki family. You need to provide this argument if you want to parse into interwiki links.</param>
+      <param name="text">Wikilink expression, without square brackets.</param>
+      <param name="defaultNamespaceId">Id of default namespace. See <see cref="T:WikiClientLibrary.BuiltInNamespaces" /> for a list of possible values.</param>
+      <returns>A <see cref="T:WikiClientLibrary.WikiLink" /> instance, or <c>null</c> if the parsing failed.</returns>
+      <exception cref="T:System.ArgumentNullException">
+            Both <paramref name="site" /> and <paramref name="family" /> is <c>null</c>.
+            -- or --
+            <paramref name="text" /> is <c>null</c>.
+            </exception>
     </member>
     <member name="T:WikiClientLibrary.AbuseFilters.AbuseFilter">
       <summary>
@@ -2792,17 +2896,17 @@
     </member>
     <member name="P:WikiClientLibrary.Files.UploadWarningCollection.DuplicateTitles">
       <summary>
-            Uploaded file is a duplicate of these titles.
+            The uploaded file has duplicate content to these titles. (<c>duplicate</c>)
             </summary>
     </member>
     <member name="P:WikiClientLibrary.Files.UploadWarningCollection.DuplicateVersions">
       <summary>
-            Uploaded file is duplicate of these versions .
+            Uploaded file is duplicate of these versions. (<c>duplicateversions</c>)
             </summary>
     </member>
     <member name="P:WikiClientLibrary.Files.UploadWarningCollection.ExistingAlternativeExtension">
       <summary>
-            File exists with different extension as…
+            File exists with different extension as the value of this property. (<c>exists-normalized</c>)
             </summary>
     </member>
     <member name="M:WikiClientLibrary.Files.UploadWarningCollection.FormatWarning(System.String,Newtonsoft.Json.Linq.JToken)">
@@ -2820,12 +2924,12 @@
     </member>
     <member name="P:WikiClientLibrary.Files.UploadWarningCollection.IsBadFileName">
       <summary>
-            Target filename is invalid.
+            Target filename is invalid. (<c>badfilename</c>)
             </summary>
     </member>
     <member name="P:WikiClientLibrary.Files.UploadWarningCollection.IsEmptyFile">
       <summary>
-            The file content is empty.
+            The file content is empty. (<c>emptyfile</c>)
             </summary>
     </member>
     <member name="P:WikiClientLibrary.Files.UploadWarningCollection.IsUnwantedType">
@@ -2835,7 +2939,7 @@
     </member>
     <member name="P:WikiClientLibrary.Files.UploadWarningCollection.TitleExists">
       <summary>
-            The title exists.
+            A file with the same title already exists. (<c>exists</c>)
             </summary>
     </member>
     <member name="M:WikiClientLibrary.Files.UploadWarningCollection.ToString">
@@ -2845,12 +2949,12 @@
     </member>
     <member name="P:WikiClientLibrary.Files.UploadWarningCollection.WasContentDeleted">
       <summary>
-            The file content is a duplicate of a deleted file.
+            The file content is a duplicate of a deleted file. (<c>duplicate-archive</c>)
             </summary>
     </member>
     <member name="P:WikiClientLibrary.Files.UploadWarningCollection.WasTitleDeleted">
       <summary>
-            The file with the specified title was previously deleted.
+            The file with the specified title was previously deleted. (<c>was-deleted</c>)
             </summary>
     </member>
     <member name="T:WikiClientLibrary.Files.WikiSiteExtensions">
@@ -2882,7 +2986,7 @@
             Since MW 1.31, if you are uploading the exactly same content to the same title
             with <paramref name="ignoreWarnings" /> set to <c>true</c>,
             you will receive this exception with <see cref="P:WikiClientLibrary.OperationFailedException.ErrorCode" />
-            set to <c>fileexists-no-change</c>. See https://gerrit.wikimedia.org/r/378702 .
+            set to <c>fileexists-no-change</c>. See <a href="https://gerrit.wikimedia.org/r/378702">gerrit:378702</a>.
             </exception>
       <exception cref="T:System.TimeoutException">Timeout specified in <see cref="P:WikiClientLibrary.Client.WikiClient.Timeout" /> has been reached.</exception>
     </member>
@@ -2905,7 +3009,7 @@
             Since MW 1.31, if you are uploading the exactly same content to the same title
             with <paramref name="ignoreWarnings" /> set to <c>true</c>,
             you will receive this exception with <see cref="P:WikiClientLibrary.OperationFailedException.ErrorCode" />
-            set to <c>fileexists-no-change</c>. See https://gerrit.wikimedia.org/r/378702 .
+            set to <c>fileexists-no-change</c>. See <a href="https://gerrit.wikimedia.org/r/378702">gerrit:378702</a>.
             </exception>
       <exception cref="T:System.TimeoutException">Timeout specified in <see cref="P:WikiClientLibrary.Client.WikiClient.Timeout" /> has been reached.</exception>
     </member>
@@ -2928,7 +3032,7 @@
             Since MW 1.31, if you are uploading the exactly same content to the same title
             with <paramref name="ignoreWarnings" /> set to <c>true</c>,
             you will receive this exception with <see cref="P:WikiClientLibrary.OperationFailedException.ErrorCode" />
-            set to <c>fileexists-no-change</c>. See https://gerrit.wikimedia.org/r/378702 .
+            set to <c>fileexists-no-change</c>. See <a href="https://gerrit.wikimedia.org/r/378702">gerrit:378702</a>.
             </exception>
       <exception cref="T:System.TimeoutException">Timeout specified in <see cref="P:WikiClientLibrary.Client.WikiClient.Timeout" /> has been reached.</exception>
     </member>
@@ -5182,6 +5286,30 @@
       <exception cref="T:System.ArgumentException">The given JSON object contains none of <c>title</c>+<c>ns</c> or <c>pageid</c>.</exception>
       <exception cref="T:System.ArgumentNullException">
         <paramref name="jPage" /> is <c>null</c>.</exception>
+    </member>
+    <member name="M:WikiClientLibrary.Infrastructures.MediaWikiHelper.ParseDateTime(System.String)">
+      <summary>
+            Parses a <see cref="T:System.DateTime" /> from MediaWiki API timestamp from the API response.
+            </summary>
+      <param name="expression">The timestamp expression to be parsed.</param>
+      <exception cref="T:System.ArgumentNullException">
+        <paramref name="expression" /> is <c>null</c>.</exception>
+      <exception cref="T:System.ArgumentException">
+        <paramref name="expression" /> is empty.</exception>
+      <exception cref="T:System.FormatException">
+        <paramref name="expression" /> is not a valid timestamp expression.</exception>
+    </member>
+    <member name="M:WikiClientLibrary.Infrastructures.MediaWikiHelper.ParseDateTimeOffset(System.String)">
+      <summary>
+            Parses a <see cref="T:System.DateTimeOffset" /> from MediaWiki API timestamp from the API response.
+            </summary>
+      <param name="expression">The timestamp expression to be parsed.</param>
+      <exception cref="T:System.ArgumentNullException">
+        <paramref name="expression" /> is <c>null</c>.</exception>
+      <exception cref="T:System.ArgumentException">
+        <paramref name="expression" /> is empty.</exception>
+      <exception cref="T:System.FormatException">
+        <paramref name="expression" /> is not a valid timestamp expression.</exception>
     </member>
     <member name="M:WikiClientLibrary.Infrastructures.MediaWikiHelper.ParseJsonAsync(System.IO.Stream,System.Threading.CancellationToken)">
       <summary>
