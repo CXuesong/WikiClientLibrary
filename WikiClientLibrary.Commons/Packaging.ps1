@@ -67,6 +67,7 @@ foreach ($proj in $PackageProjects) {
 }
 
 # Prepare HTML documentation.
+Copy-Item "Commit documentation in $DocumentationRoot"
 pushd .
 try {
     cd $DocumentationRoot
@@ -75,7 +76,7 @@ try {
         Exit $LASTEXITCODE
     }
     git add .
-    git commit -c "Publish reference for v$Version."
+    git commit -m "Publish reference for v$Version."
     if ($LASTEXITCODE) {
         Exit $LASTEXITCODE
     }
