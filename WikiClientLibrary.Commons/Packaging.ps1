@@ -67,10 +67,16 @@ foreach ($proj in $PackageProjects) {
 }
 
 # Prepare HTML documentation.
-Copy-Item "Commit documentation in $DocumentationRoot"
 pushd .
 try {
     cd $DocumentationRoot
+    Write-Host "Commit documentation in $PWD"
+    [string]$LastCommitMessage = git log HEAD -n 1 --pretty=%B
+    if ($LastCommitMessage.Contains("v$Version.")) {
+        # Amend last commit
+        Write-Host "Amend last commit."
+        git reset --soft HEAD^
+    }
     git checkout -- .gitignore
     if ($LASTEXITCODE) {
         Exit $LASTEXITCODE
