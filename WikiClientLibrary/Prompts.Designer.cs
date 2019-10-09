@@ -116,6 +116,15 @@ namespace WikiClientLibrary {
         }
         
         /// <summary>
+        ///   查找类似 Argument value is negative. 的本地化字符串。
+        /// </summary>
+        internal static string ExceptionArgumentIsNegative {
+            get {
+                return ResourceManager.GetString("ExceptionArgumentIsNegative", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   查找类似 Value cannot be null or empty. 的本地化字符串。
         /// </summary>
         internal static string ExceptionArgumentNullOrEmpty {
@@ -220,6 +229,15 @@ namespace WikiClientLibrary {
         internal static string ExceptionDevVersionRequiresDevChannel {
             get {
                 return ResourceManager.GetString("ExceptionDevVersionRequiresDevChannel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 The GeoCoordinateRectangle instance is not normalizable. 的本地化字符串。
+        /// </summary>
+        internal static string ExceptionGeoCoordinateRectangleNotNormalizable {
+            get {
+                return ResourceManager.GetString("ExceptionGeoCoordinateRectangleNotNormalizable", resourceCulture);
             }
         }
         
