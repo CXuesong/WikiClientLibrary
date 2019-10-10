@@ -320,7 +320,7 @@ namespace WikiClientLibrary
         /// and <see cref="Height"/> between 0 ~ 180.
         /// Taking account to the limitation of rectangles that is representable by this structure,
         /// the normalized rectangle should also have
-        /// <see cref="Right"/> between -180 ~ +540,
+        /// <see cref="Right"/> between -180 ~ +540 (-180 ~ 180 if the rectangle does not cross anti-meridian),
         /// and <see cref="Bottom"/> between -90 ~ +90.
         /// </para>
         /// <para>For "belts"/"semi-belts" along meridian and/or parallel,
@@ -340,12 +340,22 @@ namespace WikiClientLibrary
         /// Gets a value that indicates whether the current rectangle instance is normalizable.
         /// </summary>
         /// <remarks>
-        /// A normalizable rectangle should have <see cref="Bottom"/> less than or equal to 90.
+        /// A normalizable rectangle should have
+        /// <see cref="Top"/> between <c>n*360 + (-90 ~ +90)</c>
+        /// and <see cref="Bottom"/> less than or equal to <c>n*360 + 90</c>.
         /// </remarks>
-        public bool IsNormalizable => Bottom <= 90;
+        public bool IsNormalizable
+        {
+            get
+            {
+                var normalizedTop = Math.IEEERemainder(this.Top, 360);
+                return normalizedTop >= -90 && normalizedTop - this._Height <= 90;
+            }
+        } 
 
         /// <summary>
-        /// Determines whether the rectangle contains the given coordinate.
+        /// Determines whether the rectangle contains the given coordinate,
+        /// or the given coordinate falls on the edge of the rectangle.
         /// </summary>
         /// <exception cref="InvalidOperationException"><see cref="IsNormalizable"/> is false. This operation cannot be performed when the rectangle is not normalizable.</exception>
         public bool Contains(GeoCoordinate coordinate)
@@ -353,11 +363,13 @@ namespace WikiClientLibrary
             var nr = this;
             nr.Normalize();
             coordinate.Normalize();
-            if (nr.Left <= coordinate.Longitude && nr.Right > coordinate.Longitude) return false;
-            // nr.(Left, Right): (175, 185); coordinate.Longitude: -178 (in) / -170 (out)
-            if (nr.Left > coordinate.Longitude && nr.Right < coordinate.Longitude + 360) return false;
-            // TODO finish implementation.
-            throw null;
+            if (nr.Top < coordinate.Latitude || nr.Bottom > coordinate.Latitude) return false;
+            // assume the arc does not cross anti-meridian
+            if (nr.Left <= coordinate.Longitude && nr.Right >= coordinate.Longitude) return true;
+            // The arc crosses anti-meridian
+            var l = coordinate.Longitude + 360;
+            if (nr.Left <= l && nr.Right >= l) return true;
+            return false;
         }
 
         /// <summary>
@@ -399,7 +411,7 @@ namespace WikiClientLibrary
                 Top = 0;
                 _Height = 360;
             }
-            if (Top < -180 || Top > 180)
+            if (Top < -90 || Top > 90)
             {
                 var lm = Math.IEEERemainder(Top, 180);
                 if (lm > 90) lm -= 180;

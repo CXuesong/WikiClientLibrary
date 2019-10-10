@@ -85,5 +85,18 @@ namespace WikiClientLibrary.Tests.UnitTestProject1.Tests
             ShallowTrace(collection);
         }
 
+        [Fact]
+        public void GeoCoordinateRectangleTest()
+        {
+            var rect = new GeoCoordinateRectangle(365, 50, 20, 30);
+            Assert.Equal(385, rect.Right, 8);
+            Assert.Equal(20, rect.Bottom, 8);
+            Assert.False(rect.IsNormalized);
+            Assert.True(rect.IsNormalizable);
+            rect.Normalize();
+            Assert.Equal(new GeoCoordinateRectangle(5, 50, 20, 30), rect);
+            Assert.True(rect.Contains(new GeoCoordinate(25, 370)));
+        }
+
     }
 }
