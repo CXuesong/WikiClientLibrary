@@ -9,6 +9,12 @@ using Xunit.Sdk;
 namespace WikiClientLibrary.Tests.UnitTestProject1
 {
 
+    public enum CISkippedReason
+    {
+        Unknown = 0,
+        Unstable
+    }
+
     /// <summary>
     /// Mark the unit test with <c>CI=Skipped</c> trait.
     /// This will cause the test not being executed in CI environment.
@@ -17,6 +23,8 @@ namespace WikiClientLibrary.Tests.UnitTestProject1
     [TraitDiscoverer("WikiClientLibrary.Tests.UnitTestProject1." + nameof(CISkippedTraitDiscoverer), "UnitTestProject1")]
     public class CISkippedAttribute : Attribute, ITraitAttribute
     {
+
+        public CISkippedReason Reason { get; set; }
 
     }
 

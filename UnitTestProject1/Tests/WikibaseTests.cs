@@ -86,7 +86,7 @@ namespace WikiClientLibrary.Tests.UnitTestProject1.Tests
             var topiso = (WbQuantity)entity.Claims[WikidataProperties.TopographicIsolation]
                 .First().MainSnak.DataValue;
             Assert.Equal(40008, topiso.Amount, 12);
-            Assert.Equal(WikibaseUriFactory.Get(WikidataEntityUriPrefix + WikidataItems.Meter), topiso.Unit);
+            Assert.Equal(WikibaseUriFactory.Get(WikidataEntityUriPrefix + WikidataItems.KiloMeter), topiso.Unit);
         }
 
         [Fact]
@@ -275,6 +275,8 @@ namespace WikiClientLibrary.Tests.UnitTestProject1.Tests
             public const string Chumulangma = "Q513";
 
             public const string Meter = "Q11573";
+
+            public const string KiloMeter = "Q828224";
 
             public const string DeWiki = "Q48183";
 

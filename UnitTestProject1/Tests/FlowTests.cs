@@ -9,9 +9,8 @@ using Xunit.Abstractions;
 
 namespace WikiClientLibrary.Tests.UnitTestProject1.Tests
 {
-    /// <summary>
-    /// FlowTests 的摘要说明
-    /// </summary>
+
+    [CISkipped(Reason = CISkippedReason.Unstable)]
     public class FlowTests : WikiSiteTestsBase
     {
 
