@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Globalization;
 using System.Text;
 using Newtonsoft.Json.Linq;
@@ -33,8 +34,26 @@ namespace WikiClientLibrary.Generators
         /// <summary>
         /// Gets/sets the title of page around which to search.
         /// </summary>
-        /// <remarks>When this property is set to a non-null value, <see cref="TargetCoordinate"/> will be ignored.</remarks>
+        /// <remarks>
+        /// When this property is set to a non-null value,
+        /// <see cref="TargetCoordinate"/> and <see cref="BoundingRectangle"/> will be ignored.
+        /// </remarks>
         public string TargetTitle { get; set; }
+
+        /// <summary>
+        /// Geographical bounding box to search in.
+        /// </summary>
+        /// <remarks>
+        /// <para>
+        /// Specifying a bounding box that is too large can cause <see cref="ArgumentException"/>
+        /// when enumerating the items. See <see cref="OnEnumItemsFailed"/>.
+        /// </para>
+        /// <para>
+        /// Specifying this field with a non-empty rectangle will cause
+        /// <see cref="TargetCoordinate"/> and <see cref="Radius"/> being ignored.
+        /// </para>
+        /// </remarks>
+        public GeoCoordinateRectangle BoundingRectangle { get; set; }
 
         /// <summary>
         /// Gets/sets the search radius in meters (10-10000).
@@ -57,6 +76,16 @@ namespace WikiClientLibrary.Generators
         public override string ListName => "geosearch";
 
         /// <inheritdoc />
+        /// <exception cref="ArgumentException"><see cref="BoundingRectangle"/> is too big.</exception>
+        protected override void OnEnumItemsFailed(Exception exception)
+        {
+            if (exception is OperationFailedException ofe && ofe.ErrorCode == "toobig")
+            {
+                throw new ArgumentException(ofe.ErrorMessage, nameof(BoundingRectangle), exception);
+            }
+        }
+
+        /// <inheritdoc />
         public override IEnumerable<KeyValuePair<string, object>> EnumListParameters()
         {
             var prop = new Dictionary<string, object>
@@ -73,6 +102,19 @@ namespace WikiClientLibrary.Generators
                 // assume `gsglobe` corresponds to the `globe` of that page,
                 // but there is currently no such behavior.
                 prop["gspage"] = TargetTitle;
+            }
+            else if (!BoundingRectangle.IsEmpty)
+            {
+                var rect = BoundingRectangle;
+                // This is way too large than the width acceptable by MW API.
+                // And this causes weird `Right` value.
+                if (rect.Width > 180)
+                    throw new ArgumentException("Bounding box is too big.", nameof(BoundingRectangle));
+                rect.Normalize();
+                var right = rect.Right;
+                if (right > 180) right -= 360;
+                prop["gsbbox"] = string.Format(CultureInfo.InvariantCulture, "{0}|{1}|{2}|{3}",
+                    rect.Top, rect.Left, rect.Bottom, right);
             }
             else
             {

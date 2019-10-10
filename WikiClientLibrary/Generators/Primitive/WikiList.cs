@@ -93,7 +93,33 @@ namespace WikiClientLibrary.Generators.Primitive
         /// <returns>The item that will be returned in the sequence from <see cref="EnumItemsAsync"/>.</returns>
         protected abstract T ItemFromJson(JToken json);
 
+        /// <summary>
+        /// When overriden, called when there is exception raised when
+        /// executing the asynchronous generator function inside <see cref="EnumItemsAsync"/>.
+        /// </summary>
+        /// <param name="exception">The raised exception.</param>
+        /// <remarks>
+        /// <para>
+        /// Implementation can throw other more specific errors in the implementation.
+        /// The caller will throw the original exception after calling this method
+        /// if this function does not throw any other exception in the implementation.
+        /// </para>
+        /// <para>
+        /// The default implementation does nothing.
+        /// </para>
+        /// </remarks>
+        protected virtual void OnEnumItemsFailed(Exception exception)
+        {
+        }
+
         /// <inheritdoc />
+        /// <exception cref="OperationFailedException">
+        /// (When enumerating) There is any MediaWiki API failure during the operation.
+        /// </exception>
+        /// <exception cref="Exception">
+        /// (When enumerating) There can be other types of errors thrown.
+        /// See the respective <see cref="OnEnumItemsFailed"/> override documentations in the implementation classes.
+        /// </exception>
         public IAsyncEnumerable<T> EnumItemsAsync()
         {
             return AsyncEnumerableFactory.FromAsyncGenerator<T>(async (sink, ct) =>
@@ -109,33 +135,42 @@ namespace WikiClientLibrary.Generators.Primitive
                 using (Site.BeginActionScope(this))
                 {
                     NEXT_PAGE:
-                    var jresult = await Site.InvokeMediaWikiApiAsync(new MediaWikiFormRequestMessage(queryParams), ct);
-                    // If there's no result, "query" node will not exist.
-                    var queryNode = (JObject)jresult["query"];
-                    if (queryNode == null || queryNode.Count == 0) goto END_OF_PARSING;
-                    var listNode = queryNode[ListName];
-                    if (listNode == null)
+                    try
                     {
-                        if (queryNode.Count > 1)
-                            throw new UnexpectedDataException(Prompts.ExceptionWikiListCannotFindResultRoot);
-                        listNode = ((JProperty)queryNode.First).Value;
+                        var jresult = await Site.InvokeMediaWikiApiAsync(new MediaWikiFormRequestMessage(queryParams), ct);
+                        // If there's no result, "query" node will not exist.
+                        var queryNode = (JObject)jresult["query"];
+                        if (queryNode == null || queryNode.Count == 0) goto END_OF_PARSING;
+                        var listNode = queryNode[ListName];
+                        if (listNode == null)
+                        {
+                            if (queryNode.Count > 1)
+                                throw new UnexpectedDataException(Prompts.ExceptionWikiListCannotFindResultRoot);
+                            listNode = ((JProperty)queryNode.First).Value;
+                        }
+                        await sink.YieldAndWait(listNode.Select(ItemFromJson));
+                        END_OF_PARSING:
+                        var continuation = (JObject)(jresult["continue"]
+                                                     ?? ((JProperty)jresult["query-continue"]?.First)?.Value);
+                        // No more results.
+                        if (continuation == null || continuation.Count == 0) return;
+                        // Check for continuation.
+                        foreach (var p in continuation.Properties())
+                        {
+                            object parsed;
+                            if (p.Value is JValue value) parsed = value.Value;
+                            else parsed = p.Value.ToString(Formatting.None);
+                            queryParams[p.Name] = parsed;
+                        }
+                        if (queryNode == null || queryNode.Count == 0)
+                            Site.Logger.LogWarning("Empty query page with continuation received.");
+
                     }
-                    await sink.YieldAndWait(listNode.Select(ItemFromJson));
-                    END_OF_PARSING:
-                    var continuation = (JObject)(jresult["continue"]
-                                                 ?? ((JProperty)jresult["query-continue"]?.First)?.Value);
-                    // No more results.
-                    if (continuation == null || continuation.Count == 0) return;
-                    // Check for continuation.
-                    foreach (var p in continuation.Properties())
+                    catch (Exception ex)
                     {
-                        object parsed;
-                        if (p.Value is JValue value) parsed = value.Value;
-                        else parsed = p.Value.ToString(Formatting.None);
-                        queryParams[p.Name] = parsed;
+                        OnEnumItemsFailed(ex);
+                        throw;
                     }
-                    if (queryNode == null || queryNode.Count == 0)
-                        Site.Logger.LogWarning("Empty query page with continuation received.");
                     goto NEXT_PAGE;
                 }
             });

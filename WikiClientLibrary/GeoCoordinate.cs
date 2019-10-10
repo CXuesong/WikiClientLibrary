@@ -174,7 +174,10 @@ namespace WikiClientLibrary
     /// </summary>
     /// <remarks>
     /// <para>This structure uses degrees as the unit of the coordinate.</para>
-    /// <para>Keep in mind the latitude increases as you go north (i.e. top of the rectangle).</para>
+    /// <para>
+    /// Keep in mind the latitude decreases as you go down / south (i.e. bottom of the rectangle).
+    /// Thus <see cref="Bottom"/> value is less than or equals to <see cref="Top"/> value.
+    /// </para>
     /// <para>
     /// Rectangles spanning along meridian and across the north/south pole may not be represented properly by this structure.
     /// Consider using two <see cref="GeoCoordinateRectangle"/> instances in this case.
@@ -301,6 +304,10 @@ namespace WikiClientLibrary
         /// <summary>
         /// Gets the bottom-border latitude of the rectangle.
         /// </summary>
+        /// <para>
+        /// Keep in mind the latitude decreases as you go down / south (i.e. bottom of the rectangle).
+        /// Thus <see cref="Bottom"/> value is less than or equals to <see cref="Top"/> value.
+        /// </para>
         public double Bottom => this.Top - this._Height;
 
         /// <summary>
