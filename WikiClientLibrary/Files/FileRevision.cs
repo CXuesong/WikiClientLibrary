@@ -28,10 +28,10 @@ namespace WikiClientLibrary.Files
         public WikiPageStub Page { get; internal set; }
 
         /// <summary>
-        /// Whether the file is anonymous.
+        /// Whether the file is anonymous. (MW ~1.33-)
         /// </summary>
         /// <remarks>
-        /// If this revision indicates a stashed file, this property will be <c>true</c>.
+        /// Before ~MW 1.33, if this revision indicates a stashed file, this property will be <c>true</c>.
         /// </remarks>
         [JsonProperty("anon")]
         public bool IsAnonymous { get; private set; }
