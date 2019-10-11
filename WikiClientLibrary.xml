@@ -315,7 +315,7 @@
     </member>
     <member name="T:WikiClientLibrary.GeoCoordinate">
       <summary>
-            Represents a coordinate on the globe.
+            Represents a coordinate and an optional size in radius on the globe.
             </summary>
     </member>
     <member name="M:WikiClientLibrary.GeoCoordinate.#ctor(System.Double,System.Double)">
@@ -384,6 +384,11 @@
             Gets a value that indicates if all the members in the structure have their uninitialized values.
             </summary>
     </member>
+    <member name="P:WikiClientLibrary.GeoCoordinate.IsNormalized">
+      <summary>
+            Determines whether the current coordinates is normalized.
+            </summary>
+    </member>
     <member name="P:WikiClientLibrary.GeoCoordinate.Latitude">
       <summary>
             Gets/sets the latitude of the location.
@@ -392,6 +397,12 @@
     <member name="P:WikiClientLibrary.GeoCoordinate.Longitude">
       <summary>
             Gets/sets the longitude of the location.
+            </summary>
+    </member>
+    <member name="M:WikiClientLibrary.GeoCoordinate.Normalize">
+      <summary>
+            Normalizes the coordinates, ensuring the current coordinates meets
+            the definition of "normalized coordinates" as specified in <see cref="P:WikiClientLibrary.GeoCoordinate.IsNormalized" />.
             </summary>
     </member>
     <member name="M:WikiClientLibrary.GeoCoordinate.Offset(System.Double,System.Double)">
@@ -460,6 +471,202 @@
     <member name="M:WikiClientLibrary.GeoCoordinate.ToString">
       <summary>Returns the fully qualified type name of this instance.</summary>
       <returns>A <see cref="T:System.String" /> containing a fully qualified type name.</returns>
+    </member>
+    <member name="T:WikiClientLibrary.GeoCoordinateRectangle">
+      <summary>
+            Represents a spherical rectangle determined by the top-left (north-west) and bottom-right (south-east) coordinates on the globe.
+            </summary>
+    </member>
+    <member name="M:WikiClientLibrary.GeoCoordinateRectangle.#ctor(System.Double,System.Double,System.Double,System.Double)">
+      <summary>
+            Initializes a new <see cref="T:WikiClientLibrary.GeoCoordinateRectangle" /> with the specified left, top, width, height on sphere.
+            </summary>
+      <param name="left">left-border longitude of the rectangle.</param>
+      <param name="top">top-border latitude of the rectangle.</param>
+      <param name="width">width in longitude of the rectangle.</param>
+      <param name="height">height in latitude of the rectangle.</param>
+      <exception cref="T:System.ArgumentOutOfRangeException">Either <paramref name="width" /> or <paramref name="height" /> is negative.</exception>
+    </member>
+    <member name="P:WikiClientLibrary.GeoCoordinateRectangle.Bottom">
+      <summary>
+            Gets the bottom-border latitude of the rectangle.
+            </summary>
+    </member>
+    <member name="M:WikiClientLibrary.GeoCoordinateRectangle.Contains(WikiClientLibrary.GeoCoordinate)">
+      <summary>
+            Determines whether the rectangle contains the given coordinate,
+            or the given coordinate falls on the edge of the rectangle.
+            </summary>
+      <param name="coordinate">
+        <markup>
+          <include item="SMCMissingParamTag">
+            <parameter>param</parameter>
+            <parameter>coordinate</parameter>
+            <parameter>M:WikiClientLibrary.GeoCoordinateRectangle.Contains(WikiClientLibrary.GeoCoordinate)</parameter>
+          </include>
+        </markup>
+      </param>
+      <exception cref="T:System.InvalidOperationException">
+        <see cref="P:WikiClientLibrary.GeoCoordinateRectangle.IsNormalizable" /> is false. This operation cannot be performed when the rectangle is not normalizable.</exception>
+    </member>
+    <member name="F:WikiClientLibrary.GeoCoordinateRectangle.Empty">
+      <summary>
+            Gets an empty <see cref="T:WikiClientLibrary.GeoCoordinateRectangle" /> value with its members uninitialized.
+            </summary>
+    </member>
+    <member name="M:WikiClientLibrary.GeoCoordinateRectangle.Equals(System.Object)">
+      <summary>Indicates whether this instance and a specified object are equal.</summary>
+      <param name="obj">The object to compare with the current instance. </param>
+      <returns>true if <paramref name="obj" /> and this instance are the same type and represent the same value; otherwise, false. </returns>
+    </member>
+    <member name="M:WikiClientLibrary.GeoCoordinateRectangle.Equals(WikiClientLibrary.GeoCoordinateRectangle)">
+      <summary>Indicates whether the current object is equal to another object of the same type.</summary>
+      <param name="other">An object to compare with this object.</param>
+      <returns>true if the current object is equal to the <paramref name="other" /> parameter; otherwise, false.</returns>
+    </member>
+    <member name="M:WikiClientLibrary.GeoCoordinateRectangle.FromBoundingCoordinates(System.Double,System.Double,System.Double,System.Double)">
+      <summary>
+            Constructs a <see cref="T:WikiClientLibrary.GeoCoordinateRectangle" /> instance from the given bounding coordinates.
+            </summary>
+      <param name="longitude1">first longitude of the rectangle.</param>
+      <param name="latitude1">first latitude of the rectangle.</param>
+      <param name="longitude2">second longitude of the rectangle.</param>
+      <param name="latitude2">second latitude of the rectangle.</param>
+      <returns>
+            a <see cref="T:WikiClientLibrary.GeoCoordinateRectangle" /> that uses the given vertex coordinates.
+            First longitude/latitude may be swapped with second one to ensure the resulting rectangle has
+            positive <see cref="P:WikiClientLibrary.GeoCoordinateRectangle.Width" /> and <see cref="P:WikiClientLibrary.GeoCoordinateRectangle.Height" />.
+            </returns>
+    </member>
+    <member name="M:WikiClientLibrary.GeoCoordinateRectangle.FromBoundingCoordinates(WikiClientLibrary.GeoCoordinate,WikiClientLibrary.GeoCoordinate)">
+      <summary>
+            Constructs a <see cref="T:WikiClientLibrary.GeoCoordinateRectangle" /> instance from the given bounding coordinates.
+            </summary>
+      <param name="coordinate1">first vertex coordinate. <see cref="P:WikiClientLibrary.GeoCoordinate.Dimension" /> is ignored.</param>
+      <param name="coordinate2">second vertex coordinate. <see cref="P:WikiClientLibrary.GeoCoordinate.Dimension" /> is ignored.</param>
+    </member>
+    <member name="M:WikiClientLibrary.GeoCoordinateRectangle.GetHashCode">
+      <summary>Returns the hash code for this instance.</summary>
+      <returns>A 32-bit signed integer that is the hash code for this instance.</returns>
+    </member>
+    <member name="P:WikiClientLibrary.GeoCoordinateRectangle.Height">
+      <summary>
+            Gets/sets the height in latitude of the rectangle.
+            </summary>
+      <exception cref="T:System.ArgumentOutOfRangeException">
+        <paramref name="value" /> is negative.</exception>
+    </member>
+    <member name="P:WikiClientLibrary.GeoCoordinateRectangle.IsEmpty">
+      <summary>
+            Determines whether the rectangle is empty in area.
+            </summary>
+    </member>
+    <member name="P:WikiClientLibrary.GeoCoordinateRectangle.IsNormalizable">
+      <summary>
+            Gets a value that indicates whether the current rectangle instance is normalizable.
+            </summary>
+    </member>
+    <member name="P:WikiClientLibrary.GeoCoordinateRectangle.IsNormalized">
+      <summary>
+            Determines whether the coordinates of current spherical rectangle are normalized.
+            </summary>
+    </member>
+    <member name="P:WikiClientLibrary.GeoCoordinateRectangle.Left">
+      <summary>
+            Gets/sets the left-border longitude of the rectangle.
+            </summary>
+    </member>
+    <member name="M:WikiClientLibrary.GeoCoordinateRectangle.Normalize">
+      <summary>
+            Normalizes the coordinates, ensuring the current coordinates meets
+            the definition of "normalized spherical rectangle" as specified in <see cref="P:WikiClientLibrary.GeoCoordinateRectangle.IsNormalized" />.
+            </summary>
+      <exception cref="T:System.InvalidOperationException">
+        <see cref="P:WikiClientLibrary.GeoCoordinateRectangle.IsNormalizable" /> is false. That is, trying to normalize a non-normalizable rectangle.</exception>
+    </member>
+    <member name="M:WikiClientLibrary.GeoCoordinateRectangle.Offset(System.Double,System.Double)">
+      <summary>
+            Offsets the rectangle by the specified values.
+            </summary>
+      <param name="longitudeOffset">Offset of the longitude.</param>
+      <param name="latitudeOffset">Offset of the latitude.</param>
+    </member>
+    <member name="M:WikiClientLibrary.GeoCoordinateRectangle.op_Equality(WikiClientLibrary.GeoCoordinateRectangle,WikiClientLibrary.GeoCoordinateRectangle)">
+      <summary>
+        <markup>
+          <include item="SMCMissingTag">
+            <parameter>summary</parameter>
+            <parameter>M:WikiClientLibrary.GeoCoordinateRectangle.op_Equality(WikiClientLibrary.GeoCoordinateRectangle,WikiClientLibrary.GeoCoordinateRectangle)</parameter>
+          </include>
+        </markup>
+      </summary>
+      <param name="left">
+        <markup>
+          <include item="SMCMissingParamTag">
+            <parameter>param</parameter>
+            <parameter>left</parameter>
+            <parameter>M:WikiClientLibrary.GeoCoordinateRectangle.op_Equality(WikiClientLibrary.GeoCoordinateRectangle,WikiClientLibrary.GeoCoordinateRectangle)</parameter>
+          </include>
+        </markup>
+      </param>
+      <param name="right">
+        <markup>
+          <include item="SMCMissingParamTag">
+            <parameter>param</parameter>
+            <parameter>right</parameter>
+            <parameter>M:WikiClientLibrary.GeoCoordinateRectangle.op_Equality(WikiClientLibrary.GeoCoordinateRectangle,WikiClientLibrary.GeoCoordinateRectangle)</parameter>
+          </include>
+        </markup>
+      </param>
+    </member>
+    <member name="M:WikiClientLibrary.GeoCoordinateRectangle.op_Inequality(WikiClientLibrary.GeoCoordinateRectangle,WikiClientLibrary.GeoCoordinateRectangle)">
+      <summary>
+        <markup>
+          <include item="SMCMissingTag">
+            <parameter>summary</parameter>
+            <parameter>M:WikiClientLibrary.GeoCoordinateRectangle.op_Inequality(WikiClientLibrary.GeoCoordinateRectangle,WikiClientLibrary.GeoCoordinateRectangle)</parameter>
+          </include>
+        </markup>
+      </summary>
+      <param name="left">
+        <markup>
+          <include item="SMCMissingParamTag">
+            <parameter>param</parameter>
+            <parameter>left</parameter>
+            <parameter>M:WikiClientLibrary.GeoCoordinateRectangle.op_Inequality(WikiClientLibrary.GeoCoordinateRectangle,WikiClientLibrary.GeoCoordinateRectangle)</parameter>
+          </include>
+        </markup>
+      </param>
+      <param name="right">
+        <markup>
+          <include item="SMCMissingParamTag">
+            <parameter>param</parameter>
+            <parameter>right</parameter>
+            <parameter>M:WikiClientLibrary.GeoCoordinateRectangle.op_Inequality(WikiClientLibrary.GeoCoordinateRectangle,WikiClientLibrary.GeoCoordinateRectangle)</parameter>
+          </include>
+        </markup>
+      </param>
+    </member>
+    <member name="P:WikiClientLibrary.GeoCoordinateRectangle.Right">
+      <summary>
+            Gets the right-border longitude of the rectangle.
+            </summary>
+    </member>
+    <member name="P:WikiClientLibrary.GeoCoordinateRectangle.Top">
+      <summary>
+            Gets/sets the top-border latitude of the rectangle.
+            </summary>
+    </member>
+    <member name="M:WikiClientLibrary.GeoCoordinateRectangle.ToString">
+      <summary>Returns the fully qualified type name of this instance.</summary>
+      <returns>A <see cref="T:System.String" /> containing a fully qualified type name.</returns>
+    </member>
+    <member name="P:WikiClientLibrary.GeoCoordinateRectangle.Width">
+      <summary>
+            Gets/sets the width in longitude of the rectangle.
+            </summary>
+      <exception cref="T:System.ArgumentOutOfRangeException">
+        <paramref name="value" /> is negative.</exception>
     </member>
     <member name="T:WikiClientLibrary.InvalidActionException">
       <summary>
@@ -2742,7 +2949,7 @@
     </member>
     <member name="P:WikiClientLibrary.Files.FileRevision.IsAnonymous">
       <summary>
-            Whether the file is anonymous.
+            Whether the file is anonymous. (MW ~1.33-)
             </summary>
     </member>
     <member name="P:WikiClientLibrary.Files.FileRevision.Mime">
@@ -3416,6 +3623,11 @@
       </summary>
       <param name="site">The MediaWiki site this instance applies to.</param>
     </member>
+    <member name="P:WikiClientLibrary.Generators.GeoSearchGenerator.BoundingRectangle">
+      <summary>
+            Geographical bounding box to search in.
+            </summary>
+    </member>
     <member name="M:WikiClientLibrary.Generators.GeoSearchGenerator.EnumListParameters">
       <summary>
             When overridden, fills generator parameters for <c>action=query&amp;list={ListName}</c> request.
@@ -3443,6 +3655,15 @@
       <summary>
             Only list pages in these namespaces.
             </summary>
+    </member>
+    <member name="M:WikiClientLibrary.Generators.GeoSearchGenerator.OnEnumItemsFailed(System.Exception)">
+      <summary>
+            When overriden, called when there is exception raised when
+            executing the asynchronous generator function inside <see cref="M:WikiClientLibrary.Generators.Primitive.WikiList`1.EnumItemsAsync" />.
+            </summary>
+      <param name="exception">The raised exception.</param>
+      <exception cref="T:System.ArgumentException">
+        <see cref="P:WikiClientLibrary.Generators.GeoSearchGenerator.BoundingRectangle" /> is too big.</exception>
     </member>
     <member name="P:WikiClientLibrary.Generators.GeoSearchGenerator.Radius">
       <summary>
@@ -4855,6 +5076,13 @@
       <summary>
             Asynchronously enumerates all the items in the list.
             </summary>
+      <exception cref="T:WikiClientLibrary.OperationFailedException">
+            (When enumerating) There is any MediaWiki API failure during the operation.
+            </exception>
+      <exception cref="T:System.Exception">
+            (When enumerating) There can be other types of errors thrown.
+            See the respective <see cref="M:WikiClientLibrary.Generators.Primitive.WikiList`1.OnEnumItemsFailed(System.Exception)" /> override documentations in the implementation classes.
+            </exception>
     </member>
     <member name="M:WikiClientLibrary.Generators.Primitive.WikiList`1.EnumListParameters">
       <summary>
@@ -4873,6 +5101,13 @@
       <summary>
             The name of list, used as the value of <c>list</c> parameter in <c>action=query</c> request.
             </summary>
+    </member>
+    <member name="M:WikiClientLibrary.Generators.Primitive.WikiList`1.OnEnumItemsFailed(System.Exception)">
+      <summary>
+            When overriden, called when there is exception raised when
+            executing the asynchronous generator function inside <see cref="M:WikiClientLibrary.Generators.Primitive.WikiList`1.EnumItemsAsync" />.
+            </summary>
+      <param name="exception">The raised exception.</param>
     </member>
     <member name="P:WikiClientLibrary.Generators.Primitive.WikiList`1.PaginationSize">
       <summary>
