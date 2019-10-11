@@ -297,4 +297,10 @@
   <data name="ExceptionWikiLinkRequireInterwikiPrefix" xml:space="preserve">
     <value>A valid interwiki prefix is required when parsing WikiLink without specifying originating WikiSite.</value>
   </data>
+  <data name="ExceptionArgumentIsNegative" xml:space="preserve">
+    <value>Argument value is negative.</value>
+  </data>
+  <data name="ExceptionGeoCoordinateRectangleNotNormalizable" xml:space="preserve">
+    <value>The GeoCoordinateRectangle instance is not normalizable.</value>
+  </data>
 </root>

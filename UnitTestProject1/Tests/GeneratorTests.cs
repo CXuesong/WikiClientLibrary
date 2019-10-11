@@ -399,7 +399,7 @@ namespace WikiClientLibrary.Tests.UnitTestProject1.Tests
         }
 
         [Fact]
-        public async Task WpEnGeoSearchTest()
+        public async Task WpEnGeoSearchTest1()
         {
             var site = await WpEnSiteAsync;
             var gen = new GeoSearchGenerator(site) { TargetCoordinate = new GeoCoordinate(47.01, 2), Radius = 2000 };
@@ -407,6 +407,17 @@ namespace WikiClientLibrary.Tests.UnitTestProject1.Tests
             ShallowTrace(result);
             Assert.NotNull(result);
             Assert.InRange(result.Distance, 1110, 1113);
+            Assert.True(result.IsPrimaryCoordinate);
+        }
+
+        [Fact]
+        public async Task WpEnGeoSearchTest2()
+        {
+            var site = await WpEnSiteAsync;
+            var gen = new GeoSearchGenerator(site) { BoundingRectangle = new GeoCoordinateRectangle(1.9, 47.1, 0.2, 0.2) };
+            var result = await gen.EnumItemsAsync().Take(20).FirstOrDefaultAsync(r => r.Page.Title == "France");
+            ShallowTrace(result);
+            Assert.NotNull(result);
             Assert.True(result.IsPrimaryCoordinate);
         }
 

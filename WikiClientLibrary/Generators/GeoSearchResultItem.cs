@@ -38,6 +38,7 @@ namespace WikiClientLibrary.Generators
         /// <summary>
         /// Distance of the object from the search location, in meters.
         /// </summary>
+        /// <remarks>The value is not set if the search is performed with <see cref="GeoSearchGenerator.BoundingRectangle"/>.</remarks>
         public double Distance { get; }
 
     }

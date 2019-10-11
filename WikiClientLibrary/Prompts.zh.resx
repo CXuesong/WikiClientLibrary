@@ -135,6 +135,9 @@
   <data name="ExceptionArgumentIsEmpty1" xml:space="preserve">
     <value>{0}为空白。</value>
   </data>
+  <data name="ExceptionArgumentIsNegative" xml:space="preserve">
+    <value>参数值为负数。</value>
+  </data>
   <data name="ExceptionArgumentNullOrEmpty" xml:space="preserve">
     <value>参数不应为null或空白。</value>
   </data>
