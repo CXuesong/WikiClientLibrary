@@ -126,9 +126,18 @@ namespace WikiClientLibrary
     /// </remarks>
     public class UnauthorizedOperationException : OperationFailedException
     {
+
+        private readonly string[] emptyStrings = { };
+
         public UnauthorizedOperationException(string errorCode, string message)
+            : this(errorCode, message, null)
+        {
+        }
+
+        public UnauthorizedOperationException(string errorCode, string message, IReadOnlyCollection<string> desiredPermissions)
             : base(errorCode, message)
         {
+            DesiredPermissions = desiredPermissions ?? emptyStrings;
         }
 
         public UnauthorizedOperationException(string message, Exception innerException)
@@ -141,6 +150,21 @@ namespace WikiClientLibrary
         {
         }
 
+        /// <summary>
+        /// The desired permission(s) to perform the operation.
+        /// </summary>
+        public IReadOnlyCollection<string> DesiredPermissions { get; }
+
+        /// <inheritdoc />
+        public override string ToString()
+        {
+            var message = base.ToString();
+            if (DesiredPermissions.Count > 0)
+            {
+                message += " " + string.Format(Prompts.ExceptionDesiredPermissions1, string.Join(",", DesiredPermissions));
+            }
+            return message;
+        }
     }
 
     /// <summary>

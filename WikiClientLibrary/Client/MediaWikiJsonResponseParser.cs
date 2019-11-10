@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Globalization;
 using System.Linq;
 using System.Net.Http;
 using System.Text;
@@ -151,8 +152,22 @@ namespace WikiClientLibrary.Client
                 case "mustbeloggedin": // You must be logged in to upload this file.
                     throw new UnauthorizedOperationException(errorCode, errorMessage);
                 case "permissions":
-                    if (errorNode["permissions"] != null && errorNode["permissions"].Type != JTokenType.Null)
-                        errorMessage += " Desired permissions:" + errorNode["permissions"]?.ToString(Formatting.None);
+                    if (errorNode["permissions"] != null)
+                    {
+                        var jPermissions = errorNode["permissions"];
+                        if (jPermissions.Type != JTokenType.Null)
+                        {
+                            var permissions = jPermissions is JArray a
+                                ? a.Select(c => c is JValue v ? Convert.ToString(v.Value, CultureInfo.InvariantCulture) : c.ToString())
+                                : new[]
+                                {
+                                        jPermissions is JValue v1
+                                            ? Convert.ToString(v1.Value, CultureInfo.InvariantCulture)
+                                            : jPermissions.ToString()
+                                };
+                            throw new UnauthorizedOperationException(errorCode, errorMessage, permissions.ToList());
+                        }
+                    }
                     throw new UnauthorizedOperationException(errorCode, errorMessage);
                 case "badtoken":
                     throw new BadTokenException(errorCode, errorMessage);
@@ -177,7 +192,7 @@ namespace WikiClientLibrary.Client
                     // ...]
                     if (errorCode.StartsWith("internal_api_error", StringComparison.OrdinalIgnoreCase))
                     {
-                        throw new MediaWikiRemoteException(errorCode, errorMessage, 
+                        throw new MediaWikiRemoteException(errorCode, errorMessage,
                             (string)errorNode["errorclass"], (string)errorNode["*"]);
                     }
                     var messages = (JArray)errorNode["messages"];

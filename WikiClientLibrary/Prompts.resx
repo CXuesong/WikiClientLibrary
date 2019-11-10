@@ -303,4 +303,7 @@
   <data name="ExceptionGeoCoordinateRectangleNotNormalizable" xml:space="preserve">
     <value>The GeoCoordinateRectangle instance is not normalizable.</value>
   </data>
+  <data name="ExceptionDesiredPermissions1" xml:space="preserve">
+    <value>Desired permission(s): {0}.</value>
+  </data>
 </root>

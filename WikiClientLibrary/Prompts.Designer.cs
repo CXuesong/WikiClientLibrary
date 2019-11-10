@@ -224,6 +224,15 @@ namespace WikiClientLibrary {
         }
         
         /// <summary>
+        ///   查找类似 Desired permission(s): {0}. 的本地化字符串。
+        /// </summary>
+        internal static string ExceptionDesiredPermissions1 {
+            get {
+                return ResourceManager.GetString("ExceptionDesiredPermissions1", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   查找类似 When devChannel is None, devVersion must be 0. 的本地化字符串。
         /// </summary>
         internal static string ExceptionDevVersionRequiresDevChannel {
