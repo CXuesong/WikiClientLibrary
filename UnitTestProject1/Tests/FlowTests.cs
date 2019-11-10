@@ -10,7 +10,6 @@ using Xunit.Abstractions;
 namespace WikiClientLibrary.Tests.UnitTestProject1.Tests
 {
 
-    [CISkipped(Reason = CISkippedReason.Unstable)]
     public class FlowTests : WikiSiteTestsBase
     {
 
