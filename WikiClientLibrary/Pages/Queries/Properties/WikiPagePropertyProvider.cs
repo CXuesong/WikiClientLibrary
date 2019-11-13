@@ -66,7 +66,7 @@ namespace WikiClientLibrary.Pages.Queries.Properties
         /// <inheritdoc />
         public virtual int GetMaxPaginationSize(MediaWikiVersion version, bool apiHighLimits)
         {
-            return apiHighLimits ? 500 : 5000;
+            return apiHighLimits ? 5000 : 500;
         }
 
         /// <inheritdoc />
