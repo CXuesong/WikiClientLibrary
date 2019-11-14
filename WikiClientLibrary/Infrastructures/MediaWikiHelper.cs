@@ -301,6 +301,33 @@ namespace WikiClientLibrary.Infrastructures
             return DateTime.Parse(expression, CultureInfo.InvariantCulture, DateTimeStyles.RoundtripKind);
         }
 
+        /// <summary>
+        /// Tries to parse a <see cref="DateTime"/> from MediaWiki API timestamp from the API response.
+        /// </summary>
+        /// <inheritdoc cref="ParseDateTimeOffset"/>
+        /// <param name="result">The variable to receive the parsed result.</param>
+        /// <returns>A boolean indicates whether the parsing is successful.</returns>
+        /// <seealso cref="ParseDateTime"/>
+        public static bool TryParseDateTime(string expression, out DateTime result)
+        {
+            if (expression == null)
+                throw new ArgumentNullException(nameof(expression));
+            if (expression.Length == 0)
+                throw new ArgumentException(Prompts.ExceptionArgumentIsEmpty, nameof(expression));
+            result = DateTime.MinValue;
+            if (expression.Length <= infinityExpressionMaxLength && infinityValues.Contains(expression.ToLowerInvariant()))
+            {
+                result = DateTime.MaxValue;
+                return true;
+            }
+            if (DateTime.TryParseExact(expression, "yyyy-MM-ddTHH:mm:ssK", CultureInfo.InvariantCulture,
+                DateTimeStyles.RoundtripKind, out result))
+                return true;
+            if (DateTime.TryParse(expression, CultureInfo.InvariantCulture, DateTimeStyles.RoundtripKind, out result))
+                return true;
+            return false;
+        }
+
         private static readonly ConcurrentDictionary<PageQueryOptions, IWikiPageQueryProvider> queryProviderPresets
             = new ConcurrentDictionary<PageQueryOptions, IWikiPageQueryProvider>();
 
@@ -356,7 +383,8 @@ namespace WikiClientLibrary.Infrastructures
                             sb.Replace('|', '\u001F');
                             sb.Insert(0, '\u001F');
                         }
-                    } else if (/* delimiter == '\u001F' && */ str.IndexOf('\u001F') >= 0)
+                    }
+                    else if (/* delimiter == '\u001F' && */ str.IndexOf('\u001F') >= 0)
                     {
                         throw new ArgumentException(Prompts.ExceptionJoinValuesCannotContainPipeAndSeparator);
                     }

@@ -133,13 +133,8 @@ namespace WikiClientLibrary.Tests.UnitTestProject1
             if (url.Contains(".wikia.com") || url.Contains(".wikia.org") || url.Contains(".fandom.com"))
             {
                 var uri = new Uri(url, UriKind.Absolute);
-#if NETCOREAPP1_1
-                var rootUrl = uri.ToString();
-                rootUrl = rootUrl.Substring(0, rootUrl.IndexOf(uri.Authority, StringComparison.Ordinal) + uri.Authority.Length);
-#else
-                var rootUrl = uri.GetLeftPart(UriPartial.Authority);
-#endif
-                var options = new WikiaSiteOptions(rootUrl + "/")
+                var rootUrl = new Uri(uri, ".").ToString();
+                var options = new WikiaSiteOptions(rootUrl)
                 {
                     AccountAssertion = AccountAssertionBehavior.AssertAll,
                 };

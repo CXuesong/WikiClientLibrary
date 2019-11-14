@@ -25,6 +25,68 @@ namespace WikiClientLibrary
     /// </summary>
     internal static class RequestHelper
     {
+
+        public const int CONTINUATION_DONE = 0;
+        public const int CONTINUATION_AVAILABLE = 1;
+        public const int CONTINUATION_LOOP = 2;
+
+        public static JObject FindQueryContinuationParameterRoot(JToken jresult)
+        {
+            return (JObject)(jresult["continue"] ?? ((JProperty)jresult["query-continue"]?.First)?.Value);
+        }
+
+        public static int ParseContinuationParameters(JToken jresult, IDictionary<string, object> queryParams, bool dryRun = false)
+        {
+            var continuation = FindQueryContinuationParameterRoot(jresult);
+            // No more results.
+            if (continuation == null || continuation.Count == 0)
+                return CONTINUATION_DONE;
+            var anyNewValue = false;
+            foreach (var p in continuation.Properties())
+            {
+                object parsed;
+                if (p.Value is JValue value) parsed = value.Value;
+                else parsed = p.Value.ToString(Formatting.None);
+                if (!queryParams.TryGetValue(p.Name, out var existingValue) || !ValueEquals(existingValue, parsed))
+                    anyNewValue = true;
+                if (!dryRun)
+                    queryParams[p.Name] = parsed;
+            }
+            return anyNewValue ? CONTINUATION_AVAILABLE : CONTINUATION_LOOP;
+
+            bool ValueEquals(object existing, object incoming)
+            {
+                if (Equals(existing, incoming)) return true;
+                if (existing is DateTime dt && incoming is string s)
+                {
+                    if (MediaWikiHelper.TryParseDateTime(s, out var dt2))
+                    {
+                        // We call ToUniversalTime() in ToWikiStringValuePairs.
+                        return dt.ToUniversalTime() == dt2.ToUniversalTime();
+                    }
+                }
+                return false;
+            }
+        }
+
+        public static JToken FindQueryResponseItemsRoot(JToken jresult, string actionName)
+        {
+            // If there's no result, "query" node will not exist.
+            var queryNode = (JObject)jresult["query"];
+            if (queryNode != null && queryNode.HasValues)
+            {
+                var listNode = queryNode[actionName];
+                if (listNode == null)
+                {
+                    if (queryNode.Count > 1)
+                        throw new UnexpectedDataException(Prompts.ExceptionWikiListCannotFindResultRoot);
+                    listNode = ((JProperty)queryNode.First).Value;
+                }
+                return listNode;
+            }
+            return null;
+        }
+
         #region Page/Revision query
 
         public static IAsyncEnumerable<JObject> QueryWithContinuation(WikiSite site,
@@ -40,13 +102,10 @@ namespace WikiClientLibrary
                 {
                     var queryParams = parameters.ToDictionary(p => p.Key, p => p.Value);
                     Debug.Assert("query".Equals(queryParams["action"]));
-                NEXT_PAGE:
-                    var jresult = await site.InvokeMediaWikiApiAsync(new MediaWikiFormRequestMessage(queryParams), ct);
-                    // If there's no result, "query" node will not exist.
-                    var queryNode = (JObject)jresult["query"];
-                    if (queryNode != null)
+                    while (true)
                     {
-                        var jpages = (JObject)queryNode["pages"];
+                        var jresult = await site.InvokeMediaWikiApiAsync(new MediaWikiFormRequestMessage(queryParams), ct);
+                        var jpages = (JObject)FindQueryResponseItemsRoot(jresult, "pages");
                         if (retrivedPageIds != null && jpages != null)
                         {
                             // Remove duplicate results
@@ -67,23 +126,20 @@ namespace WikiClientLibrary
                                     "Received {Count} results on {Site}, {DistinctCount} distinct results.",
                                     originalPageCount, site, jpages.Count);
                             }
+                            await sink.YieldAndWait(jpages);
                         }
-                        await sink.YieldAndWait(queryNode);
+                        switch (ParseContinuationParameters(jresult, queryParams))
+                        {
+                            case CONTINUATION_DONE:
+                                return;
+                            case CONTINUATION_AVAILABLE:
+                                if (jpages == null)
+                                    site.Logger.LogWarning("Empty query page with continuation received on {Site}.", site);
+                                break;
+                            case CONTINUATION_LOOP:
+                                throw new UnexpectedDataException();
+                        }
                     }
-                    var continuation = (JObject)(jresult["continue"]
-                                                 ?? ((JProperty)jresult["query-continue"]?.First)?.Value);
-                    // No more results.
-                    if (continuation == null || continuation.Count == 0) return;
-                    foreach (var p in continuation.Properties())
-                    {
-                        object parsed;
-                        if (p.Value is JValue value) parsed = value.Value;
-                        else parsed = p.Value.ToString(Formatting.None);
-                        queryParams[p.Name] = parsed;
-                    }
-                    if (queryNode == null)
-                        site.Logger.LogWarning("Empty query page with continuation received on {Site}.", site);
-                    goto NEXT_PAGE;
                 }
             });
         }
@@ -424,9 +480,9 @@ namespace WikiClientLibrary
             pa["titles"] = titlesExpr;
             var resultCounter = 0;
             return QueryWithContinuation(site, pa, null)
-                .SelectMany(jquery =>
+                .SelectMany(jpages =>
                 {
-                    var page = jquery["pages"].Values().First();
+                    var page = jpages.Values().First();
                     var links = (JArray)page?["links"];
                     if (links != null)
                     {
@@ -451,9 +507,9 @@ namespace WikiClientLibrary
             pa["titles"] = titlesExpr;
             var resultCounter = 0;
             return QueryWithContinuation(site, pa, null)
-                .SelectMany(jquery =>
+                .SelectMany(jpages =>
                 {
-                    var page = jquery["pages"].Values().First();
+                    var page = jpages.Values().First();
                     var links = (JArray)page?["templates"];
                     if (links != null)
                     {

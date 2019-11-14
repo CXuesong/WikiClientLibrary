@@ -100,13 +100,12 @@ namespace WikiClientLibrary.Generators.Primitive
             if (PageTitle == null) queryParams.Add("pageids", PageId);
             foreach (var p in EnumListParameters()) queryParams.Add(p.Key, p.Value);
             return RequestHelper.QueryWithContinuation(Site, queryParams, () => Site.BeginActionScope(this))
-                .SelectMany(jresult =>
+                .SelectMany(jpages =>
                 {
                     // If there's no result, "query" node will not exist.
-                    var pagesNode = (JObject)jresult["pages"];
-                    if (pagesNode == null || pagesNode.Count == 0)
+                    if (jpages == null || jpages.Count == 0)
                         return AsyncEnumerable.Empty<T>();
-                    return pagesNode.Values().SelectMany(jpage =>
+                    return jpages.Values().SelectMany(jpage =>
                     {
                         var jprop = jpage[PropertyName];
                         return jprop.Select(v => ItemFromJson(v, (JObject)jpage));
