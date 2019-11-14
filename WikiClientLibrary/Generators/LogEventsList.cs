@@ -145,9 +145,11 @@ namespace WikiClientLibrary.Generators
                 // Need to fix it.
                 // Fist, check if there are suspectable legacy "params" node
                 var type = (string)json["type"];
-                var joldParams = (JObject)json[type];
-                if (type != null && joldParams != null)
+                if (type != null && json[type] != null)
                 {
+                    // Do not change the original JSON.
+                    json = json.DeepClone();
+                    var joldParams = (JObject)json[type];
                     var jparams = new JObject();
                     foreach (var prop in joldParams.Properties())
                     {
@@ -159,7 +161,7 @@ namespace WikiClientLibrary.Generators
                         else
                             jparams[prop.Name] = value;
                     }
-
+                    
                     json["params"] = jparams;
                 }
             }

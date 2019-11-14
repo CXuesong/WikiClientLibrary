@@ -270,31 +270,36 @@ namespace WikiClientLibrary.Tests.UnitTestProject1.Tests
             var site = await GetWikiSiteAsync(Endpoints.RuWarriorsWiki);
             var generator = new LogEventsList(site)
             {
-                PaginationSize = 100,
+                PaginationSize = 50,
                 LogType = LogTypes.Move,
                 StartTime = DateTime.Parse("2019-09-28T07:31:07Z", CultureInfo.InvariantCulture),
                 EndTime = DateTime.Parse("2019-10-03T15:29:10Z", CultureInfo.InvariantCulture),
                 TimeAscending = true,
             };
             // Take only first page, fine.
-            var logs = await generator.EnumItemsAsync().Take(100).ToListAsync();
+            var logs = await generator.EnumItemsAsync().Take(50).ToListAsync();
             Output.WriteLine("{0}", logs.FirstOrDefault());
             Output.WriteLine("{0}", logs.LastOrDefault());
             Assert.Equal("FANDOMbot", logs.First().UserName);
             Assert.Equal("FANDOMbot", logs.Last().UserName);
             // Take the second page, it throws.
-            await Assert.ThrowsAsync<UnexpectedDataException>(() => generator.EnumItemsAsync().Take(150).ToListAsync());
+            await Assert.ThrowsAsync<UnexpectedDataException>(() => generator.EnumItemsAsync().Take(51).ToListAsync());
             // Introduce some last-resorts.
             generator.CompatibilityOptions = new WikiListCompatibilityOptions
             {
                 ContinuationLoopBehaviors = WikiListContinuationLoopBehaviors.FetchMore
             };
-            var logs2 = await generator.EnumItemsAsync().Take(150).ToListAsync();
-            // The first 100 items should be the same.
-            Assert.Equal(logs.Select(l => l.LogId), logs2.Take(100).Select(l => l.LogId));
+            var logs2 = await generator.EnumItemsAsync().Take(100).ToListAsync();
+            Output.WriteLine("logs = {0}", string.Join(",", logs.Select(l => l.LogId)));
+            Output.WriteLine("logs2 = {0}", string.Join(",", logs2.Select(l => l.LogId)));
+            // The first 50 items should be the same.
+            Assert.Equal(logs.Select(l => l.LogId), logs2.Take(50).Select(l => l.LogId));
             // The next 50 items should not be duplicate with the first 100 items.
-            var seenLogIds = logs.Select(l => l.LogId).ToHashSet();
-            Assert.DoesNotContain(logs2.Skip(100), l => seenLogIds.Contains(l.LogId));
+            var logs2Id = logs2.Skip(50).Select(l => l.LogId).ToHashSet();
+            foreach (var l in logs)
+            {
+                Assert.DoesNotContain(l.LogId, logs2Id);
+            }
         }
 
         [Fact]

@@ -197,9 +197,17 @@ namespace WikiClientLibrary.Generators.Primitive
                                                             Site.Logger.LogInformation("Successfully got out of the continuation loop.");
                                                             if (listNode2 != null)
                                                             {
-                                                                // Eliminate items that we have already yielded.
-                                                                var yieldedItems = new HashSet<JToken>(listNode, new JTokenEqualityComparer());
-                                                                await sink.YieldAndWait(listNode2.Where(n => !yieldedItems.Contains(n)).Select(ItemFromJson));
+                                                                if (listNode != null)
+                                                                {
+                                                                    // Eliminate items that we have already yielded.
+                                                                    var yieldedItems = new HashSet<JToken>(listNode, new JTokenEqualityComparer());
+                                                                    await sink.YieldAndWait(
+                                                                        listNode2.Where(n => !yieldedItems.Contains(n)).Select(ItemFromJson));
+                                                                }
+                                                                else
+                                                                {
+                                                                    await sink.YieldAndWait(listNode2.Select(ItemFromJson));
+                                                                }
                                                             }
                                                             outOfLoop = true;
                                                             if (applyResult == RequestHelper.CONTINUATION_DONE)
