@@ -106,25 +106,28 @@ namespace WikiClientLibrary
                     {
                         var jresult = await site.InvokeMediaWikiApiAsync(new MediaWikiFormRequestMessage(queryParams), ct);
                         var jpages = (JObject)FindQueryResponseItemsRoot(jresult, "pages");
-                        if (retrivedPageIds != null && jpages != null)
+                        if (jpages != null)
                         {
-                            // Remove duplicate results
-                            var duplicateKeys = new List<string>(jpages.Count);
-                            foreach (var jpage in jpages)
+                            if (retrivedPageIds != null)
                             {
-                                if (!retrivedPageIds.Add(Convert.ToInt32(jpage.Key)))
+                                // Remove duplicate results
+                                var duplicateKeys = new List<string>(jpages.Count);
+                                foreach (var jpage in jpages)
                                 {
-                                    // The page has been retrieved before.
-                                    duplicateKeys.Add(jpage.Key);
+                                    if (!retrivedPageIds.Add(Convert.ToInt32(jpage.Key)))
+                                    {
+                                        // The page has been retrieved before.
+                                        duplicateKeys.Add(jpage.Key);
+                                    }
                                 }
-                            }
-                            var originalPageCount = jpages.Count;
-                            foreach (var k in duplicateKeys) jpages.Remove(k);
-                            if (originalPageCount != jpages.Count)
-                            {
-                                site.Logger.LogWarning(
-                                    "Received {Count} results on {Site}, {DistinctCount} distinct results.",
-                                    originalPageCount, site, jpages.Count);
+                                var originalPageCount = jpages.Count;
+                                foreach (var k in duplicateKeys) jpages.Remove(k);
+                                if (originalPageCount != jpages.Count)
+                                {
+                                    site.Logger.LogWarning(
+                                        "Received {Count} results on {Site}, {DistinctCount} distinct results.",
+                                        originalPageCount, site, jpages.Count);
+                                }
                             }
                             await sink.YieldAndWait(jpages);
                         }
