@@ -6,12 +6,18 @@ on:
     paths-ignore:
       - '*.md'
       - '*.txt'
+  pull_request:
+    branches:
+      - master
+    paths-ignore:
+      - '*.md'
+      - '*.txt'
   schedule:
     - cron: "7 0 * * MON"
 
 jobs:
-  build:
-    name: Build & Test
+  build_linux:
+    name: Linux Build & Test
     runs-on: ubuntu-latest
     env:
       DOTNET_SKIP_FIRST_TIME_EXPERIENCE: 1
