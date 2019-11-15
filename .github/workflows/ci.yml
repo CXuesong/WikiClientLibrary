@@ -41,9 +41,6 @@ jobs:
       - name: Test
         shell: pwsh
         run: ./WikiClientLibrary.Commons/CI/Test.ps1
-      - name: Cleanup
-        shell: pwsh
-        run: './WikiClientLibrary.Commons/CI/BuildSecret.ps1 -SourceRootPath . -Clear'
   build_windows:
     if: success()
     name: Windows Build
@@ -74,6 +71,3 @@ jobs:
       - name: Test
         shell: pwsh
         run: './WikiClientLibrary.Commons/CI/Test.ps1 -Configuration ${{ matrix.config }}'
-      - name: Cleanup
-        shell: pwsh
-        run: './WikiClientLibrary.Commons/CI/BuildSecret.ps1 -SourceRootPath . -Clear'
