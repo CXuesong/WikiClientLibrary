@@ -20,7 +20,7 @@ if ($IsLinux) {
 } elseif ($IsWindows) {
     Invoke-WebRequest 'https://dot.net/v1/dotnet-install.ps1' -OutFile 'DotNet-Install.ps1'
     ./DotNet-Install.ps1 -Version 2.1.202
-    ./DotNet-Install.ps1 -Version 3.0
+    ./DotNet-Install.ps1 -Version 3.0.100
     Write-Host "Installed .NET Core SDKs:"
     dotnet --list-sdks
     CheckLastExitCode
