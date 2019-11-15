@@ -13,11 +13,17 @@ using WikiClientLibrary.Sites;
 namespace WikiClientLibrary.Generators
 {
     /// <summary>
-    /// Search titles and text.
+    /// Search for the pages matching the specific keywords in titles and text.
     /// (<a href="https://www.mediawiki.org/wiki/API:Search">mw:API:Search</a>, MediaWiki 1.11+)
     /// </summary>
     /// <remarks>
-    /// <para>For full-text search on Wikia, use <c>LocalWikiSearchList</c> in <c>WikiClientLibrary.Wikia.WikiaApi</c> namespace.</para>
+    /// <para>
+    /// Depending on the real-time changes happening on the server,
+    /// the enumerated sequence from <see cref="WikiList{T}.EnumItemsAsync"/> may duplicate between each pagination,
+    /// usually the first and/or the last 1 or 2 items.
+    /// The result of <see cref="WikiPageGenerator{TItem}.EnumPagesAsync()"/>, however, has already been removed of duplicates.
+    /// </para>
+    /// <para>For full-text search on Wikia, use <see cref="T:WikiClientLibrary.Wikia.WikiaApi.LocalWikiSearchList"/>.</para>
     /// </remarks>
     public class SearchGenerator : WikiPageGenerator<SearchResultItem>
     {
@@ -108,6 +114,12 @@ namespace WikiClientLibrary.Generators
             }
             return dict;
         }
+
+        /// <inheritdoc />
+        /// <remarks>
+        /// <para>The value is overridden in this class as <c>true</c>.</para>
+        /// </remarks>
+        protected override bool DistinctGeneratedPages => true;
 
         /// <inheritdoc />
         protected override SearchResultItem ItemFromJson(JToken json)

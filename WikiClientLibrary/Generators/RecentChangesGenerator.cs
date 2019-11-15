@@ -110,7 +110,7 @@ namespace WikiClientLibrary.Generators
             if ((value & RecentChangesFilterTypes.External) == RecentChangesFilterTypes.External) types += "|external";
             if ((value & RecentChangesFilterTypes.Create) == RecentChangesFilterTypes.Create) types += "|new";
             if ((value & RecentChangesFilterTypes.Log) == RecentChangesFilterTypes.Log) types += "|log";
-            if ((value & RecentChangesFilterTypes.Categorize) == RecentChangesFilterTypes.Log) types += "|categorize";
+            if ((value & RecentChangesFilterTypes.Categorize) == RecentChangesFilterTypes.Categorize) types += "|categorize";
             if (types.Length == 0) throw new ArgumentOutOfRangeException(nameof(value));
             return types.Substring(1);
         }
@@ -168,6 +168,9 @@ namespace WikiClientLibrary.Generators
         // 2nd, 3rd, etc time, only the properties that has been changed will be included in JSON,
         // which will screw up Page.LoadFromJson .
         /// <inheritdoc />
+        /// <remarks>
+        /// <para>The value is overridden in this class as <c>true</c>.</para>
+        /// </remarks>
         protected override bool DistinctGeneratedPages => true;
 
         /// <inheritdoc />

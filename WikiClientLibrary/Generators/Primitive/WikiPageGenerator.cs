@@ -64,9 +64,13 @@ namespace WikiClientLibrary.Generators.Primitive
         /// <summary>
         /// When using the default implementation of <see cref="EnumPagesAsync(IWikiPageQueryProvider)"/>,
         /// determines whether to remove duplicate page results generated from generator results.
+        /// This property does not affect the behavior of <see cref="WikiList{T}.EnumItemsAsync"/>.
         /// </summary>
-        /// <remarks>If the derived class has overridden <see cref="EnumPagesAsync(IWikiPageQueryProvider)"/>,
-        /// the value of this property might be ignored.</remarks>
+        /// <remarks>
+        /// <para>The default value is <c>false</c>.</para>
+        /// <para>If the derived class has overridden <see cref="EnumPagesAsync(IWikiPageQueryProvider)"/>,
+        /// the value of this property might be ignored.</para>
+        /// </remarks>
         protected virtual bool DistinctGeneratedPages => false;
 
         ///// <summary>

@@ -22,10 +22,15 @@ namespace WikiClientLibrary.Tests.UnitTestProject1.Tests
         {
         }
 
-        private void AssertTitlesDistinct(IReadOnlyCollection<WikiPage> pages)
+        private void AssertTitlesDistinct(IList<WikiPage> pages)
         {
-            var distinctTitles = pages.Select(p => p.Title).Distinct().Count();
-            Assert.Equal(pages.Count, distinctTitles);
+            var distinctTitles = pages.GroupBy(p => p.Title);
+            foreach (var group in distinctTitles)
+            {
+                var count = group.Count();
+                var indices = string.Join(',', group.Select(pages.IndexOf));
+                Assert.True(count == 1, $"Page instance [[{group.Key}]] is not unique. Found {count} instances with indices {indices}.");
+            }
         }
 
         private void TracePages(IReadOnlyCollection<WikiPage> pages)
@@ -363,7 +368,7 @@ namespace WikiClientLibrary.Tests.UnitTestProject1.Tests
         {
             var site = await WpTest2SiteAsync;
             var generator = new SearchGenerator(site, "test") { PaginationSize = 20 };
-            var pages = await generator.EnumPagesAsync().Take(100).ToListAsync();
+            var pages = await generator.EnumPagesAsync().Take(200).ToListAsync();
             TracePages(pages);
             AssertTitlesDistinct(pages);
         }
