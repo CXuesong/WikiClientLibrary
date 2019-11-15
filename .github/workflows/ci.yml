@@ -43,4 +43,4 @@ jobs:
         run: ./WikiClientLibrary.Commons/CI/Test.ps1
       - name: Cleanup
         shell: pwsh
-        run: './WikiClientLibrary.Commons/CI/BuildSecret.ps1 -Clear'
+        run: './WikiClientLibrary.Commons/CI/BuildSecret.ps1 -SourceRootPath . -Clear'
