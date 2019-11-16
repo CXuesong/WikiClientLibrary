@@ -124,7 +124,7 @@ namespace WikiClientLibrary.Tests.UnitTestProject1
             {
                 for (int i = 0; i < length; i++)
                 {
-                    var nextDigit = random.Next(0, 37);
+                    var nextDigit = random.Next(0, 36);
                     if (nextDigit < 10)
                         sb.Append((char)('0' + nextDigit));
                     else
