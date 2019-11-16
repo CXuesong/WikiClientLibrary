@@ -1,6 +1,6 @@
 # Wiki Client Library
 
-[![Build Status](https://travis-ci.com/CXuesong/WikiClientLibrary.svg?branch=master)](https://travis-ci.com/CXuesong/WikiClientLibrary) [![Gitter](https://badges.gitter.im/CXuesong/WikiClientLibrary.svg?style=flat-square)](https://gitter.im/CXuesong/WikiClientLibrary?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
+[![Build Status](https://github.com/CXuesong/WikiClientLibrary/workflows/CI/badge.svg?branch=master)](https://github.com/CXuesong/WikiClientLibrary/actions?query=workflow%3ACI) [![Gitter](https://badges.gitter.im/CXuesong/WikiClientLibrary.svg?style=flat-square)](https://gitter.im/CXuesong/WikiClientLibrary?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
 
 A hand-crafted asynchronous [MediaWiki](https://www.mediawiki.org/) API client library for wiki sites (including [Wikipedia](https://www.wikipedia.org/) and its sister projects, as well as [FANDOM](<https://community.fandom.com/wiki/Community_Central>) and [Wikia.org](<https://www.wikia.org/>). The library targets at .NET Standard 1.1 & 2.0 (See [Supported Platforms](https://docs.microsoft.com/en-us/dotnet/standard/net-standard#net-platforms-support)), and focuses on the API compatibility with MediaWiki 1.19 (Wikia), as well as the state-of-art APIs of MediaWiki (i.e. 1.34-wmf, as in 2019-05). Other versions in between are hopefully also compatible.
 
