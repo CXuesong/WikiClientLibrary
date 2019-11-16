@@ -37,22 +37,42 @@ namespace WikiClientLibrary.Tests.UnitTestProject1.Tests
         [Fact]
         public async Task BoardTest()
         {
+            void DumpTopics(IReadOnlyCollection<Topic> ts)
+            {
+                Output.WriteLine("Topics: {0}", ts.Count);
+                Output.WriteLine("#, Title, TopicTitle, Author, TimeStamp, LastUpdated, LastPost");
+                var index = 0;
+                foreach (var topic in ts)
+                {
+                    if (topic == null)
+                        Output.WriteLine("{0}, <null>", index);
+                    else
+                        Output.WriteLine("{0}, {1}, {2}, {3}, {4:u}, {5:u}, {6:u}",
+                            index, topic.Title, topic.TopicTitle, topic.TopicTitleRevision.Author,
+                            topic.TopicTitleRevision.TimeStamp, topic.TopicTitleRevision.LastUpdated,
+                            ExpandPosts(topic.Posts).Max(p => p.LastRevision.TimeStamp));
+                    index++;
+                }
+            }
+
             var board = new Board(await WpBetaSiteAsync, "Talk:Flow QA");
             await board.RefreshAsync();
             ShallowTrace(board);
-            for (int x = 0; x < 20; x++)
+            var topics = await board.EnumTopicsAsync(TopicListingOptions.OrderByPosted, 4).Take(10).ToArrayAsync();
+            DumpTopics(topics);
+            Assert.DoesNotContain(null, topics);
+            for (int i = 1; i < topics.Length; i++)
             {
-                var topics = await board.EnumTopicsAsync(TopicListingOptions.OrderByPosted, 4).Take(10).ToArrayAsync();
-                Assert.DoesNotContain(null, topics);
-                for (int i = 1; i < topics.Length; i++)
-                    Assert.True(topics[i - 1].TopicTitleRevision.TimeStamp >= topics[i].TopicTitleRevision.TimeStamp,
-                        "Topic list is not sorted in posted order as expectation.");
-                topics = await board.EnumTopicsAsync(TopicListingOptions.OrderByUpdated, 5).Take(10).ToArrayAsync();
-                for (int i = 1; i < topics.Length; i++)
-                    Assert.True(ExpandPosts(topics[i - 1].Posts).Select(p => p.LastRevision.TimeStamp).Max()
-                                >= ExpandPosts(topics[i].Posts).Select(p => p.LastRevision.TimeStamp).Max(),
-                        "Topic list is not sorted in updated order as expectation.");
+                Assert.True(topics[i - 1].TopicTitleRevision.TimeStamp >= topics[i].TopicTitleRevision.TimeStamp,
+                    $"Topic list is not sorted in posted order as expectation. At index {i}.");
             }
+            topics = await board.EnumTopicsAsync(TopicListingOptions.OrderByUpdated, 5).Take(10).ToArrayAsync();
+            DumpTopics(topics);
+            Assert.DoesNotContain(null, topics);
+            for (int i = 1; i < topics.Length; i++)
+                Assert.True(ExpandPosts(topics[i - 1].Posts).Select(p => p.LastRevision.TimeStamp).Max()
+                            >= ExpandPosts(topics[i].Posts).Select(p => p.LastRevision.TimeStamp).Max(),
+                    $"Topic list is not sorted in updated order as expectation. At index {i}.");
         }
 
         [Fact]
