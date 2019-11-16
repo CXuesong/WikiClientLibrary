@@ -1345,6 +1345,82 @@
             Detailed error message provided by MediaWiki API.
             </summary>
     </member>
+    <member name="T:WikiClientLibrary.ServerLagException">
+      <summary>
+            Raises when MediaWiki server replication lag
+            does not meet the required limitation.
+            (<a href="https://www.mediawiki.org/wiki/Manual:Maxlag_parameter">mw:Manual:Maxlag parameter</a>)
+            </summary>
+    </member>
+    <member name="M:WikiClientLibrary.ServerLagException.#ctor(System.String,System.String,System.Double,System.String,System.String)">
+      <summary>
+        <markup>
+          <include item="SMCAutoDocConstructor">
+            <parameter>WikiClientLibrary.ServerLagException</parameter>
+          </include>
+        </markup>
+      </summary>
+      <param name="errorCode">
+        <markup>
+          <include item="SMCMissingParamTag">
+            <parameter>param</parameter>
+            <parameter>errorCode</parameter>
+            <parameter>M:WikiClientLibrary.ServerLagException.#ctor(System.String,System.String,System.Double,System.String,System.String)</parameter>
+          </include>
+        </markup>
+      </param>
+      <param name="message">
+        <markup>
+          <include item="SMCMissingParamTag">
+            <parameter>param</parameter>
+            <parameter>message</parameter>
+            <parameter>M:WikiClientLibrary.ServerLagException.#ctor(System.String,System.String,System.Double,System.String,System.String)</parameter>
+          </include>
+        </markup>
+      </param>
+      <param name="lag">
+        <markup>
+          <include item="SMCMissingParamTag">
+            <parameter>param</parameter>
+            <parameter>lag</parameter>
+            <parameter>M:WikiClientLibrary.ServerLagException.#ctor(System.String,System.String,System.Double,System.String,System.String)</parameter>
+          </include>
+        </markup>
+      </param>
+      <param name="lagType">
+        <markup>
+          <include item="SMCMissingParamTag">
+            <parameter>param</parameter>
+            <parameter>lagType</parameter>
+            <parameter>M:WikiClientLibrary.ServerLagException.#ctor(System.String,System.String,System.Double,System.String,System.String)</parameter>
+          </include>
+        </markup>
+      </param>
+      <param name="laggedHost">
+        <markup>
+          <include item="SMCMissingParamTag">
+            <parameter>param</parameter>
+            <parameter>laggedHost</parameter>
+            <parameter>M:WikiClientLibrary.ServerLagException.#ctor(System.String,System.String,System.Double,System.String,System.String)</parameter>
+          </include>
+        </markup>
+      </param>
+    </member>
+    <member name="P:WikiClientLibrary.ServerLagException.Lag">
+      <summary>
+            The actual lag in seconds.
+            </summary>
+    </member>
+    <member name="P:WikiClientLibrary.ServerLagException.LaggedHost">
+      <summary>
+            The lagged host name.
+            </summary>
+    </member>
+    <member name="P:WikiClientLibrary.ServerLagException.LagType">
+      <summary>
+            Type of the lag.
+            </summary>
+    </member>
     <member name="T:WikiClientLibrary.UnauthorizedOperationException">
       <summary>
             Raises when user has no rights for certain operations.
@@ -1404,6 +1480,42 @@
         </markup>
       </param>
     </member>
+    <member name="M:WikiClientLibrary.UnauthorizedOperationException.#ctor(System.String,System.String,System.Collections.Generic.IReadOnlyCollection{System.String})">
+      <summary>
+        <markup>
+          <include item="SMCAutoDocConstructor">
+            <parameter>WikiClientLibrary.UnauthorizedOperationException</parameter>
+          </include>
+        </markup>
+      </summary>
+      <param name="errorCode">
+        <markup>
+          <include item="SMCMissingParamTag">
+            <parameter>param</parameter>
+            <parameter>errorCode</parameter>
+            <parameter>M:WikiClientLibrary.UnauthorizedOperationException.#ctor(System.String,System.String,System.Collections.Generic.IReadOnlyCollection{System.String})</parameter>
+          </include>
+        </markup>
+      </param>
+      <param name="message">
+        <markup>
+          <include item="SMCMissingParamTag">
+            <parameter>param</parameter>
+            <parameter>message</parameter>
+            <parameter>M:WikiClientLibrary.UnauthorizedOperationException.#ctor(System.String,System.String,System.Collections.Generic.IReadOnlyCollection{System.String})</parameter>
+          </include>
+        </markup>
+      </param>
+      <param name="desiredPermissions">
+        <markup>
+          <include item="SMCMissingParamTag">
+            <parameter>param</parameter>
+            <parameter>desiredPermissions</parameter>
+            <parameter>M:WikiClientLibrary.UnauthorizedOperationException.#ctor(System.String,System.String,System.Collections.Generic.IReadOnlyCollection{System.String})</parameter>
+          </include>
+        </markup>
+      </param>
+    </member>
     <member name="M:WikiClientLibrary.UnauthorizedOperationException.#ctor(WikiClientLibrary.OperationFailedException)">
       <summary>
         <markup>
@@ -1421,6 +1533,15 @@
           </include>
         </markup>
       </param>
+    </member>
+    <member name="P:WikiClientLibrary.UnauthorizedOperationException.DesiredPermissions">
+      <summary>
+            The desired permission(s) to perform the operation.
+            </summary>
+    </member>
+    <member name="M:WikiClientLibrary.UnauthorizedOperationException.ToString">
+      <summary>Creates and returns a string representation of the current exception.</summary>
+      <returns>A string representation of the current exception.</returns>
     </member>
     <member name="T:WikiClientLibrary.UnexpectedDataException">
       <summary>
@@ -4492,6 +4613,7 @@
       <summary>
             When using the default implementation of <see cref="M:WikiClientLibrary.Generators.Primitive.WikiPageGenerator`1.EnumPagesAsync(WikiClientLibrary.Pages.Queries.IWikiPageQueryProvider)" />,
             determines whether to remove duplicate page results generated from generator results.
+            This property does not affect the behavior of <see cref="M:WikiClientLibrary.Generators.Primitive.WikiList`1.EnumItemsAsync" />.
             </summary>
     </member>
     <member name="P:WikiClientLibrary.Generators.RecentChangesGenerator.EndTime">
@@ -4755,7 +4877,7 @@
     </member>
     <member name="T:WikiClientLibrary.Generators.SearchGenerator">
       <summary>
-            Search titles and text.
+            Search for the pages matching the specific keywords in titles and text.
             (<a href="https://www.mediawiki.org/wiki/API:Search">mw:API:Search</a>, MediaWiki 1.11+)
             </summary>
     </member>
@@ -4791,6 +4913,13 @@
     <member name="P:WikiClientLibrary.Generators.SearchGenerator.BackendName">
       <summary>
             Class name of search back-end to use (Default: $wgSearchType, MediaWiki 1.22+)
+            </summary>
+    </member>
+    <member name="P:WikiClientLibrary.Generators.SearchGenerator.DistinctGeneratedPages">
+      <summary>
+            When using the default implementation of <see cref="M:WikiClientLibrary.Generators.Primitive.WikiPageGenerator`1.EnumPagesAsync(WikiClientLibrary.Pages.Queries.IWikiPageQueryProvider)" />,
+            determines whether to remove duplicate page results generated from generator results.
+            This property does not affect the behavior of <see cref="M:WikiClientLibrary.Generators.Primitive.WikiList`1.EnumItemsAsync" />.
             </summary>
     </member>
     <member name="M:WikiClientLibrary.Generators.SearchGenerator.EnumListParameters">
@@ -5072,6 +5201,11 @@
       </summary>
       <param name="site">The MediaWiki site this instance applies to.</param>
     </member>
+    <member name="P:WikiClientLibrary.Generators.Primitive.WikiList`1.CompatibilityOptions">
+      <summary>
+            Gets/sets the compatibility options used with this list.
+            </summary>
+    </member>
     <member name="M:WikiClientLibrary.Generators.Primitive.WikiList`1.EnumItemsAsync">
       <summary>
             Asynchronously enumerates all the items in the list.
@@ -5116,6 +5250,46 @@
     </member>
     <member name="P:WikiClientLibrary.Generators.Primitive.WikiList`1.Site">
       <summary>Gets the MediaWiki site this instance applies to.</summary>
+    </member>
+    <member name="T:WikiClientLibrary.Generators.Primitive.WikiListCompatibilityOptions">
+      <summary>
+            Provides more options on detailed behavior of <see cref="T:WikiClientLibrary.Generators.Primitive.WikiList`1" />-derived instances.
+            Most of the options are provided for compatibility purpose.
+            </summary>
+    </member>
+    <member name="M:WikiClientLibrary.Generators.Primitive.WikiListCompatibilityOptions.#ctor">
+      <summary>
+        <markup>
+          <include item="SMCAutoDocConstructor">
+            <parameter>WikiClientLibrary.Generators.Primitive.WikiListCompatibilityOptions</parameter>
+          </include>
+        </markup>
+      </summary>
+    </member>
+    <member name="P:WikiClientLibrary.Generators.Primitive.WikiListCompatibilityOptions.ContinuationLoopBehaviors">
+      <summary>
+            Specifies the behavior when <see cref="T:WikiClientLibrary.Generators.Primitive.WikiList`1" /> detects itself is getting into a loop
+            due to the continuation parameter set provided by the server shares the exact same value.
+            </summary>
+    </member>
+    <member name="T:WikiClientLibrary.Generators.Primitive.WikiListContinuationLoopBehaviors">
+      <summary>
+            Controls the behavior when <see cref="T:WikiClientLibrary.Generators.Primitive.WikiList`1" /> detects itself is getting into a loop
+            due to the continuation parameter set provided by the server has the exact same values
+            as query parameters.
+            </summary>
+    </member>
+    <member name="F:WikiClientLibrary.Generators.Primitive.WikiListContinuationLoopBehaviors.None">
+      <summary>
+            Do nothing. This will cause an <see cref="T:WikiClientLibrary.UnexpectedDataException" /> to be thrown.
+            </summary>
+    </member>
+    <member name="F:WikiClientLibrary.Generators.Primitive.WikiListContinuationLoopBehaviors.FetchMore">
+      <summary>
+            Tries to fetch more items, so the last item might have a different timestamp, causing the continuation continues.
+            <see cref="T:WikiClientLibrary.Generators.Primitive.WikiList`1" /> will fetch for 1000 items at most, depending on whether the user has `apihighlimits` right.
+            If it still cannot get out of the continuation loop, an <see cref="T:WikiClientLibrary.UnexpectedDataException" /> will be thrown.
+            </summary>
     </member>
     <member name="T:WikiClientLibrary.Generators.Primitive.WikiPageGenerator">
       <summary>
@@ -5162,6 +5336,7 @@
       <summary>
             When using the default implementation of <see cref="M:WikiClientLibrary.Generators.Primitive.WikiPageGenerator`1.EnumPagesAsync(WikiClientLibrary.Pages.Queries.IWikiPageQueryProvider)" />,
             determines whether to remove duplicate page results generated from generator results.
+            This property does not affect the behavior of <see cref="M:WikiClientLibrary.Generators.Primitive.WikiList`1.EnumItemsAsync" />.
             </summary>
     </member>
     <member name="M:WikiClientLibrary.Generators.Primitive.WikiPageGenerator`1.EnumGeneratorParameters">
@@ -5622,6 +5797,20 @@
           </include>
         </markup>
       </param>
+    </member>
+    <member name="M:WikiClientLibrary.Infrastructures.MediaWikiHelper.TryParseDateTime(System.String,System.DateTime@)">
+      <summary>
+            Tries to parse a <see cref="T:System.DateTime" /> from MediaWiki API timestamp from the API response.
+            </summary>
+      <param name="result">The variable to receive the parsed result.</param>
+      <param name="expression">The timestamp expression to be parsed.</param>
+      <returns>A boolean indicates whether the parsing is successful.</returns>
+      <exception cref="T:System.ArgumentNullException">
+        <paramref name="expression" /> is <c>null</c>.</exception>
+      <exception cref="T:System.ArgumentException">
+        <paramref name="expression" /> is empty.</exception>
+      <exception cref="T:System.FormatException">
+        <paramref name="expression" /> is not a valid timestamp expression.</exception>
     </member>
     <member name="T:WikiClientLibrary.Infrastructures.OrderedKeyValuePairs`2">
       <summary>
@@ -6411,10 +6600,10 @@
     </member>
     <member name="M:WikiClientLibrary.Infrastructures.Logging.WikiLoggingHelper.BeginActionScope(WikiClientLibrary.IWikiClientLoggable,System.Object,System.String)">
       <summary>
-            Invokes <see cref="M:Microsoft.Extensions.Logging.ILogger.BeginScope``1(``0)" /> on the <see cref="P:WikiClientLibrary.IWikiClientLoggable.Logger" />
-            with the current action(method) name and parameters.
+            Invokes <see cref="M:Microsoft.Extensions.Logging.ILogger.BeginScope``1(``0)" /> with the current action(method) name and parameters.
             </summary>
-      <param name="loggable">The instance whose <see cref="P:WikiClientLibrary.IWikiClientLoggable.Logger" /> will enter a new scope.</param>
+      <param name="loggable">The loggable object whose logger will enter a new scope.</param>
+      <param name="logger">The logger that will enter a new scope.</param>
       <param name="target">The action target. Usually the target <see cref="T:WikiClientLibrary.Sites.WikiSite" />, <see cref="T:WikiClientLibrary.Pages.WikiPage" />, etc.
             Can be <c>null</c>.</param>
       <param name="parameters">The action parameters. Can be <c>null</c>.</param>
@@ -10215,168 +10404,52 @@
       <summary>
             Imports the Lua module with the specified name and gets the module content.
             </summary>
-      <param name="site">
-        <markup>
-          <include item="SMCMissingParamTag">
-            <parameter>param</parameter>
-            <parameter>site</parameter>
-            <parameter>M:WikiClientLibrary.Scribunto.ScribuntoWikiSiteExtensions.ScribuntoLoadDataAsync``1(WikiClientLibrary.Sites.WikiSite,System.String)</parameter>
-          </include>
-        </markup>
-      </param>
-      <param name="moduleName">
-        <markup>
-          <include item="SMCMissingParamTag">
-            <parameter>param</parameter>
-            <parameter>moduleName</parameter>
-            <parameter>M:WikiClientLibrary.Scribunto.ScribuntoWikiSiteExtensions.ScribuntoLoadDataAsync``1(WikiClientLibrary.Sites.WikiSite,System.String)</parameter>
-          </include>
-        </markup>
-      </param>
-      <typeparam name="T">
-        <markup>
-          <include item="SMCMissingParamTag">
-            <parameter>typeparam</parameter>
-            <parameter>T</parameter>
-            <parameter>M:WikiClientLibrary.Scribunto.ScribuntoWikiSiteExtensions.ScribuntoLoadDataAsync``1(WikiClientLibrary.Sites.WikiSite,System.String)</parameter>
-          </include>
-        </markup>
-      </typeparam>
+      <param name="site">The MediaWiki site on which to evaluate the module.</param>
+      <param name="moduleName">Name of the module to be imported, with or without <c>Module:</c> prefix.</param>
+      <param name="epilog">The Lua code snippet used to return value from the imported module (denoted as <c>p</c> in Lua),
+            or <c>null</c> to use default epilog (<c>return p</c>).</param>
+      <param name="serializer">The JsonSerializer used to deserialize the return value from JSON, or <c>null</c> to use default JSON serializer.</param>
+      <param name="cancellationToken">A token used to cancel the operation.</param>
+      <typeparam name="T">The expected evaluation return value type.</typeparam>
       <returns>The deserialized Lua evaluation result of the module.</returns>
     </member>
     <member name="M:WikiClientLibrary.Scribunto.ScribuntoWikiSiteExtensions.ScribuntoLoadDataAsync``1(WikiClientLibrary.Sites.WikiSite,System.String,Newtonsoft.Json.JsonSerializer)">
       <summary>
             Imports the Lua module with the specified name and gets the module content.
             </summary>
-      <param name="site">
-        <markup>
-          <include item="SMCMissingParamTag">
-            <parameter>param</parameter>
-            <parameter>site</parameter>
-            <parameter>M:WikiClientLibrary.Scribunto.ScribuntoWikiSiteExtensions.ScribuntoLoadDataAsync``1(WikiClientLibrary.Sites.WikiSite,System.String,Newtonsoft.Json.JsonSerializer)</parameter>
-          </include>
-        </markup>
-      </param>
-      <param name="moduleName">
-        <markup>
-          <include item="SMCMissingParamTag">
-            <parameter>param</parameter>
-            <parameter>moduleName</parameter>
-            <parameter>M:WikiClientLibrary.Scribunto.ScribuntoWikiSiteExtensions.ScribuntoLoadDataAsync``1(WikiClientLibrary.Sites.WikiSite,System.String,Newtonsoft.Json.JsonSerializer)</parameter>
-          </include>
-        </markup>
-      </param>
-      <param name="serializer">
-        <markup>
-          <include item="SMCMissingParamTag">
-            <parameter>param</parameter>
-            <parameter>serializer</parameter>
-            <parameter>M:WikiClientLibrary.Scribunto.ScribuntoWikiSiteExtensions.ScribuntoLoadDataAsync``1(WikiClientLibrary.Sites.WikiSite,System.String,Newtonsoft.Json.JsonSerializer)</parameter>
-          </include>
-        </markup>
-      </param>
-      <typeparam name="T">
-        <markup>
-          <include item="SMCMissingParamTag">
-            <parameter>typeparam</parameter>
-            <parameter>T</parameter>
-            <parameter>M:WikiClientLibrary.Scribunto.ScribuntoWikiSiteExtensions.ScribuntoLoadDataAsync``1(WikiClientLibrary.Sites.WikiSite,System.String,Newtonsoft.Json.JsonSerializer)</parameter>
-          </include>
-        </markup>
-      </typeparam>
+      <param name="site">The MediaWiki site on which to evaluate the module.</param>
+      <param name="moduleName">Name of the module to be imported, with or without <c>Module:</c> prefix.</param>
+      <param name="epilog">The Lua code snippet used to return value from the imported module (denoted as <c>p</c> in Lua),
+            or <c>null</c> to use default epilog (<c>return p</c>).</param>
+      <param name="serializer">The JsonSerializer used to deserialize the return value from JSON, or <c>null</c> to use default JSON serializer.</param>
+      <param name="cancellationToken">A token used to cancel the operation.</param>
+      <typeparam name="T">The expected evaluation return value type.</typeparam>
       <returns>The deserialized Lua evaluation result of the module.</returns>
     </member>
     <member name="M:WikiClientLibrary.Scribunto.ScribuntoWikiSiteExtensions.ScribuntoLoadDataAsync``1(WikiClientLibrary.Sites.WikiSite,System.String,Newtonsoft.Json.JsonSerializer,System.Threading.CancellationToken)">
       <summary>
             Imports the Lua module with the specified name and gets the module content.
             </summary>
-      <param name="site">
-        <markup>
-          <include item="SMCMissingParamTag">
-            <parameter>param</parameter>
-            <parameter>site</parameter>
-            <parameter>M:WikiClientLibrary.Scribunto.ScribuntoWikiSiteExtensions.ScribuntoLoadDataAsync``1(WikiClientLibrary.Sites.WikiSite,System.String,Newtonsoft.Json.JsonSerializer,System.Threading.CancellationToken)</parameter>
-          </include>
-        </markup>
-      </param>
-      <param name="moduleName">
-        <markup>
-          <include item="SMCMissingParamTag">
-            <parameter>param</parameter>
-            <parameter>moduleName</parameter>
-            <parameter>M:WikiClientLibrary.Scribunto.ScribuntoWikiSiteExtensions.ScribuntoLoadDataAsync``1(WikiClientLibrary.Sites.WikiSite,System.String,Newtonsoft.Json.JsonSerializer,System.Threading.CancellationToken)</parameter>
-          </include>
-        </markup>
-      </param>
-      <param name="serializer">
-        <markup>
-          <include item="SMCMissingParamTag">
-            <parameter>param</parameter>
-            <parameter>serializer</parameter>
-            <parameter>M:WikiClientLibrary.Scribunto.ScribuntoWikiSiteExtensions.ScribuntoLoadDataAsync``1(WikiClientLibrary.Sites.WikiSite,System.String,Newtonsoft.Json.JsonSerializer,System.Threading.CancellationToken)</parameter>
-          </include>
-        </markup>
-      </param>
-      <param name="cancellationToken">
-        <markup>
-          <include item="SMCMissingParamTag">
-            <parameter>param</parameter>
-            <parameter>cancellationToken</parameter>
-            <parameter>M:WikiClientLibrary.Scribunto.ScribuntoWikiSiteExtensions.ScribuntoLoadDataAsync``1(WikiClientLibrary.Sites.WikiSite,System.String,Newtonsoft.Json.JsonSerializer,System.Threading.CancellationToken)</parameter>
-          </include>
-        </markup>
-      </param>
-      <typeparam name="T">
-        <markup>
-          <include item="SMCMissingParamTag">
-            <parameter>typeparam</parameter>
-            <parameter>T</parameter>
-            <parameter>M:WikiClientLibrary.Scribunto.ScribuntoWikiSiteExtensions.ScribuntoLoadDataAsync``1(WikiClientLibrary.Sites.WikiSite,System.String,Newtonsoft.Json.JsonSerializer,System.Threading.CancellationToken)</parameter>
-          </include>
-        </markup>
-      </typeparam>
+      <param name="site">The MediaWiki site on which to evaluate the module.</param>
+      <param name="moduleName">Name of the module to be imported, with or without <c>Module:</c> prefix.</param>
+      <param name="epilog">The Lua code snippet used to return value from the imported module (denoted as <c>p</c> in Lua),
+            or <c>null</c> to use default epilog (<c>return p</c>).</param>
+      <param name="serializer">The JsonSerializer used to deserialize the return value from JSON, or <c>null</c> to use default JSON serializer.</param>
+      <param name="cancellationToken">A token used to cancel the operation.</param>
+      <typeparam name="T">The expected evaluation return value type.</typeparam>
       <returns>The deserialized Lua evaluation result of the module.</returns>
     </member>
     <member name="M:WikiClientLibrary.Scribunto.ScribuntoWikiSiteExtensions.ScribuntoLoadDataAsync``1(WikiClientLibrary.Sites.WikiSite,System.String,System.String)">
       <summary>
             Imports the Lua module with the specified name and gets the module content.
             </summary>
-      <param name="site">
-        <markup>
-          <include item="SMCMissingParamTag">
-            <parameter>param</parameter>
-            <parameter>site</parameter>
-            <parameter>M:WikiClientLibrary.Scribunto.ScribuntoWikiSiteExtensions.ScribuntoLoadDataAsync``1(WikiClientLibrary.Sites.WikiSite,System.String,System.String)</parameter>
-          </include>
-        </markup>
-      </param>
-      <param name="moduleName">
-        <markup>
-          <include item="SMCMissingParamTag">
-            <parameter>param</parameter>
-            <parameter>moduleName</parameter>
-            <parameter>M:WikiClientLibrary.Scribunto.ScribuntoWikiSiteExtensions.ScribuntoLoadDataAsync``1(WikiClientLibrary.Sites.WikiSite,System.String,System.String)</parameter>
-          </include>
-        </markup>
-      </param>
-      <param name="epilog">
-        <markup>
-          <include item="SMCMissingParamTag">
-            <parameter>param</parameter>
-            <parameter>epilog</parameter>
-            <parameter>M:WikiClientLibrary.Scribunto.ScribuntoWikiSiteExtensions.ScribuntoLoadDataAsync``1(WikiClientLibrary.Sites.WikiSite,System.String,System.String)</parameter>
-          </include>
-        </markup>
-      </param>
-      <typeparam name="T">
-        <markup>
-          <include item="SMCMissingParamTag">
-            <parameter>typeparam</parameter>
-            <parameter>T</parameter>
-            <parameter>M:WikiClientLibrary.Scribunto.ScribuntoWikiSiteExtensions.ScribuntoLoadDataAsync``1(WikiClientLibrary.Sites.WikiSite,System.String,System.String)</parameter>
-          </include>
-        </markup>
-      </typeparam>
+      <param name="site">The MediaWiki site on which to evaluate the module.</param>
+      <param name="moduleName">Name of the module to be imported, with or without <c>Module:</c> prefix.</param>
+      <param name="epilog">The Lua code snippet used to return value from the imported module (denoted as <c>p</c> in Lua),
+            or <c>null</c> to use default epilog (<c>return p</c>).</param>
+      <param name="serializer">The JsonSerializer used to deserialize the return value from JSON, or <c>null</c> to use default JSON serializer.</param>
+      <param name="cancellationToken">A token used to cancel the operation.</param>
+      <typeparam name="T">The expected evaluation return value type.</typeparam>
       <returns>The deserialized Lua evaluation result of the module.</returns>
     </member>
     <member name="M:WikiClientLibrary.Scribunto.ScribuntoWikiSiteExtensions.ScribuntoLoadDataAsync``1(WikiClientLibrary.Sites.WikiSite,System.String,System.String,Newtonsoft.Json.JsonSerializer,System.Threading.CancellationToken)">
@@ -10396,93 +10469,26 @@
       <summary>
             Imports the Lua module with the specified name and gets the module content.
             </summary>
-      <param name="site">
-        <markup>
-          <include item="SMCMissingParamTag">
-            <parameter>param</parameter>
-            <parameter>site</parameter>
-            <parameter>M:WikiClientLibrary.Scribunto.ScribuntoWikiSiteExtensions.ScribuntoLoadDataAsync``1(WikiClientLibrary.Sites.WikiSite,System.String,System.String,System.Threading.CancellationToken)</parameter>
-          </include>
-        </markup>
-      </param>
-      <param name="moduleName">
-        <markup>
-          <include item="SMCMissingParamTag">
-            <parameter>param</parameter>
-            <parameter>moduleName</parameter>
-            <parameter>M:WikiClientLibrary.Scribunto.ScribuntoWikiSiteExtensions.ScribuntoLoadDataAsync``1(WikiClientLibrary.Sites.WikiSite,System.String,System.String,System.Threading.CancellationToken)</parameter>
-          </include>
-        </markup>
-      </param>
-      <param name="epilog">
-        <markup>
-          <include item="SMCMissingParamTag">
-            <parameter>param</parameter>
-            <parameter>epilog</parameter>
-            <parameter>M:WikiClientLibrary.Scribunto.ScribuntoWikiSiteExtensions.ScribuntoLoadDataAsync``1(WikiClientLibrary.Sites.WikiSite,System.String,System.String,System.Threading.CancellationToken)</parameter>
-          </include>
-        </markup>
-      </param>
-      <param name="cancellationToken">
-        <markup>
-          <include item="SMCMissingParamTag">
-            <parameter>param</parameter>
-            <parameter>cancellationToken</parameter>
-            <parameter>M:WikiClientLibrary.Scribunto.ScribuntoWikiSiteExtensions.ScribuntoLoadDataAsync``1(WikiClientLibrary.Sites.WikiSite,System.String,System.String,System.Threading.CancellationToken)</parameter>
-          </include>
-        </markup>
-      </param>
-      <typeparam name="T">
-        <markup>
-          <include item="SMCMissingParamTag">
-            <parameter>typeparam</parameter>
-            <parameter>T</parameter>
-            <parameter>M:WikiClientLibrary.Scribunto.ScribuntoWikiSiteExtensions.ScribuntoLoadDataAsync``1(WikiClientLibrary.Sites.WikiSite,System.String,System.String,System.Threading.CancellationToken)</parameter>
-          </include>
-        </markup>
-      </typeparam>
+      <param name="site">The MediaWiki site on which to evaluate the module.</param>
+      <param name="moduleName">Name of the module to be imported, with or without <c>Module:</c> prefix.</param>
+      <param name="epilog">The Lua code snippet used to return value from the imported module (denoted as <c>p</c> in Lua),
+            or <c>null</c> to use default epilog (<c>return p</c>).</param>
+      <param name="serializer">The JsonSerializer used to deserialize the return value from JSON, or <c>null</c> to use default JSON serializer.</param>
+      <param name="cancellationToken">A token used to cancel the operation.</param>
+      <typeparam name="T">The expected evaluation return value type.</typeparam>
       <returns>The deserialized Lua evaluation result of the module.</returns>
     </member>
     <member name="M:WikiClientLibrary.Scribunto.ScribuntoWikiSiteExtensions.ScribuntoLoadDataAsync``1(WikiClientLibrary.Sites.WikiSite,System.String,System.Threading.CancellationToken)">
       <summary>
             Imports the Lua module with the specified name and gets the module content.
             </summary>
-      <param name="site">
-        <markup>
-          <include item="SMCMissingParamTag">
-            <parameter>param</parameter>
-            <parameter>site</parameter>
-            <parameter>M:WikiClientLibrary.Scribunto.ScribuntoWikiSiteExtensions.ScribuntoLoadDataAsync``1(WikiClientLibrary.Sites.WikiSite,System.String,System.Threading.CancellationToken)</parameter>
-          </include>
-        </markup>
-      </param>
-      <param name="moduleName">
-        <markup>
-          <include item="SMCMissingParamTag">
-            <parameter>param</parameter>
-            <parameter>moduleName</parameter>
-            <parameter>M:WikiClientLibrary.Scribunto.ScribuntoWikiSiteExtensions.ScribuntoLoadDataAsync``1(WikiClientLibrary.Sites.WikiSite,System.String,System.Threading.CancellationToken)</parameter>
-          </include>
-        </markup>
-      </param>
-      <param name="cancellationToken">
-        <markup>
-          <include item="SMCMissingParamTag">
-            <parameter>param</parameter>
-            <parameter>cancellationToken</parameter>
-            <parameter>M:WikiClientLibrary.Scribunto.ScribuntoWikiSiteExtensions.ScribuntoLoadDataAsync``1(WikiClientLibrary.Sites.WikiSite,System.String,System.Threading.CancellationToken)</parameter>
-          </include>
-        </markup>
-      </param>
-      <typeparam name="T">
-        <markup>
-          <include item="SMCMissingParamTag">
-            <parameter>typeparam</parameter>
-            <parameter>T</parameter>
-            <parameter>M:WikiClientLibrary.Scribunto.ScribuntoWikiSiteExtensions.ScribuntoLoadDataAsync``1(WikiClientLibrary.Sites.WikiSite,System.String,System.Threading.CancellationToken)</parameter>
-          </include>
-        </markup>
-      </typeparam>
+      <param name="site">The MediaWiki site on which to evaluate the module.</param>
+      <param name="moduleName">Name of the module to be imported, with or without <c>Module:</c> prefix.</param>
+      <param name="epilog">The Lua code snippet used to return value from the imported module (denoted as <c>p</c> in Lua),
+            or <c>null</c> to use default epilog (<c>return p</c>).</param>
+      <param name="serializer">The JsonSerializer used to deserialize the return value from JSON, or <c>null</c> to use default JSON serializer.</param>
+      <param name="cancellationToken">A token used to cancel the operation.</param>
+      <typeparam name="T">The expected evaluation return value type.</typeparam>
       <returns>The deserialized Lua evaluation result of the module.</returns>
     </member>
     <member name="T:WikiClientLibrary.Sites.AccountAssertionBehavior">

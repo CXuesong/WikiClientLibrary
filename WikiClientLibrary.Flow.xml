@@ -390,6 +390,7 @@
     <member name="P:WikiClientLibrary.Flow.Revision.Content">
       <summary>
             Revision content, in wikitext format.
+            Depending on the context, this can be the topic content, topic summary, or post content.
             </summary>
     </member>
     <member name="P:WikiClientLibrary.Flow.Revision.ContentLength">
@@ -444,13 +445,8 @@
     </member>
     <member name="P:WikiClientLibrary.Flow.Revision.LastUpdated">
       <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>P:WikiClientLibrary.Flow.Revision.LastUpdated</parameter>
-          </include>
-        </markup>
-      </summary>
+            For topic revision, the last update time of the whole topic.
+            </summary>
     </member>
     <member name="P:WikiClientLibrary.Flow.Revision.Links">
       <summary>
@@ -544,7 +540,7 @@
     </member>
     <member name="P:WikiClientLibrary.Flow.Revision.Summary">
       <summary>
-            The latest revision of topic summary, if available.
+            For topic title revision, this is the latest revision of topic summary, if available.
             </summary>
     </member>
     <member name="P:WikiClientLibrary.Flow.Revision.TimeStamp">
