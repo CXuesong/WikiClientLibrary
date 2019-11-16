@@ -84,14 +84,15 @@ The original title of the page is '''{title}'''.
         }
 
         [Theory]
-        [InlineData("File:Test image.jpg", "1")]
-        [InlineData("File:Test image.jpg", "2")]
-        [InlineData("Test image.jpg", "1")]
+        [InlineData("File:Test image {0}.jpg", "1")]
+        [InlineData("File:Test image {0}.jpg", "2")]
+        [InlineData("Test image {0}.jpg", "1")]
         public async Task LocalFileUploadTest1(string fileName, string imageName)
         {
             const string ReuploadSuffix = "\n\nReuploaded.";
             var site = await SiteAsync;
             var file = Utility.GetDemoImage(imageName);
+            fileName = string.Format(fileName, Utility.RandomTitleString());
             var result = await site.UploadAsync(fileName, new StreamUploadSource(file.ContentStream), file.Description, false);
             ShallowTrace(result);
             if (result.ResultCode == UploadResultCode.Warning)
