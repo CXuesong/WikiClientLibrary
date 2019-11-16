@@ -127,7 +127,9 @@ The original title of the page is '''{title}'''.
         [Fact]
         public async Task LocalFileUploadRetryTest1()
         {
-            const string fileName = "File:Test image.jpg";
+            // This is to attempt to prevent the following error:
+            // backend-fail-alreadyexists: The file "mwstore://local-swift-eqiad/local-public/archive/9/95/20191116051316!Test_image.jpg" already exists.
+            var fileName = $"File:Test image {Utility.RandomTitleString()}.jpg";
             var localSite = await CreateIsolatedWikiSiteAsync(CredentialManager.DirtyTestsEntryPointUrl);
             // Cache the token first so it won't be affected by the short timeout.
             await localSite.GetTokenAsync("edit");
@@ -214,7 +216,9 @@ JasonHise grants anyone the right to use this work for any purpose, without any 
             } while (!chunked.IsStashed);
             try
             {
-                await site.UploadAsync("Test image.jpg", chunked, file.Description, true);
+                // This is to attempt to prevent the following error:
+                // backend-fail-alreadyexists: The file "mwstore://local-swift-eqiad/local-public/archive/9/95/20191116051316!Test_image.jpg" already exists.
+                await site.UploadAsync($"Test image {Utility.RandomTitleString()}.jpg", chunked, file.Description, true);
             }
             catch (OperationFailedException ex) when (ex.ErrorCode == "fileexists-no-change")
             {

@@ -40,17 +40,19 @@ namespace WikiClientLibrary.Tests.UnitTestProject1.Tests
             var board = new Board(await WpBetaSiteAsync, "Talk:Flow QA");
             await board.RefreshAsync();
             ShallowTrace(board);
-            var topics = await board.EnumTopicsAsync(TopicListingOptions.OrderByPosted, 4).Take(10).ToArrayAsync();
-            ShallowTrace(topics, 3);
-            Assert.DoesNotContain(null, topics);
-            for (int i = 1; i < topics.Length; i++)
-                Assert.True(topics[i - 1].TopicTitleRevision.TimeStamp >= topics[i].TopicTitleRevision.TimeStamp,
-                    "Topic list is not sorted in posted order as expectation.");
-            topics = await board.EnumTopicsAsync(TopicListingOptions.OrderByUpdated, 5).Take(10).ToArrayAsync();
-            for (int i = 1; i < topics.Length; i++)
-                Assert.True(ExpandPosts(topics[i - 1].Posts).Select(p => p.LastRevision.TimeStamp).Max()
-                            >= ExpandPosts(topics[i].Posts).Select(p => p.LastRevision.TimeStamp).Max(),
-                    "Topic list is not sorted in updated order as expectation.");
+            for (int x = 0; x < 20; x++)
+            {
+                var topics = await board.EnumTopicsAsync(TopicListingOptions.OrderByPosted, 4).Take(10).ToArrayAsync();
+                Assert.DoesNotContain(null, topics);
+                for (int i = 1; i < topics.Length; i++)
+                    Assert.True(topics[i - 1].TopicTitleRevision.TimeStamp >= topics[i].TopicTitleRevision.TimeStamp,
+                        "Topic list is not sorted in posted order as expectation.");
+                topics = await board.EnumTopicsAsync(TopicListingOptions.OrderByUpdated, 5).Take(10).ToArrayAsync();
+                for (int i = 1; i < topics.Length; i++)
+                    Assert.True(ExpandPosts(topics[i - 1].Posts).Select(p => p.LastRevision.TimeStamp).Max()
+                                >= ExpandPosts(topics[i].Posts).Select(p => p.LastRevision.TimeStamp).Max(),
+                        "Topic list is not sorted in updated order as expectation.");
+            }
         }
 
         [Fact]
