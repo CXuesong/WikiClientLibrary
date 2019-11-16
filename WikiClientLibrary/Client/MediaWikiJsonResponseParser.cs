@@ -105,6 +105,10 @@ namespace WikiClientLibrary.Client
         /// <description>Mapped exception type</description>
         /// </listheader>
         /// <item>
+        /// <term><c>maxlag</c></term>
+        /// <description><see cref="ServerLagException"/>; <see cref="WikiResponseParsingContext.NeedRetry"/> will be set to <c>true</c>.</description>
+        /// </item>
+        /// <item>
         /// <term><c>permissiondenied</c>, <c>readapidenied</c>, <c>mustbeloggedin</c></term>
         /// <description><see cref="UnauthorizedOperationException"/></description>
         /// </item>
@@ -147,8 +151,11 @@ namespace WikiClientLibrary.Client
         {
             switch (errorCode)
             {
+                case "maxlag":  // maxlag reached.
+                    context.NeedRetry = true;
+                    throw new ServerLagException(errorCode, errorMessage, (double?)errorNode["lag"] ?? 0, (string)errorNode["type"], (string)errorNode["host"]);
                 case "permissiondenied":
-                case "readapidenied": // You need read permission to use this module
+                case "readapidenied": // You need read permission to use this module.
                 case "mustbeloggedin": // You must be logged in to upload this file.
                     throw new UnauthorizedOperationException(errorCode, errorMessage);
                 case "permissions":

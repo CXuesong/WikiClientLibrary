@@ -211,7 +211,7 @@ namespace WikiClientLibrary.Client
                 return true;
             }
 
-            RETRY:
+        RETRY:
             Logger.LogTrace("Initiate request to: {EndPointUrl}.", endPointUrl);
             cancellationToken.ThrowIfCancellationRequested();
             var requestSw = Stopwatch.StartNew();
@@ -245,17 +245,21 @@ namespace WikiClientLibrary.Client
                 if (!response.IsSuccessStatusCode)
                     Logger.LogWarning("HTTP {StatusCode} {Reason}.", statusCode, response.ReasonPhrase, requestSw.Elapsed);
                 var localRetryDelay = RetryDelay;
-                if (retries < MaxRetries && response.Headers.RetryAfter != null)
+                if (response.Headers.RetryAfter != null)
                 {
-                    // Service Error. We can retry.
-                    // HTTP 503 : https://www.mediawiki.org/wiki/Manual:Maxlag_parameter
-                    // Delay per Retry-After Header
-                    var date = response.Headers.RetryAfter.Date;
-                    var delay = response.Headers.RetryAfter.Delta;
-                    if (delay == null && date != null) delay = date - DateTimeOffset.Now;
-                    // Or use the default delay
-                    if (delay != null && delay < RetryDelay)
-                        localRetryDelay = delay.Value;
+                    Logger.LogWarning("Detected Retry-After header in HTTP response: {RetryAfter}.", response.Headers.RetryAfter);
+                    if (retries < MaxRetries)
+                    {
+                        // Service Error. We can retry.
+                        // HTTP 503 or 200 : https://www.mediawiki.org/wiki/Manual:Maxlag_parameter
+                        // Delay per Retry-After Header
+                        var date = response.Headers.RetryAfter.Date;
+                        var delay = response.Headers.RetryAfter.Delta;
+                        if (delay == null && date != null) delay = date - DateTimeOffset.Now;
+                        // Or use the default delay
+                        if (delay != null && delay < RetryDelay)
+                            localRetryDelay = delay.Value;
+                    }
                 }
                 // It's responseParser's turn to check status code.
                 cancellationToken.ThrowIfCancellationRequested();

@@ -237,6 +237,42 @@ namespace WikiClientLibrary
     }
 
     /// <summary>
+    /// Raises when MediaWiki server replication lag
+    /// does not meet the required limitation.
+    /// (<a href="https://www.mediawiki.org/wiki/Manual:Maxlag_parameter">mw:Manual:Maxlag parameter</a>)
+    /// </summary>
+    public class ServerLagException : OperationFailedException
+    {
+
+        public ServerLagException(string errorCode, string message, double lag, string lagType, string laggedHost)
+            : base(errorCode, message)
+        {
+            Lag = lag;
+            LaggedHost = laggedHost;
+            LagType = lagType;
+        }
+
+        /// <summary>
+        /// The actual lag in seconds.
+        /// </summary>
+        public double Lag { get; }
+
+        /// <summary>
+        /// Type of the lag.
+        /// </summary>
+        /// <remarks>
+        /// For most of the cases, the value is <c>"db"</c>.
+        /// </remarks>
+        public string LagType { get; }
+
+        /// <summary>
+        /// The lagged host name.
+        /// </summary>
+        public string LaggedHost { get; }
+
+    }
+
+    /// <summary>
     /// Raises when the received network data is out of expectation.
     /// This may indicate the client library code is out of date.
     /// </summary>
