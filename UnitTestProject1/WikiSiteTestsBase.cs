@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Reflection;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -213,7 +214,11 @@ namespace WikiClientLibrary.Tests.UnitTestProject1
             {
                 Timeout = TimeSpan.FromSeconds(20),
                 RetryDelay = TimeSpan.FromSeconds(5),
-                ClientUserAgent = "UnitTest/1.0 (.NET CLR)",
+#if ENV_CI_BUILD
+                ClientUserAgent = $"UnitTest/1.0 ({RuntimeInformation.FrameworkDescription}; ENV_CI_BUILD)",
+#else
+                ClientUserAgent = $"UnitTest/1.0 ({RuntimeInformation.FrameworkDescription})",
+#endif
                 Logger = OutputLoggerFactory.CreateLogger<WikiClient>(),
             };
             return client;
