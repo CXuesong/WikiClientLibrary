@@ -64,7 +64,7 @@ jobs:
           submodules: true
       - name: PrepEnv
         shell: pwsh
-        run: './WikiClientLibrary.Commons/CI/PrepEnv.ps1 -Configuration ${{ matrix.config }}'
+        run: './WikiClientLibrary.Commons/CI/PrepEnv.ps1'
       - name: Build
         shell: pwsh
         run: './WikiClientLibrary.Commons/CI/Build.ps1 -Configuration ${{ matrix.config }}'
