@@ -45,15 +45,17 @@ namespace WikiClientLibrary.Generators.Primitive
         /// If it still cannot get out of the continuation loop, an <see cref="UnexpectedDataException"/> will be thrown.
         /// </summary>
         FetchMore = 1,
-        /// <summary>
-        /// Tries to increment/decrement the raw query continuation parameter value, so as to get out of the continuation loop,
-        /// at the cost of skipping some of the items.
-        /// </summary>
-        SkipItems = 2,
-        /// <summary>
-        /// Tries <see cref="FetchMore"/> first, then <see cref="SkipItems"/>.
-        /// </summary>
-        FetchMoreThenSkip = FetchMore | SkipItems,
+
+        // TODO implement the following options.
+        ///// <summary>
+        ///// Tries to increment/decrement the raw query continuation parameter value, so as to get out of the continuation loop,
+        ///// at the cost of skipping some of the items.
+        ///// </summary>
+        //SkipItems = 2,
+        ///// <summary>
+        ///// Tries <see cref="FetchMore"/> first, then <see cref="SkipItems"/>.
+        ///// </summary>
+        //FetchMoreThenSkip = FetchMore | SkipItems,
     }
 
 }

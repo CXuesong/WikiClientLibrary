@@ -220,11 +220,11 @@ namespace WikiClientLibrary.Generators.Primitive
 
                                             }
                                         }
-                                        if (!outOfLoop && (CompatibilityOptions.ContinuationLoopBehaviors & WikiListContinuationLoopBehaviors.SkipItems) ==
-                                            WikiListContinuationLoopBehaviors.SkipItems)
-                                        {
+                                        //if (!outOfLoop && (CompatibilityOptions.ContinuationLoopBehaviors & WikiListContinuationLoopBehaviors.SkipItems) ==
+                                        //    WikiListContinuationLoopBehaviors.SkipItems)
+                                        //{
 
-                                        }
+                                        //}
                                     }
                                     if (!outOfLoop)
                                         throw new UnexpectedDataException("Continuation information provided by server response leads to an infinite loop.");
