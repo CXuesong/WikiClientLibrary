@@ -64,7 +64,8 @@ namespace WikiClientLibrary.Infrastructures.Logging
             return logger.BeginScope(new ActionLogScopeState(target, actionName, parameters));
         }
 
-        /// <inheritdoc cref="BeginActionScope(IWikiClientLoggable,object,IEnumerable,string)"/>
+        /// <inheritdoc cref="BeginActionScope(ILogger,object,IEnumerable,string)"/>
+        /// <param name="loggable">The loggable object whose logger will enter a new scope.</param>
         public static IDisposable BeginActionScope(this IWikiClientLoggable loggable, object target, [CallerMemberName] string actionName = null)
         {
             if (loggable == null) throw new ArgumentNullException(nameof(loggable));

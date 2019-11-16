@@ -42,7 +42,7 @@ namespace WikiClientLibrary.Scribunto
         /// <a href="https://www.mediawiki.org/wiki/Extension:Scribunto/Lua_reference_manual#mw.loadData"><c>mw.loadData</c></a>,
         /// it works as long as the imported module meets the requirement of <c>loadData</c> function.
         /// </remarks>
-        /// <inheritdoc cref="ScribuntoLoadDataAsync{T}(WikiSite,string,JsonSerializer,CancellationToken)"/>
+        /// <inheritdoc cref="ScribuntoLoadDataAsync{T}(WikiSite,string,string,JsonSerializer,CancellationToken)"/>
         public static Task<T> ScribuntoLoadDataAsync<T>(this WikiSite site, string moduleName,
             JsonSerializer serializer, CancellationToken cancellationToken)
         {
