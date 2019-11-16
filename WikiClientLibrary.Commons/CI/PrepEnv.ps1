@@ -34,7 +34,7 @@ elseif ($IsWindows) {
     # SHFB
     if ($Configuration -eq "Release") {
         Invoke-WebRequest "https://github.com/EWSoftware/SHFB/releases/download/v2019.9.15.0/SHFBInstaller_v2019.9.15.0.zip" -OutFile SHFBInstaller.zip
-        New-Item -ItemType Directory SHFBInstaller
+        New-Item -ItemType Directory SHFBInstaller | Out-Null
         Expand-Archive SHFBInstaller.zip SHFBInstaller
         $proc = Start-Process -PassThru -Wait -FilePath ./SHFBInstaller/InstallResources/SandcastleHelpFileBuilder.msi -ArgumentList /quiet, /lwe, SHFBInstall.log
         Get-Content SHFBInstall.log
