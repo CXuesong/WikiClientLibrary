@@ -43,7 +43,7 @@ jobs:
         run: ./WikiClientLibrary.Commons/CI/Test.ps1
       - name: CollectArtifacts
         shell: pwsh
-        run: './WikiClientLibrary.Commons/CI/CollectArtifacts -Configuration ${{ matrix.config }}'
+        run: './WikiClientLibrary.Commons/CI/CollectArtifacts -Configuration Release'
       - uses: actions/upload-artifact@master
         with:
           name: BuildArtifacts-CIRelease
