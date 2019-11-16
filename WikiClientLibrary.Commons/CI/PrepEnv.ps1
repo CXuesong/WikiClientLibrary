@@ -10,10 +10,30 @@ trap {
     Write-Host $_.ScriptStackTrace
     Exit 1
 }
+
 function CheckLastExitCode($ExitCode = $LASTEXITCODE) {
     if ($ExitCode) {
         Write-Host (Get-PSCallStack)
         Exit $ExitCode
+    }
+}
+
+function checkDotNetSdkVersions {
+    [CmdletBinding()] param([string] $Channel)
+
+    [string[]]$sdks = dotnet --list-sdks
+
+    $matchingSdks = $sdks | ? { $_ -match "^$Channel\." }
+
+    Write-Host "Installed .NET Core SDK $Channel.x:"
+    Write-Host $matchingSdks
+
+    if ($matchingSdks) {
+        return $true
+    }
+    else {
+        Write-Error "No matching SDK installed for channel: $Channel."
+        return $false
     }
 }
 
@@ -22,20 +42,28 @@ if ($IsLinux) {
     if ($SHFB) {
         Write-Error "SHFB is not supported on Linux."
     }
-    sudo apt install dotnet-sdk-2.1.202 dotnet-sdk-3.0
-    CheckLastExitCode
-    Write-Host "Installed .NET Core SDKs:"
-    dotnet --list-sdks
-    CheckLastExitCode
+    if (-not (checkDotNetSdkVersions -Channel 2 -ErrorAction Continue)) {
+        sudo apt install dotnet-sdk-2.1.202
+        CheckLastExitCode
+        checkDotNetSdkVersions -Channel 2
+    }
+    if (-not (checkDotNetSdkVersions -Channel 3 -ErrorAction Continue)) {
+        sudo apt install dotnet-sdk-3.0
+        CheckLastExitCode
+        checkDotNetSdkVersions -Channel 3
+    }
 }
 elseif ($IsWindows) {
     # dotnet
     Invoke-WebRequest 'https://dot.net/v1/dotnet-install.ps1' -OutFile 'DotNet-Install.ps1'
-    ./DotNet-Install.ps1 -Version 2.1.202
-    ./DotNet-Install.ps1 -Version 3.0.100
-    Write-Host "Installed .NET Core SDKs:"
-    dotnet --list-sdks
-    CheckLastExitCode
+    if (-not (checkDotNetSdkVersions -Channel 2 -ErrorAction Continue)) {
+        ./DotNet-Install.ps1 -Version 2.1.202
+        checkDotNetSdkVersions -Channel 2
+    }
+    if (-not (checkDotNetSdkVersions -Channel 3 -ErrorAction Continue)) {
+        ./DotNet-Install.ps1 -Version 3.0.100
+        checkDotNetSdkVersions -Channel 3
+    }
 
     # SHFB
     if ($SHFB) {
