@@ -34,7 +34,7 @@ namespace WikiClientLibrary.Tests.UnitTestProject1
             {
                 sb.Append(obj);
             }
-            if (maxDepth < 1 || obj.GetType().GetTypeInfo().IsPrimitive 
+            if (maxDepth < 1 || obj.GetType().GetTypeInfo().IsPrimitive
                              || obj is string || obj is Uri || obj is DateTime || obj is DateTimeOffset)
             {
                 var s = sb.ToString();
@@ -114,6 +114,26 @@ namespace WikiClientLibrary.Tests.UnitTestProject1
         {
             return new HashSet<T>(source);
         }
+
+        private static readonly Random random = new Random();
+
+        public static string RandomTitleString(int length = 8)
+        {
+            var sb = new StringBuilder();
+            lock (random)
+            {
+                for (int i = 0; i < length; i++)
+                {
+                    var nextDigit = random.Next(0, 36);
+                    if (nextDigit < 10)
+                        sb.Append((char)('0' + nextDigit));
+                    else
+                        sb.Append((char)('a' - 10 + nextDigit));
+                }
+            }
+            return sb.ToString();
+        }
+
     }
 
     internal struct DemoFileInfo

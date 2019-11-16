@@ -37,20 +37,45 @@ namespace WikiClientLibrary.Tests.UnitTestProject1.Tests
         [Fact]
         public async Task BoardTest()
         {
+            void DumpTopics(IReadOnlyCollection<Topic> ts)
+            {
+                Output.WriteLine("Topics: {0}", ts.Count);
+                Output.WriteLine("#, Title, TopicTitle, Author, TimeStamp, LastUpdated, LastPost");
+                var index = 0;
+                foreach (var topic in ts)
+                {
+                    if (topic == null)
+                        Output.WriteLine("{0}, <null>", index);
+                    else
+                        Output.WriteLine("{0}, {1}, {2}, {3}, {4:u}, {5:u}, {6:u}",
+                            index, topic.Title, topic.TopicTitle, topic.TopicTitleRevision.Author,
+                            topic.TopicTitleRevision.TimeStamp, topic.TopicTitleRevision.LastUpdated,
+                            ExpandPosts(topic.Posts).Max(p => p.LastRevision.TimeStamp));
+                    index++;
+                }
+            }
+
             var board = new Board(await WpBetaSiteAsync, "Talk:Flow QA");
             await board.RefreshAsync();
             ShallowTrace(board);
-            var topics = await board.EnumTopicsAsync(TopicListingOptions.OrderByPosted, 4).Take(10).ToArrayAsync();
-            ShallowTrace(topics, 3);
+            // Flow seems not very consistent when we are querying and posting topics at the same time.
+            // We are running 3 tasks in parallel on CI.
+            // But we can skip the first several items to evade this.
+            var topics = await board.EnumTopicsAsync(TopicListingOptions.OrderByPosted, 4).Skip(10).Take(10).ToArrayAsync();
+            DumpTopics(topics);
             Assert.DoesNotContain(null, topics);
             for (int i = 1; i < topics.Length; i++)
+            {
                 Assert.True(topics[i - 1].TopicTitleRevision.TimeStamp >= topics[i].TopicTitleRevision.TimeStamp,
-                    "Topic list is not sorted in posted order as expectation.");
-            topics = await board.EnumTopicsAsync(TopicListingOptions.OrderByUpdated, 5).Take(10).ToArrayAsync();
+                    $"Topic list is not sorted in posted order as expected. At index {i}.");
+            }
+            topics = await board.EnumTopicsAsync(TopicListingOptions.OrderByUpdated, 5).Skip(10).Take(10).ToArrayAsync();
+            DumpTopics(topics);
+            Assert.DoesNotContain(null, topics);
             for (int i = 1; i < topics.Length; i++)
                 Assert.True(ExpandPosts(topics[i - 1].Posts).Select(p => p.LastRevision.TimeStamp).Max()
                             >= ExpandPosts(topics[i].Posts).Select(p => p.LastRevision.TimeStamp).Max(),
-                    "Topic list is not sorted in updated order as expectation.");
+                    $"Topic list is not sorted in updated order as expected. At index {i}.");
         }
 
         [Fact]

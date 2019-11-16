@@ -54,6 +54,9 @@ namespace WikiClientLibrary.Flow
             set => TimeStamp = DateTime.ParseExact(value, "yyyyMMddHHmmss", null);
         }
 
+        /// <summary>
+        /// For topic revision, the last update time of the whole topic.
+        /// </summary>
         public DateTime? LastUpdated { get; private set; }
 
         [JsonProperty("last_updated")]
@@ -219,6 +222,7 @@ namespace WikiClientLibrary.Flow
 
         /// <summary>
         /// Revision content, in wikitext format.
+        /// Depending on the context, this can be the topic content, topic summary, or post content.
         /// </summary>
         public string Content { get; private set; }
 
@@ -235,7 +239,7 @@ namespace WikiClientLibrary.Flow
         }
 
         /// <summary>
-        /// The latest revision of topic summary, if available.
+        /// For topic title revision, this is the latest revision of topic summary, if available.
         /// </summary>
         public Revision Summary { get; private set; }
 
