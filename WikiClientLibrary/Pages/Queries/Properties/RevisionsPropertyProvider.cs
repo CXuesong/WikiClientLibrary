@@ -40,6 +40,8 @@ namespace WikiClientLibrary.Pages.Queries.Properties
         /// </remarks>
         public IEnumerable<string> Slots { get; set; }
 
+        internal static readonly object RVLIMIT_SINGLE_REVISION_MAGIC = "[single]";
+
         /// <inheritdoc />
         public override IEnumerable<KeyValuePair<string, object>> EnumParameters(MediaWikiVersion version)
         {
@@ -51,7 +53,7 @@ namespace WikiClientLibrary.Pages.Queries.Properties
                         : "ids|timestamp|flags|comment|user|userid|contentmodel|sha1|tags|size"
                 },
                 // This field should be post-processed in RequestHelper.RefreshPagesAsync
-                { "rvlimit", "dummy" }
+                { "rvlimit", RVLIMIT_SINGLE_REVISION_MAGIC }
             };
             if (Slots != null || version >= new MediaWikiVersion(1, 32))
             {
