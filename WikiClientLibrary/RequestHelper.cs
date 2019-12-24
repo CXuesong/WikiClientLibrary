@@ -224,7 +224,8 @@ namespace WikiClientLibrary
                             queryParams["pageids"] = MediaWikiHelper.JoinValues(partition.Select(p => p.Id));
                         }
                         // For single-page fetching, force fetching 1 revision only.
-                        if (partition.Count == 1)
+                        // This is for not letting MW server returning too many results for RevisionsPropertyProvider.
+                        if (partition.Count == 1 && queryParams.ContainsKey("rvlimit"))
                             queryParams["rvlimit"] = 1;
                         else
                             queryParams.Remove("rvlimit");

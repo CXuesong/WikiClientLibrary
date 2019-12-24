@@ -49,7 +49,9 @@ namespace WikiClientLibrary.Pages.Queries.Properties
                     "rvprop", FetchContent
                         ? "ids|timestamp|flags|comment|user|userid|contentmodel|sha1|tags|size|content"
                         : "ids|timestamp|flags|comment|user|userid|contentmodel|sha1|tags|size"
-                }
+                },
+                // This field should be post-processed in RequestHelper.RefreshPagesAsync
+                { "rvlimit", "dummy" }
             };
             if (Slots != null || version >= new MediaWikiVersion(1, 32))
             {
