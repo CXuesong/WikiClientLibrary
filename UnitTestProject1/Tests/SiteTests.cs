@@ -203,7 +203,7 @@ namespace WikiClientLibrary.Tests.UnitTestProject1.Tests
 
         // [Theory]
         // [InlineData(Endpoints.WikipediaTest2)]
-        public async Task InterlacingLoginLogoutTest(string endpointUrl)
+        private async Task InterlacingLoginLogoutTest(string endpointUrl)
         {
             // The two sites belong to different WikiClient instances.
             var site1 = await CreateIsolatedWikiSiteAsync(endpointUrl);

@@ -115,7 +115,7 @@ namespace WikiClientLibrary.Tests.UnitTestProject1
         }
     }
 
-    public class TestOutputLoggerProvider : ILoggerProvider
+    public sealed class TestOutputLoggerProvider : ILoggerProvider
     {
 
         public TestOutputLoggerProvider(ITestOutputHelper output)

@@ -24,8 +24,8 @@ namespace WikiClientLibrary.Tests.UnitTestProject1.Tests
             ShallowTrace(result);
             Assert.Equal("一九五二年", result.Title);
             Assert.Equal("一九五二年", result.DisplayTitle);
-            Assert.True(result.Interlanguages.First(l => l.Language == "en").Title == "1952");
-            Assert.True(result.Interlanguages.First(l => l.Language == "zh").Title == "1952年");
+            Assert.True(result.LanguageLinks.First(l => l.Language == "en").Title == "1952");
+            Assert.True(result.LanguageLinks.First(l => l.Language == "zh").Title == "1952年");
             Assert.Contains("><b>一九五二年</b>，繼<b>", result.Content);
             Assert.Contains(result.Sections, s => s.Heading == "大事");
         }
