@@ -68,7 +68,7 @@ namespace WikiClientLibrary.Generators
                 {"rvuser", UserName},
                 {"rvexcludeuser", ExcludedUserName},
             };
-            p.AddRange(_PropertyProvider.EnumParameters(Site.SiteInfo.Version));
+            p.AddRange(_PropertyProvider.EnumParameters(Site.SiteInfo.Version).Where(p1 => p1.Key != "rvlimit"));
             return p;
         }
 
