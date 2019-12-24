@@ -44,12 +44,12 @@ namespace WikiClientLibrary.Pages.Queries
         IEnumerable<IWikiPagePropertyGroup> ParsePropertyGroups(JObject json);
     }
 
-    /// <inheritdoc />
     /// <summary>
     /// The default implementation of <see cref="IWikiPageQueryProvider"/> that generates parameters for
     /// <c>action=query&amp;titles=</c> or <c>action=query&amp;pageids=</c> MediaWiki API requests
     /// with a set of <see cref="IWikiPagePropertyProvider{T}"/>.
     /// </summary>
+    /// <inheritdoc />
     public class WikiPageQueryProvider : IWikiPageQueryProvider
     {
 
@@ -59,8 +59,9 @@ namespace WikiClientLibrary.Pages.Queries
         /// Initializes a <see cref="WikiPageQueryProvider"/> from the given <see cref="PageQueryOptions"/> value.
         /// </summary>
         /// <param name="options">The page query options.</param>
-        /// <returns>The equavalent <see cref="WikiPageQueryProvider"/> that can be further modified by the caller.</returns>
-        /// <remarks>If you won't perform any customizations on the returned instance, consider using <see cref="MediaWikiHelper.QueryProviderFromOptions"/>.</remarks>
+        /// <returns>The equivalent <see cref="WikiPageQueryProvider"/> that can be further modified by the caller.</returns>
+        /// <remarks>If you won't perform any customizations on the returned instance,
+        /// consider using <see cref="MediaWikiHelper.QueryProviderFromOptions"/>.</remarks>
         public static WikiPageQueryProvider FromOptions(PageQueryOptions options)
         {
             if ((options & (PageQueryOptions.FetchContent | PageQueryOptions.ResolveRedirects)) != options)

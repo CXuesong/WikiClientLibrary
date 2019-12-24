@@ -1,8 +1,10 @@
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Runtime.Serialization;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using WikiClientLibrary.Pages.Queries.Properties;
 using WikiClientLibrary.Sites;
 
 namespace WikiClientLibrary.Pages.Parsing
@@ -56,7 +58,10 @@ namespace WikiClientLibrary.Pages.Parsing
         }
 
         [JsonProperty("langlinks")]
-        public IReadOnlyCollection<InterlanguageInfo> Interlanguages { get; private set; }
+        public IReadOnlyCollection<LanguageLinkInfo> LanguageLinks { get; private set; }
+
+        [Obsolete("Use LanguageLinks instead of this property.")]
+        public IReadOnlyCollection<LanguageLinkInfo> Interlanguages => LanguageLinks;
 
         [JsonProperty]
         public IReadOnlyCollection<ContentCategoryInfo> Categories { get; private set; }
@@ -200,34 +205,6 @@ namespace WikiClientLibrary.Pages.Parsing
         /// <inheritdoc />
         public override string ToString()
             => string.IsNullOrEmpty(SortKey) ? CategoryName : (CategoryName + "|" + SortKey);
-    }
-
-    [JsonObject(MemberSerialization.OptIn)]
-    public class InterlanguageInfo
-    {
-        [JsonProperty("lang")]
-        public string Language { get; private set; }
-
-        [JsonProperty]
-        public string Url { get; private set; }
-
-        /// <summary>
-        /// Autonym of the languge.
-        /// </summary>
-        [JsonProperty]
-        public string Autonym { get; private set; }
-
-        /// <summary>
-        /// Title of the page in the specified language.
-        /// </summary>
-        [JsonProperty("*")]
-        public string PageTitle { get; private set; }
-
-        /// <inheritdoc />
-        public override string ToString()
-        {
-            return $"{Language}:{PageTitle}";
-        }
     }
 
     /// <summary>

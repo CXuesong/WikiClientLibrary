@@ -149,6 +149,30 @@ namespace WikiClientLibrary.Tests.UnitTestProject1.Tests
         }
 
         [Fact]
+        public async Task WpLzhPageLanguageLinksTest()
+        {
+            var site = await WpLzhSiteAsync;
+            var page = new WikiPage(site, "莎拉伯恩哈特");
+            await page.RefreshAsync(new WikiPageQueryProvider
+            {
+                Properties =
+                {
+                    new LanguageLinksPropertyProvider(LanguageLinkProperties.Autonym)
+                }
+            });
+            var langLinks = page.GetPropertyGroup<LanguageLinksPropertyGroup>()?.LanguageLinks;
+            ShallowTrace(langLinks);
+            Assert.NotNull(langLinks);
+            Assert.True(langLinks.Count > 120);
+            var langLink = langLinks.FirstOrDefault(l => l.Language == "en");
+            Assert.NotNull(langLink);
+            Assert.Equal("Sarah Bernhardt", langLink.Title);
+            Assert.Equal("English", langLink.Autonym);
+            // We didn't ask for URL so this should be null.
+            Assert.All(langLinks, l => Assert.Null(l.Url));
+        }
+
+        [Fact]
         public async Task WpLzhPageReadDisambigTest()
         {
             var site = await WpLzhSiteAsync;
