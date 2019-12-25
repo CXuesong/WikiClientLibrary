@@ -59,7 +59,6 @@ namespace WikiClientLibrary.Generators
         {
             var p = new OrderedKeyValuePairs<string, object>
             {
-                {"rvlimit", PaginationSize},
                 {"rvdir", TimeAscending ? "newer" : "older"},
                 {"rvstart", StartTime},
                 {"rvend", EndTime},
@@ -68,7 +67,7 @@ namespace WikiClientLibrary.Generators
                 {"rvuser", UserName},
                 {"rvexcludeuser", ExcludedUserName},
             };
-            p.AddRange(_PropertyProvider.EnumParameters(Site.SiteInfo.Version).Where(p1 => p1.Key != "rvlimit"));
+            p.AddRange(_PropertyProvider.EnumParameters(Site.SiteInfo.Version, PaginationSize));
             return p;
         }
 
