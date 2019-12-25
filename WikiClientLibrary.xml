@@ -8373,59 +8373,6 @@
       <summary>Returns a string that represents the current object.</summary>
       <returns>A string that represents the current object.</returns>
     </member>
-    <member name="T:WikiClientLibrary.Pages.Parsing.InterlanguageInfo">
-      <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>T:WikiClientLibrary.Pages.Parsing.InterlanguageInfo</parameter>
-          </include>
-        </markup>
-      </summary>
-    </member>
-    <member name="M:WikiClientLibrary.Pages.Parsing.InterlanguageInfo.#ctor">
-      <summary>
-        <markup>
-          <include item="SMCAutoDocConstructor">
-            <parameter>WikiClientLibrary.Pages.Parsing.InterlanguageInfo</parameter>
-          </include>
-        </markup>
-      </summary>
-    </member>
-    <member name="P:WikiClientLibrary.Pages.Parsing.InterlanguageInfo.Autonym">
-      <summary>
-            Autonym of the languge.
-            </summary>
-    </member>
-    <member name="P:WikiClientLibrary.Pages.Parsing.InterlanguageInfo.Language">
-      <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>P:WikiClientLibrary.Pages.Parsing.InterlanguageInfo.Language</parameter>
-          </include>
-        </markup>
-      </summary>
-    </member>
-    <member name="P:WikiClientLibrary.Pages.Parsing.InterlanguageInfo.PageTitle">
-      <summary>
-            Title of the page in the specified language.
-            </summary>
-    </member>
-    <member name="M:WikiClientLibrary.Pages.Parsing.InterlanguageInfo.ToString">
-      <summary>Returns a string that represents the current object.</summary>
-      <returns>A string that represents the current object.</returns>
-    </member>
-    <member name="P:WikiClientLibrary.Pages.Parsing.InterlanguageInfo.Url">
-      <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>P:WikiClientLibrary.Pages.Parsing.InterlanguageInfo.Url</parameter>
-          </include>
-        </markup>
-      </summary>
-    </member>
     <member name="T:WikiClientLibrary.Pages.Parsing.ParsedContentInfo">
       <summary>
             Contains parsed content of specific page or wikitext.
@@ -8466,6 +8413,16 @@
           <include item="SMCMissingTag">
             <parameter>summary</parameter>
             <parameter>P:WikiClientLibrary.Pages.Parsing.ParsedContentInfo.Interlanguages</parameter>
+          </include>
+        </markup>
+      </summary>
+    </member>
+    <member name="P:WikiClientLibrary.Pages.Parsing.ParsedContentInfo.LanguageLinks">
+      <summary>
+        <markup>
+          <include item="SMCMissingTag">
+            <parameter>summary</parameter>
+            <parameter>P:WikiClientLibrary.Pages.Parsing.ParsedContentInfo.LanguageLinks</parameter>
           </include>
         </markup>
       </summary>
@@ -8964,7 +8921,7 @@
             Initializes a <see cref="T:WikiClientLibrary.Pages.Queries.WikiPageQueryProvider" /> from the given <see cref="T:WikiClientLibrary.Pages.PageQueryOptions" /> value.
             </summary>
       <param name="options">The page query options.</param>
-      <returns>The equavalent <see cref="T:WikiClientLibrary.Pages.Queries.WikiPageQueryProvider" /> that can be further modified by the caller.</returns>
+      <returns>The equivalent <see cref="T:WikiClientLibrary.Pages.Queries.WikiPageQueryProvider" /> that can be further modified by the caller.</returns>
     </member>
     <member name="M:WikiClientLibrary.Pages.Queries.WikiPageQueryProvider.GetMaxPaginationSize(WikiClientLibrary.MediaWikiVersion,System.Boolean)">
       <summary>
@@ -9342,6 +9299,184 @@
         <paramref name="json" /> is <c>null</c>.</exception>
     </member>
     <member name="P:WikiClientLibrary.Pages.Queries.Properties.IWikiPagePropertyProvider`1.PropertyName">
+      <summary>
+            Gets the property name, when this property is needed to be included in the <c>prop=</c> parameter
+            in the MediaWiki API request.
+            </summary>
+    </member>
+    <member name="T:WikiClientLibrary.Pages.Queries.Properties.LanguageLinkInfo">
+      <summary>
+            Represents the information about a language link.
+            </summary>
+    </member>
+    <member name="M:WikiClientLibrary.Pages.Queries.Properties.LanguageLinkInfo.#ctor">
+      <summary>
+        <markup>
+          <include item="SMCAutoDocConstructor">
+            <parameter>WikiClientLibrary.Pages.Queries.Properties.LanguageLinkInfo</parameter>
+          </include>
+        </markup>
+      </summary>
+    </member>
+    <member name="P:WikiClientLibrary.Pages.Queries.Properties.LanguageLinkInfo.Autonym">
+      <summary>
+            Autonym of the language.
+            </summary>
+    </member>
+    <member name="P:WikiClientLibrary.Pages.Queries.Properties.LanguageLinkInfo.Language">
+      <summary>
+        <markup>
+          <include item="SMCMissingTag">
+            <parameter>summary</parameter>
+            <parameter>P:WikiClientLibrary.Pages.Queries.Properties.LanguageLinkInfo.Language</parameter>
+          </include>
+        </markup>
+      </summary>
+    </member>
+    <member name="P:WikiClientLibrary.Pages.Queries.Properties.LanguageLinkInfo.PageTitle">
+      <summary>
+        <markup>
+          <include item="SMCMissingTag">
+            <parameter>summary</parameter>
+            <parameter>P:WikiClientLibrary.Pages.Queries.Properties.LanguageLinkInfo.PageTitle</parameter>
+          </include>
+        </markup>
+      </summary>
+    </member>
+    <member name="P:WikiClientLibrary.Pages.Queries.Properties.LanguageLinkInfo.Title">
+      <summary>
+            Title of the page in the specified language.
+            </summary>
+    </member>
+    <member name="M:WikiClientLibrary.Pages.Queries.Properties.LanguageLinkInfo.ToString">
+      <summary>Returns a string that represents the current object.</summary>
+      <returns>A string that represents the current object.</returns>
+    </member>
+    <member name="P:WikiClientLibrary.Pages.Queries.Properties.LanguageLinkInfo.Url">
+      <summary>
+        <markup>
+          <include item="SMCMissingTag">
+            <parameter>summary</parameter>
+            <parameter>P:WikiClientLibrary.Pages.Queries.Properties.LanguageLinkInfo.Url</parameter>
+          </include>
+        </markup>
+      </summary>
+    </member>
+    <member name="T:WikiClientLibrary.Pages.Queries.Properties.LanguageLinkProperties">
+      <summary>
+            The additional language link properties to retrieve for <see cref="T:WikiClientLibrary.Pages.Queries.Properties.LanguageLinksPropertyGroup" />.
+            </summary>
+    </member>
+    <member name="F:WikiClientLibrary.Pages.Queries.Properties.LanguageLinkProperties.Url">
+      <summary>Adds the full URL. (MW 1.23+, or MW 1.17+ in compatible mode)</summary>
+    </member>
+    <member name="F:WikiClientLibrary.Pages.Queries.Properties.LanguageLinkProperties.LanguageName">
+      <summary>Adds the localized language name (best effort, use CLDR extension). Use llinlanguagecode to control the language. (MW 1.23+)</summary>
+    </member>
+    <member name="F:WikiClientLibrary.Pages.Queries.Properties.LanguageLinkProperties.Autonym">
+      <summary>Adds the native language name. (MW 1.23+)</summary>
+    </member>
+    <member name="T:WikiClientLibrary.Pages.Queries.Properties.LanguageLinksPropertyGroup">
+      <summary>
+        <markup>
+          <include item="SMCMissingTag">
+            <parameter>summary</parameter>
+            <parameter>T:WikiClientLibrary.Pages.Queries.Properties.LanguageLinksPropertyGroup</parameter>
+          </include>
+        </markup>
+      </summary>
+    </member>
+    <member name="P:WikiClientLibrary.Pages.Queries.Properties.LanguageLinksPropertyGroup.LanguageLinks">
+      <summary>Retrieved language links.</summary>
+    </member>
+    <member name="T:WikiClientLibrary.Pages.Queries.Properties.LanguageLinksPropertyProvider">
+      <summary>
+            Gets a list of interlanguage links from the provided pages to other languages.
+            (<a href="https://www.mediawiki.org/wiki/API:Langlinks">mw:API:Langlinks</a>)
+            </summary>
+    </member>
+    <member name="M:WikiClientLibrary.Pages.Queries.Properties.LanguageLinksPropertyProvider.#ctor">
+      <summary>
+        <markup>
+          <include item="SMCAutoDocConstructor">
+            <parameter>WikiClientLibrary.Pages.Queries.Properties.LanguageLinksPropertyProvider</parameter>
+          </include>
+        </markup>
+      </summary>
+    </member>
+    <member name="M:WikiClientLibrary.Pages.Queries.Properties.LanguageLinksPropertyProvider.#ctor(WikiClientLibrary.Pages.Queries.Properties.LanguageLinkProperties)">
+      <summary>
+        <markup>
+          <include item="SMCAutoDocConstructor">
+            <parameter>WikiClientLibrary.Pages.Queries.Properties.LanguageLinksPropertyProvider</parameter>
+          </include>
+        </markup>
+      </summary>
+      <param name="languageLinkProperties">
+        <markup>
+          <include item="SMCMissingParamTag">
+            <parameter>param</parameter>
+            <parameter>languageLinkProperties</parameter>
+            <parameter>M:WikiClientLibrary.Pages.Queries.Properties.LanguageLinksPropertyProvider.#ctor(WikiClientLibrary.Pages.Queries.Properties.LanguageLinkProperties)</parameter>
+          </include>
+        </markup>
+      </param>
+    </member>
+    <member name="M:WikiClientLibrary.Pages.Queries.Properties.LanguageLinksPropertyProvider.EnumParameters(WikiClientLibrary.MediaWikiVersion)">
+      <summary>
+        <markup>
+          <include item="SMCMissingTag">
+            <parameter>summary</parameter>
+            <parameter>M:WikiClientLibrary.Pages.Queries.Properties.LanguageLinksPropertyProvider.EnumParameters(WikiClientLibrary.MediaWikiVersion)</parameter>
+          </include>
+        </markup>
+      </summary>
+      <param name="version">
+        <markup>
+          <include item="SMCMissingParamTag">
+            <parameter>param</parameter>
+            <parameter>version</parameter>
+            <parameter>M:WikiClientLibrary.Pages.Queries.Properties.LanguageLinksPropertyProvider.EnumParameters(WikiClientLibrary.MediaWikiVersion)</parameter>
+          </include>
+        </markup>
+      </param>
+    </member>
+    <member name="P:WikiClientLibrary.Pages.Queries.Properties.LanguageLinksPropertyProvider.LanguageLinkProperties">
+      <summary>
+            Specify the additional language link properties to retrieve.
+            </summary>
+    </member>
+    <member name="P:WikiClientLibrary.Pages.Queries.Properties.LanguageLinksPropertyProvider.LanguageName">
+      <summary>
+            Only returns the interwiki link for this language code.
+            </summary>
+    </member>
+    <member name="P:WikiClientLibrary.Pages.Queries.Properties.LanguageLinksPropertyProvider.LanguageNameLanguage">
+      <summary>
+            When <see cref="P:WikiClientLibrary.Pages.Queries.Properties.LanguageLinksPropertyProvider.LanguageLinkProperties" /> has <see cref="F:WikiClientLibrary.Pages.Queries.Properties.LanguageLinkProperties.LanguageName" /> set,
+            specifies the display language of the language names.
+            </summary>
+    </member>
+    <member name="M:WikiClientLibrary.Pages.Queries.Properties.LanguageLinksPropertyProvider.ParsePropertyGroup(Newtonsoft.Json.Linq.JObject)">
+      <summary>
+        <markup>
+          <include item="SMCMissingTag">
+            <parameter>summary</parameter>
+            <parameter>M:WikiClientLibrary.Pages.Queries.Properties.LanguageLinksPropertyProvider.ParsePropertyGroup(Newtonsoft.Json.Linq.JObject)</parameter>
+          </include>
+        </markup>
+      </summary>
+      <param name="json">
+        <markup>
+          <include item="SMCMissingParamTag">
+            <parameter>param</parameter>
+            <parameter>json</parameter>
+            <parameter>M:WikiClientLibrary.Pages.Queries.Properties.LanguageLinksPropertyProvider.ParsePropertyGroup(Newtonsoft.Json.Linq.JObject)</parameter>
+          </include>
+        </markup>
+      </param>
+    </member>
+    <member name="P:WikiClientLibrary.Pages.Queries.Properties.LanguageLinksPropertyProvider.PropertyName">
       <summary>
             Gets the property name, when this property is needed to be included in the <c>prop=</c> parameter
             in the MediaWiki API request.
