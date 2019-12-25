@@ -13,12 +13,6 @@ namespace WikiClientLibrary.Pages.Queries.Properties
     /// Gets a list of interlanguage links from the provided pages to other languages.
     /// (<a href="https://www.mediawiki.org/wiki/API:Langlinks">mw:API:Langlinks</a>)
     /// </summary>
-    /// <remarks>
-    /// <para>As property provider does not support pagination on property values,
-    /// you have to make sure it's possible to fetch all the language links in one request.
-    /// The current logic is to fetch first 450 language links available.</para>
-    /// <para>For your reference, as of 2019-12, there are 322 interlanguage sites for en Wikipedia.</para>
-    /// </remarks>
     public class LanguageLinksPropertyProvider : WikiPagePropertyProvider<LanguageLinksPropertyGroup>
     {
 
@@ -53,7 +47,8 @@ namespace WikiClientLibrary.Pages.Queries.Properties
 
         public override IEnumerable<KeyValuePair<string, object>> EnumParameters(MediaWikiVersion version)
         {
-            var p = new OrderedKeyValuePairs<string, object> { { "lllimit", 450 } };
+            // Limit is 500 for user, and 5000 for bots. We take 300 in a batch.
+            var p = new OrderedKeyValuePairs<string, object> { { "lllimit", 300 } };
             if (LanguageLinkProperties != LanguageLinkProperties.None)
             {
                 if (version >= new MediaWikiVersion(1, 23))

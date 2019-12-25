@@ -244,9 +244,31 @@ namespace WikiClientLibrary
                             queryParams.Remove("rvlimit");
                         }
                         var jobj = await site.InvokeMediaWikiApiAsync(new MediaWikiFormRequestMessage(queryParams), cancellationToken);
-                        var jquery = jobj["query"];
-                        // Process continuation caused by props that contains a list that is too long.
-                        // if (ParseContinuationParameters(jobj))
+                        var jquery = (JObject)jobj["query"];
+                        // Process continuation caused by props (e.g. langlinks) that contains a list that is too long.
+                        if (ParseContinuationParameters(jobj, queryParams, true) == CONTINUATION_AVAILABLE)
+                        {
+                            var queryParams1 = queryParams.ToDictionary();
+                            ParseContinuationParameters(jobj, queryParams);
+                            PROP_NEXT_PAGE:
+                            site.Logger.LogDebug("Detected query continuation.", partition.Count);
+                            var jobj1 = await site.InvokeMediaWikiApiAsync(new MediaWikiFormRequestMessage(queryParams1), cancellationToken);
+                            var jquery1 = jobj1["query"];
+                            if (jquery1.HasValues)
+                            {
+                                // Merge JSON response
+                                jquery.Merge(jquery1);
+                            }
+                            switch (ParseContinuationParameters(jobj1, queryParams1))
+                            {
+                                case CONTINUATION_DONE:
+                                    break;
+                                case CONTINUATION_AVAILABLE:
+                                    goto PROP_NEXT_PAGE;
+                                case CONTINUATION_LOOP:
+                                    throw new UnexpectedDataException(Prompts.ExceptionUnexpectedContinuationLoop);
+                            }
+                        }
                         if (sitePages.Key.HasTitle)
                         {
                             // Process title normalization.

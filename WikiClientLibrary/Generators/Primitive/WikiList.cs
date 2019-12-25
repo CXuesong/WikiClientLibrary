@@ -227,7 +227,7 @@ namespace WikiClientLibrary.Generators.Primitive
                                         //}
                                     }
                                     if (!outOfLoop)
-                                        throw new UnexpectedDataException("Continuation information provided by server response leads to an infinite loop.");
+                                        throw new UnexpectedDataException(Prompts.ExceptionUnexpectedContinuationLoop);
                                     break;
                             }
                         }

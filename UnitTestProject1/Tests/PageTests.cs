@@ -153,13 +153,7 @@ namespace WikiClientLibrary.Tests.UnitTestProject1.Tests
         {
             var site = await WpLzhSiteAsync;
             var page = new WikiPage(site, "莎拉伯恩哈特");
-            await page.RefreshAsync(new WikiPageQueryProvider
-            {
-                Properties =
-                {
-                    new LanguageLinksPropertyProvider(LanguageLinkProperties.Autonym)
-                }
-            });
+            await page.RefreshAsync(new WikiPageQueryProvider { Properties = { new LanguageLinksPropertyProvider(LanguageLinkProperties.Autonym) } });
             var langLinks = page.GetPropertyGroup<LanguageLinksPropertyGroup>()?.LanguageLinks;
             ShallowTrace(langLinks);
             Assert.NotNull(langLinks);
@@ -170,6 +164,15 @@ namespace WikiClientLibrary.Tests.UnitTestProject1.Tests
             Assert.Equal("English", langLink.Autonym);
             // We didn't ask for URL so this should be null.
             Assert.All(langLinks, l => Assert.Null(l.Url));
+            // Try out whether we still can fetch complete prop values even in the case of prop pagination.
+            var pages = new[] { "挪威", "坤輿", "維基共享" }.Select(t => new WikiPage(site, t)).Append(page).ToList();
+            await pages.RefreshAsync(new WikiPageQueryProvider { Properties = { new LanguageLinksPropertyProvider() } });
+            Output.WriteLine("Language links ----");
+            foreach (var p in pages)
+                Output.WriteLine("{0}: {1}", p, p.GetPropertyGroup<LanguageLinksPropertyGroup>()?.LanguageLinks.Count);
+            Assert.All(pages, p => Assert.True(p.GetPropertyGroup<LanguageLinksPropertyGroup>().LanguageLinks.Count > 50));
+            Assert.Equal(langLinks.ToDictionary(l => l.Language, l => l.Title),
+                page.GetPropertyGroup<LanguageLinksPropertyGroup>().LanguageLinks.ToDictionary(l => l.Language, l => l.Title));
         }
 
         [Fact]

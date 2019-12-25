@@ -306,4 +306,7 @@
   <data name="ExceptionDesiredPermissions1" xml:space="preserve">
     <value>Desired permission(s): {0}.</value>
   </data>
+  <data name="ExceptionUnexpectedContinuationLoop" xml:space="preserve">
+    <value>Continuation information provided by server response leads to an infinite loop.</value>
+  </data>
 </root>

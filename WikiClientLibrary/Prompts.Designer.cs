@@ -458,6 +458,15 @@ namespace WikiClientLibrary {
         }
         
         /// <summary>
+        ///   查找类似 Continuation information provided by server response leads to an infinite loop. 的本地化字符串。
+        /// </summary>
+        internal static string ExceptionUnexpectedContinuationLoop {
+            get {
+                return ResourceManager.GetString("ExceptionUnexpectedContinuationLoop", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   查找类似 Unexpected data received. 的本地化字符串。
         /// </summary>
         internal static string ExceptionUnexpectedData {
