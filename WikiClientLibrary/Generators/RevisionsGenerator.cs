@@ -59,15 +59,16 @@ namespace WikiClientLibrary.Generators
         {
             var p = new OrderedKeyValuePairs<string, object>
             {
-                {"rvdir", TimeAscending ? "newer" : "older"},
-                {"rvstart", StartTime},
-                {"rvend", EndTime},
-                {"rvstartid", StartRevisionId},
-                {"rvendid", EndRevisionId},
-                {"rvuser", UserName},
-                {"rvexcludeuser", ExcludedUserName},
+                { "rvlimit", PaginationSize },
+                { "rvdir", TimeAscending ? "newer" : "older" },
+                { "rvstart", StartTime },
+                { "rvend", EndTime },
+                { "rvstartid", StartRevisionId },
+                { "rvendid", EndRevisionId },
+                { "rvuser", UserName },
+                { "rvexcludeuser", ExcludedUserName },
             };
-            p.AddRange(_PropertyProvider.EnumParameters(Site.SiteInfo.Version, PaginationSize));
+            p.AddRange(_PropertyProvider.EnumParameters(Site.SiteInfo.Version));
             return p;
         }
 

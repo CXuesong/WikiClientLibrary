@@ -40,9 +40,8 @@ namespace WikiClientLibrary.Pages.Queries.Properties
         /// </remarks>
         public IEnumerable<string> Slots { get; set; }
 
-        internal static readonly object RVLIMIT_SINGLE_REVISION_MAGIC = "[single]";
-
-        internal IEnumerable<KeyValuePair<string, object>> EnumParameters(MediaWikiVersion version, object rvlimit)
+        /// <inheritdoc />
+        public override IEnumerable<KeyValuePair<string, object>> EnumParameters(MediaWikiVersion version)
         {
             var p = new OrderedKeyValuePairs<string, object>
             {
@@ -50,8 +49,7 @@ namespace WikiClientLibrary.Pages.Queries.Properties
                     "rvprop", FetchContent
                         ? "ids|timestamp|flags|comment|user|userid|contentmodel|sha1|tags|size|content"
                         : "ids|timestamp|flags|comment|user|userid|contentmodel|sha1|tags|size"
-                },
-                { "rvlimit", rvlimit }
+                }
             };
             if (Slots != null || version >= new MediaWikiVersion(1, 32))
             {
@@ -59,14 +57,6 @@ namespace WikiClientLibrary.Pages.Queries.Properties
                 p.Add("rvslots", Slots == null ? RevisionSlot.MainSlotName : MediaWikiHelper.JoinValues(Slots));
             }
             return p;
-        }
-
-        /// <inheritdoc />
-        public override IEnumerable<KeyValuePair<string, object>> EnumParameters(MediaWikiVersion version)
-        {
-            // This special rvlimit value would later be post-processed in RequestHelper.RefreshPagesAsync
-            // to avoid fetching more than 1 revision for single page (entering 1 page multiple revision mode).
-            return EnumParameters(version, RVLIMIT_SINGLE_REVISION_MAGIC);
         }
 
         /// <inheritdoc />

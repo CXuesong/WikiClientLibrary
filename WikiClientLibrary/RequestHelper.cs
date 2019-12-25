@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
@@ -103,13 +104,6 @@ namespace WikiClientLibrary
                 {
                     var queryParams = parameters.ToDictionary(p => p.Key, p => p.Value);
                     Debug.Assert("query".Equals(queryParams["action"]));
-                    // Remove rvlimit magic value provided by RevisionsPropertyProvider.
-                    // We are using generator to list multiple pages, so rvlimit won't be needed.
-                    // However, we still need to match rvlimit value to rule out the case where caller is RevisionsGenerator.
-                    if (queryParams.TryGetValue("rvlimit", out var rvLimit) && rvLimit == RevisionsPropertyProvider.RVLIMIT_SINGLE_REVISION_MAGIC)
-                    {
-                        queryParams.Remove("rvlimit");
-                    }
                     while (true)
                     {
                         var jresult = await site.InvokeMediaWikiApiAsync(new MediaWikiFormRequestMessage(queryParams), ct);
@@ -230,18 +224,6 @@ namespace WikiClientLibrary
                             site.Logger.LogDebug("Fetching {Count} pages by ID.", partition.Count);
                             Debug.Assert(sitePages.All(p => p.PageStub.HasId));
                             queryParams["pageids"] = MediaWikiHelper.JoinValues(partition.Select(p => p.Id));
-                        }
-                        // For single-page fetching, force fetching 1 revision only.
-                        // This is for not letting MW server returning too many results for RevisionsPropertyProvider.
-                        if (partition.Count == 1
-                            && queryParams.TryGetValue("rvlimit", out var rvLimit)
-                            && rvLimit == RevisionsPropertyProvider.RVLIMIT_SINGLE_REVISION_MAGIC)
-                        {
-                            queryParams["rvlimit"] = 1;
-                        }
-                        else
-                        {
-                            queryParams.Remove("rvlimit");
                         }
                         var jobj = await site.InvokeMediaWikiApiAsync(new MediaWikiFormRequestMessage(queryParams), cancellationToken);
                         var jquery = (JObject)jobj["query"];
@@ -364,7 +346,7 @@ namespace WikiClientLibrary
             });
         }
 
-        #endregion
+#endregion
 
         private static readonly IReadOnlyCollection<PurgeFailureInfo> emptyPurgeFailures = new PurgeFailureInfo[0];
 
