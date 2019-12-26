@@ -2,9 +2,9 @@
   <Import Project="../WikiClientLibrary.Commons/WikiClientLibrary.Commons.props" />
 
   <PropertyGroup>
-    <Version>0.7.0-int.8</Version>
-    <AssemblyVersion>0.7.0.8</AssemblyVersion>
-    <FileVersion>0.7.0.8</FileVersion>
+    <Version>0.7.0-int.9</Version>
+    <AssemblyVersion>0.7.0.9</AssemblyVersion>
+    <FileVersion>0.7.0.9</FileVersion>
     <Copyright>Copyright (C) CXuesong 2019</Copyright>
     <PackageReleaseNotes>See https://github.com/CXuesong/WikiClientLibrary/releases .</PackageReleaseNotes>
     <PackageTags>MediaWiki API Client</PackageTags>

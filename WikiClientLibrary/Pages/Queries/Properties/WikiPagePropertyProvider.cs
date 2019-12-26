@@ -31,6 +31,11 @@ namespace WikiClientLibrary.Pages.Queries.Properties
         /// This applies to the values of <c>ids=</c> and <c>titles=</c> parameters
         /// for <c>action=query</c> request.
         /// </returns>
+        /// <remarks>
+        /// The current value in documentation is 50 for users and 500 for bots.
+        /// However, the actual number may be lower than this, depending on the <c>prop=</c> value.
+        /// See <a href="https://www.mediawiki.org/wiki/API:Query">mw:API:Query</a> for the latest count limit on ids and titles.
+        /// </remarks>
         int GetMaxPaginationSize(MediaWikiVersion version, bool apiHighLimits);
 
         /// <summary>
@@ -66,7 +71,7 @@ namespace WikiClientLibrary.Pages.Queries.Properties
         /// <inheritdoc />
         public virtual int GetMaxPaginationSize(MediaWikiVersion version, bool apiHighLimits)
         {
-            return apiHighLimits ? 5000 : 500;
+            return apiHighLimits ? 500 : 50;
         }
 
         /// <inheritdoc />
