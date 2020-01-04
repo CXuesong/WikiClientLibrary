@@ -493,11 +493,11 @@
       <summary>Mark the edit as bot edit.</summary>
     </member>
     <member name="F:WikiClientLibrary.Wikibase.EntityEditOptions.Progressive">
-      <summary>Forces progressive edit, even if the client is creating a new item.
+      <summary>Forces progressive edit, even if WCL is creating a new item.
             This option cannot be used with <see cref="F:WikiClientLibrary.Wikibase.EntityEditOptions.Bulk" /> and <see cref="F:WikiClientLibrary.Wikibase.EntityEditOptions.ClearData" />.</summary>
     </member>
     <member name="F:WikiClientLibrary.Wikibase.EntityEditOptions.Bulk">
-      <summary>Forces bulk edit, even if the client is creating a new item.</summary>
+      <summary>Forces bulk edit, even if WCL is editing an existing item with less than 5 items of changes.</summary>
     </member>
     <member name="F:WikiClientLibrary.Wikibase.EntityEditOptions.ClearData">
       <summary>Clears all the existing data of the entity before making the changes.
