@@ -98,8 +98,8 @@ namespace WikiClientLibrary.Tests.UnitTestProject1.Tests
             Assert.NotNull(coordinate);
             ShallowTrace(coordinate);
             Assert.False(coordinate.PrimaryCoordinate.IsEmpty);
-            Assert.Equal(48.8567, coordinate.PrimaryCoordinate.Latitude, 12);
-            Assert.Equal(2.3508, coordinate.PrimaryCoordinate.Longitude, 12);
+            Assert.Equal(48.856613, coordinate.PrimaryCoordinate.Latitude, 5);
+            Assert.Equal(2.352222, coordinate.PrimaryCoordinate.Longitude, 5);
             Assert.Equal(GeoCoordinate.Earth, coordinate.PrimaryCoordinate.Globe);
         }
 
