@@ -66,8 +66,8 @@ namespace WikiClientLibrary.Tests.UnitTestProject1.Tests
             Assert.DoesNotContain(null, topics);
             for (int i = 1; i < topics.Length; i++)
             {
-                Assert.True(topics[i - 1].TopicTitleRevision.TimeStamp >= topics[i].TopicTitleRevision.TimeStamp,
-                    $"Topic list is not sorted in posted order as expected. At index {i}.");
+                Assert.True(topics[i - 1].TopicTitleRevision.LastUpdated >= topics[i].TopicTitleRevision.LastUpdated,
+                    $"Topic list is not sorted in posted order as expected. At index {i}. This: {topics[i].TopicTitleRevision.LastUpdated:u}, Prev: {topics[i - 1].TopicTitleRevision.LastUpdated:u}");
             }
             topics = await board.EnumTopicsAsync(TopicListingOptions.OrderByUpdated, 5).Skip(10).Take(10).ToArrayAsync();
             DumpTopics(topics);
