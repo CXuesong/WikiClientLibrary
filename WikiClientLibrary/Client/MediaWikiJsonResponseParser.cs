@@ -185,7 +185,14 @@ namespace WikiClientLibrary.Client
                     throw new AccountAssertionFailureException(errorCode, errorMessage);
                 case "prev_revision":
                     throw new OperationConflictException(errorCode, errorMessage);
+                case "badvalue":    // since 1.35.0-wmf.19
+                    // throw more specific Exception, if possible.
+                    if (errorMessage.IndexOf("\"action\"", StringComparison.Ordinal) >= 0)
+                        throw new InvalidActionException(errorCode, errorMessage);
+                    throw new BadValueException(errorCode, errorMessage);
                 default:
+                    if (errorCode.StartsWith("unknown_", StringComparison.OrdinalIgnoreCase))
+                        throw new BadValueException(errorCode, errorMessage);
                     if (errorCode.EndsWith("conflict", StringComparison.OrdinalIgnoreCase))
                         throw new OperationConflictException(errorCode, errorMessage);
                     // "messages": [

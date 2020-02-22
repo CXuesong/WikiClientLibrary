@@ -31,7 +31,7 @@ namespace WikiClientLibrary
     /// <summary>
     /// An exception indicating the requested operation has failed.
     /// </summary>
-    /// <remarks>This often corresponds to MediaWiki API error, i.e. API responses with "error" node.</remarks>
+    /// <remarks>This often represents MediaWiki API error, i.e. API responses with "error" node.</remarks>
     public class OperationFailedException : WikiClientException
     {
         /// <summary>
@@ -74,10 +74,24 @@ namespace WikiClientLibrary
     }
 
     /// <summary>
+    /// An exception indicating an unrecognized value was specified for an enumerated-value parameter.
+    /// </summary>
+    /// <remarks>
+    /// This exception represents <c>unknown_X</c> MW API error before MW 1.35.0-wmf.19, and <c>badvalue</c> since MW 1.35.0-wmf.19.
+    /// </remarks>
+    public class BadValueException : OperationFailedException
+    {
+        public BadValueException(string errorCode, string message)
+            : base(errorCode, message)
+        {
+        }
+    }
+
+    /// <summary>
     /// An exception indicating the requested action is invalid.
     /// </summary>
-    /// <remarks>This corresponds to <c>unknown_action</c> MW API error.</remarks>
-    public class InvalidActionException : OperationFailedException
+    /// <remarks>This represents <c>unknown_action</c> MW API error before MW 1.35.0-wmf.19.</remarks>
+    public class InvalidActionException : BadValueException
     {
         public InvalidActionException(string errorCode, string message)
             : base(errorCode, message)
@@ -90,7 +104,7 @@ namespace WikiClientLibrary
     /// API requests.
     /// </summary>
     /// <remarks>
-    /// This corresponds to <c>assertuserfailed</c> or <c>assertbotfailed</c> MW API error.
+    /// This represents <c>assertuserfailed</c> or <c>assertbotfailed</c> MW API error.
     /// <para>See <a href="https://www.mediawiki.org/wiki/API:Assert">mw:API:Assert</a>.</para>
     /// </remarks>
     public class AccountAssertionFailureException : OperationFailedException
@@ -104,7 +118,7 @@ namespace WikiClientLibrary
     /// Raises when user has no rights for certain operations.
     /// </summary>
     /// <remarks>
-    /// This exception corresponds to the following MW API errors:
+    /// This exception represents the following MW API errors:
     /// <list type="bullet">
     /// <item>
     /// <term>readapidenied</term>
@@ -170,7 +184,7 @@ namespace WikiClientLibrary
     /// <summary>
     /// Raises when conflict detected performing the operation. (<c>*conflict</c>)
     /// </summary>
-    /// <remarks>This corresponds to <c>*conflict</c> MW API error.</remarks>
+    /// <remarks>This represents <c>*conflict</c> MW API error.</remarks>
     public class OperationConflictException : OperationFailedException
     {
 
@@ -184,7 +198,7 @@ namespace WikiClientLibrary
     /// <summary>
     /// Raises when the token used to invoke MediaWiki API is invalid. (<c>badtoken</c>)
     /// </summary>
-    /// <remarks>This corresponds to <c>badtoken</c> MW API error.</remarks>
+    /// <remarks>This represents <c>badtoken</c> MW API error.</remarks>
     public class BadTokenException : OperationFailedException
     {
 
@@ -198,7 +212,7 @@ namespace WikiClientLibrary
     /// <summary>
     /// Raises when the remote MediaWiki site has encountered an internal error. (<c>internal_api_error_*</c>)
     /// </summary>
-    /// <remarks>This corresponds to <c>internal_api_error_*</c> MW API error.</remarks>
+    /// <remarks>This represents <c>internal_api_error_*</c> MW API error.</remarks>
     public class MediaWikiRemoteException : OperationFailedException
     {
 
