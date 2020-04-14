@@ -300,7 +300,7 @@ namespace WikiClientLibrary.Wikibase.DataTypes
                 return new WbQuantity(amount,
                     lb == null ? amount : Convert.ToDouble(lb),
                     ub == null ? amount : Convert.ToDouble(ub),
-                    WikibaseUriFactory.Get(unit));
+                    unit == "1" ? WbQuantity.Unity : WikibaseUriFactory.Get(unit));
             }, v =>
             {
                 var obj = new JObject
