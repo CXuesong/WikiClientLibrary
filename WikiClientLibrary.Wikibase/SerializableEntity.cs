@@ -323,11 +323,11 @@ namespace WikiClientLibrary.Wikibase
         /// <param name="fileName">The path of file containing the serialized JSON of a single entity.</param>
         /// <remarks></remarks>
         /// <seealso cref="Load(string)"/>
-        public static SerializableEntity LoadAll(string fileName)
+        public static IEnumerable<SerializableEntity> LoadAll(string fileName)
         {
             if (fileName == null) throw new ArgumentNullException(nameof(fileName));
             using (var reader = File.OpenText(fileName))
-                return Load(Utility.WikiJsonSerializer.Deserialize<Contracts.Entity>(reader));
+                return LoadAll(reader);
         }
 
 #endif
