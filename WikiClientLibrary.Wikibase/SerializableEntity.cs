@@ -327,7 +327,10 @@ namespace WikiClientLibrary.Wikibase
         {
             if (fileName == null) throw new ArgumentNullException(nameof(fileName));
             using (var reader = File.OpenText(fileName))
-                return LoadAll(reader);
+            {
+                foreach (var i in LoadAll(reader))
+                    yield return i;
+            }
         }
 
 #endif
