@@ -115,7 +115,7 @@ namespace WikiClientLibrary.Infrastructures
                    select new KeyValuePair<string, object>(p.Name, value);
         }
 
-        private const string JsonHtmlResponseHelpLink = "https://github.com/CXuesong/WikiClientLibrary/wiki/Troubleshooting";
+        internal const string ExceptionTroubleshootingHelpLink = "https://github.com/CXuesong/WikiClientLibrary/wiki/Troubleshooting";
 
         // Disable automatic datetime detection for JValue.
         // We are converting string to JObject, then from JObject to data model.
@@ -143,7 +143,7 @@ namespace WikiClientLibrary.Infrastructures
             if (content[0] == '<')
                 throw new UnexpectedDataException(Prompts.ExceptionHtmlResponseHint)
                 {
-                    HelpLink = JsonHtmlResponseHelpLink
+                    HelpLink = ExceptionTroubleshootingHelpLink
                 };
             try
             {

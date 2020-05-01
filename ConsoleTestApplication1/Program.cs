@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
@@ -17,6 +18,9 @@ namespace ConsoleTestApplication1
     {
         static void Main(string[] args)
         {
+            // We want TLS 1.2 support. This statement is needed until .NET Framework 4.7 / .NET Core
+            // https://github.com/CXuesong/WikiClientLibrary/issues/66
+            ServicePointManager.SecurityProtocol |= SecurityProtocolType.Tls12;
             try
             {
                 HelloWikiWorld().Wait();

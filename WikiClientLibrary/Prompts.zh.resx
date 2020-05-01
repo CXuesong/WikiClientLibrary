@@ -225,6 +225,9 @@
   <data name="ExceptionScribuntoResetCannotValidate" xml:space="preserve">
     <value>无法验证Scribunto控制台状态。Lua _VERSION值为空。</value>
   </data>
+  <data name="ExceptionSecureChannelFailureHint" xml:space="preserve">
+    <value>如果你正在访问维基媒体（Wikimedia）下属网站，请检查你的TLS版本是否兼容（TLS 1.2）。请参阅 https://github.com/CXuesong/WikiClientLibrary/wiki/Troubleshooting 以了解更多信息。</value>
+  </data>
   <data name="ExceptionStashingComplete" xml:space="preserve">
     <value>文件内容已经被上传。</value>
   </data>

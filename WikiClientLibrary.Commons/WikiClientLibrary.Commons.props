@@ -3,8 +3,16 @@
     <DefineConstants>$(DefineConstants);BCL_FEATURE_DISPOSE_HTTPCONTENT</DefineConstants>
   </PropertyGroup>
 
-  <PropertyGroup Condition=" '$(TargetFramework)' == 'netstandard2.1' Or '$(TargetFramework)' == 'netcoreapp3.0' ">
-    <DefineConstants>$(DefineConstants);BCL_FEATURE_ASYNC_ENUMERABLE</DefineConstants>
+  <PropertyGroup Condition=" '$(TargetFramework)' != 'netstandard1.1' ">
+    <DefineConstants>$(DefineConstants);BCL_FEATURE_WEB_EXCEPTION</DefineConstants>
+  </PropertyGroup>
+
+  <PropertyGroup Condition=" $([System.Text.RegularExpressions.Regex]::IsMatch($(TargetFramework), `^(netstandard2\.[1-9]|netcoreapp[3-9]\.\d+)$`)) ">
+    <DefineConstants>$(DefineConstants);BCL_FEATURE_SPAN;BCL_FEATURE_HASHCODE;BCL_FEATURE_ASYNC_ENUMERABLE;LANG_FEATURE_INTERFACE_DEFAULT_METHODS</DefineConstants>
+  </PropertyGroup>
+
+  <PropertyGroup Condition=" $([System.Text.RegularExpressions.Regex]::IsMatch($(TargetFramework), `^(netstandard(1\.[3-9]|[2-9]\.\d+))$`)) ">
+    <DefineConstants>$(DefineConstants);BCL_FEATURE_ARRAY_EMPTY</DefineConstants>
   </PropertyGroup>
 
   <PropertyGroup Condition=" '$(WCL_IS_CI_BUILD)' == '1' Or '$(WCL_IS_CI_BUILD)' == 'True' Or '$(WCL_IS_CI_BUILD)' == 'On' Or '$(WCL_IS_CI_BUILD)' == 'Yes' ">

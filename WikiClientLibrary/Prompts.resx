@@ -309,4 +309,7 @@
   <data name="ExceptionUnexpectedContinuationLoop" xml:space="preserve">
     <value>Continuation information provided by server response leads to an infinite loop.</value>
   </data>
+  <data name="ExceptionSecureChannelFailureHint" xml:space="preserve">
+    <value>If you are accessing Wikimedia site, ensure your TLS version is compatible (TLS 1.2). See https://github.com/CXuesong/WikiClientLibrary/wiki/Troubleshooting for more information.</value>
+  </data>
 </root>

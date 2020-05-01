@@ -404,6 +404,15 @@ namespace WikiClientLibrary {
         }
         
         /// <summary>
+        ///   查找类似 If you are accessing Wikimedia site, ensure your TLS version is compatible (TLS 1.2). See https://github.com/CXuesong/WikiClientLibrary/wiki/Troubleshooting for more information. 的本地化字符串。
+        /// </summary>
+        internal static string ExceptionSecureChannelFailureHint {
+            get {
+                return ResourceManager.GetString("ExceptionSecureChannelFailureHint", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   查找类似 The content has been uploaded. 的本地化字符串。
         /// </summary>
         internal static string ExceptionStashingComplete {

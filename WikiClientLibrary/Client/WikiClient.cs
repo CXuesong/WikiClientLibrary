@@ -6,6 +6,7 @@ using System.Net;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
 using System.Net.Http;
+using System.Reflection;
 using System.Threading;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
@@ -20,8 +21,12 @@ namespace WikiClientLibrary.Client
     public class WikiClient : IWikiClient, IWikiClientLoggable, IDisposable
     {
 
-#if NETSTANDARD1_1
+#if NET45
+        private const string targetFramework = ".NET Framework 4.5";
+#elif NETSTANDARD1_1
         private const string targetFramework = ".NET Standard 1.1";
+#elif NETSTANDARD1_3
+        private const string targetFramework = ".NET Standard 1.3";
 #elif NETSTANDARD2_0
         private const string targetFramework = ".NET Standard 2.0";
 #elif NETSTANDARD2_1
@@ -236,6 +241,28 @@ namespace WikiClientLibrary.Client
                 Logger.LogWarning("Timeout.");
                 if (!await PrepareForRetry(RetryDelay)) throw new TimeoutException();
                 goto RETRY;
+            }
+            catch (HttpRequestException ex)
+            {
+#if BCL_FEATURE_WEB_EXCEPTION
+                if (ex.InnerException is WebException ex1 && ex1.Status == WebExceptionStatus.SecureChannelFailure)
+                {
+#else
+                // .NET 4.5
+                var ex1 = ex.InnerException;
+                if (ex1 != null && ex1.GetType().FullName == "System.Net.WebException")
+                {
+                    var statusProperty = ex1.GetType().GetRuntimeProperty("Status");
+                    if (statusProperty != null && statusProperty.GetValue(ex1)?.ToString() == "SecureChannelFailure")
+#endif
+                    {
+                        throw new HttpRequestException(ex1.Message + Prompts.ExceptionSecureChannelFailureHint, ex)
+                        {
+                            HelpLink = MediaWikiHelper.ExceptionTroubleshootingHelpLink
+                        };
+                    }
+                }
+                throw;
             }
             using (response)
             {
