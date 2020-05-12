@@ -808,6 +808,11 @@
             Provides options for creating or repying to a post.
             </summary>
     </member>
+    <member name="F:WikiClientLibrary.Wikia.Discussions.PostCreationOptions.None">
+      <summary>
+            No options.
+            </summary>
+    </member>
     <member name="F:WikiClientLibrary.Wikia.Discussions.PostCreationOptions.AsArticleComment">
       <summary>
             Creates the new post using article comment API,
@@ -820,44 +825,19 @@
             regardless of the current namespace.
             </summary>
     </member>
-    <member name="F:WikiClientLibrary.Wikia.Discussions.PostCreationOptions.None">
-      <summary>
-            No options.
-            </summary>
-    </member>
-    <member name="F:WikiClientLibrary.Wikia.Discussions.PostCreationOptions.value__">
-      <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>F:WikiClientLibrary.Wikia.Discussions.PostCreationOptions.value__</parameter>
-          </include>
-        </markup>
-      </summary>
-    </member>
     <member name="T:WikiClientLibrary.Wikia.Discussions.PostQueryOptions">
       <summary>
             Provides options for fetching a post from the server.
             </summary>
+    </member>
+    <member name="F:WikiClientLibrary.Wikia.Discussions.PostQueryOptions.None">
+      <summary>No options.</summary>
     </member>
     <member name="F:WikiClientLibrary.Wikia.Discussions.PostQueryOptions.ExactAuthoringInformation">
       <summary>
             Asks for exact author information, even if we are fetching for multiple
             comments at one time.
             </summary>
-    </member>
-    <member name="F:WikiClientLibrary.Wikia.Discussions.PostQueryOptions.None">
-      <summary>No options.</summary>
-    </member>
-    <member name="F:WikiClientLibrary.Wikia.Discussions.PostQueryOptions.value__">
-      <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>F:WikiClientLibrary.Wikia.Discussions.PostQueryOptions.value__</parameter>
-          </include>
-        </markup>
-      </summary>
     </member>
     <member name="T:WikiClientLibrary.Wikia.Sites.AppleTouchIconInfo">
       <summary>
@@ -1926,96 +1906,6 @@
           <include item="SMCMissingTag">
             <parameter>summary</parameter>
             <parameter>T:WikiClientLibrary.Wikia.WikiaApi.SearchRankingType</parameter>
-          </include>
-        </markup>
-      </summary>
-    </member>
-    <member name="F:WikiClientLibrary.Wikia.WikiaApi.SearchRankingType.Default">
-      <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>F:WikiClientLibrary.Wikia.WikiaApi.SearchRankingType.Default</parameter>
-          </include>
-        </markup>
-      </summary>
-    </member>
-    <member name="F:WikiClientLibrary.Wikia.WikiaApi.SearchRankingType.Freshest">
-      <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>F:WikiClientLibrary.Wikia.WikiaApi.SearchRankingType.Freshest</parameter>
-          </include>
-        </markup>
-      </summary>
-    </member>
-    <member name="F:WikiClientLibrary.Wikia.WikiaApi.SearchRankingType.MostViewed">
-      <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>F:WikiClientLibrary.Wikia.WikiaApi.SearchRankingType.MostViewed</parameter>
-          </include>
-        </markup>
-      </summary>
-    </member>
-    <member name="F:WikiClientLibrary.Wikia.WikiaApi.SearchRankingType.Newest">
-      <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>F:WikiClientLibrary.Wikia.WikiaApi.SearchRankingType.Newest</parameter>
-          </include>
-        </markup>
-      </summary>
-    </member>
-    <member name="F:WikiClientLibrary.Wikia.WikiaApi.SearchRankingType.Oldest">
-      <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>F:WikiClientLibrary.Wikia.WikiaApi.SearchRankingType.Oldest</parameter>
-          </include>
-        </markup>
-      </summary>
-    </member>
-    <member name="F:WikiClientLibrary.Wikia.WikiaApi.SearchRankingType.RecentlyModified">
-      <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>F:WikiClientLibrary.Wikia.WikiaApi.SearchRankingType.RecentlyModified</parameter>
-          </include>
-        </markup>
-      </summary>
-    </member>
-    <member name="F:WikiClientLibrary.Wikia.WikiaApi.SearchRankingType.Stable">
-      <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>F:WikiClientLibrary.Wikia.WikiaApi.SearchRankingType.Stable</parameter>
-          </include>
-        </markup>
-      </summary>
-    </member>
-    <member name="F:WikiClientLibrary.Wikia.WikiaApi.SearchRankingType.Stalest">
-      <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>F:WikiClientLibrary.Wikia.WikiaApi.SearchRankingType.Stalest</parameter>
-          </include>
-        </markup>
-      </summary>
-    </member>
-    <member name="F:WikiClientLibrary.Wikia.WikiaApi.SearchRankingType.value__">
-      <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>F:WikiClientLibrary.Wikia.WikiaApi.SearchRankingType.value__</parameter>
           </include>
         </markup>
       </summary>

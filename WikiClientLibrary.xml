@@ -69,6 +69,38 @@
         </markup>
       </param>
     </member>
+    <member name="T:WikiClientLibrary.BadValueException">
+      <summary>
+            An exception indicating an unrecognized value was specified for an enumerated-value parameter.
+            </summary>
+    </member>
+    <member name="M:WikiClientLibrary.BadValueException.#ctor(System.String,System.String)">
+      <summary>
+        <markup>
+          <include item="SMCAutoDocConstructor">
+            <parameter>WikiClientLibrary.BadValueException</parameter>
+          </include>
+        </markup>
+      </summary>
+      <param name="errorCode">
+        <markup>
+          <include item="SMCMissingParamTag">
+            <parameter>param</parameter>
+            <parameter>errorCode</parameter>
+            <parameter>M:WikiClientLibrary.BadValueException.#ctor(System.String,System.String)</parameter>
+          </include>
+        </markup>
+      </param>
+      <param name="message">
+        <markup>
+          <include item="SMCMissingParamTag">
+            <parameter>param</parameter>
+            <parameter>message</parameter>
+            <parameter>M:WikiClientLibrary.BadValueException.#ctor(System.String,System.String)</parameter>
+          </include>
+        </markup>
+      </param>
+    </member>
     <member name="T:WikiClientLibrary.BuiltInNamespaces">
       <summary>
             Contains MediaWiki built-in namespace IDs for most MediaWiki sites. (MediaWiki 1.14+)
