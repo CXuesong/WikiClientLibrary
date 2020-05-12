@@ -108,6 +108,10 @@ namespace WikiClientLibrary.Generators.Primitive
                     return jpages.Values().SelectMany(jpage =>
                     {
                         var jprop = jpage[PropertyName];
+                        // This can happen when there are multiple titles specified (such as stuffing multiple titles in PageTitle),
+                        // and pagination is triggered.
+                        // See https://github.com/CXuesong/WikiClientLibrary/issues/67.
+                        if (jprop == null) return Enumerable.Empty<T>();
                         return jprop.Select(v => ItemFromJson(v, (JObject)jpage));
                     }).ToList().ToAsyncEnumerable();
                     // ToList is necessary. See

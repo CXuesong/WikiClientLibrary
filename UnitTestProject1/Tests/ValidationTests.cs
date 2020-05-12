@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
+using WikiClientLibrary.Generators;
+using WikiClientLibrary.Infrastructures;
 using WikiClientLibrary.Wikia;
 using WikiClientLibrary.Wikia.Sites;
 using Xunit;
@@ -30,6 +32,20 @@ namespace WikiClientLibrary.Tests.UnitTestProject1.Tests
             // Cause: cacheBuster=7030077030012 in /api/v1/Mercury/WikiVariables request exceeds Int32 limit.
             var site = new WikiaSite(WikiClient, "https://theedgechronicles.fandom.com/");
             await site.Initialization;
+        }
+
+        /// <summary>
+        /// [B]ArgumentNullException in WikiPagePropertyList&lt;T&gt;
+        /// </summary>
+        [Fact]
+        public async Task Issue67()
+        {
+            var site = await WpEnSiteAsync;
+            var items = await new CategoriesGenerator(site)
+            {
+                PageTitle = MediaWikiHelper.JoinValues(new[] { "Test", ".test", "Test_(Unix)", "Test_(assessment)" }),
+            }.EnumItemsAsync().ToListAsync();
+            ShallowTrace(items);
         }
 
     }
