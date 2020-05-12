@@ -55,6 +55,7 @@ namespace WikiClientLibrary.Wikibase
                 _State = value;
             }
         }
+
     }
 
     /// <summary>

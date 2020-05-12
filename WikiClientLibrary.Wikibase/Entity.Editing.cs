@@ -442,12 +442,12 @@ namespace WikiClientLibrary.Wikibase
         None = 0,
         /// <summary>Mark the edit as bot edit.</summary>
         Bot = 1,
-        /// <summary>Forces progressive edit, even if the client is creating a new item.
+        /// <summary>Forces progressive edit, even if WCL is creating a new item.
         /// This option cannot be used with <see cref="Bulk"/> and <see cref="ClearData"/>.</summary>
         /// <remarks>Note that setting <see cref="Entity.DataType"/> is not possible in progressive mode,
         /// nor can you change the data type of an existing property due to the limitation of Wikibase.</remarks>
         Progressive = 2,
-        /// <summary>Forces bulk edit, even if the client is creating a new item.</summary>
+        /// <summary>Forces bulk edit, even if WCL is editing an existing item with less than 5 items of changes.</summary>
         Bulk = 4,
         /// <summary>Clears all the existing data of the entity before making the changes.
         /// This option implies <see cref="Bulk"/> flag.</summary>
