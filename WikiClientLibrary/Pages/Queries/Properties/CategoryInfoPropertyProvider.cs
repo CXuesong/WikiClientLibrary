@@ -12,7 +12,9 @@ namespace WikiClientLibrary.Pages.Queries.Properties
     /// (<a href="https://www.mediawiki.org/wiki/API:Categoryinfo">mw:API:Categoryinfo</a>, MediaWiki 1.13+)
     /// </summary>
     public class CategoryInfoPropertyProvider : WikiPagePropertyProvider<CategoryInfoPropertyGroup>
-    {        /// <inheritdoc />
+    {
+
+        /// <inheritdoc />
         public override IEnumerable<KeyValuePair<string, object>> EnumParameters(MediaWikiVersion version)
         {
             return Enumerable.Empty<KeyValuePair<string, object>>();

@@ -9,7 +9,7 @@ using WikiClientLibrary.Infrastructures;
 
 namespace WikiClientLibrary.Pages.Queries.Properties
 {
-    internal class CategoriesPropertyProvider : WikiPagePropertyProvider<CategoriesPropertyGroup>
+    public class CategoriesPropertyProvider : WikiPagePropertyProvider<CategoriesPropertyGroup>
     {
 
         /// <summary>
@@ -20,7 +20,9 @@ namespace WikiClientLibrary.Pages.Queries.Properties
         /// <summary>
         /// Only list these categories. Useful for checking whether a certain page is in a certain category.
         /// </summary>
-        public IEnumerable<string> CategorySelection { get; set; }        /// <inheritdoc />
+        public IEnumerable<string> CategorySelection { get; set; }
+
+        /// <inheritdoc />
         public override IEnumerable<KeyValuePair<string, object>> EnumParameters(MediaWikiVersion version)
         {
             var p = new OrderedKeyValuePairs<string, object>
@@ -87,7 +89,7 @@ namespace WikiClientLibrary.Pages.Queries.Properties
         }
     }
 
-    internal class CategoriesPropertyGroup : WikiPagePropertyGroup
+    public class CategoriesPropertyGroup : WikiPagePropertyGroup
     {
 
         private static readonly CategoriesPropertyGroup empty = new CategoriesPropertyGroup();
