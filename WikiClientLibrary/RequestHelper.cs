@@ -37,13 +37,14 @@ namespace WikiClientLibrary
             return (JObject)(jresult["continue"] ?? ((JProperty)jresult["query-continue"]?.First)?.Value);
         }
 
-        public static int ParseContinuationParameters(JToken jresult, IDictionary<string, object> queryParams, bool dryRun = false)
+        public static int ParseContinuationParameters(JToken jresult, IDictionary<string, object> queryParams, IDictionary<string, object> continuationParams)
         {
             var continuation = FindQueryContinuationParameterRoot(jresult);
             // No more results.
             if (continuation == null || continuation.Count == 0)
                 return CONTINUATION_DONE;
             var anyNewValue = false;
+            continuationParams?.Clear();
             foreach (var p in continuation.Properties())
             {
                 object parsed;
@@ -51,8 +52,7 @@ namespace WikiClientLibrary
                 else parsed = p.Value.ToString(Formatting.None);
                 if (!queryParams.TryGetValue(p.Name, out var existingValue) || !ValueEquals(existingValue, parsed))
                     anyNewValue = true;
-                if (!dryRun)
-                    queryParams[p.Name] = parsed;
+                continuationParams?.Add(new KeyValuePair<string, object>(p.Name, parsed));
             }
             return anyNewValue ? CONTINUATION_AVAILABLE : CONTINUATION_LOOP;
 
@@ -102,10 +102,13 @@ namespace WikiClientLibrary
                 var retrivedPageIds = distinctPages ? new HashSet<int>() : null;
                 using (beginActionScope?.Invoke())
                 {
-                    var queryParams = parameters.ToDictionary(p => p.Key, p => p.Value);
-                    Debug.Assert("query".Equals(queryParams["action"]));
+                    var baseQueryParams = parameters.ToDictionary(p => p.Key, p => p.Value);
+                    Debug.Assert("query".Equals(baseQueryParams["action"]));
+                    var continuationParams = new Dictionary<string, object>();
                     while (true)
                     {
+                        var queryParams = new Dictionary<string, object>(baseQueryParams);
+                        queryParams.MergeFrom(continuationParams);
                         var jresult = await site.InvokeMediaWikiApiAsync(new MediaWikiFormRequestMessage(queryParams), ct);
                         var jpages = (JObject)FindQueryResponseItemsRoot(jresult, "pages");
                         if (jpages != null)
@@ -133,13 +136,14 @@ namespace WikiClientLibrary
                             }
                             await sink.YieldAndWait(jpages);
                         }
-                        switch (ParseContinuationParameters(jresult, queryParams))
+                        switch (ParseContinuationParameters(jresult, queryParams, continuationParams))
                         {
                             case CONTINUATION_DONE:
                                 return;
                             case CONTINUATION_AVAILABLE:
                                 if (jpages == null)
                                     site.Logger.LogWarning("Empty query page with continuation received on {Site}.", site);
+                                // Continue the loop and fetch for the next page of query.
                                 break;
                             case CONTINUATION_LOOP:
                                 throw new UnexpectedDataException();
@@ -227,28 +231,31 @@ namespace WikiClientLibrary
                         }
                         var jobj = await site.InvokeMediaWikiApiAsync(new MediaWikiFormRequestMessage(queryParams), cancellationToken);
                         var jquery = (JObject)jobj["query"];
-                        // Process continuation caused by props (e.g. langlinks) that contains a list that is too long.
-                        if (ParseContinuationParameters(jobj, queryParams, true) == CONTINUATION_AVAILABLE)
+                        var continuationStatus = ParseContinuationParameters(jobj, queryParams, null);
+                        // Process continuation caused by props (e.g. langlinks) that contain a list that is too long.
+                        if (continuationStatus != CONTINUATION_DONE)
                         {
-                            var queryParams1 = queryParams.ToDictionary();
-                            ParseContinuationParameters(jobj, queryParams);
-                            PROP_NEXT_PAGE:
-                            site.Logger.LogDebug("Detected query continuation.", partition.Count);
-                            var jobj1 = await site.InvokeMediaWikiApiAsync(new MediaWikiFormRequestMessage(queryParams1), cancellationToken);
-                            var jquery1 = jobj1["query"];
-                            if (jquery1.HasValues)
+                            var queryParams1 = new Dictionary<string, object>();
+                            var continuationParams = new Dictionary<string, object>();
+                            var jobj1 = jobj;
+                            ParseContinuationParameters(jobj1, queryParams1, continuationParams);
+                            while (continuationStatus != CONTINUATION_DONE)
                             {
-                                // Merge JSON response
-                                jquery.Merge(jquery1);
-                            }
-                            switch (ParseContinuationParameters(jobj1, queryParams1))
-                            {
-                                case CONTINUATION_DONE:
-                                    break;
-                                case CONTINUATION_AVAILABLE:
-                                    goto PROP_NEXT_PAGE;
-                                case CONTINUATION_LOOP:
+                                if (continuationStatus == CONTINUATION_LOOP)
                                     throw new UnexpectedDataException(Prompts.ExceptionUnexpectedContinuationLoop);
+                                Debug.Assert(continuationStatus == CONTINUATION_AVAILABLE);
+                                site.Logger.LogDebug("Detected query continuation. PartitionCount={PartitionCount}.", partition.Count);
+                                queryParams1.Clear();
+                                queryParams1.MergeFrom(queryParams);
+                                queryParams1.MergeFrom(continuationParams);
+                                jobj1 = await site.InvokeMediaWikiApiAsync(new MediaWikiFormRequestMessage(queryParams1), cancellationToken);
+                                var jquery1 = jobj1["query"];
+                                if (jquery1.HasValues)
+                                {
+                                    // Merge JSON response
+                                    jquery.Merge(jquery1);
+                                }
+                                continuationStatus = ParseContinuationParameters(jobj1, queryParams1, continuationParams);
                             }
                         }
                         if (sitePages.Key.HasTitle)
@@ -346,7 +353,7 @@ namespace WikiClientLibrary
             });
         }
 
-#endregion
+        #endregion
 
         private static readonly IReadOnlyCollection<PurgeFailureInfo> emptyPurgeFailures = new PurgeFailureInfo[0];
 

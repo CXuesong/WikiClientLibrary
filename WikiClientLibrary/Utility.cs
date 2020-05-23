@@ -78,6 +78,12 @@ namespace WikiClientLibrary
                 .Select(p => new KeyValuePair<string, string>(p.Key, ToWikiQueryValue(p.Value)));
         }
 
+        public static void MergeFrom<TKey, TValue>(this IDictionary<TKey, TValue> dict, IEnumerable<KeyValuePair<TKey, TValue>> items)
+        {
+            foreach (var item in items)
+                dict[item.Key] = item.Value;
+        }
+
         public static string ToWikiQueryValue(object value)
         {
             switch (value)

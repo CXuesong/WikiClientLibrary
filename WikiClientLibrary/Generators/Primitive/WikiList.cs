@@ -130,18 +130,25 @@ namespace WikiClientLibrary.Generators.Primitive
         {
             return AsyncEnumerableFactory.FromAsyncGenerator<T>(async (sink, ct) =>
             {
-                var queryParams = new Dictionary<string, object>
+                var baseQueryParams = new Dictionary<string, object>
                 {
                     {"action", "query"},
                     {"maxlag", 5},
                     {"list", ListName},
                 };
-                foreach (var p in EnumListParameters()) queryParams.Add(p.Key, p.Value);
+                foreach (var p in EnumListParameters())
+                    baseQueryParams.Add(p.Key, p.Value);
                 ct.ThrowIfCancellationRequested();
+                var continuationParams = new Dictionary<string, object>();
                 using (Site.BeginActionScope(this))
                 {
+                    // query parameters for this batch. The content/ref will be modified below.
+                    var queryParams = new Dictionary<string, object>();
                     while (true)
                     {
+                        queryParams.Clear();
+                        queryParams.MergeFrom(baseQueryParams);
+                        queryParams.MergeFrom(continuationParams);
                         try
                         {
                             var jresult = await Site.InvokeMediaWikiApiAsync(new MediaWikiFormRequestMessage(queryParams), ct);
@@ -149,7 +156,7 @@ namespace WikiClientLibrary.Generators.Primitive
                             if (listNode != null)
                                 await sink.YieldAndWait(listNode.Select(ItemFromJson));
                             // Check for continuation.
-                            switch (RequestHelper.ParseContinuationParameters(jresult, queryParams))
+                            switch (RequestHelper.ParseContinuationParameters(jresult, queryParams, continuationParams))
                             {
                                 case RequestHelper.CONTINUATION_DONE:
                                     return;
@@ -167,10 +174,9 @@ namespace WikiClientLibrary.Generators.Primitive
                                         if ((CompatibilityOptions.ContinuationLoopBehaviors & WikiListContinuationLoopBehaviors.FetchMore) ==
                                             WikiListContinuationLoopBehaviors.FetchMore)
                                         {
-                                            var queryParams2 = new Dictionary<string, object>(queryParams);
-                                            // xxlimit
+                                            // xxlimit (length = 7)
                                             var limitParamName =
-                                                queryParams2.Keys.FirstOrDefault(k => k.Length == 7 && k.EndsWith("limit", StringComparison.Ordinal));
+                                                queryParams.Keys.FirstOrDefault(k => k.Length == 7 && k.EndsWith("limit", StringComparison.Ordinal));
                                             if (limitParamName == null)
                                             {
                                                 Site.Logger.LogWarning("Failed to find the underlying parameter name for PaginationSize.");
@@ -179,19 +185,20 @@ namespace WikiClientLibrary.Generators.Primitive
                                             {
                                                 var maxLimit = Site.AccountInfo.HasRight(UserRights.ApiHighLimits) ? 1000 : 500;
                                                 var currentLimit = Math.Max(PaginationSize, 50);
+                                                // Continuously expand PaginationSize, hopefully we can retrieve some different continuation param value.
                                                 while (currentLimit < maxLimit)
                                                 {
                                                     currentLimit = Math.Min(maxLimit, currentLimit * 2);
                                                     Site.Logger.LogDebug("Try to fetch more with {ParamName}={ParamValue}.", limitParamName, currentLimit);
-                                                    queryParams2[limitParamName] = currentLimit;
-                                                    var jresult2 = await Site.InvokeMediaWikiApiAsync(new MediaWikiFormRequestMessage(queryParams2), ct);
-                                                    var applyResult = RequestHelper.ParseContinuationParameters(jresult2, queryParams2, true);
+                                                    queryParams.Clear();
+                                                    queryParams.MergeFrom(baseQueryParams);
+                                                    queryParams.MergeFrom(continuationParams);
+                                                    queryParams[limitParamName] = currentLimit;
+                                                    var jresult2 = await Site.InvokeMediaWikiApiAsync(new MediaWikiFormRequestMessage(queryParams), ct);
+                                                    var applyResult = RequestHelper.ParseContinuationParameters(jresult2, queryParams, continuationParams);
                                                     switch (applyResult)
                                                     {
                                                         case RequestHelper.CONTINUATION_AVAILABLE:
-                                                            var applyResult2 = RequestHelper.ParseContinuationParameters(jresult2, queryParams);
-                                                            Debug.Assert(applyResult2 == RequestHelper.CONTINUATION_AVAILABLE);
-                                                            goto case RequestHelper.CONTINUATION_DONE;
                                                         case RequestHelper.CONTINUATION_DONE:
                                                             var listNode2 = RequestHelper.FindQueryResponseItemsRoot(jresult2, ListName);
                                                             Site.Logger.LogInformation("Successfully got out of the continuation loop.");
