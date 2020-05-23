@@ -8988,6 +8988,76 @@
             In the case of multiple redirects (A→B→C→…→X), all the redirects on the path will be resolved.
             </summary>
     </member>
+    <member name="T:WikiClientLibrary.Pages.Queries.Properties.CategoriesPropertyGroup">
+      <summary>
+        <markup>
+          <include item="SMCMissingTag">
+            <parameter>summary</parameter>
+            <parameter>T:WikiClientLibrary.Pages.Queries.Properties.CategoriesPropertyGroup</parameter>
+          </include>
+        </markup>
+      </summary>
+    </member>
+    <member name="P:WikiClientLibrary.Pages.Queries.Properties.CategoriesPropertyGroup.Categories">
+      <summary>
+        <markup>
+          <include item="SMCMissingTag">
+            <parameter>summary</parameter>
+            <parameter>P:WikiClientLibrary.Pages.Queries.Properties.CategoriesPropertyGroup.Categories</parameter>
+          </include>
+        </markup>
+      </summary>
+    </member>
+    <member name="T:WikiClientLibrary.Pages.Queries.Properties.CategoriesPropertyProvider">
+      <summary>
+        <markup>
+          <include item="SMCMissingTag">
+            <parameter>summary</parameter>
+            <parameter>T:WikiClientLibrary.Pages.Queries.Properties.CategoriesPropertyProvider</parameter>
+          </include>
+        </markup>
+      </summary>
+    </member>
+    <member name="M:WikiClientLibrary.Pages.Queries.Properties.CategoriesPropertyProvider.#ctor">
+      <summary>
+        <markup>
+          <include item="SMCAutoDocConstructor">
+            <parameter>WikiClientLibrary.Pages.Queries.Properties.CategoriesPropertyProvider</parameter>
+          </include>
+        </markup>
+      </summary>
+    </member>
+    <member name="P:WikiClientLibrary.Pages.Queries.Properties.CategoriesPropertyProvider.CategorySelection">
+      <summary>
+            Only list these categories. Useful for checking whether a certain page is in a certain category.
+            </summary>
+    </member>
+    <member name="M:WikiClientLibrary.Pages.Queries.Properties.CategoriesPropertyProvider.EnumParameters(WikiClientLibrary.MediaWikiVersion)">
+      <summary>
+            Enumerates the MediaWiki API request parameters for <c>action=query</c> request.
+            </summary>
+      <param name="version">MediaWiki API version. Use <seealso cref="P:WikiClientLibrary.MediaWikiVersion.Zero" /> for unknown version or compatible mode.</param>
+    </member>
+    <member name="P:WikiClientLibrary.Pages.Queries.Properties.CategoriesPropertyProvider.HiddenCategoryFilter">
+      <summary>
+            Whether to include hidden categories in the returned list.
+            </summary>
+    </member>
+    <member name="M:WikiClientLibrary.Pages.Queries.Properties.CategoriesPropertyProvider.ParsePropertyGroup(Newtonsoft.Json.Linq.JObject)">
+      <summary>
+            Parses the properties from the given<c>action=query</c> JSON response.
+            </summary>
+      <param name="json">One of the item node under the JSON path <c>query/pages</c>.</param>
+      <returns>A property group instance, or <c>null</c> if no extra property group available.</returns>
+      <exception cref="T:System.ArgumentNullException">
+        <paramref name="json" /> is <c>null</c>.</exception>
+    </member>
+    <member name="P:WikiClientLibrary.Pages.Queries.Properties.CategoriesPropertyProvider.PropertyName">
+      <summary>
+            Gets the property name, when this property is needed to be included in the <c>prop=</c> parameter
+            in the MediaWiki API request.
+            </summary>
+    </member>
     <member name="T:WikiClientLibrary.Pages.Queries.Properties.CategoryInfoPropertyGroup">
       <summary>
             Property group for category page information.
