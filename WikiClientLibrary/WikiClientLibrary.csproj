@@ -19,7 +19,15 @@
       * Other miscellaneous MediaWiki API, such as OpenSearch, Page parsing, and Patrol.
       * Scribunto Lua console and server-side module execution support
     </Description>
+    <PublishRepositoryUrl>true</PublishRepositoryUrl>
+    <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
   </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All" />
+  </ItemGroup>
+
 
   <ItemGroup>
     <PackageReference Include="CXuesong.AsyncEnumerableExtensions" Version="0.2.0" />
