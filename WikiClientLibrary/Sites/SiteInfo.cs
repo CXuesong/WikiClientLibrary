@@ -125,7 +125,7 @@ namespace WikiClientLibrary.Sites
         public string LogoUrl { get; private set; }
 
         /// <summary>
-        /// API version information as found in $wgVersion. 1.8+
+        /// API version information as found in <c>$wgVersion</c>. (MW 1.8+)
         /// </summary>
         /// <remarks>Example value: <c>MediaWiki 1.28.0-wmf.15</c>.</remarks>
         [JsonProperty("generator")]
@@ -147,7 +147,7 @@ namespace WikiClientLibrary.Sites
                     }
                     if (value[pos] < '0' && value[pos] > '9')
                         goto NEXT;
-                    Version = MediaWikiVersion.Parse(value.Substring(pos));
+                    Version = MediaWikiVersion.Parse(value.Substring(pos), true);
                 }
             }
         }
@@ -156,8 +156,10 @@ namespace WikiClientLibrary.Sites
         /// Gets MediaWiki API version.
         /// </summary>
         /// <remarks>
-        /// This version is parsed from the value of <see cref="Generator"/>.
-        /// If WCL failed to parse the version, this property will be <see cref="MediaWikiVersion.Zero"/>.
+        /// <para>This version is parsed from the value of <see cref="Generator"/>.
+        /// Suffix truncation is allowed when parsing the version.
+        /// If WCL failed to extract version part from <see cref="Generator"/>, this property will be <see cref="MediaWikiVersion.Zero"/>.</para>
+        /// <para>See <see cref="MediaWikiVersion.Parse(string,bool)"/> for more information about version suffix truncation.</para>
         /// </remarks>
         public MediaWikiVersion Version { get; private set; }
 

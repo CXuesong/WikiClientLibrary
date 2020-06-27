@@ -277,7 +277,7 @@
     <value>Invalid version number component.</value>
   </data>
   <data name="ExceptionVersionUnknownDevVersionPrefix1" xml:space="preserve">
-    <value>Unrecognizable DevVersion prefix: {0}.</value>
+    <value>Unrecognizable DevVersion prefix: {0}. Version truncation is not allowed by parsing setting.</value>
   </data>
   <data name="ExceptionVersionIncompleteDevVersion" xml:space="preserve">
     <value>Incomplete DevVersion expression.</value>

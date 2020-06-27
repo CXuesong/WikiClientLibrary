@@ -48,5 +48,16 @@ namespace WikiClientLibrary.Tests.UnitTestProject1.Tests
             ShallowTrace(items);
         }
 
+        /// <summary>
+        /// [T]Paring/truncating Debian MediaWiki package version.
+        /// </summary>
+        [Fact]
+        public void Issue72()
+        {
+            Assert.Throws<FormatException>(() => MediaWikiVersion.Parse("1.19.5-1+deb7u1"));
+            var version = MediaWikiVersion.Parse("1.19.5-1+deb7u1", true);
+            Assert.Equal(new MediaWikiVersion(1, 19, 5), version);
+        }
+
     }
 }

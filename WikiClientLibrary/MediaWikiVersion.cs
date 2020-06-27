@@ -64,41 +64,58 @@ namespace WikiClientLibrary
         /// </summary>
         public static MediaWikiVersion Zero { get; } = default;
 
+        /// <inheritdoc cref="Parse(string,bool)"/>
+        /// <remarks>This overload does not allow version truncation.</remarks>
+        public static MediaWikiVersion Parse(string version)
+        {
+            return Parse(version, false);
+        }
+
         /// <summary>
         /// Parses a MediaWiki core version number from its string representation.
         /// </summary>
         /// <param name="version">The version to be parsed.</param>
-        /// <exception cref="ArgumentException">
+        /// <param name="allowTruncation">Whether allows truncating unknown version suffix (such as <c>-1+deb7u1</c> in <c>1.19.5-1+deb7u1</c>).</param>
+        /// <exception cref="ArgumentException"><paramref name="version"/> is <c>null</c> or empty.</exception>
+        /// <exception cref="FormatException">
         /// <paramref name="version"/> is not a valid version expression, such as
         /// <list type="bullet">
         /// <item><description>is <c>null</c>, empty, or whitespace.</description></item>
         /// <item><description>has more than 3 version components before the first dash, if any.</description></item>
-        /// <item><description>has invalid dev-channel suffix. See <seealso cref="MediaWikiDevChannel"/> for a list of valid dev-channel suffixes.</description></item>
+        /// <item><description>has invalid dev-channel suffix, and suffix truncation is not allowed. See <seealso cref="MediaWikiDevChannel"/> for a list of valid dev-channel suffixes.</description></item>
         /// <item><description>has invalid numeric version components, including failure to parse as number, or arithmetic overflow.</description></item>
         /// </list>
         /// </exception>
         /// <returns>The parsed version.</returns>
-        /// <seealso cref="TryParse"/>
-        public static MediaWikiVersion Parse(string version)
+        /// <seealso cref="TryParse(string,out MediaWikiVersion)"/>
+        public static MediaWikiVersion Parse(string version, bool allowTruncation)
         {
-            var result = Parse(version, true, out var v);
+            var result = Parse(version, allowTruncation, true, out var v);
             Debug.Assert(result);
             return v;
+        }
+
+        /// <inheritdoc cref="TryParse(string,bool,out MediaWikiVersion)"/>
+        /// <remarks>This overload does not allow version truncation.</remarks>
+        public static bool TryParse(string version, out MediaWikiVersion parsed)
+        {
+            return Parse(version, false, false, out parsed);
         }
 
         /// <summary>
         /// Tries to parse a MediaWiki core version number from its string representation.
         /// </summary>
         /// <param name="version">The version to be parsed.</param>
+        /// <param name="allowTruncation">Whether allows truncating unknown version suffix (such as <c>-1+deb7u1</c> in <c>1.19.5-1+deb7u1</c>).</param>
         /// <param name="parsed">A variable to receive the parsed version value.</param>
         /// <returns>Whether the parsing is successful.</returns>
         /// <seealso cref="Parse(string)"/>
-        public static bool TryParse(string version, out MediaWikiVersion parsed)
+        public static bool TryParse(string version, bool allowTruncation, out MediaWikiVersion parsed)
         {
-            return Parse(version, false, out parsed);
+            return Parse(version, true, false, out parsed);
         }
 
-        public static bool Parse(string version, bool raiseError, out MediaWikiVersion parsed)
+        internal static bool Parse(string version, bool allowTruncation, bool raiseError, out MediaWikiVersion parsed)
         {
             if (string.IsNullOrEmpty(version))
             {
@@ -111,7 +128,7 @@ namespace WikiClientLibrary
             if (components2.Length > 3)
             {
                 if (!raiseError) goto SILENT_FAIL;
-                throw new ArgumentException(Prompts.ExceptionVersionTooManyComponents, nameof(version));
+                throw new FormatException(Prompts.ExceptionVersionTooManyComponents);
             }
             short major;
             short minor = 0, revision = 0;
@@ -128,7 +145,7 @@ namespace WikiClientLibrary
             catch (Exception ex)
             {
                 if (!raiseError) goto SILENT_FAIL;
-                throw new ArgumentException(Prompts.ExceptionVersionInvalidNumber, nameof(version), ex);
+                throw new FormatException(Prompts.ExceptionVersionInvalidNumber, ex);
             }
 
             if (components1.Length > 1)
@@ -156,11 +173,17 @@ namespace WikiClientLibrary
                     devChannel = MediaWikiDevChannel.Beta;
                     devVersionStartsAt = 4;
                 }
+                else if (allowTruncation)
+                {
+                    // truncate unknown -suffix.
+                    devVersionStartsAt = devFullVersion.Length;
+                }
                 else
                 {
                     if (!raiseError) goto SILENT_FAIL;
-                    throw new ArgumentException(string.Format(Prompts.ExceptionVersionUnknownDevVersionPrefix1, devFullVersion));
+                    throw new FormatException(string.Format(Prompts.ExceptionVersionUnknownDevVersionPrefix1, devFullVersion));
                 }
+
                 // Parse version.
                 if (devFullVersion.Length == devVersionStartsAt)
                 {
@@ -174,7 +197,7 @@ namespace WikiClientLibrary
                     if (devFullVersion.Length <= devVersionStartsAt)
                     {
                         if (!raiseError) goto SILENT_FAIL;
-                        throw new ArgumentException(Prompts.ExceptionVersionIncompleteDevVersion, nameof(version));
+                        throw new FormatException(Prompts.ExceptionVersionIncompleteDevVersion);
                     }
                     try
                     {
@@ -183,10 +206,11 @@ namespace WikiClientLibrary
                     catch (Exception ex)
                     {
                         if (!raiseError) goto SILENT_FAIL;
-                        throw new ArgumentException(Prompts.ExceptionVersionInvalidDevVersion, nameof(version), ex);
+                        throw new FormatException(Prompts.ExceptionVersionInvalidDevVersion, ex);
                     }
                 }
             }
+
             parsed = new MediaWikiVersion(major, minor, revision, devChannel, devVersion);
             return true;
             SILENT_FAIL:

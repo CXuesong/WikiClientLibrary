@@ -566,7 +566,7 @@ namespace WikiClientLibrary {
         }
         
         /// <summary>
-        ///   查找类似 Unrecognizable DevVersion prefix: {0}. 的本地化字符串。
+        ///   查找类似 Unrecognizable DevVersion prefix: {0}. Version truncation is not allowed by parsing setting. 的本地化字符串。
         /// </summary>
         internal static string ExceptionVersionUnknownDevVersionPrefix1 {
             get {
