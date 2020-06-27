@@ -1185,47 +1185,26 @@
             Parses a MediaWiki core version number from its string representation.
             </summary>
       <param name="version">The version to be parsed.</param>
+      <param name="allowTruncation">Whether allows truncating unknown version suffix (such as <c>-1+deb7u1</c> in <c>1.19.5-1+deb7u1</c>).</param>
       <returns>The parsed version.</returns>
       <exception cref="T:System.ArgumentException">
+        <paramref name="version" /> is <c>null</c> or empty.</exception>
+      <exception cref="T:System.FormatException">
         <paramref name="version" /> is not a valid version expression, such as
-            <list type="bullet"><item><description>is <c>null</c>, empty, or whitespace.</description></item><item><description>has more than 3 version components before the first dash, if any.</description></item><item><description>has invalid dev-channel suffix. See <seealso cref="T:WikiClientLibrary.MediaWikiDevChannel" /> for a list of valid dev-channel suffixes.</description></item><item><description>has invalid numeric version components, including failure to parse as number, or arithmetic overflow.</description></item></list></exception>
+            <list type="bullet"><item><description>is <c>null</c>, empty, or whitespace.</description></item><item><description>has more than 3 version components before the first dash, if any.</description></item><item><description>has invalid dev-channel suffix, and suffix truncation is not allowed. See <seealso cref="T:WikiClientLibrary.MediaWikiDevChannel" /> for a list of valid dev-channel suffixes.</description></item><item><description>has invalid numeric version components, including failure to parse as number, or arithmetic overflow.</description></item></list></exception>
     </member>
-    <member name="M:WikiClientLibrary.MediaWikiVersion.Parse(System.String,System.Boolean,WikiClientLibrary.MediaWikiVersion@)">
+    <member name="M:WikiClientLibrary.MediaWikiVersion.Parse(System.String,System.Boolean)">
       <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>M:WikiClientLibrary.MediaWikiVersion.Parse(System.String,System.Boolean,WikiClientLibrary.MediaWikiVersion@)</parameter>
-          </include>
-        </markup>
-      </summary>
-      <param name="version">
-        <markup>
-          <include item="SMCMissingParamTag">
-            <parameter>param</parameter>
-            <parameter>version</parameter>
-            <parameter>M:WikiClientLibrary.MediaWikiVersion.Parse(System.String,System.Boolean,WikiClientLibrary.MediaWikiVersion@)</parameter>
-          </include>
-        </markup>
-      </param>
-      <param name="raiseError">
-        <markup>
-          <include item="SMCMissingParamTag">
-            <parameter>param</parameter>
-            <parameter>raiseError</parameter>
-            <parameter>M:WikiClientLibrary.MediaWikiVersion.Parse(System.String,System.Boolean,WikiClientLibrary.MediaWikiVersion@)</parameter>
-          </include>
-        </markup>
-      </param>
-      <param name="parsed">
-        <markup>
-          <include item="SMCMissingParamTag">
-            <parameter>param</parameter>
-            <parameter>parsed</parameter>
-            <parameter>M:WikiClientLibrary.MediaWikiVersion.Parse(System.String,System.Boolean,WikiClientLibrary.MediaWikiVersion@)</parameter>
-          </include>
-        </markup>
-      </param>
+            Parses a MediaWiki core version number from its string representation.
+            </summary>
+      <param name="version">The version to be parsed.</param>
+      <param name="allowTruncation">Whether allows truncating unknown version suffix (such as <c>-1+deb7u1</c> in <c>1.19.5-1+deb7u1</c>).</param>
+      <returns>The parsed version.</returns>
+      <exception cref="T:System.ArgumentException">
+        <paramref name="version" /> is <c>null</c> or empty.</exception>
+      <exception cref="T:System.FormatException">
+        <paramref name="version" /> is not a valid version expression, such as
+            <list type="bullet"><item><description>is <c>null</c>, empty, or whitespace.</description></item><item><description>has more than 3 version components before the first dash, if any.</description></item><item><description>has invalid dev-channel suffix, and suffix truncation is not allowed. See <seealso cref="T:WikiClientLibrary.MediaWikiDevChannel" /> for a list of valid dev-channel suffixes.</description></item><item><description>has invalid numeric version components, including failure to parse as number, or arithmetic overflow.</description></item></list></exception>
     </member>
     <member name="P:WikiClientLibrary.MediaWikiVersion.Revision">
       <summary>
@@ -1236,11 +1215,21 @@
       <summary>Returns the fully qualified type name of this instance.</summary>
       <returns>A <see cref="T:System.String" /> containing a fully qualified type name.</returns>
     </member>
+    <member name="M:WikiClientLibrary.MediaWikiVersion.TryParse(System.String,System.Boolean,WikiClientLibrary.MediaWikiVersion@)">
+      <summary>
+            Tries to parse a MediaWiki core version number from its string representation.
+            </summary>
+      <param name="version">The version to be parsed.</param>
+      <param name="allowTruncation">Whether allows truncating unknown version suffix (such as <c>-1+deb7u1</c> in <c>1.19.5-1+deb7u1</c>).</param>
+      <param name="parsed">A variable to receive the parsed version value.</param>
+      <returns>Whether the parsing is successful.</returns>
+    </member>
     <member name="M:WikiClientLibrary.MediaWikiVersion.TryParse(System.String,WikiClientLibrary.MediaWikiVersion@)">
       <summary>
             Tries to parse a MediaWiki core version number from its string representation.
             </summary>
       <param name="version">The version to be parsed.</param>
+      <param name="allowTruncation">Whether allows truncating unknown version suffix (such as <c>-1+deb7u1</c> in <c>1.19.5-1+deb7u1</c>).</param>
       <param name="parsed">A variable to receive the parsed version value.</param>
       <returns>Whether the parsing is successful.</returns>
     </member>
@@ -11782,7 +11771,7 @@
     </member>
     <member name="P:WikiClientLibrary.Sites.SiteInfo.Generator">
       <summary>
-            API version information as found in $wgVersion. 1.8+
+            API version information as found in <c>$wgVersion</c>. (MW 1.8+)
             </summary>
     </member>
     <member name="P:WikiClientLibrary.Sites.SiteInfo.IsTitleCaseSensitive">
