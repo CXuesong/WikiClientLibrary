@@ -104,7 +104,7 @@
     <NamingMethod>Guid</NamingMethod>
     <HelpTitle>Wiki Client Library</HelpTitle>
     <ContentPlacement>AboveNamespaces</ContentPlacement>
-    <CopyrightText>Copyright %28C%29 CXuesong 2018</CopyrightText>
+    <CopyrightText>Copyright %28C%29 CXuesong 2020</CopyrightText>
     <VisibleItems>Attributes, ExplicitInterfaceImplementations, InheritedMembers, InheritedFrameworkMembers, Protected, ProtectedInternalAsProtected, EditorBrowsableNever, NonBrowsable</VisibleItems>
     <HeaderText>
     </HeaderText>

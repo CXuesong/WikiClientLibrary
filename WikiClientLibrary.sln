@@ -7,13 +7,15 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WikiClientLibrary", "WikiCl
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UnitTestProject1", "UnitTestProject1\UnitTestProject1.csproj", "{7D4BFD1B-2290-47B5-B8A3-5C67427E0AC1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WpfTestApplication1", "WpfTestApplication1\WpfTestApplication1.csproj", "{F9309EAA-E454-429B-BEAD-F69678EB97C5}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WpfTestApplication1", "WpfTestApplication1\WpfTestApplication1.csproj", "{F9309EAA-E454-429B-BEAD-F69678EB97C5}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{4C8F5DE7-898C-4311-876A-AB07BD8B32A1}"
 	ProjectSection(SolutionItems) = preProject
 		.editorconfig = .editorconfig
 		LICENSE.md = LICENSE.md
 		README.md = README.md
+		WikiClientLibrary.Commons\WikiClientLibrary.Commons.props = WikiClientLibrary.Commons\WikiClientLibrary.Commons.props
+		WikiClientLibrary.Commons\WikiClientLibrary.Packages.props = WikiClientLibrary.Commons\WikiClientLibrary.Packages.props
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ConsoleTestApplication1", "ConsoleTestApplication1\ConsoleTestApplication1.csproj", "{8D6F74BD-B8A1-4B00-A1E9-07BC3F38CD67}"
