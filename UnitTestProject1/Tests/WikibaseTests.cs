@@ -77,11 +77,11 @@ namespace WikiClientLibrary.Tests.UnitTestProject1.Tests
             Assert.Equal(27.988055555556, location.Latitude, 12);
             Assert.Equal(86.925277777778, location.Longitude, 12);
 
-            claim = entity.Claims[WikidataProperties.TopographicProminence].First();
+            claim = entity.Claims[WikidataProperties.ElevationAboveSeaLevel].First();
             var height = (WbQuantity)claim.MainSnak.DataValue;
             Assert.Equal(8848, height.Amount, 4);
             Assert.Equal(WikidataProperties.ReferenceUrl, claim.References[0].Snaks[0].PropertyId);
-            Assert.Equal("http://www.peakbagger.com/peak.aspx?pid=10640", claim.References[0].Snaks[0].DataValue);
+            Assert.Equal("https://www.peakware.com/peaks.php?pk=80", claim.References[0].Snaks[0].DataValue);
 
             var topiso = (WbQuantity)entity.Claims[WikidataProperties.TopographicIsolation]
                 .First().MainSnak.DataValue;
@@ -298,6 +298,8 @@ namespace WikiClientLibrary.Tests.UnitTestProject1.Tests
             public const string TopographicIsolation = "P2659";
 
             public const string TopographicProminence = "P2660";
+
+            public const string ElevationAboveSeaLevel = "P2044";
 
         }
 
