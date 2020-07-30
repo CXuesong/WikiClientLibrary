@@ -370,16 +370,34 @@ namespace WikiClientLibrary.Sites
     /// <remarks>Note the namespace name is case-insensitive.</remarks>
     public class NamespaceCollection : ICollection<NamespaceInfo>
     {
-        private readonly IDictionary<int, NamespaceInfo> idNsDict;          // id -- ns
-        private readonly IDictionary<string, NamespaceInfo> nameNsDict;     // name/custom/alias -- ns
+        private readonly Dictionary<int, NamespaceInfo> idNsDict;           // id -- ns
+        private readonly Dictionary<string, NamespaceInfo> nameNsDict;      // name/custom/alias -- ns
 
         internal NamespaceCollection(WikiSite site, JObject namespaces, JArray jaliases)
         {
             // jaliases : query.namespacealiases
             if (site == null) throw new ArgumentNullException(nameof(site));
             if (namespaces == null) throw new ArgumentNullException(nameof(namespaces));
-            idNsDict = namespaces.ToObject<IDictionary<int, NamespaceInfo>>(Utility.WikiJsonSerializer);
-            nameNsDict = idNsDict.Values.ToDictionary(n => n.CanonicalName.ToLowerInvariant());
+            idNsDict = namespaces.ToObject<Dictionary<int, NamespaceInfo>>(Utility.WikiJsonSerializer);
+            nameNsDict = new Dictionary<string, NamespaceInfo>();
+            foreach (var value in idNsDict.Values)
+            {
+                var normalizedName = value.CanonicalName.ToLowerInvariant();
+#if BCL_FEATURE_TRY_ADD
+                if (!nameNsDict.TryAdd(normalizedName, value))
+#else
+                try
+                {
+                    nameNsDict.Add(normalizedName, value);
+                }
+                catch (ArgumentException)
+#endif
+                {
+                    site.Logger.LogWarning(
+                        "Namespace canonical name collision on {Site}: {Name} for {Value1} and {Value2}.",
+                        site, value.CanonicalName, value, nameNsDict[normalizedName]);
+                }
+            }
             // Add custom name.
             foreach (var ns in idNsDict.Values)
             {
@@ -393,24 +411,27 @@ namespace WikiClientLibrary.Sites
                 {
                     var id = (int)al["id"];
                     var name = (string)al["*"];
-                    NamespaceInfo ns;
-                    if (idNsDict.TryGetValue(id, out ns))
+                    if (idNsDict.TryGetValue(id, out var ns))
                     {
                         ns.AddAlias(name);
                         var normalizedName = name.ToLowerInvariant();
-                        NamespaceInfo varns;
-                        if (nameNsDict.TryGetValue(normalizedName, out varns))
+#if BCL_FEATURE_TRY_ADD
+                        if (!nameNsDict.TryAdd(normalizedName, ns))
+#else
+                        try
+                        {
+                            nameNsDict.Add(normalizedName, ns);
+                        }
+                        catch (ArgumentException)
+#endif
                         {
                             // If the namespace alias already exists, check if they're pointing
                             // to the same NamespaceInfo
-                            if (varns != ns)
+                            var existingNs = nameNsDict[normalizedName];
+                            if (existingNs != ns)
                                 site.Logger.LogWarning(
                                     "Namespace alias collision on {Site}: {Name} for {Value1} and {Value2}.",
-                                    site, name, ns, varns);
-                        }
-                        else
-                        {
-                            nameNsDict.Add(normalizedName, ns);
+                                    site, name, ns, existingNs);
                         }
                     }
                     else
@@ -478,7 +499,7 @@ namespace WikiClientLibrary.Sites
             return TryGetNamespace(name) != null;
         }
 
-        #region ICollection
+#region ICollection
 
         /// <summary>
         /// 返回一个循环访问集合的枚举器。
@@ -570,7 +591,7 @@ namespace WikiClientLibrary.Sites
         /// </returns>
         bool ICollection<NamespaceInfo>.IsReadOnly => true;
 
-        #endregion
+#endregion
     }
 
     /// <summary>
@@ -714,7 +735,7 @@ namespace WikiClientLibrary.Sites
             return nameIwDict.ContainsKey(name);
         }
 
-        #region ICollection
+#region ICollection
 
         /// <summary>
         /// 返回一个循环访问集合的枚举器。
@@ -806,7 +827,7 @@ namespace WikiClientLibrary.Sites
         /// </returns>
         bool ICollection<InterwikiEntry>.IsReadOnly => true;
 
-        #endregion
+#endregion
     }
 
     /// <summary>
@@ -840,7 +861,7 @@ namespace WikiClientLibrary.Sites
             return nameLookup[name].Any();
         }
 
-        #region ICollection
+#region ICollection
 
         /// <summary>
         /// 返回一个循环访问集合的枚举器。
@@ -932,7 +953,7 @@ namespace WikiClientLibrary.Sites
         /// </returns>
         bool ICollection<ExtensionInfo>.IsReadOnly => true;
 
-        #endregion
+#endregion
     }
     [JsonObject(MemberSerialization.OptIn)]
     public class ExtensionInfo
