@@ -134,8 +134,7 @@ namespace WikiClientLibrary.Tests.UnitTestProject1.Tests
             {
                 new EntityEditEntry(nameof(Entity.Labels), new WbMonolingualText("en", "test entity " + rand)),
                 new EntityEditEntry(nameof(Entity.Aliases), new WbMonolingualText("en", "entity for test")),
-                new EntityEditEntry(nameof(Entity.Aliases), new WbMonolingualText("en", "test")),
-                new EntityEditEntry(nameof(Entity.Descriptions),
+                new EntityEditEntry(nameof(Entity.Aliases), new WbMonolingualText("en", "test")), new EntityEditEntry(nameof(Entity.Descriptions),
                     new WbMonolingualText("en",
                         "This is a test entity for unit test. If you see this entity outside the test site, please check the revision history and notify the editor.")),
                 new EntityEditEntry(nameof(Entity.Descriptions), new WbMonolingualText("zh", "此实体仅用于测试之用。如果你在非测试维基见到此实体，请检查修订历史并告知编辑者。")),
@@ -192,33 +191,45 @@ namespace WikiClientLibrary.Tests.UnitTestProject1.Tests
             //  Add the claims.
             changelist = new[]
             {
-                new EntityEditEntry(nameof(Entity.Claims), new Claim(new Snak(prop, entity.Id))),
-                new EntityEditEntry(nameof(Entity.Claims), new Claim(new Snak(prop, ArbitaryItemEntityId))
-                {
-                    References = {new ClaimReference(new Snak(prop, entity.Id))}
-                }),
+                new EntityEditEntry(nameof(Entity.Claims), new Claim(new Snak(prop, entity.Id))), new EntityEditEntry(nameof(Entity.Claims),
+                    new Claim(new Snak(prop, entity.Id)) { Qualifiers = { new Snak(prop, ArbitaryItemEntityId) } }),
+                new EntityEditEntry(nameof(Entity.Claims),
+                    new Claim(new Snak(prop, ArbitaryItemEntityId)) { References = { new ClaimReference(new Snak(prop, entity.Id)) } }),
             };
             await entity.EditAsync(changelist, "Edit test entity. Add claims.", options);
             if ((options & EntityEditOptions.Bulk) != EntityEditOptions.Bulk)
                 await entity.RefreshAsync(EntityQueryOptions.FetchClaims);
-            Assert.Equal(2, entity.Claims.Count);
-            Assert.Equal(2, entity.Claims[prop.Id].Count);
+            ShallowTrace(entity);
+
+            Assert.Equal(3, entity.Claims.Count);
+            Assert.Equal(3, entity.Claims[prop.Id].Count);
             Assert.Contains(entity.Claims[prop.Id], c => entity.Id.Equals(c.MainSnak.DataValue));
             var claim2 = entity.Claims[prop.Id].FirstOrDefault(c => ArbitaryItemEntityId.Equals(c.MainSnak.DataValue));
             Assert.NotNull(claim2);
             Assert.Equal(entity.Id, claim2.References[0].Snaks[0].DataValue);
+
+            //  Check consistency on the claim with qualifier
+            var qualifiedClaim = entity.Claims[prop.Id].Single(c => c.Qualifiers.Count > 0);
+            Assert.Equal(entity.Id, qualifiedClaim.MainSnak.DataValue);
+            Assert.Single(qualifiedClaim.Qualifiers);
+            Assert.Equal(prop.Id, qualifiedClaim.Qualifiers[0].PropertyId);
+            Assert.Equal(ArbitaryItemEntityId, qualifiedClaim.Qualifiers[0].DataValue);
+
+            //  Update claim qualifier
+            qualifiedClaim.Qualifiers[0].DataValue = entity.Id;
+            changelist = new[] { new EntityEditEntry(nameof(Entity.Claims), qualifiedClaim) };
+            await entity.EditAsync(changelist, "Edit test entity. Update qualifier.", options);
             ShallowTrace(entity);
 
-            // Remove a claim
-            changelist = new[]
-            {
-                new EntityEditEntry(nameof(Entity.Claims), claim2, EntityEditEntryState.Removed),
-            };
+            // Remove a claim (claim2 contains the claim id now).
+            changelist = new[] { new EntityEditEntry(nameof(Entity.Claims), claim2, EntityEditEntryState.Removed), };
             await entity.EditAsync(changelist, "Edit test entity. Remove a claim.", options);
             if ((options & EntityEditOptions.Bulk) != EntityEditOptions.Bulk)
                 await entity.RefreshAsync(EntityQueryOptions.FetchClaims);
-            Assert.Single(entity.Claims);
-            Assert.Contains(entity.Claims[prop.Id], c => entity.Id.Equals(c.MainSnak.DataValue));
+            Assert.Equal(2, entity.Claims.Count);
+            Assert.All(entity.Claims[prop.Id], c => Assert.Equal(entity.Id, c.MainSnak.DataValue));
+            Assert.Contains(entity.Claims[prop.Id], c => c.Qualifiers.Count == 0);
+            Assert.Contains(entity.Claims[prop.Id], c => c.Qualifiers.Count == 1 && entity.Id.Equals(c.Qualifiers[0].DataValue));
         }
 
         [Fact]
