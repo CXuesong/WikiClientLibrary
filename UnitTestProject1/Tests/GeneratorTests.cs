@@ -268,8 +268,9 @@ namespace WikiClientLibrary.Tests.UnitTestProject1.Tests
             }
         }
 
-        [Fact]
-        public async Task WikiaLogEventsListLoopTest()
+        // The test will not hold since ruwarriorswiki has upgraded into MW 1.33
+        // [Fact]
+        internal async Task WikiaLogEventsListLoopTest()
         {
             // This is a known scenario. There are a lot of logs on ruwarriorswiki with the same timestamp.
             var site = await GetWikiSiteAsync(Endpoints.RuWarriorsWiki);
