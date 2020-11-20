@@ -247,3 +247,6 @@ ModelManifest.xml
 # Private folders
 _private/
 /DocumentationProject/Help
+
+#VSCode
+.vscode/

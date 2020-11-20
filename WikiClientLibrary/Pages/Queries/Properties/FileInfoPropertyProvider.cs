@@ -16,13 +16,22 @@ namespace WikiClientLibrary.Pages.Queries.Properties
     /// (<a href="https://www.mediawiki.org/wiki/API:Fileinfo">mw:API:Fileinfo</a>, MediaWiki 1.13+)
     /// </summary>
     public class FileInfoPropertyProvider : WikiPagePropertyProvider<FileInfoPropertyGroup>
-    {        /// <inheritdoc />
+    {
+        public bool QueryExtMetadata { get; set; }
+
+        /// <inheritdoc />
         public override IEnumerable<KeyValuePair<string, object>> EnumParameters(MediaWikiVersion version)
         {
+            var properties = new List<string>() { "timestamp", "user", "comment", "url", "size", "sha1" };
+            if (QueryExtMetadata)
+                properties.Add("extmetadata");
+
             return new OrderedKeyValuePairs<string, object>
             {
-                {"iiprop", "timestamp|user|comment|url|size|sha1"},
+                {"iiprop", string.Join("|", properties)},
             };
+
+
         }
 
         /// <inheritdoc />
