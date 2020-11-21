@@ -52,6 +52,11 @@ if ($IsLinux) {
         CheckLastExitCode
         checkDotNetSdkVersions -Channel 3
     }
+    if (-not (checkDotNetSdkVersions -Channel 5 -ErrorAction Continue)) {
+        sudo apt install dotnet-sdk-5.0
+        CheckLastExitCode
+        checkDotNetSdkVersions -Channel 5
+    }
 }
 elseif ($IsWindows) {
     # dotnet
@@ -64,7 +69,10 @@ elseif ($IsWindows) {
         ./DotNet-Install.ps1 -Version 3.1.10
         checkDotNetSdkVersions -Channel 3
     }
-
+    if (-not (checkDotNetSdkVersions -Channel 5 -ErrorAction Continue)) {
+        ./DotNet-Install.ps1 -Version 5.0
+        checkDotNetSdkVersions -Channel 5
+    }
     # SHFB
     if ($SHFB) {
         Write-Host "Downloading SHFB."
