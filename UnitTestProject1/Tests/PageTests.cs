@@ -229,7 +229,7 @@ namespace WikiClientLibrary.Tests.UnitTestProject1.Tests
 
             ShallowTrace(file);
             Assert.NotNull(file.LastFileRevision.ExtMetadata);
-            Assert.Equal("mediawiki-metadata", file.LastFileRevision.ExtMetadata["DateTime"]?.source);
+            Assert.Equal("mediawiki-metadata", file.LastFileRevision.ExtMetadata["DateTime"]?.Source);
         }
 
         [Fact]
