@@ -347,10 +347,14 @@ namespace WikiClientLibrary.Files
         }
     }
 
+    [JsonObject(MemberSerialization.OptIn)]
     public class MetadataValue
     {
-        public object value { get; set; }
-        public string source { get; set; }
-        public string hidden { get; set; }
+        [JsonProperty("value")]
+        public object Value { get; set; }
+        [JsonProperty("source")]
+        public string Source { get; set; }
+        [JsonProperty("hidden")]
+        public string Hidden { get; set; }
     }
 }
