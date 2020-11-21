@@ -26,6 +26,7 @@ If you bump into bugs, have any suggestions or feature requests, feel free to op
 
 * [Repository Wiki](https://github.com/CXuesong/WikiClientLibrary/wiki) (getting started & conceptual documentations)
 * [Library Documentation](https://cxuesong.github.io/WikiClientLibrary) (for latest pre-release)
+* [FuGet Gallery](https://www.fuget.org/packages/CXuesong.MW.WikiClientLibrary) (inspect & diff public API)
 * [Releases](https://github.com/CXuesong/WikiClientLibrary/releases)
 
 ## Overview
