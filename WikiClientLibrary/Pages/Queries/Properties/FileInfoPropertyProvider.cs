@@ -17,12 +17,17 @@ namespace WikiClientLibrary.Pages.Queries.Properties
     /// </summary>
     public class FileInfoPropertyProvider : WikiPagePropertyProvider<FileInfoPropertyGroup>
     {
+
+        /// <summary>
+        /// Whether lists formatted metadata combined from multiple sources. (MW 1.17+)
+        /// </summary>
+        /// <seealso cref="FileRevision.ExtMetadata"/>
         public bool QueryExtMetadata { get; set; }
 
         /// <inheritdoc />
         public override IEnumerable<KeyValuePair<string, object>> EnumParameters(MediaWikiVersion version)
         {
-            var properties = new List<string>() { "timestamp", "user", "comment", "url", "size", "sha1" };
+            var properties = new List<string> { "timestamp", "user", "comment", "url", "size", "sha1" };
             if (QueryExtMetadata)
                 properties.Add("extmetadata");
 
@@ -30,8 +35,6 @@ namespace WikiClientLibrary.Pages.Queries.Properties
             {
                 {"iiprop", string.Join("|", properties)},
             };
-
-
         }
 
         /// <inheritdoc />
@@ -46,7 +49,9 @@ namespace WikiClientLibrary.Pages.Queries.Properties
 
     /// <summary>
     /// Contains properties for MediaWiki files.
-    /// (<a href="https://www.mediawiki.org/wiki/API:Fileinfo">mw:API:Fileinfo</a>, MediaWiki 1.13+)
+    /// (<a href="https://www.mediawiki.org/wiki/API:Fileinfo">mw:API:Fileinfo</a>,
+    /// <a href="https://www.mediawiki.org/wiki/API:Imageinfo">mw:API:Imageinfo</a>,
+    /// MediaWiki 1.13+)
     /// </summary>
     public class FileInfoPropertyGroup : WikiPagePropertyGroup
     {

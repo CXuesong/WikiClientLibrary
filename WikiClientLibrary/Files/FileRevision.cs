@@ -16,6 +16,9 @@ namespace WikiClientLibrary.Files
     /// <summary>
     /// Represents a revision of a file or image.
     /// </summary>
+    /// <remarks>
+    /// For revision of a MediaWiki page, see <see cref="Revision"/>.
+    /// </remarks>
     /// <seealso cref="FileInfoPropertyGroup"/>
     /// <seealso cref="FileInfoPropertyProvider"/>
     [JsonObject(MemberSerialization.OptIn)]
@@ -27,6 +30,10 @@ namespace WikiClientLibrary.Files
         /// </summary>
         public WikiPageStub Page { get; internal set; }
 
+        /// <summary>
+        /// Formatted metadata combined from multiple sources. Results are HTML formatted. (MW 1.17+)
+        /// </summary>
+        /// <seealso cref="FileInfoPropertyProvider.QueryExtMetadata"/>
         [JsonProperty]
         public IReadOnlyDictionary<string, MetadataValue> ExtMetadata { get; private set; }
 
@@ -350,11 +357,19 @@ namespace WikiClientLibrary.Files
     [JsonObject(MemberSerialization.OptIn)]
     public class MetadataValue
     {
-        [JsonProperty("value")]
-        public object Value { get; set; }
-        [JsonProperty("source")]
-        public string Source { get; set; }
-        [JsonProperty("hidden")]
-        public string Hidden { get; set; }
+
+        /// <summary>Raw metadata value.</summary>
+        [JsonProperty]
+        public JToken Value { get; private set; }
+
+        [JsonProperty]
+        public string Source { get; private set; }
+
+        // https://github.com/wikimedia/mediawiki/blob/a638c0dce0b5a71c3c42ddf7e38e11e7bcd61f7a/includes/media/FormatMetadata.php#L1712
+        /// <summary>Whether this metadata field is visible on File page by default.</summary>
+        [JsonProperty]
+        public bool Hidden { get; private set; }
+
+
     }
 }
