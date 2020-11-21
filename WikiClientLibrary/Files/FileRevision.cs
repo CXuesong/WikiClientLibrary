@@ -27,6 +27,9 @@ namespace WikiClientLibrary.Files
         /// </summary>
         public WikiPageStub Page { get; internal set; }
 
+        [JsonProperty]
+        public IReadOnlyDictionary<string, MetadataValue> ExtMetadata { get; private set; }
+
         /// <summary>
         /// Whether the file is anonymous. (MW ~1.33-)
         /// </summary>
@@ -344,4 +347,14 @@ namespace WikiClientLibrary.Files
         }
     }
 
+    [JsonObject(MemberSerialization.OptIn)]
+    public class MetadataValue
+    {
+        [JsonProperty("value")]
+        public object Value { get; set; }
+        [JsonProperty("source")]
+        public string Source { get; set; }
+        [JsonProperty("hidden")]
+        public string Hidden { get; set; }
+    }
 }

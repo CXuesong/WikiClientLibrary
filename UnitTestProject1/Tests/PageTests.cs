@@ -181,7 +181,7 @@ namespace WikiClientLibrary.Tests.UnitTestProject1.Tests
             var site = await WpLzhSiteAsync;
             var page1 = new WikiPage(site, "莎拉伯恩哈特");
             var page2 = new WikiPage(site, "中國_(釋義)");
-            await new[] {page1, page2}.RefreshAsync();
+            await new[] { page1, page2 }.RefreshAsync();
             Assert.False(await page1.IsDisambiguationAsync());
             Assert.True(await page2.IsDisambiguationAsync());
         }
@@ -211,6 +211,25 @@ namespace WikiClientLibrary.Tests.UnitTestProject1.Tests
             //Assert.True(file.Exists);   //It's on WikiMedia!
             Assert.Equal(58865, file.LastFileRevision.Size);
             Assert.Equal("7aa12c613c156dd125212d85a072b250625ae39f", file.LastFileRevision.Sha1.ToLowerInvariant());
+            Assert.Null(file.LastFileRevision.ExtMetadata);
+        }
+
+        [Fact]
+        public async Task WpLzhFetchFileWithExtMetadataTest()
+        {
+            var site = await WpLzhSiteAsync;
+            var file = new WikiPage(site, "File:Empress Suiko.jpg");
+            await file.RefreshAsync(new WikiPageQueryProvider
+            {
+                Properties =
+                {
+                    new FileInfoPropertyProvider { QueryExtMetadata = true }
+                }
+            });
+
+            ShallowTrace(file);
+            Assert.NotNull(file.LastFileRevision.ExtMetadata);
+            Assert.Equal("mediawiki-metadata", file.LastFileRevision.ExtMetadata["DateTime"]?.Source);
         }
 
         [Fact]
