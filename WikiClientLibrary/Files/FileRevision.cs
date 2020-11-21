@@ -27,8 +27,8 @@ namespace WikiClientLibrary.Files
         /// </summary>
         public WikiPageStub Page { get; internal set; }
 
-        [JsonProperty("extmetadata")]
-        public Dictionary<string, MetadataValue> ExtMetadata { get; set; }
+        [JsonProperty]
+        public IReadOnlyDictionary<string, MetadataValue> ExtMetadata { get; private set; }
 
         /// <summary>
         /// Whether the file is anonymous. (MW ~1.33-)
