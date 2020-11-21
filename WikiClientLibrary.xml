@@ -3079,6 +3079,11 @@
             Url of the description page.
             </summary>
     </member>
+    <member name="P:WikiClientLibrary.Files.FileRevision.ExtMetadata">
+      <summary>
+            Formatted metadata combined from multiple sources. Results are HTML formatted. (MW 1.17+)
+            </summary>
+    </member>
     <member name="P:WikiClientLibrary.Files.FileRevision.Height">
       <summary>
         <markup>
@@ -3138,6 +3143,60 @@
           </include>
         </markup>
       </summary>
+    </member>
+    <member name="T:WikiClientLibrary.Files.FileRevisionExtMetadataValue">
+      <summary>
+            Represents the value and source of an entry of <seealso cref="T:WikiClientLibrary.Files.FileRevision" /> extmetadata.
+            </summary>
+    </member>
+    <member name="M:WikiClientLibrary.Files.FileRevisionExtMetadataValue.#ctor">
+      <summary>
+        <markup>
+          <include item="SMCAutoDocConstructor">
+            <parameter>WikiClientLibrary.Files.FileRevisionExtMetadataValue</parameter>
+          </include>
+        </markup>
+      </summary>
+    </member>
+    <member name="P:WikiClientLibrary.Files.FileRevisionExtMetadataValue.Hidden">
+      <summary>Whether this metadata field is visible on File page by default.</summary>
+    </member>
+    <member name="P:WikiClientLibrary.Files.FileRevisionExtMetadataValue.Source">
+      <summary>Source of the metadata value.</summary>
+    </member>
+    <member name="M:WikiClientLibrary.Files.FileRevisionExtMetadataValue.ToString">
+      <summary>Returns a string that represents the current object.</summary>
+      <returns>A string that represents the current object.</returns>
+    </member>
+    <member name="P:WikiClientLibrary.Files.FileRevisionExtMetadataValue.Value">
+      <summary>Metadata value.</summary>
+    </member>
+    <member name="T:WikiClientLibrary.Files.FileRevisionExtMetadataValueSources">
+      <summary>
+            Contains non-exhaustive possible values of <c>extmetadata</c> value sources.
+            </summary>
+    </member>
+    <member name="F:WikiClientLibrary.Files.FileRevisionExtMetadataValueSources.CommonsCategories">
+      <summary>Provided by Wikimedia Commons category.</summary>
+    </member>
+    <member name="F:WikiClientLibrary.Files.FileRevisionExtMetadataValueSources.CommonsDescriptionPage">
+      <summary>Provided by Wikimedia Commons file description page.</summary>
+    </member>
+    <member name="F:WikiClientLibrary.Files.FileRevisionExtMetadataValueSources.CommonsTemplates">
+      <summary>Provided by template usage on Wikimedia Commons file description page.</summary>
+    </member>
+    <member name="F:WikiClientLibrary.Files.FileRevisionExtMetadataValueSources.Extension">
+      <summary>
+        <markup>
+          <include item="SMCMissingTag">
+            <parameter>summary</parameter>
+            <parameter>F:WikiClientLibrary.Files.FileRevisionExtMetadataValueSources.Extension</parameter>
+          </include>
+        </markup>
+      </summary>
+    </member>
+    <member name="F:WikiClientLibrary.Files.FileRevisionExtMetadataValueSources.MediaWikiMetadata">
+      <summary>Provided by MediaWiki metadata.</summary>
     </member>
     <member name="T:WikiClientLibrary.Files.StreamUploadSource">
       <summary>
@@ -9208,7 +9267,9 @@
     <member name="T:WikiClientLibrary.Pages.Queries.Properties.FileInfoPropertyGroup">
       <summary>
             Contains properties for MediaWiki files.
-            (<a href="https://www.mediawiki.org/wiki/API:Fileinfo">mw:API:Fileinfo</a>, MediaWiki 1.13+)
+            (<a href="https://www.mediawiki.org/wiki/API:Fileinfo">mw:API:Fileinfo</a>,
+            <a href="https://www.mediawiki.org/wiki/API:Imageinfo">mw:API:Imageinfo</a>,
+            MediaWiki 1.13+)
             </summary>
     </member>
     <member name="P:WikiClientLibrary.Pages.Queries.Properties.FileInfoPropertyGroup.LatestRevision">
@@ -9260,6 +9321,11 @@
       <summary>
             Gets the property name, when this property is needed to be included in the <c>prop=</c> parameter
             in the MediaWiki API request.
+            </summary>
+    </member>
+    <member name="P:WikiClientLibrary.Pages.Queries.Properties.FileInfoPropertyProvider.QueryExtMetadata">
+      <summary>
+            Whether lists formatted metadata combined from multiple sources. (MW 1.17+)
             </summary>
     </member>
     <member name="T:WikiClientLibrary.Pages.Queries.Properties.GeoCoordinatesPropertyGroup">
