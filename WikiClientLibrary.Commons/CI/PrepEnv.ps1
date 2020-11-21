@@ -43,12 +43,12 @@ if ($IsLinux) {
         Write-Error "SHFB is not supported on Linux."
     }
     if (-not (checkDotNetSdkVersions -Channel 2 -ErrorAction Continue)) {
-        sudo apt install dotnet-sdk-2.1.202
+        sudo apt install dotnet-sdk-2.1
         CheckLastExitCode
         checkDotNetSdkVersions -Channel 2
     }
     if (-not (checkDotNetSdkVersions -Channel 3 -ErrorAction Continue)) {
-        sudo apt install dotnet-sdk-3.0
+        sudo apt install dotnet-sdk-3.1
         CheckLastExitCode
         checkDotNetSdkVersions -Channel 3
     }
@@ -57,11 +57,11 @@ elseif ($IsWindows) {
     # dotnet
     Invoke-WebRequest 'https://dot.net/v1/dotnet-install.ps1' -OutFile 'DotNet-Install.ps1'
     if (-not (checkDotNetSdkVersions -Channel 2 -ErrorAction Continue)) {
-        ./DotNet-Install.ps1 -Version 2.1.202
+        ./DotNet-Install.ps1 -Version 2.1.23
         checkDotNetSdkVersions -Channel 2
     }
     if (-not (checkDotNetSdkVersions -Channel 3 -ErrorAction Continue)) {
-        ./DotNet-Install.ps1 -Version 3.0.100
+        ./DotNet-Install.ps1 -Version 3.1.10
         checkDotNetSdkVersions -Channel 3
     }
 
