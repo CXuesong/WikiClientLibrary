@@ -64,7 +64,6 @@ namespace WikiClientLibrary.Pages.Queries.Properties
     public abstract class WikiPagePropertyProvider<T> : IWikiPagePropertyProvider<T> where T : IWikiPagePropertyGroup
     {
 
-
         /// <inheritdoc />
         public abstract IEnumerable<KeyValuePair<string, object>> EnumParameters(MediaWikiVersion version);
 

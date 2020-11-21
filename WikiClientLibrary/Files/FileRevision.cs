@@ -362,7 +362,13 @@ namespace WikiClientLibrary.Files
     public class FileRevisionExtMetadataValue
     {
 
-        /// <summary>Raw metadata value.</summary>
+        /// <summary>Metadata value.</summary>
+        /// <remarks>
+        /// According to <a href="https://www.mediawiki.org/wiki/API:Imageinfo">mw:API:Imageinfo</a>,
+        /// the metadata value is expected to be formatted HTML expression.
+        /// But sometimes the value could be <c>"True"</c>, <c>"true"</c>, or JSON numeric expression.
+        /// You need to cast the returned value into your expected CLR type before working on it.
+        /// </remarks>
         [JsonProperty]
         public JToken Value { get; private set; }
 
