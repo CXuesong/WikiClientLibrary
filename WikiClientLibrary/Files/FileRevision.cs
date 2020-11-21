@@ -35,7 +35,7 @@ namespace WikiClientLibrary.Files
         /// </summary>
         /// <seealso cref="FileInfoPropertyProvider.QueryExtMetadata"/>
         [JsonProperty]
-        public IReadOnlyDictionary<string, MetadataValue> ExtMetadata { get; private set; }
+        public IReadOnlyDictionary<string, FileRevisionExtMetadataValue> ExtMetadata { get; private set; }
 
         /// <summary>
         /// Whether the file is anonymous. (MW ~1.33-)
@@ -355,7 +355,7 @@ namespace WikiClientLibrary.Files
     }
 
     [JsonObject(MemberSerialization.OptIn)]
-    public class MetadataValue
+    public class FileRevisionExtMetadataValue
     {
 
         /// <summary>Raw metadata value.</summary>
