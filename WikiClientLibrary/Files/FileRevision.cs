@@ -354,6 +354,10 @@ namespace WikiClientLibrary.Files
         }
     }
 
+    /// <summary>
+    /// Represents the value and source of an entry of <seealso cref="FileRevision"/> extmetadata.
+    /// </summary>
+    /// <seealso cref="FileRevision.ExtMetadata"/>
     [JsonObject(MemberSerialization.OptIn)]
     public class FileRevisionExtMetadataValue
     {
@@ -362,6 +366,8 @@ namespace WikiClientLibrary.Files
         [JsonProperty]
         public JToken Value { get; private set; }
 
+        /// <summary>Source of the metadata value.</summary>
+        /// <remarks>See <see cref="FileRevisionExtMetadataValueSources"/> for a list of possible metadata sources.</remarks>
         [JsonProperty]
         public string Source { get; private set; }
 
@@ -370,6 +376,34 @@ namespace WikiClientLibrary.Files
         [JsonProperty]
         public bool Hidden { get; private set; }
 
+        /// <inheritdoc />
+        public override string ToString() => $"{Value} ({Source})";
+    }
+
+    /// <summary>
+    /// Contains non-exhaustive possible values of <c>extmetadata</c> value sources.
+    /// </summary>
+    public static class FileRevisionExtMetadataValueSources
+    {
+
+        // https://github.com/wikimedia/mediawiki/blob/a638c0dce0b5a71c3c42ddf7e38e11e7bcd61f7a/includes/media/FormatMetadata.php#L1798
+        /// <summary>Provided by MediaWiki metadata.</summary>
+        public const string MediaWikiMetadata = "mediawiki-metadata";
+
+        // https://github.com/wikimedia/mediawiki-extensions-CommonsMetadata/blob/21a72a786641755da3bbe0f212f66bfc34a1a07d/src/DataCollector.php#L182
+        /// <summary>Provided by Wikimedia Commons category.</summary>
+        public const string CommonsCategories = "commons-categories";
+
+        // https://github.com/wikimedia/mediawiki-extensions-CommonsMetadata/blob/21a72a786641755da3bbe0f212f66bfc34a1a07d/src/DataCollector.php#L229
+        /// <summary>Provided by Wikimedia Commons file description page.</summary>
+        public const string CommonsDescriptionPage = "commons-desc-page";
+
+        // https://github.com/wikimedia/mediawiki-extensions-CommonsMetadata/blob/21a72a786641755da3bbe0f212f66bfc34a1a07d/src/DataCollector.php#L240
+        /// <summary>Provided by template usage on Wikimedia Commons file description page.</summary>
+        public const string CommonsTemplates = "commons-templates";
+
+        // Not sure for now.
+        public const string Extension = "extension";
 
     }
 }

@@ -6,6 +6,7 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using WikiClientLibrary;
+using WikiClientLibrary.Files;
 using WikiClientLibrary.Generators;
 using WikiClientLibrary.Pages;
 using WikiClientLibrary.Pages.Queries;
@@ -227,9 +228,14 @@ namespace WikiClientLibrary.Tests.UnitTestProject1.Tests
                 }
             });
 
+            Output.WriteLine("Fetched file:");
             ShallowTrace(file);
+            Output.WriteLine("ExtMetadata:");
+            ShallowTrace(file.LastFileRevision.ExtMetadata);
+
             Assert.NotNull(file.LastFileRevision.ExtMetadata);
-            Assert.Equal("mediawiki-metadata", file.LastFileRevision.ExtMetadata["DateTime"]?.Source);
+            Assert.True(new DateTime(2013, 11, 14, 12, 15, 30) <= (DateTime)file.LastFileRevision.ExtMetadata["DateTime"].Value);
+            Assert.Equal(FileRevisionExtMetadataValueSources.MediaWikiMetadata, file.LastFileRevision.ExtMetadata["DateTime"]?.Source);
         }
 
         [Fact]
