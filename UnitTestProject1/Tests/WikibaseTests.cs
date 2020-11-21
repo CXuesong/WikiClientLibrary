@@ -276,7 +276,7 @@ namespace WikiClientLibrary.Tests.UnitTestProject1.Tests
             Assert.Empty(SerializableEntity.LoadAll(TextReader.Null));
         }
 
-        public static class WikidataItems
+        internal static class WikidataItems
         {
 
             public const string Earth = "Q2";
@@ -293,7 +293,7 @@ namespace WikiClientLibrary.Tests.UnitTestProject1.Tests
 
         }
 
-        public static class WikidataProperties
+        internal static class WikidataProperties
         {
 
             public const string ImportedFrom = "P143";

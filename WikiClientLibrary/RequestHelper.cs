@@ -176,8 +176,8 @@ namespace WikiClientLibrary
             /// <inheritdoc />
             public override bool Equals(object obj)
             {
-                if (ReferenceEquals(null, obj)) return false;
-                return obj is WikiPageGroupKey && Equals((WikiPageGroupKey)obj);
+                if (obj is null) return false;
+                return obj is WikiPageGroupKey key && Equals(key);
             }
 
             /// <inheritdoc />
@@ -355,7 +355,12 @@ namespace WikiClientLibrary
 
         #endregion
 
-        private static readonly IReadOnlyCollection<PurgeFailureInfo> emptyPurgeFailures = new PurgeFailureInfo[0];
+        private static readonly IReadOnlyCollection<PurgeFailureInfo> emptyPurgeFailures
+#if BCL_FEATURE_ARRAY_EMPTY
+            = Array.Empty<PurgeFailureInfo>();
+#else
+            = new PurgeFailureInfo[0];
+#endif
 
         /// <summary>
         /// Asynchronously purges the pages.

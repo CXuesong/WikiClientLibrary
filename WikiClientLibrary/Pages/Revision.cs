@@ -184,13 +184,13 @@ namespace WikiClientLibrary.Pages
         /// <remarks>See https://www.mediawiki.org/wiki/Help:RevisionDelete .</remarks>
         public RevisionHiddenFields HiddenFields { get; private set; }
 
-#pragma warning disable 649
+#pragma warning disable IDE0044 // Add readonly modifier
         [JsonProperty] private bool Minor;
         [JsonProperty] private bool Bot;
         [JsonProperty] private bool New;
         [JsonProperty] private bool Anon;
         [JsonProperty] private bool UserHidden;
-#pragma warning restore 649
+#pragma warning restore IDE0044 // Add readonly modifier
 
         [OnDeserialized]
         private void OnDeserialized(StreamingContext context)
