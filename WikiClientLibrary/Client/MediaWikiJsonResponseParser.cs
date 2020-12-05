@@ -146,55 +146,63 @@ namespace WikiClientLibrary.Client
         /// </item>
         /// </list> 
         /// </remarks>
-        protected virtual void OnApiError(string errorCode, string errorMessage, JToken errorNode, JToken responseNode,
-            WikiResponseParsingContext context)
+        protected virtual void OnApiError(string errorCode, string errorMessage,
+            JToken errorNode, JToken responseNode, WikiResponseParsingContext context)
         {
+            var fullMessage = errorMessage;
+            // Append additional messages from WMF, if any.
+            var jmessages = (JArray)errorNode["messages"];
+            if (jmessages != null && jmessages.Count > 1 && jmessages[0]["html"] != null)
+            {
+                // jmessages[0] usually is the same as errorMessage
+                errorMessage = string.Join(" ", jmessages.Select(m => (string)m["html"]["*"]));
+            }
             switch (errorCode)
             {
                 case "maxlag":  // maxlag reached.
                     context.NeedRetry = true;
-                    throw new ServerLagException(errorCode, errorMessage, (double?)errorNode["lag"] ?? 0, (string)errorNode["type"], (string)errorNode["host"]);
+                    throw new ServerLagException(errorCode, fullMessage, (double?)errorNode["lag"] ?? 0, (string)errorNode["type"], (string)errorNode["host"]);
                 case "permissiondenied":
                 case "readapidenied": // You need read permission to use this module.
                 case "mustbeloggedin": // You must be logged in to upload this file.
-                    throw new UnauthorizedOperationException(errorCode, errorMessage);
+                    throw new UnauthorizedOperationException(errorCode, fullMessage);
                 case "permissions":
-                    if (errorNode["permissions"] != null)
+                    JToken jPermissions;
+                    if ((jPermissions = errorNode["permissions"]) != null)
                     {
-                        var jPermissions = errorNode["permissions"];
                         if (jPermissions.Type != JTokenType.Null)
                         {
                             var permissions = jPermissions is JArray a
                                 ? a.Select(c => c is JValue v ? Convert.ToString(v.Value, CultureInfo.InvariantCulture) : c.ToString())
                                 : new[]
                                 {
-                                        jPermissions is JValue v1
-                                            ? Convert.ToString(v1.Value, CultureInfo.InvariantCulture)
-                                            : jPermissions.ToString()
+                                    jPermissions is JValue v1
+                                        ? Convert.ToString(v1.Value, CultureInfo.InvariantCulture)
+                                        : jPermissions.ToString()
                                 };
-                            throw new UnauthorizedOperationException(errorCode, errorMessage, permissions.ToList());
+                            throw new UnauthorizedOperationException(errorCode, fullMessage, permissions.ToList());
                         }
                     }
-                    throw new UnauthorizedOperationException(errorCode, errorMessage);
+                    throw new UnauthorizedOperationException(errorCode, fullMessage);
                 case "badtoken":
-                    throw new BadTokenException(errorCode, errorMessage);
+                    throw new BadTokenException(errorCode, fullMessage);
                 case "unknown_action":
-                    throw new InvalidActionException(errorCode, errorMessage);
+                    throw new InvalidActionException(errorCode, fullMessage);
                 case "assertuserfailed":
                 case "assertbotfailed":
-                    throw new AccountAssertionFailureException(errorCode, errorMessage);
+                    throw new AccountAssertionFailureException(errorCode, fullMessage);
                 case "prev_revision":
-                    throw new OperationConflictException(errorCode, errorMessage);
+                    throw new OperationConflictException(errorCode, fullMessage);
                 case "badvalue":    // since 1.35.0-wmf.19
                     // throw more specific Exception, if possible.
-                    if (errorMessage.IndexOf("\"action\"", StringComparison.Ordinal) >= 0)
-                        throw new InvalidActionException(errorCode, errorMessage);
-                    throw new BadValueException(errorCode, errorMessage);
+                    if (fullMessage.IndexOf("\"action\"", StringComparison.Ordinal) >= 0)
+                        throw new InvalidActionException(errorCode, fullMessage);
+                    throw new BadValueException(errorCode, fullMessage);
                 default:
                     if (errorCode.StartsWith("unknown_", StringComparison.OrdinalIgnoreCase))
-                        throw new BadValueException(errorCode, errorMessage);
+                        throw new BadValueException(errorCode, fullMessage);
                     if (errorCode.EndsWith("conflict", StringComparison.OrdinalIgnoreCase))
-                        throw new OperationConflictException(errorCode, errorMessage);
+                        throw new OperationConflictException(errorCode, fullMessage);
                     // "messages": [
                     // {
                     // "name": "wikibase-api-failed-save",
@@ -206,15 +214,10 @@ namespace WikiClientLibrary.Client
                     // ...]
                     if (errorCode.StartsWith("internal_api_error", StringComparison.OrdinalIgnoreCase))
                     {
-                        throw new MediaWikiRemoteException(errorCode, errorMessage,
+                        throw new MediaWikiRemoteException(errorCode, fullMessage,
                             (string)errorNode["errorclass"], (string)errorNode["*"]);
                     }
-                    var messages = (JArray)errorNode["messages"];
-                    if (messages != null && messages.Count > 1 && messages[0]["html"] != null)
-                    {
-                        errorMessage = string.Join(" ", messages.Select(m => (string)m["html"]["*"]));
-                    }
-                    throw new OperationFailedException(errorCode, errorMessage);
+                    throw new OperationFailedException(errorCode, fullMessage);
             }
         }
 
