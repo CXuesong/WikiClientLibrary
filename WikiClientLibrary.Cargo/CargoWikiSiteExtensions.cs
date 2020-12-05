@@ -1,0 +1,74 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
+using Newtonsoft.Json.Linq;
+using WikiClientLibrary.Client;
+using WikiClientLibrary.Infrastructures.Logging;
+using WikiClientLibrary.Sites;
+
+namespace WikiClientLibrary.Cargo
+{
+
+    /// <summary>
+    /// Extension methods for MediaWiki sites with <a href="https://www.mediawiki.org/wiki/Special:MyLanguage/Extension:Cargo">Cargo extension</a> installed.
+    /// </summary>
+    public static class CargoWikiSiteExtensions
+    {
+
+        /// <inheritdoc cref="ExecuteCargoQueryAsync(WikiSite,CargoQueryParameters,CancellationToken)"/>
+        public static Task<IList<JObject>> ExecuteCargoQueryAsync(this WikiSite site, CargoQueryParameters queryParameters)
+        {
+            return ExecuteCargoQueryAsync(site, queryParameters, default);
+        }
+
+        /// <summary>
+        /// Executes a Cargo query and retrieves the response rows.
+        /// </summary>
+        /// <param name="site">a MediaWiki site with Cargo extension installed.</param>
+        /// <param name="queryParameters">query parameters.</param>
+        /// <param name="cancellationToken">a token used to cancel the operation.</param>
+        /// <returns>a list of rows, each item is a JSON object with field name as key.</returns>
+        public static async Task<IList<JObject>> ExecuteCargoQueryAsync(this WikiSite site, CargoQueryParameters queryParameters, CancellationToken cancellationToken)
+        {
+            if (site == null) throw new ArgumentNullException(nameof(site));
+            if (queryParameters == null) throw new ArgumentNullException(nameof(queryParameters));
+            if (queryParameters.Limit <= 0)
+                throw new ArgumentOutOfRangeException(nameof(queryParameters) + "." + nameof(queryParameters.Limit));
+            if (queryParameters.Offset < 0)
+                throw new ArgumentOutOfRangeException(nameof(queryParameters) + "." + nameof(queryParameters.Offset));
+            using (site.BeginActionScope(site, nameof(ExecuteCargoQueryAsync)))
+            {
+                var resp = await site.InvokeMediaWikiApiAsync(new MediaWikiFormRequestMessage(new
+                {
+                    action = "cargoquery",
+                    limit = queryParameters.Limit,
+                    tables = queryParameters.Tables?.Length > 0 ? string.Join(",", queryParameters.Tables) : null,
+                    fields = queryParameters.Fields?.Length > 0 ? string.Join(",", queryParameters.Fields) : null,
+                    where = queryParameters.Where,
+                    group_by = queryParameters.GroupBy,
+                    having = queryParameters.Having,
+                    join_on = queryParameters.JoinOn,
+                    order_by = queryParameters.OrderBy?.Length > 0 ? string.Join(",", queryParameters.OrderBy) : null,
+                }), cancellationToken);
+                var jroot = resp["cargoquery"];
+                if (jroot == null || !jroot.HasValues)
+                {
+                    if (jroot == null)
+                    {
+                        site.Logger.LogWarning("cargoquery node is missing in the response.");
+                    }
+#if BCL_FEATURE_ARRAY_EMPTY
+                    return Array.Empty<JObject>();
+#else
+                    return new JObject[] { };
+#endif
+                }
+                return ((JArray)jroot).Select(row => (JObject)row["title"]).ToList();
+            }
+        }
+
+    }
+}

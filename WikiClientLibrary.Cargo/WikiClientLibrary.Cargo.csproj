@@ -1,0 +1,16 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <Import Project="../WikiClientLibrary.Commons/WikiClientLibrary.Packages.props" />
+  <PropertyGroup>
+    <TargetFrameworks>netstandard1.1;netstandard2.1</TargetFrameworks>
+    <AssemblyName>WikiClientLibrary.Cargo</AssemblyName>
+    <PackageId>CXuesong.MW.WikiClientLibrary.Cargo</PackageId>
+    <Description>
+      WikiClientLibrary.Cargo is a .NET Standard &amp; asynchronous client library for MediaWiki sites with Cargo support.
+    </Description>
+    <PackageTags>$(PackageTags) Cargo</PackageTags>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\WikiClientLibrary\WikiClientLibrary.csproj" />
+  </ItemGroup>
+</Project>

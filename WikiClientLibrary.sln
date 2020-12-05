@@ -38,6 +38,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WikiClientLibrary.Demos.Scr
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Demos", "Demos", "{C44A67B1-09F7-490B-9EED-93257EBBD0AC}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WikiClientLibrary.Cargo", "WikiClientLibrary.Cargo\WikiClientLibrary.Cargo.csproj", "{1C989C60-6DB0-4330-96DA-69A92158092B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		CIRelease|Any CPU = CIRelease|Any CPU
@@ -113,6 +115,14 @@ Global
 		{74E68632-F2B3-4B77-BF96-502809BBCB1C}.Publish|Any CPU.Build.0 = Release|Any CPU
 		{74E68632-F2B3-4B77-BF96-502809BBCB1C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{74E68632-F2B3-4B77-BF96-502809BBCB1C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1C989C60-6DB0-4330-96DA-69A92158092B}.CIRelease|Any CPU.ActiveCfg = Release|Any CPU
+		{1C989C60-6DB0-4330-96DA-69A92158092B}.CIRelease|Any CPU.Build.0 = Release|Any CPU
+		{1C989C60-6DB0-4330-96DA-69A92158092B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1C989C60-6DB0-4330-96DA-69A92158092B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1C989C60-6DB0-4330-96DA-69A92158092B}.Publish|Any CPU.ActiveCfg = Debug|Any CPU
+		{1C989C60-6DB0-4330-96DA-69A92158092B}.Publish|Any CPU.Build.0 = Debug|Any CPU
+		{1C989C60-6DB0-4330-96DA-69A92158092B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1C989C60-6DB0-4330-96DA-69A92158092B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
