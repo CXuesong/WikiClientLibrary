@@ -36,6 +36,17 @@ namespace WikiClientLibrary.Tests.UnitTestProject1.Tests
             Assert.All(result, r => Assert.True((string)r["RP"] == "" || (int)r["RP"] > 0));
         }
 
+        [Fact]
+        public async Task CargoErrorTest()
+        {
+            var site = await GetWikiSiteAsync(Endpoints.LolEsportsWiki);
+            var ex = await Assert.ThrowsAsync<MediaWikiRemoteException>(() => site.ExecuteCargoQueryAsync(new CargoQueryParameters
+            {
+                Tables = new[] { "Skins" },
+            }));
+            Assert.Equal("MWException", ex.ErrorClass);
+        }
+
     }
 
 }
