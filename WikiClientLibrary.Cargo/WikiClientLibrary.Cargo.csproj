@@ -1,5 +1,6 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <Import Project="../WikiClientLibrary.Commons/WikiClientLibrary.Packages.props" />
+
   <PropertyGroup>
     <TargetFrameworks>netstandard1.1;netstandard2.1</TargetFrameworks>
     <AssemblyName>WikiClientLibrary.Cargo</AssemblyName>
@@ -9,6 +10,10 @@
     </Description>
     <PackageTags>$(PackageTags) Cargo</PackageTags>
   </PropertyGroup>
+
+  <ItemGroup Condition=" $(TargetFramework.CompareTo('netstandard2.0')) &lt; 0 ">
+    <PackageReference Include="System.Linq.Queryable" Version="4.3.0" />
+  </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\WikiClientLibrary\WikiClientLibrary.csproj" />

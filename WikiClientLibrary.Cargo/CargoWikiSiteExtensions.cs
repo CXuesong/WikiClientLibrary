@@ -49,7 +49,7 @@ namespace WikiClientLibrary.Cargo
                 throw new ArgumentOutOfRangeException(nameof(queryParameters) + "." + nameof(queryParameters.Limit));
             if (queryParameters.Offset < 0)
                 throw new ArgumentOutOfRangeException(nameof(queryParameters) + "." + nameof(queryParameters.Offset));
-            if (queryParameters.Tables == null || queryParameters.Tables.Length == 0)
+            if (queryParameters.Tables == null)
                 throw new ArgumentException("queryParameters.Tables must be specified", nameof(queryParameters) + "." + nameof(queryParameters.Tables));
             using (site.BeginActionScope(site, nameof(ExecuteCargoQueryAsync)))
             {
@@ -57,13 +57,13 @@ namespace WikiClientLibrary.Cargo
                 {
                     action = "cargoquery",
                     limit = queryParameters.Limit,
-                    tables = queryParameters.Tables?.Length > 0 ? string.Join(",", queryParameters.Tables) : null,
-                    fields = queryParameters.Fields?.Length > 0 ? string.Join(",", queryParameters.Fields) : null,
+                    tables = string.Join(",", queryParameters.Tables),
+                    fields = queryParameters.Fields != null ? string.Join(",", queryParameters.Fields) : null,
                     where = queryParameters.Where,
                     group_by = queryParameters.GroupBy,
                     having = queryParameters.Having,
                     join_on = queryParameters.JoinOn,
-                    order_by = queryParameters.OrderBy?.Length > 0 ? string.Join(",", queryParameters.OrderBy) : null,
+                    order_by = queryParameters.OrderBy != null ? string.Join(",", queryParameters.OrderBy) : null,
                 }), cancellationToken);
                 var jroot = resp["cargoquery"];
                 if (jroot == null || !jroot.HasValues)

@@ -8,8 +8,6 @@ namespace WikiClientLibrary.Cargo
     public class CargoQueryParameters
     {
 
-        private static string[] emptyStrings = { };
-
         /// <summary>The query offset.</summary>
         public int Offset { get; set; }
 
@@ -17,10 +15,10 @@ namespace WikiClientLibrary.Cargo
         public int Limit { get; set; } = 50;
 
         /// <summary>The Cargo database table or tables on which to search.</summary>
-        public string[] Tables { get; set; } = emptyStrings;
+        public IEnumerable<string> Tables { get; set; }
 
         /// <summary>The table field(s) to retrieve.</summary>
-        public string[] Fields { get; set; } = emptyStrings;
+        public IEnumerable<string> Fields { get; set; }
 
         /// <summary>The conditions for the query, corresponding to an SQL WHERE clause.</summary>
         public string Where { get; set; }
@@ -35,7 +33,7 @@ namespace WikiClientLibrary.Cargo
         public string Having { get; set; }
 
         /// <summary>The order of results, corresponding to an SQL ORDER BY clause.</summary>
-        public string[] OrderBy { get; set; } = emptyStrings;
+        public IEnumerable<string> OrderBy { get; set; }
 
     }
 

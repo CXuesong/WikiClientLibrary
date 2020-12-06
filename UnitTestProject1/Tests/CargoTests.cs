@@ -5,6 +5,8 @@ using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using WikiClientLibrary.Cargo;
+using WikiClientLibrary.Cargo.Linq;
+using WikiClientLibrary.Cargo.Linq.ExpressionVisitors;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -45,6 +47,45 @@ namespace WikiClientLibrary.Tests.UnitTestProject1.Tests
                 Tables = new[] { "Skins" },
             }));
             Assert.Equal("MWException", ex.ErrorClass);
+        }
+
+        [Fact]
+        public async Task LinqToCargoTest()
+        {
+            var site = await GetWikiSiteAsync(Endpoints.LolEsportsWiki);
+            var cqContext = new CargoQueryContext(site);
+            var closureParams = new { Champion = "Diana" };
+            var q = cqContext.Table<LolSkin>("Skins")
+                .Select(s => new { s.Name, s.Champion, s.ReleaseDate })
+                .Where(s => s.Champion == closureParams.Champion);
+            var q1 = new CargoQueryExpressionTreeReducer().VisitAndConvert(q.Expression, nameof(LinqToCargoTest));
+        }
+
+        private class LolSkin
+        {
+
+            public string Page { get; set; }
+
+            public string Name { get; set; }
+
+            public string Champion { get; set; }
+
+            public int RP { get; set; }
+
+            public DateTime ReleaseDate { get; set; }
+
+            public ICollection<string> Artists { get; set; }
+
+            public bool IsLegacy { get; set; }
+
+            public string Special { get; set; }
+
+            public bool HasChromas { get; set; }
+
+            public bool IsClassic { get; set; }
+
+            public bool IsReleased { get; set; }
+
         }
 
     }
