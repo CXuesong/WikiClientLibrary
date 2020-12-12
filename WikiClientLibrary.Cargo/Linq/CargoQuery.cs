@@ -8,6 +8,7 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading;
 using AsyncEnumerableExtensions;
+using WikiClientLibrary.Cargo.Linq.IntermediateExpressions;
 
 namespace WikiClientLibrary.Cargo.Linq
 {
@@ -30,6 +31,12 @@ namespace WikiClientLibrary.Cargo.Linq
         public Expression Expression { get; }
 
         public CargoQueryProvider Provider { get; }
+        
+        public CargoQueryParameters BuildQueryParameters()
+        {
+            var expr = (CargoQueryExpression)Expression;
+            return new CargoQueryParameters();
+        }
 
     }
 
@@ -39,11 +46,6 @@ namespace WikiClientLibrary.Cargo.Linq
         internal CargoQuery(CargoQueryProvider provider, Expression expression)
             : base(provider, expression, typeof(T))
         {
-        }
-
-        public CargoQueryParameters BuildQueryParameters()
-        {
-            return new CargoQueryParameters();
         }
 
         /// <inheritdoc />

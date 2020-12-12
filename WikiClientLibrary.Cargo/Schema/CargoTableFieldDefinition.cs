@@ -1,0 +1,119 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Numerics;
+using System.Reflection;
+using System.Text;
+
+namespace WikiClientLibrary.Cargo.Schema
+{
+
+    /// <summary>
+    /// Represents a field in <see cref="CargoTableDefinition"/>.
+    /// </summary>
+    public class CargoTableFieldDefinition
+    {
+
+        internal static CargoTableFieldType MatchFieldType(Type clrType, out bool isCollection)
+        {
+            isCollection = false;
+            if (clrType.IsConstructedGenericType && clrType.GetGenericTypeDefinition() == typeof(ICollection<>))
+            {
+                isCollection = true;
+                clrType = clrType.GenericTypeArguments[0];
+            }
+            else
+            {
+                isCollection = false;
+            }
+            if (clrType == typeof(string)) return CargoTableFieldType.String;
+            if (clrType == typeof(bool)) return CargoTableFieldType.Boolean;
+            if (
+                clrType == typeof(BigInteger)
+                || clrType == typeof(byte) || clrType == typeof(sbyte)
+                || clrType == typeof(short) || clrType == typeof(ushort)
+                || clrType == typeof(int) || clrType == typeof(uint)
+                || clrType == typeof(long) || clrType == typeof(ulong)
+            ) return CargoTableFieldType.Integer;
+            if (clrType == typeof(DateTime) || clrType == typeof(DateTimeOffset)) return CargoTableFieldType.Datetime;
+            throw new NotSupportedException($"Not supported type {clrType}.");
+        }
+
+        internal static CargoTableFieldDefinition FromProperty(PropertyInfo property)
+        {
+            var fieldName = property.Name;
+            var fieldType = MatchFieldType(property.PropertyType, out var isCollection);
+            return new CargoTableFieldDefinition(fieldName, fieldType, isCollection ? "," : null);
+        }
+
+        public CargoTableFieldDefinition(string name, CargoTableFieldType fieldType, string listDelimiter)
+        {
+            Name = name;
+            FieldType = fieldType;
+            ListDelimiter = listDelimiter;
+        }
+
+        public string Name { get; }
+
+        public CargoTableFieldType FieldType { get; }
+
+        public bool IsList => ListDelimiter != null;
+
+        public string ListDelimiter { get; }
+
+        /// <inheritdoc />
+        public override string ToString()
+        {
+            if (IsList)
+            {
+                return $"{Name}=List ({ListDelimiter}) of {FieldType}";
+            }
+            return $"{Name}={FieldType}";
+        }
+    }
+
+    public enum CargoTableFieldType
+    {
+
+        /// <summary>Holds the name of a page in the wiki (default max size: 300 characters)</summary>
+        Page,
+        /// <summary>Holds standard, non-wikitext text (default max size: 300 characters)</summary>
+        String,
+        /// <summary>Holds standard, non-wikitext text; intended for longer values (Not indexed)</summary>
+        Text,
+        /// <summary>Holds an integer</summary>
+        Integer,
+        /// <summary>Holds a real, i.e. non-integer, number</summary>
+        Float,
+        /// <summary>Holds a date without time</summary>
+        Date,
+        StartDate,
+        /// <summary>Similar to Date, but are meant to Hold the beginning and end of some duration. A table can hold either no Start date and no End date field, or exactly one of both.</summary>
+        EndDate,
+        /// <summary>Holds a date and time</summary>
+        Datetime,
+        StartDatetime,
+        /// <summary>Work like Start date or End date, but include a time.</summary>
+        EndDatetime,
+        /// <summary>Holds a Boolean value, whose value should be 1 or 0, or 'yes' or 'no' (see this section for Cargo-specific information on querying Boolean values)</summary>
+        Boolean,
+        /// <summary>Holds geographical coordinates</summary>
+        Coordinates,
+        /// <summary>Holds a short text that is meant to be parsed by the MediaWiki parser (default max size: 300 characters)</summary>
+        WikitextString,
+        /// <summary>Holds longer text that is meant to be parsed by the MediaWiki parser (Not indexed)</summary>
+        Wikitext,
+        /// <summary>Holds text that can be searched on, using the MATCHES command (requires MySQL 5.6+ or MariaDB 5.6+)</summary>
+        Searchtext,
+        /// <summary>Holds the name of an uploaded file or image in the wiki (similar to Page, but does not require specifying the "File:" namespace) (default max size: 300 characters)</summary>
+        File,
+        /// <summary>Holds a URL (default max size: 300 characters)</summary>
+        URL,
+        /// <summary>Holds an email address (default max size: 300 characters)</summary>
+        Email,
+        /// <summary>Holds a "rating" value, i.e. usually an integer from 1 to 5</summary>
+        Rating,
+
+    }
+
+}
