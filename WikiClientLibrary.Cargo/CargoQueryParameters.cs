@@ -23,8 +23,10 @@ namespace WikiClientLibrary.Cargo
         /// <summary>The conditions for the query, corresponding to an SQL WHERE clause.</summary>
         public string Where { get; set; }
 
-        /// <summary>Conditions for joining multiple tables, corresponding to an SQL JOIN ON clause.</summary>
-        public string JoinOn { get; set; }
+        /// <summary>Conditions for joining multiple tables (LEFT OUTER JOIN), corresponding to an SQL JOIN ON clause.</summary>
+        /// <value>a sequence containing search conditions (<c>ON table1a.field1a = table1b.field1b, ... </c>) for the JOIN clause.
+        /// Conditions will be concatenated with comma (<c>,</c>).</value>
+        public IEnumerable<string> JoinOn { get; set; }
 
         /// <summary>Field(s) on which to group results, corresponding to an SQL GROUP BY clause.</summary>
         public string GroupBy { get; set; }

@@ -49,20 +49,24 @@ namespace WikiClientLibrary.Cargo
                 throw new ArgumentOutOfRangeException(nameof(queryParameters) + "." + nameof(queryParameters.Limit));
             if (queryParameters.Offset < 0)
                 throw new ArgumentOutOfRangeException(nameof(queryParameters) + "." + nameof(queryParameters.Offset));
-            if (queryParameters.Tables == null)
-                throw new ArgumentException("queryParameters.Tables must be specified", nameof(queryParameters) + "." + nameof(queryParameters.Tables));
+            var tables = queryParameters.Tables != null ? string.Join(",", queryParameters.Tables) : null;
+            if (string.IsNullOrEmpty(tables))
+                throw new ArgumentException("queryParameters.Tables should not be null or empty.", nameof(queryParameters) + "." + nameof(queryParameters.Tables));
+            var fields = queryParameters.Fields != null ? string.Join(",", queryParameters.Fields) : null;
+            if (string.IsNullOrEmpty(fields))
+                throw new ArgumentException("queryParameters.Fields should not be null or empty.", nameof(queryParameters) + "." + nameof(queryParameters.Fields));
             using (site.BeginActionScope(site, nameof(ExecuteCargoQueryAsync)))
             {
                 var resp = await site.InvokeMediaWikiApiAsync(new MediaWikiFormRequestMessage(new
                 {
                     action = "cargoquery",
                     limit = queryParameters.Limit,
-                    tables = string.Join(",", queryParameters.Tables),
-                    fields = queryParameters.Fields != null ? string.Join(",", queryParameters.Fields) : null,
+                    tables,
+                    fields,
                     where = queryParameters.Where,
                     group_by = queryParameters.GroupBy,
                     having = queryParameters.Having,
-                    join_on = queryParameters.JoinOn,
+                    join_on = queryParameters.JoinOn != null ? string.Join(",", queryParameters.JoinOn) : null,
                     order_by = queryParameters.OrderBy != null ? string.Join(",", queryParameters.OrderBy) : null,
                 }), cancellationToken);
                 var jroot = resp["cargoquery"];
