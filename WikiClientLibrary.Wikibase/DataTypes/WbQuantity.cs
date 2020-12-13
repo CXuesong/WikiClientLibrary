@@ -20,14 +20,12 @@ namespace WikiClientLibrary.Wikibase.DataTypes
         /// </summary>
         public WbQuantity(double amount, Uri unit) : this(amount, amount, amount, unit)
         {
-            
         }
 
         /// <inheritdoc cref="WbQuantity(double,double,double,Uri)"/>
         /// <param name="error">The numeric error of the <paramref name="amount"/>.</param>
         public WbQuantity(double amount, double error, Uri unit) : this(amount, amount - error, amount + error, unit)
         {
-
         }
 
         /// <summary>
@@ -87,7 +85,10 @@ namespace WikiClientLibrary.Wikibase.DataTypes
                 else
                     s += "+" + upper + "/-" + lower;
             }
-            if (Unit != null) s += "(" + Unit.LocalPath + ")";
+            if (Unit != Unity)
+            {
+                s += "(" + (Unit.IsAbsoluteUri ? Unit.LocalPath : Unit.ToString()) + ")";
+            }
             return s;
         }
     }
