@@ -45,6 +45,7 @@ namespace WikiClientLibrary.Tests.UnitTestProject1.Tests
             var ex = await Assert.ThrowsAsync<MediaWikiRemoteException>(() => site.ExecuteCargoQueryAsync(new CargoQueryParameters
             {
                 Tables = new[] { "Skins" },
+                Fields = new[] { "NonExistentField" },
             }));
             Assert.Equal("MWException", ex.ErrorClass);
         }
@@ -56,6 +57,8 @@ namespace WikiClientLibrary.Tests.UnitTestProject1.Tests
             var cqContext = new CargoQueryContext(site);
             var closureParams = new { Champion = "Diana" };
             var q = cqContext.Table<LolSkin>("Skins")
+                .OrderBy(s => s.RP)
+                .ThenByDescending(s => s.ReleaseDate)
                 .Select(s => new { s.Name, s.Champion, s.ReleaseDate })
                 .Where(s => s.Champion == closureParams.Champion);
             var q1 = new CargoQueryExpressionTreeReducer().VisitAndConvert(q.Expression, nameof(LinqToCargoTest));

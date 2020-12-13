@@ -40,7 +40,7 @@ namespace WikiClientLibrary.Cargo.Linq
 
     }
 
-    internal class CargoQuery<T> : CargoQuery, IQueryable<T>, IAsyncEnumerable<T>
+    internal class CargoQuery<T> : CargoQuery, IQueryable<T>, IOrderedQueryable<T>, IAsyncEnumerable<T>
     {
 
         internal CargoQuery(CargoQueryProvider provider, Expression expression)

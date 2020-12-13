@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Diagnostics;
 using System.Linq;
 using System.Linq.Expressions;
@@ -58,6 +59,14 @@ namespace WikiClientLibrary.Cargo.Linq.ExpressionVisitors
                         return ProcessTakeCall((CargoQueryExpression)Visit(node.Arguments[0]), (ConstantExpression)Visit(node.Arguments[1]));
                     case nameof(Queryable.Skip):
                         return ProcessSkipCall((CargoQueryExpression)Visit(node.Arguments[0]), (ConstantExpression)Visit(node.Arguments[1]));
+                    case nameof(Queryable.OrderBy):
+                        return ProcessOrderByCall((CargoQueryExpression)Visit(node.Arguments[0]), UnwindLambdaExpression(Visit(node.Arguments[1])), false);
+                    case nameof(Queryable.ThenBy):
+                        return ProcessThenOrderByCall((CargoQueryExpression)Visit(node.Arguments[0]), UnwindLambdaExpression(Visit(node.Arguments[1])), false);
+                    case nameof(Queryable.OrderByDescending):
+                        return ProcessOrderByCall((CargoQueryExpression)Visit(node.Arguments[0]), UnwindLambdaExpression(Visit(node.Arguments[1])), true);
+                    case nameof(Queryable.ThenByDescending):
+                        return ProcessThenOrderByCall((CargoQueryExpression)Visit(node.Arguments[0]), UnwindLambdaExpression(Visit(node.Arguments[1])), true);
                 }
             }
             throw new NotSupportedException("Not supported method call.");
@@ -79,7 +88,7 @@ namespace WikiClientLibrary.Cargo.Linq.ExpressionVisitors
                 Debug.Assert(newExpr.Members.Count == newExpr.Arguments.Count);
                 var fields = newExpr.Members.Zip(newExpr.Arguments, (m, a) =>
                     new ProjectionExpression(fieldRefReplacer.VisitAndConvert(a, "Select"), m.Name)
-                ).ToList();
+                ).ToImmutableList();
                 return source.Project(fields, selector.ReturnType);
             }
 
@@ -102,7 +111,6 @@ namespace WikiClientLibrary.Cargo.Linq.ExpressionVisitors
             }
 
             var pItem = predicate.Parameters[0];
-
             var fieldRefReplacer = new MemberAccessExpressionReplacer(pItem, source.ClrMemberMapping);
             return source.Filter(fieldRefReplacer.VisitAndConvert(predicate.Body, "Where"));
         }
@@ -119,6 +127,20 @@ namespace WikiClientLibrary.Cargo.Linq.ExpressionVisitors
         {
             var countVal = (int)count.Value;
             return source.Skip(countVal);
+        }
+
+        private CargoQueryExpression ProcessOrderByCall(CargoQueryExpression source, LambdaExpression keySelector, bool descending)
+        {
+            var pItem = keySelector.Parameters[0];
+            var fieldRefReplacer = new MemberAccessExpressionReplacer(pItem, source.ClrMemberMapping);
+            return source.SetOrderBy(fieldRefReplacer.VisitAndConvert(keySelector.Body, "OrderBy"), descending);
+        }
+
+        private CargoQueryExpression ProcessThenOrderByCall(CargoQueryExpression source, LambdaExpression keySelector, bool descending)
+        {
+            var pItem = keySelector.Parameters[0];
+            var fieldRefReplacer = new MemberAccessExpressionReplacer(pItem, source.ClrMemberMapping);
+            return source.SetOrderBy(fieldRefReplacer.VisitAndConvert(keySelector.Body, "ThenOrderBy"), descending);
         }
 
     }

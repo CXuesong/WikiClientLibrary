@@ -25,6 +25,9 @@ namespace WikiClientLibrary.Cargo.Linq.IntermediateExpressions
 
         public string Alias { get; }
 
+        /// <inheritdoc />
+        public override string ToString() => $"{Expression} AS {Alias}";
+
     }
 
 }

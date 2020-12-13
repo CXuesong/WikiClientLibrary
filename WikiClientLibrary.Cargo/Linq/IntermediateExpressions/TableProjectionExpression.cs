@@ -27,6 +27,9 @@ namespace WikiClientLibrary.Cargo.Linq.IntermediateExpressions
 
         public string TableAlias { get; }
 
+        /// <inheritdoc />
+        public override string ToString() => $"{TableName} AS {TableAlias}";
+
     }
 
 }

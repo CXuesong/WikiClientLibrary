@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Diagnostics;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Text;
-using WikiClientLibrary.Cargo.Schema;
 
 namespace WikiClientLibrary.Cargo.Linq.IntermediateExpressions
 {
@@ -26,11 +26,8 @@ namespace WikiClientLibrary.Cargo.Linq.IntermediateExpressions
             RecordType = recordType;
             Fields = model.Properties.Select(p =>
                 new ProjectionExpression(new FieldRefExpression(tableAlias, p), p.Name)
-            ).ToList();
-            Tables = new List<TableProjectionExpression>
-            {
-                new TableProjectionExpression(model, tableAlias)
-            };
+            ).ToImmutableList();
+            Tables = ImmutableList.Create(new TableProjectionExpression(model, tableAlias));
             ClrMemberMapping = Fields.ToDictionary(f => f.Alias, f => f.Expression);
         }
 
@@ -42,16 +39,16 @@ namespace WikiClientLibrary.Cargo.Linq.IntermediateExpressions
         public Type RecordType { get; private set; }
 
         /// <summary>Field projections (<c>SELECT ...</c>).</summary>
-        public IReadOnlyList<ProjectionExpression> Fields { get; private set; } = Utility.EmptyArray<ProjectionExpression>();
+        public IImmutableList<ProjectionExpression> Fields { get; private set; } = ImmutableList<ProjectionExpression>.Empty;
 
         /// <summary>Filter condition (<c>WHERE ...</c>).</summary>
         public Expression Predicate { get; private set; } = null;
 
         /// <summary>Sort condition.</summary>
-        public IReadOnlyList<Expression> OrderBy { get; private set; } = Utility.EmptyArray<Expression>();
+        public IImmutableList<OrderByExpression> OrderBy { get; private set; } = ImmutableList<OrderByExpression>.Empty;
 
         /// <summary>Table and alias.</summary>
-        public IReadOnlyList<TableProjectionExpression> Tables { get; private set; } = Utility.EmptyArray<TableProjectionExpression>();
+        public IImmutableList<TableProjectionExpression> Tables { get; private set; } = ImmutableList<TableProjectionExpression>.Empty;
 
         public int Offset { get; private set; }
 
@@ -59,7 +56,7 @@ namespace WikiClientLibrary.Cargo.Linq.IntermediateExpressions
 
         public IReadOnlyDictionary<string, Expression> ClrMemberMapping { get; private set; }
 
-        public CargoQueryExpression Project(IReadOnlyList<ProjectionExpression> fields, Type recordType)
+        public CargoQueryExpression Project(IImmutableList<ProjectionExpression> fields, Type recordType)
         {
             Debug.Assert(fields != null);
             Debug.Assert(recordType != null);
@@ -112,6 +109,22 @@ namespace WikiClientLibrary.Cargo.Linq.IntermediateExpressions
             }
             return newInst;
         }
-        
+
+        public CargoQueryExpression SetOrderBy(Expression expression, bool descending = false)
+        {
+            Debug.Assert(expression != null);
+            var newInst = (CargoQueryExpression)MemberwiseClone();
+            newInst.OrderBy = ImmutableList.Create(new OrderByExpression(expression, descending));
+            return newInst;
+        }
+
+        public CargoQueryExpression ThenOrderBy(Expression expression, bool descending = false)
+        {
+            Debug.Assert(expression != null);
+            var newInst = (CargoQueryExpression)MemberwiseClone();
+            newInst.OrderBy = OrderBy.Add(new OrderByExpression(expression, descending));
+            return newInst;
+        }
+
     }
 }

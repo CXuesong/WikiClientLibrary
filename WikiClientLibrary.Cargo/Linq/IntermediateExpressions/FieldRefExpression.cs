@@ -31,5 +31,8 @@ namespace WikiClientLibrary.Cargo.Linq.IntermediateExpressions
 
         public string FieldName => Property.Name;
 
+        /// <inheritdoc />
+        public override string ToString() => $"{TableAlias}.{FieldName}";
+
     }
 }
