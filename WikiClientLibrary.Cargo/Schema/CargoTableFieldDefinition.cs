@@ -16,7 +16,6 @@ namespace WikiClientLibrary.Cargo.Schema
 
         internal static CargoTableFieldType MatchFieldType(Type clrType, out bool isCollection)
         {
-            isCollection = false;
             if (clrType.IsConstructedGenericType && clrType.GetGenericTypeDefinition() == typeof(ICollection<>))
             {
                 isCollection = true;

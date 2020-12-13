@@ -39,7 +39,7 @@ namespace WikiClientLibrary.Cargo.Linq
         /// <inheritdoc />
         public IQueryable<T> Table<T>(string name)
         {
-            return new CargoTable<T>(CargoModel.FromClrType(typeof(T), name),
+            return new CargoRecordSet<T>(CargoModel.FromClrType(typeof(T), name),
                 new CargoQueryProvider(WikiSite));
         }
 

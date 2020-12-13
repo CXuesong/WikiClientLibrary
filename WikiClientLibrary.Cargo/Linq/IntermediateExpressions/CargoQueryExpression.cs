@@ -13,7 +13,7 @@ namespace WikiClientLibrary.Cargo.Linq.IntermediateExpressions
     /// <summary>
     /// Represents a full <c>SELECT</c> query expression that can be later converted into Cargo query parameters.
     /// </summary>
-    internal class CargoQueryExpression : CargoSqlExpression
+    internal sealed class CargoQueryExpression : CargoSqlExpression
     {
 
         public CargoQueryExpression()

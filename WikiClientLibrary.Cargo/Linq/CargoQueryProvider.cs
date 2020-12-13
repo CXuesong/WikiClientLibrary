@@ -10,10 +10,10 @@ using WikiClientLibrary.Sites;
 namespace WikiClientLibrary.Cargo.Linq
 {
 
-    public class CargoQueryProvider: IQueryProvider
+    public class CargoQueryProvider : IQueryProvider
     {
 
-        public CargoQueryProvider(WikiSite wikiSite) 
+        public CargoQueryProvider(WikiSite wikiSite)
             : this(wikiSite, 10)
         {
         }
@@ -36,13 +36,13 @@ namespace WikiClientLibrary.Cargo.Linq
             var queryableType = expression.Type.GetTypeInfo().ImplementedInterfaces
                 .First(i => i.IsConstructedGenericType && i.GetGenericTypeDefinition() == typeof(IQueryable<>));
             var elementType = queryableType.GenericTypeArguments[0];
-            return (IQueryable)Activator.CreateInstance(typeof(CargoQuery<>).MakeGenericType(elementType), this, expression);
+            return (IQueryable)Activator.CreateInstance(typeof(CargoRecordQueryable<>).MakeGenericType(elementType), this, expression);
         }
 
         /// <inheritdoc />
         public IQueryable<TElement> CreateQuery<TElement>(Expression expression)
         {
-            return new CargoQuery<TElement>(this, expression);
+            return new CargoRecordQueryable<TElement>(this, expression);
         }
 
         /// <inheritdoc />

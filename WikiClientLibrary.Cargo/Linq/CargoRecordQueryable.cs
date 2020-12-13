@@ -8,15 +8,16 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading;
 using AsyncEnumerableExtensions;
+using WikiClientLibrary.Cargo.Linq.ExpressionVisitors;
 using WikiClientLibrary.Cargo.Linq.IntermediateExpressions;
 
 namespace WikiClientLibrary.Cargo.Linq
 {
 
-    internal abstract class CargoQuery
+    public abstract class CargoRecordQueryable
     {
 
-        internal CargoQuery(CargoQueryProvider provider, Expression expression, Type elementType)
+        internal CargoRecordQueryable(CargoQueryProvider provider, Expression expression, Type elementType)
         {
             Debug.Assert(provider != null);
             Debug.Assert(expression != null);
@@ -31,25 +32,40 @@ namespace WikiClientLibrary.Cargo.Linq
         public Expression Expression { get; }
 
         public CargoQueryProvider Provider { get; }
-        
+
+        /// <summary>
+        /// Builds Cargo API query parameters from the current LINQ to Cargo expression.
+        /// </summary>
         public CargoQueryParameters BuildQueryParameters()
         {
-            var expr = (CargoQueryExpression)Expression;
-            return new CargoQueryParameters();
+            var expr = Expression;
+            expr = new ExpressionTreePartialEvaluator().VisitAndConvert(expr, nameof(BuildQueryParameters));
+            expr = new CargoQueryExpressionReducer().VisitAndConvert(expr, nameof(BuildQueryParameters));
+            if (expr is CargoQueryExpression cqe)
+            {
+                // TODO
+                return new CargoQueryParameters();
+            }
+            throw new InvalidOperationException($"Cannot reduce the expression to CargoQueryExpression. Actual type: {expr?.GetType()}.");
         }
 
     }
 
-    internal class CargoQuery<T> : CargoQuery, IQueryable<T>, IOrderedQueryable<T>, IAsyncEnumerable<T>
+    public class CargoRecordQueryable<T> : CargoRecordQueryable, IQueryable<T>, IOrderedQueryable<T>, IAsyncEnumerable<T>
     {
 
-        internal CargoQuery(CargoQueryProvider provider, Expression expression)
+        internal CargoRecordQueryable(CargoQueryProvider provider, Expression expression)
             : base(provider, expression, typeof(T))
         {
         }
 
         /// <inheritdoc />
+#if BCL_FEATURE_ASYNC_ENUMERABLE
+        public IEnumerator<T> GetEnumerator() => BuildAsyncEnumerable().ToEnumerable().GetEnumerator();
+#else
+        // Use explicit implementation on .NET Standard 1.1 to avoid name conflict with the one returning IAsyncEnumerator.
         IEnumerator<T> IEnumerable<T>.GetEnumerator() => BuildAsyncEnumerable().ToEnumerable().GetEnumerator();
+#endif
 
         /// <inheritdoc />
         IEnumerator IEnumerable.GetEnumerator() => BuildAsyncEnumerable().ToEnumerable().GetEnumerator();

@@ -11,28 +11,11 @@ using static WikiClientLibrary.Cargo.Linq.ExpressionVisitors.ExpressionVisitorUt
 namespace WikiClientLibrary.Cargo.Linq.ExpressionVisitors
 {
 
-    public class CargoQueryParametersBuilder : ExpressionVisitor
+    /// <summary>
+    /// Simplifies the LINQ expression into a single <see cref="CargoQueryExpression"/> root node.
+    /// </summary>
+    public class CargoQueryExpressionReducer : ExpressionVisitor
     {
-
-        // c.f. https://github.com/dotnet/efcore/blob/main/src/EFCore.Relational/Query/QuerySqlGenerator.cs
-        private static readonly Dictionary<ExpressionType, string> _operatorMap = new Dictionary<ExpressionType, string>
-        {
-            { ExpressionType.Equal, " = " },
-            { ExpressionType.NotEqual, " <> " },
-            { ExpressionType.GreaterThan, " > " },
-            { ExpressionType.GreaterThanOrEqual, " >= " },
-            { ExpressionType.LessThan, " < " },
-            { ExpressionType.LessThanOrEqual, " <= " },
-            { ExpressionType.AndAlso, " AND " },
-            { ExpressionType.OrElse, " OR " },
-            { ExpressionType.Add, " + " },
-            { ExpressionType.Subtract, " - " },
-            { ExpressionType.Multiply, " * " },
-            { ExpressionType.Divide, " / " },
-            { ExpressionType.Modulo, " % " },
-            { ExpressionType.And, " & " },
-            { ExpressionType.Or, " | " }
-        };
 
         /// <inheritdoc />
         public override Expression Visit(Expression node)
@@ -69,7 +52,7 @@ namespace WikiClientLibrary.Cargo.Linq.ExpressionVisitors
                         return ProcessThenOrderByCall((CargoQueryExpression)Visit(node.Arguments[0]), UnwindLambdaExpression(Visit(node.Arguments[1])), true);
                 }
             }
-            throw new NotSupportedException("Not supported method call.");
+            throw new NotSupportedException($"Method call is not supported: {node.Method}.");
         }
 
         private CargoQueryExpression ProcessSelectCall(CargoQueryExpression source, LambdaExpression selector)
