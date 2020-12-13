@@ -77,7 +77,7 @@ namespace WikiClientLibrary.Tests.UnitTestProject1.Tests
             Assert.Equal(27.988055555556, location.Latitude, 12);
             Assert.Equal(86.925277777778, location.Longitude, 12);
 
-            claim = entity.Claims[WikidataProperties.ElevationAboveSeaLevel].First();
+            claim = entity.Claims[WikidataProperties.ElevationAboveSeaLevel].First(c => Math.Abs(((WbQuantity)c.MainSnak.DataValue).Amount - 8848) < 0.0001);
             var height = (WbQuantity)claim.MainSnak.DataValue;
             Assert.Equal(8848, height.Amount, 4);
             Assert.Equal(WikidataProperties.ReferenceUrl, claim.References[0].Snaks[0].PropertyId);
