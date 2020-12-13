@@ -61,7 +61,7 @@ namespace WikiClientLibrary.Tests.UnitTestProject1.Tests
                 .ThenByDescending(s => s.ReleaseDate)
                 .Select(s => new { s.Name, s.Champion, s.ReleaseDate })
                 .Where(s => s.Champion == closureParams.Champion);
-            var q1 = new CargoQueryExpressionTreeReducer().VisitAndConvert(q.Expression, nameof(LinqToCargoTest));
+            var q1 = new ExpressionTreePartialEvaluator().VisitAndConvert(q.Expression, nameof(LinqToCargoTest));
             var q2 = new CargoQueryParametersBuilder().VisitAndConvert(q1, nameof(LinqToCargoTest));
         }
 
