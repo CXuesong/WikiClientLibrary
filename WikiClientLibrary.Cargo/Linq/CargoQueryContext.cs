@@ -19,7 +19,7 @@ namespace WikiClientLibrary.Cargo.Linq
         /// <typeparam name="T">type of the model.</typeparam>
         /// <param name="name">name of the Cargo table. Specify <c>null</c> to use default table name corresponding to the model.</param>
         /// <returns>LINQ root.</returns>
-        IQueryable<T> Table<T>(string name = null);
+        ICargoRecordSet<T> Table<T>(string name = null);
 
     }
 
@@ -34,10 +34,7 @@ namespace WikiClientLibrary.Cargo.Linq
         public WikiSite WikiSite { get; }
 
         /// <inheritdoc />
-        public IQueryable<T> Table<T>() => Table<T>(null);
-
-        /// <inheritdoc />
-        public IQueryable<T> Table<T>(string name)
+        public ICargoRecordSet<T> Table<T>(string name)
         {
             return new CargoRecordSet<T>(CargoModel.FromClrType(typeof(T), name),
                 new CargoQueryProvider(WikiSite));

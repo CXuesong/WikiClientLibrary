@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using Newtonsoft.Json;
 using WikiClientLibrary.Cargo;
 using WikiClientLibrary.Cargo.Linq;
-using WikiClientLibrary.Cargo.Linq.ExpressionVisitors;
+using WikiClientLibrary.Sites;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -54,15 +54,29 @@ namespace WikiClientLibrary.Tests.UnitTestProject1.Tests
         public async Task LinqToCargoTest()
         {
             var site = await GetWikiSiteAsync(Endpoints.LolEsportsWiki);
-            var cqContext = new CargoQueryContext(site);
+            var cqContext = new LolCargoQueryContext(site);
             var closureParams = new { Champion = "Diana" };
-            var q = cqContext.Table<LolSkin>("Skins")
+            var q = cqContext.Skins
                 .OrderBy(s => s.RP)
                 .ThenByDescending(s => s.ReleaseDate)
                 .Select(s => new { s.Name, s.Champion, s.ReleaseDate })
-                .Where(s => s.Champion == closureParams.Champion)
-                .Take(5);
-            // var records = await q.ToAsyncEnumerable().ToListAsync();
+                .Where(s => s.Champion == closureParams.Champion && s.ReleaseDate < new DateTime(2020, 1, 1))
+                .Take(10);
+            // Call .AsAsyncEnumerable to ensure we use async Linq call.
+            var records = await q.AsAsyncEnumerable().ToListAsync();
+            ShallowTrace(records);
+        }
+
+        private class LolCargoQueryContext : CargoQueryContext
+        {
+
+            /// <inheritdoc />
+            public LolCargoQueryContext(WikiSite wikiSite) : base(wikiSite)
+            {
+            }
+
+            public ICargoRecordSet<LolSkin> Skins => Table<LolSkin>("Skins");
+
         }
 
         private class LolSkin
@@ -76,7 +90,7 @@ namespace WikiClientLibrary.Tests.UnitTestProject1.Tests
 
             public int RP { get; set; }
 
-            public DateTime ReleaseDate { get; set; }
+            public DateTime? ReleaseDate { get; set; }
 
             public ICollection<string> Artists { get; set; }
 

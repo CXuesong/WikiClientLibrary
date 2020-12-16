@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Text;
@@ -8,12 +10,13 @@ namespace WikiClientLibrary.Cargo.Linq.ExpressionVisitors
 {
 
     /// <summary>
-    /// Partially evaluates all the evaluatable expressions in the expression tree.
+    /// Partially evaluates all the evaluable expressions in the expression tree.
     /// </summary>
     public class ExpressionTreePartialEvaluator : ExpressionVisitor
     {
 
-        private bool _isReducible;
+        private readonly Stack<Expression> _exprStack = new Stack<Expression>();
+        private readonly HashSet<Expression> _nonEvaluableExpressions = new HashSet<Expression>();
 
         private ConstantExpression Evaluate(Expression expr)
         {
@@ -28,36 +31,93 @@ namespace WikiClientLibrary.Cargo.Linq.ExpressionVisitors
             }
         }
 
+        private bool IsNonEvaluable(Expression expr)
+        {
+            if (IsWellKnownNonEvaluable(expr)) return true;
+            return _nonEvaluableExpressions.Contains(expr);
+        }
+
+        private bool IsWellKnownNonEvaluable(Expression expr)
+        {
+            Debug.Assert(expr != null);
+            if (expr.NodeType == ExpressionType.Parameter || expr.NodeType == ExpressionType.Extension)
+            {
+                return true;
+            }
+            return false;
+        }
+
+        private void DeclareNonEvaluable(Expression expr)
+        {
+            Debug.Assert(!IsWellKnownNonEvaluable(expr), "No need to record well-known non-evaluable expressions.");
+            _nonEvaluableExpressions.Add(expr);
+        }
+
+        /// <inheritdoc />
+        public override Expression Visit(Expression node)
+        {
+            if (node == null)
+                return null;
+            Debug.WriteLine("Visit {0}：{1}", node.NodeType, node);
+            _exprStack.Push(node);
+            Expression result;
+            try
+            {
+                result = base.Visit(node);
+            }
+            finally
+            {
+                var popped = _exprStack.Pop();
+                Debug.Assert(popped == node);
+            }
+            if (IsWellKnownNonEvaluable(result) || _nonEvaluableExpressions.Contains(result))
+            {
+                // By default any expression containing non-evaluable expression is not evaluable.
+                // Traverse through parents
+                foreach (var parentExpr in _exprStack)
+                {
+                    if (IsNonEvaluable(parentExpr))
+                    {
+                        // If any expression in the ancestor path has been decided as non-evaluable, its parent must has been declared so.
+                        break;
+                    }
+                    DeclareNonEvaluable(parentExpr);
+                }
+            }
+            return result;
+        }
+
+        /// <inheritdoc />
+        protected override Expression VisitLambda<T>(Expression<T> node)
+        {
+            // Assume we can evaluate everything in the lambda first.
+            var result = base.VisitLambda(node);
+            // Do full evaluate expression at lambda body, if possible.
+            if (!_nonEvaluableExpressions.Contains(node.Body))
+                result = node.Update(Evaluate(node.Body), node.Parameters);
+            return result;
+        }
+
         /// <inheritdoc />
         protected override Expression VisitBinary(BinaryExpression node)
         {
-            _isReducible = true;
             var left = Visit(node.Left);
-            var isLeftReducible = _isReducible;
-            _isReducible = true;
             var right = Visit(node.Right);
-            var isRightReducible = _isReducible;
-            if (isLeftReducible && isRightReducible)
-                return Evaluate(node);
-            if (isLeftReducible)
+            var isLeftEvaluable = !_nonEvaluableExpressions.Contains(left);
+            var isRightEvaluable = !_nonEvaluableExpressions.Contains(right);
+            // Full evaluable. Let caller check whether we can reduce this expression with others.
+            if (isLeftEvaluable && isRightEvaluable)
+            {
+                return node;
+            }
+            // Not evaluable. Partially evaluate the lhs / rhs.
+            if (isLeftEvaluable)
                 left = Evaluate(left);
-            if (isRightReducible)
+            if (isRightEvaluable)
                 right = Evaluate(right);
-            return node.Update(left, node.Conversion, right);
-        }
-
-        /// <inheritdoc />
-        protected override Expression VisitParameter(ParameterExpression node)
-        {
-            _isReducible = false;
-            return base.VisitParameter(node);
-        }
-
-        /// <inheritdoc />
-        protected override Expression VisitExtension(Expression node)
-        {
-            _isReducible = false;
-            return node;
+            var result = node.Update(left, node.Conversion, right);
+            DeclareNonEvaluable(result);
+            return result;
         }
 
     }

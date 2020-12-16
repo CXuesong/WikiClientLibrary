@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
@@ -55,8 +56,43 @@ namespace WikiClientLibrary.Cargo
             var fields = queryParameters.Fields != null ? string.Join(",", queryParameters.Fields) : null;
             if (string.IsNullOrEmpty(fields))
                 throw new ArgumentException("queryParameters.Fields should not be null or empty.", nameof(queryParameters) + "." + nameof(queryParameters.Fields));
+            var join_on = queryParameters.JoinOn != null ? string.Join(",", queryParameters.JoinOn) : null;
+            var order_by = queryParameters.OrderBy != null ? string.Join(",", queryParameters.OrderBy) : null;
             using (site.BeginActionScope(site, nameof(ExecuteCargoQueryAsync)))
             {
+                if (site.Logger.IsEnabled(LogLevel.Debug))
+                {
+                    var sb = new StringBuilder(128);
+                    sb.Append("SELECT ");
+                    sb.Append(fields);
+                    sb.Append(" FROM ");
+                    sb.Append(tables);
+                    sb.AppendLine();
+                    if (queryParameters.Where != null)
+                    {
+                        sb.Append(" WHERE ");
+                        sb.Append(queryParameters.Where);
+                        sb.AppendLine();
+                    }
+                    if (queryParameters.GroupBy != null)
+                    {
+                        sb.Append(" GROUP BY ");
+                        sb.Append(queryParameters.GroupBy);
+                        sb.AppendLine();
+                    }
+                    if (order_by != null)
+                    {
+                        sb.Append(" ORDER BY ");
+                        sb.Append(order_by);
+                        sb.AppendLine();
+                    }
+                    sb.Append(" OFFSET ");
+                    sb.Append(queryParameters.Offset);
+                    sb.Append(" FETCH ");
+                    sb.Append(queryParameters.Limit);
+                    sb.Append(" ROWS ONLY");
+                    site.Logger.LogDebug("Invoke Cargo query. Pseudo-query: {0}", sb.ToString());
+                }
                 var resp = await site.InvokeMediaWikiApiAsync(new MediaWikiFormRequestMessage(new
                 {
                     action = "cargoquery",
@@ -66,8 +102,8 @@ namespace WikiClientLibrary.Cargo
                     where = queryParameters.Where,
                     group_by = queryParameters.GroupBy,
                     having = queryParameters.Having,
-                    join_on = queryParameters.JoinOn != null ? string.Join(",", queryParameters.JoinOn) : null,
-                    order_by = queryParameters.OrderBy != null ? string.Join(",", queryParameters.OrderBy) : null,
+                    join_on,
+                    order_by,
                 }), cancellationToken);
                 var jroot = resp["cargoquery"];
                 if (jroot == null || !jroot.HasValues)

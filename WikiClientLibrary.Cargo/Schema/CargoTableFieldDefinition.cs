@@ -14,16 +14,24 @@ namespace WikiClientLibrary.Cargo.Schema
     public class CargoTableFieldDefinition
     {
 
-        internal static CargoTableFieldType MatchFieldType(Type clrType, out bool isCollection)
+        internal static CargoTableFieldType MatchFieldType(Type clrType, out bool isCollection,out bool isNullable)
         {
-            if (clrType.IsConstructedGenericType && clrType.GetGenericTypeDefinition() == typeof(ICollection<>))
+            isCollection = false;
+            isNullable = !clrType.GetTypeInfo().IsValueType;
+            if (clrType.IsConstructedGenericType)
             {
-                isCollection = true;
-                clrType = clrType.GenericTypeArguments[0];
-            }
-            else
-            {
-                isCollection = false;
+                var genDef = clrType.GetGenericTypeDefinition();
+                if (genDef == typeof(ICollection<>) || genDef == typeof(IList<>))
+                {
+                    isCollection = true;
+                    clrType = clrType.GenericTypeArguments[0];
+                }
+                if (genDef == typeof(Nullable<>))
+                {
+                    // Nullable<> is value type, but it's nullable.
+                    isNullable = true;
+                    clrType = clrType.GenericTypeArguments[0];
+                }
             }
             if (clrType == typeof(string)) return CargoTableFieldType.String;
             if (clrType == typeof(bool)) return CargoTableFieldType.Boolean;
@@ -34,6 +42,9 @@ namespace WikiClientLibrary.Cargo.Schema
                 || clrType == typeof(int) || clrType == typeof(uint)
                 || clrType == typeof(long) || clrType == typeof(ulong)
             ) return CargoTableFieldType.Integer;
+            if (clrType == typeof(decimal)
+                || clrType == typeof(float) || clrType == typeof(double)
+            ) return CargoTableFieldType.Integer;
             if (clrType == typeof(DateTime) || clrType == typeof(DateTimeOffset)) return CargoTableFieldType.Datetime;
             throw new NotSupportedException($"Not supported type {clrType}.");
         }
@@ -41,15 +52,16 @@ namespace WikiClientLibrary.Cargo.Schema
         internal static CargoTableFieldDefinition FromProperty(PropertyInfo property)
         {
             var fieldName = property.Name;
-            var fieldType = MatchFieldType(property.PropertyType, out var isCollection);
-            return new CargoTableFieldDefinition(fieldName, fieldType, isCollection ? "," : null);
+            var fieldType = MatchFieldType(property.PropertyType, out var isCollection, out var isNullable);
+            return new CargoTableFieldDefinition(fieldName, fieldType, isCollection ? "," : null, !isNullable);
         }
 
-        public CargoTableFieldDefinition(string name, CargoTableFieldType fieldType, string listDelimiter)
+        public CargoTableFieldDefinition(string name, CargoTableFieldType fieldType, string listDelimiter, bool isMandatory)
         {
             Name = name;
             FieldType = fieldType;
             ListDelimiter = listDelimiter;
+            IsMandatory = isMandatory;
         }
 
         public string Name { get; }
@@ -59,6 +71,11 @@ namespace WikiClientLibrary.Cargo.Schema
         public bool IsList => ListDelimiter != null;
 
         public string ListDelimiter { get; }
+
+        /// <summary>
+        /// If set, the field is declared as mandatory, i.e. blank values are not allowed.
+        /// </summary>
+        public bool IsMandatory { get; }
 
         /// <inheritdoc />
         public override string ToString()

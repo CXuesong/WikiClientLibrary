@@ -13,7 +13,7 @@ using WikiClientLibrary.Cargo.Linq.IntermediateExpressions;
 
 namespace WikiClientLibrary.Cargo.Linq
 {
-
+    
     public abstract class CargoRecordQueryable
     {
 
@@ -43,20 +43,56 @@ namespace WikiClientLibrary.Cargo.Linq
             expr = new CargoQueryExpressionReducer().VisitAndConvert(expr, nameof(BuildQueryParameters));
             if (expr is CargoQueryExpression cqe)
             {
-                // TODO
-                return new CargoQueryParameters();
+                var cb = new CargoQueryClauseBuilder();
+                var p = new CargoQueryParameters
+                {
+                    Fields = cqe.Fields.Select(f => cb.BuildClause(f)).ToList(),
+                    Tables = cqe.Tables.Select(t => cb.BuildClause(t)).ToList(),
+                    Where = cqe.Predicate == null ? null : cb.BuildClause(cqe.Predicate),
+                    Offset = cqe.Offset,
+                    // We use -1 to let caller know we shouldn't limit record count.
+                    Limit = cqe.Limit ?? -1,
+                };
+                return p;
             }
             throw new InvalidOperationException($"Cannot reduce the expression to CargoQueryExpression. Actual type: {expr?.GetType()}.");
         }
 
     }
 
-    public class CargoRecordQueryable<T> : CargoRecordQueryable, IQueryable<T>, IOrderedQueryable<T>, IAsyncEnumerable<T>
+    public class CargoRecordQueryable<T> : CargoRecordQueryable,IQueryable<T>, IOrderedQueryable<T>, IAsyncEnumerable<T>
     {
 
         internal CargoRecordQueryable(CargoQueryProvider provider, Expression expression)
             : base(provider, expression, typeof(T))
         {
+        }
+        
+        private IAsyncEnumerable<T> BuildAsyncEnumerable()
+        {
+            var p = BuildQueryParameters();
+            var limit = p.Limit;
+            // Trivial case
+            if (limit == 0) return AsyncEnumerable.Empty<T>();
+            var paginationSize = Provider.PaginationSize;
+            // Restrict Limit to pagination size.
+            if (p.Limit < 0 || p.Limit > paginationSize)
+                p.Limit = paginationSize;
+            return AsyncEnumerableFactory.FromAsyncGenerator<T>(async (sink, ct) =>
+            {
+                var yieldedCount = 0;
+                while (p.Limit > 0)
+                {
+                    var result = await Provider.WikiSite.ExecuteCargoQueryAsync(p, ct);
+                    // No more record.
+                    if (result.Count == 0) return;
+                    await sink.YieldAndWait(result.Select(r => r.ToObject<T>()));
+                    yieldedCount += result.Count;
+                    // Prepare for next batch.
+                    p.Offset += result.Count;
+                    p.Limit = limit < 0 ? paginationSize : Math.Min(paginationSize, limit - yieldedCount);
+                }
+            });
         }
 
         /// <inheritdoc />
@@ -72,15 +108,6 @@ namespace WikiClientLibrary.Cargo.Linq
 
         /// <inheritdoc />
         IQueryProvider IQueryable.Provider => Provider;
-
-        private IAsyncEnumerable<T> BuildAsyncEnumerable() =>
-            AsyncEnumerableFactory.FromAsyncGenerator<T>(async (sink, ct) =>
-            {
-                ct.ThrowIfCancellationRequested();
-                var p = BuildQueryParameters();
-                var result = await Provider.WikiSite.ExecuteCargoQueryAsync(p, ct);
-                await sink.YieldAndWait(result.Select(r => r.ToObject<T>()));
-            });
 
         /// <inheritdoc />
 #if BCL_FEATURE_ASYNC_ENUMERABLE

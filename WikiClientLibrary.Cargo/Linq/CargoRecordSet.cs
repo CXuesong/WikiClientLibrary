@@ -5,6 +5,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
+using System.Threading;
 using WikiClientLibrary.Cargo.Linq.IntermediateExpressions;
 
 namespace WikiClientLibrary.Cargo.Linq
@@ -38,28 +39,23 @@ namespace WikiClientLibrary.Cargo.Linq
         /// <inheritdoc />
         Type IQueryable.ElementType => _rootQueryable.ElementType;
 
-        /// <inheritdoc />
-        Expression IQueryable.Expression => _rootQueryable.Expression;
-
-        /// <inheritdoc />
-        IQueryProvider IQueryable.Provider => _rootQueryable.Provider;
-
         public CargoQueryProvider Provider { get; }
 
         /// <inheritdoc />
         public string Name => Model.Name;
 
         /// <inheritdoc />
-        IEnumerator<T> IEnumerable<T>.GetEnumerator()
-        {
-            return ((IEnumerable<T>)_rootQueryable).GetEnumerator();
-        }
+        Expression IQueryable.Expression => _rootQueryable.Expression;
 
         /// <inheritdoc />
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return ((IEnumerable)_rootQueryable).GetEnumerator();
-        }
+        IQueryProvider IQueryable.Provider => _rootQueryable.Provider;
+
+        /// <inheritdoc />
+        IEnumerator<T> IEnumerable<T>.GetEnumerator() => ((IEnumerable<T>)_rootQueryable).GetEnumerator();
+
+        /// <inheritdoc />
+        IEnumerator IEnumerable.GetEnumerator() => ((IEnumerable<T>)_rootQueryable).GetEnumerator();
+
     }
 
 }

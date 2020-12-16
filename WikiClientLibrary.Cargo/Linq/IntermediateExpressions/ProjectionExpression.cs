@@ -14,6 +14,9 @@ namespace WikiClientLibrary.Cargo.Linq.IntermediateExpressions
 
         public ProjectionExpression(Expression expression, string alias)
         {
+            if (expression == null) throw new ArgumentNullException(nameof(expression));
+            if (alias == null) throw new ArgumentNullException(nameof(alias));
+            if (alias.Length == 0) throw new ArgumentException("Parameter should not be empty.", nameof(alias));
             Expression = expression;
             Alias = alias;
         }
