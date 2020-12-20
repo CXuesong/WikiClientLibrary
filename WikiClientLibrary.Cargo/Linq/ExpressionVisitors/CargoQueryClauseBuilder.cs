@@ -105,6 +105,23 @@ namespace WikiClientLibrary.Cargo.Linq.ExpressionVisitors
         }
 
         /// <inheritdoc />
+        protected override Expression VisitUnary(UnaryExpression node)
+        {
+            _builder.Append('(');
+            switch (node.NodeType)
+            {
+                case ExpressionType.Not:
+                    _builder.Append("NOT ");
+                    break;
+                default:
+                    throw new InvalidOperationException($"Operator is not supported: {node.NodeType}.");
+            }
+            Visit(node.Operand);
+            _builder.Append(')');
+            return node;
+        }
+
+        /// <inheritdoc />
         protected override Expression VisitBinary(BinaryExpression node)
         {
             if (!_operatorMap.TryGetValue(node.NodeType, out var op))
@@ -112,13 +129,12 @@ namespace WikiClientLibrary.Cargo.Linq.ExpressionVisitors
             // Unconditionally add brackets to ensure priority is correct.
             _builder.Append('(');
             Visit(node.Left);
-            if (node.NodeType == ExpressionType.Equal && (
-                node.Right is ConstantExpression c2 && c2.Value == null
-                || node.Left is ConstantExpression c1 && c1.Value == null
-            ))
+            if ((node.NodeType == ExpressionType.Equal || node.NodeType == ExpressionType.NotEqual)
+                && (node.Right is ConstantExpression c2 && c2.Value == null
+                    || node.Left is ConstantExpression c1 && c1.Value == null))
             {
                 // use `IS NULL` instead of `= NULL`.
-                op = " IS ";
+                op = node.NodeType == ExpressionType.Equal ? " IS " : " IS NOT ";
             }
             _builder.Append(op);
             Visit(node.Right);
@@ -155,6 +171,14 @@ namespace WikiClientLibrary.Cargo.Linq.ExpressionVisitors
             }
             return node;
         }
+
+        /// <inheritdoc />
+        protected override Expression VisitMethodCall(MethodCallExpression node)
+        {
+            throw new NotImplementedException("Method call translation is not implemented yet.");
+            return base.VisitMethodCall(node);
+        }
+
     }
 
 }
