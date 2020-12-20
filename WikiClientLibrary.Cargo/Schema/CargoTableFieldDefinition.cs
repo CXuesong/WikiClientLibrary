@@ -4,6 +4,8 @@ using System.Linq;
 using System.Numerics;
 using System.Reflection;
 using System.Text;
+using WikiClientLibrary.Cargo.Linq;
+using WikiClientLibrary.Cargo.Schema.DataAnnotations;
 
 namespace WikiClientLibrary.Cargo.Schema
 {
@@ -14,7 +16,7 @@ namespace WikiClientLibrary.Cargo.Schema
     public class CargoTableFieldDefinition
     {
 
-        internal static CargoTableFieldType MatchFieldType(Type clrType, out bool isCollection,out bool isNullable)
+        internal static CargoTableFieldType MatchFieldType(Type clrType, out bool isCollection, out bool isNullable)
         {
             isCollection = false;
             isNullable = !clrType.GetTypeInfo().IsValueType;
@@ -51,9 +53,11 @@ namespace WikiClientLibrary.Cargo.Schema
 
         internal static CargoTableFieldDefinition FromProperty(PropertyInfo property)
         {
-            var fieldName = property.Name;
             var fieldType = MatchFieldType(property.PropertyType, out var isCollection, out var isNullable);
-            return new CargoTableFieldDefinition(fieldName, fieldType, isCollection ? "," : null, !isNullable);
+            var listAttr = property.GetCustomAttribute<CargoListAttribute>();
+            if (listAttr != null && !isCollection)
+                throw new InvalidOperationException("Invalid CargoListAttribute usage: Annotated member is not collection.");
+            return new CargoTableFieldDefinition(CargoModelUtility.ColumnNameFromProperty(property), fieldType, isCollection ? listAttr?.Delimiter ?? "," : null, !isNullable);
         }
 
         public CargoTableFieldDefinition(string name, CargoTableFieldType fieldType, string listDelimiter, bool isMandatory)

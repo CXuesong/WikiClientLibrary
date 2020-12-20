@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Reflection;
 using System.Text;
 using WikiClientLibrary.Cargo.Schema;
@@ -10,6 +11,7 @@ namespace WikiClientLibrary.Cargo.Linq
     /// <summary>
     /// Represents a property (or field) in <see cref="CargoModel"/>.
     /// </summary>
+    [DebuggerDisplay("{Name} ({ClrProperty})")]
     public class CargoModelProperty
     {
 

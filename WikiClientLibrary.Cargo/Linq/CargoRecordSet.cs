@@ -29,7 +29,8 @@ namespace WikiClientLibrary.Cargo.Linq
         {
             Debug.Assert(model != null);
             Debug.Assert(provider != null);
-            _rootQueryable = new CargoRecordQueryable<T>(provider, new CargoQueryExpression(model, typeof(T)));
+            Debug.Assert(model.ClrType == typeof(T));
+            _rootQueryable = new CargoRecordQueryable<T>(provider, new CargoQueryExpression(model));
             Model = model;
             Provider = provider;
         }

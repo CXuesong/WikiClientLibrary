@@ -20,10 +20,14 @@ namespace WikiClientLibrary.Cargo.Linq.IntermediateExpressions
         {
         }
 
-        public CargoQueryExpression(CargoModel model, Type recordType)
+        /// <summary>
+        /// Initialize a query expression from the specified model.
+        /// </summary>
+        /// <param name="model"></param>
+        public CargoQueryExpression(CargoModel model)
         {
             const string tableAlias = "T0";
-            RecordType = recordType;
+            RecordType = model.ClrType;
             Fields = model.Properties.Select(p =>
                 new ProjectionExpression(new FieldRefExpression(tableAlias, p), p.Name)
             ).ToImmutableList();
@@ -54,6 +58,9 @@ namespace WikiClientLibrary.Cargo.Linq.IntermediateExpressions
 
         public int? Limit { get; private set; }
 
+        /// <summary>
+        /// Maps field alias into <see cref="FieldRefExpression"/>.
+        /// </summary>
         public IReadOnlyDictionary<string, Expression> ClrMemberMapping { get; private set; }
 
         public CargoQueryExpression Project(IImmutableList<ProjectionExpression> fields, Type recordType)

@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using WikiClientLibrary.Cargo;
 using WikiClientLibrary.Cargo.Linq;
+using WikiClientLibrary.Cargo.Schema;
 using WikiClientLibrary.Sites;
 using Xunit;
 using Xunit.Abstractions;
@@ -59,12 +61,13 @@ namespace WikiClientLibrary.Tests.UnitTestProject1.Tests
             var q = cqContext.Skins
                 .OrderBy(s => s.RP)
                 .ThenByDescending(s => s.ReleaseDate)
-                .Select(s => new { s.Name, s.Champion, s.ReleaseDate })
+                .Select(s => new { s.Page, Name = s.Name, s.Champion, s.ReleaseDate })
                 .Where(s => s.Champion == closureParams.Champion && s.ReleaseDate < new DateTime(2020, 1, 1))
                 .Take(10);
             // Call .AsAsyncEnumerable to ensure we use async Linq call.
             var records = await q.AsAsyncEnumerable().ToListAsync();
             ShallowTrace(records);
+            Assert.All(records, r => Assert.Equal(r.Name, r.Page));
         }
 
         private class LolCargoQueryContext : CargoQueryContext
@@ -75,13 +78,15 @@ namespace WikiClientLibrary.Tests.UnitTestProject1.Tests
             {
             }
 
-            public ICargoRecordSet<LolSkin> Skins => Table<LolSkin>("Skins");
+            public ICargoRecordSet<LolSkin> Skins => Table<LolSkin>();
 
         }
 
+        [Table("Skins")]
         private class LolSkin
         {
 
+            [Column(CargoSpecialColumnNames.PageName)]
             public string Page { get; set; }
 
             public string Name { get; set; }

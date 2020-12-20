@@ -34,8 +34,8 @@ namespace WikiClientLibrary.Cargo.Linq.ExpressionVisitors
 
             if (node.Expression == Target)
             {
-                var memberName = node.Member.Name;
-                return MemberReplacements[memberName];
+                var columnName = CargoModelUtility.ColumnNameFromProperty(node.Member);
+                return MemberReplacements[columnName];
             }
             return visitedNode;
         }
