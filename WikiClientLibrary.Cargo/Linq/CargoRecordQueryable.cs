@@ -13,7 +13,7 @@ using WikiClientLibrary.Cargo.Linq.IntermediateExpressions;
 
 namespace WikiClientLibrary.Cargo.Linq
 {
-    
+
     public abstract class CargoRecordQueryable
     {
 
@@ -49,6 +49,7 @@ namespace WikiClientLibrary.Cargo.Linq
                     Fields = cqe.Fields.Select(f => cb.BuildClause(f)).ToList(),
                     Tables = cqe.Tables.Select(t => cb.BuildClause(t)).ToList(),
                     Where = cqe.Predicate == null ? null : cb.BuildClause(cqe.Predicate),
+                    OrderBy = cqe.OrderBy.Select(f => cb.BuildClause(f)).ToList(),
                     Offset = cqe.Offset,
                     // We use -1 to let caller know we shouldn't limit record count.
                     Limit = cqe.Limit ?? -1,
@@ -60,14 +61,14 @@ namespace WikiClientLibrary.Cargo.Linq
 
     }
 
-    public class CargoRecordQueryable<T> : CargoRecordQueryable,IQueryable<T>, IOrderedQueryable<T>, IAsyncEnumerable<T>
+    public class CargoRecordQueryable<T> : CargoRecordQueryable, IQueryable<T>, IOrderedQueryable<T>, IAsyncEnumerable<T>
     {
 
         internal CargoRecordQueryable(CargoQueryProvider provider, Expression expression)
             : base(provider, expression, typeof(T))
         {
         }
-        
+
         private IAsyncEnumerable<T> BuildAsyncEnumerable()
         {
             var p = BuildQueryParameters();

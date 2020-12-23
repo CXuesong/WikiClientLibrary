@@ -153,7 +153,7 @@ namespace WikiClientLibrary.Cargo.Linq.ExpressionVisitors
                     _builder.Append(fr.FieldName);
                     break;
                 case OrderByExpression ob:
-                    Visit(ob);
+                    Visit(ob.Expression);
                     _builder.Append(ob.Descending ? " DESC" : " ASC");
                     break;
                 case ProjectionExpression proj:
