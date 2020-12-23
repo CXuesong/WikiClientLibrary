@@ -96,6 +96,7 @@ namespace WikiClientLibrary.Cargo
                 var resp = await site.InvokeMediaWikiApiAsync(new MediaWikiFormRequestMessage(new
                 {
                     action = "cargoquery",
+                    offset = queryParameters.Offset,
                     limit = queryParameters.Limit,
                     tables,
                     fields,
