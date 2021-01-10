@@ -37,5 +37,7 @@ namespace WikiClientLibrary.Tests.UnitTestProject1
 
         public const string RuWarriorsWiki = "https://warriors-cats.fandom.com/ru/api.php";
 
+        public const string LolEsportsWiki = "https://lol.gamepedia.com/api.php";
+
     }
 }
