@@ -29,15 +29,12 @@ namespace WikiClientLibrary.Cargo.Linq.ExpressionVisitors
         /// <inheritdoc />
         protected override Expression VisitMember(MemberExpression node)
         {
-            var visitedNode = base.VisitMember(node);
-            Debug.Assert(ReferenceEquals(visitedNode, node));
-
             if (node.Expression == Target)
             {
                 var columnName = CargoModelUtility.ColumnNameFromProperty(node.Member);
                 return MemberReplacements[columnName];
             }
-            return visitedNode;
+            return base.VisitMember(node);
         }
 
     }

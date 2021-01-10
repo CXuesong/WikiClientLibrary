@@ -26,7 +26,7 @@ var context = new LolCargoQueryContext(site);
 var query = context.RosterChanges
     .Where(x => x.DateSort > new DateTime(2020, 12, 11))
     .OrderBy(x => x.DateSort)
-    .Select(x => new { x.Player, x.DateSort, }).Take(100);
+    .Select(x => new { x.Player, x.DateSort, x.DateSort.Year }).Take(100);
 var counter = 0;
 await foreach (var item in query.AsAsyncEnumerable())
 {

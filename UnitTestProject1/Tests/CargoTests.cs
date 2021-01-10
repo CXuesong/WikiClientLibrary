@@ -53,7 +53,7 @@ namespace WikiClientLibrary.Tests.UnitTestProject1.Tests
         }
 
         [Fact]
-        public async Task LinqToCargoTest()
+        public async Task LinqToCargoTest1()
         {
             var site = await GetWikiSiteAsync(Endpoints.LolEsportsWiki);
             var cqContext = new LolCargoQueryContext(site);
@@ -61,13 +61,31 @@ namespace WikiClientLibrary.Tests.UnitTestProject1.Tests
             var q = cqContext.Skins
                 .OrderBy(s => s.RP)
                 .ThenByDescending(s => s.ReleaseDate)
-                .Select(s => new { s.Page, Name = s.Name, s.Champion, s.ReleaseDate })
+                .Select(s => new { s.Page, SkinName = s.Name, s.Champion, s.ReleaseDate })
                 .Where(s => s.Champion == closureParams.Champion && s.ReleaseDate < new DateTime(2020, 1, 1))
                 .Take(10);
             // Call .AsAsyncEnumerable to ensure we use async Linq call.
             var records = await q.AsAsyncEnumerable().ToListAsync();
             ShallowTrace(records);
-            Assert.All(records, r => Assert.Equal(r.Name, r.Page));
+            Assert.All(records, r => Assert.Equal(r.SkinName, r.Page));
+        }
+
+        [Fact]
+        public async Task LinqToCargoDateTimeTest1()
+        {
+            var site = await GetWikiSiteAsync(Endpoints.LolEsportsWiki);
+            var cqContext = new LolCargoQueryContext(site);
+            var q = cqContext.Skins
+                .OrderBy(s => s.ReleaseDate)
+                .Select(s => new { SkinName = s.Name, s.Champion, s.ReleaseDate, s.ReleaseDate.Value.Year })
+                .Where(s => s.Year >= 2019 && s.Year <= 2020)
+                .Take(100);
+            // Call .AsAsyncEnumerable to ensure we use async Linq call.
+            var records = await q.AsAsyncEnumerable().ToListAsync();
+            ShallowTrace(records);
+            Assert.Equal(100, records.Count);
+            Assert.All(records, r => Assert.Equal(r.ReleaseDate?.Year, r.Year));
+            Assert.All(records, r => Assert.InRange(r.Year, 2019, 2020));
         }
 
         private class LolCargoQueryContext : CargoQueryContext
