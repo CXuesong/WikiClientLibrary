@@ -100,7 +100,7 @@ namespace WikiClientLibrary.Wikibase.DataTypes
             if (value == null) return null;
             if (value is T t)
                 return toJsonHandler(t);
-            throw new ArgumentException("Value type is incompatible.", nameof(value));
+            throw new ArgumentException($"Value type is incompatible for {Name}: expected {typeof(T)}, received {value.GetType()}.", nameof(value));
         }
 
     }
