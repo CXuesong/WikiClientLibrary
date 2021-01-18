@@ -45,14 +45,16 @@ namespace WikiClientLibrary.Cargo.Linq.ExpressionVisitors
                     case nameof(Queryable.OrderBy):
                         return ProcessOrderByCall((CargoQueryExpression)Visit(node.Arguments[0]), UnwindLambdaExpression(Visit(node.Arguments[1])), false);
                     case nameof(Queryable.ThenBy):
-                        return ProcessThenOrderByCall((CargoQueryExpression)Visit(node.Arguments[0]), UnwindLambdaExpression(Visit(node.Arguments[1])), false);
+                        return ProcessThenOrderByCall((CargoQueryExpression)Visit(node.Arguments[0]), UnwindLambdaExpression(Visit(node.Arguments[1])),
+                            false);
                     case nameof(Queryable.OrderByDescending):
                         return ProcessOrderByCall((CargoQueryExpression)Visit(node.Arguments[0]), UnwindLambdaExpression(Visit(node.Arguments[1])), true);
                     case nameof(Queryable.ThenByDescending):
                         return ProcessThenOrderByCall((CargoQueryExpression)Visit(node.Arguments[0]), UnwindLambdaExpression(Visit(node.Arguments[1])), true);
                 }
+                throw new NotSupportedException($"Queryable method call is not supported: {node.Method}.");
             }
-            throw new NotSupportedException($"Method call is not supported: {node.Method}.");
+            return node;
         }
 
         private CargoQueryExpression ProcessSelectCall(CargoQueryExpression source, LambdaExpression selector)

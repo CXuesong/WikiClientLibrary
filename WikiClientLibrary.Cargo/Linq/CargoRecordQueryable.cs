@@ -39,7 +39,9 @@ namespace WikiClientLibrary.Cargo.Linq
         public CargoQueryParameters BuildQueryParameters()
         {
             var expr = Expression;
+            expr = new CargoPreEvaluationTranslator().VisitAndConvert(expr, nameof(BuildQueryParameters));
             expr = new ExpressionTreePartialEvaluator().VisitAndConvert(expr, nameof(BuildQueryParameters));
+            expr = new CargoPostEvaluationTranslator().VisitAndConvert(expr, nameof(BuildQueryParameters));
             expr = new CargoQueryExpressionReducer().VisitAndConvert(expr, nameof(BuildQueryParameters));
             if (expr is CargoQueryExpression cqe)
             {
@@ -82,6 +84,7 @@ namespace WikiClientLibrary.Cargo.Linq
             return AsyncEnumerableFactory.FromAsyncGenerator<T>(async (sink, ct) =>
             {
                 var yieldedCount = 0;
+                p.Offset = 0;
                 while (p.Limit > 0)
                 {
                     var result = await Provider.WikiSite.ExecuteCargoQueryAsync(p, ct);

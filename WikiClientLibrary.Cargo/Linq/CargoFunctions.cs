@@ -42,5 +42,21 @@ namespace WikiClientLibrary.Cargo.Linq
         public static bool HoldsLike<T>(IEnumerable<T> cargoList, string pattern)
             => throw GetClientInvocationException(nameof(HoldsLike));
 
+        /// <summary>
+        /// Returns the difference (<paramref name="dt1"/> - <paramref name="dt2"/>) between 2 dates expressed as a value in days from one date to the other.
+        /// </summary>
+        /// <param name="dt1">date 1.</param>
+        /// <param name="dt2">date 2.</param>
+        public static int DateDiff(DateTime? dt1, DateTime? dt2)
+            => throw GetClientInvocationException(nameof(DateDiff));
+
+        /// <summary>
+        /// Returns the difference (<paramref name="dt1"/> - <paramref name="dt2"/>) between 2 dates expressed as a value in days from one date to the other.
+        /// </summary>
+        /// <param name="dt1">date 1.</param>
+        /// <param name="dt2">date 2.</param>
+        public static int DateDiff(DateTimeOffset? dt1, DateTimeOffset? dt2)
+            => throw GetClientInvocationException(nameof(DateDiff));
+
     }
 }

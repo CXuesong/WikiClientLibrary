@@ -51,7 +51,7 @@ namespace WikiClientLibrary.Tests.UnitTestProject1.Tests
             }));
             Assert.Equal("MWException", ex.ErrorClass);
         }
-
+        
         [Fact]
         public async Task LinqToCargoTest1()
         {
@@ -86,6 +86,26 @@ namespace WikiClientLibrary.Tests.UnitTestProject1.Tests
             Assert.Equal(100, records.Count);
             Assert.All(records, r => Assert.Equal(r.ReleaseDate?.Year, r.Year));
             Assert.All(records, r => Assert.InRange(r.Year, 2019, 2020));
+        }
+
+        [Theory]
+        [InlineData(365)]
+        [InlineData(730)]
+        [InlineData(500.123)]
+        public async Task LinqToCargoDateTimeTest2(double backtrackDays)
+        {
+            var site = await GetWikiSiteAsync(Endpoints.LolEsportsWiki);
+            var cqContext = new LolCargoQueryContext(site);
+            var q = cqContext.Skins
+                .OrderBy(s => s.ReleaseDate)
+                .Where(s => CargoFunctions.DateDiff(s.ReleaseDate, DateTime.Now - TimeSpan.FromDays(backtrackDays)) >= 0)
+                .Take(10);
+            // Call .AsAsyncEnumerable to ensure we use async Linq call.
+            var records = await q.AsAsyncEnumerable().ToListAsync();
+            ShallowTrace(records);
+            // Left some buffer as server time may deviate from the client time.
+            var expectedMinReleaseDate = DateTime.Now - TimeSpan.FromDays(backtrackDays + 1);
+            Assert.All(records, r => Assert.True(r.ReleaseDate == null || r.ReleaseDate > expectedMinReleaseDate));
         }
 
         private class LolCargoQueryContext : CargoQueryContext
