@@ -65,6 +65,13 @@ namespace WikiClientLibrary.Cargo.Linq.ExpressionVisitors
                         case nameof(string.TrimEnd):
                             if (node.Arguments.Count > 0) throw GetOverloadNotSupportedException();
                             return new CargoFunctionExpression("RTRIM", typeof(string), Visit(node.Object));
+                        case nameof(string.IndexOf):
+                            if (node.Arguments.Count == 1)
+                                return new CargoFunctionExpression("INSTR", typeof(int), Visit(node.Object), Visit(node.Arguments[0]));
+                            if (node.Arguments.Count == 2 && node.Method.GetParameters()[1].ParameterType == typeof(int))
+                                return new CargoFunctionExpression("LOCATE",
+                                    typeof(int), Visit(node.Object), Visit(node.Arguments[0]), Visit(node.Arguments[1]));
+                            throw GetOverloadNotSupportedException();
                         case nameof(string.Contains):
                             if (node.Arguments.Count > 1) throw GetOverloadNotSupportedException();
                             return Expression.OrElse(
@@ -73,10 +80,45 @@ namespace WikiClientLibrary.Cargo.Linq.ExpressionVisitors
                                     Expression.Constant(0))
                             );
                         case nameof(string.Substring):
-                            if (node.Arguments.Count < 2) throw GetOverloadNotSupportedException();
-                            return new CargoFunctionExpression("SUBSTRING", typeof(string), Visit(node.Object),
-                                Visit(node.Arguments[1]), Visit(node.Arguments[2]));
+                            if (node.Arguments.Count == 1)
+                                return new CargoFunctionExpression("SUBSTRING", typeof(string), Visit(node.Object), Visit(node.Arguments[1]));
+                            if (node.Arguments.Count == 2)
+                                return new CargoFunctionExpression("SUBSTRING",
+                                    typeof(string), Visit(node.Object), Visit(node.Arguments[1]), Visit(node.Arguments[2]));
+                            throw GetOverloadNotSupportedException();
                     }
+                }
+            }
+            else if (node.Method.DeclaringType == typeof(Math)
+#if BCL_FEATURE_MATHF
+                     || node.Method.DeclaringType == typeof(MathF)
+#endif
+            )
+            {
+                switch (node.Method.Name)
+                {
+                    case nameof(Math.Floor):
+                        return new CargoFunctionExpression("FLOOR", node.Method.ReturnType, Visit(node.Arguments[0]));
+                    case nameof(Math.Ceiling):
+                        return new CargoFunctionExpression("CEIL", node.Method.ReturnType, Visit(node.Arguments[0]));
+                    case nameof(Math.Round):
+                        if (node.Arguments.Count == 1)
+                            return new CargoFunctionExpression("ROUND", node.Method.ReturnType, Visit(node.Arguments[0]));
+                        if (node.Arguments.Count == 2 && node.Method.GetParameters()[1].ParameterType == typeof(int))
+                            return new CargoFunctionExpression("ROUND", node.Method.ReturnType, Visit(node.Arguments[0]), Visit(node.Arguments[1]));
+                        throw GetOverloadNotSupportedException();
+                    case nameof(Math.Pow):
+                        // POW is not supported by Cargo
+                        return new CargoFunctionExpression("POWER", node.Method.ReturnType, Visit(node.Arguments[0]), Visit(node.Arguments[1]));
+                    case nameof(Math.Exp):
+                        // EXP is not supported by Cargo
+                        return new CargoFunctionExpression("POWER", node.Method.ReturnType, Expression.Constant(Math.E), Visit(node.Arguments[0]));
+                    case nameof(Math.Log):
+                        if (node.Arguments.Count == 1)
+                            return new CargoFunctionExpression("LOG", node.Method.ReturnType, Visit(node.Arguments[0]));
+                        if (node.Arguments.Count == 2)
+                            return new CargoFunctionExpression("LOG", node.Method.ReturnType, Visit(node.Arguments[0]), Visit(node.Arguments[1]));
+                        throw GetOverloadNotSupportedException();
                 }
             }
             else if (node.Method.DeclaringType == typeof(DateTime) || node.Method.DeclaringType == typeof(DateTimeOffset))
@@ -85,7 +127,7 @@ namespace WikiClientLibrary.Cargo.Linq.ExpressionVisitors
                 {
                     case nameof(DateTimeOffset.Add):
                         return new CargoFunctionExpression("DATE_ADD", node.Method.ReturnType, Visit(node.Object), Visit(node.Arguments[0]));
-                    case nameof(DateTimeOffset.Subtract) when node.Arguments[0].Type == typeof(TimeSpan):
+                    case nameof(DateTimeOffset.Subtract):
                         return new CargoFunctionExpression("DATE_SUB", node.Method.ReturnType, Visit(node.Object), Visit(node.Arguments[0]));
                 }
             }
