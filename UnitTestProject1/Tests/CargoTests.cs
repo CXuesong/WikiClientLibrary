@@ -63,18 +63,19 @@ namespace WikiClientLibrary.Tests.UnitTestProject1.Tests
                 .ThenByDescending(s => s.ReleaseDate)
                 .Select(s => new { s.Page, SkinName = s.Name, s.Champion, s.ReleaseDate })
                 .Where(s => s.Champion == closureParams.Champion && s.ReleaseDate < new DateTime(2020, 1, 1))
-                .Take(10);
+                .Take(100);
             // Call .AsAsyncEnumerable to ensure we use async Linq call.
             var records = await q.AsAsyncEnumerable().ToListAsync();
             ShallowTrace(records);
             Assert.All(records, r => Assert.Equal(r.SkinName, r.Page));
         }
 
+        /// <summary>Tests YEAR function.</summary>
         [Fact]
         public async Task LinqToCargoDateTimeTest1()
         {
             var site = await GetWikiSiteAsync(Endpoints.LolEsportsWiki);
-            var cqContext = new LolCargoQueryContext(site);
+            var cqContext = new LolCargoQueryContext(site) { PaginationSize = 50 };
             var q = cqContext.Skins
                 .OrderBy(s => s.ReleaseDate)
                 .Select(s => new { SkinName = s.Name, s.Champion, s.ReleaseDate, s.ReleaseDate.Value.Year })
@@ -88,6 +89,7 @@ namespace WikiClientLibrary.Tests.UnitTestProject1.Tests
             Assert.All(records, r => Assert.InRange(r.Year, 2019, 2020));
         }
 
+        /// <summary>Tests DATE_DIFF and DATE_SUB functions.</summary>
         [Theory]
         [InlineData(365)]
         [InlineData(730)]
@@ -108,12 +110,37 @@ namespace WikiClientLibrary.Tests.UnitTestProject1.Tests
             Assert.All(records, r => Assert.True(r.ReleaseDate == null || r.ReleaseDate > expectedMinReleaseDate));
         }
 
+        /// <summary>Tests HOLDS and HOLDS_LIKE function.</summary>
+        [Fact]
+        public async Task LinqToCargoDateTimeTest3()
+        {
+            var site = await GetWikiSiteAsync(Endpoints.LolEsportsWiki);
+            var cqContext = new LolCargoQueryContext(site);
+            // Cargo build on lolwiki does not support `&&` very well for now.
+            var q = from s in cqContext.Skins
+                where CargoFunctions.Holds(s.Artists, "David Villegas") || CargoFunctions.HoldsLike(s.Artists, "% Studio")
+                where s.ReleaseDate >= new DateTime(2020, 1, 1) && s.ReleaseDate <= new DateTime(2021, 1, 1)
+                orderby s.ReleaseDate descending
+                // HACK projection Artists = s.Artists works here as by default we use (,) as delimiter.
+                // TODO pass through CargoCollectionAttribute to ProjectionExpression.
+                select new { s.Page, s.Name, s.Artists, s.ReleaseDate };
+            var records = await q.Take(50).AsAsyncEnumerable().ToListAsync();
+            ShallowTrace(records, 3);
+            Assert.All(records, r =>
+                Assert.All(r.Artists,
+                    a => Assert.True(a == "David Villegas" || a.EndsWith(" Studio"))
+                )
+            );
+        }
+
+
         private class LolCargoQueryContext : CargoQueryContext
         {
 
             /// <inheritdoc />
             public LolCargoQueryContext(WikiSite wikiSite) : base(wikiSite)
             {
+                this.PaginationSize = 20;
             }
 
             public ICargoRecordSet<LolSkin> Skins => Table<LolSkin>();
