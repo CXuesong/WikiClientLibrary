@@ -65,6 +65,14 @@ namespace WikiClientLibrary.Cargo.Linq.ExpressionVisitors
 #endif
                     _builder.Append("NULL");
                     break;
+                case char c:
+                    _builder.Append('\'');
+                    if (c == '\'')
+                        _builder.Append("''");
+                    else
+                        _builder.Append(c);
+                    _builder.Append('\'');
+                    break;
                 case string s:
                 {
                     _builder.Append('\'');
@@ -198,21 +206,21 @@ namespace WikiClientLibrary.Cargo.Linq.ExpressionVisitors
                     _builder.Append(')');
                     break;
                 case CargoFunctionExpression func:
-                {
-                    _builder.Append(func.Name);
-                    _builder.Append('(');
-                    var isFirst = true;
-                    foreach (var arg in func.Arguments)
                     {
-                        if (isFirst)
-                            isFirst = false;
-                        else
-                            _builder.Append(',');
-                        Visit(arg);
+                        _builder.Append(func.Name);
+                        _builder.Append('(');
+                        var isFirst = true;
+                        foreach (var arg in func.Arguments)
+                        {
+                            if (isFirst)
+                                isFirst = false;
+                            else
+                                _builder.Append(',');
+                            Visit(arg);
+                        }
+                        _builder.Append(')');
+                        break;
                     }
-                    _builder.Append(')');
-                    break;
-                }
                 default:
                     throw new InvalidOperationException($"ExtensionExpression is not supported: {node.GetType()}.");
             }
@@ -224,6 +232,13 @@ namespace WikiClientLibrary.Cargo.Linq.ExpressionVisitors
         {
             throw new NotSupportedException($"Translation of member access to {node.Member} ({node}) is not supported.");
         }
+
+        /// <inheritdoc />
+        protected override Expression VisitMethodCall(MethodCallExpression node)
+        {
+            throw new NotSupportedException($"Translation of method call {node.Method} ({node}) is not supported.");
+        }
+
     }
 
 }

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using Microsoft.Extensions.Logging;
@@ -26,7 +27,17 @@ var context = new LolCargoQueryContext(site);
 var query = context.RosterChanges
     .Where(x => x.DateSort > new DateTime(2020, 12, 11))
     .OrderBy(x => x.DateSort)
-    .Select(x => new { x.Player, x.DateSort, x.DateSort.Year }).Take(100);
+    .Select(x => new
+    {
+        x.Page,
+        x.DateSort,
+        x.Player,
+        x.Direction,
+        Roles = string.Join(';', x.Roles),
+        Tags = string.Join(';', x.Tags),
+        Tournaments = string.Join(';', x.Tournaments)
+    })
+    .Take(100);
 var counter = 0;
 await foreach (var item in query.AsAsyncEnumerable())
 {
@@ -40,6 +51,7 @@ class LolCargoQueryContext : CargoQueryContext
     /// <inheritdoc />
     public LolCargoQueryContext(WikiSite wikiSite) : base(wikiSite)
     {
+        PaginationSize = 30;
     }
 
     public ICargoRecordSet<RosterChanges> RosterChanges => Table<RosterChanges>();
@@ -57,5 +69,13 @@ class RosterChanges
     public DateTime DateSort { get; set; }
 
     public string Player { get; set; }
+
+    public string Direction { get; set; }
+
+    public ICollection<string> Roles { get; set; }
+
+    public ICollection<string> Tags { get; set; }
+
+    public ICollection<string> Tournaments { get; set; }
 
 }
