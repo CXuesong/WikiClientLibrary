@@ -57,22 +57,27 @@ namespace WikiClientLibrary.Cargo.Linq.ExpressionVisitors
             return node;
         }
 
+        private MemberAccessExpressionReplacer CreateModelMemberAccessReplacer(ParameterExpression target, IEnumerable<ProjectionExpression> knownProjections)
+        {
+            return new MemberAccessExpressionReplacer(target, 
+                knownProjections.ToDictionary(f => f.TargetMember, f => f.Expression));
+        }
+
         private CargoQueryExpression ProcessSelectCall(CargoQueryExpression source, LambdaExpression selector)
         {
             Debug.Assert(selector.Parameters.Count == 1);
-            var pItem = selector.Parameters[0];
             if (selector.Body == source)
                 return source;
 
             // TODO table joins
-            var fieldRefReplacer = new MemberAccessExpressionReplacer(pItem, source.ClrMemberMapping);
+            var fieldRefReplacer = CreateModelMemberAccessReplacer(selector.Parameters[0], source.Fields);
             // Process `new { X = item.A, Y = item.B }`
             if (selector.Body is NewExpression newExpr)
             {
                 Debug.Assert(newExpr.Members != null);
                 Debug.Assert(newExpr.Members.Count == newExpr.Arguments.Count);
                 var fields = newExpr.Members.Zip(newExpr.Arguments, (m, a) =>
-                    new ProjectionExpression(fieldRefReplacer.VisitAndConvert(a, "Select"), m.Name)
+                    new ProjectionExpression(fieldRefReplacer.VisitAndConvert(a, "Select"), ProjectionExpression.MangleAlias(m.Name), m)
                 ).ToImmutableList();
                 return source.Project(fields, selector.ReturnType);
             }
@@ -94,9 +99,8 @@ namespace WikiClientLibrary.Cargo.Linq.ExpressionVisitors
             {
                 throw new NotSupportedException(".Where after .Take or .Skip is not translatable.");
             }
-
-            var pItem = predicate.Parameters[0];
-            var fieldRefReplacer = new MemberAccessExpressionReplacer(pItem, source.ClrMemberMapping);
+            
+            var fieldRefReplacer = CreateModelMemberAccessReplacer(predicate.Parameters[0], source.Fields);
             return source.Filter(fieldRefReplacer.VisitAndConvert(predicate.Body, "Where"));
         }
 
@@ -116,15 +120,13 @@ namespace WikiClientLibrary.Cargo.Linq.ExpressionVisitors
 
         private CargoQueryExpression ProcessOrderByCall(CargoQueryExpression source, LambdaExpression keySelector, bool descending)
         {
-            var pItem = keySelector.Parameters[0];
-            var fieldRefReplacer = new MemberAccessExpressionReplacer(pItem, source.ClrMemberMapping);
+            var fieldRefReplacer = CreateModelMemberAccessReplacer(keySelector.Parameters[0], source.Fields);
             return source.SetOrderBy(fieldRefReplacer.VisitAndConvert(keySelector.Body, "OrderBy"), descending);
         }
 
         private CargoQueryExpression ProcessThenOrderByCall(CargoQueryExpression source, LambdaExpression keySelector, bool descending)
         {
-            var pItem = keySelector.Parameters[0];
-            var fieldRefReplacer = new MemberAccessExpressionReplacer(pItem, source.ClrMemberMapping);
+            var fieldRefReplacer = CreateModelMemberAccessReplacer(keySelector.Parameters[0], source.Fields);
             return source.SetOrderBy(fieldRefReplacer.VisitAndConvert(keySelector.Body, "ThenOrderBy"), descending);
         }
 

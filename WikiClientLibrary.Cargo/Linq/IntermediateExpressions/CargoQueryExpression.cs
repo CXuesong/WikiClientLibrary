@@ -16,7 +16,9 @@ namespace WikiClientLibrary.Cargo.Linq.IntermediateExpressions
     internal sealed class CargoQueryExpression : CargoSqlExpression
     {
 
-        public CargoQueryExpression()
+        private IReadOnlyDictionary<string, ProjectionExpression> aliasProjectionDict;
+
+        private CargoQueryExpression()
         {
         }
 
@@ -29,10 +31,10 @@ namespace WikiClientLibrary.Cargo.Linq.IntermediateExpressions
             const string tableAlias = "T0";
             RecordType = model.ClrType;
             Fields = model.Properties.Select(p =>
-                new ProjectionExpression(new FieldRefExpression(tableAlias, p), p.Name)
+                new ProjectionExpression(new FieldRefExpression(tableAlias, p), ProjectionExpression.MangleAlias(p.Name), p.ClrProperty)
             ).ToImmutableList();
             Tables = ImmutableList.Create(new TableProjectionExpression(model, tableAlias));
-            ClrMemberMapping = Fields.ToDictionary(f => f.Alias, f => f.Expression);
+            aliasProjectionDict = Fields.ToDictionary(f => f.Alias);
         }
 
         /// <inheritdoc />
@@ -59,9 +61,11 @@ namespace WikiClientLibrary.Cargo.Linq.IntermediateExpressions
         public int? Limit { get; private set; }
 
         /// <summary>
-        /// Maps field alias into <see cref="FieldRefExpression"/>.
+        /// Gets field projection by projection alias.
         /// </summary>
-        public IReadOnlyDictionary<string, Expression> ClrMemberMapping { get; private set; }
+        public ProjectionExpression GetProjectionByAlias(string alias) => aliasProjectionDict[alias];
+
+        public ProjectionExpression TryGetProjectionByAlias(string alias) => aliasProjectionDict.TryGetValue(alias, out var p) ? p : null;
 
         public CargoQueryExpression Project(IImmutableList<ProjectionExpression> fields, Type recordType)
         {
@@ -70,7 +74,7 @@ namespace WikiClientLibrary.Cargo.Linq.IntermediateExpressions
             var newInst = (CargoQueryExpression)MemberwiseClone();
             newInst.RecordType = recordType;
             newInst.Fields = fields;
-            newInst.ClrMemberMapping = fields.ToDictionary(f => f.Alias, f => f.Expression);
+            newInst.aliasProjectionDict = fields.ToDictionary(f => f.Alias);
             return newInst;
         }
 

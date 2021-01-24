@@ -185,7 +185,7 @@ namespace WikiClientLibrary.Cargo.Linq.ExpressionVisitors
                 case ProjectionExpression proj:
                     Visit(proj.Expression);
                     _builder.Append(" = ");
-                    _builder.Append(ProjectionExpression.MangleAlias(proj.Alias));
+                    _builder.Append(proj.Alias);
                     break;
                 case TableProjectionExpression tp:
                     _builder.Append(tp.TableName);

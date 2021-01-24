@@ -15,7 +15,7 @@ namespace WikiClientLibrary.Cargo.Linq.ExpressionVisitors
     public class MemberAccessExpressionReplacer : ExpressionVisitor
     {
 
-        public MemberAccessExpressionReplacer(ParameterExpression target, IReadOnlyDictionary<string, Expression> memberReplacements)
+        public MemberAccessExpressionReplacer(ParameterExpression target, IReadOnlyDictionary<MemberInfo, Expression> memberReplacements)
         {
             Debug.Assert(target != null);
             Target = target;
@@ -24,15 +24,14 @@ namespace WikiClientLibrary.Cargo.Linq.ExpressionVisitors
 
         public ParameterExpression Target { get; }
 
-        public IReadOnlyDictionary<string, Expression> MemberReplacements { get; }
+        public IReadOnlyDictionary<MemberInfo, Expression> MemberReplacements { get; }
 
         /// <inheritdoc />
         protected override Expression VisitMember(MemberExpression node)
         {
             if (node.Expression == Target)
             {
-                var columnName = CargoModelUtility.ColumnNameFromProperty(node.Member);
-                return MemberReplacements[columnName];
+                return MemberReplacements[node.Member];
             }
             return base.VisitMember(node);
         }

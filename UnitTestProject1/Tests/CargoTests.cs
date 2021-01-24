@@ -102,7 +102,7 @@ namespace WikiClientLibrary.Tests.UnitTestProject1.Tests
                 .Take(10);
             // Call .AsAsyncEnumerable to ensure we use async Linq call.
             var records = await q.AsAsyncEnumerable().ToListAsync();
-            ShallowTrace(records);
+            ShallowTrace(records, 3);
             // Left some buffer as server time may deviate from the client time.
             var expectedMinReleaseDate = DateTime.Now - TimeSpan.FromDays(backtrackDays + 1);
             Assert.All(records, r => Assert.True(r.ReleaseDate == null || r.ReleaseDate > expectedMinReleaseDate));
@@ -131,7 +131,7 @@ namespace WikiClientLibrary.Tests.UnitTestProject1.Tests
 
             public string Champion { get; set; }
 
-            public int RP { get; set; }
+            public int? RP { get; set; }
 
             public DateTime? ReleaseDate { get; set; }
 

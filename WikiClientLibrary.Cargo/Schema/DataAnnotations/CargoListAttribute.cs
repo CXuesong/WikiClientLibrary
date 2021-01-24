@@ -16,9 +16,11 @@ namespace WikiClientLibrary.Cargo.Schema.DataAnnotations
     public class CargoListAttribute : Attribute
     {
 
+        public const string DefaultDelimiter = ",";
+
         /// <summary>Initialize the attribute with comma (,) as list separator.</summary>
         public CargoListAttribute()
-            : this(",")
+            : this(DefaultDelimiter)
         {
         }
 

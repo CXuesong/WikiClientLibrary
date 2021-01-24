@@ -20,14 +20,17 @@ namespace WikiClientLibrary.Cargo.Schema
         {
             isCollection = false;
             isNullable = !clrType.GetTypeInfo().IsValueType;
+            {
+                var elementType = CargoModelUtility.GetCollectionElementType(clrType);
+                if (elementType != null)
+                {
+                    isCollection = true;
+                    clrType = elementType;
+                }
+            }
             if (clrType.IsConstructedGenericType)
             {
                 var genDef = clrType.GetGenericTypeDefinition();
-                if (genDef == typeof(ICollection<>) || genDef == typeof(IList<>))
-                {
-                    isCollection = true;
-                    clrType = clrType.GenericTypeArguments[0];
-                }
                 if (genDef == typeof(Nullable<>))
                 {
                     // Nullable<> is value type, but it's nullable.
