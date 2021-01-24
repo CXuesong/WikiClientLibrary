@@ -10,25 +10,34 @@ using WikiClientLibrary.Sites;
 namespace WikiClientLibrary.Cargo.Linq
 {
 
-    public class CargoQueryProvider : IQueryProvider
+    internal class CargoQueryProvider : IQueryProvider
     {
+        private int _PaginationSize = 10;
+        private ICargoRecordConverter _RecordConverter = new CargoRecordConverter();
 
         public CargoQueryProvider(WikiSite wikiSite)
-            : this(wikiSite, 10)
         {
-        }
-
-        public CargoQueryProvider(WikiSite wikiSite, int paginationSize)
-        {
-            if (paginationSize <= 0)
-                throw new ArgumentOutOfRangeException(nameof(paginationSize));
-            PaginationSize = paginationSize;
             WikiSite = wikiSite ?? throw new ArgumentNullException(nameof(wikiSite));
         }
 
         public WikiSite WikiSite { get; }
 
-        public int PaginationSize { get; }
+        public int PaginationSize
+        {
+            get => _PaginationSize;
+            set
+            {
+                if (value <= 0)
+                    throw new ArgumentOutOfRangeException(nameof(value));
+                _PaginationSize = value;
+            }
+        }
+
+        public ICargoRecordConverter RecordConverter
+        {
+            get => _RecordConverter;
+            set => _RecordConverter = value ?? throw new ArgumentNullException(nameof(value));
+        }
 
         /// <inheritdoc />
         public IQueryable CreateQuery(Expression expression)
@@ -48,13 +57,13 @@ namespace WikiClientLibrary.Cargo.Linq
         /// <inheritdoc />
         public object Execute(Expression expression)
         {
-            throw new NotImplementedException();
+            throw new NotSupportedException();
         }
 
         /// <inheritdoc />
         public TResult Execute<TResult>(Expression expression)
         {
-            throw new NotImplementedException();
+            throw new NotSupportedException();
         }
 
     }

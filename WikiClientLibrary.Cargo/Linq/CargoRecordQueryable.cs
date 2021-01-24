@@ -8,13 +8,14 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading;
 using AsyncEnumerableExtensions;
+using Newtonsoft.Json.Linq;
 using WikiClientLibrary.Cargo.Linq.ExpressionVisitors;
 using WikiClientLibrary.Cargo.Linq.IntermediateExpressions;
 
 namespace WikiClientLibrary.Cargo.Linq
 {
 
-    public abstract class CargoRecordQueryable
+    internal abstract class CargoRecordQueryable
     {
 
         internal CargoRecordQueryable(CargoQueryProvider provider, Expression expression, Type elementType)
@@ -53,7 +54,7 @@ namespace WikiClientLibrary.Cargo.Linq
                     Where = cqe.Predicate == null ? null : cb.BuildClause(cqe.Predicate),
                     OrderBy = cqe.OrderBy.Select(f => cb.BuildClause(f)).ToList(),
                     Offset = cqe.Offset,
-                    // We use -1 to let caller know we shouldn't limit record count.
+                    // We use -1 to let caller know this query is not limiting record count.
                     Limit = cqe.Limit ?? -1,
                 };
                 return p;
@@ -63,7 +64,7 @@ namespace WikiClientLibrary.Cargo.Linq
 
     }
 
-    public class CargoRecordQueryable<T> : CargoRecordQueryable, IQueryable<T>, IOrderedQueryable<T>, IAsyncEnumerable<T>
+    internal class CargoRecordQueryable<T> : CargoRecordQueryable, IQueryable<T>, IOrderedQueryable<T>, IAsyncEnumerable<T>
     {
 
         internal CargoRecordQueryable(CargoQueryProvider provider, Expression expression)
@@ -73,28 +74,32 @@ namespace WikiClientLibrary.Cargo.Linq
 
         private IAsyncEnumerable<T> BuildAsyncEnumerable()
         {
-            var p = BuildQueryParameters();
-            var limit = p.Limit;
+            var queryParams = BuildQueryParameters();
+            var limit = queryParams.Limit;
             // Trivial case
             if (limit == 0) return AsyncEnumerable.Empty<T>();
             var paginationSize = Provider.PaginationSize;
             // Restrict Limit to pagination size.
-            if (p.Limit < 0 || p.Limit > paginationSize)
-                p.Limit = paginationSize;
+            if (queryParams.Limit < 0 || queryParams.Limit > paginationSize)
+                queryParams.Limit = paginationSize;
             return AsyncEnumerableFactory.FromAsyncGenerator<T>(async (sink, ct) =>
             {
                 var yieldedCount = 0;
-                p.Offset = 0;
-                while (p.Limit > 0)
+                queryParams.Offset = 0;
+                while (queryParams.Limit > 0)
                 {
-                    var result = await Provider.WikiSite.ExecuteCargoQueryAsync(p, ct);
+                    var result = await Provider.WikiSite.ExecuteCargoQueryAsync(queryParams, ct);
                     // No more record.
                     if (result.Count == 0) return;
-                    await sink.YieldAndWait(result.Select(r => r.ToObject<T>()));
+                    await sink.YieldAndWait(result.Select(r => (T)Provider.RecordConverter.DeserializeRecord(
+                        r.Properties().ToDictionary(
+                            p => ProjectionExpression.UnmangleAlias(p.Name),
+                            p => p.Value
+                        ), typeof(T))));
                     yieldedCount += result.Count;
                     // Prepare for next batch.
-                    p.Offset += result.Count;
-                    p.Limit = limit < 0 ? paginationSize : Math.Min(paginationSize, limit - yieldedCount);
+                    queryParams.Offset += result.Count;
+                    queryParams.Limit = limit < 0 ? paginationSize : Math.Min(paginationSize, limit - yieldedCount);
                 }
             });
         }
