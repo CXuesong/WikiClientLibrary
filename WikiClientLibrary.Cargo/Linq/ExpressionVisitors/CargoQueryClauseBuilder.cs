@@ -101,23 +101,21 @@ namespace WikiClientLibrary.Cargo.Linq.ExpressionVisitors
                     break;
                 case TimeSpan ts:
                     // https://dev.mysql.com/doc/refman/5.6/en/expressions.html#temporal-intervals
-                    _builder.Append("INTERVAL ");
+                    _builder.Append("INTERVAL '");
                     if (ts.Ticks % TimeSpan.TicksPerDay == 0)
                     {
                         _builder.Append(ts.Ticks / TimeSpan.TicksPerDay);
-                        _builder.Append(" DAY");
+                        _builder.Append("' DAY");
                     }
                     else if (ts.Ticks < TimeSpan.TicksPerDay)
                     {
-                        _builder.Append(ts);
-                        _builder.Append(" HOUR_MICROSECOND");
+                        _builder.Append(ts.ToString("hh':'mm':'ss'.'ffffff", CultureInfo.InvariantCulture));
+                        _builder.Append("' HOUR_MICROSECOND");
                     }
                     else
                     {
-                        _builder.Append(ts.Days);
-                        _builder.Append(' ');
-                        _builder.Append(new TimeSpan(ts.Ticks % TimeSpan.TicksPerDay));
-                        _builder.Append(" DAY_MICROSECOND");
+                        _builder.Append(ts.ToString("d' 'hh':'mm':'ss'.'ffffff", CultureInfo.InvariantCulture));
+                        _builder.Append("' DAY_MICROSECOND");
                     }
                     break;
                 default:
