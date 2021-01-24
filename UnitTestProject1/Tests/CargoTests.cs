@@ -106,7 +106,8 @@ namespace WikiClientLibrary.Tests.UnitTestProject1.Tests
             var records = await q.AsAsyncEnumerable().ToListAsync();
             ShallowTrace(records, 3);
             // Left some buffer as server time may deviate from the client time.
-            var expectedMinReleaseDate = DateTime.Now - TimeSpan.FromDays(backtrackDays + 1);
+            var expectedMinReleaseDate = DateTime.UtcNow - TimeSpan.FromDays(backtrackDays + 1);
+            Output.WriteLine("expectedMinReleaseDate = {0:O}", expectedMinReleaseDate);
             Assert.All(records, r => Assert.True(r.ReleaseDate == null || r.ReleaseDate > expectedMinReleaseDate));
         }
 
