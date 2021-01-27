@@ -84,24 +84,8 @@ namespace WikiClientLibrary.Cargo.Linq
                 }
                 return;
             }
-            var nullableUnderlyingType = Nullable.GetUnderlyingType(targetType);
-            if (nullableUnderlyingType != null)
-            {
-                var ifNullLabel = gen.DefineLabel();
-                var endIfLabel = gen.DefineLabel();
-                gen.Emit(OpCodes.Dup);      // JToken value
-                gen.EmitCall(OpCodes.Call, ValueConverters.IsNullableNullMethod, null);
-                gen.Emit(OpCodes.Brtrue_S, ifNullLabel);
 
-                gen.EmitCall(OpCodes.Call, ValueConverters.GetValueDeserializer(targetType), null);
-                gen.Emit(OpCodes.Br, endIfLabel);
-
-                gen.MarkLabel(ifNullLabel);
-                gen.Emit(OpCodes.Pop);      // JToken value
-                gen.Emit(OpCodes.Ldnull);
-                gen.MarkLabel(endIfLabel);
-                return;
-            }
+            // Not emit nullable value deserialization here since it's too tricky to do it right.
             gen.EmitCall(OpCodes.Call, ValueConverters.GetValueDeserializer(targetType), null);
         }
 
@@ -111,10 +95,12 @@ namespace WikiClientLibrary.Cargo.Linq
             if (modelType == null) throw new ArgumentNullException(nameof(modelType));
             if (!cachedDeserializers.TryGetValue(modelType, out var des))
             {
-                var builder = new DynamicMethod(typeof(CargoRecordConverter) + "$DeserializeRecordImpl[" + modelType + "]",
+                var builder = new DynamicMethod(
+                    typeof(CargoRecordConverter) + "$DeserializeRecordImpl[" + modelType + "]",
                     modelType,
                     new[] { typeof(IReadOnlyDictionary<string, JToken>) },
-                    typeof(CargoRecordConverter));
+                    typeof(CargoRecordConverter)
+                );
                 var gen = builder.GetILGenerator();
                 // Find ctor with most parameters.
                 var ctor = modelType.GetTypeInfo().DeclaredConstructors
@@ -171,6 +157,10 @@ namespace WikiClientLibrary.Cargo.Linq
         {
 
             private static readonly MethodInfo deserializeValueMethod = typeof(ValueConverters).GetTypeInfo().GetDeclaredMethod(nameof(DeserializeValue));
+
+            private static readonly MethodInfo deserializeNullableValueMethod =
+                typeof(ValueConverters).GetTypeInfo().GetDeclaredMethod(nameof(DeserializeNullableValue));
+
             public static readonly MethodInfo IsNullableNullMethod = typeof(ValueConverters).GetTypeInfo().GetDeclaredMethod(nameof(IsNullableNull));
             private static readonly Dictionary<Type, MethodInfo> wellKnownValueDeserializers;
 
@@ -189,6 +179,8 @@ namespace WikiClientLibrary.Cargo.Linq
             {
                 if (wellKnownValueDeserializers.TryGetValue(valueType, out var m))
                     return m;
+                var nullableUnderlyingType = Nullable.GetUnderlyingType(valueType);
+                if (nullableUnderlyingType != null) return deserializeNullableValueMethod.MakeGenericMethod(nullableUnderlyingType);
                 return deserializeValueMethod.MakeGenericMethod(valueType);
             }
 
@@ -205,6 +197,12 @@ namespace WikiClientLibrary.Cargo.Linq
                     return s.Length == 0 || s.Equals("null", StringComparison.OrdinalIgnoreCase);
                 }
                 return false;
+            }
+
+            public static T? DeserializeNullableValue<T>(JToken value) where T : struct
+            {
+                if (IsNullableNull(value)) return null;
+                return value.ToObject<T>();
             }
 
             public static string DeserializeString(JToken value) => (string)value;
@@ -235,7 +233,7 @@ namespace WikiClientLibrary.Cargo.Linq
                         return true;
 
                     if (s.Equals("0", StringComparison.OrdinalIgnoreCase)
-                    || s.Equals("false", StringComparison.OrdinalIgnoreCase))
+                        || s.Equals("false", StringComparison.OrdinalIgnoreCase))
                         return false;
 
                     if (int.TryParse(s, NumberStyles.Integer, CultureInfo.InvariantCulture, out var v))
@@ -247,6 +245,23 @@ namespace WikiClientLibrary.Cargo.Linq
             public static DateTime DeserializeDateTime(JToken value) => (DateTime)value;
 
             public static DateTimeOffset DeserializeDateTimeOffset(JToken value) => (DateTimeOffset)value;
+
+            public static int? DeserializeNullableInt32(JToken value) => IsNullableNull(value) ? (int?)null : (int)value;
+
+            public static long? DeserializeNullableInt64(JToken value) => IsNullableNull(value) ? (long?)null : (long)value;
+
+            public static float? DeserializeNullableFloat(JToken value) => IsNullableNull(value) ? (float?)null : (float)value;
+
+            public static double? DeserializeNullableDouble(JToken value) => IsNullableNull(value) ? (double?)null : (double)value;
+
+            public static decimal? DeserializeNullableDecimal(JToken value) => IsNullableNull(value) ? (decimal?)null : (decimal)value;
+
+            public static bool? DeserializeNullableBoolean(JToken value) => IsNullableNull(value) ? (bool?)null : DeserializeBoolean(value);
+
+            public static DateTime? DeserializeNullableDateTime(JToken value) => IsNullableNull(value) ? (DateTime?)null : (DateTime)value;
+
+            public static DateTimeOffset? DeserializeNullableDateTimeOffset(JToken value)
+                => IsNullableNull(value) ? (DateTimeOffset?)null : (DateTimeOffset)value;
 
         }
 
