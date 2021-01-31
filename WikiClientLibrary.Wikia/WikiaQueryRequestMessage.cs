@@ -21,8 +21,6 @@ namespace WikiClientLibrary.Wikia
     public class WikiaQueryRequestMessage : WikiRequestMessage
     {
 
-        private static readonly KeyValuePair<string, object>[] emptyReadonlyFields = { };
-
         private readonly IList<KeyValuePair<string, object>> fields;
         private IList<KeyValuePair<string, object>> readonlyFields;
         private string queryString;
@@ -67,7 +65,7 @@ namespace WikiClientLibrary.Wikia
             if (fieldCollection == null)
             {
                 fields = null;
-                readonlyFields = emptyReadonlyFields;
+                readonlyFields = Array.Empty<KeyValuePair<string, object>>();
             }
             else
             {

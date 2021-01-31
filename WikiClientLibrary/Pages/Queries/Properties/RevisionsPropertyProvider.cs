@@ -91,7 +91,7 @@ namespace WikiClientLibrary.Pages.Queries.Properties
 
         private RevisionsPropertyGroup()
         {
-            _Revisions = new Revision[0];
+            _Revisions = Array.Empty<Revision>();
         }
 
         private RevisionsPropertyGroup(WikiPageStub page, JArray jrevisions)

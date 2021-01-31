@@ -385,7 +385,7 @@ namespace WikiClientLibrary.Wikibase
     public sealed class EntitySiteLink
     {
 
-        private static readonly IReadOnlyList<string> emptyBadges = new ReadOnlyCollection<string>(new string[0]);
+        private static readonly IReadOnlyList<string> emptyBadges = new ReadOnlyCollection<string>(Array.Empty<string>());
 
         public EntitySiteLink(string site, string title) : this(site, title, null, null)
         {

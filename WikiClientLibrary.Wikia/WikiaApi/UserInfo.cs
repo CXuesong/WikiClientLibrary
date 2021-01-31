@@ -10,8 +10,6 @@ namespace WikiClientLibrary.Wikia.WikiaApi
     public class UserInfo
     {
 
-        private static readonly string[] emptyStrings = { };
-
         /// <summary>User ID.</summary>
         [JsonProperty("user_id")]
         public int Id { get; private set; }
@@ -29,7 +27,7 @@ namespace WikiClientLibrary.Wikia.WikiaApi
         public string UserPageUrl { get; private set; }
 
         [JsonProperty("poweruser_types")]
-        public ICollection<string> PowerUserTypes { get; private set; } = emptyStrings;
+        public ICollection<string> PowerUserTypes { get; private set; } = Array.Empty<string>();
 
         /// <summary>The full URL of user's avatar.</summary>
         [JsonProperty("avatar")]

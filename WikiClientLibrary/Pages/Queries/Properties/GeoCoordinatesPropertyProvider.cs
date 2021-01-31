@@ -81,7 +81,6 @@ namespace WikiClientLibrary.Pages.Queries.Properties
     public class GeoCoordinatesPropertyGroup : WikiPagePropertyGroup
     {
         private static readonly GeoCoordinatesPropertyGroup Empty = new GeoCoordinatesPropertyGroup();
-        private static readonly GeoCoordinate[] emptyCoordinates = { };
 
         private IReadOnlyCollection<GeoCoordinate> _Coordinates;
 
@@ -96,7 +95,7 @@ namespace WikiClientLibrary.Pages.Queries.Properties
         {
             PrimaryCoordinate = GeoCoordinate.Empty;
             PrimaryDistance = 0;
-            _Coordinates = emptyCoordinates;
+            _Coordinates = Array.Empty<GeoCoordinate>();
         }
 
         private GeoCoordinatesPropertyGroup(JArray jcoordinates)
@@ -132,7 +131,7 @@ namespace WikiClientLibrary.Pages.Queries.Properties
             get
             {
                 if (_Coordinates != null) return _Coordinates;
-                if (PrimaryCoordinate.IsEmpty) _Coordinates = emptyCoordinates;
+                if (PrimaryCoordinate.IsEmpty) _Coordinates = Array.Empty<GeoCoordinate>();
                 _Coordinates = new ReadOnlyCollection<GeoCoordinate>(new[] { PrimaryCoordinate });
                 return _Coordinates;
             }

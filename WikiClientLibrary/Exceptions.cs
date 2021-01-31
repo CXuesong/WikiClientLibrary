@@ -140,9 +140,6 @@ namespace WikiClientLibrary
     /// </remarks>
     public class UnauthorizedOperationException : OperationFailedException
     {
-
-        private readonly string[] emptyStrings = { };
-
         public UnauthorizedOperationException(string errorCode, string message)
             : this(errorCode, message, null)
         {
@@ -151,7 +148,7 @@ namespace WikiClientLibrary
         public UnauthorizedOperationException(string errorCode, string message, IReadOnlyCollection<string> desiredPermissions)
             : base(errorCode, message)
         {
-            DesiredPermissions = desiredPermissions ?? emptyStrings;
+            DesiredPermissions = desiredPermissions ?? Array.Empty<string>();
         }
 
         public UnauthorizedOperationException(string message, Exception innerException)

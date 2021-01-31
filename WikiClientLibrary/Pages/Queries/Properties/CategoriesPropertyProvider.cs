@@ -103,7 +103,7 @@ namespace WikiClientLibrary.Pages.Queries.Properties
 
         private CategoriesPropertyGroup()
         {
-            Categories = new WikiPageCategoryInfo[0];
+            Categories = Array.Empty<WikiPageCategoryInfo>();
         }
 
         private CategoriesPropertyGroup(JArray jcats)

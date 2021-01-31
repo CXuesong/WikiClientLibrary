@@ -84,7 +84,6 @@ namespace WikiClientLibrary.Pages
         private List<IWikiPagePropertyGroup> propertyGroups;
 
         private IReadOnlyCollection<IWikiPagePropertyGroup> readonlyPropertyGroups;
-        private static readonly IWikiPagePropertyGroup[] emptyPropertyGroups = { };
         private PageInfoPropertyGroup pageInfo;
 
         /// <summary>
@@ -128,7 +127,7 @@ namespace WikiClientLibrary.Pages
             get
             {
                 if (readonlyPropertyGroups != null) return readonlyPropertyGroups;
-                if (propertyGroups == null) return emptyPropertyGroups;
+                if (propertyGroups == null) return Array.Empty<IWikiPagePropertyGroup>();
                 var s = new ReadOnlyCollection<IWikiPagePropertyGroup>(propertyGroups);
                 Volatile.Write(ref readonlyPropertyGroups, s);
                 return s;
@@ -271,7 +270,7 @@ namespace WikiClientLibrary.Pages
         /// OR an empty sequence if there's no redirect resolved, or redirect resolution
         /// has been disabled.
         /// </value>
-        public IList<string> RedirectPath { get; internal set; } = EmptyStrings;
+        public IList<string> RedirectPath { get; internal set; } = Array.Empty<string>();
 
         /// <summary>
         /// Tries to get the final target of the redirect page.
@@ -297,10 +296,6 @@ namespace WikiClientLibrary.Pages
         #endregion
 
         #region Query
-
-        private static readonly WikiPage[] EmptyPages = new WikiPage[0];
-
-        private static readonly string[] EmptyStrings = new string[0];
 
         protected void AssertExists()
         {

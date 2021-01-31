@@ -113,8 +113,6 @@ namespace WikiClientLibrary.Wikia.Sites
     public class NavigationItem
     {
 
-        private static readonly NavigationItem[] emptyChildren = { };
-
         [JsonProperty("text")]
         public string Text { get; private set; }
 
@@ -131,7 +129,7 @@ namespace WikiClientLibrary.Wikia.Sites
         /// Children collection containing article or special pages data.
         /// </summary>
         [JsonProperty("children")]
-        public IList<NavigationItem> Children { get; private set; } = emptyChildren;
+        public IList<NavigationItem> Children { get; private set; } = Array.Empty<NavigationItem>();
 
         /// <inheritdoc />
         public override string ToString() => Text + "(" + Url + ")";

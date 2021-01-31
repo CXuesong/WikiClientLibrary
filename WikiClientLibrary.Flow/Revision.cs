@@ -19,8 +19,6 @@ namespace WikiClientLibrary.Flow
     public class Revision
     {
 
-        private static readonly IList<string> emptyStrings = new string[] { };
-
         private static readonly IDictionary<string, FlowLink> emptyLinks = new ReadOnlyDictionary<string, FlowLink>(
             new Dictionary<string, FlowLink>());
 
@@ -126,7 +124,7 @@ namespace WikiClientLibrary.Flow
         /// Workflow ID of the replies.
         /// </summary>
         [JsonProperty("replies")]
-        public IList<string> ReplyIds { get; private set; } = emptyStrings;
+        public IList<string> ReplyIds { get; private set; } = (IList<string>) Array.Empty<string>();
 
         /// <summary>
         /// HTML links to show different views.

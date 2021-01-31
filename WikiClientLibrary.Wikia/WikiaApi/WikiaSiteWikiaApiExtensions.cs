@@ -116,8 +116,6 @@ namespace WikiClientLibrary.Wikia.WikiaApi
             return FetchRelatedPagesAsync(site, pageId, maxCount, CancellationToken.None);
         }
 
-        private static readonly RelatedPageItem[] emptyRelatedPages = { };
-
         /// <summary>
         /// Asynchronously fetches the specified page's related pages.
         /// </summary>
@@ -141,7 +139,7 @@ namespace WikiClientLibrary.Wikia.WikiaApi
                     cancellationToken);
                 var jitems = jresult["items"][pageId.ToString(CultureInfo.InvariantCulture)];
                 if (jitems == null) jitems = ((JProperty)jresult["items"].First)?.Value;
-                if (jitems == null || !jitems.HasValues) return emptyRelatedPages;
+                if (jitems == null || !jitems.HasValues) return Array.Empty<RelatedPageItem>();
                 var items = jitems.ToObject<IList<RelatedPageItem>>();
                 var basePath = (string)jresult["basepath"];
                 if (basePath != null)

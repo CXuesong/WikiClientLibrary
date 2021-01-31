@@ -23,8 +23,6 @@ namespace WikiClientLibrary.Wikia.Discussions
     public class Post
     {
 
-        private static readonly Post[] emptyPosts = { };
-
         /// <summary>
         /// Initializes a new instance of <see cref="Post"/>.
         /// </summary>
@@ -79,7 +77,7 @@ namespace WikiClientLibrary.Wikia.Discussions
         public Revision LastRevision { get; private set; }
 
         /// <summary>Gets the replies of the post.</summary>
-        public IReadOnlyList<Post> Replies { get; internal set; } = emptyPosts;
+        public IReadOnlyList<Post> Replies { get; internal set; } = Array.Empty<Post>();
 
         /// <inheritdoc cref="RefreshAsync(PostQueryOptions,CancellationToken)"/>
         /// <seealso cref="DiscussionsExtensions.RefreshAsync(IEnumerable{Post})"/>

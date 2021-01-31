@@ -63,7 +63,7 @@ namespace WikiClientLibrary.Flow
         /// <summary>
         /// Gets the list of posts, starting from the OP's first post.
         /// </summary>
-        public IList<Post> Posts { get; private set; } = Post.EmptyPosts;
+        public IList<Post> Posts { get; private set; } = Array.Empty<Post>();
         
         /// <summary>
         /// Topic display title.
@@ -263,7 +263,7 @@ namespace WikiClientLibrary.Flow
             TopicTitleRevision = rev;
             if (rev.ReplyIds == null || rev.ReplyIds.Count == 0)
             {
-                Posts = Post.EmptyPosts;
+                Posts = Array.Empty<Post>();
             }
             else
             {

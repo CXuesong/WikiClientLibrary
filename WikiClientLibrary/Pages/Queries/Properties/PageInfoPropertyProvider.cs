@@ -33,9 +33,6 @@ namespace WikiClientLibrary.Pages.Queries.Properties
     public class PageInfoPropertyGroup : WikiPagePropertyGroup
     {
 
-        private static readonly string[] emptyStrings = new string[0];
-        private static readonly ProtectionInfo[] emptyProtections = new ProtectionInfo[0];
-
         protected internal PageInfoPropertyGroup(JObject jPage)
         {
             ContentModel = (string)jPage["contentmodel"];
@@ -59,11 +56,11 @@ namespace WikiClientLibrary.Pages.Queries.Properties
                 if (jPage["protection"] != null)
                     Protections = jPage["protection"].HasValues
                         ? jPage["protection"].ToObject<IReadOnlyCollection<ProtectionInfo>>(Utility.WikiJsonSerializer)
-                        : emptyProtections;
+                        : Array.Empty<ProtectionInfo>();
                 if (jPage["restrictiontypes"] != null)
                     RestrictionTypes = jPage["restrictiontypes"].HasValues
                         ? jPage["restrictiontypes"].ToObject<IReadOnlyCollection<string>>(Utility.WikiJsonSerializer)
-                        : emptyStrings;
+                        : Array.Empty<string>();
             }
         }
 

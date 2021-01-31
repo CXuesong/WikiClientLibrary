@@ -143,7 +143,7 @@ namespace WikiClientLibrary.Pages.Queries.Properties
     public class LanguageLinksPropertyGroup : WikiPagePropertyGroup
     {
 
-        private static readonly LanguageLinksPropertyGroup Empty = new LanguageLinksPropertyGroup(new LanguageLinkInfo[0]);
+        private static readonly LanguageLinksPropertyGroup Empty = new LanguageLinksPropertyGroup(Array.Empty<LanguageLinkInfo>());
 
         internal static LanguageLinksPropertyGroup Create(JToken jpage)
         {

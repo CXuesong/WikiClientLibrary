@@ -18,8 +18,6 @@ namespace WikiClientLibrary.Flow
     public sealed class Post
     {
 
-        internal static readonly IList<Post> EmptyPosts = new Post[] { };
-
         /// <summary>
         /// Initializes a new <see cref="Post"/> instance from MW site and post workflow ID.
         /// </summary>
@@ -57,7 +55,7 @@ namespace WikiClientLibrary.Flow
         /// <summary>
         /// Gets a read-only view of the replies.
         /// </summary>
-        public IList<Post> Replies { get; private set; } = EmptyPosts;
+        public IList<Post> Replies { get; private set; } = (IList<Post>) Array.Empty<Post>();
 
         /// <summary>
         /// Post content.
@@ -147,7 +145,7 @@ namespace WikiClientLibrary.Flow
             LastRevision = rev;
             if (rev.ReplyIds == null || rev.ReplyIds.Count == 0)
             {
-                Replies = EmptyPosts;
+                Replies = Array.Empty<Post>();
             }
             else
             {

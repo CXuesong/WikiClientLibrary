@@ -21,7 +21,6 @@ namespace WikiClientLibrary.Wikibase.Infrastructures
 
         private readonly Dictionary<TKey, Slot> dict;
         private bool _IsReadOnly;
-        private static readonly TItem[] emptyItems = { };
 
         public UnorderedKeyedMultiCollection() : this(EqualityComparer<TKey>.Default)
         {
@@ -75,7 +74,7 @@ namespace WikiClientLibrary.Wikibase.Infrastructures
             {
                 if (key == null) throw new ArgumentNullException(nameof(key));
                 if (dict.TryGetValue(key, out var slot)) return slot.ReadOnlyItems;
-                return emptyItems;
+                return Array.Empty<TItem>();
             }
         }
 

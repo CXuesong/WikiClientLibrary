@@ -11,8 +11,6 @@ namespace WikiClientLibrary.AbuseFilters
     public sealed class AbuseFilter
     {
 
-        public static readonly string[] emptyActions = { };
-        
         [JsonProperty]
         public int Id { get; private set; }
 
@@ -22,7 +20,7 @@ namespace WikiClientLibrary.AbuseFilters
         [JsonProperty]
         public string Pattern { get; set; }
 
-        public IReadOnlyCollection<string> Actions { get; private set; } = emptyActions;
+        public IReadOnlyCollection<string> Actions { get; private set; } = Array.Empty<string>();
 
         [JsonProperty("actions")]
         private string RawActions
@@ -30,8 +28,8 @@ namespace WikiClientLibrary.AbuseFilters
             set
             {
                 Actions = string.IsNullOrEmpty(value)
-                    ? emptyActions
-                    : (IReadOnlyCollection<string>)new ReadOnlyCollection<string>(value.Split(','));
+                    ? Array.Empty<string>()
+                    : new ReadOnlyCollection<string>(value.Split(','));
             }
         }
 
