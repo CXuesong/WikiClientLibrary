@@ -155,7 +155,7 @@ namespace WikiClientLibrary.Client
             if (jmessages != null && jmessages.Count > 1 && jmessages[0]["html"] != null)
             {
                 // jmessages[0] usually is the same as errorMessage
-                errorMessage = string.Join(" ", jmessages.Select(m => (string)m["html"]["*"]));
+                fullMessage = string.Join(" ", jmessages.Select(m => (string)m["html"]["*"]));
             }
             switch (errorCode)
             {
