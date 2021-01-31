@@ -52,7 +52,7 @@ namespace WikiClientLibrary.Wikibase
             {
                 {
                     "redirects",
-                    (options & EntityQueryOptions.SupressRedirects) == EntityQueryOptions.SupressRedirects
+                    (options & EntityQueryOptions.SuppressRedirects) == EntityQueryOptions.SuppressRedirects
                         ? "no"
                         : "yes"
                 },

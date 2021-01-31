@@ -29,7 +29,7 @@ namespace WikiClientLibrary.AbuseFilters
             {
                 Actions = string.IsNullOrEmpty(value)
                     ? Array.Empty<string>()
-                    : new ReadOnlyCollection<string>(value.Split(','));
+                    : (IReadOnlyCollection<string>)new ReadOnlyCollection<string>(value.Split(','));
             }
         }
 

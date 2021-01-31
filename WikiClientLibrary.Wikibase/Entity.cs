@@ -220,7 +220,7 @@ namespace WikiClientLibrary.Wikibase
             var extensionData = entity.ExtensionData ?? emptyExtensionData;
             var id = entity.Id;
             Debug.Assert(id != null);
-            if ((options & EntityQueryOptions.SupressRedirects) != EntityQueryOptions.SupressRedirects
+            if ((options & EntityQueryOptions.SuppressRedirects) != EntityQueryOptions.SuppressRedirects
                 && Id != null && Id != id)
             {
                 // The page has been overwritten, or deleted.
@@ -376,7 +376,7 @@ namespace WikiClientLibrary.Wikibase
         /// <summary>
         /// Do not resolve redirect. Treat them like deleted entities.
         /// </summary>
-        SupressRedirects = 0x100,
+        SuppressRedirects = 0x100,
     }
 
     /// <summary>
