@@ -1,21 +1,17 @@
-﻿<Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
-    <TargetFramework>net48</TargetFramework>
+    <TargetFramework>net5.0-windows</TargetFramework>
     <UseWPF>true</UseWPF>
   </PropertyGroup>
+
   <ItemGroup>
     <EmbeddedResource Include="WikiPageTemplate.html" />
   </ItemGroup>
+
   <ItemGroup>
-    <ProjectReference Include="..\WikiClientLibrary\WikiClientLibrary.csproj">
-      <Project>{15E595DB-4FF0-4722-AC16-1881C6B811CC}</Project>
-      <Name>WikiClientLibrary</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <PackageReference Include="Microsoft.CSharp" Version="4.6.0" />
+    <ProjectReference Include="..\WikiClientLibrary\WikiClientLibrary.csproj" />
   </ItemGroup>
 
 </Project>

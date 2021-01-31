@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <Import Project="../WikiClientLibrary.Commons/WikiClientLibrary.Packages.props" />
+
   <PropertyGroup>
-    <TargetFrameworks>netstandard1.3;netstandard2.1</TargetFrameworks>
     <AssemblyName>WikiClientLibrary.Wikia</AssemblyName>
     <PackageId>CXuesong.MW.WikiClientLibrary.Wikia</PackageId>
     <Description>

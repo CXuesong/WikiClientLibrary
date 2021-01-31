@@ -21,14 +21,8 @@ namespace WikiClientLibrary.Client
     public class WikiClient : IWikiClient, IWikiClientLoggable, IDisposable
     {
 
-#if NET45
-        private const string targetFramework = ".NET Framework 4.5";
-#elif NETSTANDARD1_1
-        private const string targetFramework = ".NET Standard 1.1";
-#elif NETSTANDARD1_3
-        private const string targetFramework = ".NET Standard 1.3";
-#elif NETSTANDARD2_0
-        private const string targetFramework = ".NET Standard 2.0";
+#if NET5_0
+        private const string targetFramework = ".NET 5.0";
 #elif NETSTANDARD2_1
         private const string targetFramework = ".NET Standard 2.1";
 #endif

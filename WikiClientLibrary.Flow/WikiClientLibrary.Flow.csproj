@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <Import Project="../WikiClientLibrary.Commons/WikiClientLibrary.Packages.props" />
+
   <PropertyGroup>
-    <TargetFrameworks>netstandard1.1;netstandard2.1</TargetFrameworks>
     <AssemblyName>WikiClientLibrary.Flow</AssemblyName>
     <PackageId>CXuesong.MW.WikiClientLibrary.Flow</PackageId>
     <Description>
