@@ -175,7 +175,7 @@ namespace WikiClientLibrary.Client
                             content.Add(new StringContent(s), p.Key);
                             break;
                         case Stream stream:
-                            content.Add(new KeepAlivingStreamContent(stream), p.Key, "dummy");
+                            content.Add(new StreamContent(stream), p.Key, "dummy");
                             break;
                         case null:
                             // Ignore null entries.
