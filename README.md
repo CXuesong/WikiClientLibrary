@@ -13,9 +13,10 @@ Install-Package CXuesong.MW.WikiClientLibrary
 dotnet add package CXuesong.MW.WikiClientLibrary
 ```
 
-| Package                                  | Status                                   |
-| ---------------------------------------- | ---------------------------------------- |
+| Package                                                      | Status                                                       |
+| ------------------------------------------------------------ | ------------------------------------------------------------ |
 | [CXuesong.MW.WikiClientLibrary](https://www.nuget.org/packages/CXuesong.MW.WikiClientLibrary) | ![NuGet version (CXuesong.MW.WikiClientLibrary)](https://img.shields.io/nuget/vpre/CXuesong.MW.WikiClientLibrary.svg?style=flat-square) ![NuGet version (CXuesong.MW.WikiClientLibrary)](https://img.shields.io/nuget/dt/CXuesong.MW.WikiClientLibrary.svg?style=flat-square) |
+| [CXuesong.MW.WikiClientLibrary.Cargo](https://www.nuget.org/packages/CXuesong.MW.WikiClientLibrary.Cargo) | ![NuGet version (CXuesong.MW.WikiClientLibrary.Cargo)](https://img.shields.io/nuget/vpre/CXuesong.MW.WikiClientLibrary.Cargo.svg?style=flat-square)![NuGet version (CXuesong.MW.WikiClientLibrary)](https://img.shields.io/nuget/dt/CXuesong.MW.WikiClientLibrary.Cargo.svg?style=flat-square) |
 | [CXuesong.MW.WikiClientLibrary.Flow](https://www.nuget.org/packages/CXuesong.MW.WikiClientLibrary.Flow) | ![NuGet version (CXuesong.MW.WikiClientLibrary.Flow)](https://img.shields.io/nuget/vpre/CXuesong.MW.WikiClientLibrary.Flow.svg?style=flat-square) ![NuGet version (CXuesong.MW.WikiClientLibrary.Flow)](https://img.shields.io/nuget/dt/CXuesong.MW.WikiClientLibrary.Flow.svg?style=flat-square) |
 | [CXuesong.MW.WikiClientLibrary.Wikia](https://www.nuget.org/packages/CXuesong.MW.WikiClientLibrary.Wikia) | ![NuGet version (CXuesong.MW.WikiClientLibrary.Wikia)](https://img.shields.io/nuget/vpre/CXuesong.MW.WikiClientLibrary.Wikia.svg?style=flat-square) ![NuGet version (CXuesong.MW.WikiClientLibrary.Wikia)](https://img.shields.io/nuget/dt/CXuesong.MW.WikiClientLibrary.Wikia.svg?style=flat-square) |
 | [CXuesong.MW.WikiClientLibrary.Wikibase](https://www.nuget.org/packages/CXuesong.MW.WikiClientLibrary.Wikibase) | ![NuGet version (CXuesong.MW.WikiClientLibrary.Wikibase)](https://img.shields.io/nuget/vpre/CXuesong.MW.WikiClientLibrary.Wikibase.svg?style=flat-square) ![NuGet version (CXuesong.MW.WikiClientLibrary.Wikibase)](https://img.shields.io/nuget/dt/CXuesong.MW.WikiClientLibrary.Wikibase.svg?style=flat-square) |
