@@ -1,0 +1,973 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<doc>
+  <assembly>
+    <name>WikiClientLibrary.Cargo</name>
+  </assembly>
+  <members>
+    <member name="T:WikiClientLibrary.Cargo.CargoQueryParameters">
+      <summary>
+        <markup>
+          <include item="SMCMissingTag">
+            <parameter>summary</parameter>
+            <parameter>T:WikiClientLibrary.Cargo.CargoQueryParameters</parameter>
+          </include>
+        </markup>
+      </summary>
+    </member>
+    <member name="M:WikiClientLibrary.Cargo.CargoQueryParameters.#ctor">
+      <summary>
+        <markup>
+          <include item="SMCAutoDocConstructor">
+            <parameter>WikiClientLibrary.Cargo.CargoQueryParameters</parameter>
+          </include>
+        </markup>
+      </summary>
+    </member>
+    <member name="P:WikiClientLibrary.Cargo.CargoQueryParameters.Fields">
+      <summary>The table field(s) to retrieve.</summary>
+    </member>
+    <member name="P:WikiClientLibrary.Cargo.CargoQueryParameters.GroupBy">
+      <summary>Field(s) on which to group results, corresponding to an SQL GROUP BY clause.</summary>
+    </member>
+    <member name="P:WikiClientLibrary.Cargo.CargoQueryParameters.Having">
+      <summary>Conditions for grouped values, corresponding to an SQL HAVING clause.</summary>
+    </member>
+    <member name="P:WikiClientLibrary.Cargo.CargoQueryParameters.JoinOn">
+      <summary>Conditions for joining multiple tables (LEFT OUTER JOIN), corresponding to an SQL JOIN ON clause.</summary>
+    </member>
+    <member name="P:WikiClientLibrary.Cargo.CargoQueryParameters.Limit">
+      <summary>A limit on the number of results returned.</summary>
+    </member>
+    <member name="P:WikiClientLibrary.Cargo.CargoQueryParameters.Offset">
+      <summary>The query offset.</summary>
+    </member>
+    <member name="P:WikiClientLibrary.Cargo.CargoQueryParameters.OrderBy">
+      <summary>The order of results, corresponding to an SQL ORDER BY clause.</summary>
+    </member>
+    <member name="P:WikiClientLibrary.Cargo.CargoQueryParameters.Tables">
+      <summary>The Cargo database table or tables on which to search.</summary>
+    </member>
+    <member name="P:WikiClientLibrary.Cargo.CargoQueryParameters.Where">
+      <summary>The conditions for the query, corresponding to an SQL WHERE clause.</summary>
+    </member>
+    <member name="T:WikiClientLibrary.Cargo.CargoWikiSiteExtensions">
+      <summary>
+            Extension methods for MediaWiki sites with <a href="https://www.mediawiki.org/wiki/Special:MyLanguage/Extension:Cargo">Cargo extension</a> installed.
+            </summary>
+    </member>
+    <member name="M:WikiClientLibrary.Cargo.CargoWikiSiteExtensions.ExecuteCargoQueryAsync(WikiClientLibrary.Sites.WikiSite,WikiClientLibrary.Cargo.CargoQueryParameters)">
+      <summary>
+            Executes a Cargo query and retrieves the response rows.
+            </summary>
+      <param name="site">a MediaWiki site with Cargo extension installed.</param>
+      <param name="queryParameters">query parameters.</param>
+      <param name="cancellationToken">a token used to cancel the operation.</param>
+      <returns>a list of rows, each item is a JSON object with field name as key.</returns>
+      <exception cref="T:System.ArgumentNullException">
+        <paramref name="site" /> or <paramref name="queryParameters" /> is <c>null</c>.</exception>
+      <exception cref="T:System.ArgumentOutOfRangeException">
+        <paramref name="queryParameters" />.<see cref="P:WikiClientLibrary.Cargo.CargoQueryParameters.Limit" /> is 0 or negative.
+            - or -
+            <paramref name="queryParameters" />.<see cref="P:WikiClientLibrary.Cargo.CargoQueryParameters.Offset" /> is negative.
+            </exception>
+      <exception cref="T:WikiClientLibrary.MediaWikiRemoteException">
+            When query execution failed, Cargo usually fails with <c>internal_api_error_MWException</c> error.
+            You should observe <c>"MWException"</c> as the value of <see cref="P:WikiClientLibrary.MediaWikiRemoteException.ErrorClass" />.
+            </exception>
+    </member>
+    <member name="M:WikiClientLibrary.Cargo.CargoWikiSiteExtensions.ExecuteCargoQueryAsync(WikiClientLibrary.Sites.WikiSite,WikiClientLibrary.Cargo.CargoQueryParameters,System.Threading.CancellationToken)">
+      <summary>
+            Executes a Cargo query and retrieves the response rows.
+            </summary>
+      <param name="site">a MediaWiki site with Cargo extension installed.</param>
+      <param name="queryParameters">query parameters.</param>
+      <param name="cancellationToken">a token used to cancel the operation.</param>
+      <returns>a list of rows, each item is a JSON object with field name as key.</returns>
+      <exception cref="T:System.ArgumentNullException">
+        <paramref name="site" /> or <paramref name="queryParameters" /> is <c>null</c>.</exception>
+      <exception cref="T:System.ArgumentOutOfRangeException">
+        <paramref name="queryParameters" />.<see cref="P:WikiClientLibrary.Cargo.CargoQueryParameters.Limit" /> is 0 or negative.
+            - or -
+            <paramref name="queryParameters" />.<see cref="P:WikiClientLibrary.Cargo.CargoQueryParameters.Offset" /> is negative.
+            </exception>
+      <exception cref="T:WikiClientLibrary.MediaWikiRemoteException">
+            When query execution failed, Cargo usually fails with <c>internal_api_error_MWException</c> error.
+            You should observe <c>"MWException"</c> as the value of <see cref="P:WikiClientLibrary.MediaWikiRemoteException.ErrorClass" />.
+            </exception>
+    </member>
+    <member name="T:WikiClientLibrary.Cargo.Linq.CargoFunctions">
+      <summary>
+            Contains stub methods used inside expressions in <see cref="T:System.Linq.IQueryable`1" /> extension methods.
+            These methods are used for building LINQ query expressions and are not intended to be invoked directly.
+            </summary>
+    </member>
+    <member name="M:WikiClientLibrary.Cargo.Linq.CargoFunctions.DateDiff(System.Nullable{System.DateTime},System.Nullable{System.DateTime})">
+      <summary>
+            Returns the difference (<paramref name="dt1" /> - <paramref name="dt2" />) between 2 dates expressed as a value in days from one date to the other.
+            </summary>
+      <param name="dt1">date 1.</param>
+      <param name="dt2">date 2.</param>
+    </member>
+    <member name="M:WikiClientLibrary.Cargo.Linq.CargoFunctions.DateDiff(System.Nullable{System.DateTimeOffset},System.Nullable{System.DateTimeOffset})">
+      <summary>
+            Returns the difference (<paramref name="dt1" /> - <paramref name="dt2" />) between 2 dates expressed as a value in days from one date to the other.
+            </summary>
+      <param name="dt1">date 1.</param>
+      <param name="dt2">date 2.</param>
+    </member>
+    <member name="M:WikiClientLibrary.Cargo.Linq.CargoFunctions.Holds``1(System.Collections.Generic.IEnumerable{``0},``0)">
+      <summary>
+            Determines whether the list-typed field contains a certain value.
+            (See <a href="https://www.mediawiki.org/wiki/Extension:Cargo/Querying_data#The_%22HOLDS%22_command">mw:Extension:Cargo/Querying data#The "HOLDS" command</a>.)
+            </summary>
+      <param name="cargoList">Cargo table field expression of type <c>list</c>.</param>
+      <param name="element">the matching element.</param>
+      <typeparam name="T">element name.</typeparam>
+      <returns>whether the list contains the matching element.</returns>
+    </member>
+    <member name="M:WikiClientLibrary.Cargo.Linq.CargoFunctions.HoldsLike``1(System.Collections.Generic.IEnumerable{``0},System.String)">
+      <summary>
+            Determines whether the list-typed field contains any value matching the specific <c>LIKE</c> wildcard expression.
+            (See <a href="https://www.mediawiki.org/wiki/Extension:Cargo/Querying_data#HOLDS_LIKE">mw:Extension:Cargo/Querying data#HOLDS LIKE</a>.)
+            </summary>
+      <param name="cargoList">Cargo table field expression of type <c>list</c>.</param>
+      <param name="pattern">the matching pattern with <c>%</c> or <c>_</c> wildcard.</param>
+      <typeparam name="T">element name.</typeparam>
+      <returns>whether the list contains the matching element.</returns>
+    </member>
+    <member name="M:WikiClientLibrary.Cargo.Linq.CargoFunctions.Like(System.String,System.String)">
+      <summary>
+        <markup>
+          <include item="SMCMissingTag">
+            <parameter>summary</parameter>
+            <parameter>M:WikiClientLibrary.Cargo.Linq.CargoFunctions.Like(System.String,System.String)</parameter>
+          </include>
+        </markup>
+      </summary>
+      <param name="value">
+        <markup>
+          <include item="SMCMissingParamTag">
+            <parameter>param</parameter>
+            <parameter>value</parameter>
+            <parameter>M:WikiClientLibrary.Cargo.Linq.CargoFunctions.Like(System.String,System.String)</parameter>
+          </include>
+        </markup>
+      </param>
+      <param name="pattern">
+        <markup>
+          <include item="SMCMissingParamTag">
+            <parameter>param</parameter>
+            <parameter>pattern</parameter>
+            <parameter>M:WikiClientLibrary.Cargo.Linq.CargoFunctions.Like(System.String,System.String)</parameter>
+          </include>
+        </markup>
+      </param>
+    </member>
+    <member name="T:WikiClientLibrary.Cargo.Linq.CargoModel">
+      <summary>
+            Represents a mapping between Cargo table and CLR model (DTO) type.
+            </summary>
+    </member>
+    <member name="P:WikiClientLibrary.Cargo.Linq.CargoModel.ClrType">
+      <summary>
+        <markup>
+          <include item="SMCMissingTag">
+            <parameter>summary</parameter>
+            <parameter>P:WikiClientLibrary.Cargo.Linq.CargoModel.ClrType</parameter>
+          </include>
+        </markup>
+      </summary>
+    </member>
+    <member name="M:WikiClientLibrary.Cargo.Linq.CargoModel.FromClrType(System.Type,System.String)">
+      <summary>
+        <markup>
+          <include item="SMCMissingTag">
+            <parameter>summary</parameter>
+            <parameter>M:WikiClientLibrary.Cargo.Linq.CargoModel.FromClrType(System.Type,System.String)</parameter>
+          </include>
+        </markup>
+      </summary>
+      <param name="clrType">
+        <markup>
+          <include item="SMCMissingParamTag">
+            <parameter>param</parameter>
+            <parameter>clrType</parameter>
+            <parameter>M:WikiClientLibrary.Cargo.Linq.CargoModel.FromClrType(System.Type,System.String)</parameter>
+          </include>
+        </markup>
+      </param>
+      <param name="nameOverride">
+        <markup>
+          <include item="SMCMissingParamTag">
+            <parameter>param</parameter>
+            <parameter>nameOverride</parameter>
+            <parameter>M:WikiClientLibrary.Cargo.Linq.CargoModel.FromClrType(System.Type,System.String)</parameter>
+          </include>
+        </markup>
+      </param>
+    </member>
+    <member name="P:WikiClientLibrary.Cargo.Linq.CargoModel.Name">
+      <summary>
+        <markup>
+          <include item="SMCMissingTag">
+            <parameter>summary</parameter>
+            <parameter>P:WikiClientLibrary.Cargo.Linq.CargoModel.Name</parameter>
+          </include>
+        </markup>
+      </summary>
+    </member>
+    <member name="P:WikiClientLibrary.Cargo.Linq.CargoModel.Properties">
+      <summary>
+        <markup>
+          <include item="SMCMissingTag">
+            <parameter>summary</parameter>
+            <parameter>P:WikiClientLibrary.Cargo.Linq.CargoModel.Properties</parameter>
+          </include>
+        </markup>
+      </summary>
+    </member>
+    <member name="P:WikiClientLibrary.Cargo.Linq.CargoModel.TableDefinition">
+      <summary>
+        <markup>
+          <include item="SMCMissingTag">
+            <parameter>summary</parameter>
+            <parameter>P:WikiClientLibrary.Cargo.Linq.CargoModel.TableDefinition</parameter>
+          </include>
+        </markup>
+      </summary>
+    </member>
+    <member name="T:WikiClientLibrary.Cargo.Linq.CargoModelProperty">
+      <summary>
+            Represents a property (or field) in <see cref="T:WikiClientLibrary.Cargo.Linq.CargoModel" />.
+            </summary>
+    </member>
+    <member name="P:WikiClientLibrary.Cargo.Linq.CargoModelProperty.ClrProperty">
+      <summary>
+        <markup>
+          <include item="SMCMissingTag">
+            <parameter>summary</parameter>
+            <parameter>P:WikiClientLibrary.Cargo.Linq.CargoModelProperty.ClrProperty</parameter>
+          </include>
+        </markup>
+      </summary>
+    </member>
+    <member name="P:WikiClientLibrary.Cargo.Linq.CargoModelProperty.ClrType">
+      <summary>
+        <markup>
+          <include item="SMCMissingTag">
+            <parameter>summary</parameter>
+            <parameter>P:WikiClientLibrary.Cargo.Linq.CargoModelProperty.ClrType</parameter>
+          </include>
+        </markup>
+      </summary>
+    </member>
+    <member name="P:WikiClientLibrary.Cargo.Linq.CargoModelProperty.FieldDefinition">
+      <summary>
+        <markup>
+          <include item="SMCMissingTag">
+            <parameter>summary</parameter>
+            <parameter>P:WikiClientLibrary.Cargo.Linq.CargoModelProperty.FieldDefinition</parameter>
+          </include>
+        </markup>
+      </summary>
+    </member>
+    <member name="P:WikiClientLibrary.Cargo.Linq.CargoModelProperty.Name">
+      <summary>Cargo field name in the Cargo table.</summary>
+    </member>
+    <member name="T:WikiClientLibrary.Cargo.Linq.CargoQueryContext">
+      <summary>
+        <markup>
+          <include item="SMCMissingTag">
+            <parameter>summary</parameter>
+            <parameter>T:WikiClientLibrary.Cargo.Linq.CargoQueryContext</parameter>
+          </include>
+        </markup>
+      </summary>
+    </member>
+    <member name="M:WikiClientLibrary.Cargo.Linq.CargoQueryContext.#ctor(WikiClientLibrary.Sites.WikiSite)">
+      <summary>
+        <markup>
+          <include item="SMCAutoDocConstructor">
+            <parameter>WikiClientLibrary.Cargo.Linq.CargoQueryContext</parameter>
+          </include>
+        </markup>
+      </summary>
+      <param name="wikiSite">
+        <markup>
+          <include item="SMCMissingParamTag">
+            <parameter>param</parameter>
+            <parameter>wikiSite</parameter>
+            <parameter>M:WikiClientLibrary.Cargo.Linq.CargoQueryContext.#ctor(WikiClientLibrary.Sites.WikiSite)</parameter>
+          </include>
+        </markup>
+      </param>
+    </member>
+    <member name="P:WikiClientLibrary.Cargo.Linq.CargoQueryContext.PaginationSize">
+      <summary>
+            Gets/sets the default pagination size used when requesting
+            for the records from MediaWiki server. (Default value: <c>10</c>.)
+            </summary>
+    </member>
+    <member name="M:WikiClientLibrary.Cargo.Linq.CargoQueryContext.Table``1">
+      <summary>
+            Starts a Linq query expression on the specified table.
+            </summary>
+      <typeparam name="T">
+        <markup>
+          <include item="SMCMissingParamTag">
+            <parameter>typeparam</parameter>
+            <parameter>T</parameter>
+            <parameter>M:WikiClientLibrary.Cargo.Linq.CargoQueryContext.Table``1</parameter>
+          </include>
+        </markup>
+      </typeparam>
+    </member>
+    <member name="M:WikiClientLibrary.Cargo.Linq.CargoQueryContext.Table``1(System.String)">
+      <summary>
+            Starts a Linq query expression on the specified Cargo model and Cargo table.
+            </summary>
+      <param name="name">name of the Cargo table. Specify <c>null</c> to use default table name corresponding to the model.</param>
+      <typeparam name="T">type of the model.</typeparam>
+      <returns>LINQ root.</returns>
+    </member>
+    <member name="P:WikiClientLibrary.Cargo.Linq.CargoQueryContext.WikiSite">
+      <summary>
+        <markup>
+          <include item="SMCMissingTag">
+            <parameter>summary</parameter>
+            <parameter>P:WikiClientLibrary.Cargo.Linq.CargoQueryContext.WikiSite</parameter>
+          </include>
+        </markup>
+      </summary>
+    </member>
+    <member name="T:WikiClientLibrary.Cargo.Linq.CargoRecordConverter">
+      <summary>
+        <markup>
+          <include item="SMCMissingTag">
+            <parameter>summary</parameter>
+            <parameter>T:WikiClientLibrary.Cargo.Linq.CargoRecordConverter</parameter>
+          </include>
+        </markup>
+      </summary>
+    </member>
+    <member name="M:WikiClientLibrary.Cargo.Linq.CargoRecordConverter.#ctor">
+      <summary>
+        <markup>
+          <include item="SMCAutoDocConstructor">
+            <parameter>WikiClientLibrary.Cargo.Linq.CargoRecordConverter</parameter>
+          </include>
+        </markup>
+      </summary>
+    </member>
+    <member name="M:WikiClientLibrary.Cargo.Linq.CargoRecordConverter.DeserializeRecord(System.Collections.Generic.IReadOnlyDictionary{System.Reflection.MemberInfo,Newtonsoft.Json.Linq.JToken},System.Type)">
+      <summary>
+        <markup>
+          <include item="SMCMissingTag">
+            <parameter>summary</parameter>
+            <parameter>M:WikiClientLibrary.Cargo.Linq.CargoRecordConverter.DeserializeRecord(System.Collections.Generic.IReadOnlyDictionary{System.Reflection.MemberInfo,Newtonsoft.Json.Linq.JToken},System.Type)</parameter>
+          </include>
+        </markup>
+      </summary>
+      <param name="record">
+        <markup>
+          <include item="SMCMissingParamTag">
+            <parameter>param</parameter>
+            <parameter>record</parameter>
+            <parameter>M:WikiClientLibrary.Cargo.Linq.CargoRecordConverter.DeserializeRecord(System.Collections.Generic.IReadOnlyDictionary{System.Reflection.MemberInfo,Newtonsoft.Json.Linq.JToken},System.Type)</parameter>
+          </include>
+        </markup>
+      </param>
+      <param name="modelType">
+        <markup>
+          <include item="SMCMissingParamTag">
+            <parameter>param</parameter>
+            <parameter>modelType</parameter>
+            <parameter>M:WikiClientLibrary.Cargo.Linq.CargoRecordConverter.DeserializeRecord(System.Collections.Generic.IReadOnlyDictionary{System.Reflection.MemberInfo,Newtonsoft.Json.Linq.JToken},System.Type)</parameter>
+          </include>
+        </markup>
+      </param>
+    </member>
+    <member name="T:WikiClientLibrary.Cargo.Linq.CargoRecordQueryableExtensions">
+      <summary>
+        <markup>
+          <include item="SMCMissingTag">
+            <parameter>summary</parameter>
+            <parameter>T:WikiClientLibrary.Cargo.Linq.CargoRecordQueryableExtensions</parameter>
+          </include>
+        </markup>
+      </summary>
+    </member>
+    <member name="M:WikiClientLibrary.Cargo.Linq.CargoRecordQueryableExtensions.AsAsyncEnumerable``1(System.Linq.IQueryable{``0})">
+      <summary>
+            Casts the input <see cref="T:System.Linq.IQueryable`1" /> instance into <see cref="T:System.Collections.Generic.IAsyncEnumerable`1" /> instance.
+            </summary>
+      <param name="queryable">the input queryable that should have implemented <see cref="T:System.Collections.Generic.IAsyncEnumerable`1" />.</param>
+      <typeparam name="T">type of the item.</typeparam>
+      <returns>the same object reference as <paramref name="queryable" />.</returns>
+      <exception cref="T:System.InvalidOperationException">input <paramref name="queryable" /> does not implement <see cref="T:System.Collections.Generic.IAsyncEnumerable`1" />.</exception>
+    </member>
+    <member name="T:WikiClientLibrary.Cargo.Linq.ICargoQueryContext">
+      <summary>
+            Provides LINQ to Cargo query ability.
+            </summary>
+    </member>
+    <member name="M:WikiClientLibrary.Cargo.Linq.ICargoQueryContext.Table``1">
+      <summary>
+            Starts a Linq query expression on the specified table.
+            </summary>
+      <typeparam name="T">
+        <markup>
+          <include item="SMCMissingParamTag">
+            <parameter>typeparam</parameter>
+            <parameter>T</parameter>
+            <parameter>M:WikiClientLibrary.Cargo.Linq.ICargoQueryContext.Table``1</parameter>
+          </include>
+        </markup>
+      </typeparam>
+    </member>
+    <member name="M:WikiClientLibrary.Cargo.Linq.ICargoQueryContext.Table``1(System.String)">
+      <summary>
+            Starts a Linq query expression on the specified Cargo model and Cargo table.
+            </summary>
+      <param name="name">name of the Cargo table. Specify <c>null</c> to use default table name corresponding to the model.</param>
+      <typeparam name="T">type of the model.</typeparam>
+      <returns>LINQ root.</returns>
+    </member>
+    <member name="T:WikiClientLibrary.Cargo.Linq.ICargoRecordConverter">
+      <summary>
+        <markup>
+          <include item="SMCMissingTag">
+            <parameter>summary</parameter>
+            <parameter>T:WikiClientLibrary.Cargo.Linq.ICargoRecordConverter</parameter>
+          </include>
+        </markup>
+      </summary>
+    </member>
+    <member name="M:WikiClientLibrary.Cargo.Linq.ICargoRecordConverter.DeserializeRecord(System.Collections.Generic.IReadOnlyDictionary{System.Reflection.MemberInfo,Newtonsoft.Json.Linq.JToken},System.Type)">
+      <summary>
+            Converts JSON record object from MediaWiki Cargo API response into CLR model type.
+            </summary>
+      <param name="record">
+        <markup>
+          <include item="SMCMissingParamTag">
+            <parameter>param</parameter>
+            <parameter>record</parameter>
+            <parameter>M:WikiClientLibrary.Cargo.Linq.ICargoRecordConverter.DeserializeRecord(System.Collections.Generic.IReadOnlyDictionary{System.Reflection.MemberInfo,Newtonsoft.Json.Linq.JToken},System.Type)</parameter>
+          </include>
+        </markup>
+      </param>
+      <param name="modelType">
+        <markup>
+          <include item="SMCMissingParamTag">
+            <parameter>param</parameter>
+            <parameter>modelType</parameter>
+            <parameter>M:WikiClientLibrary.Cargo.Linq.ICargoRecordConverter.DeserializeRecord(System.Collections.Generic.IReadOnlyDictionary{System.Reflection.MemberInfo,Newtonsoft.Json.Linq.JToken},System.Type)</parameter>
+          </include>
+        </markup>
+      </param>
+    </member>
+    <member name="T:WikiClientLibrary.Cargo.Linq.ICargoRecordSet`1">
+      <summary>
+            A queryable Cargo table instance.
+            </summary>
+      <typeparam name="T">type of the model.</typeparam>
+    </member>
+    <member name="P:WikiClientLibrary.Cargo.Linq.ICargoRecordSet`1.Name">
+      <summary>
+        <markup>
+          <include item="SMCMissingTag">
+            <parameter>summary</parameter>
+            <parameter>P:WikiClientLibrary.Cargo.Linq.ICargoRecordSet`1.Name</parameter>
+          </include>
+        </markup>
+      </summary>
+    </member>
+    <member name="T:WikiClientLibrary.Cargo.Linq.ExpressionVisitors.CargoPostEvaluationTranslator">
+      <summary>
+        <markup>
+          <include item="SMCMissingTag">
+            <parameter>summary</parameter>
+            <parameter>T:WikiClientLibrary.Cargo.Linq.ExpressionVisitors.CargoPostEvaluationTranslator</parameter>
+          </include>
+        </markup>
+      </summary>
+    </member>
+    <member name="M:WikiClientLibrary.Cargo.Linq.ExpressionVisitors.CargoPostEvaluationTranslator.#ctor">
+      <summary>
+        <markup>
+          <include item="SMCAutoDocConstructor">
+            <parameter>WikiClientLibrary.Cargo.Linq.ExpressionVisitors.CargoPostEvaluationTranslator</parameter>
+          </include>
+        </markup>
+      </summary>
+    </member>
+    <member name="M:WikiClientLibrary.Cargo.Linq.ExpressionVisitors.CargoPostEvaluationTranslator.VisitBinary(System.Linq.Expressions.BinaryExpression)">
+      <summary>Visits the children of the <see cref="T:System.Linq.Expressions.BinaryExpression" />.</summary>
+      <param name="node">The expression to visit.</param>
+      <returns>The modified expression, if it or any subexpression was modified; otherwise, returns the original expression.</returns>
+    </member>
+    <member name="M:WikiClientLibrary.Cargo.Linq.ExpressionVisitors.CargoPostEvaluationTranslator.VisitMember(System.Linq.Expressions.MemberExpression)">
+      <summary>Visits the children of the <see cref="T:System.Linq.Expressions.MemberExpression" />.</summary>
+      <param name="node">The expression to visit.</param>
+      <returns>The modified expression, if it or any subexpression was modified; otherwise, returns the original expression.</returns>
+    </member>
+    <member name="M:WikiClientLibrary.Cargo.Linq.ExpressionVisitors.CargoPostEvaluationTranslator.VisitMethodCall(System.Linq.Expressions.MethodCallExpression)">
+      <summary>Visits the children of the <see cref="T:System.Linq.Expressions.MethodCallExpression" />.</summary>
+      <param name="node">The expression to visit.</param>
+      <returns>The modified expression, if it or any subexpression was modified; otherwise, returns the original expression.</returns>
+    </member>
+    <member name="T:WikiClientLibrary.Cargo.Linq.ExpressionVisitors.CargoPreEvaluationTranslator">
+      <summary>
+        <markup>
+          <include item="SMCMissingTag">
+            <parameter>summary</parameter>
+            <parameter>T:WikiClientLibrary.Cargo.Linq.ExpressionVisitors.CargoPreEvaluationTranslator</parameter>
+          </include>
+        </markup>
+      </summary>
+    </member>
+    <member name="M:WikiClientLibrary.Cargo.Linq.ExpressionVisitors.CargoPreEvaluationTranslator.#ctor">
+      <summary>
+        <markup>
+          <include item="SMCAutoDocConstructor">
+            <parameter>WikiClientLibrary.Cargo.Linq.ExpressionVisitors.CargoPreEvaluationTranslator</parameter>
+          </include>
+        </markup>
+      </summary>
+    </member>
+    <member name="M:WikiClientLibrary.Cargo.Linq.ExpressionVisitors.CargoPreEvaluationTranslator.VisitMember(System.Linq.Expressions.MemberExpression)">
+      <summary>Visits the children of the <see cref="T:System.Linq.Expressions.MemberExpression" />.</summary>
+      <param name="node">The expression to visit.</param>
+      <returns>The modified expression, if it or any subexpression was modified; otherwise, returns the original expression.</returns>
+    </member>
+    <member name="M:WikiClientLibrary.Cargo.Linq.ExpressionVisitors.CargoPreEvaluationTranslator.VisitMethodCall(System.Linq.Expressions.MethodCallExpression)">
+      <summary>Visits the children of the <see cref="T:System.Linq.Expressions.MethodCallExpression" />.</summary>
+      <param name="node">The expression to visit.</param>
+      <returns>The modified expression, if it or any subexpression was modified; otherwise, returns the original expression.</returns>
+    </member>
+    <member name="T:WikiClientLibrary.Cargo.Linq.ExpressionVisitors.CargoQueryExpressionReducer">
+      <summary>
+            Simplifies the LINQ expression into a single <see cref="T:WikiClientLibrary.Cargo.Linq.IntermediateExpressions.CargoQueryExpression" /> root node.
+            </summary>
+    </member>
+    <member name="M:WikiClientLibrary.Cargo.Linq.ExpressionVisitors.CargoQueryExpressionReducer.#ctor">
+      <summary>
+        <markup>
+          <include item="SMCAutoDocConstructor">
+            <parameter>WikiClientLibrary.Cargo.Linq.ExpressionVisitors.CargoQueryExpressionReducer</parameter>
+          </include>
+        </markup>
+      </summary>
+    </member>
+    <member name="M:WikiClientLibrary.Cargo.Linq.ExpressionVisitors.CargoQueryExpressionReducer.Visit(System.Linq.Expressions.Expression)">
+      <summary>Dispatches the expression to one of the more specialized visit methods in this class.</summary>
+      <param name="node">The expression to visit.</param>
+      <returns>The modified expression, if it or any subexpression was modified; otherwise, returns the original expression.</returns>
+    </member>
+    <member name="M:WikiClientLibrary.Cargo.Linq.ExpressionVisitors.CargoQueryExpressionReducer.VisitMethodCall(System.Linq.Expressions.MethodCallExpression)">
+      <summary>Visits the children of the <see cref="T:System.Linq.Expressions.MethodCallExpression" />.</summary>
+      <param name="node">The expression to visit.</param>
+      <returns>The modified expression, if it or any subexpression was modified; otherwise, returns the original expression.</returns>
+    </member>
+    <member name="T:WikiClientLibrary.Cargo.Linq.ExpressionVisitors.ExpressionTreePartialEvaluator">
+      <summary>
+            Partially evaluates all the evaluable expressions in the expression tree.
+            </summary>
+    </member>
+    <member name="M:WikiClientLibrary.Cargo.Linq.ExpressionVisitors.ExpressionTreePartialEvaluator.#ctor">
+      <summary>
+        <markup>
+          <include item="SMCAutoDocConstructor">
+            <parameter>WikiClientLibrary.Cargo.Linq.ExpressionVisitors.ExpressionTreePartialEvaluator</parameter>
+          </include>
+        </markup>
+      </summary>
+    </member>
+    <member name="M:WikiClientLibrary.Cargo.Linq.ExpressionVisitors.ExpressionTreePartialEvaluator.Visit(System.Linq.Expressions.Expression)">
+      <summary>Dispatches the expression to one of the more specialized visit methods in this class.</summary>
+      <param name="node">The expression to visit.</param>
+      <returns>The modified expression, if it or any subexpression was modified; otherwise, returns the original expression.</returns>
+    </member>
+    <member name="M:WikiClientLibrary.Cargo.Linq.ExpressionVisitors.ExpressionTreePartialEvaluator.VisitBinary(System.Linq.Expressions.BinaryExpression)">
+      <summary>Visits the children of the <see cref="T:System.Linq.Expressions.BinaryExpression" />.</summary>
+      <param name="node">The expression to visit.</param>
+      <returns>The modified expression, if it or any subexpression was modified; otherwise, returns the original expression.</returns>
+    </member>
+    <member name="M:WikiClientLibrary.Cargo.Linq.ExpressionVisitors.ExpressionTreePartialEvaluator.VisitExtension(System.Linq.Expressions.Expression)">
+      <summary>Visits the children of the extension expression.</summary>
+      <param name="node">The expression to visit.</param>
+      <returns>The modified expression, if it or any subexpression was modified; otherwise, returns the original expression.</returns>
+    </member>
+    <member name="M:WikiClientLibrary.Cargo.Linq.ExpressionVisitors.ExpressionTreePartialEvaluator.VisitLambda``1(System.Linq.Expressions.Expression{``0})">
+      <summary>Visits the children of the <see cref="T:System.Linq.Expressions.Expression`1" />.</summary>
+      <param name="node">The expression to visit.</param>
+      <typeparam name="T">The type of the delegate.</typeparam>
+      <returns>The modified expression, if it or any subexpression was modified; otherwise, returns the original expression.</returns>
+    </member>
+    <member name="T:WikiClientLibrary.Cargo.Linq.ExpressionVisitors.MemberAccessExpressionReplacer">
+      <summary>
+            Replaces the member access (read) expression to a specified <see cref="P:WikiClientLibrary.Cargo.Linq.ExpressionVisitors.MemberAccessExpressionReplacer.Target" /> into the specified expression.
+            </summary>
+    </member>
+    <member name="M:WikiClientLibrary.Cargo.Linq.ExpressionVisitors.MemberAccessExpressionReplacer.#ctor(System.Linq.Expressions.ParameterExpression,System.Collections.Generic.IReadOnlyDictionary{System.Reflection.MemberInfo,System.Linq.Expressions.Expression})">
+      <summary>
+        <markup>
+          <include item="SMCAutoDocConstructor">
+            <parameter>WikiClientLibrary.Cargo.Linq.ExpressionVisitors.MemberAccessExpressionReplacer</parameter>
+          </include>
+        </markup>
+      </summary>
+      <param name="target">
+        <markup>
+          <include item="SMCMissingParamTag">
+            <parameter>param</parameter>
+            <parameter>target</parameter>
+            <parameter>M:WikiClientLibrary.Cargo.Linq.ExpressionVisitors.MemberAccessExpressionReplacer.#ctor(System.Linq.Expressions.ParameterExpression,System.Collections.Generic.IReadOnlyDictionary{System.Reflection.MemberInfo,System.Linq.Expressions.Expression})</parameter>
+          </include>
+        </markup>
+      </param>
+      <param name="memberReplacements">
+        <markup>
+          <include item="SMCMissingParamTag">
+            <parameter>param</parameter>
+            <parameter>memberReplacements</parameter>
+            <parameter>M:WikiClientLibrary.Cargo.Linq.ExpressionVisitors.MemberAccessExpressionReplacer.#ctor(System.Linq.Expressions.ParameterExpression,System.Collections.Generic.IReadOnlyDictionary{System.Reflection.MemberInfo,System.Linq.Expressions.Expression})</parameter>
+          </include>
+        </markup>
+      </param>
+    </member>
+    <member name="P:WikiClientLibrary.Cargo.Linq.ExpressionVisitors.MemberAccessExpressionReplacer.MemberReplacements">
+      <summary>
+        <markup>
+          <include item="SMCMissingTag">
+            <parameter>summary</parameter>
+            <parameter>P:WikiClientLibrary.Cargo.Linq.ExpressionVisitors.MemberAccessExpressionReplacer.MemberReplacements</parameter>
+          </include>
+        </markup>
+      </summary>
+    </member>
+    <member name="P:WikiClientLibrary.Cargo.Linq.ExpressionVisitors.MemberAccessExpressionReplacer.Target">
+      <summary>
+        <markup>
+          <include item="SMCMissingTag">
+            <parameter>summary</parameter>
+            <parameter>P:WikiClientLibrary.Cargo.Linq.ExpressionVisitors.MemberAccessExpressionReplacer.Target</parameter>
+          </include>
+        </markup>
+      </summary>
+    </member>
+    <member name="M:WikiClientLibrary.Cargo.Linq.ExpressionVisitors.MemberAccessExpressionReplacer.VisitMember(System.Linq.Expressions.MemberExpression)">
+      <summary>Visits the children of the <see cref="T:System.Linq.Expressions.MemberExpression" />.</summary>
+      <param name="node">The expression to visit.</param>
+      <returns>The modified expression, if it or any subexpression was modified; otherwise, returns the original expression.</returns>
+    </member>
+    <member name="T:WikiClientLibrary.Cargo.Schema.CargoSpecialColumnNames">
+      <summary>
+            Special column names as listed on <a href="https://www.mediawiki.org/wiki/Extension:Cargo/Storing_data#Database_storage_details">mw:Extension:Cargo/Storing data#Database storage details</a></summary>
+    </member>
+    <member name="F:WikiClientLibrary.Cargo.Schema.CargoSpecialColumnNames.FieldName">
+      <summary>(<c>__files</c> table) The name of the relevant field of type "File".</summary>
+    </member>
+    <member name="F:WikiClientLibrary.Cargo.Schema.CargoSpecialColumnNames.FileName">
+      <summary>(<c>__files</c> table) The value of the field, i.e. the name of an uploaded file.</summary>
+    </member>
+    <member name="F:WikiClientLibrary.Cargo.Schema.CargoSpecialColumnNames.Id">
+      <summary>Holds a unique ID for this row.</summary>
+    </member>
+    <member name="F:WikiClientLibrary.Cargo.Schema.CargoSpecialColumnNames.Left">
+      <summary>(<c>__[ColumnName]_hierarchy</c> table) The number of the leftmost node represented by this value.</summary>
+    </member>
+    <member name="F:WikiClientLibrary.Cargo.Schema.CargoSpecialColumnNames.PageId">
+      <summary>Holds the internal MediaWiki ID for that page.</summary>
+    </member>
+    <member name="F:WikiClientLibrary.Cargo.Schema.CargoSpecialColumnNames.PageName">
+      <summary>Holds the name of the page from which this row of values was stored.</summary>
+    </member>
+    <member name="F:WikiClientLibrary.Cargo.Schema.CargoSpecialColumnNames.PageNamespace">
+      <summary>Holds the numerical ID of the namespace of the page from which this row of values was stored.</summary>
+    </member>
+    <member name="F:WikiClientLibrary.Cargo.Schema.CargoSpecialColumnNames.PageTitle">
+      <summary>Similar to <see cref="F:WikiClientLibrary.Cargo.Schema.CargoSpecialColumnNames.PageName" />, but leaves out the namespace, if there is one.</summary>
+    </member>
+    <member name="F:WikiClientLibrary.Cargo.Schema.CargoSpecialColumnNames.Position">
+      <summary>(<c>__[ListColumnName]</c> table) Holds the position of this value in the list (can be 1, 2, etc.)</summary>
+    </member>
+    <member name="F:WikiClientLibrary.Cargo.Schema.CargoSpecialColumnNames.Right">
+      <summary>(<c>__[ColumnName]_hierarchy</c> table) The number of the rightmost node represented by this value.</summary>
+    </member>
+    <member name="F:WikiClientLibrary.Cargo.Schema.CargoSpecialColumnNames.RowId">
+      <summary>(<c>__[ListColumnName]</c> table) Holds the ID of the row (i.e., _ID) in the main table that this value corresponds to.</summary>
+    </member>
+    <member name="F:WikiClientLibrary.Cargo.Schema.CargoSpecialColumnNames.Value">
+      <summary>
+            (<c>__[ListColumnName]</c> table) Holds the actual, individual value.
+            (<c>__[ColumnName]_hierarchy</c> table) The allowed value.
+            </summary>
+    </member>
+    <member name="T:WikiClientLibrary.Cargo.Schema.CargoTableDefinition">
+      <summary>
+            Represents the schema of a Cargo table.
+            </summary>
+    </member>
+    <member name="M:WikiClientLibrary.Cargo.Schema.CargoTableDefinition.#ctor(System.String,System.Collections.Generic.IEnumerable{WikiClientLibrary.Cargo.Schema.CargoTableFieldDefinition})">
+      <summary>
+        <markup>
+          <include item="SMCAutoDocConstructor">
+            <parameter>WikiClientLibrary.Cargo.Schema.CargoTableDefinition</parameter>
+          </include>
+        </markup>
+      </summary>
+      <param name="name">
+        <markup>
+          <include item="SMCMissingParamTag">
+            <parameter>param</parameter>
+            <parameter>name</parameter>
+            <parameter>M:WikiClientLibrary.Cargo.Schema.CargoTableDefinition.#ctor(System.String,System.Collections.Generic.IEnumerable{WikiClientLibrary.Cargo.Schema.CargoTableFieldDefinition})</parameter>
+          </include>
+        </markup>
+      </param>
+      <param name="fields">
+        <markup>
+          <include item="SMCMissingParamTag">
+            <parameter>param</parameter>
+            <parameter>fields</parameter>
+            <parameter>M:WikiClientLibrary.Cargo.Schema.CargoTableDefinition.#ctor(System.String,System.Collections.Generic.IEnumerable{WikiClientLibrary.Cargo.Schema.CargoTableFieldDefinition})</parameter>
+          </include>
+        </markup>
+      </param>
+    </member>
+    <member name="P:WikiClientLibrary.Cargo.Schema.CargoTableDefinition.Fields">
+      <summary>
+        <markup>
+          <include item="SMCMissingTag">
+            <parameter>summary</parameter>
+            <parameter>P:WikiClientLibrary.Cargo.Schema.CargoTableDefinition.Fields</parameter>
+          </include>
+        </markup>
+      </summary>
+    </member>
+    <member name="P:WikiClientLibrary.Cargo.Schema.CargoTableDefinition.Name">
+      <summary>
+        <markup>
+          <include item="SMCMissingTag">
+            <parameter>summary</parameter>
+            <parameter>P:WikiClientLibrary.Cargo.Schema.CargoTableDefinition.Name</parameter>
+          </include>
+        </markup>
+      </summary>
+    </member>
+    <member name="M:WikiClientLibrary.Cargo.Schema.CargoTableDefinition.ToString">
+      <summary>Returns a string that represents the current object.</summary>
+      <returns>A string that represents the current object.</returns>
+    </member>
+    <member name="T:WikiClientLibrary.Cargo.Schema.CargoTableFieldDefinition">
+      <summary>
+            Represents a field in <see cref="T:WikiClientLibrary.Cargo.Schema.CargoTableDefinition" />.
+            </summary>
+    </member>
+    <member name="M:WikiClientLibrary.Cargo.Schema.CargoTableFieldDefinition.#ctor(System.String,WikiClientLibrary.Cargo.Schema.CargoTableFieldType,System.String,System.Boolean)">
+      <summary>
+        <markup>
+          <include item="SMCAutoDocConstructor">
+            <parameter>WikiClientLibrary.Cargo.Schema.CargoTableFieldDefinition</parameter>
+          </include>
+        </markup>
+      </summary>
+      <param name="name">
+        <markup>
+          <include item="SMCMissingParamTag">
+            <parameter>param</parameter>
+            <parameter>name</parameter>
+            <parameter>M:WikiClientLibrary.Cargo.Schema.CargoTableFieldDefinition.#ctor(System.String,WikiClientLibrary.Cargo.Schema.CargoTableFieldType,System.String,System.Boolean)</parameter>
+          </include>
+        </markup>
+      </param>
+      <param name="fieldType">
+        <markup>
+          <include item="SMCMissingParamTag">
+            <parameter>param</parameter>
+            <parameter>fieldType</parameter>
+            <parameter>M:WikiClientLibrary.Cargo.Schema.CargoTableFieldDefinition.#ctor(System.String,WikiClientLibrary.Cargo.Schema.CargoTableFieldType,System.String,System.Boolean)</parameter>
+          </include>
+        </markup>
+      </param>
+      <param name="listDelimiter">
+        <markup>
+          <include item="SMCMissingParamTag">
+            <parameter>param</parameter>
+            <parameter>listDelimiter</parameter>
+            <parameter>M:WikiClientLibrary.Cargo.Schema.CargoTableFieldDefinition.#ctor(System.String,WikiClientLibrary.Cargo.Schema.CargoTableFieldType,System.String,System.Boolean)</parameter>
+          </include>
+        </markup>
+      </param>
+      <param name="isMandatory">
+        <markup>
+          <include item="SMCMissingParamTag">
+            <parameter>param</parameter>
+            <parameter>isMandatory</parameter>
+            <parameter>M:WikiClientLibrary.Cargo.Schema.CargoTableFieldDefinition.#ctor(System.String,WikiClientLibrary.Cargo.Schema.CargoTableFieldType,System.String,System.Boolean)</parameter>
+          </include>
+        </markup>
+      </param>
+    </member>
+    <member name="P:WikiClientLibrary.Cargo.Schema.CargoTableFieldDefinition.FieldType">
+      <summary>
+        <markup>
+          <include item="SMCMissingTag">
+            <parameter>summary</parameter>
+            <parameter>P:WikiClientLibrary.Cargo.Schema.CargoTableFieldDefinition.FieldType</parameter>
+          </include>
+        </markup>
+      </summary>
+    </member>
+    <member name="P:WikiClientLibrary.Cargo.Schema.CargoTableFieldDefinition.IsList">
+      <summary>
+        <markup>
+          <include item="SMCMissingTag">
+            <parameter>summary</parameter>
+            <parameter>P:WikiClientLibrary.Cargo.Schema.CargoTableFieldDefinition.IsList</parameter>
+          </include>
+        </markup>
+      </summary>
+    </member>
+    <member name="P:WikiClientLibrary.Cargo.Schema.CargoTableFieldDefinition.IsMandatory">
+      <summary>
+            If set, the field is declared as mandatory, i.e. blank values are not allowed.
+            </summary>
+    </member>
+    <member name="P:WikiClientLibrary.Cargo.Schema.CargoTableFieldDefinition.ListDelimiter">
+      <summary>
+        <markup>
+          <include item="SMCMissingTag">
+            <parameter>summary</parameter>
+            <parameter>P:WikiClientLibrary.Cargo.Schema.CargoTableFieldDefinition.ListDelimiter</parameter>
+          </include>
+        </markup>
+      </summary>
+    </member>
+    <member name="P:WikiClientLibrary.Cargo.Schema.CargoTableFieldDefinition.Name">
+      <summary>
+        <markup>
+          <include item="SMCMissingTag">
+            <parameter>summary</parameter>
+            <parameter>P:WikiClientLibrary.Cargo.Schema.CargoTableFieldDefinition.Name</parameter>
+          </include>
+        </markup>
+      </summary>
+    </member>
+    <member name="M:WikiClientLibrary.Cargo.Schema.CargoTableFieldDefinition.ToString">
+      <summary>Returns a string that represents the current object.</summary>
+      <returns>A string that represents the current object.</returns>
+    </member>
+    <member name="T:WikiClientLibrary.Cargo.Schema.CargoTableFieldType">
+      <summary>
+        <markup>
+          <include item="SMCMissingTag">
+            <parameter>summary</parameter>
+            <parameter>T:WikiClientLibrary.Cargo.Schema.CargoTableFieldType</parameter>
+          </include>
+        </markup>
+      </summary>
+    </member>
+    <member name="F:WikiClientLibrary.Cargo.Schema.CargoTableFieldType.Page">
+      <summary>Holds the name of a page in the wiki (default max size: 300 characters)</summary>
+    </member>
+    <member name="F:WikiClientLibrary.Cargo.Schema.CargoTableFieldType.String">
+      <summary>Holds standard, non-wikitext text (default max size: 300 characters)</summary>
+    </member>
+    <member name="F:WikiClientLibrary.Cargo.Schema.CargoTableFieldType.Text">
+      <summary>Holds standard, non-wikitext text; intended for longer values (Not indexed)</summary>
+    </member>
+    <member name="F:WikiClientLibrary.Cargo.Schema.CargoTableFieldType.Integer">
+      <summary>Holds an integer</summary>
+    </member>
+    <member name="F:WikiClientLibrary.Cargo.Schema.CargoTableFieldType.Float">
+      <summary>Holds a real, i.e. non-integer, number</summary>
+    </member>
+    <member name="F:WikiClientLibrary.Cargo.Schema.CargoTableFieldType.Date">
+      <summary>Holds a date without time</summary>
+    </member>
+    <member name="F:WikiClientLibrary.Cargo.Schema.CargoTableFieldType.EndDate">
+      <summary>Similar to Date, but are meant to Hold the beginning and end of some duration. A table can hold either no Start date and no End date field, or exactly one of both.</summary>
+    </member>
+    <member name="F:WikiClientLibrary.Cargo.Schema.CargoTableFieldType.Datetime">
+      <summary>Holds a date and time</summary>
+    </member>
+    <member name="F:WikiClientLibrary.Cargo.Schema.CargoTableFieldType.EndDatetime">
+      <summary>Work like Start date or End date, but include a time.</summary>
+    </member>
+    <member name="F:WikiClientLibrary.Cargo.Schema.CargoTableFieldType.Boolean">
+      <summary>Holds a Boolean value, whose value should be 1 or 0, or 'yes' or 'no' (see this section for Cargo-specific information on querying Boolean values)</summary>
+    </member>
+    <member name="F:WikiClientLibrary.Cargo.Schema.CargoTableFieldType.Coordinates">
+      <summary>Holds geographical coordinates</summary>
+    </member>
+    <member name="F:WikiClientLibrary.Cargo.Schema.CargoTableFieldType.WikitextString">
+      <summary>Holds a short text that is meant to be parsed by the MediaWiki parser (default max size: 300 characters)</summary>
+    </member>
+    <member name="F:WikiClientLibrary.Cargo.Schema.CargoTableFieldType.Wikitext">
+      <summary>Holds longer text that is meant to be parsed by the MediaWiki parser (Not indexed)</summary>
+    </member>
+    <member name="F:WikiClientLibrary.Cargo.Schema.CargoTableFieldType.Searchtext">
+      <summary>Holds text that can be searched on, using the MATCHES command (requires MySQL 5.6+ or MariaDB 5.6+)</summary>
+    </member>
+    <member name="F:WikiClientLibrary.Cargo.Schema.CargoTableFieldType.File">
+      <summary>Holds the name of an uploaded file or image in the wiki (similar to Page, but does not require specifying the "File:" namespace) (default max size: 300 characters)</summary>
+    </member>
+    <member name="F:WikiClientLibrary.Cargo.Schema.CargoTableFieldType.URL">
+      <summary>Holds a URL (default max size: 300 characters)</summary>
+    </member>
+    <member name="F:WikiClientLibrary.Cargo.Schema.CargoTableFieldType.Email">
+      <summary>Holds an email address (default max size: 300 characters)</summary>
+    </member>
+    <member name="F:WikiClientLibrary.Cargo.Schema.CargoTableFieldType.Rating">
+      <summary>Holds a "rating" value, i.e. usually an integer from 1 to 5</summary>
+    </member>
+    <member name="T:WikiClientLibrary.Cargo.Schema.DataAnnotations.CargoListAttribute">
+      <summary>
+            Annotates the property as a cargo list, i.e. <c>List (<see cref="P:WikiClientLibrary.Cargo.Schema.DataAnnotations.CargoListAttribute.Delimiter" />) of [type]</c>.
+            </summary>
+    </member>
+    <member name="M:WikiClientLibrary.Cargo.Schema.DataAnnotations.CargoListAttribute.#ctor">
+      <summary>Initialize the attribute with comma (,) as list separator.</summary>
+    </member>
+    <member name="M:WikiClientLibrary.Cargo.Schema.DataAnnotations.CargoListAttribute.#ctor(System.String)">
+      <summary>
+        <markup>
+          <include item="SMCAutoDocConstructor">
+            <parameter>WikiClientLibrary.Cargo.Schema.DataAnnotations.CargoListAttribute</parameter>
+          </include>
+        </markup>
+      </summary>
+      <param name="delimiter">
+        <markup>
+          <include item="SMCMissingParamTag">
+            <parameter>param</parameter>
+            <parameter>delimiter</parameter>
+            <parameter>M:WikiClientLibrary.Cargo.Schema.DataAnnotations.CargoListAttribute.#ctor(System.String)</parameter>
+          </include>
+        </markup>
+      </param>
+    </member>
+    <member name="F:WikiClientLibrary.Cargo.Schema.DataAnnotations.CargoListAttribute.DefaultDelimiter">
+      <summary>
+        <markup>
+          <include item="SMCMissingTag">
+            <parameter>summary</parameter>
+            <parameter>F:WikiClientLibrary.Cargo.Schema.DataAnnotations.CargoListAttribute.DefaultDelimiter</parameter>
+          </include>
+        </markup>
+      </summary>
+    </member>
+    <member name="P:WikiClientLibrary.Cargo.Schema.DataAnnotations.CargoListAttribute.Delimiter">
+      <summary>
+        <markup>
+          <include item="SMCMissingTag">
+            <parameter>summary</parameter>
+            <parameter>P:WikiClientLibrary.Cargo.Schema.DataAnnotations.CargoListAttribute.Delimiter</parameter>
+          </include>
+        </markup>
+      </summary>
+    </member>
+  </members>
+</doc>

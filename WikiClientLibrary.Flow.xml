@@ -445,7 +445,8 @@
     </member>
     <member name="P:WikiClientLibrary.Flow.Revision.LastUpdated">
       <summary>
-            For topic revision, the last update time of the whole topic.
+            For topic revision, the last update time of the whole topic,
+            including replies, changes to topic title, content, or replies.
             </summary>
     </member>
     <member name="P:WikiClientLibrary.Flow.Revision.Links">
@@ -556,7 +557,7 @@
     </member>
     <member name="T:WikiClientLibrary.Flow.Topic">
       <summary>
-            Reporesents a topic on a Flow board.
+            Represents a topic on a Flow board.
             </summary>
     </member>
     <member name="M:WikiClientLibrary.Flow.Topic.#ctor(WikiClientLibrary.Sites.WikiSite,System.String)">

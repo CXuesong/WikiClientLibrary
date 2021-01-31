@@ -861,23 +861,13 @@
     </member>
     <member name="P:WikiClientLibrary.MediaWikiRemoteException.ErrorClass">
       <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>P:WikiClientLibrary.MediaWikiRemoteException.ErrorClass</parameter>
-          </include>
-        </markup>
-      </summary>
+            PHP class name of the error.
+            </summary>
     </member>
     <member name="P:WikiClientLibrary.MediaWikiRemoteException.RemoteStackTrace">
       <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>P:WikiClientLibrary.MediaWikiRemoteException.RemoteStackTrace</parameter>
-          </include>
-        </markup>
-      </summary>
+            Stack trace provided by MediaWiki server, if available.
+            </summary>
     </member>
     <member name="M:WikiClientLibrary.MediaWikiRemoteException.ToString">
       <summary>Creates and returns a string representation of the current exception.</summary>
