@@ -71,11 +71,7 @@ namespace WikiClientLibrary.Pages.Queries.Properties
 
         private FileInfoPropertyGroup()
         {
-#if BCL_FEATURE_ARRAY_EMPTY
             _Revisions = Array.Empty<FileRevision>();
-#else
-            _Revisions = new FileRevision[0];
-#endif
         }
 
         private FileInfoPropertyGroup(WikiPageStub page, JArray jrevisions)

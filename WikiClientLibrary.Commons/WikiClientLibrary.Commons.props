@@ -1,28 +1,4 @@
 <Project>
-  <PropertyGroup Condition=" '$(TargetFramework)' == 'netstandard1.1' ">
-    <DefineConstants>$(DefineConstants);BCL_FEATURE_DISPOSE_HTTPCONTENT</DefineConstants>
-  </PropertyGroup>
-
-  <PropertyGroup Condition=" '$(TargetFramework)' != 'netstandard1.1' ">
-    <DefineConstants>$(DefineConstants);BCL_FEATURE_WEB_EXCEPTION</DefineConstants>
-  </PropertyGroup>
-
-  <PropertyGroup Condition=" $([System.Text.RegularExpressions.Regex]::IsMatch($(TargetFramework), `^(netstandard2\.\d+|net(coreapp)?[2-9]\.\d+)$`)) ">
-    <DefineConstants>$(DefineConstants);BCL_FEATURE_DBNULL</DefineConstants>
-  </PropertyGroup>
-
-  <PropertyGroup Condition=" $([System.Text.RegularExpressions.Regex]::IsMatch($(TargetFramework), `^(netstandard2\.[1-9]|net(coreapp)?[2-9]\.\d+)$`)) ">
-    <DefineConstants>$(DefineConstants);BCL_FEATURE_MATHF</DefineConstants>
-  </PropertyGroup>
-
-  <PropertyGroup Condition=" $([System.Text.RegularExpressions.Regex]::IsMatch($(TargetFramework), `^(netstandard2\.[1-9]|net(coreapp)?[3-9]\.\d+)$`)) ">
-    <DefineConstants>$(DefineConstants);BCL_FEATURE_SPAN;BCL_FEATURE_HASHCODE;BCL_FEATURE_ASYNC_ENUMERABLE;BCL_FEATURE_TRY_ADD;LANG_FEATURE_INTERFACE_DEFAULT_METHODS</DefineConstants>
-  </PropertyGroup>
-
-  <PropertyGroup Condition=" $([System.Text.RegularExpressions.Regex]::IsMatch($(TargetFramework), `^(netstandard(1\.[3-9]|[2-9]\.\d+))$`)) ">
-    <DefineConstants>$(DefineConstants);BCL_FEATURE_ARRAY_EMPTY</DefineConstants>
-  </PropertyGroup>
-
   <PropertyGroup Condition=" '$(WCL_IS_CI_BUILD)' == '1' Or '$(WCL_IS_CI_BUILD)' == 'True' Or '$(WCL_IS_CI_BUILD)' == 'On' Or '$(WCL_IS_CI_BUILD)' == 'Yes' ">
     <DefineConstants>$(DefineConstants);ENV_CI_BUILD</DefineConstants>
     <!-- Normalize value -->

@@ -355,13 +355,6 @@ namespace WikiClientLibrary
 
         #endregion
 
-        private static readonly IReadOnlyCollection<PurgeFailureInfo> emptyPurgeFailures
-#if BCL_FEATURE_ARRAY_EMPTY
-            = Array.Empty<PurgeFailureInfo>();
-#else
-            = new PurgeFailureInfo[0];
-#endif
-
         /// <summary>
         /// Asynchronously purges the pages.
         /// </summary>
@@ -426,7 +419,7 @@ namespace WikiClientLibrary
                     }
                 }
             }
-            return failedPages ?? emptyPurgeFailures;
+            return failedPages ?? (IReadOnlyCollection<PurgeFailureInfo>) Array.Empty<PurgeFailureInfo>();
         }
 
         public static async Task PatrolAsync(WikiSite site, int? recentChangeId, int? revisionId, CancellationToken cancellationToken)

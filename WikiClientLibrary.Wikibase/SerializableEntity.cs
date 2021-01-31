@@ -301,8 +301,6 @@ namespace WikiClientLibrary.Wikibase
             //}
         }
 
-#if !NETSTANDARD1_1
-
         /// <inheritdoc cref="Load(JsonReader)"/>
         /// <summary>
         /// Enumerates all the entities from JSON array contained in the file.
@@ -332,8 +330,6 @@ namespace WikiClientLibrary.Wikibase
                     yield return i;
             }
         }
-
-#endif
 
         /// <summary>
         /// Creates a new instance of <see cref="SerializableEntity"/> from JSON string.

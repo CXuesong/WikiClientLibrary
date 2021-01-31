@@ -89,11 +89,7 @@ namespace WikiClientLibrary.Cargo.Linq.ExpressionVisitors
                     }
                 }
             }
-            else if (node.Method.DeclaringType == typeof(Math)
-#if BCL_FEATURE_MATHF
-                     || node.Method.DeclaringType == typeof(MathF)
-#endif
-            )
+            else if (node.Method.DeclaringType == typeof(Math) || node.Method.DeclaringType == typeof(MathF))
             {
                 switch (node.Method.Name)
                 {

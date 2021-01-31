@@ -45,7 +45,7 @@ namespace WikiClientLibrary.Cargo.Linq
         {
             var values = (string)value;
             if (values == null) return default;
-            if (values.Length == 0) return Utility.EmptyArray<T>();
+            if (values.Length == 0) return Array.Empty<T>();
             return values.Split(new[] { separator }, StringSplitOptions.None)
                 .Select(i => (T)Convert.ChangeType(i, typeof(T), CultureInfo.InvariantCulture))
                 .ToList();
@@ -55,7 +55,7 @@ namespace WikiClientLibrary.Cargo.Linq
         {
             var values = (string)value;
             if (values == null) return default;
-            if (values.Length == 0) return Utility.EmptyArray<string>();
+            if (values.Length == 0) return Array.Empty<string>();
             var result = values.Split(new[] { separator }, StringSplitOptions.None);
             for (int i = 0; i < result.Length; i++)
                 result[i] = result[i].Trim();

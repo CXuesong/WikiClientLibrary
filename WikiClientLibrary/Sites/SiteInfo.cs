@@ -383,15 +383,7 @@ namespace WikiClientLibrary.Sites
             foreach (var value in idNsDict.Values)
             {
                 var normalizedName = value.CanonicalName.ToLowerInvariant();
-#if BCL_FEATURE_TRY_ADD
                 if (!nameNsDict.TryAdd(normalizedName, value))
-#else
-                try
-                {
-                    nameNsDict.Add(normalizedName, value);
-                }
-                catch (ArgumentException)
-#endif
                 {
                     site.Logger.LogWarning(
                         "Namespace canonical name collision on {Site}: {Name} for {Value1} and {Value2}.",
@@ -415,15 +407,7 @@ namespace WikiClientLibrary.Sites
                     {
                         ns.AddAlias(name);
                         var normalizedName = name.ToLowerInvariant();
-#if BCL_FEATURE_TRY_ADD
                         if (!nameNsDict.TryAdd(normalizedName, ns))
-#else
-                        try
-                        {
-                            nameNsDict.Add(normalizedName, ns);
-                        }
-                        catch (ArgumentException)
-#endif
                         {
                             // If the namespace alias already exists, check if they're pointing
                             // to the same NamespaceInfo

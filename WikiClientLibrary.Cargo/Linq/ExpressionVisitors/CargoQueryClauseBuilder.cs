@@ -60,9 +60,7 @@ namespace WikiClientLibrary.Cargo.Linq.ExpressionVisitors
             switch (value)
             {
                 case null:
-#if BCL_FEATURE_DBNULL
                 case DBNull _:
-#endif
                     _builder.Append("NULL");
                     break;
                 case char c:

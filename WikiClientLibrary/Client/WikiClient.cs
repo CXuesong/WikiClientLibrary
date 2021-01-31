@@ -238,17 +238,9 @@ namespace WikiClientLibrary.Client
             }
             catch (HttpRequestException ex)
             {
-#if BCL_FEATURE_WEB_EXCEPTION
-                if (ex.InnerException is WebException ex1 && ex1.Status == WebExceptionStatus.SecureChannelFailure)
+                // SSL protocol not supported. This is ubiquitous on .NET Framework 4.5 but no, not on .NET 5.
+                if (ex.InnerException is WebException { Status: WebExceptionStatus.SecureChannelFailure } ex1)
                 {
-#else
-                // .NET 4.5
-                var ex1 = ex.InnerException;
-                if (ex1 != null && ex1.GetType().FullName == "System.Net.WebException")
-                {
-                    var statusProperty = ex1.GetType().GetRuntimeProperty("Status");
-                    if (statusProperty != null && statusProperty.GetValue(ex1)?.ToString() == "SecureChannelFailure")
-#endif
                     {
                         throw new HttpRequestException(ex1.Message + Prompts.ExceptionSecureChannelFailureHint, ex)
                         {

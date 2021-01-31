@@ -113,11 +113,7 @@ namespace WikiClientLibrary.Cargo
                     {
                         site.Logger.LogWarning("cargoquery node is missing in the response.");
                     }
-#if BCL_FEATURE_ARRAY_EMPTY
                     return Array.Empty<JObject>();
-#else
-                    return new JObject[] { };
-#endif
                 }
                 return ((JArray)jroot).Select(row => (JObject)row["title"]).ToList();
             }

@@ -120,12 +120,7 @@ namespace WikiClientLibrary.Cargo.Linq
         }
 
         /// <inheritdoc />
-#if BCL_FEATURE_ASYNC_ENUMERABLE
         public IEnumerator<T> GetEnumerator() => BuildAsyncEnumerable().ToEnumerable().GetEnumerator();
-#else
-        // Use explicit implementation on .NET Standard 1.1 to avoid name conflict with the one returning IAsyncEnumerator.
-        IEnumerator<T> IEnumerable<T>.GetEnumerator() => BuildAsyncEnumerable().ToEnumerable().GetEnumerator();
-#endif
 
         /// <inheritdoc />
         IEnumerator IEnumerable.GetEnumerator() => BuildAsyncEnumerable().ToEnumerable().GetEnumerator();
@@ -134,13 +129,8 @@ namespace WikiClientLibrary.Cargo.Linq
         IQueryProvider IQueryable.Provider => Provider;
 
         /// <inheritdoc />
-#if BCL_FEATURE_ASYNC_ENUMERABLE
         public IAsyncEnumerator<T> GetAsyncEnumerator(CancellationToken cancellationToken = default) =>
             BuildAsyncEnumerable().GetAsyncEnumerator(cancellationToken);
-#else
-        public IAsyncEnumerator<T> GetEnumerator()
-            => BuildAsyncEnumerable().GetEnumerator();
-#endif
 
     }
 
