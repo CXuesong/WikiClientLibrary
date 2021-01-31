@@ -145,9 +145,9 @@ namespace WikiClientLibrary.Scribunto
                 moduleContent, "=mw.text.jsonEncode(p)", true, cancellationToken);
             if (string.IsNullOrEmpty(result.ReturnValue))
                 throw new UnexpectedDataException(Prompts.ExceptionScribuntoConsoleReturnEmpty);
-            using (var sr = new StringReader(result.ReturnValue))
-            using (var jr = new JsonTextReader(sr))
-                return serializer.Deserialize<T>(jr);
+            using var sr = new StringReader(result.ReturnValue);
+            using var jr = new JsonTextReader(sr);
+            return serializer.Deserialize<T>(jr);
         }
 
     }

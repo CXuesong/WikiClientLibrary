@@ -45,8 +45,8 @@ namespace WikiClientLibrary.Client
             JToken jroot;
             try
             {
-                using (var s = await response.Content.ReadAsStreamAsync())
-                    jroot = await MediaWikiHelper.ParseJsonAsync(s, context.CancellationToken);
+                await using var s = await response.Content.ReadAsStreamAsync();
+                jroot = await MediaWikiHelper.ParseJsonAsync(s, context.CancellationToken);
             }
             catch (JsonException)
             {
@@ -195,7 +195,7 @@ namespace WikiClientLibrary.Client
                     throw new OperationConflictException(errorCode, fullMessage);
                 case "badvalue":    // since 1.35.0-wmf.19
                     // throw more specific Exception, if possible.
-                    if (fullMessage.IndexOf("\"action\"", StringComparison.Ordinal) >= 0)
+                    if (fullMessage.Contains("\"action\""))
                         throw new InvalidActionException(errorCode, fullMessage);
                     throw new BadValueException(errorCode, fullMessage);
                 default:

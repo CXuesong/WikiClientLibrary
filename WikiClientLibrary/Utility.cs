@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Buffers;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -6,15 +7,11 @@ using System.Dynamic;
 using System.Globalization;
 using System.IO;
 using System.Linq;
-using System.Net;
-using System.Reflection;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Serialization;
 using WikiClientLibrary.Generators;
-using System.Runtime.CompilerServices;
 using AsyncEnumerableExtensions;
 using WikiClientLibrary.Infrastructures;
 using WikiClientLibrary.Pages;
@@ -86,30 +83,23 @@ namespace WikiClientLibrary
 
         public static string ToWikiQueryValue(object value)
         {
-            switch (value)
+            return value switch
             {
-                case null:
-                case string _:
-                    return (string)value;
-                case bool b:
-                    return b ? "" : null;
-                case AutoWatchBehavior awb:
-                    return awb switch
-                    {
-                        AutoWatchBehavior.Default => "preferences",
-                        AutoWatchBehavior.None => "nochange",
-                        AutoWatchBehavior.Watch => "watch",
-                        AutoWatchBehavior.Unwatch => "unwatch",
-                        _ => throw new ArgumentOutOfRangeException(nameof(value), value, null)
-                    };
-                case DateTime dt:
-                    // ISO 8601
-                    return dt.ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ssK", CultureInfo.InvariantCulture);
-                case IFormattable fmt:
-                    return fmt.ToString(null, CultureInfo.InvariantCulture);
-                default:
-                    return value.ToString();
-            }
+                null => null,
+                string _ => (string)value,
+                bool b => b ? "" : null,
+                AutoWatchBehavior awb => awb switch
+                {
+                    AutoWatchBehavior.Default => "preferences",
+                    AutoWatchBehavior.None => "nochange",
+                    AutoWatchBehavior.Watch => "watch",
+                    AutoWatchBehavior.Unwatch => "unwatch",
+                    _ => throw new ArgumentOutOfRangeException(nameof(value), value, null)
+                },
+                DateTime dt => dt.ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ssK", CultureInfo.InvariantCulture), // ISO 8601
+                IFormattable fmt => fmt.ToString(null, CultureInfo.InvariantCulture),
+                _ => value.ToString(),
+            };
         }
 
         /// <summary>
@@ -263,17 +253,24 @@ namespace WikiClientLibrary
             if (bufferSize <= 0) throw new ArgumentOutOfRangeException(nameof(bufferSize));
             if (byteCount == 0) return 0;
             cancellationToken.ThrowIfCancellationRequested();
-            var buffer = new byte[bufferSize];
-            var bytesRead = 0;
-            while (bytesRead < byteCount)
+            var buffer = ArrayPool<byte>.Shared.Rent(bufferSize);
+            try
             {
-                var chunkSize = Math.Min(byteCount, bufferSize);
-                chunkSize = await source.ReadAsync(buffer, 0, chunkSize, cancellationToken);
-                if (chunkSize == 0) return bytesRead;
-                await destination.WriteAsync(buffer, 0, chunkSize, cancellationToken);
-                bytesRead += chunkSize;
+                var bytesRead = 0;
+                while (bytesRead < byteCount)
+                {
+                    var chunkSize = Math.Min(byteCount, bufferSize);
+                    chunkSize = await source.ReadAsync(buffer.AsMemory(0, chunkSize), cancellationToken);
+                    if (chunkSize == 0) return bytesRead;
+                    await destination.WriteAsync(buffer.AsMemory(0, chunkSize), cancellationToken);
+                    bytesRead += chunkSize;
+                }
+                return bytesRead;
             }
-            return bytesRead;
+            finally
+            {
+                ArrayPool<byte>.Shared.Return(buffer);
+            }
         }
 
         public static Dictionary<TKey, TValue> ToDictionary<TKey, TValue>(this IEnumerable<KeyValuePair<TKey, TValue>> source)

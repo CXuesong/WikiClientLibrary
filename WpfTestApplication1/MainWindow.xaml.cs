@@ -17,8 +17,6 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
-using System.Windows.Shapes;
-using WikiClientLibrary;
 using WikiClientLibrary.Client;
 using WikiClientLibrary.Pages.Parsing;
 using WikiClientLibrary.Sites;
@@ -42,12 +40,10 @@ namespace WpfTestApplication1
         public MainWindow()
         {
             InitializeComponent();
-            using (var s = typeof (MainWindow).Assembly.GetManifestResourceStream("WpfTestApplication1.WikiPageTemplate.html"))
-            {
-                if (s == null) throw new MissingManifestResourceException("Wiki page template file is missing.");
-                using (var reader = new StreamReader(s))
-                    PageTemplate = reader.ReadToEnd();
-            }
+            using var s = typeof (MainWindow).Assembly.GetManifestResourceStream("WpfTestApplication1.WikiPageTemplate.html");
+            if (s == null) throw new MissingManifestResourceException("Wiki page template file is missing.");
+            using var reader = new StreamReader(s);
+            PageTemplate = reader.ReadToEnd();
         }
 
         private void SetStatus(string status = null)
@@ -130,8 +126,7 @@ namespace WpfTestApplication1
         {
             if (e.AddedItems != null && e.AddedItems.Count > 0)
             {
-                var section = e.AddedItems[0] as ContentSectionInfo;
-                if (section != null)
+                if (e.AddedItems[0] is ContentSectionInfo section)
                 {
                     dynamic doc = PageFrame.Document;
                     var anchor = doc?.getElementById(section.Anchor);

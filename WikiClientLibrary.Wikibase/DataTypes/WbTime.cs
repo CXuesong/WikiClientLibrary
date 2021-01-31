@@ -270,21 +270,19 @@ namespace WikiClientLibrary.Wikibase.DataTypes
         /// <inheritdoc />
         public override int GetHashCode()
         {
-            unchecked
-            {
-                var hashCode = Year;
-                hashCode = (hashCode * 397) ^ Month;
-                hashCode = (hashCode * 397) ^ Day;
-                hashCode = (hashCode * 397) ^ Hour;
-                hashCode = (hashCode * 397) ^ Minute;
-                hashCode = (hashCode * 397) ^ Second;
-                hashCode = (hashCode * 397) ^ Before;
-                hashCode = (hashCode * 397) ^ After;
-                hashCode = (hashCode * 397) ^ TimeZone;
-                hashCode = (hashCode * 397) ^ (int)Precision;
-                hashCode = (hashCode * 397) ^ CalendarModel.GetHashCode();
-                return hashCode;
-            }
+            var hash = new HashCode();
+            hash.Add(Year);
+            hash.Add(Month);
+            hash.Add(Day);
+            hash.Add(Hour);
+            hash.Add(Minute);
+            hash.Add(Second);
+            hash.Add(Before);
+            hash.Add(After);
+            hash.Add(TimeZone);
+            hash.Add(Precision);
+            hash.Add(CalendarModel);
+            return hash.ToHashCode();
         }
 
         public static bool operator ==(WbTime left, WbTime right)

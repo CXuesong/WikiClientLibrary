@@ -15,58 +15,56 @@ namespace WikiClientLibrary.Demos.ScribuntoInteractive
         internal static async Task Main(string[] args)
         {
             var endPoint = args.Length > 0 ? args[0] : "https://test2.wikipedia.org/w/api.php";
-            using (var client = new WikiClient { ClientUserAgent = "ScribuntoConsoleTestApplication1/0.1" })
+            using var client = new WikiClient { ClientUserAgent = "ScribuntoConsoleTestApplication1/0.1" };
+            var site = new WikiSite(client, endPoint);
+            await site.Initialization;
+            var sc = new ScribuntoConsole(site);
+            await ResetSessionAsync(sc);
+            var eofShortcut = RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? "Ctrl + Z" : "Ctrl + D";
+            Console.WriteLine("* Enter any Lua expression to evaluate. EOF ({0}) to exit.", eofShortcut);
+            Console.WriteLine("* Precede a line with '=' to evaluate it as an expression or use \x1b[36mprint()\x1b[0m. Use \x1b[36mmw.logObject()\x1b[0m for tables.");
+            Console.WriteLine("* Use \x1b[36mmw.log()\x1b[0m and \x1b[36mmw.logObject()\x1b[0m in module code to send messages to this console.");
+            Console.WriteLine("* Enter .help for a list of local commands.");
+            while (true)
             {
-                var site = new WikiSite(client, endPoint);
-                await site.Initialization;
-                var sc = new ScribuntoConsole(site);
-                await ResetSessionAsync(sc);
-                var eofShortcut = RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? "Ctrl + Z" : "Ctrl + D";
-                Console.WriteLine("* Enter any Lua expression to evaluate. EOF ({0}) to exit.", eofShortcut);
-                Console.WriteLine("* Precede a line with '=' to evaluate it as an expression or use \x1b[36mprint()\x1b[0m. Use \x1b[36mmw.logObject()\x1b[0m for tables.");
-                Console.WriteLine("* Use \x1b[36mmw.log()\x1b[0m and \x1b[36mmw.logObject()\x1b[0m in module code to send messages to this console.");
-                Console.WriteLine("* Enter .help for a list of local commands.", eofShortcut);
-                while (true)
+                Console.Write("> ");
+                var l = Console.ReadLine();
+                if (l == null)
+                    break;
+                if (string.IsNullOrWhiteSpace(l))
+                    continue;
+                if (l.StartsWith("."))
                 {
-                    Console.Write("> ");
-                    var l = Console.ReadLine();
-                    if (l == null)
+                    if (string.Equals(l, ".exit", StringComparison.OrdinalIgnoreCase))
                         break;
-                    if (string.IsNullOrWhiteSpace(l))
-                        continue;
-                    if (l.StartsWith("."))
+                    await ExecuteCommandAsync(l[1..], sc);
+                    continue;
+                }
+                try
+                {
+                    var result = await sc.EvaluateAsync(l);
+                    if (result.IsNewSession)
                     {
-                        if (string.Equals(l, ".exit", StringComparison.OrdinalIgnoreCase))
-                            break;
-                        await ExecuteCommandAsync(l[1..], sc);
-                        continue;
+                        Console.WriteLine("---------- Session Cleared ----------");
                     }
-                    try
+                    if (!string.IsNullOrEmpty(result.Output))
                     {
-                        var result = await sc.EvaluateAsync(l);
-                        if (result.IsNewSession)
-                        {
-                            Console.WriteLine("---------- Session Cleared ----------");
-                        }
-                        if (!string.IsNullOrEmpty(result.Output))
-                        {
-                            Console.WriteLine(result.Output);
-                        }
-                        if (!string.IsNullOrEmpty(result.ReturnValue))
-                        {
-                            Console.ForegroundColor = ConsoleColor.White;
-                            Console.WriteLine(result.ReturnValue);
-                            Console.ResetColor();
-                        }
+                        Console.WriteLine(result.Output);
                     }
-                    catch (ScribuntoConsoleException ex)
+                    if (!string.IsNullOrEmpty(result.ReturnValue))
                     {
-                        if (!string.IsNullOrEmpty(ex.EvaluationResult.Output))
-                        {
-                            Console.WriteLine(ex.EvaluationResult.Output);
-                        }
-                        WriteError(string.Format("{0}: {1}", ex.ErrorCode, ex.ErrorMessage));
+                        Console.ForegroundColor = ConsoleColor.White;
+                        Console.WriteLine(result.ReturnValue);
+                        Console.ResetColor();
                     }
+                }
+                catch (ScribuntoConsoleException ex)
+                {
+                    if (!string.IsNullOrEmpty(ex.EvaluationResult.Output))
+                    {
+                        Console.WriteLine(ex.EvaluationResult.Output);
+                    }
+                    WriteError(string.Format("{0}: {1}", ex.ErrorCode, ex.ErrorMessage));
                 }
             }
         }
@@ -108,9 +106,9 @@ namespace WikiClientLibrary.Demos.ScribuntoInteractive
                 .Where(t => t.attr != null)
                 .Select(t => (command: t.attr.Command, desc: t.attr.Description, method: t.method))
                 .OrderBy(t => t.command);
-            foreach (var t in commands)
+            foreach ((string command, string desc, _) in commands)
             {
-                Console.WriteLine(".{0,-15} {1}", t.command, t.desc);
+                Console.WriteLine(".{0,-15} {1}", command, desc);
             }
         }
 

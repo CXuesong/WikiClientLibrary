@@ -43,15 +43,13 @@ namespace WikiClientLibrary.Tests.UnitTestProject1
                 if (s.Length > 1024) s = s.Substring(0, 1024) + "...";
                 return s;
             }
-            var dict = obj as IDictionary;
-            var enu = obj as IEnumerable;
             if (obj is ICollection collection)
             {
                 sb.AppendLine();
                 sb.Append(' ', indention * 2);
                 sb.AppendFormat("Count = {0}", collection.Count);
             }
-            if (dict != null)
+            if (obj is IDictionary dict)
             {
                 foreach (DictionaryEntry p in dict)
                 {
@@ -61,7 +59,7 @@ namespace WikiClientLibrary.Tests.UnitTestProject1
                     sb.Append(DumpObject(p.Value, indention + 1, maxDepth - 1));
                 }
             }
-            else if (enu != null)
+            else if (obj is IEnumerable enu)
             {
                 foreach (var i in enu)
                 {
@@ -105,11 +103,9 @@ namespace WikiClientLibrary.Tests.UnitTestProject1
             var assembly = typeof(Utility).GetTypeInfo().Assembly;
             var content = assembly.GetManifestResourceStream($"WikiClientLibrary.Tests.UnitTestProject1.DemoImages.{imageName}.jpg");
             if (content == null) throw new ArgumentException("Invalid imageName.");
-            using (var r = new StreamReader(assembly.GetManifestResourceStream($"WikiClientLibrary.Tests.UnitTestProject1.DemoImages.{imageName}.txt")))
-            {
-                var desc = r.ReadToEnd();
-                return new DemoFileInfo(content, desc);
-            }
+            using var r = new StreamReader(assembly.GetManifestResourceStream($"WikiClientLibrary.Tests.UnitTestProject1.DemoImages.{imageName}.txt"));
+            var desc = r.ReadToEnd();
+            return new DemoFileInfo(content, desc);
         }
 
         public static HashSet<T> ToHashSet<T>(this IEnumerable<T> source)

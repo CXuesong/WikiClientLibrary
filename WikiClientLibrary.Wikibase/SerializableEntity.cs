@@ -219,20 +219,16 @@ namespace WikiClientLibrary.Wikibase
         public static IEnumerable<SerializableEntity> ParseAll(string entitiesJson)
         {
             if (entitiesJson == null) throw new ArgumentNullException(nameof(entitiesJson));
-            using (var sr = new StringReader(entitiesJson))
-            using (var jr = new JsonTextReader(sr))
-            {
-                foreach (var i in LoadAll(jr)) yield return i;
-            }
+            using var sr = new StringReader(entitiesJson);
+            using var jr = new JsonTextReader(sr);
+            foreach (var i in LoadAll(jr)) yield return i;
         }
 
         /// <inheritdoc cref="LoadAll(JsonReader)"/>
         public static IEnumerable<SerializableEntity> LoadAll(TextReader reader)
         {
-            using (var jr = new JsonTextReader(reader) {CloseInput = false})
-            {
-                foreach (var i in LoadAll(jr)) yield return i;
-            }
+            using var jr = new JsonTextReader(reader) {CloseInput = false};
+            foreach (var i in LoadAll(jr)) yield return i;
         }
 
         /// <summary>
@@ -307,8 +303,8 @@ namespace WikiClientLibrary.Wikibase
         public static SerializableEntity Load(string fileName)
         {
             if (fileName == null) throw new ArgumentNullException(nameof(fileName));
-            using (var reader = File.OpenText(fileName))
-                return Load(Utility.WikiJsonSerializer.Deserialize<Contracts.Entity>(reader));
+            using var reader = File.OpenText(fileName);
+            return Load(Utility.WikiJsonSerializer.Deserialize<Contracts.Entity>(reader));
         }
 
         /// <inheritdoc cref="LoadAll(JsonReader)"/>
@@ -321,11 +317,9 @@ namespace WikiClientLibrary.Wikibase
         public static IEnumerable<SerializableEntity> LoadAll(string fileName)
         {
             if (fileName == null) throw new ArgumentNullException(nameof(fileName));
-            using (var reader = File.OpenText(fileName))
-            {
-                foreach (var i in LoadAll(reader))
-                    yield return i;
-            }
+            using var reader = File.OpenText(fileName);
+            foreach (var i in LoadAll(reader))
+                yield return i;
         }
 
         /// <summary>

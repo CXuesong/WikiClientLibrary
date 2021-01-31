@@ -51,16 +51,13 @@ namespace WikiClientLibrary.Flow
             return new DateTime(621355968000000000L + ticks * 10000L, DateTimeKind.Utc);
         }
 
-        private static readonly IList<KeyValuePair<string, string>> emptyQueryParams
-            = new KeyValuePair<string, string>[0];
-
         public static IList<KeyValuePair<string, string>> ParseUrlQueryParametrs(string url)
         {
             if (url == null) throw new ArgumentNullException(nameof(url));
             var queryStarts = url.IndexOf('?');
-            if (queryStarts < 0) return emptyQueryParams;
+            if (queryStarts < 0) return Array.Empty<KeyValuePair<string, string>>();
             var query = url[(queryStarts + 1)..];
-            if (query.Length == 0) return emptyQueryParams;
+            if (query.Length == 0) return Array.Empty<KeyValuePair<string, string>>();
             return query.Split('&').Select(p =>
             {
                 var equalIndex = p.IndexOf('=');

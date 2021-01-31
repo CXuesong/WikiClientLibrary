@@ -38,7 +38,7 @@ namespace WikiClientLibrary.Wikia.WikiaApi
         {
             if (site == null) throw new ArgumentNullException(nameof(site));
             if (userName == null) throw new ArgumentNullException(nameof(userName));
-            if (userName.IndexOf(',') >= 0)
+            if (userName.Contains(','))
                 throw new ArgumentException("User name cannot contain comma (,).", nameof(userName));
             using (site.BeginActionScope(null, (object)userName))
             {

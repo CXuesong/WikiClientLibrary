@@ -179,7 +179,7 @@ namespace WikiClientLibrary
             var title = pipePos >= 0 ? text.Substring(0, pipePos) : text;
             var anchor = pipePos >= 0 ? text[(pipePos + 1)..] : null;
             //This code was adapted from Title.php : secureAndSplit()
-            if (title.IndexOf('\ufffd') >= 0)
+            if (title.Contains('\ufffd'))
             {
                 if (exceptionOnFailure)
                     throw new ArgumentException(string.Format(Prompts.ExceptionTitleIllegalCharacter1, "\uFFFD 'REPLACEMENT CHARACTER'"), nameof(text));

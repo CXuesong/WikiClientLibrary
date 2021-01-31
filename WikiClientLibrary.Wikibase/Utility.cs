@@ -56,27 +56,21 @@ namespace WikiClientLibrary.Wikibase
 
         public static string Serialize(this JsonSerializer serializer, object value)
         {
-            using (var writer = new StringWriter())
-            {
-                serializer.Serialize(writer, value);
-                return writer.ToString();
-            }
+            using var writer = new StringWriter();
+            serializer.Serialize(writer, value);
+            return writer.ToString();
         }
 
         public static T Deserialize<T>(this JsonSerializer serializer, TextReader reader)
         {
-            using (var jreader = new JsonTextReader(reader))
-            {
-                return serializer.Deserialize<T>(jreader);
-            }
+            using var jreader = new JsonTextReader(reader);
+            return serializer.Deserialize<T>(jreader);
         }
 
         public static T Deserialize<T>(this JsonSerializer serializer, string json)
         {
-            using (var reader = new StringReader(json))
-            {
-                return serializer.Deserialize<T>(reader);
-            }
+            using var reader = new StringReader(json);
+            return serializer.Deserialize<T>(reader);
         }
 
         public static string NewClaimGuid(string entityId)

@@ -147,11 +147,9 @@ namespace WikiClientLibrary.Infrastructures
                 };
             try
             {
-                using (var reader = new StringReader(content))
-                using (var jreader = new JsonTextReader(reader))
-                {
-                    return jTokenSerializer.Deserialize<JToken>(jreader);
-                }
+                using var reader = new StringReader(content);
+                using var jreader = new JsonTextReader(reader);
+                return jTokenSerializer.Deserialize<JToken>(jreader);
             }
             catch (Exception ex)
             {
@@ -378,13 +376,13 @@ namespace WikiClientLibrary.Infrastructures
                 {
                     if (delimiter == '|')
                     {
-                        if (str.IndexOf('|') >= 0)
+                        if (str.Contains('|'))
                         {
                             sb.Replace('|', '\u001F');
                             sb.Insert(0, '\u001F');
                         }
                     }
-                    else if (/* delimiter == '\u001F' && */ str.IndexOf('\u001F') >= 0)
+                    else if (/* delimiter == '\u001F' && */ str.Contains('\u001F'))
                     {
                         throw new ArgumentException(Prompts.ExceptionJoinValuesCannotContainPipeAndSeparator);
                     }

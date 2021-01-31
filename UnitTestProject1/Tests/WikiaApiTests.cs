@@ -89,8 +89,8 @@ namespace WikiClientLibrary.Tests.UnitTestProject1.Tests
             Assert.NotEmpty(results);
             Assert.All(results, p => Assert.True(p.Quality >= list.MinimumArticleQuality));
             var exactMatches = results.Count(p =>
-                p.Snippet.IndexOf("test", StringComparison.OrdinalIgnoreCase) >= 0
-                || p.Snippet.IndexOf("keyword", StringComparison.OrdinalIgnoreCase) >= 0
+                p.Snippet.Contains("test", StringComparison.OrdinalIgnoreCase)
+                || p.Snippet.Contains("keyword", StringComparison.OrdinalIgnoreCase)
             );
             Output.WriteLine($"Exact matches: {exactMatches}/{results.Count}");
             // At least 80% of the items are exact match.

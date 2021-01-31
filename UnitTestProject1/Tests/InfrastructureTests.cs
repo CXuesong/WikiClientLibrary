@@ -22,9 +22,9 @@ namespace WikiClientLibrary.Tests.UnitTestProject1.Tests
 
         private T DeserializeWith<T>(string json, JsonSerializer serializer)
         {
-            using (var sr = new StringReader(json))
-            using (var jr = new JsonTextReader(sr))
-                return serializer.Deserialize<T>(jr);
+            using var sr = new StringReader(json);
+            using var jr = new JsonTextReader(sr);
+            return serializer.Deserialize<T>(jr);
         }
 
         [Fact]
