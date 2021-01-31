@@ -118,27 +118,18 @@ namespace WikiClientLibrary.Wikia.WikiaApi
 
         private string SerializeRank(SearchRankingType value)
         {
-            switch (value)
+            return value switch
             {
-                case SearchRankingType.Default:
-                    return "default";
-                case SearchRankingType.Newest:
-                    return "newest";
-                case SearchRankingType.Oldest:
-                    return "oldest";
-                case SearchRankingType.RecentlyModified:
-                    return "recently-modified";
-                case SearchRankingType.Stable:
-                    return "Stable";
-                case SearchRankingType.MostViewed:
-                    return "most-viewed";
-                case SearchRankingType.Freshest:
-                    return "freshest";
-                case SearchRankingType.Stalest:
-                    return "stalest";
-                default:
-                    throw new ArgumentOutOfRangeException(nameof(value), value, null);
-            }
+                SearchRankingType.Default => "default",
+                SearchRankingType.Newest => "newest",
+                SearchRankingType.Oldest => "oldest",
+                SearchRankingType.RecentlyModified => "recently-modified",
+                SearchRankingType.Stable => "Stable",
+                SearchRankingType.MostViewed => "most-viewed",
+                SearchRankingType.Freshest => "freshest",
+                SearchRankingType.Stalest => "stalest",
+                _ => throw new ArgumentOutOfRangeException(nameof(value), value, null)
+            };
         }
 
         /// <inheritdoc />

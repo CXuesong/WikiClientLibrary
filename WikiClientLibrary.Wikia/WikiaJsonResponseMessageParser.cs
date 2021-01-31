@@ -70,13 +70,11 @@ namespace WikiClientLibrary.Wikia
                     var details = (string)exception["details"];
                     var code = (int?)exception["code"] ?? (int)response.StatusCode;
                     var traceId = (string)jroot["trace_id"];
-                    switch (type)
+                    throw type switch
                     {
-                        case "NotFoundApiException":
-                            throw new NotFoundApiException(type, message, code, details, traceId);
-                        default:
-                            throw new WikiaApiException(type, message, code, details, traceId);
-                    }
+                        "NotFoundApiException" => new NotFoundApiException(type, message, code, details, traceId),
+                        _ => new WikiaApiException(type, message, code, details, traceId)
+                    };
                 }
             }
             return jroot;

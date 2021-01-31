@@ -261,8 +261,7 @@ namespace WikiClientLibrary.Pages.Parsing
         private static double? TryParseAsDouble(JToken token)
         {
             var s = (string)token;
-            double v;
-            if (double.TryParse(s, out v)) return v;
+            if (double.TryParse(s, out double v)) return v;
             return null;
         }
 

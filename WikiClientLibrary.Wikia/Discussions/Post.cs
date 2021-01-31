@@ -235,13 +235,13 @@ namespace WikiClientLibrary.Wikia.Discussions
             }
             if (listItem.Id.StartsWith("comm-"))
             {
-                id = Convert.ToInt32(listItem.Id.Substring(5));
+                id = Convert.ToInt32(listItem.Id[5..]);
             }
             else
             {
                 var sep = listItem.Id.LastIndexOf('-');
                 if (sep >= 0)
-                    id = Convert.ToInt32(listItem.Id.Substring(sep + 1));
+                    id = Convert.ToInt32(listItem.Id[(sep + 1)..]);
             }
             if (id == 0)
                 throw new UnexpectedDataException($"Cannot infer comment ID from <li> node. @id={listItem.Id}.");

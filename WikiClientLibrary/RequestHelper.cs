@@ -56,7 +56,7 @@ namespace WikiClientLibrary
             }
             return anyNewValue ? CONTINUATION_AVAILABLE : CONTINUATION_LOOP;
 
-            bool ValueEquals(object existing, object incoming)
+            static bool ValueEquals(object existing, object incoming)
             {
                 if (Equals(existing, incoming)) return true;
                 if (existing is DateTime dt && incoming is string s)
@@ -431,7 +431,7 @@ namespace WikiClientLibrary
             //    throw new ArgumentException("Either recentChangeId or revisionId should be set, not both.");
             if (revisionId != null && site.SiteInfo.Version < new MediaWikiVersion(1, 22))
                 throw new InvalidOperationException(Prompts.ExceptionPatrolledByRevisionNotSupported);
-            var token = await site.GetTokenAsync("patrol");
+            var token = await site.GetTokenAsync("patrol", cancellationToken);
             try
             {
                 var jresult = await site.InvokeMediaWikiApiAsync(new MediaWikiFormRequestMessage(new

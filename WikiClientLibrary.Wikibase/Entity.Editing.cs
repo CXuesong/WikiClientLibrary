@@ -126,12 +126,12 @@ namespace WikiClientLibrary.Wikibase
 
         private static string FormatEntityType(EntityType type)
         {
-            switch (type)
+            return type switch
             {
-                case EntityType.Item: return "item";
-                case EntityType.Property: return "property";
-                default: throw new ArgumentException("Invalid entity type.", nameof(type));
-            }
+                EntityType.Item => "item",
+                EntityType.Property => "property",
+                _ => throw new ArgumentException("Invalid entity type.", nameof(type))
+            };
         }
 
         private void CheckEditOptions(EntityEditOptions options)

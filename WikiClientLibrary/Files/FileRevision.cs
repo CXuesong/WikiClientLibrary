@@ -122,20 +122,13 @@ namespace WikiClientLibrary.Files
         {
             set
             {
-                switch (value)
+                ResultCode = value switch
                 {
-                    case "Success":
-                        ResultCode = UploadResultCode.Success;
-                        break;
-                    case "Warning":
-                        ResultCode = UploadResultCode.Warning;
-                        break;
-                    case "Continue":
-                        ResultCode = UploadResultCode.Continue;
-                        break;
-                    default:
-                        throw new ArgumentOutOfRangeException(nameof(value), value, "Unknown result: " + value);
-                }
+                    "Success" => UploadResultCode.Success,
+                    "Warning" => UploadResultCode.Warning,
+                    "Continue" => UploadResultCode.Continue,
+                    _ => throw new ArgumentOutOfRangeException(nameof(value), value, "Unknown result: " + value)
+                };
             }
         }
 

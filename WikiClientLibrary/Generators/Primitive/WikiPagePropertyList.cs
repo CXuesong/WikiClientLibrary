@@ -26,8 +26,7 @@ namespace WikiClientLibrary.Generators.Primitive
         /// <param name="site">The MediaWiki site this instance applies to.</param>
         protected WikiPagePropertyList(WikiSite site)
         {
-            if (site == null) throw new ArgumentNullException(nameof(site));
-            Site = site;
+            Site = site ?? throw new ArgumentNullException(nameof(site));
         }
 
         /// <summary>Gets the MediaWiki site this instance applies to.</summary>

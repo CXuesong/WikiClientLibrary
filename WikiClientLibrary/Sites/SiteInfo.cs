@@ -147,7 +147,7 @@ namespace WikiClientLibrary.Sites
                     }
                     if (value[pos] < '0' && value[pos] > '9')
                         goto NEXT;
-                    Version = MediaWikiVersion.Parse(value.Substring(pos), true);
+                    Version = MediaWikiVersion.Parse(value[pos..], true);
                 }
             }
         }
@@ -164,14 +164,14 @@ namespace WikiClientLibrary.Sites
         public MediaWikiVersion Version { get; private set; }
 
         /// <summary>
-        /// A list of magic words and their aliases 1.14+
+        /// A list of magic words and their aliases (MW 1.14+)
         /// </summary>
-        public string[] MagicWords { get; private set; }
+        public IReadOnlyCollection<string> MagicWords { get; private set; }
 
         [JsonProperty("magicwords")]
         private JObject MagicWordsProxy
         {
-            set { MagicWords = value.Properties().Select(p => p.Name).ToArray(); }
+            set { MagicWords = value.Properties().Select(p => p.Name).ToList().AsReadOnly(); }
         }
 
         #endregion
@@ -191,17 +191,12 @@ namespace WikiClientLibrary.Sites
         {
             set
             {
-                switch (value)
+                IsTitleCaseSensitive = value switch
                 {
-                    case "case-sensitive":
-                        IsTitleCaseSensitive = true;
-                        break;
-                    case "first-letter":
-                        IsTitleCaseSensitive = false;
-                        break;
-                    default:
-                        throw new ArgumentException("Invalid case value.");
-                }
+                    "case-sensitive" => true,
+                    "first-letter" => false,
+                    _ => throw new ArgumentException("Invalid case value.")
+                };
             }
         }
 
@@ -258,8 +253,6 @@ namespace WikiClientLibrary.Sites
     public class NamespaceInfo
     {
 
-        private static IList<string> EmptyStrings = new string[0];
-
         /// <summary>
         /// An integer identification number which is unique for each namespace.
         /// </summary>
@@ -271,17 +264,12 @@ namespace WikiClientLibrary.Sites
         {
             set
             {
-                switch (value)
+                IsCaseSensitive = value switch
                 {
-                    case "case-sensitive":
-                        IsCaseSensitive = true;
-                        break;
-                    case "first-letter":
-                        IsCaseSensitive = false;
-                        break;
-                    default:
-                        throw new ArgumentException("Invalid case value.");
-                }
+                    "case-sensitive" => true,
+                    "first-letter" => false,
+                    _ => throw new ArgumentException("Invalid case value.")
+                };
             }
         }
 
@@ -313,7 +301,7 @@ namespace WikiClientLibrary.Sites
         /// <summary>
         /// Namespace alias names.
         /// </summary>
-        public IList<string> Aliases { get; private set; } = EmptyStrings;
+        public IList<string> Aliases { get; private set; } = (IList<string>) Array.Empty<string>();
 
         // In JSON, prior to MediaWiki 1.25, the parameter name was *.
         [JsonProperty("*")]
@@ -465,12 +453,9 @@ namespace WikiClientLibrary.Sites
 
         private NamespaceInfo TryGetNamespace(string name)
         {
-            NamespaceInfo ns;
             // Namespace name is case-insensitive.
             var nn = Utility.NormalizeTitlePart(name, true).ToLowerInvariant();
-            if (nameNsDict.TryGetValue(nn, out ns))
-                return ns;
-            return null;
+            return nameNsDict.TryGetValue(nn, out NamespaceInfo ns) ? ns : null;
         }
 
         public bool Contains(int index)
@@ -686,13 +671,9 @@ namespace WikiClientLibrary.Sites
             foreach (var entry in entries)
             {
                 var prefix = entry.Prefix.ToLowerInvariant();
-                try
+                if (!entryDict.TryAdd(prefix, entry))
                 {
-                    entryDict.Add(prefix, entry);
-                }
-                catch (ArgumentException)
-                {
-                    // Duplicate key. We will just keep the first occurence.
+                    // Duplicate key. We will just keep the first occurrence.
                     if (entryDict[prefix].Url != entry.Url)
                     {
                         // And there are same prefixes assigned to different URLs. Worse.

@@ -177,7 +177,7 @@ namespace WikiClientLibrary
             //First remove anchor, which is stored unchanged, if there is one
             var pipePos = text.IndexOf('|');
             var title = pipePos >= 0 ? text.Substring(0, pipePos) : text;
-            var anchor = pipePos >= 0 ? text.Substring(pipePos + 1) : null;
+            var anchor = pipePos >= 0 ? text[(pipePos + 1)..] : null;
             //This code was adapted from Title.php : secureAndSplit()
             if (title.IndexOf('\ufffd') >= 0)
             {
@@ -186,7 +186,7 @@ namespace WikiClientLibrary
                 return null;
             }
             var hashPos = title.IndexOf('#');
-            var section = hashPos >= 0 ? title.Substring(hashPos + 1) : null;
+            var section = hashPos >= 0 ? title[(hashPos + 1)..] : null;
             title = hashPos >= 0 ? title.Substring(0, hashPos) : title;
             var match = IllegalTitlesPattern.Match(title);
             if (match.Success)
@@ -477,7 +477,7 @@ namespace WikiClientLibrary
                     {
                         localValue = Target;
                         var colonPos = localValue.IndexOf(':');
-                        if (colonPos >= 0) localValue = localValue.Substring(colonPos + 1);
+                        if (colonPos >= 0) localValue = localValue[(colonPos + 1)..];
                     }
                     else
                     {

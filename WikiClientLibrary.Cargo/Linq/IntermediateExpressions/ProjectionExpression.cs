@@ -55,7 +55,7 @@ namespace WikiClientLibrary.Cargo.Linq.IntermediateExpressions
             if (alias == null)
                 throw new ArgumentNullException(nameof(alias));
             if (alias.StartsWith("wcl_p"))
-                return alias.Substring(5);
+                return alias[5..];
             return alias;
         }
 

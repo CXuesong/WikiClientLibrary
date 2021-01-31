@@ -112,7 +112,7 @@ namespace WikiClientLibrary.Generators
             if ((value & RecentChangesFilterTypes.Log) == RecentChangesFilterTypes.Log) types += "|log";
             if ((value & RecentChangesFilterTypes.Categorize) == RecentChangesFilterTypes.Categorize) types += "|categorize";
             if (types.Length == 0) throw new ArgumentOutOfRangeException(nameof(value));
-            return types.Substring(1);
+            return types[1..];
         }
 
         private string ParseFilters()
@@ -122,7 +122,7 @@ namespace WikiClientLibrary.Generators
                         + AnonymousFilter.ToString("|anon", "|!anon", "")
                         + RedirectsFilter.ToString("|redirect", "|!redirect", "")
                         + PatrolledFilter.ToString("|patrolled", "|!patrolled", "");
-            return types.Length > 1 ? types.Substring(1) : null;
+            return types.Length > 1 ? types[1..] : null;
         }
 
         private IEnumerable<KeyValuePair<string, object>> EnumParams(bool isList)

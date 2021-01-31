@@ -64,7 +64,7 @@ namespace WikiClientLibrary.Generators
             if ((value & CategoryMemberTypes.Subcategory) == CategoryMemberTypes.Subcategory) types += "|subcat";
             if ((value & CategoryMemberTypes.File) == CategoryMemberTypes.File) types += "|file";
             if (types.Length == 0) throw new ArgumentOutOfRangeException(nameof(value));
-            return types.Substring(1);
+            return types[1..];
         }
 
         /// <inheritdoc />

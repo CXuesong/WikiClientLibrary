@@ -193,15 +193,12 @@ namespace WikiClientLibrary.Scribunto
                     "The MediaWiki site does not support Scribunto console. Check whether the required extension has been installed.", ex);
             }
             var result = jresult.ToObject<ScribuntoEvaluationResult>(Utility.WikiJsonSerializer);
-            switch (result.Type)
+            return result.Type switch
             {
-                case ScribuntoEvaluationResultType.Normal:
-                    return result;
-                case ScribuntoEvaluationResultType.Error:
-                    throw new ScribuntoConsoleException((string)jresult["messagename"], (string)jresult["message"], result);
-                default:
-                    throw new UnexpectedDataException($"Unexpected evaluation result type: {(string)jresult["type"]}.");
-            }
+                ScribuntoEvaluationResultType.Normal => result,
+                ScribuntoEvaluationResultType.Error => throw new ScribuntoConsoleException((string)jresult["messagename"], (string)jresult["message"], result),
+                _ => throw new UnexpectedDataException($"Unexpected evaluation result type: {(string)jresult["type"]}.")
+            };
         }
 
     }

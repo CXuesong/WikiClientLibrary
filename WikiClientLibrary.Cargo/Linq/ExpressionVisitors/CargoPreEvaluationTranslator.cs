@@ -16,18 +16,16 @@ namespace WikiClientLibrary.Cargo.Linq.ExpressionVisitors
         {
             if (node.Object == null && node.Method.DeclaringType == typeof(CargoFunctions))
             {
-                switch (node.Method.Name)
+                return node.Method.Name switch
                 {
-                    case nameof(CargoFunctions.Like):
-                        return new CargoBinaryOperationExpression(" LIKE ", Visit(node.Arguments[0]), Visit(node.Arguments[1]), node.Type);
-                    case nameof(CargoFunctions.Holds):
-                        return new CargoBinaryOperationExpression(" HOLDS ", Visit(node.Arguments[0]), Visit(node.Arguments[1]), node.Type);
-                    case nameof(CargoFunctions.HoldsLike):
-                        return new CargoBinaryOperationExpression(" HOLDS LIKE ", Visit(node.Arguments[0]), Visit(node.Arguments[1]), node.Type);
-                    case nameof(CargoFunctions.DateDiff):
-                        return new CargoFunctionExpression("DATEDIFF", typeof(int), Visit(node.Arguments[0]), Visit(node.Arguments[1]));
-                }
-                throw new NotImplementedException($"CargoFunction call is not implemented: {node.Method}.");
+                    nameof(CargoFunctions.Like) => new CargoBinaryOperationExpression(" LIKE ", Visit(node.Arguments[0]), Visit(node.Arguments[1]), node.Type),
+                    nameof(CargoFunctions.Holds) =>
+                        new CargoBinaryOperationExpression(" HOLDS ", Visit(node.Arguments[0]), Visit(node.Arguments[1]), node.Type),
+                    nameof(CargoFunctions.HoldsLike) => new CargoBinaryOperationExpression(" HOLDS LIKE ", Visit(node.Arguments[0]), Visit(node.Arguments[1]),
+                        node.Type),
+                    nameof(CargoFunctions.DateDiff) => new CargoFunctionExpression("DATEDIFF", typeof(int), Visit(node.Arguments[0]), Visit(node.Arguments[1])),
+                    _ => throw new NotImplementedException($"CargoFunction call is not implemented: {node.Method}.")
+                };
             }
             return base.VisitMethodCall(node);
         }

@@ -202,12 +202,12 @@ namespace WikiClientLibrary.Wikia
                 var pageNamespaceId = owner.NamespaceId;
                 if (pageTitle.StartsWith("Message Wall:", StringComparison.OrdinalIgnoreCase))
                 {
-                    pageTitle = pageTitle.Substring(13);
+                    pageTitle = pageTitle[13..];
                     if (!owner.HasNamespaceId) pageNamespaceId = WikiaNamespaces.MessageWall;
                 }
                 else if (pageTitle.StartsWith("Board:", StringComparison.OrdinalIgnoreCase))
                 {
-                    pageTitle = pageTitle.Substring(6);
+                    pageTitle = pageTitle[6..];
                     if (!owner.HasNamespaceId) pageNamespaceId = WikiaNamespaces.Thread;
                 }
                 else
@@ -244,7 +244,7 @@ namespace WikiClientLibrary.Wikia
                     {
                         if (!tokenPurged)
                         {
-                            if (errorMessage.IndexOf("There seems to be a problem with your login session", StringComparison.OrdinalIgnoreCase) >= 0)
+                            if (errorMessage.Contains("There seems to be a problem with your login session", StringComparison.OrdinalIgnoreCase))
                             {
                                 await site.GetTokenAsync("edit", true, cancellationToken);
                                 tokenPurged = true;
@@ -292,7 +292,7 @@ namespace WikiClientLibrary.Wikia
                     {
                         if (!tokenPurged)
                         {
-                            if (errorMessage.IndexOf("There seems to be a problem with your login session", StringComparison.OrdinalIgnoreCase) >= 0)
+                            if (errorMessage.Contains("There seems to be a problem with your login session", StringComparison.OrdinalIgnoreCase))
                             {
                                 await site.GetTokenAsync("edit", true, cancellationToken);
                                 tokenPurged = true;

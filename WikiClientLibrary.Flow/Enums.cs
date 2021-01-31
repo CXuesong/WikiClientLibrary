@@ -51,40 +51,38 @@ namespace WikiClientLibrary.Flow
 
         public static string ToString(ModerationAction value)
         {
-            switch (value)
+            return value switch
             {
-                case ModerationAction.Delete: return "delete";
-                case ModerationAction.Hide: return "hide";
-                case ModerationAction.Suppress: return "suppress";
-                case ModerationAction.Restore: return "restore";
-                case ModerationAction.Unhide: return "unhide";
-                case ModerationAction.Undelete: return "undelete";
-                case ModerationAction.Unsuppress: return "unsuppress";
-                default:
-                    throw new ArgumentOutOfRangeException(nameof(value), value, null);
-            }
+                ModerationAction.Delete => "delete",
+                ModerationAction.Hide => "hide",
+                ModerationAction.Suppress => "suppress",
+                ModerationAction.Restore => "restore",
+                ModerationAction.Unhide => "unhide",
+                ModerationAction.Undelete => "undelete",
+                ModerationAction.Unsuppress => "unsuppress",
+                _ => throw new ArgumentOutOfRangeException(nameof(value), value, null)
+            };
         }
 
         public static string ToString(LockAction value)
         {
-            switch (value)
+            return value switch
             {
-                case LockAction.Lock: return "lock";
-                case LockAction.Unlock: return "unlock";
-                default:
-                    throw new ArgumentOutOfRangeException(nameof(value), value, null);
-            }
+                LockAction.Lock => "lock",
+                LockAction.Unlock => "unlock",
+                _ => throw new ArgumentOutOfRangeException(nameof(value), value, null)
+            };
         }
 
         public static ModerationState ParseModerationState(string value)
         {
-            switch (value)
+            return value switch
             {
-                case "delete": return ModerationState.Deleted;
-                case "hide": return ModerationState.Hidden;
-                case "suppress": return ModerationState.Suppressed;
-                default: return ModerationState.Unknown;
-            }
+                "delete" => ModerationState.Deleted,
+                "hide" => ModerationState.Hidden,
+                "suppress" => ModerationState.Suppressed,
+                _ => ModerationState.Unknown
+            };
         }
 
     }

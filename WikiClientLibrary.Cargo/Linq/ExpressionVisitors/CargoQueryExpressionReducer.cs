@@ -32,27 +32,24 @@ namespace WikiClientLibrary.Cargo.Linq.ExpressionVisitors
             // c.f. https://github.com/dotnet/efcore/blob/main/src/EFCore.InMemory/Query/Internal/InMemoryQueryableMethodTranslatingExpressionVisitor.cs
             if (node.Method.DeclaringType == typeof(Queryable))
             {
-                switch (node.Method.Name)
+                return node.Method.Name switch
                 {
-                    case nameof(Queryable.Select):
-                        return ProcessSelectCall((CargoQueryExpression)Visit(node.Arguments[0]), UnwindLambdaExpression(Visit(node.Arguments[1])));
-                    case nameof(Queryable.Where):
-                        return ProcessWhereCall((CargoQueryExpression)Visit(node.Arguments[0]), UnwindLambdaExpression(Visit(node.Arguments[1])));
-                    case nameof(Queryable.Take):
-                        return ProcessTakeCall((CargoQueryExpression)Visit(node.Arguments[0]), (ConstantExpression)Visit(node.Arguments[1]));
-                    case nameof(Queryable.Skip):
-                        return ProcessSkipCall((CargoQueryExpression)Visit(node.Arguments[0]), (ConstantExpression)Visit(node.Arguments[1]));
-                    case nameof(Queryable.OrderBy):
-                        return ProcessOrderByCall((CargoQueryExpression)Visit(node.Arguments[0]), UnwindLambdaExpression(Visit(node.Arguments[1])), false);
-                    case nameof(Queryable.ThenBy):
-                        return ProcessThenOrderByCall((CargoQueryExpression)Visit(node.Arguments[0]), UnwindLambdaExpression(Visit(node.Arguments[1])),
-                            false);
-                    case nameof(Queryable.OrderByDescending):
-                        return ProcessOrderByCall((CargoQueryExpression)Visit(node.Arguments[0]), UnwindLambdaExpression(Visit(node.Arguments[1])), true);
-                    case nameof(Queryable.ThenByDescending):
-                        return ProcessThenOrderByCall((CargoQueryExpression)Visit(node.Arguments[0]), UnwindLambdaExpression(Visit(node.Arguments[1])), true);
-                }
-                throw new NotSupportedException($"Queryable method call is not supported: {node.Method}.");
+                    nameof(Queryable.Select) => ProcessSelectCall((CargoQueryExpression)Visit(node.Arguments[0]),
+                        UnwindLambdaExpression(Visit(node.Arguments[1]))),
+                    nameof(Queryable.Where) => ProcessWhereCall((CargoQueryExpression)Visit(node.Arguments[0]),
+                        UnwindLambdaExpression(Visit(node.Arguments[1]))),
+                    nameof(Queryable.Take) => ProcessTakeCall((CargoQueryExpression)Visit(node.Arguments[0]), (ConstantExpression)Visit(node.Arguments[1])),
+                    nameof(Queryable.Skip) => ProcessSkipCall((CargoQueryExpression)Visit(node.Arguments[0]), (ConstantExpression)Visit(node.Arguments[1])),
+                    nameof(Queryable.OrderBy) => ProcessOrderByCall((CargoQueryExpression)Visit(node.Arguments[0]),
+                        UnwindLambdaExpression(Visit(node.Arguments[1])), false),
+                    nameof(Queryable.ThenBy) => ProcessThenOrderByCall((CargoQueryExpression)Visit(node.Arguments[0]),
+                        UnwindLambdaExpression(Visit(node.Arguments[1])), false),
+                    nameof(Queryable.OrderByDescending) => ProcessOrderByCall((CargoQueryExpression)Visit(node.Arguments[0]),
+                        UnwindLambdaExpression(Visit(node.Arguments[1])), true),
+                    nameof(Queryable.ThenByDescending) => ProcessThenOrderByCall((CargoQueryExpression)Visit(node.Arguments[0]),
+                        UnwindLambdaExpression(Visit(node.Arguments[1])), true),
+                    _ => throw new NotSupportedException($"Queryable method call is not supported: {node.Method}.")
+                };
             }
             return node;
         }

@@ -138,7 +138,7 @@ namespace WikiClientLibrary.Flow
                     foreach (var pa in urlParams)
                     {
                         if (pa.Key.StartsWith("topiclist_"))
-                            queryParams["vtl" + pa.Key.Substring(10)] = pa.Value;
+                            queryParams["vtl" + pa.Key[10..]] = pa.Value;
                     }
                     goto NEXT_PAGE;
                 }

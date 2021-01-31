@@ -200,21 +200,15 @@ namespace WikiClientLibrary.Wikibase.DataTypes
         /// <inheritdoc />
         public override string ToString()
         {
-            switch (Precision)
+            return Precision switch
             {
-                case WikibaseTimePrecision.Month:
-                    return $"{Year:0000}-{Month:00}";
-                case WikibaseTimePrecision.Day:
-                    return $"{Year:0000}-{Month:00}-{Day:00}";
-                case WikibaseTimePrecision.Hour:
-                    return $"{Year:0000}-{Month:00}-{Day:00} {Hour:00}h";
-                case WikibaseTimePrecision.Minute:
-                    return $"{Year:0000}-{Month:00}-{Day:00} {Hour:00}:{Minute:00}";
-                case WikibaseTimePrecision.Second:
-                    return $"{Year:0000}-{Month:00}-{Day:00} {Hour:00}:{Minute:00}:{Second:00}";
-                default:
-                    return "Y" + Year;
-            }
+                WikibaseTimePrecision.Month => $"{Year:0000}-{Month:00}",
+                WikibaseTimePrecision.Day => $"{Year:0000}-{Month:00}-{Day:00}",
+                WikibaseTimePrecision.Hour => $"{Year:0000}-{Month:00}-{Day:00} {Hour:00}h",
+                WikibaseTimePrecision.Minute => $"{Year:0000}-{Month:00}-{Day:00} {Hour:00}:{Minute:00}",
+                WikibaseTimePrecision.Second => $"{Year:0000}-{Month:00}-{Day:00} {Hour:00}:{Minute:00}:{Second:00}",
+                _ => "Y" + Year
+            };
         }
 
         /// <summary>

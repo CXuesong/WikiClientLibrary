@@ -201,7 +201,7 @@ namespace WikiClientLibrary
                     }
                     try
                     {
-                        devVersion = int.Parse(devFullVersion.Substring(devVersionStartsAt));
+                        devVersion = int.Parse(devFullVersion[devVersionStartsAt..]);
                     }
                     catch (Exception ex)
                     {

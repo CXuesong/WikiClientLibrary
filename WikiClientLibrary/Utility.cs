@@ -94,19 +94,14 @@ namespace WikiClientLibrary
                 case bool b:
                     return b ? "" : null;
                 case AutoWatchBehavior awb:
-                    switch (awb)
+                    return awb switch
                     {
-                        case AutoWatchBehavior.Default:
-                            return "preferences";
-                        case AutoWatchBehavior.None:
-                            return "nochange";
-                        case AutoWatchBehavior.Watch:
-                            return "watch";
-                        case AutoWatchBehavior.Unwatch:
-                            return "unwatch";
-                        default:
-                            throw new ArgumentOutOfRangeException(nameof(value), value, null);
-                    }
+                        AutoWatchBehavior.Default => "preferences",
+                        AutoWatchBehavior.None => "nochange",
+                        AutoWatchBehavior.Watch => "watch",
+                        AutoWatchBehavior.Unwatch => "unwatch",
+                        _ => throw new ArgumentOutOfRangeException(nameof(value), value, null)
+                    };
                 case DateTime dt:
                     // ISO 8601
                     return dt.ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ssK", CultureInfo.InvariantCulture);
@@ -140,17 +135,13 @@ namespace WikiClientLibrary
         public static string ToString(this PropertyFilterOption value,
             string withValue, string withoutValue, string allValue = "all")
         {
-            switch (value)
+            return value switch
             {
-                case PropertyFilterOption.Disable:
-                    return allValue;
-                case PropertyFilterOption.WithProperty:
-                    return withValue;
-                case PropertyFilterOption.WithoutProperty:
-                    return withoutValue;
-                default:
-                    throw new ArgumentOutOfRangeException(nameof(value), value, null);
-            }
+                PropertyFilterOption.Disable => allValue,
+                PropertyFilterOption.WithProperty => withValue,
+                PropertyFilterOption.WithoutProperty => withoutValue,
+                _ => throw new ArgumentOutOfRangeException(nameof(value), value, null)
+            };
         }
 
         /// <summary>
@@ -239,7 +230,7 @@ namespace WikiClientLibrary
             if (state == 2)
             {
                 // Remove trailing space.
-                Debug.Assert(sb[sb.Length - 1] == ' ');
+                Debug.Assert(sb[^1] == ' ');
                 return sb.ToString(0, sb.Length - 1);
             }
             return sb.ToString();

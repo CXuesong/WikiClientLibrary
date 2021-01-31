@@ -148,9 +148,6 @@ namespace WikiClientLibrary.Infrastructures.Logging
 
         private sealed class ActionLogScopeState : IReadOnlyList<KeyValuePair<string, object>>
         {
-
-            private static readonly object[] emptyParameters = { };
-
             private readonly object target;
             private readonly string action;
             private readonly IList parameters;
@@ -162,11 +159,11 @@ namespace WikiClientLibrary.Infrastructures.Logging
                 this.action = action;
                 if (parameters == null)
                 {
-                    this.parameters = emptyParameters;
+                    this.parameters = Array.Empty<object>();
                 }
                 else if (parameters is IList list)
                 {
-                    this.parameters = list.Count > 0 ? list : emptyParameters;
+                    this.parameters = list.Count > 0 ? list : Array.Empty<object>();
                 }
                 else
                 {
@@ -196,13 +193,13 @@ namespace WikiClientLibrary.Infrastructures.Logging
             {
                 get
                 {
-                    switch (index)
+                    return index switch
                     {
-                        case 0: return new KeyValuePair<string, object>("Target", target);
-                        case 1: return new KeyValuePair<string, object>("Action", action);
-                        case 2: return new KeyValuePair<string, object>("Parameters", parameters);
-                        default: throw new IndexOutOfRangeException();
-                    }
+                        0 => new KeyValuePair<string, object>("Target", target),
+                        1 => new KeyValuePair<string, object>("Action", action),
+                        2 => new KeyValuePair<string, object>("Parameters", parameters),
+                        _ => throw new IndexOutOfRangeException()
+                    };
                 }
             }
 
@@ -217,18 +214,16 @@ namespace WikiClientLibrary.Infrastructures.Logging
                 if (target is IEnumerable<object> enu)
                 {
                     isCollection = true;
-                    using (var e = enu.GetEnumerator())
+                    using var e = enu.GetEnumerator();
+                    if (e.MoveNext())
                     {
-                        if (e.MoveNext())
-                        {
-                            localTarget = e.Current;
-                            anyMoreItems = e.MoveNext();
-                        }
-                        else
-                        {
-                            localTarget = null;
-                            builder.Append("{[]}");
-                        }
+                        localTarget = e.Current;
+                        anyMoreItems = e.MoveNext();
+                    }
+                    else
+                    {
+                        localTarget = null;
+                        builder.Append("{[]}");
                     }
                 }
                 if (localTarget != null)

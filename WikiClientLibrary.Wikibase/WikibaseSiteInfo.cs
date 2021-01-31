@@ -85,7 +85,7 @@ namespace WikiClientLibrary.Wikibase
         {
             if (entityUri == null) throw new ArgumentNullException(nameof(entityUri));
             if (entityUri.StartsWith(ConceptBaseUri, StringComparison.Ordinal))
-                return entityUri.Substring(ConceptBaseUri.Length);
+                return entityUri[ConceptBaseUri.Length..];
             throw new ArgumentException("Cannot parse entity ID from the specified entity URI.");
         }
 

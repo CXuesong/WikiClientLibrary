@@ -36,19 +36,14 @@ namespace WikiClientLibrary.Cargo.Linq.ExpressionVisitors
         /// <inheritdoc />
         public override int GetHashCode(Expression obj)
         {
-            switch (obj)
+            return obj switch
             {
-                case ConstantExpression ce:
-                    return unchecked(ce.NodeType.GetHashCode() * 7 + ce.Type.GetHashCode() * 43 + (ce.Value == null ? 0 : ce.Value.GetHashCode()) * 71);
-                case BinaryExpression be:
-                    return unchecked(be.NodeType.GetHashCode() * 7 + GetHashCode(be.Left) * 43 + GetHashCode(be.Right) * 71);
-                case MemberExpression me:
-                    return unchecked(me.NodeType.GetHashCode() * 7 + GetHashCode(me.Expression) * 43 + me.Member.GetHashCode() * 71 +
-                                     me.Type.GetHashCode() * 97);
-                case null:
-                    return 0;
-            }
-            return obj.GetHashCode();
+                ConstantExpression ce => HashCode.Combine(ce.NodeType, ce.Type, ce.Value),
+                BinaryExpression be => HashCode.Combine(be.NodeType, GetHashCode(be.Left), GetHashCode(be.Right)),
+                MemberExpression me => HashCode.Combine(me.NodeType, GetHashCode(me.Expression), me.Member, me.Type),
+                null => 0,
+                _ => obj.GetHashCode()
+            };
         }
 
     }

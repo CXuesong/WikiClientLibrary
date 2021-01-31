@@ -36,19 +36,12 @@ namespace WikiClientLibrary.Flow
         public static UserStub UserFromJson(JToken user)
         {
             if (user == null) throw new ArgumentNullException(nameof(user));
-            Gender gender;
-            switch ((string)user["gender"])
+            Gender gender = (string)user["gender"] switch
             {
-                case "male":
-                    gender = Gender.Male;
-                    break;
-                case "female":
-                    gender = Gender.Female;
-                    break;
-                default:
-                    gender = Gender.Unknown;
-                    break;
-            }
+                "male" => Gender.Male,
+                "female" => Gender.Female,
+                _ => Gender.Unknown
+            };
             return new UserStub((string)user["name"], (int?)user["id"] ?? 0, gender, (string)user["wiki"]);
         }
 
@@ -66,13 +59,13 @@ namespace WikiClientLibrary.Flow
             if (url == null) throw new ArgumentNullException(nameof(url));
             var queryStarts = url.IndexOf('?');
             if (queryStarts < 0) return emptyQueryParams;
-            var query = url.Substring(queryStarts + 1);
+            var query = url[(queryStarts + 1)..];
             if (query.Length == 0) return emptyQueryParams;
             return query.Split('&').Select(p =>
             {
                 var equalIndex = p.IndexOf('=');
                 if (equalIndex < 0) return new KeyValuePair<string, string>(null, p);
-                return new KeyValuePair<string, string>(p.Substring(0, equalIndex), p.Substring(equalIndex + 1));
+                return new KeyValuePair<string, string>(p.Substring(0, equalIndex), p[(equalIndex + 1)..]);
             }).ToList();
         }
 

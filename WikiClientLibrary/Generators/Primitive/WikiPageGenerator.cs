@@ -43,7 +43,7 @@ namespace WikiClientLibrary.Generators.Primitive
     {
 
         /// <inheritdoc/>
-        public WikiPageGenerator(WikiSite site) : base(site)
+        protected WikiPageGenerator(WikiSite site) : base(site)
         {
         }
 

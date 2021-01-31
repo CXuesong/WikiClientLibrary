@@ -381,43 +381,37 @@ namespace WikiClientLibrary.Wikibase
         public override string ToString()
         {
             // TODO need something link TryGetDataValue to handle unknown data types
-            var valueExpr = "[Invalid SnakType]";
-            switch (SnakType)
+            var valueExpr = SnakType switch
             {
-                case SnakType.Value:
-                    valueExpr = DataValue?.ToString();
-                    break;
-                case SnakType.SomeValue:
-                    valueExpr = "[SomeValue]";
-                    break;
-                case SnakType.NoValue:
-                    valueExpr = "[NoValue]";
-                    break;
-            }
+                SnakType.Value => DataValue?.ToString(),
+                SnakType.SomeValue => "[SomeValue]",
+                SnakType.NoValue => "[NoValue]",
+                _ => "[Invalid SnakType]"
+            };
             return $"{PropertyId} = {valueExpr}";
         }
 
         internal static SnakType ParseSnakType(string expr)
         {
             if (expr == null) throw new ArgumentNullException(nameof(expr));
-            switch (expr)
+            return expr switch
             {
-                case "value": return SnakType.Value;
-                case "somevalue": return SnakType.SomeValue;
-                case "novalue": return SnakType.NoValue;
-                default: throw new ArgumentException("Invalid SnackType expression.", nameof(expr));
-            }
+                "value" => SnakType.Value,
+                "somevalue" => SnakType.SomeValue,
+                "novalue" => SnakType.NoValue,
+                _ => throw new ArgumentException("Invalid SnackType expression.", nameof(expr))
+            };
         }
 
         internal static string ParseSnakType(SnakType value)
         {
-            switch (value)
+            return value switch
             {
-                case SnakType.Value: return "value";
-                case SnakType.SomeValue: return "somevalue";
-                case SnakType.NoValue: return "novalue";
-                default: throw new ArgumentException("Invalid SnackType value.", nameof(value));
-            }
+                SnakType.Value => "value",
+                SnakType.SomeValue => "somevalue",
+                SnakType.NoValue => "novalue",
+                _ => throw new ArgumentException("Invalid SnackType value.", nameof(value))
+            };
         }
 
         internal static Snak FromContract(Contracts.Snak snak)

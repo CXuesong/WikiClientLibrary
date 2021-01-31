@@ -102,25 +102,22 @@ namespace WikiClientLibrary.Wikibase
 
         internal static EntityType ParseEntityType(string value)
         {
-            switch (value)
+            return value switch
             {
-                case "item":
-                    return EntityType.Item;
-                case "property":
-                    return EntityType.Property;
-                default:
-                    return EntityType.Unknown;
-            }
+                "item" => EntityType.Item,
+                "property" => EntityType.Property,
+                _ => EntityType.Unknown
+            };
         }
 
         private static string ToString(EntityType value)
         {
-            switch (value)
+            return value switch
             {
-                case EntityType.Item: return "item";
-                case EntityType.Property: return "property";
-                default: return "unknown";
-            }
+                EntityType.Item => "item",
+                EntityType.Property => "property",
+                _ => "unknown"
+            };
         }
 
         /// <summary>

@@ -38,7 +38,7 @@ namespace WikiClientLibrary.Demos.ScribuntoInteractive
                     {
                         if (string.Equals(l, ".exit", StringComparison.OrdinalIgnoreCase))
                             break;
-                        await ExecuteCommandAsync(l.Substring(1), sc);
+                        await ExecuteCommandAsync(l[1..], sc);
                         continue;
                     }
                     try

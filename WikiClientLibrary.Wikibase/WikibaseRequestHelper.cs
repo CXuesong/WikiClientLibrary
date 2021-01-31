@@ -42,7 +42,7 @@ namespace WikiClientLibrary.Wikibase
                         if ((propValue & EntityQueryOptions.FetchSiteLinksUrl) == EntityQueryOptions.FetchSiteLinksUrl) props += "|sitelinks/urls";
                         if ((propValue & EntityQueryOptions.FetchClaims) == EntityQueryOptions.FetchClaims) props += "|claims";
                         Debug.Assert(props != null);
-                        props = props.Substring(1);
+                        props = props[1..];
                         propdict.Add(propValue, props);
                     }
                 }

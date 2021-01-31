@@ -162,17 +162,12 @@ namespace WikiClientLibrary.Wikibase.DataTypes
             id = null;
             if (id != null) return id;
             var type = (string)value["entity-type"];
-            switch (type)
+            id = type switch
             {
-                case "item":
-                    id = "Q";
-                    break;
-                case "property":
-                    id = "P";
-                    break;
-                default:
-                    throw new ArgumentException("Invalid entity-type: " + type + ".", nameof(value));
-            }
+                "item" => "Q",
+                "property" => "P",
+                _ => throw new ArgumentException("Invalid entity-type: " + type + ".", nameof(value))
+            };
             id += (string)value["numeric-id"];
             return id;
         }
@@ -185,7 +180,7 @@ namespace WikiClientLibrary.Wikibase.DataTypes
             int idValue;
             try
             {
-                idValue = Convert.ToInt32(id.Substring(1));
+                idValue = Convert.ToInt32(id[1..]);
             }
             catch (FormatException)
             {

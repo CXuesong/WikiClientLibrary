@@ -98,20 +98,13 @@ namespace WikiClientLibrary.Generators
             // Include redirect pages in the search. From 1.23 onwards, redirects are always included. (Removed in 1.23)
             if (Site.SiteInfo.Version < new MediaWikiVersion(1, 23))
                 dict["srredirects"] = true;
-            switch (MatchingField)
+            dict["srwhat"] = MatchingField switch
             {
-                case SearchableField.Title:
-                    dict["srwhat"] = "title";
-                    break;
-                case SearchableField.Text:
-                    dict["srwhat"] = "text";
-                    break;
-                case SearchableField.NearMatch:
-                    dict["srwhat"] = "nearmatch";
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException();
-            }
+                SearchableField.Title => "title",
+                SearchableField.Text => "text",
+                SearchableField.NearMatch => "nearmatch",
+                _ => throw new ArgumentOutOfRangeException()
+            };
             return dict;
         }
 

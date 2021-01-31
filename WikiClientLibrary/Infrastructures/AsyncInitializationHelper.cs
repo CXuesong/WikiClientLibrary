@@ -34,15 +34,13 @@ namespace WikiClientLibrary.Infrastructures
             if (initializationTask == null) return;
             if (initializationTask.Status == TaskStatus.RanToCompletion) return;
             var name = objectType.Name;
-            switch (initializationTask.Status)
+            throw initializationTask.Status switch
             {
-                case TaskStatus.Canceled:
-                    throw new InvalidOperationException(string.Format(Prompts.ExceptionAsyncInitCancelled1, name));
-                case TaskStatus.Faulted:
-                    throw new InvalidOperationException(string.Format(Prompts.ExceptionAsyncInitFaulted2, name, initializationTask.Exception), initializationTask.Exception);
-                default:
-                    throw new InvalidOperationException(string.Format(Prompts.ExceptionAsyncInitNotComplete1, name));
-            }
+                TaskStatus.Canceled => new InvalidOperationException(string.Format(Prompts.ExceptionAsyncInitCancelled1, name)),
+                TaskStatus.Faulted => new InvalidOperationException(string.Format(Prompts.ExceptionAsyncInitFaulted2, name, initializationTask.Exception),
+                    initializationTask.Exception),
+                _ => new InvalidOperationException(string.Format(Prompts.ExceptionAsyncInitNotComplete1, name))
+            };
         }
 
     }
