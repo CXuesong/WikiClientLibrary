@@ -28,8 +28,4 @@
     <!-- Normalize value -->
     <WCL_IS_CI_BUILD>True</WCL_IS_CI_BUILD>
   </PropertyGroup>
-
-  <ItemGroup>
-    <Compile Include="$(MSBuildThisFileDirectory)\AsyncEnumerableExtensionFacade.cs" />
-  </ItemGroup>
 </Project>

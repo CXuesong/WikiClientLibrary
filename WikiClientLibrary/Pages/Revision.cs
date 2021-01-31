@@ -29,11 +29,11 @@ namespace WikiClientLibrary.Pages
         /// <remarks>
         /// <para>The <see cref="WikiPage"/> of returned <see cref="Revision"/> will be a valid object.
         /// However, its <see cref="WikiPage.LastRevision"/> and <see cref="WikiPage.Content"/> will corresponds
-        /// to the lastest revision fetched in this invocation, and pages with the same title
+        /// to the latest revision fetched in this invocation, and pages with the same title
         /// share the same reference.</para>
         /// </remarks>
         /// <exception cref="ArgumentException"><paramref name="revisionId"/> is not an existing revision id.</exception>
-        public static Task<Revision> FetchRevisionAsync(WikiSite site, int revisionId)
+        public static ValueTask<Revision> FetchRevisionAsync(WikiSite site, int revisionId)
         {
             return FetchRevisionsAsync(site, new[] { revisionId }, PageQueryOptions.FetchContent).FirstAsync();
         }
