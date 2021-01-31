@@ -12,7 +12,8 @@ namespace WikiClientLibrary.Tests.UnitTestProject1
     public enum CISkippedReason
     {
         Unknown = 0,
-        Unstable
+        Unstable,
+        Deprecated,
     }
 
     /// <summary>

@@ -10,6 +10,9 @@ using Xunit.Abstractions;
 namespace WikiClientLibrary.Tests.UnitTestProject1.Tests
 {
 
+    // https://www.mediawiki.org/wiki/Structured_Discussions
+    // Structured Discussions is no longer in feature development, and new deployments have been suspended for now.
+    [CISkipped(Reason = CISkippedReason.Deprecated)]
     public class FlowTests : WikiSiteTestsBase
     {
 
@@ -68,11 +71,12 @@ namespace WikiClientLibrary.Tests.UnitTestProject1.Tests
             Assert.All(topics, t => Assert.Equal(t.TopicTitleRevision.LastUpdated, 
                 ExpandPosts(t.Posts).Select(p => p.LastRevision).Prepend(t.TopicTitleRevision)
                 .Max(r => r.TimeStamp)));
-            for (int i = 1; i < topics.Length; i++)
-            {
-                Assert.True(topics[i - 1].TopicTitleRevision.TimeStamp >= topics[i].TopicTitleRevision.TimeStamp,
-                    $"Topic list is not sorted in posted order as expected. At index {i}. This: {topics[i].TopicTitleRevision.TimeStamp:u}, Prev: {topics[i - 1].TopicTitleRevision.TimeStamp:u}");
-            }
+            // TODO Use GetPostedTime to retrieve the real posted time of a topic.
+            //for (int i = 1; i < topics.Length; i++)
+            //{
+            //    Assert.True(topics[i - 1].TopicTitleRevision.TimeStamp >= topics[i].TopicTitleRevision.TimeStamp,
+            //        $"Topic list is not sorted in posted order as expected. At index {i}. This: {topics[i].TopicTitleRevision.TimeStamp:u}, Prev: {topics[i - 1].TopicTitleRevision.TimeStamp:u}");
+            //}
             topics = await board.EnumTopicsAsync(TopicListingOptions.OrderByUpdated, 5).Skip(10).Take(10).ToArrayAsync();
             DumpTopics(topics);
             Assert.DoesNotContain(null, topics);
@@ -139,6 +143,13 @@ namespace WikiClientLibrary.Tests.UnitTestProject1.Tests
             await topic1.RefreshAsync();
             Assert.Equal(summary, topic1.Summary);
         }
+
+        //private async Task<DateTime> GetPostedTime(Topic topic)
+        //{
+        //    if (topic.TopicTitleRevision.Summary.IsOriginalContent)
+        //        return topic.TopicTitleRevision.Summary.TimeStamp;
+        //    throw new NotImplementedException();
+        //}
 
     }
 }
