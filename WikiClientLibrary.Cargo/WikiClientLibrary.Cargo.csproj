@@ -2,7 +2,6 @@
   <Import Project="../WikiClientLibrary.Commons/WikiClientLibrary.Packages.props" />
 
   <PropertyGroup>
-    <Version>$(Version)-int.2</Version>
     <TargetFrameworks>netstandard1.3;netstandard2.1</TargetFrameworks>
     <AssemblyName>WikiClientLibrary.Cargo</AssemblyName>
     <PackageId>CXuesong.MW.WikiClientLibrary.Cargo</PackageId>

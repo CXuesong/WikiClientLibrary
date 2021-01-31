@@ -2,10 +2,10 @@
   <Import Project="../WikiClientLibrary.Commons/WikiClientLibrary.Commons.props" />
 
   <PropertyGroup>
-    <Version>0.7.4</Version>
-    <AssemblyVersion>0.7.4.0</AssemblyVersion>
-    <FileVersion>0.7.4.0</FileVersion>
-    <Copyright>Copyright (C) CXuesong 2020</Copyright>
+    <Version>0.7.5</Version>
+    <AssemblyVersion>0.7.5.0</AssemblyVersion>
+    <FileVersion>0.7.5.0</FileVersion>
+    <Copyright>Copyright (C) CXuesong 2021</Copyright>
     <PackageReleaseNotes>See https://github.com/CXuesong/WikiClientLibrary/releases .</PackageReleaseNotes>
     <PackageTags>MediaWiki API Client</PackageTags>
     <NeutralLanguage>en-us</NeutralLanguage>
