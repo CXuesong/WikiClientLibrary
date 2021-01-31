@@ -3,8 +3,9 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
-using AsyncEnumerableExtensions;
+using System.Threading;
 using Newtonsoft.Json.Linq;
 using WikiClientLibrary.Client;
 using WikiClientLibrary.Infrastructures;
@@ -210,33 +211,27 @@ namespace WikiClientLibrary.Pages
         /// <exception cref="ArgumentNullException">Either <paramref name="site"/> or <paramref name="ids"/> is <c>null</c>.</exception>
         /// <returns>A sequence of <see cref="WikiPageStub"/> containing the page information.</returns>
         /// <remarks>For how the missing pages are handled, see the "remarks" section of <see cref="WikiPage"/>.</remarks>
-        public static IAsyncEnumerable<WikiPageStub> FromPageIds(WikiSite site, IEnumerable<int> ids)
+        public static async IAsyncEnumerable<WikiPageStub> FromPageIds(WikiSite site, IEnumerable<int> ids,
+            [EnumeratorCancellation] CancellationToken cancellationToken = default)
         {
-            return AsyncEnumerableFactory.FromAsyncGenerator<WikiPageStub>(async (sink, ct) =>
+            var titleLimit = site.AccountInfo.HasRight(UserRights.ApiHighLimits)
+                ? 500
+                : 50;
+            foreach (var partition in ids.Partition(titleLimit))
             {
-                var titleLimit = site.AccountInfo.HasRight(UserRights.ApiHighLimits)
-                    ? 500
-                    : 50;
-                foreach (var partition in ids.Partition(titleLimit))
+                var jresult = await site.InvokeMediaWikiApiAsync(
+                    new MediaWikiFormRequestMessage(new { action = "query", pageids = MediaWikiHelper.JoinValues(partition), }), cancellationToken);
+                Debug.Assert(jresult["query"] != null);
+                var jpages = jresult["query"]["pages"];
+                foreach (var id in partition)
                 {
-                    var jresult = await site.InvokeMediaWikiApiAsync(new MediaWikiFormRequestMessage(new
-                    {
-                        action = "query",
-                        pageids = MediaWikiHelper.JoinValues(partition),
-                    }), ct);
-                    Debug.Assert(jresult["query"] != null);
-                    var jpages = jresult["query"]["pages"];
-                    foreach (var id in partition)
-                    {
-                        var jpage = jpages[id.ToString(CultureInfo.InvariantCulture)];
-                        if (jpage["missing"] == null)
-                            sink.Yield(new WikiPageStub(id, (string)jpage["title"], (int)jpage["ns"]));
-                        else
-                            sink.Yield(new WikiPageStub(id, MissingPageTitle, UnknownNamespaceId));
-                    }
-                    await sink.Wait();
+                    var jpage = jpages[id.ToString(CultureInfo.InvariantCulture)];
+                    if (jpage["missing"] == null)
+                        yield return new WikiPageStub(id, (string)jpage["title"], (int)jpage["ns"]);
+                    else
+                        yield return new WikiPageStub(id, MissingPageTitle, UnknownNamespaceId);
                 }
-            });
+            }
         }
 
         /// <summary>
@@ -247,40 +242,35 @@ namespace WikiClientLibrary.Pages
         /// <exception cref="ArgumentNullException">Either <paramref name="site"/> or <paramref name="titles"/> is <c>null</c>.</exception>
         /// <returns>A sequence of <see cref="WikiPageStub"/> containing the page information.</returns>
         /// <remarks>For how the missing pages are handled, see the "remarks" section of <see cref="WikiPage"/>.</remarks>
-        public static IAsyncEnumerable<WikiPageStub> FromPageTitles(WikiSite site, IEnumerable<string> titles)
+        public static async IAsyncEnumerable<WikiPageStub> FromPageTitles(WikiSite site, IEnumerable<string> titles,
+            [EnumeratorCancellation] CancellationToken cancellationToken = default)
         {
             if (site == null) throw new ArgumentNullException(nameof(site));
             if (titles == null) throw new ArgumentNullException(nameof(titles));
-            return AsyncEnumerableFactory.FromAsyncGenerator<WikiPageStub>(async (sink, ct) =>
+            var titleLimit = site.AccountInfo.HasRight(UserRights.ApiHighLimits)
+                ? 500
+                : 50;
+            foreach (var partition in titles.Partition(titleLimit))
             {
-                var titleLimit = site.AccountInfo.HasRight(UserRights.ApiHighLimits)
-                    ? 500
-                    : 50;
-                foreach (var partition in titles.Partition(titleLimit))
+                var jresult = await site.InvokeMediaWikiApiAsync(
+                    new MediaWikiFormRequestMessage(new { action = "query", titles = MediaWikiHelper.JoinValues(partition), }), cancellationToken);
+                Debug.Assert(jresult["query"] != null);
+                // Process title normalization.
+                var normalizedDict = jresult["query"]["normalized"]?.ToDictionary(n => (string)n["from"],
+                    n => (string)n["to"]);
+                var pageDict = ((JObject)jresult["query"]["pages"]).Properties()
+                    .ToDictionary(p => (string)p.Value["title"], p => p.Value);
+                foreach (var name in partition)
                 {
-                    var jresult = await site.InvokeMediaWikiApiAsync(new MediaWikiFormRequestMessage(new
-                    {
-                        action = "query", titles = MediaWikiHelper.JoinValues(partition),
-                    }), ct);
-                    Debug.Assert(jresult["query"] != null);
-                    // Process title normalization.
-                    var normalizedDict = jresult["query"]["normalized"]?.ToDictionary(n => (string)n["from"],
-                        n => (string)n["to"]);
-                    var pageDict = ((JObject)jresult["query"]["pages"]).Properties()
-                        .ToDictionary(p => (string)p.Value["title"], p => p.Value);
-                    foreach (var name in partition)
-                    {
-                        if (normalizedDict == null || !normalizedDict.TryGetValue(name, out var normalizedName))
-                            normalizedName = name;
-                        var jpage = pageDict[normalizedName];
-                        if (jpage["missing"] == null)
-                            sink.Yield(new WikiPageStub((int)jpage["pageid"], (string)jpage["title"], (int)jpage["ns"]));
-                        else
-                            sink.Yield(new WikiPageStub(MissingPageIdMask, (string)jpage["title"], (int)jpage["ns"]));
-                    }
-                    await sink.Wait();
+                    if (normalizedDict == null || !normalizedDict.TryGetValue(name, out var normalizedName))
+                        normalizedName = name;
+                    var jpage = pageDict[normalizedName];
+                    if (jpage["missing"] == null)
+                        yield return (new WikiPageStub((int)jpage["pageid"], (string)jpage["title"], (int)jpage["ns"]));
+                    else
+                        yield return (new WikiPageStub(MissingPageIdMask, (string)jpage["title"], (int)jpage["ns"]));
                 }
-            });
+            }
         }
 
     }

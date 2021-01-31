@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using Newtonsoft.Json.Linq;
 using WikiClientLibrary.Infrastructures.Logging;
 using WikiClientLibrary.Sites;
@@ -87,7 +88,7 @@ namespace WikiClientLibrary.Generators.Primitive
         protected abstract T ItemFromJson(JToken json, JObject jpage);
 
         /// <inheritdoc />
-        public IAsyncEnumerable<T> EnumItemsAsync()
+        public IAsyncEnumerable<T> EnumItemsAsync(CancellationToken cancellationToken = default)
         {
             var queryParams = new Dictionary<string, object>
             {
@@ -98,7 +99,7 @@ namespace WikiClientLibrary.Generators.Primitive
             };
             if (PageTitle == null) queryParams.Add("pageids", PageId);
             foreach (var p in EnumListParameters()) queryParams.Add(p.Key, p.Value);
-            return RequestHelper.QueryWithContinuation(Site, queryParams, () => Site.BeginActionScope(this))
+            return RequestHelper.QueryWithContinuation(Site, queryParams, () => Site.BeginActionScope(this), cancellationToken: cancellationToken)
                 .SelectMany(jpages =>
                 {
                     // If there's no result, "query" node will not exist.

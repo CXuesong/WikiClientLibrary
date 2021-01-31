@@ -12,7 +12,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using WikiClientLibrary.Generators;
-using AsyncEnumerableExtensions;
 using WikiClientLibrary.Infrastructures;
 using WikiClientLibrary.Pages;
 
@@ -224,18 +223,6 @@ namespace WikiClientLibrary
                 return sb.ToString(0, sb.Length - 1);
             }
             return sb.ToString();
-        }
-
-        public static IAsyncEnumerable<TResult> SelectAsync<TSource, TResult>(this IEnumerable<TSource> source,
-            Func<TSource, Task<TResult>> selector)
-        {
-            return AsyncEnumerableFactory.FromAsyncGenerator<TResult>(async sink =>
-            {
-                foreach (var item in source)
-                {
-                    await sink.YieldAndWait(await selector(item));
-                }
-            });
         }
 
         public static Task<int> CopyRangeToAsync(this Stream source, Stream destination, int byteCount,

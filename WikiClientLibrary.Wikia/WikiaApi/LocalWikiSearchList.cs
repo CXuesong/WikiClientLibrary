@@ -2,11 +2,11 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Runtime.Serialization;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using AsyncEnumerableExtensions;
 using Newtonsoft.Json.Linq;
 using WikiClientLibrary.Generators;
 using WikiClientLibrary.Generators.Primitive;
@@ -21,7 +21,7 @@ namespace WikiClientLibrary.Wikia.WikiaApi
     /// </summary>
     /// <remarks>To take a sequence of <see cref="WikiPage"/> instances from this object,
     /// you can use LINQ <see cref="Enumerable.Select{TSource,TResult}(IEnumerable{TSource},Func{TSource,TResult})"/> method
-    /// with <see cref="WikiClientLibrary.Pages.WikiPage.WikiPage(WikiSite,string)"/>; then call <see cref="Pages.WikiPageExtensions.RefreshAsync(IEnumerable{WikiPage})"/>
+    /// with <see cref="WikiPage(WikiSite,string)"/>; then call <see cref="Pages.WikiPageExtensions.RefreshAsync(IEnumerable{WikiPage})"/>
     /// to fetch page information or content.</remarks>
     /// <seealso cref="SearchGenerator"/>
     public class LocalWikiSearchList : IWikiList<LocalWikiSearchResultItem>
@@ -133,25 +133,22 @@ namespace WikiClientLibrary.Wikia.WikiaApi
         }
 
         /// <inheritdoc />
-        public IAsyncEnumerable<LocalWikiSearchResultItem> EnumItemsAsync()
+        public async IAsyncEnumerable<LocalWikiSearchResultItem> EnumItemsAsync([EnumeratorCancellation] CancellationToken cancellationToken = default)
         {
-            return AsyncEnumerableFactory.FromAsyncGenerator<LocalWikiSearchResultItem>(async (sink, ct) =>
+            int totalBatches = 1;
+            for (int currentBatch = 1; currentBatch <= totalBatches; currentBatch++)
             {
-                int totalBatches = 1;
-                for (int currentBatch = 1; currentBatch <= totalBatches; currentBatch++)
+                var jresult = await Site.InvokeWikiaApiAsync("/Search/List", new WikiaQueryRequestMessage(new
                 {
-                    var jresult = await Site.InvokeWikiaApiAsync("/Search/List", new WikiaQueryRequestMessage(new
-                    {
-                        query = Keyword, type = "articles", rank = SerializeRank(RankingType), limit = PaginationSize,
-                        minArticleQuality = MinimumArticleQuality, namespaces = NamespaceIds == null ? null : string.Join(",", NamespaceIds),
-                        batch = currentBatch,
-                    }), ct);
-                    totalBatches = (int)jresult["batches"];
-                    var items = jresult["items"].ToObject<IEnumerable<LocalWikiSearchResultItem>>(
-                        Utility.WikiaApiJsonSerializer);
-                    await sink.YieldAndWait(items);
-                }
-            });
+                    query = Keyword, type = "articles", rank = SerializeRank(RankingType), limit = PaginationSize,
+                    minArticleQuality = MinimumArticleQuality, namespaces = NamespaceIds == null ? null : string.Join(",", NamespaceIds),
+                    batch = currentBatch,
+                }), cancellationToken);
+                totalBatches = (int)jresult["batches"];
+                var items = jresult["items"].ToObject<IEnumerable<LocalWikiSearchResultItem>>(Utility.WikiaApiJsonSerializer);
+                foreach (var i in items)
+                    yield return i;
+            }
         }
     }
 

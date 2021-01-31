@@ -4,10 +4,10 @@ using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using AsyncEnumerableExtensions;
 using HtmlAgilityPack;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json.Linq;
@@ -27,7 +27,8 @@ namespace WikiClientLibrary.Wikia
     internal static class RequestHelper
     {
 
-        public static IAsyncEnumerable<Post> EnumArticleCommentsAsync(Board board, PostQueryOptions options)
+        public static async IAsyncEnumerable<Post> EnumArticleCommentsAsync(Board board, PostQueryOptions options,
+            [EnumeratorCancellation] CancellationToken cancellationToken = default)
         {
             IList<Post> PostsFromJsonOutline(JObject commentList)
             {
@@ -61,36 +62,35 @@ namespace WikiClientLibrary.Wikia
                 }
             }
 
-            return AsyncEnumerableFactory.FromAsyncGenerator<Post>(async (sink, ct) =>
+
+            using (board.Site.BeginActionScope(board))
             {
-                using (board.Site.BeginActionScope(board))
+                // Refresh to get the page id.
+                if (!board.Page.HasId) await board.RefreshAsync(cancellationToken);
+                if (!board.Exists) yield break;
+                var pagesCount = 1;
+                for (int page = 1; page <= pagesCount; page++)
                 {
-                    // Refresh to get the page id.
-                    if (!board.Page.HasId) await board.RefreshAsync(ct);
-                    if (!board.Exists) return;
-                    var pagesCount = 1;
-                    for (int page = 1; page <= pagesCount; page++)
-                    {
-                        var jroot = await board.Site.InvokeNirvanaAsync(new WikiaQueryRequestMessage(new
+                    var jroot = await board.Site.InvokeNirvanaAsync(
+                        new WikiaQueryRequestMessage(new
                         {
                             format = "json",
                             controller = "ArticleComments",
                             method = "Content",
                             articleId = board.Page.Id,
                             page = page
-                        }), WikiaJsonResponseParser.Default, ct);
-                        // Build comment structure.
-                        var jcomments = jroot["commentListRaw"];
-                        if (jcomments != null && jcomments.HasValues)
-                        {
-                            var comments = PostsFromJsonOutline((JObject)jcomments);
-                            pagesCount = (int)jroot["pagesCount"];
-                            await RefreshPostsAsync(PostsAndDescendants(comments), options, ct);
-                            await sink.YieldAndWait(comments);
-                        }
+                        }), WikiaJsonResponseParser.Default, cancellationToken);
+                    // Build comment structure.
+                    var jcomments = jroot["commentListRaw"];
+                    if (jcomments != null && jcomments.HasValues)
+                    {
+                        var comments = PostsFromJsonOutline((JObject)jcomments);
+                        pagesCount = (int)jroot["pagesCount"];
+                        await RefreshPostsAsync(PostsAndDescendants(comments), options, cancellationToken);
+                        foreach (var c in comments) yield return c;
                     }
                 }
-            });
+            }
         }
 
         private static readonly WikiPageQueryProvider postLastRevisionQueryProvider = new WikiPageQueryProvider

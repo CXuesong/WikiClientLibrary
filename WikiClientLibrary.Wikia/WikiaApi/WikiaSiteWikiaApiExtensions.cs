@@ -4,10 +4,10 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using AsyncEnumerableExtensions;
 using Newtonsoft.Json.Linq;
 using WikiClientLibrary.Infrastructures.Logging;
 using WikiClientLibrary.Wikia.Sites;
@@ -70,39 +70,37 @@ namespace WikiClientLibrary.Wikia.WikiaApi
         /// An asynchronous sequence containing the detailed user information.
         /// The user names are normalized by the server. Inexistent user names are skipped.
         /// </returns>
-        public static IAsyncEnumerable<UserInfo> FetchUsersAsync(this WikiaSite site, IEnumerable<string> userNames)
+        public static async IAsyncEnumerable<UserInfo> FetchUsersAsync(this WikiaSite site, IEnumerable<string> userNames,
+            [EnumeratorCancellation] CancellationToken cancellationToken = default)
         {
             if (site == null) throw new ArgumentNullException(nameof(site));
             if (userNames == null) throw new ArgumentNullException(nameof(userNames));
-            return AsyncEnumerableFactory.FromAsyncGenerator<UserInfo>(async (sink, ct) =>
+            using (site.BeginActionScope(null, (object)(userNames as ICollection)))
             {
-                using (site.BeginActionScope(null, (object)(userNames as ICollection)))
+                foreach (var names in userNames.Partition(100))
                 {
-                    foreach (var names in userNames.Partition(100))
+                    JToken jresult;
+                    try
                     {
-                        JToken jresult;
-                        try
-                        {
-                            jresult = await site.InvokeWikiaApiAsync("/User/Details",
-                                new WikiaQueryRequestMessage(new {ids = string.Join(", ", names)}), ct);
-                        }
-                        catch (WikiaApiException ex) when (ex.ErrorType == "NotFoundApiException")
-                        {
-                            // All the usesers in this batch are not found.
-                            // Pity.
-                            continue;
-                        }
-                        var basePath = (string)jresult["basepath"];
-                        var users = jresult["items"].ToObject<ICollection<UserInfo>>();
-                        if (basePath != null)
-                        {
-                            foreach (var user in users)
-                                user.ApplyBasePath(basePath);
-                        }
-                        await sink.YieldAndWait(users);
+                        jresult = await site.InvokeWikiaApiAsync("/User/Details",
+                            new WikiaQueryRequestMessage(new { ids = string.Join(", ", names) }), cancellationToken);
                     }
+                    catch (WikiaApiException ex) when (ex.ErrorType == "NotFoundApiException")
+                    {
+                        // All the usesers in this batch are not found.
+                        // Pity.
+                        continue;
+                    }
+                    var basePath = (string)jresult["basepath"];
+                    var users = jresult["items"].ToObject<ICollection<UserInfo>>();
+                    if (basePath != null)
+                    {
+                        foreach (var user in users)
+                            user.ApplyBasePath(basePath);
+                    }
+                    foreach (var user in users) yield return user;
                 }
-            });
+            }
         }
 
         /// <inheritdoc cref="FetchRelatedPagesAsync(WikiaSite,int,int,CancellationToken)"/>

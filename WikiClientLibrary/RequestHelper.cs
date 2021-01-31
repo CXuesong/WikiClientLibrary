@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
@@ -15,7 +16,6 @@ using WikiClientLibrary.Generators;
 using WikiClientLibrary.Infrastructures;
 using WikiClientLibrary.Pages;
 using WikiClientLibrary.Sites;
-using AsyncEnumerableExtensions;
 using WikiClientLibrary.Infrastructures.Logging;
 using WikiClientLibrary.Pages.Queries;
 using WikiClientLibrary.Pages.Queries.Properties;
@@ -91,66 +91,64 @@ namespace WikiClientLibrary
 
         #region Page/Revision query
 
-        public static IAsyncEnumerable<JObject> QueryWithContinuation(WikiSite site,
+        public static async IAsyncEnumerable<JObject> QueryWithContinuation(WikiSite site,
             IEnumerable<KeyValuePair<string, object>> parameters,
             Func<IDisposable> beginActionScope,
-            bool distinctPages = false)
+            bool distinctPages = false,
+            [EnumeratorCancellation] CancellationToken cancellationToken = default)
         {
-            return AsyncEnumerableFactory.FromAsyncGenerator<JObject>(async (sink, ct) =>
+            cancellationToken.ThrowIfCancellationRequested();
+            var retrivedPageIds = distinctPages ? new HashSet<int>() : null;
+            using (beginActionScope?.Invoke())
             {
-                ct.ThrowIfCancellationRequested();
-                var retrivedPageIds = distinctPages ? new HashSet<int>() : null;
-                using (beginActionScope?.Invoke())
+                var baseQueryParams = parameters.ToDictionary(p => p.Key, p => p.Value);
+                Debug.Assert("query".Equals(baseQueryParams["action"]));
+                var continuationParams = new Dictionary<string, object>();
+                while (true)
                 {
-                    var baseQueryParams = parameters.ToDictionary(p => p.Key, p => p.Value);
-                    Debug.Assert("query".Equals(baseQueryParams["action"]));
-                    var continuationParams = new Dictionary<string, object>();
-                    while (true)
+                    var queryParams = new Dictionary<string, object>(baseQueryParams);
+                    queryParams.MergeFrom(continuationParams);
+                    var jresult = await site.InvokeMediaWikiApiAsync(new MediaWikiFormRequestMessage(queryParams), cancellationToken);
+                    var jpages = (JObject)FindQueryResponseItemsRoot(jresult, "pages");
+                    if (jpages != null)
                     {
-                        var queryParams = new Dictionary<string, object>(baseQueryParams);
-                        queryParams.MergeFrom(continuationParams);
-                        var jresult = await site.InvokeMediaWikiApiAsync(new MediaWikiFormRequestMessage(queryParams), ct);
-                        var jpages = (JObject)FindQueryResponseItemsRoot(jresult, "pages");
-                        if (jpages != null)
+                        if (retrivedPageIds != null)
                         {
-                            if (retrivedPageIds != null)
+                            // Remove duplicate results
+                            var duplicateKeys = new List<string>(jpages.Count);
+                            foreach (var jpage in jpages)
                             {
-                                // Remove duplicate results
-                                var duplicateKeys = new List<string>(jpages.Count);
-                                foreach (var jpage in jpages)
+                                if (!retrivedPageIds.Add(Convert.ToInt32(jpage.Key)))
                                 {
-                                    if (!retrivedPageIds.Add(Convert.ToInt32(jpage.Key)))
-                                    {
-                                        // The page has been retrieved before.
-                                        duplicateKeys.Add(jpage.Key);
-                                    }
-                                }
-                                var originalPageCount = jpages.Count;
-                                foreach (var k in duplicateKeys) jpages.Remove(k);
-                                if (originalPageCount != jpages.Count)
-                                {
-                                    site.Logger.LogWarning(
-                                        "Received {Count} results on {Site}, {DistinctCount} distinct results.",
-                                        originalPageCount, site, jpages.Count);
+                                    // The page has been retrieved before.
+                                    duplicateKeys.Add(jpage.Key);
                                 }
                             }
-                            await sink.YieldAndWait(jpages);
+                            var originalPageCount = jpages.Count;
+                            foreach (var k in duplicateKeys) jpages.Remove(k);
+                            if (originalPageCount != jpages.Count)
+                            {
+                                site.Logger.LogWarning(
+                                    "Received {Count} results on {Site}, {DistinctCount} distinct results.",
+                                    originalPageCount, site, jpages.Count);
+                            }
                         }
-                        switch (ParseContinuationParameters(jresult, queryParams, continuationParams))
-                        {
-                            case CONTINUATION_DONE:
-                                return;
-                            case CONTINUATION_AVAILABLE:
-                                if (jpages == null)
-                                    site.Logger.LogWarning("Empty query page with continuation received on {Site}.", site);
-                                // Continue the loop and fetch for the next page of query.
-                                break;
-                            case CONTINUATION_LOOP:
-                                throw new UnexpectedDataException();
-                        }
+                        yield return jpages;
+                    }
+                    switch (ParseContinuationParameters(jresult, queryParams, continuationParams))
+                    {
+                        case CONTINUATION_DONE:
+                            yield break;
+                        case CONTINUATION_AVAILABLE:
+                            if (jpages == null)
+                                site.Logger.LogWarning("Empty query page with continuation received on {Site}.", site);
+                            // Continue the loop and fetch for the next page of query.
+                            break;
+                        case CONTINUATION_LOOP:
+                            throw new UnexpectedDataException();
                     }
                 }
-            });
+            }
         }
 
         private struct WikiPageGroupKey : IEquatable<WikiPageGroupKey>
@@ -308,7 +306,8 @@ namespace WikiClientLibrary
         /// <remarks>
         /// <para>If there's invalid revision id in <paramref name="revIds"/>, an <see cref="ArgumentException"/> will be thrown while enumerating.</para>
         /// </remarks>
-        public static IAsyncEnumerable<Revision> FetchRevisionsAsync(WikiSite site, IEnumerable<int> revIds, IWikiPageQueryProvider options, CancellationToken cancellationToken)
+        public static async IAsyncEnumerable<Revision> FetchRevisionsAsync(WikiSite site, IEnumerable<int> revIds,
+            IWikiPageQueryProvider options, [EnumeratorCancellation] CancellationToken cancellationToken = default)
         {
             if (revIds == null) throw new ArgumentNullException(nameof(revIds));
             var queryParams = options.EnumParameters(site.SiteInfo.Version).ToDictionary();
@@ -316,41 +315,39 @@ namespace WikiClientLibrary
             // We are only fetching by revisions.
             queryParams.Remove("rvlimit");
             var titleLimit = options.GetMaxPaginationSize(site.SiteInfo.Version, site.AccountInfo.HasRight(UserRights.ApiHighLimits));
-            return AsyncEnumerableFactory.FromAsyncGenerator<Revision>(async sink =>
+            // Page ID --> Page Stub
+            var stubDict = new Dictionary<int, WikiPageStub>();
+            var revDict = new Dictionary<int, Revision>();
+            using (site.BeginActionScope(null, (object)revIds))
             {
-                // Page ID --> Page Stub
-                var stubDict = new Dictionary<int, WikiPageStub>();
-                var revDict = new Dictionary<int, Revision>();
-                using (site.BeginActionScope(null, (object)revIds))
+                foreach (var partition in revIds.Partition(titleLimit))
                 {
-                    foreach (var partition in revIds.Partition(titleLimit))
+                    site.Logger.LogDebug("Fetching {Count} revisions from {Site}.", partition.Count, site);
+                    queryParams["revids"] = MediaWikiHelper.JoinValues(partition);
+                    var jobj = await site.InvokeMediaWikiApiAsync(new MediaWikiFormRequestMessage(queryParams), cancellationToken);
+                    var jpages = (JObject)jobj["query"]["pages"];
+                    // Generate stubs first
+                    foreach (var p in jpages)
                     {
-                        site.Logger.LogDebug("Fetching {Count} revisions from {Site}.", partition.Count, site);
-                        queryParams["revids"] = MediaWikiHelper.JoinValues(partition);
-                        var jobj = await site.InvokeMediaWikiApiAsync(new MediaWikiFormRequestMessage(queryParams), cancellationToken);
-                        var jpages = (JObject)jobj["query"]["pages"];
-                        // Generate stubs first
-                        foreach (var p in jpages)
+                        var jrevs = p.Value["revisions"];
+                        if (jrevs == null || !jrevs.HasValues) continue;
+                        var id = Convert.ToInt32(p.Key);
+                        if (!stubDict.TryGetValue(id, out var stub))
                         {
-                            var jrevs = p.Value["revisions"];
-                            if (jrevs == null || !jrevs.HasValues) continue;
-                            var id = Convert.ToInt32(p.Key);
-                            if (!stubDict.TryGetValue(id, out var stub))
-                            {
-                                stub = new WikiPageStub(id, (string)p.Value["title"], (int)p.Value["ns"]);
-                                stubDict.Add(id, stub);
-                            }
-                            foreach (var jrev in jrevs)
-                            {
-                                var rev = jrev.ToObject<Revision>(Utility.WikiJsonSerializer);
-                                rev.Page = stub;
-                                revDict.Add(rev.Id, rev);
-                            }
+                            stub = new WikiPageStub(id, (string)p.Value["title"], (int)p.Value["ns"]);
+                            stubDict.Add(id, stub);
                         }
-                        await sink.YieldAndWait(partition.Select(id => revDict.TryGetValue(id, out var rev) ? rev : null));
+                        foreach (var jrev in jrevs)
+                        {
+                            var rev = jrev.ToObject<Revision>(Utility.WikiJsonSerializer);
+                            rev.Page = stub;
+                            revDict.Add(rev.Id, rev);
+                        }
                     }
+                    foreach (var id in partition)
+                        yield return revDict.TryGetValue(id, out var rev) ? rev : null;
                 }
-            });
+            }
         }
 
         #endregion

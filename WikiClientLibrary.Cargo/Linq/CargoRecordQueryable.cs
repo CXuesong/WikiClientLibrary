@@ -7,7 +7,7 @@ using System.Linq.Expressions;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading;
-using AsyncEnumerableExtensions;
+using Newtonsoft.Json.Linq;
 using WikiClientLibrary.Cargo.Linq.ExpressionVisitors;
 using WikiClientLibrary.Cargo.Linq.IntermediateExpressions;
 
@@ -84,39 +84,37 @@ namespace WikiClientLibrary.Cargo.Linq
         {
         }
 
-        private IAsyncEnumerable<T> BuildAsyncEnumerable()
+        private async IAsyncEnumerable<T> BuildAsyncEnumerable([EnumeratorCancellation] CancellationToken cancellationToken = default)
         {
             var queryParams = BuildQueryParameters();
             var limit = queryParams.Limit;
             // Trivial case
-            if (limit == 0) return AsyncEnumerable.Empty<T>();
+            if (limit == 0) yield break;
             var paginationSize = Provider.PaginationSize;
             // Restrict Limit to pagination size.
             if (queryParams.Limit < 0 || queryParams.Limit > paginationSize)
                 queryParams.Limit = paginationSize;
-            return AsyncEnumerableFactory.FromAsyncGenerator<T>(async (sink, ct) =>
+            var queryExpr = this.ReducedQueryExpression;
+            var yieldedCount = 0;
+            queryParams.Offset = 0;
+            while (queryParams.Limit > 0)
             {
-                var queryExpr = this.ReducedQueryExpression;
-                var yieldedCount = 0;
-                queryParams.Offset = 0;
-                while (queryParams.Limit > 0)
+                var result = await Provider.WikiSite.ExecuteCargoQueryAsync(queryParams, cancellationToken);
+                foreach (var r in result)
                 {
-                    var result = await Provider.WikiSite.ExecuteCargoQueryAsync(queryParams, ct);
-                    // No more record.
-                    if (result.Count == 0) return;
-                    await sink.YieldAndWait(result.Select(r => (T)Provider.RecordConverter.DeserializeRecord(
+                    yield return (T)Provider.RecordConverter.DeserializeRecord(
                         r.Properties().Select(p => (proj: queryExpr.TryGetProjectionByAlias(p.Name), value: p.Value))
                             .Where(t => t.proj != null)
                             .ToDictionary(
                                 t => t.proj.TargetMember,
                                 t => t.value
-                            ), typeof(T))));
-                    yieldedCount += result.Count;
-                    // Prepare for next batch.
-                    queryParams.Offset += result.Count;
-                    queryParams.Limit = limit < 0 ? paginationSize : Math.Min(paginationSize, limit - yieldedCount);
+                            ), typeof(T));
                 }
-            });
+                yieldedCount += result.Count;
+                // Prepare for next batch.
+                queryParams.Offset += result.Count;
+                queryParams.Limit = limit < 0 ? paginationSize : Math.Min(paginationSize, limit - yieldedCount);
+            }
         }
 
         /// <inheritdoc />
@@ -130,7 +128,7 @@ namespace WikiClientLibrary.Cargo.Linq
 
         /// <inheritdoc />
         public IAsyncEnumerator<T> GetAsyncEnumerator(CancellationToken cancellationToken = default) =>
-            BuildAsyncEnumerable().GetAsyncEnumerator(cancellationToken);
+            BuildAsyncEnumerable(cancellationToken).GetAsyncEnumerator(cancellationToken);
 
     }
 

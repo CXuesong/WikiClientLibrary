@@ -2,10 +2,10 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using AsyncEnumerableExtensions;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using Newtonsoft.Json.Linq;
@@ -89,7 +89,7 @@ namespace WikiClientLibrary.Flow
             return EnumTopicsAsync(TopicListingOptions.OrderByPosted, 20);
         }
 
-        /// <inheritdoc cref="EnumTopicsAsync(TopicListingOptions, int)"/>
+        /// <inheritdoc cref="EnumTopicsAsync(TopicListingOptions, int, CancellationToken)"/>
         public IAsyncEnumerable<Topic> EnumTopicsAsync(TopicListingOptions options)
         {
             return EnumTopicsAsync(options, 20);
@@ -103,7 +103,8 @@ namespace WikiClientLibrary.Flow
         /// How many topics should be fetched in batch per MediaWiki API request.
         /// No more than 100 (100 for bots) is allowed.
         /// </param>
-        public IAsyncEnumerable<Topic> EnumTopicsAsync(TopicListingOptions options, int pageSize)
+        public async IAsyncEnumerable<Topic> EnumTopicsAsync(TopicListingOptions options, int pageSize,
+            [EnumeratorCancellation] CancellationToken cancellationToken = default)
         {
             if (pageSize <= 0) throw new ArgumentOutOfRangeException(nameof(pageSize));
             var sortParam = "user";
@@ -111,38 +112,36 @@ namespace WikiClientLibrary.Flow
                 sortParam = "newest";
             if ((options & TopicListingOptions.OrderByUpdated) == TopicListingOptions.OrderByUpdated)
                 sortParam = "updated";
-            return AsyncEnumerableFactory.FromAsyncGenerator<Topic>(async (sink, ct) =>
+            var queryParams = new Dictionary<string, object>
             {
-                var queryParams = new Dictionary<string, object>
+                { "action", "flow" },
+                { "submodule", "view-topiclist" },
+                { "page", Title },
+                { "vtlsortby", sortParam },
+                { "vtlsavesortby", (options & TopicListingOptions.SaveSortingPreference) == TopicListingOptions.SaveSortingPreference },
+                { "vtllimit", pageSize },
+                { "vtlformat", "wikitext" },
+            };
+        NEXT_PAGE:
+            var jresult = await Site.InvokeMediaWikiApiAsync(new MediaWikiFormRequestMessage(queryParams), cancellationToken);
+            var jtopiclist = (JObject)jresult["flow"]["view-topiclist"]["result"]["topiclist"];
+            foreach (var t in Topic.FromJsonTopicList(Site, jtopiclist))
+                yield return t;
+            // 2018-07-30 flow.view-topiclist.result.topiclist.links.pagination is [] instead of null for boards without pagination.
+            var jpagination = jtopiclist["links"]?["pagination"];
+            var nextPageUrl = jpagination == null || jpagination is JArray
+                ? null
+                : (string)jpagination["fwd"]?["url"];
+            if (nextPageUrl != null)
+            {
+                var urlParams = FlowUtility.ParseUrlQueryParametrs(nextPageUrl);
+                foreach (var pa in urlParams)
                 {
-                    {"action", "flow"},
-                    {"submodule", "view-topiclist"},
-                    {"page", Title},
-                    {"vtlsortby", sortParam},
-                    {"vtlsavesortby", (options & TopicListingOptions.SaveSortingPreference) == TopicListingOptions.SaveSortingPreference},
-                    {"vtllimit", pageSize},
-                    {"vtlformat", "wikitext"},
-                };
-                NEXT_PAGE:
-                var jresult = await Site.InvokeMediaWikiApiAsync(new MediaWikiFormRequestMessage(queryParams), ct);
-                var jtopiclist = (JObject)jresult["flow"]["view-topiclist"]["result"]["topiclist"];
-                await sink.YieldAndWait(Topic.FromJsonTopicList(Site, jtopiclist));
-                // 2018-07-30 flow.view-topiclist.result.topiclist.links.pagination is [] instead of null for boards without pagination.
-                var jpagination = jtopiclist["links"]?["pagination"];
-                var nextPageUrl = jpagination == null || jpagination is JArray 
-                    ? null 
-                    : (string) jpagination["fwd"]?["url"];
-                if (nextPageUrl != null)
-                {
-                    var urlParams = FlowUtility.ParseUrlQueryParametrs(nextPageUrl);
-                    foreach (var pa in urlParams)
-                    {
-                        if (pa.Key.StartsWith("topiclist_"))
-                            queryParams["vtl" + pa.Key[10..]] = pa.Value;
-                    }
-                    goto NEXT_PAGE;
+                    if (pa.Key.StartsWith("topiclist_"))
+                        queryParams["vtl" + pa.Key[10..]] = pa.Value;
                 }
-            });
+                goto NEXT_PAGE;
+            }
         }
 
         /// <inheritdoc cref="NewTopicAsync(string,string,CancellationToken)"/>
