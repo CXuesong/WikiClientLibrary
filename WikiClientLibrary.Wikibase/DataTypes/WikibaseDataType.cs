@@ -159,7 +159,6 @@ namespace WikiClientLibrary.Wikibase.DataTypes
         private static string EntityIdFromJson(JToken value)
         {
             var id = (string)value["id"];
-            id = null;
             if (id != null) return id;
             var type = (string)value["entity-type"];
             id = type switch
