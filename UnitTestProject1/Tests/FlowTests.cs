@@ -64,17 +64,20 @@ namespace WikiClientLibrary.Tests.UnitTestProject1.Tests
             var topics = await board.EnumTopicsAsync(TopicListingOptions.OrderByPosted, 4).Skip(10).Take(10).ToArrayAsync();
             DumpTopics(topics);
             Assert.DoesNotContain(null, topics);
+            // Remember to include title revision in the LastUpdated candidates.
+            Assert.All(topics, t => Assert.Equal(t.TopicTitleRevision.LastUpdated, 
+                ExpandPosts(t.Posts).Select(p => p.LastRevision).Prepend(t.TopicTitleRevision)
+                .Max(r => r.TimeStamp)));
             for (int i = 1; i < topics.Length; i++)
             {
-                Assert.True(topics[i - 1].TopicTitleRevision.LastUpdated >= topics[i].TopicTitleRevision.LastUpdated,
-                    $"Topic list is not sorted in posted order as expected. At index {i}. This: {topics[i].TopicTitleRevision.LastUpdated:u}, Prev: {topics[i - 1].TopicTitleRevision.LastUpdated:u}");
+                Assert.True(topics[i - 1].TopicTitleRevision.TimeStamp >= topics[i].TopicTitleRevision.TimeStamp,
+                    $"Topic list is not sorted in posted order as expected. At index {i}. This: {topics[i].TopicTitleRevision.TimeStamp:u}, Prev: {topics[i - 1].TopicTitleRevision.TimeStamp:u}");
             }
             topics = await board.EnumTopicsAsync(TopicListingOptions.OrderByUpdated, 5).Skip(10).Take(10).ToArrayAsync();
             DumpTopics(topics);
             Assert.DoesNotContain(null, topics);
             for (int i = 1; i < topics.Length; i++)
-                Assert.True(ExpandPosts(topics[i - 1].Posts).Select(p => p.LastRevision.TimeStamp).Max()
-                            >= ExpandPosts(topics[i].Posts).Select(p => p.LastRevision.TimeStamp).Max(),
+                Assert.True(topics[i - 1].TopicTitleRevision.LastUpdated >= topics[i].TopicTitleRevision.LastUpdated,
                     $"Topic list is not sorted in updated order as expected. At index {i}.");
         }
 

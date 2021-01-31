@@ -11,13 +11,12 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using Newtonsoft.Json.Linq;
 using WikiClientLibrary.Client;
-using WikiClientLibrary.Pages;
 using WikiClientLibrary.Sites;
 
 namespace WikiClientLibrary.Flow
 {
     /// <summary>
-    /// Reporesents a topic on a Flow board.
+    /// Represents a topic on a Flow board.
     /// </summary>
     public class Topic
     {

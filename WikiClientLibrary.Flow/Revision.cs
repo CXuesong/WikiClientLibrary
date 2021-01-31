@@ -55,7 +55,8 @@ namespace WikiClientLibrary.Flow
         }
 
         /// <summary>
-        /// For topic revision, the last update time of the whole topic.
+        /// For topic revision, the last update time of the whole topic,
+        /// including replies, changes to topic title, content, or replies.
         /// </summary>
         public DateTime? LastUpdated { get; private set; }
 
