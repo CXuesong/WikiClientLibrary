@@ -30,8 +30,10 @@ namespace WikiClientLibrary.Tests.UnitTestProject1
                 sb.Append(obj.GetType().Name);
                 sb.Append('}');
             }
-            else
+            else if (obj is DateTime || obj is DateTimeOffset)
             {
+                sb.AppendFormat("{0:O}", obj);
+            } else {
                 sb.Append(obj);
             }
             if (maxDepth < 1 || obj.GetType().GetTypeInfo().IsPrimitive

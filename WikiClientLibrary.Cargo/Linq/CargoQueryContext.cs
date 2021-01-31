@@ -31,6 +31,8 @@ namespace WikiClientLibrary.Cargo.Linq
     public class CargoQueryContext : ICargoQueryContext
     {
 
+        private int _PaginationSize = 10;
+
         public CargoQueryContext(WikiSite wikiSite)
         {
             WikiSite = wikiSite ?? throw new ArgumentNullException(nameof(wikiSite));
@@ -38,14 +40,30 @@ namespace WikiClientLibrary.Cargo.Linq
 
         public WikiSite WikiSite { get; }
 
+        /// <summary>
+        /// Gets/sets the default pagination size used when requesting
+        /// for the records from MediaWiki server. (Default value: <c>10</c>.)
+        /// </summary>
+        public int PaginationSize
+        {
+            get => _PaginationSize;
+            set
+            {
+                if (value <= 0)
+                    throw new ArgumentOutOfRangeException(nameof(value));
+                _PaginationSize = value;
+            }
+        }
+
         /// <inheritdoc />
         public ICargoRecordSet<T> Table<T>(string name)
         {
-            return new CargoRecordSet<T>(CargoModel.FromClrType(typeof(T), name), new CargoQueryProvider(WikiSite));
+            return new CargoRecordSet<T>(CargoModel.FromClrType(typeof(T), name), new CargoQueryProvider(WikiSite) { PaginationSize = _PaginationSize });
         }
 
         /// <inheritdoc />
         public ICargoRecordSet<T> Table<T>() => Table<T>(null);
+
     }
 
 }

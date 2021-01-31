@@ -216,8 +216,14 @@ namespace WikiClientLibrary
     public class MediaWikiRemoteException : OperationFailedException
     {
 
+        /// <summary>
+        /// PHP class name of the error.
+        /// </summary>
         public virtual string ErrorClass { get; }
 
+        /// <summary>
+        /// Stack trace provided by MediaWiki server, if available.
+        /// </summary>
         public virtual string RemoteStackTrace { get; }
 
         public MediaWikiRemoteException(string errorCode, string message)

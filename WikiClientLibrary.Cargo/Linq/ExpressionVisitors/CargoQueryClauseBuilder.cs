@@ -10,6 +10,7 @@ using WikiClientLibrary.Cargo.Linq.IntermediateExpressions;
 namespace WikiClientLibrary.Cargo.Linq.ExpressionVisitors
 {
 
+    // c.f. https://www.mediawiki.org/wiki/Extension:Cargo/Querying_data#Using_SQL_functions
     /// <summary>
     /// Builds clause (segment of query expression) from the expression.
     /// </summary>
@@ -64,6 +65,14 @@ namespace WikiClientLibrary.Cargo.Linq.ExpressionVisitors
 #endif
                     _builder.Append("NULL");
                     break;
+                case char c:
+                    _builder.Append('\'');
+                    if (c == '\'')
+                        _builder.Append("''");
+                    else
+                        _builder.Append(c);
+                    _builder.Append('\'');
+                    break;
                 case string s:
                 {
                     _builder.Append('\'');
@@ -98,6 +107,25 @@ namespace WikiClientLibrary.Cargo.Linq.ExpressionVisitors
                     // ODBC format
                     _builder.AppendFormat("{{dt'{0:O}'}}", value);
                     break;
+                case TimeSpan ts:
+                    // https://dev.mysql.com/doc/refman/5.6/en/expressions.html#temporal-intervals
+                    _builder.Append("INTERVAL '");
+                    if (ts.Ticks % TimeSpan.TicksPerDay == 0)
+                    {
+                        _builder.Append(ts.Ticks / TimeSpan.TicksPerDay);
+                        _builder.Append("' DAY");
+                    }
+                    else if (ts.Ticks < TimeSpan.TicksPerDay)
+                    {
+                        _builder.Append(ts.ToString("hh':'mm':'ss'.'ffffff", CultureInfo.InvariantCulture));
+                        _builder.Append("' HOUR_MICROSECOND");
+                    }
+                    else
+                    {
+                        _builder.Append(ts.ToString("d' 'hh':'mm':'ss'.'ffffff", CultureInfo.InvariantCulture));
+                        _builder.Append("' DAY_MICROSECOND");
+                    }
+                    break;
                 default:
                     throw new InvalidOperationException($"Constant value (of {value.GetType()}) is not supported: {value}");
             }
@@ -110,6 +138,10 @@ namespace WikiClientLibrary.Cargo.Linq.ExpressionVisitors
             _builder.Append('(');
             switch (node.NodeType)
             {
+                case ExpressionType.Convert:
+                case ExpressionType.ConvertChecked:
+                    // We do not surface cast operators to SQL expression.
+                    break;
                 case ExpressionType.Not:
                     _builder.Append("NOT ");
                     break;
@@ -166,6 +198,29 @@ namespace WikiClientLibrary.Cargo.Linq.ExpressionVisitors
                     _builder.Append(" = ");
                     _builder.Append(tp.TableAlias);
                     break;
+                case CargoBinaryOperationExpression bin:
+                    _builder.Append('(');
+                    Visit(bin.Left);
+                    _builder.Append(bin.Operator);
+                    Visit(bin.Right);
+                    _builder.Append(')');
+                    break;
+                case CargoFunctionExpression func:
+                    {
+                        _builder.Append(func.Name);
+                        _builder.Append('(');
+                        var isFirst = true;
+                        foreach (var arg in func.Arguments)
+                        {
+                            if (isFirst)
+                                isFirst = false;
+                            else
+                                _builder.Append(',');
+                            Visit(arg);
+                        }
+                        _builder.Append(')');
+                        break;
+                    }
                 default:
                     throw new InvalidOperationException($"ExtensionExpression is not supported: {node.GetType()}.");
             }
@@ -173,10 +228,15 @@ namespace WikiClientLibrary.Cargo.Linq.ExpressionVisitors
         }
 
         /// <inheritdoc />
+        protected override Expression VisitMember(MemberExpression node)
+        {
+            throw new NotSupportedException($"Translation of member access to {node.Member} ({node}) is not supported.");
+        }
+
+        /// <inheritdoc />
         protected override Expression VisitMethodCall(MethodCallExpression node)
         {
-            throw new NotImplementedException("Method call translation is not implemented yet.");
-            return base.VisitMethodCall(node);
+            throw new NotSupportedException($"Translation of method call {node.Method} ({node}) is not supported.");
         }
 
     }

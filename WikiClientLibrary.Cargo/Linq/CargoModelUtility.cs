@@ -18,6 +18,18 @@ namespace WikiClientLibrary.Cargo.Linq
             return member.Name;
         }
 
+        public static Type GetCollectionElementType(Type collectionType)
+        {
+            if (!collectionType.IsConstructedGenericType)
+                return null;
+            var genDef = collectionType.GetGenericTypeDefinition();
+            if (genDef == typeof(ICollection<>) || genDef == typeof(IList<>))
+            {
+                return collectionType.GenericTypeArguments[0];
+            }
+            return null;
+        }
+
     }
 
 }
