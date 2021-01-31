@@ -289,7 +289,7 @@ namespace WikiClientLibrary.Tests.UnitTestProject1.Tests
             Assert.Equal("FANDOMbot", logs.First().UserName);
             Assert.Equal("FANDOMbot", logs.Last().UserName);
             // Take the second page, it throws.
-            await Assert.ThrowsAsync<UnexpectedDataException>(() => generator.EnumItemsAsync().Take(51).ToListAsync());
+            await Assert.ThrowsAsync<UnexpectedDataException>(() => generator.EnumItemsAsync().Take(51).ToListAsync().AsTask());
             // Introduce some last-resorts.
             generator.CompatibilityOptions = new WikiListCompatibilityOptions
             {

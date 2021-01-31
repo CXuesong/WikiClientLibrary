@@ -121,7 +121,7 @@ namespace ConsoleTestApplication1
                 RedirectsFilter = PropertyFilterOption.WithoutProperty
             };
             // Take the first 1000 results
-            var pages = await allpages.EnumPagesAsync().Take(1000).ToList();
+            var pages = await allpages.EnumPagesAsync().Take(1000).ToListAsync();
             foreach (var p in pages)
                 Console.WriteLine("{0, -30} {1, 8}B {2}", p, p.ContentLength, p.LastTouched);
 
@@ -132,7 +132,7 @@ namespace ConsoleTestApplication1
             {
                 MemberTypes = CategoryMemberTypes.Subcategory
             };
-            pages = await catmembers.EnumPagesAsync().Take(10).ToList();
+            pages = await catmembers.EnumPagesAsync().Take(10).ToListAsync();
             foreach (var p in pages)
                 Console.WriteLine("{0, -30} {1, 8}B {2}", p, p.ContentLength, p.LastTouched);
         }
@@ -151,13 +151,13 @@ namespace ConsoleTestApplication1
                 // so this will help.
             };
             // List the 10 latest new pages
-            var pages = await rcg.EnumPagesAsync().Take(10).ToList();
+            var pages = await rcg.EnumPagesAsync().Take(10).ToListAsync();
             Console.WriteLine("New pages");
             foreach (var p in pages)
                 Console.WriteLine("{0, -30} {1, 8}B {2}", p, p.ContentLength, p.LastTouched);
             // List the 10 latest recent changes
             rcg.TypeFilters = RecentChangesFilterTypes.All;
-            var rcs = await rcg.EnumItemsAsync().Take(10).ToList();
+            var rcs = await rcg.EnumItemsAsync().Take(10).ToListAsync();
             Console.WriteLine();
             Console.WriteLine("Recent changes");
             foreach (var rc in rcs)
@@ -182,7 +182,7 @@ namespace ConsoleTestApplication1
                 PatrolledFilter = PropertyFilterOption.WithoutProperty
             };
             // List the first unpatrolled result.
-            var rc = await rcg.EnumItemsAsync().FirstOrDefault();
+            var rc = await rcg.EnumItemsAsync().FirstOrDefaultAsync();
             if (rc == null)
             {
                 Console.WriteLine("Nothing to patrol.");
@@ -193,7 +193,7 @@ namespace ConsoleTestApplication1
             // Show the involved revisions.
             if (rc.OldRevisionId > 0 && rc.RevisionId > 0)
             {
-                var rev = await Revision.FetchRevisionsAsync(site, rc.OldRevisionId, rc.RevisionId).ToList();
+                var rev = await Revision.FetchRevisionsAsync(site, rc.OldRevisionId, rc.RevisionId).ToListAsync();
                 // Maybe we'll use some 3rd party diff lib
                 Console.WriteLine("Before, RevId={0}, {1}", rev[0].Id, rev[0].TimeStamp);
                 Console.WriteLine(rev[0].Content);
