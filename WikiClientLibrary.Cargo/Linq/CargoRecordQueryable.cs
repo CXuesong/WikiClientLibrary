@@ -100,6 +100,8 @@ namespace WikiClientLibrary.Cargo.Linq
             while (queryParams.Limit > 0)
             {
                 var result = await Provider.WikiSite.ExecuteCargoQueryAsync(queryParams, cancellationToken);
+                // No more results.
+                if (result.Count == 0) yield break;
                 foreach (var r in result)
                 {
                     yield return (T)Provider.RecordConverter.DeserializeRecord(
