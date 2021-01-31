@@ -9,6 +9,7 @@ $ErrorActionPreference = "Stop"
 $LASTEXITCODE = 0
 $PackageProjects = @(
     "WikiClientLibrary", 
+    "WikiClientLibrary.Cargo",
     "WikiClientLibrary.Flow",
     "WikiClientLibrary.Wikia",
     "WikiClientLibrary.Wikibase"

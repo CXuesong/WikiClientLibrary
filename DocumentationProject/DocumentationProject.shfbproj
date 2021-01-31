@@ -31,6 +31,7 @@
       <DocumentationSource sourceFile="..\WikiClientLibrary\WikiClientLibrary.csproj" />
       <DocumentationSource sourceFile="..\WikiClientLibrary.Flow\WikiClientLibrary.Flow.csproj" />
       <DocumentationSource sourceFile="..\WikiClientLibrary.Wikia\WikiClientLibrary.Wikia.csproj" />
+      <DocumentationSource sourceFile="..\WikiClientLibrary.Cargo\WikiClientLibrary.Cargo.csproj" />
     </DocumentationSources>
     <SaveComponentCacheCapacity>100</SaveComponentCacheCapacity>
     <BuildAssemblerVerbosity>OnlyWarningsAndErrors</BuildAssemblerVerbosity>
