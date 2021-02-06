@@ -343,8 +343,9 @@ namespace WikiClientLibrary
                             revDict.Add(rev.Id, rev);
                         }
                     }
-                    foreach (var id in partition)
-                        yield return revDict.TryGetValue(id, out var rev) ? rev : null;
+                    await using (ExecutionContextScope.Capture())
+                        foreach (var id in partition)
+                            yield return revDict.TryGetValue(id, out var rev) ? rev : null;
                 }
             }
         }
