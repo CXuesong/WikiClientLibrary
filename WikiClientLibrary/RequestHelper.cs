@@ -98,55 +98,54 @@ namespace WikiClientLibrary
             [EnumeratorCancellation] CancellationToken cancellationToken = default)
         {
             cancellationToken.ThrowIfCancellationRequested();
-            var retrivedPageIds = distinctPages ? new HashSet<int>() : null;
-            using (beginActionScope?.Invoke())
+            var retrievedPageIds = distinctPages ? new HashSet<int>() : null;
+            var actionScopeDisposable = beginActionScope?.Invoke();
+            var baseQueryParams = parameters.ToDictionary(p => p.Key, p => p.Value);
+            Debug.Assert("query".Equals(baseQueryParams["action"]));
+            var continuationParams = new Dictionary<string, object>();
+            while (true)
             {
-                var baseQueryParams = parameters.ToDictionary(p => p.Key, p => p.Value);
-                Debug.Assert("query".Equals(baseQueryParams["action"]));
-                var continuationParams = new Dictionary<string, object>();
-                while (true)
+                var queryParams = new Dictionary<string, object>(baseQueryParams);
+                queryParams.MergeFrom(continuationParams);
+                var jresult = await site.InvokeMediaWikiApiAsync(new MediaWikiFormRequestMessage(queryParams), cancellationToken);
+                var jpages = (JObject)FindQueryResponseItemsRoot(jresult, "pages");
+                if (jpages != null)
                 {
-                    var queryParams = new Dictionary<string, object>(baseQueryParams);
-                    queryParams.MergeFrom(continuationParams);
-                    var jresult = await site.InvokeMediaWikiApiAsync(new MediaWikiFormRequestMessage(queryParams), cancellationToken);
-                    var jpages = (JObject)FindQueryResponseItemsRoot(jresult, "pages");
-                    if (jpages != null)
+                    if (retrievedPageIds != null)
                     {
-                        if (retrivedPageIds != null)
+                        // Remove duplicate results
+                        var duplicateKeys = new List<string>(jpages.Count);
+                        foreach (var jpage in jpages)
                         {
-                            // Remove duplicate results
-                            var duplicateKeys = new List<string>(jpages.Count);
-                            foreach (var jpage in jpages)
+                            if (!retrievedPageIds.Add(Convert.ToInt32(jpage.Key)))
                             {
-                                if (!retrivedPageIds.Add(Convert.ToInt32(jpage.Key)))
-                                {
-                                    // The page has been retrieved before.
-                                    duplicateKeys.Add(jpage.Key);
-                                }
-                            }
-                            var originalPageCount = jpages.Count;
-                            foreach (var k in duplicateKeys) jpages.Remove(k);
-                            if (originalPageCount != jpages.Count)
-                            {
-                                site.Logger.LogWarning(
-                                    "Received {Count} results on {Site}, {DistinctCount} distinct results.",
-                                    originalPageCount, site, jpages.Count);
+                                // The page has been retrieved before.
+                                duplicateKeys.Add(jpage.Key);
                             }
                         }
+                        var originalPageCount = jpages.Count;
+                        foreach (var k in duplicateKeys) jpages.Remove(k);
+                        if (originalPageCount != jpages.Count)
+                        {
+                            site.Logger.LogWarning(
+                                "Received {Count} results on {Site}, {DistinctCount} distinct results.",
+                                originalPageCount, site, jpages.Count);
+                        }
+                    }
+                    await using (ExecutionContextScope.Capture())
                         yield return jpages;
-                    }
-                    switch (ParseContinuationParameters(jresult, queryParams, continuationParams))
-                    {
-                        case CONTINUATION_DONE:
-                            yield break;
-                        case CONTINUATION_AVAILABLE:
-                            if (jpages == null)
-                                site.Logger.LogWarning("Empty query page with continuation received on {Site}.", site);
-                            // Continue the loop and fetch for the next page of query.
-                            break;
-                        case CONTINUATION_LOOP:
-                            throw new UnexpectedDataException();
-                    }
+                }
+                switch (ParseContinuationParameters(jresult, queryParams, continuationParams))
+                {
+                    case CONTINUATION_DONE:
+                        yield break;
+                    case CONTINUATION_AVAILABLE:
+                        if (jpages == null)
+                            site.Logger.LogWarning("Empty query page with continuation received on {Site}.", site);
+                        // Continue the loop and fetch for the next page of query.
+                        break;
+                    case CONTINUATION_LOOP:
+                        throw new UnexpectedDataException();
                 }
             }
         }

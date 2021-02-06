@@ -223,14 +223,15 @@ namespace WikiClientLibrary.Pages
                     new MediaWikiFormRequestMessage(new { action = "query", pageids = MediaWikiHelper.JoinValues(partition), }), cancellationToken);
                 Debug.Assert(jresult["query"] != null);
                 var jpages = jresult["query"]["pages"];
-                foreach (var id in partition)
-                {
-                    var jpage = jpages[id.ToString(CultureInfo.InvariantCulture)];
-                    if (jpage["missing"] == null)
-                        yield return new WikiPageStub(id, (string)jpage["title"], (int)jpage["ns"]);
-                    else
-                        yield return new WikiPageStub(id, MissingPageTitle, UnknownNamespaceId);
-                }
+                await using (ExecutionContextScope.Capture())
+                    foreach (var id in partition)
+                    {
+                        var jpage = jpages[id.ToString(CultureInfo.InvariantCulture)];
+                        if (jpage["missing"] == null)
+                            yield return new WikiPageStub(id, (string)jpage["title"], (int)jpage["ns"]);
+                        else
+                            yield return new WikiPageStub(id, MissingPageTitle, UnknownNamespaceId);
+                    }
             }
         }
 
@@ -260,6 +261,7 @@ namespace WikiClientLibrary.Pages
                     n => (string)n["to"]);
                 var pageDict = ((JObject)jresult["query"]["pages"]).Properties()
                     .ToDictionary(p => (string)p.Value["title"], p => p.Value);
+                await using var ecs = ExecutionContextScope.Capture();
                 foreach (var name in partition)
                 {
                     if (normalizedDict == null || !normalizedDict.TryGetValue(name, out var normalizedName))

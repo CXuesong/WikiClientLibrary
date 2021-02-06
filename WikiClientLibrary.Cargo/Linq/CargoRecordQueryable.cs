@@ -10,6 +10,7 @@ using System.Threading;
 using Newtonsoft.Json.Linq;
 using WikiClientLibrary.Cargo.Linq.ExpressionVisitors;
 using WikiClientLibrary.Cargo.Linq.IntermediateExpressions;
+using WikiClientLibrary.Infrastructures;
 
 namespace WikiClientLibrary.Cargo.Linq
 {
@@ -102,16 +103,17 @@ namespace WikiClientLibrary.Cargo.Linq
                 var result = await Provider.WikiSite.ExecuteCargoQueryAsync(queryParams, cancellationToken);
                 // No more results.
                 if (result.Count == 0) yield break;
-                foreach (var r in result)
-                {
-                    yield return (T)Provider.RecordConverter.DeserializeRecord(
-                        r.Properties().Select(p => (proj: queryExpr.TryGetProjectionByAlias(p.Name), value: p.Value))
-                            .Where(t => t.proj != null)
-                            .ToDictionary(
-                                t => t.proj.TargetMember,
-                                t => t.value
-                            ), typeof(T));
-                }
+                await using (ExecutionContextScope.Capture())
+                    foreach (var r in result)
+                    {
+                        yield return (T)Provider.RecordConverter.DeserializeRecord(
+                            r.Properties().Select(p => (proj: queryExpr.TryGetProjectionByAlias(p.Name), value: p.Value))
+                                .Where(t => t.proj != null)
+                                .ToDictionary(
+                                    t => t.proj.TargetMember,
+                                    t => t.value
+                                ), typeof(T));
+                    }
                 yieldedCount += result.Count;
                 // Prepare for next batch.
                 queryParams.Offset += result.Count;

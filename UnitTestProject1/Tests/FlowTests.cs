@@ -24,6 +24,7 @@ namespace WikiClientLibrary.Tests.UnitTestProject1.Tests
 
         private IEnumerable<Post> ExpandPosts(IEnumerable<Post> posts)
         {
+            // Not restoring execution context as no Logging involved.
             foreach (var post in posts)
             {
                 yield return post;

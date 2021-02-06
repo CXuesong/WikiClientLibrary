@@ -9,6 +9,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
+using WikiClientLibrary.Infrastructures;
 using WikiClientLibrary.Infrastructures.Logging;
 using WikiClientLibrary.Wikia.Sites;
 
@@ -98,7 +99,9 @@ namespace WikiClientLibrary.Wikia.WikiaApi
                         foreach (var user in users)
                             user.ApplyBasePath(basePath);
                     }
-                    foreach (var user in users) yield return user;
+                    await using (ExecutionContextScope.Capture())
+                        foreach (var user in users)
+                            yield return user;
                 }
             }
         }

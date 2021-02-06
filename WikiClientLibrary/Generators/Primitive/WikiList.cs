@@ -5,9 +5,9 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using WikiClientLibrary.Client;
+using WikiClientLibrary.Infrastructures;
 using WikiClientLibrary.Infrastructures.Logging;
 using WikiClientLibrary.Sites;
 
@@ -129,126 +129,126 @@ namespace WikiClientLibrary.Generators.Primitive
         /// </exception>
         public async IAsyncEnumerable<T> EnumItemsAsync([EnumeratorCancellation] CancellationToken cancellationToken = default)
         {
-            var baseQueryParams = new Dictionary<string, object>
+            var baseQueryParams = new Dictionary<string, object> { { "action", "query" }, { "maxlag", 5 }, { "list", ListName }, };
+            foreach (var p in EnumListParameters())
+                baseQueryParams.Add(p.Key, p.Value);
+            cancellationToken.ThrowIfCancellationRequested();
+            var continuationParams = new Dictionary<string, object>();
+            using var scope = Site.BeginActionScope(this);
+            // query parameters for this batch. The content/ref will be modified below.
+            var queryParams = new Dictionary<string, object>();
+            while (true)
+            {
+                queryParams.Clear();
+                queryParams.MergeFrom(baseQueryParams);
+                queryParams.MergeFrom(continuationParams);
+                JToken jresult;
+                JToken listNode;
+                try
                 {
-                    {"action", "query"},
-                    {"maxlag", 5},
-                    {"list", ListName},
-                };
-                foreach (var p in EnumListParameters())
-                    baseQueryParams.Add(p.Key, p.Value);
-                cancellationToken.ThrowIfCancellationRequested();
-                var continuationParams = new Dictionary<string, object>();
-                using (Site.BeginActionScope(this))
+                    jresult = await Site.InvokeMediaWikiApiAsync(new MediaWikiFormRequestMessage(queryParams), cancellationToken);
+                    listNode = RequestHelper.FindQueryResponseItemsRoot(jresult, ListName);
+                }
+                catch (Exception ex)
                 {
-                    // query parameters for this batch. The content/ref will be modified below.
-                    var queryParams = new Dictionary<string, object>();
-                    while (true)
+                    OnEnumItemsFailed(ex);
+                    throw;
+                }
+                if (listNode != null)
+                {
+                    await using (ExecutionContextScope.Capture())
                     {
-                        queryParams.Clear();
-                        queryParams.MergeFrom(baseQueryParams);
-                        queryParams.MergeFrom(continuationParams);
-                        JToken jresult;
-                        JToken listNode;
-                        try
-                        {
-                            jresult = await Site.InvokeMediaWikiApiAsync(new MediaWikiFormRequestMessage(queryParams), cancellationToken);
-                            listNode = RequestHelper.FindQueryResponseItemsRoot(jresult, ListName);
-                        }
-                        catch (Exception ex)
-                        {
-                            OnEnumItemsFailed(ex);
-                            throw;
-                        }
-                        if (listNode != null)
-                            foreach (var n in listNode)
-                                yield return ItemFromJson(n);
-                        // Check for continuation.
-                        switch (RequestHelper.ParseContinuationParameters(jresult, queryParams, continuationParams))
-                        {
-                            case RequestHelper.CONTINUATION_DONE:
-                                yield break;
-                            case RequestHelper.CONTINUATION_AVAILABLE:
-                                if (listNode == null)
-                                    Site.Logger.LogWarning("Empty query page with continuation received.");
-                                break;
-                            case RequestHelper.CONTINUATION_LOOP:
-                                Site.Logger.LogWarning("Continuation information provided by server response leads to infinite loop. {RawData}",
-                                    RequestHelper.FindQueryContinuationParameterRoot(jresult));
-                                // The following is just last effort.
-                                var outOfLoop = false;
-                                if (CompatibilityOptions != null)
-                                {
-                                    if ((CompatibilityOptions.ContinuationLoopBehaviors & WikiListContinuationLoopBehaviors.FetchMore) ==
-                                        WikiListContinuationLoopBehaviors.FetchMore)
-                                    {
-                                        // xxlimit (length = 7)
-                                        var limitParamName =
-                                            queryParams.Keys.FirstOrDefault(k => k.Length == 7 && k.EndsWith("limit", StringComparison.Ordinal));
-                                        if (limitParamName == null)
-                                        {
-                                            Site.Logger.LogWarning("Failed to find the underlying parameter name for PaginationSize.");
-                                        }
-                                        else
-                                        {
-                                            var maxLimit = Site.AccountInfo.HasRight(UserRights.ApiHighLimits) ? 1000 : 500;
-                                            var currentLimit = Math.Max(PaginationSize, 50);
-                                            // Continuously expand PaginationSize, hopefully we can retrieve some different continuation param value.
-                                            while (currentLimit < maxLimit)
-                                            {
-                                                currentLimit = Math.Min(maxLimit, currentLimit * 2);
-                                                Site.Logger.LogDebug("Try to fetch more with {ParamName}={ParamValue}.", limitParamName, currentLimit);
-                                                queryParams.Clear();
-                                                queryParams.MergeFrom(baseQueryParams);
-                                                queryParams.MergeFrom(continuationParams);
-                                                queryParams[limitParamName] = currentLimit;
-                                                var jresult2 = await Site.InvokeMediaWikiApiAsync(new MediaWikiFormRequestMessage(queryParams),
-                                                    cancellationToken);
-                                                var applyResult = RequestHelper.ParseContinuationParameters(jresult2, queryParams, continuationParams);
-                                                switch (applyResult)
-                                                {
-                                                    case RequestHelper.CONTINUATION_AVAILABLE:
-                                                    case RequestHelper.CONTINUATION_DONE:
-                                                        var listNode2 = RequestHelper.FindQueryResponseItemsRoot(jresult2, ListName);
-                                                        Site.Logger.LogInformation("Successfully got out of the continuation loop.");
-                                                        if (listNode2 != null)
-                                                        {
-                                                            if (listNode != null)
-                                                            {
-                                                                // Eliminate items that we have already yielded.
-                                                                var yieldedItems = new HashSet<JToken>(listNode, new JTokenEqualityComparer());
-                                                                foreach (var n in listNode2.Where(n => !yieldedItems.Contains(n)))
-                                                                    yield return ItemFromJson(n);
-                                                            }
-                                                            else
-                                                            {
-                                                                foreach (var n in listNode2)
-                                                                    yield return ItemFromJson(n);
-                                                            }
-                                                        }
-                                                        outOfLoop = true;
-                                                        if (applyResult == RequestHelper.CONTINUATION_DONE)
-                                                            yield break;
-                                                        break;
-                                                    case RequestHelper.CONTINUATION_LOOP:
-                                                        break;
-                                                }
-                                            }
-
-                                        }
-                                    }
-                                    //if (!outOfLoop && (CompatibilityOptions.ContinuationLoopBehaviors & WikiListContinuationLoopBehaviors.SkipItems) ==
-                                    //    WikiListContinuationLoopBehaviors.SkipItems)
-                                    //{
-
-                                    //}
-                                }
-                                if (!outOfLoop)
-                                    throw new UnexpectedDataException(Prompts.ExceptionUnexpectedContinuationLoop);
-                                break;
-                        }
+                        foreach (var n in listNode)
+                            yield return ItemFromJson(n);
                     }
                 }
+                // Check for continuation.
+                switch (RequestHelper.ParseContinuationParameters(jresult, queryParams, continuationParams))
+                {
+                    case RequestHelper.CONTINUATION_DONE:
+                        yield break;
+                    case RequestHelper.CONTINUATION_AVAILABLE:
+                        if (listNode == null)
+                            Site.Logger.LogWarning("Empty query page with continuation received.");
+                        break;
+                    case RequestHelper.CONTINUATION_LOOP:
+                        Site.Logger.LogWarning("Continuation information provided by server response leads to infinite loop. {RawData}",
+                            RequestHelper.FindQueryContinuationParameterRoot(jresult));
+                        // The following is just last effort.
+                        var outOfLoop = false;
+                        if (CompatibilityOptions != null)
+                        {
+                            if ((CompatibilityOptions.ContinuationLoopBehaviors & WikiListContinuationLoopBehaviors.FetchMore) ==
+                                WikiListContinuationLoopBehaviors.FetchMore)
+                            {
+                                // xxlimit (length = 7)
+                                var limitParamName =
+                                    queryParams.Keys.FirstOrDefault(k => k.Length == 7 && k.EndsWith("limit", StringComparison.Ordinal));
+                                if (limitParamName == null)
+                                {
+                                    Site.Logger.LogWarning("Failed to find the underlying parameter name for PaginationSize.");
+                                }
+                                else
+                                {
+                                    var maxLimit = Site.AccountInfo.HasRight(UserRights.ApiHighLimits) ? 1000 : 500;
+                                    var currentLimit = Math.Max(PaginationSize, 50);
+                                    // Continuously expand PaginationSize, hopefully we can retrieve some different continuation param value.
+                                    while (currentLimit < maxLimit)
+                                    {
+                                        currentLimit = Math.Min(maxLimit, currentLimit * 2);
+                                        Site.Logger.LogDebug("Try to fetch more with {ParamName}={ParamValue}.", limitParamName, currentLimit);
+                                        queryParams.Clear();
+                                        queryParams.MergeFrom(baseQueryParams);
+                                        queryParams.MergeFrom(continuationParams);
+                                        queryParams[limitParamName] = currentLimit;
+                                        var jresult2 = await Site.InvokeMediaWikiApiAsync(new MediaWikiFormRequestMessage(queryParams),
+                                            cancellationToken);
+                                        var applyResult = RequestHelper.ParseContinuationParameters(jresult2, queryParams, continuationParams);
+                                        switch (applyResult)
+                                        {
+                                            case RequestHelper.CONTINUATION_AVAILABLE:
+                                            case RequestHelper.CONTINUATION_DONE:
+                                                var listNode2 = RequestHelper.FindQueryResponseItemsRoot(jresult2, ListName);
+                                                Site.Logger.LogInformation("Successfully got out of the continuation loop.");
+                                                if (listNode2 != null)
+                                                {
+                                                    if (listNode != null)
+                                                    {
+                                                        // Eliminate items that we have already yielded.
+                                                        var yieldedItems = new HashSet<JToken>(listNode, new JTokenEqualityComparer());
+                                                        await using (ExecutionContextScope.Capture())
+                                                            foreach (var n in listNode2.Where(n => !yieldedItems.Contains(n)))
+                                                                yield return ItemFromJson(n);
+                                                    }
+                                                    else
+                                                    {
+                                                        await using (ExecutionContextScope.Capture())
+                                                            foreach (var n in listNode2)
+                                                                yield return ItemFromJson(n);
+                                                    }
+                                                }
+                                                outOfLoop = true;
+                                                if (applyResult == RequestHelper.CONTINUATION_DONE)
+                                                    yield break;
+                                                break;
+                                            case RequestHelper.CONTINUATION_LOOP:
+                                                break;
+                                        }
+                                    }
+
+                                }
+                            }
+                            //if (!outOfLoop && (CompatibilityOptions.ContinuationLoopBehaviors & WikiListContinuationLoopBehaviors.SkipItems) ==
+                            //    WikiListContinuationLoopBehaviors.SkipItems)
+                            //{
+
+                            //}
+                        }
+                        if (!outOfLoop)
+                            throw new UnexpectedDataException(Prompts.ExceptionUnexpectedContinuationLoop);
+                        break;
+                }
+            }
         }
 
     }

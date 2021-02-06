@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
 using WikiClientLibrary.Generators;
 using WikiClientLibrary.Generators.Primitive;
+using WikiClientLibrary.Infrastructures;
 using WikiClientLibrary.Pages;
 using WikiClientLibrary.Sites;
 using WikiClientLibrary.Wikia.Sites;
@@ -146,8 +147,9 @@ namespace WikiClientLibrary.Wikia.WikiaApi
                 }), cancellationToken);
                 totalBatches = (int)jresult["batches"];
                 var items = jresult["items"].ToObject<IEnumerable<LocalWikiSearchResultItem>>(Utility.WikiaApiJsonSerializer);
-                foreach (var i in items)
-                    yield return i;
+                await using (ExecutionContextScope.Capture())
+                    foreach (var i in items)
+                        yield return i;
             }
         }
     }

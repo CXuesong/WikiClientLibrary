@@ -62,7 +62,6 @@ namespace WikiClientLibrary.Wikia
                 }
             }
 
-
             using (board.Site.BeginActionScope(board))
             {
                 // Refresh to get the page id.
@@ -87,7 +86,9 @@ namespace WikiClientLibrary.Wikia
                         var comments = PostsFromJsonOutline((JObject)jcomments);
                         pagesCount = (int)jroot["pagesCount"];
                         await RefreshPostsAsync(PostsAndDescendants(comments), options, cancellationToken);
-                        foreach (var c in comments) yield return c;
+                        await using (ExecutionContextScope.Capture())
+                            foreach (var c in comments)
+                                yield return c;
                     }
                 }
             }
