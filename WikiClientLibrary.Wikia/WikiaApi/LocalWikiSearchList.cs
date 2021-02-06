@@ -147,7 +147,7 @@ namespace WikiClientLibrary.Wikia.WikiaApi
                 }), cancellationToken);
                 totalBatches = (int)jresult["batches"];
                 var items = jresult["items"].ToObject<IEnumerable<LocalWikiSearchResultItem>>(Utility.WikiaApiJsonSerializer);
-                await using (ExecutionContextScope.Capture())
+                using (ExecutionContextStash.Capture())
                     foreach (var i in items)
                         yield return i;
             }

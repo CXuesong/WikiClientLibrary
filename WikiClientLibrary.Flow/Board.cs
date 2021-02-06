@@ -125,7 +125,7 @@ namespace WikiClientLibrary.Flow
         NEXT_PAGE:
             var jresult = await Site.InvokeMediaWikiApiAsync(new MediaWikiFormRequestMessage(queryParams), cancellationToken);
             var jtopiclist = (JObject)jresult["flow"]["view-topiclist"]["result"]["topiclist"];
-            await using (ExecutionContextScope.Capture())
+            using (ExecutionContextStash.Capture())
                 foreach (var t in Topic.FromJsonTopicList(Site, jtopiclist))
                     yield return t;
             // 2018-07-30 flow.view-topiclist.result.topiclist.links.pagination is [] instead of null for boards without pagination.

@@ -86,7 +86,7 @@ namespace WikiClientLibrary.Wikia
                         var comments = PostsFromJsonOutline((JObject)jcomments);
                         pagesCount = (int)jroot["pagesCount"];
                         await RefreshPostsAsync(PostsAndDescendants(comments), options, cancellationToken);
-                        await using (ExecutionContextScope.Capture())
+                        using (ExecutionContextStash.Capture())
                             foreach (var c in comments)
                                 yield return c;
                     }

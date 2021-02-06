@@ -156,7 +156,7 @@ namespace WikiClientLibrary.Generators.Primitive
                 }
                 if (listNode != null)
                 {
-                    await using (ExecutionContextScope.Capture())
+                    using (ExecutionContextStash.Capture())
                     {
                         foreach (var n in listNode)
                             yield return ItemFromJson(n);
@@ -216,13 +216,13 @@ namespace WikiClientLibrary.Generators.Primitive
                                                     {
                                                         // Eliminate items that we have already yielded.
                                                         var yieldedItems = new HashSet<JToken>(listNode, new JTokenEqualityComparer());
-                                                        await using (ExecutionContextScope.Capture())
+                                                        using (ExecutionContextStash.Capture())
                                                             foreach (var n in listNode2.Where(n => !yieldedItems.Contains(n)))
                                                                 yield return ItemFromJson(n);
                                                     }
                                                     else
                                                     {
-                                                        await using (ExecutionContextScope.Capture())
+                                                        using (ExecutionContextStash.Capture())
                                                             foreach (var n in listNode2)
                                                                 yield return ItemFromJson(n);
                                                     }

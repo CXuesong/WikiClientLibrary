@@ -103,7 +103,7 @@ namespace WikiClientLibrary.Cargo.Linq
                 var result = await Provider.WikiSite.ExecuteCargoQueryAsync(queryParams, cancellationToken);
                 // No more results.
                 if (result.Count == 0) yield break;
-                await using (ExecutionContextScope.Capture())
+                using (ExecutionContextStash.Capture())
                     foreach (var r in result)
                     {
                         yield return (T)Provider.RecordConverter.DeserializeRecord(

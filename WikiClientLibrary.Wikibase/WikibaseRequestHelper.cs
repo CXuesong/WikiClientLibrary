@@ -129,7 +129,7 @@ namespace WikiClientLibrary.Wikibase
                     var jentities = (JObject)jresult["entities"];
                     var nameIdDict = jentities.PropertyValues().Where(e => e["missing"] == null)
                         .ToDictionary(e => (string)e["sitelinks"][siteName]["title"], e => (string)e["id"]);
-                    await using (ExecutionContextScope.Capture())
+                    using (ExecutionContextStash.Capture())
                         foreach (var title in partition)
                             yield return nameIdDict.TryGetValue(title, out var id) ? id : null;
                 }

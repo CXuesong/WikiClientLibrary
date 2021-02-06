@@ -99,7 +99,7 @@ namespace WikiClientLibrary.Wikia.WikiaApi
                         foreach (var user in users)
                             user.ApplyBasePath(basePath);
                     }
-                    await using (ExecutionContextScope.Capture())
+                    using (ExecutionContextStash.Capture())
                         foreach (var user in users)
                             yield return user;
                 }

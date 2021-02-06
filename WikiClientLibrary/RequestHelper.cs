@@ -132,7 +132,7 @@ namespace WikiClientLibrary
                                 originalPageCount, site, jpages.Count);
                         }
                     }
-                    await using (ExecutionContextScope.Capture())
+                    using (ExecutionContextStash.Capture())
                         yield return jpages;
                 }
                 switch (ParseContinuationParameters(jresult, queryParams, continuationParams))
@@ -343,7 +343,7 @@ namespace WikiClientLibrary
                             revDict.Add(rev.Id, rev);
                         }
                     }
-                    await using (ExecutionContextScope.Capture())
+                    using (ExecutionContextStash.Capture())
                         foreach (var id in partition)
                             yield return revDict.TryGetValue(id, out var rev) ? rev : null;
                 }

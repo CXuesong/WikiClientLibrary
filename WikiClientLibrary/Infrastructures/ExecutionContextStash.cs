@@ -20,42 +20,40 @@ namespace WikiClientLibrary.Infrastructures
     /// This helper is for correctly restoring execution context (and <see cref="AsyncLocal{T}"/>) after <c>yield return</c>.
     /// <c>Microsoft.Extension.Logging</c> depends on that for scoped logging.
     /// </remarks>
-    public readonly struct ExecutionContextScope
+    public readonly struct ExecutionContextStash : IDisposable
     {
 
-        private readonly ExecutionContext capturedContext;
+        private readonly ExecutionContext executionContext;
 
-        public static ExecutionContextScope Capture()
+        public static ExecutionContextStash Capture()
         {
-            return new ExecutionContextScope(ExecutionContext.Capture());
+            return new ExecutionContextStash(ExecutionContext.Capture());
         }
 
-        private ExecutionContextScope(ExecutionContext context)
+        private ExecutionContextStash(ExecutionContext context)
         {
-            this.capturedContext = context;
+            this.executionContext = context;
         }
 
         /// <summary>
         /// Gets an awaiter to <c>await</c> in order to enter the Captured execution context.
         /// </summary>
-        public ExecutionContextEnteringAwaiter GetAwaiter() => new ExecutionContextEnteringAwaiter(capturedContext);
-
-        public ExecutionContextScope DisposeAsync()
+        public void RestoreExecutionContext()
         {
-            // Restores execution context via `GetAwaiter`.
-            return this;
+            if (executionContext == null) return;
+            // Restore execution context inline.
+#if BCL_FEATURE_EXECUTION_CONTEXT_RESTORE
+            // On .NET 5+, restores execution context with public API.
+            ExecutionContext.Restore(executionContext);
+#else
+            // Otherwise, invoke our hacky delegate.
+            restoreExecutionContext(executionContext);
+#endif
         }
 
-    }
+        /// <summary>Calls <see cref="RestoreExecutionContext"/>.</summary>
+        public void Dispose() => RestoreExecutionContext();
 
-    /// <summary>
-    /// This type is infrastructure of WCL and is not intended to be used directly in your own code.
-    /// This awaiter synchronously restores specified execution context.
-    /// </summary>
-    public readonly struct ExecutionContextEnteringAwaiter : ICriticalNotifyCompletion
-    {
-
-        private readonly ExecutionContext executionContext;
 #if !BCL_FEATURE_EXECUTION_CONTEXT_RESTORE
         private static readonly Action<ExecutionContext> restoreExecutionContext = BuildRestoreExecutionContextDelegate();
 
@@ -64,7 +62,7 @@ namespace WikiClientLibrary.Infrastructures
             // You feel like you're going to have a bad time.
 
             // On .NET Standard 2.1, there is no ExecutionContext.Restore(ExecutionContext) public API.
-            // Cannot leverage ExecutionContext.Run in OnComplete impl here as CPS transformation done by C# compiler does not give us enough freedom.
+            // Cannot leverage ExecutionContext.Run and Awaiter.OnComplete impl here as CPS transformation done by C# compiler does not give us enough freedom.
             // `AsyncTaskMethodBuilder<TResult>.GetStateMachineBox` is always capturing current ExecutionContext and
             // restoring it *inside* OnComplete callback thunk. This behavior cannot be disabled.
 
@@ -78,7 +76,7 @@ namespace WikiClientLibrary.Infrastructures
             {
                 var dm = new DynamicMethod("proxy$ExecutionContext.Restore",
                     typeof(void), new[] { typeof(ExecutionContext) },
-                    typeof(ExecutionContextEnteringAwaiter),
+                    typeof(ExecutionContextStash),
                     skipVisibility: true);
                 var gen = dm.GetILGenerator();
                 gen.Emit(OpCodes.Ldarg_0);
@@ -99,7 +97,7 @@ namespace WikiClientLibrary.Infrastructures
             {
                 var dm = new DynamicMethod("proxy$ExecutionContext.RestoreChangedContextToThread",
                     typeof(void), new[] { typeof(ExecutionContext) },
-                    typeof(ExecutionContextEnteringAwaiter),
+                    typeof(ExecutionContextStash),
                     skipVisibility: true);
                 var gen = dm.GetILGenerator();
                 var label1 = gen.DefineLabel();
@@ -133,48 +131,5 @@ namespace WikiClientLibrary.Infrastructures
         }
 #endif
 
-        internal ExecutionContextEnteringAwaiter(ExecutionContext executionContext)
-        {
-            this.executionContext = executionContext;
-        }
-
-        // Returns true as we can restore executionContext inline & synchronously.
-        public bool IsCompleted => true;
-        
-        public void GetResult()
-        {
-            if (executionContext == null) return;
-            // Restore execution context inline.
-#if BCL_FEATURE_EXECUTION_CONTEXT_RESTORE
-            // On .NET 5+, restores execution context with public API.
-            ExecutionContext.Restore(executionContext);
-#else
-            // Otherwise, invoke our hacky delegate.
-            restoreExecutionContext(executionContext);
-#endif
-        }
-
-        public void OnCompleted(Action continuation)
-        {
-            if (executionContext == null)
-            {
-                // No execution context to restore. Flow the current one.
-                ThreadPool.QueueUserWorkItem(c => ((Action)c)(), continuation);
-            }
-            else
-            {
-                // Restore `executionContext` in GetResult.
-                ThreadPool.UnsafeQueueUserWorkItem(c => ((Action)c)(), continuation);
-            }
-        }
-
-        /// <inheritdoc />
-        public void UnsafeOnCompleted(Action continuation)
-        {
-            // Restore `executionContext` in GetResult.
-            ThreadPool.UnsafeQueueUserWorkItem(c => ((Action)c)(), continuation);
-        }
-
     }
-
 }

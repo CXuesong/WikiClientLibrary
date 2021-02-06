@@ -223,7 +223,7 @@ namespace WikiClientLibrary.Pages
                     new MediaWikiFormRequestMessage(new { action = "query", pageids = MediaWikiHelper.JoinValues(partition), }), cancellationToken);
                 Debug.Assert(jresult["query"] != null);
                 var jpages = jresult["query"]["pages"];
-                await using (ExecutionContextScope.Capture())
+                using (ExecutionContextStash.Capture())
                     foreach (var id in partition)
                     {
                         var jpage = jpages[id.ToString(CultureInfo.InvariantCulture)];
@@ -261,7 +261,7 @@ namespace WikiClientLibrary.Pages
                     n => (string)n["to"]);
                 var pageDict = ((JObject)jresult["query"]["pages"]).Properties()
                     .ToDictionary(p => (string)p.Value["title"], p => p.Value);
-                await using var ecs = ExecutionContextScope.Capture();
+                using var ecs = ExecutionContextStash.Capture();
                 foreach (var name in partition)
                 {
                     if (normalizedDict == null || !normalizedDict.TryGetValue(name, out var normalizedName))
