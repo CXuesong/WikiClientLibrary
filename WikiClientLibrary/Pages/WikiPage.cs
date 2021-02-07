@@ -111,12 +111,12 @@ namespace WikiClientLibrary.Pages
         /// <typeparam name="T">The type of the desired property group.</typeparam>
         public T GetPropertyGroup<T>() where T : IWikiPagePropertyGroup
         {
-            if (propertyGroups == null) return default(T);
+            if (propertyGroups == null) return default;
             foreach (var prop in propertyGroups)
             {
                 if (prop is T t) return t;
             }
-            return default(T);
+            return default;
         }
 
         /// <summary>

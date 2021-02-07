@@ -143,7 +143,7 @@ namespace WikiClientLibrary.Tests.UnitTestProject1.Tests
             //      var site = new WikiSite(WikiClient, "api-endpoint");
             //      await site.Initialization;
             // The second statement will throw exception if you haven't logged in.
-            var site = await CredentialManager.EarlyLoginAsync(CreateWikiClient(), 
+            var site = await CredentialManager.EarlyLoginAsync(client, 
                 new SiteOptions(CredentialManager.PrivateWikiTestsEntryPointUrl));
             ShallowTrace(site);
             await site.LogoutAsync();

@@ -97,7 +97,7 @@ namespace WikiClientLibrary.Infrastructures
                 return stringEnu.Select(p => new KeyValuePair<string, object>(p.Key, p.Value));
             if (dict is IDictionary idict0)
             {
-                IEnumerable<KeyValuePair<string, object>> Enumerator(IDictionary idict)
+                static IEnumerable<KeyValuePair<string, object>> Enumerator(IDictionary idict)
                 {
                     var de = idict.GetEnumerator();
                     while (de.MoveNext()) yield return new KeyValuePair<string, object>((string)de.Key, de.Value);
@@ -371,7 +371,7 @@ namespace WikiClientLibrary.Infrastructures
             foreach (var v in values)
             {
                 if (sb.Length > 0) sb.Append(delimiter);
-                string str = v == null ? null : v.ToString();
+                var str = v?.ToString();
                 if (str != null)
                 {
                     if (delimiter == '|')

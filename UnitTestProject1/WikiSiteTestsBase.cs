@@ -6,6 +6,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Text;
@@ -22,7 +23,7 @@ using Xunit.Abstractions;
 namespace WikiClientLibrary.Tests.UnitTestProject1
 {
 
-    public class UnitTestsBase : IDisposable
+    public class UnitTestsBase : IAsyncDisposable
     {
 
         public UnitTestsBase(ITestOutputHelper output)
@@ -66,17 +67,12 @@ namespace WikiClientLibrary.Tests.UnitTestProject1
             Output.WriteLine(rawTrace);
         }
 
-        protected virtual void Dispose(bool disposing)
-        {
-            if (disposing)
-            {
-            }
-        }
+        protected virtual ValueTask DisposeAsync(bool disposing) => default;
 
         /// <inheritdoc />
-        public void Dispose()
+        public async ValueTask DisposeAsync()
         {
-            Dispose(true);
+            await DisposeAsync(true);
             GC.SuppressFinalize(this);
         }
     }
@@ -196,7 +192,7 @@ namespace WikiClientLibrary.Tests.UnitTestProject1
 
         protected Task<WikiSite> WikiSiteFromNameAsync(string sitePropertyName)
         {
-            async Task<TDest> CastAsync<TSource, TDest>(Task<TSource> sourceTask)
+            static async Task<TDest> CastAsync<TSource, TDest>(Task<TSource> sourceTask)
             {
                 return (TDest)(object)await sourceTask;
             }
@@ -225,23 +221,22 @@ namespace WikiClientLibrary.Tests.UnitTestProject1
         }
 
         /// <inheritdoc />
-        protected override void Dispose(bool disposing)
+        protected override async ValueTask DisposeAsync(bool disposing)
         {
             if (disposing)
             {
                 // Logout all the sites.
-                var tasks = new List<Task>();
+                List<Task<WikiSite>> sites;
                 lock (siteCache)
+                    sites = siteCache.Values.ToList();
+                foreach (var s in sites)
                 {
-                    foreach (var p in siteCache)
-                    {
-                        var site = p.Value.GetAwaiter().GetResult();
-                        if (site.AccountInfo.IsUser) tasks.Add(site.LogoutAsync());
-                    }
+                    var site = await s;
+                    if (site.AccountInfo.IsUser)
+                        await site.LogoutAsync();
                 }
-                Task.WaitAll(tasks.ToArray());
             }
-            base.Dispose(disposing);
+            await base.DisposeAsync(disposing);
         }
     }
 }

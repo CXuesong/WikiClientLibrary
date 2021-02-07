@@ -157,20 +157,15 @@ namespace WikiClientLibrary.Cargo.Linq
 
             private static readonly MethodInfo deserializeValueMethod = typeof(ValueConverters).GetMethod(nameof(DeserializeValue));
 
-            private static readonly MethodInfo deserializeNullableValueMethod =
-                typeof(ValueConverters).GetMethod(nameof(DeserializeNullableValue));
-            private static readonly Dictionary<Type, MethodInfo> wellKnownValueDeserializers;
+            private static readonly MethodInfo deserializeNullableValueMethod
+                = typeof(ValueConverters).GetMethod(nameof(DeserializeNullableValue));
 
-            static ValueConverters()
-            {
-                wellKnownValueDeserializers = typeof(ValueConverters)
+            private static readonly Dictionary<Type, MethodInfo> wellKnownValueDeserializers
+                = typeof(ValueConverters)
                     .GetMethods(BindingFlags.Public | BindingFlags.Static)
-                    .Where(m =>
-                        m.Name.StartsWith("Deserialize", StringComparison.Ordinal)
-                        && !m.IsGenericMethod
-                    )
+                    .Where(m => !m.IsGenericMethod
+                                && m.Name.StartsWith("Deserialize", StringComparison.Ordinal))
                     .ToDictionary(m => m.ReturnType);
-            }
 
             public static MethodInfo GetValueDeserializer(Type valueType)
             {
