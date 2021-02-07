@@ -8,7 +8,6 @@ using WikiClientLibrary;
 using System.Diagnostics;
 using System.IO;
 using System.Reflection;
-using System.Runtime.ExceptionServices;
 using System.Text.RegularExpressions;
 using WikiClientLibrary.Client;
 using WikiClientLibrary.Sites;
@@ -36,7 +35,7 @@ namespace WikiClientLibrary.Tests.UnitTestProject1
             } else {
                 sb.Append(obj);
             }
-            if (maxDepth < 1 || obj.GetType().GetTypeInfo().IsPrimitive
+            if (maxDepth < 1 || obj.GetType().IsPrimitive
                              || obj is string || obj is Uri || obj is DateTime || obj is DateTimeOffset)
             {
                 var s = sb.ToString();
@@ -100,7 +99,7 @@ namespace WikiClientLibrary.Tests.UnitTestProject1
         public static DemoFileInfo GetDemoImage(string imageName)
         {
             // Load DemoImage.jpg
-            var assembly = typeof(Utility).GetTypeInfo().Assembly;
+            var assembly = typeof(Utility).Assembly;
             var content = assembly.GetManifestResourceStream($"WikiClientLibrary.Tests.UnitTestProject1.DemoImages.{imageName}.jpg");
             if (content == null) throw new ArgumentException("Invalid imageName.");
             using var r = new StreamReader(assembly.GetManifestResourceStream($"WikiClientLibrary.Tests.UnitTestProject1.DemoImages.{imageName}.txt"));

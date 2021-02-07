@@ -107,7 +107,7 @@ namespace WikiClientLibrary.Infrastructures
             }
             // Sanity check: We only want to marshal anonymous types.
             // If you are in RELEASE mode… I wish you good luck.
-            Debug.Assert(dict.GetType().GetTypeInfo().CustomAttributes
+            Debug.Assert(dict.GetType().CustomAttributes
                     .Any(a => a.AttributeType != typeof(CompilerGeneratedAttribute)),
                 "We only want to marshal anonymous types. Did you accidentally pass in a wrong object?");
             return from p in dict.GetType().GetRuntimeProperties()

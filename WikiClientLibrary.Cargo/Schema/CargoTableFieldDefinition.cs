@@ -19,7 +19,7 @@ namespace WikiClientLibrary.Cargo.Schema
         internal static CargoTableFieldType MatchFieldType(Type clrType, out bool isCollection, out bool isNullable)
         {
             isCollection = false;
-            isNullable = !clrType.GetTypeInfo().IsValueType;
+            isNullable = !clrType.IsValueType;
             {
                 var elementType = CargoModelUtility.GetCollectionElementType(clrType);
                 if (elementType != null)

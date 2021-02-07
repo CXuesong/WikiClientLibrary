@@ -75,7 +75,7 @@ namespace WikiClientLibrary.Infrastructures
         /// <inheritdoc />
         public override bool CanConvert(Type objectType)
         {
-            return objectType.GetTypeInfo().IsEnum;
+            return objectType.IsEnum;
         }
     }
 

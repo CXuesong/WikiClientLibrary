@@ -229,7 +229,7 @@ namespace WikiClientLibrary.Infrastructures.Logging
                 if (localTarget != null)
                 {
                     if (isCollection) builder.Append('[');
-                    var type = localTarget.GetType().GetTypeInfo();
+                    var type = localTarget.GetType();
                     if (!type.IsPrimitive && !type.Namespace.StartsWith("System."))
                         builder.Append(type.Name);
                     builder.Append('{');

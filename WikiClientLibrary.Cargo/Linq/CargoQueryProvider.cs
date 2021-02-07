@@ -42,7 +42,7 @@ namespace WikiClientLibrary.Cargo.Linq
         /// <inheritdoc />
         public IQueryable CreateQuery(Expression expression)
         {
-            var queryableType = expression.Type.GetTypeInfo().ImplementedInterfaces
+            var queryableType = expression.Type.GetInterfaces()
                 .First(i => i.IsConstructedGenericType && i.GetGenericTypeDefinition() == typeof(IQueryable<>));
             var elementType = queryableType.GenericTypeArguments[0];
             return (IQueryable)Activator.CreateInstance(typeof(CargoRecordQueryable<>).MakeGenericType(elementType), this, expression);

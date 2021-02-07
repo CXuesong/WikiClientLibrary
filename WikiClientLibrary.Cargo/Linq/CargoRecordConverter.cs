@@ -34,9 +34,9 @@ namespace WikiClientLibrary.Cargo.Linq
             .GetRuntimeMethod(nameof(IReadOnlyDictionary<string, JToken>.TryGetValue),
                 new[] { typeof(string), typeof(JToken).MakeByRefType() });
 
-        private static readonly MethodInfo deserializeCollectionMethod = typeof(CargoRecordConverter).GetTypeInfo().GetDeclaredMethod(nameof(DeserializeCollection));
+        private static readonly MethodInfo deserializeCollectionMethod = typeof(CargoRecordConverter).GetMethod(nameof(DeserializeCollection));
 
-        private static readonly MethodInfo deserializeStringCollectionMethod = typeof(CargoRecordConverter).GetTypeInfo().GetDeclaredMethod(nameof(DeserializeStringCollection));
+        private static readonly MethodInfo deserializeStringCollectionMethod = typeof(CargoRecordConverter).GetMethod(nameof(DeserializeStringCollection));
 
         private readonly ConcurrentDictionary<Type, Func<IReadOnlyDictionary<string, JToken>, object>> cachedDeserializers =
             new ConcurrentDictionary<Type, Func<IReadOnlyDictionary<string, JToken>, object>>();
@@ -70,7 +70,7 @@ namespace WikiClientLibrary.Cargo.Linq
             {
                 var delimiter = listAttr?.Delimiter ?? CargoListAttribute.DefaultDelimiter;
                 // Currently we require cargo list model property declared as ICollection<T> actually.
-                if (targetType.GetTypeInfo().IsAssignableFrom(typeof(IList<>).MakeGenericType(elementType).GetTypeInfo()))
+                if (targetType.IsAssignableFrom(typeof(IList<>).MakeGenericType(elementType).GetTypeInfo()))
                 {
                     gen.Emit(OpCodes.Ldstr, delimiter);
                     if (elementType == typeof(string))
@@ -103,7 +103,7 @@ namespace WikiClientLibrary.Cargo.Linq
                 );
                 var gen = builder.GetILGenerator();
                 // Find ctor with most parameters.
-                var ctor = modelType.GetTypeInfo().DeclaredConstructors
+                var ctor = modelType.GetConstructors()
                     .Where(m => m.IsPublic)
                     .Aggregate((x, y) => x.GetParameters().Length > y.GetParameters().Length ? x : y);
                 var assignedFields = new HashSet<string>();
@@ -156,12 +156,10 @@ namespace WikiClientLibrary.Cargo.Linq
         private static class ValueConverters
         {
 
-            private static readonly MethodInfo deserializeValueMethod = typeof(ValueConverters).GetTypeInfo().GetDeclaredMethod(nameof(DeserializeValue));
+            private static readonly MethodInfo deserializeValueMethod = typeof(ValueConverters).GetMethod(nameof(DeserializeValue));
 
             private static readonly MethodInfo deserializeNullableValueMethod =
-                typeof(ValueConverters).GetTypeInfo().GetDeclaredMethod(nameof(DeserializeNullableValue));
-
-            public static readonly MethodInfo IsNullableNullMethod = typeof(ValueConverters).GetTypeInfo().GetDeclaredMethod(nameof(IsNullableNull));
+                typeof(ValueConverters).GetMethod(nameof(DeserializeNullableValue));
             private static readonly Dictionary<Type, MethodInfo> wellKnownValueDeserializers;
 
             static ValueConverters()

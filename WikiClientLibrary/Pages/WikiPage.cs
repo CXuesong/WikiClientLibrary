@@ -94,7 +94,7 @@ namespace WikiClientLibrary.Pages
         public IWikiPagePropertyGroup GetPropertyGroup(Type propertyGroupType)
         {
             var ti = propertyGroupType.GetTypeInfo();
-            if (!typeof(IWikiPagePropertyGroup).GetTypeInfo().IsAssignableFrom(ti))
+            if (!typeof(IWikiPagePropertyGroup).IsAssignableFrom(ti))
                 throw new ArgumentException("propertyGroupType is not a subtype of IWikiPagePropertyGroup.", nameof(propertyGroupType));
             if (propertyGroups == null) return null;
             foreach (var prop in propertyGroups)
