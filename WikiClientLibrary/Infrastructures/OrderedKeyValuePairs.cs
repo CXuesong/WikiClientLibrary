@@ -14,7 +14,7 @@ namespace WikiClientLibrary.Infrastructures
         {
         }
 
-        public OrderedKeyValuePairs(IEqualityComparer<TKey> keyComparer)
+        public OrderedKeyValuePairs(IEqualityComparer<TKey>? keyComparer)
         {
             KeyComparer = keyComparer ?? EqualityComparer<TKey>.Default;
         }

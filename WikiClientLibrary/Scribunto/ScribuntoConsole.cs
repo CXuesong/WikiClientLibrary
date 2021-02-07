@@ -80,7 +80,7 @@ namespace WikiClientLibrary.Scribunto
         /// To create a new Lua evaluation session with a different <seealso cref="SessionId"/>,
         /// create a new <seealso cref="ScribuntoConsole"/> instance.</para>
         /// </remarks>
-        public async Task ResetAsync(string moduleContent, string moduleTitle, CancellationToken cancellationToken)
+        public async Task ResetAsync(string? moduleContent, string? moduleTitle, CancellationToken cancellationToken)
         {
             if (moduleTitle == null)
                 moduleTitle = AdhocModuleTitlePrefix;
@@ -150,7 +150,7 @@ namespace WikiClientLibrary.Scribunto
         /// <returns>The console evaluation result.</returns>
         public async Task<ScribuntoEvaluationResult> EvaluateAsync(string expression, CancellationToken cancellationToken)
         {
-            ScribuntoEvaluationResult result = null;
+            ScribuntoEvaluationResult? result = null;
             try
             {
                 result = await InvokeApiAsync(Site, _SessionId, ModuleTitle, null, expression, false, cancellationToken);
@@ -172,7 +172,7 @@ namespace WikiClientLibrary.Scribunto
             }
         }
 
-        internal static async Task<ScribuntoEvaluationResult> InvokeApiAsync(WikiSite site, long? sessionId, string title, string content, string question, bool clear, CancellationToken ct)
+        internal static async Task<ScribuntoEvaluationResult> InvokeApiAsync(WikiSite site, long? sessionId, string? title, string? content, string question, bool clear, CancellationToken ct)
         {
             JToken jresult;
             try

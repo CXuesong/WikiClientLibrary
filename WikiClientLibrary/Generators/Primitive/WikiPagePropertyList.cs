@@ -38,7 +38,7 @@ namespace WikiClientLibrary.Generators.Primitive
         /// </summary>
         /// <remarks>If this property is not <c>null</c>, the value of this property will be used.
         /// Otherwise <see cref="PageId"/> will be effective.</remarks>
-        public string PageTitle { get; set; }
+        public string? PageTitle { get; set; }
 
         /// <summary>
         /// Gets/sets the page ID from which to get the <c>list</c>-like property value.
@@ -77,7 +77,7 @@ namespace WikiClientLibrary.Generators.Primitive
         /// When overridden, fills generator parameters for <c>action=query&amp;prop={PropertyName}</c> request.
         /// </summary>
         /// <returns>A sequence of fields, which will override the basic query parameters.</returns>
-        public abstract IEnumerable<KeyValuePair<string, object>> EnumListParameters();
+        public abstract IEnumerable<KeyValuePair<string, object?>> EnumListParameters();
 
         /// <summary>
         /// Parses an item contained in the <c>action=query&amp;prop={PropertyName}</c> JSON response.

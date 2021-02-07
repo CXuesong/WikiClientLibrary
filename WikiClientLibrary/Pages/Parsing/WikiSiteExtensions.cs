@@ -16,9 +16,9 @@ namespace WikiClientLibrary.Pages.Parsing
     public static class WikiSiteExtensions
     {
 
-        private static IDictionary<string, object> BuildParsingParams(WikiSite site, ParsingOptions options)
+        private static IDictionary<string, object?> BuildParsingParams(WikiSite site, ParsingOptions options)
         {
-            var p = new Dictionary<string, object>
+            var p = new Dictionary<string, object?>
             {
                 {"action", "parse"},
                 {"prop", "text|langlinks|categories|sections|revid|displaytitle|properties"},
@@ -62,7 +62,7 @@ namespace WikiClientLibrary.Pages.Parsing
         /// <inheritdoc cref="ParsePageAsync(WikiSite,string,string,ParsingOptions,CancellationToken)"/>
         public static Task<ParsedContentInfo> ParsePageAsync(this WikiSite site, string title, ParsingOptions options, CancellationToken cancellationToken)
         {
-            return ParsePageAsync(site, title, null, options, CancellationToken.None);
+            return ParsePageAsync(site, title, null, options, cancellationToken);
         }
 
         /// <summary>
@@ -70,11 +70,11 @@ namespace WikiClientLibrary.Pages.Parsing
         /// </summary>
         /// <param name="site">The MediaWiki site to execute the request on.</param>
         /// <param name="title">Title of the page to be parsed.</param>
-        /// <param name="lang">The language (variant) used to render the content. E.g. <c>"zh-cn"</c>, <c>"zh-tw"</c>. specify <c>content</c> to use this wiki's content language.</param>
+        /// <param name="lang">The language (variant) used to render the content. E.g. <c>"zh-cn"</c>, <c>"zh-tw"</c>. specify <c>"content"</c> to use this wiki's content language.</param>
         /// <param name="options">Options for parsing.</param>
         /// <param name="cancellationToken">The cancellation token that will be checked prior to completing the returned task.</param>
         /// <exception cref="ArgumentNullException"><paramref name="title"/> is <c>null</c>.</exception>
-        public static async Task<ParsedContentInfo> ParsePageAsync(this WikiSite site, string title, string lang, ParsingOptions options, CancellationToken cancellationToken)
+        public static async Task<ParsedContentInfo> ParsePageAsync(this WikiSite site, string title, string? lang, ParsingOptions options, CancellationToken cancellationToken)
         {
             if (site == null) throw new ArgumentNullException(nameof(site));
             if (string.IsNullOrEmpty(title)) throw new ArgumentNullException(nameof(title));
@@ -102,7 +102,7 @@ namespace WikiClientLibrary.Pages.Parsing
         /// <inheritdoc cref="ParsePageAsync(WikiSite,string,string,ParsingOptions,CancellationToken)"/>
         public static Task<ParsedContentInfo> ParsePageAsync(this WikiSite site, int id, ParsingOptions options, CancellationToken cancellationToken)
         {
-            return ParsePageAsync(site, id, null, options, CancellationToken.None);
+            return ParsePageAsync(site, id, null, options, cancellationToken);
         }
 
         /// <summary>
@@ -114,7 +114,7 @@ namespace WikiClientLibrary.Pages.Parsing
         /// <param name="options">Options for parsing.</param>
         /// <param name="cancellationToken">The cancellation token that will be checked prior to completing the returned task.</param>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="id"/> is zero or negative.</exception>
-        public static async Task<ParsedContentInfo> ParsePageAsync(this WikiSite site, int id, string lang, ParsingOptions options, CancellationToken cancellationToken)
+        public static async Task<ParsedContentInfo> ParsePageAsync(this WikiSite site, int id, string? lang, ParsingOptions options, CancellationToken cancellationToken)
         {
             if (site == null) throw new ArgumentNullException(nameof(site));
             if (id <= 0) throw new ArgumentOutOfRangeException(nameof(id));
@@ -153,35 +153,36 @@ namespace WikiClientLibrary.Pages.Parsing
         /// <param name="options">Options for parsing.</param>
         /// <param name="cancellationToken">The cancellation token that will be checked prior to completing the returned task.</param>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="revId"/> is zero or negative.</exception>
-        public static async Task<ParsedContentInfo> ParseRevisionAsync(this WikiSite site, int revId, string lang, ParsingOptions options, CancellationToken cancellationToken)
+        public static async Task<ParsedContentInfo> ParseRevisionAsync(this WikiSite site, int revId, string? lang, ParsingOptions options, CancellationToken cancellationToken)
         {
             if (site == null) throw new ArgumentNullException(nameof(site));
             if (revId <= 0) throw new ArgumentOutOfRangeException(nameof(revId));
             var p = BuildParsingParams(site, options);
             p["oldid"] = revId;
+            p["uselang"] = lang;
             var jobj = await site.InvokeMediaWikiApiAsync(new MediaWikiFormRequestMessage(p), cancellationToken);
             var parsed = ((JObject)jobj["parse"]).ToObject<ParsedContentInfo>(Utility.WikiJsonSerializer);
             return parsed;
         }
 
         /// <inheritdoc cref="ParseContentAsync(WikiSite,string,string,string,string,string,ParsingOptions,CancellationToken)"/>
-        public static Task<ParsedContentInfo> ParseContentAsync(this WikiSite site, string content, string summary, string title, ParsingOptions options)
+        public static Task<ParsedContentInfo> ParseContentAsync(this WikiSite site, string? content, string? summary, string? title, ParsingOptions options)
         {
             return ParseContentAsync(site, content, summary, title, null, null, options, CancellationToken.None);
         }
 
         /// <inheritdoc cref="ParseContentAsync(WikiSite,string,string,string,string,string,ParsingOptions,CancellationToken)"/>
-        public static Task<ParsedContentInfo> ParseContentAsync(this WikiSite site, string content, string summary, string title,
+        public static Task<ParsedContentInfo> ParseContentAsync(this WikiSite site, string? content, string? summary, string? title,
             string contentModel, ParsingOptions options)
         {
             return ParseContentAsync(site, content, summary, title, contentModel, null, options, CancellationToken.None);
         }
 
         /// <inheritdoc cref="ParseContentAsync(WikiSite,string,string,string,string,string,ParsingOptions,CancellationToken)"/>
-        public static Task<ParsedContentInfo> ParseContentAsync(this WikiSite site, string content, string summary, string title,
+        public static Task<ParsedContentInfo> ParseContentAsync(this WikiSite site, string? content, string? summary, string? title,
             string contentModel, ParsingOptions options, CancellationToken cancellationToken)
         {
-            return ParseContentAsync(site, content, summary, title, contentModel, null, options, CancellationToken.None);
+            return ParseContentAsync(site, content, summary, title, contentModel, null, options, cancellationToken);
         }
 
         /// <summary>
@@ -200,8 +201,8 @@ namespace WikiClientLibrary.Pages.Parsing
         /// <param name="cancellationToken">The cancellation token that will be checked prior to completing the returned task.</param>
         /// <remarks>If both <paramref name="title"/> and <paramref name="contentModel"/> is <c>null</c>, the content model will be assumed as wikitext.</remarks>
         /// <exception cref="ArgumentException">Both <paramref name="content"/> and <paramref name="summary"/> is <c>null</c>.</exception>
-        public static async Task<ParsedContentInfo> ParseContentAsync(this WikiSite site, string content, string summary, string title,
-            string contentModel, string lang, ParsingOptions options, CancellationToken cancellationToken)
+        public static async Task<ParsedContentInfo> ParseContentAsync(this WikiSite site, string? content, string? summary, string? title,
+            string? contentModel, string? lang, ParsingOptions options, CancellationToken cancellationToken)
         {
             if (content == null && summary == null) throw new ArgumentException(nameof(content));
             var p = BuildParsingParams(site, options);
@@ -209,6 +210,7 @@ namespace WikiClientLibrary.Pages.Parsing
             p["summary"] = summary;
             p["title"] = title;
             p["uselang"] = lang;
+            p["contentmodel"] = contentModel;
             var jobj = await site.InvokeMediaWikiApiAsync(new MediaWikiFormRequestMessage(p), cancellationToken);
             var parsed = ((JObject)jobj["parse"]).ToObject<ParsedContentInfo>(Utility.WikiJsonSerializer);
             return parsed;

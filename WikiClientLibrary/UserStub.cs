@@ -21,7 +21,7 @@ namespace WikiClientLibrary
         {
         }
 
-        public UserStub(string name, int id, Gender gender, string siteName)
+        public UserStub(string name, int id, Gender gender, string? siteName)
         {
             Name = name ?? throw new ArgumentNullException(nameof(name));
             Id = id;
@@ -41,7 +41,7 @@ namespace WikiClientLibrary
 
         /// <summary>Gets the site name the user comes from.</summary>
         /// <value>The site designation. For example, Wikimedia sites has designations such as <c>enwiki</c>, <c>zhwiki</c>, <c>enwikisource</c>, etc.</value>
-        public string SiteName { get; }
+        public string? SiteName { get; }
 
         /// <summary>Determines whether the user has ID.</summary>
         /// <remarks>An anonymous user does not have an ID, and <see cref="Id"/> will be <c>0</c> in this case.</remarks>

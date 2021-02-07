@@ -55,7 +55,7 @@ namespace WikiClientLibrary.Generators
         public override string PropertyName => "revisions";
 
         /// <inheritdoc />
-        public override IEnumerable<KeyValuePair<string, object>> EnumListParameters()
+        public override IEnumerable<KeyValuePair<string, object?>> EnumListParameters()
         {
             var p = new OrderedKeyValuePairs<string, object>
             {

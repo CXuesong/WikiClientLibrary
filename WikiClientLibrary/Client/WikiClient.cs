@@ -66,7 +66,7 @@ namespace WikiClientLibrary.Client
 
         #region Configurations
 
-        private string _ClientUserAgent;
+        private string? _ClientUserAgent;
         private readonly HttpClientHandler _HttpClientHandler;
         private int _MaxRetries = 3;
         private ILogger _Logger = NullLogger.Instance;
@@ -97,7 +97,7 @@ namespace WikiClientLibrary.Client
         /// <summary>
         /// User Agent for client-side application.
         /// </summary>
-        public string ClientUserAgent
+        public string? ClientUserAgent
         {
             get { return _ClientUserAgent; }
             set

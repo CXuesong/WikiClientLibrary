@@ -292,13 +292,13 @@ namespace WikiClientLibrary.Files
         /// The uploaded file has duplicate content to these titles. (<c>duplicate</c>)
         /// </summary>
         /// <value><c>null</c> if there is no such warning in the response.</value>
-        public IList<string> DuplicateTitles { get; private set; }
+        public IList<string>? DuplicateTitles { get; private set; }
 
         /// <summary>
         /// Uploaded file is duplicate of these versions. (<c>duplicateversions</c>)
         /// </summary>
         /// <value><c>null</c> if there is no such warning in the response.</value>
-        public IList<DateTime> DuplicateVersions { get; private set; }
+        public IList<DateTime>? DuplicateVersions { get; private set; }
 
         /// <summary>
         /// Try to convert the specified warning code and context into a user-friendly

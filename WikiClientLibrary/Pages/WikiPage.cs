@@ -218,13 +218,13 @@ namespace WikiClientLibrary.Pages
         /// Gets the latest revision of the page.
         /// </summary>
         /// <remarks>Make sure to invoke <see cref="RefreshAsync()"/> before getting the value.</remarks>
-        public Revision LastRevision { get; private set; }
+        public Revision? LastRevision { get; private set; }
 
         /// <summary>
         /// Gets the latest file revision information, if applicable.
         /// </summary>
         /// <remarks>Make sure to invoke <see cref="RefreshAsync()"/> before getting the value.</remarks>
-        public FileRevision LastFileRevision { get; private set; }
+        public FileRevision? LastFileRevision { get; private set; }
 
         /// <summary>
         /// Determines whether the existing page is a disambiguation page.
@@ -516,7 +516,7 @@ namespace WikiClientLibrary.Pages
         /// <summary>
         /// Moves (renames) a page. (MediaWiki 1.12)
         /// </summary>
-        public async Task MoveAsync(string newTitle, string reason, PageMovingOptions options, AutoWatchBehavior watch,
+        public async Task MoveAsync(string newTitle, string? reason, PageMovingOptions options, AutoWatchBehavior watch,
             CancellationToken cancellationToken)
         {
             if (newTitle == null) throw new ArgumentNullException(nameof(newTitle));

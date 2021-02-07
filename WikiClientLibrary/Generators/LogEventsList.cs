@@ -17,9 +17,9 @@ namespace WikiClientLibrary.Generators
     /// <remarks>This module cannot be used as a generator.</remarks>
     public class LogEventsList : WikiList<LogEventItem>
     {
-        private string _LogType;
-        private string _LogAction;
-        private string fullLogAction;
+        private string? _LogType;
+        private string? _LogAction;
+        private string? fullLogAction;
 
         /// <inheritdoc />
         public LogEventsList(WikiSite site) : base(site)
@@ -58,13 +58,13 @@ namespace WikiClientLibrary.Generators
         /// <summary>
         /// Only list changes made by this user.
         /// </summary>
-        public string UserName { get; set; }
+        public string? UserName { get; set; }
 
         /// <summary>
         /// Only list log entries of this type.
         /// </summary>
         /// <remarks>See <see cref="LogTypes"/> for a list of predefined values.</remarks>
-        public string LogType
+        public string? LogType
         {
             get { return _LogType; }
             set
@@ -90,7 +90,7 @@ namespace WikiClientLibrary.Generators
         /// or <c>"move/move"</c>, to filter in all the page move events.
         /// </para>
         /// </remarks>
-        public string LogAction
+        public string? LogAction
         {
             get { return _LogAction; }
             set
@@ -103,7 +103,7 @@ namespace WikiClientLibrary.Generators
         /// <summary>
         /// Only list event entries tagged with this tag.
         /// </summary>
-        public string Tag { get; set; }
+        public string? Tag { get; set; }
 
         /// <inheritdoc />
         public override IEnumerable<KeyValuePair<string, object>> EnumListParameters()

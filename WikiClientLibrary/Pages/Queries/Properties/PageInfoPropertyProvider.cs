@@ -14,7 +14,9 @@ namespace WikiClientLibrary.Pages.Queries.Properties
             new OrderedKeyValuePairs<string, object>
             {
                 {"inprop", "protection"}
-            });        /// <inheritdoc />
+            });
+
+        /// <inheritdoc />
         public override IEnumerable<KeyValuePair<string, object>> EnumParameters(MediaWikiVersion version)
         {
             return fixedProp;
@@ -39,28 +41,23 @@ namespace WikiClientLibrary.Pages.Queries.Properties
             PageLanguage = (string)jPage["pagelanguage"];
             PageLanguageDirection = (string)jPage["pagelanguagedir"];
             IsRedirect = jPage["redirect"] != null;
+            Protections = Array.Empty<ProtectionInfo>();
+            LastTouched = DateTime.MinValue;
             if (jPage["missing"] != null || jPage["invalid"] != null || jPage["special"] != null)
             {
                 ContentLength = 0;
                 LastRevisionId = 0;
-                Protections = null;
-                LastTouched = DateTime.MinValue;
-                Protections = null;
-                RestrictionTypes = null;
+                RestrictionTypes = Array.Empty<string>();
             }
             else
             {
                 ContentLength = (int)jPage["length"];
                 LastRevisionId = (int)jPage["lastrevid"];
                 LastTouched = (DateTime)jPage["touched"];
-                if (jPage["protection"] != null)
-                    Protections = jPage["protection"].HasValues
-                        ? jPage["protection"].ToObject<IReadOnlyCollection<ProtectionInfo>>(Utility.WikiJsonSerializer)
-                        : Array.Empty<ProtectionInfo>();
-                if (jPage["restrictiontypes"] != null)
-                    RestrictionTypes = jPage["restrictiontypes"].HasValues
-                        ? jPage["restrictiontypes"].ToObject<IReadOnlyCollection<string>>(Utility.WikiJsonSerializer)
-                        : Array.Empty<string>();
+                if (jPage["protection"] != null && jPage["protection"].HasValues)
+                    Protections = jPage["protection"].ToObject<IReadOnlyCollection<ProtectionInfo>>(Utility.WikiJsonSerializer);
+                if (jPage["restrictiontypes"] != null && jPage["restrictiontypes"].HasValues)
+                    RestrictionTypes = jPage["restrictiontypes"].ToObject<IReadOnlyCollection<string>>(Utility.WikiJsonSerializer);
             }
         }
 

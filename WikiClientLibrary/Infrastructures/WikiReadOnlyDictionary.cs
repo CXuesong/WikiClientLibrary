@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.Serialization;
 using System.Text;
 using Newtonsoft.Json.Linq;
@@ -123,7 +124,7 @@ namespace WikiClientLibrary.Infrastructures
         }
 
         /// <inheritdoc />
-        public bool TryGetValue(string key, out JToken value)
+        public bool TryGetValue(string key, [MaybeNullWhen(false)] out JToken value)
         {
             if (myDict.TryGetValue(key, out var v))
             {

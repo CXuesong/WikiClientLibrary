@@ -32,12 +32,12 @@ namespace WikiClientLibrary
         public const int CONTINUATION_AVAILABLE = 1;
         public const int CONTINUATION_LOOP = 2;
 
-        public static JObject FindQueryContinuationParameterRoot(JToken jresult)
+        public static JObject? FindQueryContinuationParameterRoot(JToken jresult)
         {
-            return (JObject)(jresult["continue"] ?? ((JProperty)jresult["query-continue"]?.First)?.Value);
+            return (JObject?)(jresult["continue"] ?? ((JProperty)jresult["query-continue"]?.First)?.Value);
         }
 
-        public static int ParseContinuationParameters(JToken jresult, IDictionary<string, object> queryParams, IDictionary<string, object> continuationParams)
+        public static int ParseContinuationParameters(JToken jresult, IDictionary<string, object> queryParams, IDictionary<string, object>? continuationParams)
         {
             var continuation = FindQueryContinuationParameterRoot(jresult);
             // No more results.
@@ -93,13 +93,13 @@ namespace WikiClientLibrary
 
         public static async IAsyncEnumerable<JObject> QueryWithContinuation(WikiSite site,
             IEnumerable<KeyValuePair<string, object>> parameters,
-            Func<IDisposable> beginActionScope,
+            Func<IDisposable>? beginActionScope,
             bool distinctPages = false,
             [EnumeratorCancellation] CancellationToken cancellationToken = default)
         {
             cancellationToken.ThrowIfCancellationRequested();
             var retrievedPageIds = distinctPages ? new HashSet<int>() : null;
-            var actionScopeDisposable = beginActionScope?.Invoke();
+            using var actionScopeDisposable = beginActionScope?.Invoke();
             var baseQueryParams = parameters.ToDictionary(p => p.Key, p => p.Value);
             Debug.Assert("query".Equals(baseQueryParams["action"]));
             var continuationParams = new Dictionary<string, object>();
@@ -527,7 +527,7 @@ namespace WikiClientLibrary
         /// <summary>
         /// Enumerate transcluded pages trans from the page.
         /// </summary>
-        public static IAsyncEnumerable<string> EnumTransclusionsAsync(WikiSite site, string titlesExpr, IEnumerable<int> namespaces = null, IEnumerable<string> transcludedTitlesExpr = null, int limit = -1)
+        public static IAsyncEnumerable<string> EnumTransclusionsAsync(WikiSite site, string titlesExpr, IEnumerable<int>? namespaces = null, IEnumerable<string>? transcludedTitlesExpr = null, int limit = -1)
         {
             // transcludedTitlesExpr should be full titles with ns prefix.
             var pa = new Dictionary<string, object>

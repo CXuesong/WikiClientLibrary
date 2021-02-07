@@ -10,7 +10,7 @@ namespace WikiClientLibrary.Scribunto
     public class ScribuntoConsoleException : WikiClientException
     {
 
-        private static string MakeMessage(string errorCode, string errorMessage)
+        private static string MakeMessage(string? errorCode, string? errorMessage)
         {
             var message = "Error while evaluating expression";
             if (!string.IsNullOrEmpty(errorCode))
@@ -21,17 +21,17 @@ namespace WikiClientLibrary.Scribunto
             return message;
         }
 
-        public ScribuntoConsoleException(string errorCode, string errorMessage)
+        public ScribuntoConsoleException(string? errorCode, string? errorMessage)
             : this(errorCode, errorMessage, null, null)
         {
         }
 
-        public ScribuntoConsoleException(string errorCode, string errorMessage, ScribuntoEvaluationResult evaluationResult)
+        public ScribuntoConsoleException(string? errorCode, string? errorMessage, ScribuntoEvaluationResult? evaluationResult)
             : this(errorCode, errorMessage, evaluationResult, null)
         {
         }
 
-        public ScribuntoConsoleException(string errorCode, string errorMessage, ScribuntoEvaluationResult evaluationResult, string message)
+        public ScribuntoConsoleException(string? errorCode, string? errorMessage, ScribuntoEvaluationResult? evaluationResult, string? message)
             : base(message ?? MakeMessage(errorCode, errorMessage))
         {
             ErrorCode = errorCode;
@@ -39,7 +39,7 @@ namespace WikiClientLibrary.Scribunto
             EvaluationResult = evaluationResult;
         }
 
-        public ScribuntoConsoleException(string message)
+        public ScribuntoConsoleException(string? message)
             : this(null, null, null, message)
         {
         }
@@ -52,7 +52,7 @@ namespace WikiClientLibrary.Scribunto
         /// <summary>
         /// The evaluation result that causes the exception.
         /// </summary>
-        public ScribuntoEvaluationResult EvaluationResult { get; }
+        public ScribuntoEvaluationResult? EvaluationResult { get; }
 
         /// <summary>
         /// The error code (<c>messagename</c>) received from server.
@@ -60,12 +60,12 @@ namespace WikiClientLibrary.Scribunto
         /// <remarks>
         /// See <see cref="ScribuntoLuaErrorCodes" /> for a list of predefined error codes.
         /// </remarks>
-        public string ErrorCode { get; }
+        public string? ErrorCode { get; }
 
         /// <summary>
         /// The error description (<c>message</c>) received from server.
         /// </summary>
-        public string ErrorMessage { get; }
+        public string? ErrorMessage { get; }
 
     }
 

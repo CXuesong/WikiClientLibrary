@@ -37,18 +37,18 @@ namespace WikiClientLibrary
         /// <summary>
         /// Error code provided by MediaWiki API.
         /// </summary>
-        public string ErrorCode { get; }
+        public string? ErrorCode { get; }
 
         /// <summary>
         /// Detailed error message provided by MediaWiki API.
         /// </summary>
-        public string ErrorMessage { get; }
+        public string? ErrorMessage { get; }
 
         public OperationFailedException()
             : this(Prompts.ExceptionRequestFailed)
         { }
 
-        public OperationFailedException(string errorCode, string errorMessage)
+        public OperationFailedException(string? errorCode, string? errorMessage)
             : base(
                 string.Format(
                     string.IsNullOrEmpty(errorMessage)
@@ -60,13 +60,13 @@ namespace WikiClientLibrary
             ErrorMessage = errorMessage;
         }
 
-        public OperationFailedException(string message)
+        public OperationFailedException(string? message)
             : this(null, message)
         {
             ErrorMessage = message;
         }
 
-        public OperationFailedException(string message, Exception inner)
+        public OperationFailedException(string? message, Exception? inner)
             : base(message, inner)
         {
             ErrorMessage = message;
@@ -140,18 +140,18 @@ namespace WikiClientLibrary
     /// </remarks>
     public class UnauthorizedOperationException : OperationFailedException
     {
-        public UnauthorizedOperationException(string errorCode, string message)
+        public UnauthorizedOperationException(string? errorCode, string? message)
             : this(errorCode, message, null)
         {
         }
 
-        public UnauthorizedOperationException(string errorCode, string message, IReadOnlyCollection<string> desiredPermissions)
+        public UnauthorizedOperationException(string? errorCode, string? message, IReadOnlyCollection<string>? desiredPermissions)
             : base(errorCode, message)
         {
             DesiredPermissions = desiredPermissions ?? Array.Empty<string>();
         }
 
-        public UnauthorizedOperationException(string message, Exception innerException)
+        public UnauthorizedOperationException(string? message, Exception? innerException)
             : base(message, innerException)
         {
         }
@@ -216,19 +216,19 @@ namespace WikiClientLibrary
         /// <summary>
         /// PHP class name of the error.
         /// </summary>
-        public virtual string ErrorClass { get; }
+        public virtual string? ErrorClass { get; }
 
         /// <summary>
         /// Stack trace provided by MediaWiki server, if available.
         /// </summary>
-        public virtual string RemoteStackTrace { get; }
+        public virtual string? RemoteStackTrace { get; }
 
-        public MediaWikiRemoteException(string errorCode, string message)
+        public MediaWikiRemoteException(string? errorCode, string? message)
             : this(errorCode, message, null, null)
         {
         }
 
-        public MediaWikiRemoteException(string errorCode, string message, string errorClass, string remoteStackTrace)
+        public MediaWikiRemoteException(string? errorCode, string? message, string? errorClass, string? remoteStackTrace)
             : base(errorCode, message)
         {
             ErrorClass = errorClass;

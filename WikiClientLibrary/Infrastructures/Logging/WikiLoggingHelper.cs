@@ -22,7 +22,7 @@ namespace WikiClientLibrary.Infrastructures.Logging
     {
 
         /// <inheritdoc cref="BeginActionScope(ILogger,object,IEnumerable,string)"/>
-        public static IDisposable BeginActionScope(this ILogger logger, object target, [CallerMemberName] string actionName = null)
+        public static IDisposable BeginActionScope(this ILogger logger, object? target, [CallerMemberName] string? actionName = null)
         {
             return BeginActionScope(logger, target, null, actionName);
         }
@@ -31,19 +31,19 @@ namespace WikiClientLibrary.Infrastructures.Logging
         /// <param name="param1">The first parameter for the action.</param>
         /// <param name="param2">The second parameter for the action.</param>
         /// <param name="param3">The third parameter for the action.</param>
-        public static IDisposable BeginActionScope(this ILogger logger, object target, object param1, object param2, object param3, [CallerMemberName] string actionName = null)
+        public static IDisposable BeginActionScope(this ILogger logger, object? target, object param1, object param2, object param3, [CallerMemberName] string? actionName = null)
         {
             return BeginActionScope(logger, target, new[] { param1, param2, param3 }, actionName);
         }
 
         /// <inheritdoc cref="BeginActionScope(ILogger,object,object,object,string)"/>
-        public static IDisposable BeginActionScope(this ILogger logger, object target, object param1, object param2, [CallerMemberName] string actionName = null)
+        public static IDisposable BeginActionScope(this ILogger logger, object? target, object param1, object param2, [CallerMemberName] string? actionName = null)
         {
             return BeginActionScope(logger, target, new[] { param1, param2 }, actionName);
         }
 
         /// <inheritdoc cref="BeginActionScope(ILogger,object,object,object,string)"/>
-        public static IDisposable BeginActionScope(this ILogger logger, object target, object param1, [CallerMemberName] string actionName = null)
+        public static IDisposable BeginActionScope(this ILogger logger, object? target, object param1, [CallerMemberName] string? actionName = null)
         {
             return BeginActionScope(logger, target, new[] { param1 }, actionName);
         }
@@ -57,7 +57,7 @@ namespace WikiClientLibrary.Infrastructures.Logging
         /// <param name="parameters">The action parameters. Can be <c>null</c>.</param>
         /// <param name="actionName">The action name. Leave it missing to use the caller's member name.</param>
         /// <returns>An <see cref="IDisposable"/> that when disposed, indicates the action is over.</returns>
-        public static IDisposable BeginActionScope(this ILogger logger, object target, IEnumerable parameters, [CallerMemberName] string actionName = null)
+        public static IDisposable BeginActionScope(this ILogger logger, object? target, IEnumerable? parameters, [CallerMemberName] string? actionName = null)
         {
             if (logger == null) throw new ArgumentNullException(nameof(logger));
             if (logger is NullLogger) return EmptyDisposable.Instance;
@@ -66,7 +66,7 @@ namespace WikiClientLibrary.Infrastructures.Logging
 
         /// <inheritdoc cref="BeginActionScope(ILogger,object,IEnumerable,string)"/>
         /// <param name="loggable">The loggable object whose logger will enter a new scope.</param>
-        public static IDisposable BeginActionScope(this IWikiClientLoggable loggable, object target, [CallerMemberName] string actionName = null)
+        public static IDisposable BeginActionScope(this IWikiClientLoggable loggable, object? target, [CallerMemberName] string? actionName = null)
         {
             if (loggable == null) throw new ArgumentNullException(nameof(loggable));
             return BeginActionScope(loggable, target, null, actionName);
@@ -76,22 +76,22 @@ namespace WikiClientLibrary.Infrastructures.Logging
         /// <param name="param1">The first parameter for the action.</param>
         /// <param name="param2">The second parameter for the action.</param>
         /// <param name="param3">The third parameter for the action.</param>
-        public static IDisposable BeginActionScope(this IWikiClientLoggable loggable, object target, 
-            object param1, object param2, object param3, [CallerMemberName] string actionName = null)
+        public static IDisposable BeginActionScope(this IWikiClientLoggable loggable, object? target, 
+            object param1, object param2, object param3, [CallerMemberName] string? actionName = null)
         {
             return BeginActionScope(loggable, target, new[] { param1, param2, param3 }, actionName);
         }
 
         /// <inheritdoc cref="BeginActionScope(IWikiClientLoggable,object,object,object,string)"/>
-        public static IDisposable BeginActionScope(this IWikiClientLoggable loggable, object target,
-            object param1, object param2, [CallerMemberName] string actionName = null)
+        public static IDisposable BeginActionScope(this IWikiClientLoggable loggable, object? target,
+            object param1, object param2, [CallerMemberName] string? actionName = null)
         {
             return BeginActionScope(loggable, target, new[] { param1, param2 }, actionName);
         }
 
         /// <inheritdoc cref="BeginActionScope(IWikiClientLoggable,object,object,object,string)"/>
-        public static IDisposable BeginActionScope(this IWikiClientLoggable loggable, object target, 
-            object param1, [CallerMemberName] string actionName = null)
+        public static IDisposable BeginActionScope(this IWikiClientLoggable loggable, object? target, 
+            object param1, [CallerMemberName] string? actionName = null)
         {
             return BeginActionScope(loggable, target, new[] { param1 }, actionName);
         }
@@ -106,8 +106,8 @@ namespace WikiClientLibrary.Infrastructures.Logging
         /// <param name="parameters">The action parameters. Can be <c>null</c>.</param>
         /// <param name="actionName">The action name. Leave it missing to use the caller's member name.</param>
         /// <returns>An <see cref="IDisposable"/> that when disposed, indicates the action is over.</returns>
-        public static IDisposable BeginActionScope(this IWikiClientLoggable loggable, object target,
-            IEnumerable parameters, [CallerMemberName] string actionName = null)
+        public static IDisposable BeginActionScope(this IWikiClientLoggable loggable, object? target,
+            IEnumerable? parameters, [CallerMemberName] string? actionName = null)
         {
             if (loggable == null) throw new ArgumentNullException(nameof(loggable));
             if (loggable.Logger is NullLogger) return EmptyDisposable.Instance;
@@ -119,7 +119,7 @@ namespace WikiClientLibrary.Infrastructures.Logging
         private class CombinedDisposable : IDisposable
         {
 
-            private IDisposable disposable1, disposable2;
+            private IDisposable? disposable1, disposable2;
 
             public CombinedDisposable(IDisposable disposable1, IDisposable disposable2)
             {
@@ -146,14 +146,14 @@ namespace WikiClientLibrary.Infrastructures.Logging
             }
         }
 
-        private sealed class ActionLogScopeState : IReadOnlyList<KeyValuePair<string, object>>
+        private sealed class ActionLogScopeState : IReadOnlyList<KeyValuePair<string, object?>>
         {
-            private readonly object target;
-            private readonly string action;
+            private readonly object? target;
+            private readonly string? action;
             private readonly IList parameters;
             private string str;
 
-            public ActionLogScopeState(object target, string action, IEnumerable parameters)
+            public ActionLogScopeState(object? target, string? action, IEnumerable? parameters)
             {
                 this.target = target;
                 this.action = action;
@@ -172,11 +172,11 @@ namespace WikiClientLibrary.Infrastructures.Logging
             }
 
             /// <inheritdoc />
-            public IEnumerator<KeyValuePair<string, object>> GetEnumerator()
+            public IEnumerator<KeyValuePair<string, object?>> GetEnumerator()
             {
-                yield return new KeyValuePair<string, object>("Target", target);
-                yield return new KeyValuePair<string, object>("Action", action);
-                yield return new KeyValuePair<string, object>("Parameters", parameters);
+                yield return new KeyValuePair<string, object?>("Target", target);
+                yield return new KeyValuePair<string, object?>("Action", action);
+                yield return new KeyValuePair<string, object?>("Parameters", parameters);
             }
 
             /// <inheritdoc />

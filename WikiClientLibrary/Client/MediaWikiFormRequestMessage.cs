@@ -91,7 +91,7 @@ namespace WikiClientLibrary.Client
         /// <param name="fieldCollection">A dictionary or anonymous object containing the key-value pairs. See <see cref="MediaWikiHelper.EnumValues"/> for more information.</param>
         /// <param name="forceMultipartFormData">Forces the message to be marshaled as multipart/form-data, regardless of the fields.</param>
         /// <exception cref="ArgumentNullException"><paramref name="fieldCollection"/> is <c>null</c>.</exception>
-        public MediaWikiFormRequestMessage(string id, object fieldCollection, bool forceMultipartFormData) : base(id)
+        public MediaWikiFormRequestMessage(string? id, object fieldCollection, bool forceMultipartFormData) : base(id)
         {
             if (fieldCollection == null) throw new ArgumentNullException(nameof(fieldCollection));
             fields = new List<KeyValuePair<string, object>>(MediaWikiHelper.EnumValues(fieldCollection));

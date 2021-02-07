@@ -39,7 +39,7 @@ namespace WikiClientLibrary.Files
 
         private readonly long originalSourceStreamPosition;
         private int state;
-        private string lastStashingFileKey;
+        private string? lastStashingFileKey;
 
         private const int STATE_CHUNK_IMPENDING = 0;
         private const int STATE_CHUNK_STASHING = 1;
@@ -70,7 +70,7 @@ namespace WikiClientLibrary.Files
         /// - or -
         /// <paramref name="sourceStream"/> has met EOF.
         /// </exception>
-        public ChunkedUploadSource(WikiSite site, Stream sourceStream, string fileName)
+        public ChunkedUploadSource(WikiSite site, Stream sourceStream, string? fileName)
         {
             Site = site ?? throw new ArgumentNullException(nameof(site));
             SourceStream = sourceStream ?? throw new ArgumentNullException(nameof(sourceStream));

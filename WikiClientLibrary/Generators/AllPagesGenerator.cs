@@ -41,12 +41,12 @@ namespace WikiClientLibrary.Generators
         /// <summary>
         /// The page title to stop enumerating at.
         /// </summary>
-        public string EndTitle { get; set; } = null;
+        public string? EndTitle { get; set; } = null;
 
         /// <summary>
         /// Only list titles that start with this value.
         /// </summary>
-        public string Prefix { get; set; }
+        public string? Prefix { get; set; }
 
         /// <summary>
         /// How to filter redirects.

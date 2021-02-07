@@ -44,19 +44,19 @@ namespace WikiClientLibrary.Scribunto
         /// </remarks>
         /// <inheritdoc cref="ScribuntoLoadDataAsync{T}(WikiSite,string,string,JsonSerializer,CancellationToken)"/>
         public static Task<T> ScribuntoLoadDataAsync<T>(this WikiSite site, string moduleName,
-            JsonSerializer serializer, CancellationToken cancellationToken)
+            JsonSerializer? serializer, CancellationToken cancellationToken)
         {
             return ScribuntoLoadDataAsync<T>(site, moduleName, null, serializer, cancellationToken);
         }
 
         /// <inheritdoc cref="ScribuntoLoadDataAsync{T}(WikiSite,string,JsonSerializer,CancellationToken)"/>
-        public static Task<T> ScribuntoLoadDataAsync<T>(this WikiSite site, string moduleName, string epilog)
+        public static Task<T> ScribuntoLoadDataAsync<T>(this WikiSite site, string moduleName, string? epilog)
         {
             return ScribuntoLoadDataAsync<T>(site, moduleName, epilog, null, CancellationToken.None);
         }
 
         /// <inheritdoc cref="ScribuntoLoadDataAsync{T}(WikiSite,string,JsonSerializer,CancellationToken)"/>
-        public static Task<T> ScribuntoLoadDataAsync<T>(this WikiSite site, string moduleName, string epilog, CancellationToken cancellationToken)
+        public static Task<T> ScribuntoLoadDataAsync<T>(this WikiSite site, string moduleName, string? epilog, CancellationToken cancellationToken)
         {
             return ScribuntoLoadDataAsync<T>(site, moduleName, epilog, null, cancellationToken);
         }
@@ -72,8 +72,8 @@ namespace WikiClientLibrary.Scribunto
         /// <param name="serializer">The JsonSerializer used to deserialize the return value from JSON, or <c>null</c> to use default JSON serializer.</param>
         /// <param name="cancellationToken">A token used to cancel the operation.</param>
         /// <returns>The deserialized Lua evaluation result.</returns>
-        public static Task<T> ScribuntoLoadDataAsync<T>(this WikiSite site, string moduleName, string epilog,
-            JsonSerializer serializer, CancellationToken cancellationToken)
+        public static Task<T> ScribuntoLoadDataAsync<T>(this WikiSite site, string moduleName, string? epilog,
+            JsonSerializer? serializer, CancellationToken cancellationToken)
         {
             if (site == null)
                 throw new ArgumentNullException(nameof(site));
@@ -133,7 +133,7 @@ namespace WikiClientLibrary.Scribunto
         /// you cannot return Lua functions or tables containing functions in the module.</para>
         /// </remarks>
         public static async Task<T> ScribuntoExecuteLuaAsync<T>(this WikiSite site, string moduleContent,
-            JsonSerializer serializer, CancellationToken cancellationToken)
+            JsonSerializer? serializer, CancellationToken cancellationToken)
         {
             if (site == null)
                 throw new ArgumentNullException(nameof(site));

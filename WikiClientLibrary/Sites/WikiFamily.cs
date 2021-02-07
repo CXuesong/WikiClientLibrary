@@ -18,7 +18,7 @@ namespace WikiClientLibrary.Sites
         /// <summary>
         /// Gets the name of this wiki family.
         /// </summary>
-        string Name { get; }
+        string? Name { get; }
 
         /// <summary>
         /// Tries to normalize the specified wiki prefix by changing the letter-case of the input name.
@@ -26,7 +26,7 @@ namespace WikiClientLibrary.Sites
         /// <param name="prefix">The member name in the family. Usually this is the interwiki prefix.</param>
         /// <returns>The normalized wiki name, if the specified name exists. Otherwise <c>null</c>.</returns>
         /// <exception cref="ArgumentNullException"><paramref name="prefix"/> is <c>null</c>.</exception>
-        string TryNormalize(string prefix);
+        string? TryNormalize(string prefix);
 
         /// <summary>
         /// Asynchronously gets a <see cref="WikiSite"/> instance from the specified family name.
@@ -35,7 +35,7 @@ namespace WikiClientLibrary.Sites
         /// <returns>A site instance, or <c>null</c> if no site with the specified family name found..</returns>
         /// <remarks>The implementation should be thread-safe, if multiple threads are to use this instance with other classes.</remarks>
         /// <exception cref="ArgumentNullException"><paramref name="prefix"/> is <c>null</c>.</exception>
-        Task<WikiSite> GetSiteAsync(string prefix);
+        Task<WikiSite?> GetSiteAsync(string prefix);
     }
 
     /// <summary>
@@ -84,7 +84,7 @@ namespace WikiClientLibrary.Sites
         /// Initializes the instance with a <see cref="Client.WikiClient"/> and family name.
         /// </summary>
         /// <exception cref="ArgumentNullException"><paramref name="wikiClient"/> is <c>null</c>.</exception>
-        public WikiFamily(IWikiClient wikiClient, string name)
+        public WikiFamily(IWikiClient wikiClient, string? name)
         {
             if (wikiClient == null) throw new ArgumentNullException(nameof(wikiClient));
             WikiClient = wikiClient;
@@ -107,10 +107,10 @@ namespace WikiClientLibrary.Sites
         }
 
         /// <inheritdoc />
-        public string Name { get; set; }
+        public string? Name { get; set; }
 
         /// <inheritdoc />
-        public string TryNormalize(string prefix)
+        public string? TryNormalize(string prefix)
         {
             if (prefix == null) throw new ArgumentNullException(nameof(prefix));
             if (sites.TryGetValue(prefix.ToLower(), out var entry))
@@ -126,7 +126,7 @@ namespace WikiClientLibrary.Sites
         /// <returns>A site instance, or <c>null</c> if no site with the specified family name found..</returns>
         /// <remarks>The implementation should be thread-safe, if multiple threads are to use this instance with other classes.</remarks>
         /// <exception cref="ArgumentNullException"><paramref name="prefix"/> is <c>null</c>.</exception>
-        public Task<WikiSite> GetSiteAsync(string prefix)
+        public Task<WikiSite?> GetSiteAsync(string prefix)
         {
             if (prefix == null) throw new ArgumentNullException(nameof(prefix));
             prefix = prefix.ToLower();

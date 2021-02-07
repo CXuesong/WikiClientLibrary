@@ -41,7 +41,9 @@ namespace WikiClientLibrary.Pages.Queries.Properties
         /// <summary>
         /// Return extracts as plain text instead of limited HTML.
         /// </summary>
-        public bool AsPlainText { get; set; }        /// <inheritdoc />
+        public bool AsPlainText { get; set; }
+
+        /// <inheritdoc />
         public override IEnumerable<KeyValuePair<string, object>> EnumParameters(MediaWikiVersion version)
         {
             var p = new OrderedKeyValuePairs<string, object>
@@ -79,13 +81,11 @@ namespace WikiClientLibrary.Pages.Queries.Properties
     public class ExtractsPropertyGroup : WikiPagePropertyGroup
     {
 
-        private static readonly ExtractsPropertyGroup Null = new ExtractsPropertyGroup(null);
         private static readonly ExtractsPropertyGroup Empty = new ExtractsPropertyGroup("");
 
-        internal static ExtractsPropertyGroup Create(string extract)
+        internal static ExtractsPropertyGroup Create(string? extract)
         {
-            if (extract == null) return Null;
-            if (extract.Length == 0) return Empty;
+            if (string.IsNullOrEmpty(extract)) return Empty;
             return new ExtractsPropertyGroup(extract);
         }
 

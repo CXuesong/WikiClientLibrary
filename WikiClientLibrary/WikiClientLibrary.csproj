@@ -19,6 +19,7 @@
       * Other miscellaneous MediaWiki API, such as OpenSearch, Page parsing, and Patrol.
       * Scribunto Lua console and server-side module execution support
     </Description>
+    <Nullable>Enable</Nullable>
   </PropertyGroup>
 
   <ItemGroup>

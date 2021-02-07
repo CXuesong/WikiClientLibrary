@@ -104,25 +104,25 @@ namespace WikiClientLibrary.Pages
         /// <value>Wikitext source code. OR <c>null</c> if content has not been fetched.</value>
         /// <seealso cref="RevisionsPropertyProvider.FetchContent"/>
         [JsonProperty("*")]
-        public string Content { get; private set; }
+        public string Content { get; private set; } = "";
 
         /// <summary>
         /// Editor's edit summary (editor's comment on revision).
         /// </summary>
         [JsonProperty]
-        public string Comment { get; private set; }
+        public string Comment { get; private set; } = "";
 
         /// <summary>
         /// Content model id of the revision.
         /// </summary>
         [JsonProperty]
-        public string ContentModel { get; private set; }
+        public string ContentModel { get; private set; } = "";
 
         /// <summary>
         /// SHA-1 (base 16) of the revision.
         /// </summary>
         [JsonProperty]
-        public string Sha1 { get; private set; }
+        public string Sha1 { get; private set; } = "";
 
         /// <summary>
         /// The user who made the revision.
@@ -130,7 +130,7 @@ namespace WikiClientLibrary.Pages
         /// <seealso cref="RevisionFlags.Anonymous"/>
         /// <seealso cref="RevisionHiddenFields.User"/>
         [JsonProperty("user")]
-        public string UserName { get; private set; }
+        public string UserName { get; private set; } = "";
 
         /// <summary>
         /// User id of revision creator.

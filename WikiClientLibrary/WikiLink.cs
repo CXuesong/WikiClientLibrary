@@ -78,9 +78,9 @@ namespace WikiClientLibrary
         /// -- or --
         /// <paramref name="site"/> is <c>null</c>, but <paramref name="text"/> does not contain any interwiki prefix.
         /// </exception>
-        public static Task<WikiLink> ParseAsync(WikiSite site, IWikiFamily family, string text, int defaultNamespaceId)
+        public static Task<WikiLink> ParseAsync(WikiSite? site, IWikiFamily? family, string text, int defaultNamespaceId)
         {
-            return ParseInternalAsync(site, family, text, defaultNamespaceId, true);
+            return ParseInternalAsync(site, family, text, defaultNamespaceId, true)!;
         }
 
         /// <inheritdoc cref="Parse(WikiSite,string,int)"/>
@@ -100,23 +100,23 @@ namespace WikiClientLibrary
         public static WikiLink Parse(WikiSite site, string text, int defaultNamespaceId)
         {
             if (site == null) throw new ArgumentNullException(nameof(site));
-            return ParseInternalAsync(site, null, text, defaultNamespaceId, true).GetAwaiter().GetResult();
+            return ParseInternalAsync(site, null, text, defaultNamespaceId, true).GetAwaiter().GetResult()!;
         }
 
         /// <inheritdoc cref="TryParse(WikiSite,string,int)"/>
-        public static WikiLink TryParse(WikiSite site, string text)
+        public static WikiLink? TryParse(WikiSite site, string text)
         {
             return TryParse(site, text, 0);
         }
 
         /// <inheritdoc cref="TryParseAsync(WikiSite,IWikiFamily,string,int)"/>
-        public static Task<WikiLink> TryParseAsync(WikiSite site, IWikiFamily family, string text)
+        public static Task<WikiLink?> TryParseAsync(WikiSite? site, IWikiFamily? family, string text)
         {
             return TryParseAsync(site, family, text, 0);
         }
 
         /// <inheritdoc cref="TryParseAsync(IWikiFamily,string,int)"/>
-        public static Task<WikiLink> TryParseAsync(IWikiFamily family, string text)
+        public static Task<WikiLink?> TryParseAsync(IWikiFamily family, string text)
         {
             return TryParseAsync(family, text, 0);
         }
@@ -127,7 +127,7 @@ namespace WikiClientLibrary
         /// This overload resolves the target interwiki site with the interwiki prefixes provided
         /// <seealso cref="IWikiFamily"/> instance, and requires <paramref name="text"/> to have interwiki prefix.
         /// </summary>
-        public static Task<WikiLink> TryParseAsync(IWikiFamily family, string text, int defaultNamespaceId)
+        public static Task<WikiLink?> TryParseAsync(IWikiFamily family, string text, int defaultNamespaceId)
         {
             if (family == null) throw new ArgumentNullException(nameof(family));
             return TryParseAsync(null, family, text, defaultNamespaceId);
@@ -148,7 +148,7 @@ namespace WikiClientLibrary
         /// -- or --
         /// <paramref name="text"/> is <c>null</c>.
         /// </exception>
-        public static Task<WikiLink> TryParseAsync(WikiSite site, IWikiFamily family, string text, int defaultNamespaceId)
+        public static Task<WikiLink?> TryParseAsync(WikiSite? site, IWikiFamily? family, string text, int defaultNamespaceId)
         {
             return ParseInternalAsync(site, family, text, defaultNamespaceId, false);
         }
@@ -163,12 +163,12 @@ namespace WikiClientLibrary
         /// <exception cref="ArgumentNullException">Either <paramref name="site"/> or <paramref name="text"/> is <c>null</c>.</exception>
         /// <exception cref="ArgumentException"><paramref name="text"/> does not contain a valid page title.</exception>
 
-        public static WikiLink TryParse(WikiSite site, string text, int defaultNamespaceId)
+        public static WikiLink? TryParse(WikiSite site, string text, int defaultNamespaceId)
         {
             return ParseInternalAsync(site, null, text, defaultNamespaceId, false).GetAwaiter().GetResult();
         }
 
-        private static async Task<WikiLink> ParseInternalAsync(WikiSite site, IWikiFamily family, string text, int defaultNamespaceId, bool exceptionOnFailure)
+        private static async Task<WikiLink?> ParseInternalAsync(WikiSite? site, IWikiFamily? family, string text, int defaultNamespaceId, bool exceptionOnFailure)
         {
             if (site == null && family == null)
                 throw new ArgumentNullException(nameof(site) + "/" + nameof(family));
@@ -311,7 +311,7 @@ namespace WikiClientLibrary
              1      Namespace / Interwiki
              2      Page title
              */
-            string interwiki = null, nsname = null, pagetitle = null;
+            string? interwiki = null, nsname = null, pagetitle = null;
             while (title != null)
             {
                 var parts = title.Split(new[] { ':' }, 2);

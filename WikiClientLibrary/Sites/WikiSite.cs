@@ -117,7 +117,7 @@ namespace WikiClientLibrary.Sites
         /// <para>For the private wiki where anonymous users cannot access query API, you can use this
         /// overload to login to the site before any querying API invocations are issued.</para>
         /// </remarks>
-        public WikiSite(IWikiClient wikiClient, SiteOptions options, string userName, string password)
+        public WikiSite(IWikiClient wikiClient, SiteOptions options, string? userName, string? password)
         {
             if (wikiClient == null) throw new ArgumentNullException(nameof(wikiClient));
             if (options == null) throw new ArgumentNullException(nameof(options));
@@ -219,7 +219,7 @@ namespace WikiClientLibrary.Sites
         }
 
         private SiteInfo _SiteInfo;
-        private AccountInfo _AccountInfo;
+        private AccountInfo? _AccountInfo;
         private NamespaceCollection _Namespaces;
         private InterwikiMap _InterwikiMap;
         private ExtensionCollection _Extensions;
@@ -354,7 +354,7 @@ namespace WikiClientLibrary.Sites
             var form = message as MediaWikiFormRequestMessage;
             var localRequest = message;
             var badTokenRetries = 0;
-            RETRY:
+        RETRY:
             if (form != null)
             {
                 // Apply tokens
@@ -518,8 +518,7 @@ namespace WikiClientLibrary.Sites
         /// <exception cref="OperationFailedException">Cannot login with the specified credential.</exception>
         /// <exception cref="ArgumentNullException">Either <paramref name="userName"/> or <paramref name="password"/> is <c>null</c> or empty.</exception>
         /// <remarks>This operation will refresh <see cref="AccountInfo"/>.</remarks>
-        public async Task LoginAsync(string userName, string password, string domain,
-            CancellationToken cancellationToken)
+        public async Task LoginAsync(string userName, string password, string? domain, CancellationToken cancellationToken)
         {
             // Note: this method may be invoked BEFORE the initialization of _SiteInfo.
             // Note: this method may be invoked upon initialization, so use _AccountInfo instead of AccountInfo.
@@ -646,7 +645,7 @@ namespace WikiClientLibrary.Sites
             }), true, CancellationToken.None);
         }
 
-        private Task<bool> reLoginTask;
+        private Task<bool>? reLoginTask;
         private ILogger _Logger = NullLogger.Instance;
 
         private async Task<bool> Relogin()

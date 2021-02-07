@@ -3,6 +3,7 @@ using System.Buffers;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Dynamic;
 using System.Globalization;
 using System.IO;
@@ -80,7 +81,7 @@ namespace WikiClientLibrary
                 dict[item.Key] = item.Value;
         }
 
-        public static string ToWikiQueryValue(object value)
+        public static string? ToWikiQueryValue(object? value)
         {
             return value switch
             {
@@ -121,8 +122,8 @@ namespace WikiClientLibrary
             if (list.Count > 0) yield return list;
         }
 
-        public static string ToString(this PropertyFilterOption value,
-            string withValue, string withoutValue, string allValue = "all")
+        public static string? ToString(this PropertyFilterOption value,
+            string? withValue, string? withoutValue, string? allValue = "all")
         {
             return value switch
             {

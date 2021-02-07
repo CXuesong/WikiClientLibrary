@@ -65,9 +65,9 @@ namespace WikiClientLibrary.Pages
         /// Initializes a new instance of <see cref="WikiPageStub"/>.
         /// </summary>
         /// <param name="id">Page ID. <c>0</c> for unknown.</param>
-        /// <param name="title">Page full title. <c>null</c> for unkown.</param>
-        /// <param name="namespaceId">Page namespace ID. <see cref="UnknownNamespaceId"/> for unkown.</param>
-        public WikiPageStub(int id, string title, int namespaceId) : this()
+        /// <param name="title">Page full title. <c>null</c> for unknown.</param>
+        /// <param name="namespaceId">Page namespace ID. <see cref="UnknownNamespaceId"/> for unknown.</param>
+        public WikiPageStub(int id, string? title, int namespaceId) : this()
         {
             const int idMasks = SpecialPageIdMask | MissingPageIdMask | InvalidPageIdMask;
             if (id < 0 && (id & idMasks) != id)
@@ -106,17 +106,17 @@ namespace WikiClientLibrary.Pages
         }
 
         /// <summary>Gets the page ID.</summary>
-        /// <value>Page ID; or <c>0</c> if the information is not avaiable;
+        /// <value>Page ID; or <c>0</c> if the information is not available;
         /// or <see cref="MissingPageIdMask"/> for the confirmed missing page.</value>
         public int Id { get; }
 
         /// <summary>Gets the full title of the page.</summary>
-        /// <value>Normalized or un-normalized page title; or <c>null</c> if the information is not avaiable;
+        /// <value>Normalized or un-normalized page title; or <c>null</c> if the information is not available;
         /// or <see cref="MissingPageTitle"/> for the confirmed missing page.</value>
-        public string Title { get; }
+        public string? Title { get; }
 
         /// <summary>Gets the namespace ID of the page.</summary>
-        /// <value>Namespace ID for the page; or <see cref="UnknownNamespaceId"/> if the information is not avaiable.</value>
+        /// <value>Namespace ID for the page; or <see cref="UnknownNamespaceId"/> if the information is not available.</value>
         public int NamespaceId { get; }
 
         /// <summary>Checks whether the page is confirmed as missing.</summary>

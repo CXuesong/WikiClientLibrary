@@ -51,7 +51,7 @@ namespace WikiClientLibrary.Generators
         public override string PropertyName => "links";
 
         /// <inheritdoc />
-        public override IEnumerable<KeyValuePair<string, object>> EnumListParameters()
+        public override IEnumerable<KeyValuePair<string, object?>> EnumListParameters()
         {
             return new Dictionary<string, object>
             {

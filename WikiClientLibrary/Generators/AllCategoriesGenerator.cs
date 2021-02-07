@@ -21,19 +21,19 @@ namespace WikiClientLibrary.Generators
         }
 
         /// <summary>
-        /// Start listing at this title. The title need not exist.
+        /// Start listing at this title. The title does not have to exist.
         /// </summary>
         public string StartTitle { get; set; } = "!";
 
         /// <summary>
         /// The page title to stop enumerating at.
         /// </summary>
-        public string EndTitle { get; set; } = null;
+        public string? EndTitle { get; set; } = null;
 
         /// <summary>
         /// Search for all category titles that begin with this value.
         /// </summary>
-        public string Prefix { get; set; }
+        public string? Prefix { get; set; }
 
         /// <summary>
         /// Minimum number of category members.

@@ -29,7 +29,9 @@ namespace WikiClientLibrary.Pages.Queries.Properties
         public override int GetMaxPaginationSize(MediaWikiVersion version, bool apiHighLimits)
         {
             return apiHighLimits ? 100 : 50;
-        }        /// <inheritdoc />
+        }
+
+        /// <inheritdoc />
         public override IEnumerable<KeyValuePair<string, object>> EnumParameters(MediaWikiVersion version)
         {
             var p = new OrderedKeyValuePairs<string, object>();
@@ -144,14 +146,14 @@ namespace WikiClientLibrary.Pages.Queries.Properties
         {
             OriginalImage = PageImageInfo.Empty;
             ThumbnailImage = PageImageInfo.Empty;
-            ImageTitle = null;
+            ImageTitle = "";
         }
 
         private PageImagesPropertyGroup(JToken jpage)
         {
             OriginalImage = jpage["original"] != null ? ParseImageInfo(jpage["original"]) : PageImageInfo.Empty;
             ThumbnailImage = jpage["thumbnail"] != null ? ParseImageInfo(jpage["thumbnail"]) : PageImageInfo.Empty;
-            ImageTitle = (string)jpage["pageimage"];
+            ImageTitle = (string?)jpage["pageimage"] ?? "";
         }
 
         private static PageImageInfo ParseImageInfo(JToken root)

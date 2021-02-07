@@ -35,15 +35,15 @@ namespace WikiClientLibrary.Generators
         /// <summary>
         /// Only list these categories. Useful for checking whether a certain page is in a certain category.
         /// </summary>
-        public IEnumerable<string> CategorySelection { get; set; }
+        public IEnumerable<string>? CategorySelection { get; set; }
 
         /// <inheritdoc />
         public override string PropertyName => "categories";
 
         /// <inheritdoc />
-        public override IEnumerable<KeyValuePair<string, object>> EnumListParameters()
+        public override IEnumerable<KeyValuePair<string, object?>> EnumListParameters()
         {
-            var p = new OrderedKeyValuePairs<string, object>
+            var p = new OrderedKeyValuePairs<string, object?>
             {
                 {"clprop", "sortkey|timestamp|hidden"},
                 {"clshow", HiddenCategoryFilter.ToString("hidden", "!hidden", null)},
