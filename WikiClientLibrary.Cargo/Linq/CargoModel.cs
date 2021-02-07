@@ -20,7 +20,7 @@ namespace WikiClientLibrary.Cargo.Linq
         public static CargoModel FromClrType(Type clrType, string nameOverride = null)
         {
             var tableAttr = clrType.GetCustomAttribute<TableAttribute>();
-            var fields = clrType.GetRuntimeProperties()
+            var fields = clrType.GetProperties()
                 .Where(p => p.CanRead && p.CanWrite && p.GetMethod.IsPublic && p.SetMethod.IsPublic)
                 .Select(p => new CargoModelProperty(p))
                 .ToImmutableList();

@@ -25,18 +25,17 @@ namespace WikiClientLibrary.Cargo.Linq
     public class CargoRecordConverter : ICargoRecordConverter
     {
 
-        private static readonly MethodInfo dictIndexer = typeof(IReadOnlyDictionary<string, JToken>)
-            .GetRuntimeProperties()
-            .First(p => p.GetIndexParameters().Length > 0)
-            .GetMethod;
+        private static readonly MethodInfo dictIndexer
+            = typeof(IReadOnlyDictionary<string, JToken>).GetProperty("Item").GetMethod;
 
-        private static readonly MethodInfo dictTryGetValue = typeof(IReadOnlyDictionary<string, JToken>)
-            .GetRuntimeMethod(nameof(IReadOnlyDictionary<string, JToken>.TryGetValue),
-                new[] { typeof(string), typeof(JToken).MakeByRefType() });
+        private static readonly MethodInfo dictTryGetValue
+            = typeof(IReadOnlyDictionary<string, JToken>).GetMethod(nameof(IReadOnlyDictionary<string, JToken>.TryGetValue));
 
-        private static readonly MethodInfo deserializeCollectionMethod = typeof(CargoRecordConverter).GetMethod(nameof(DeserializeCollection));
+        private static readonly MethodInfo deserializeCollectionMethod = typeof(CargoRecordConverter)
+            .GetMethod(nameof(DeserializeCollection), BindingFlags.Static | BindingFlags.NonPublic);
 
-        private static readonly MethodInfo deserializeStringCollectionMethod = typeof(CargoRecordConverter).GetMethod(nameof(DeserializeStringCollection));
+        private static readonly MethodInfo deserializeStringCollectionMethod = typeof(CargoRecordConverter)
+            .GetMethod(nameof(DeserializeStringCollection), BindingFlags.Static | BindingFlags.NonPublic);
 
         private readonly ConcurrentDictionary<Type, Func<IReadOnlyDictionary<string, JToken>, object>> cachedDeserializers =
             new ConcurrentDictionary<Type, Func<IReadOnlyDictionary<string, JToken>, object>>();
@@ -118,7 +117,7 @@ namespace WikiClientLibrary.Cargo.Linq
                     assignedFields.Add(p.Name);
                 }
                 gen.Emit(OpCodes.Newobj, ctor);
-                var assignableProps = modelType.GetRuntimeProperties()
+                var assignableProps = modelType.GetProperties()
                     .Where(p => p.SetMethod != null && p.SetMethod.IsPublic && !assignedFields.Contains(p.Name))
                     .ToList();
                 // Assignment with setter
@@ -165,7 +164,7 @@ namespace WikiClientLibrary.Cargo.Linq
             static ValueConverters()
             {
                 wellKnownValueDeserializers = typeof(ValueConverters)
-                    .GetRuntimeMethods()
+                    .GetMethods(BindingFlags.Public | BindingFlags.Static)
                     .Where(m =>
                         m.Name.StartsWith("Deserialize", StringComparison.Ordinal)
                         && !m.IsGenericMethod

@@ -23,7 +23,7 @@ namespace WikiClientLibrary.Tests.UnitTestProject1
             if (obj == null) return "null";
             if ("".Equals(obj)) return "<String.Empty>";
             var sb = new StringBuilder();
-            if (obj.GetType().GetRuntimeMethod("ToString", Type.EmptyTypes).DeclaringType == typeof(object))
+            if (obj.GetType().GetMethod("ToString", Type.EmptyTypes).DeclaringType == typeof(object))
             {
                 sb.Append('{');
                 sb.Append(obj.GetType().Name);
@@ -69,7 +69,7 @@ namespace WikiClientLibrary.Tests.UnitTestProject1
             }
             else
             {
-                foreach (var p in obj.GetType().GetRuntimeProperties()
+                foreach (var p in obj.GetType().GetProperties()
                     .Where(p1 => p1.GetMethod?.IsPublic ?? false)
                     .OrderBy(p1 => p1.Name))
                 {

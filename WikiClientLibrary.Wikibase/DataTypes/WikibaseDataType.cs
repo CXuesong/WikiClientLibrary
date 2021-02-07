@@ -380,7 +380,7 @@ namespace WikiClientLibrary.Wikibase.DataTypes
 
         static BuiltInDataTypes()
         {
-            foreach (var p in typeof(BuiltInDataTypes).GetRuntimeProperties()
+            foreach (var p in typeof(BuiltInDataTypes).GetProperties()
                 .Where(p => p.PropertyType == typeof(WikibaseDataType)))
             {
                 var value = (WikibaseDataType)p.GetValue(null);

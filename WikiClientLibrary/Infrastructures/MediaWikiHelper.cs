@@ -110,7 +110,7 @@ namespace WikiClientLibrary.Infrastructures
             Debug.Assert(dict.GetType().CustomAttributes
                     .Any(a => a.AttributeType != typeof(CompilerGeneratedAttribute)),
                 "We only want to marshal anonymous types. Did you accidentally pass in a wrong object?");
-            return from p in dict.GetType().GetRuntimeProperties()
+            return from p in dict.GetType().GetProperties()
                    let value = p.GetValue(dict)
                    select new KeyValuePair<string, object>(p.Name, value);
         }

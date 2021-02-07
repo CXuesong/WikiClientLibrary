@@ -22,8 +22,8 @@ namespace WikiClientLibrary.Cargo.Linq.ExpressionVisitors
 
         private readonly HashSet<Expression> _nonEvaluableExpressions = new HashSet<Expression>(ExpressionEqualityComparer.Default)
         {
-            Expression.MakeMemberAccess(null, typeof(DateTime).GetRuntimeProperty(nameof(DateTime.Now))),
-            Expression.MakeMemberAccess(null, typeof(DateTimeOffset).GetRuntimeProperty(nameof(DateTimeOffset.Now))),
+            Expression.MakeMemberAccess(null, typeof(DateTime).GetProperty(nameof(DateTime.Now))),
+            Expression.MakeMemberAccess(null, typeof(DateTimeOffset).GetProperty(nameof(DateTimeOffset.Now))),
         };
 
         public ExpressionTreePartialEvaluator()
