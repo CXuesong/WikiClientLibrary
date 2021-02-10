@@ -14,7 +14,7 @@ namespace WikiClientLibrary.Infrastructures
     // c.f. https://github.com/dotnet/runtime/issues/47802
     /// <summary>
     /// This type is infrastructure of WCL and is not intended to be used directly in your own code.
-    /// Restores the execution context by <c>await</c>ing on this structure.
+    /// Restores the execution context by calling <see cref="Dispose"/> on this structure.
     /// </summary>
     /// <remarks>
     /// This helper is for correctly restoring execution context (and <see cref="AsyncLocal{T}"/>) after <c>yield return</c>.
@@ -23,20 +23,20 @@ namespace WikiClientLibrary.Infrastructures
     public readonly struct ExecutionContextStash : IDisposable
     {
 
-        private readonly ExecutionContext executionContext;
+        private readonly ExecutionContext? executionContext;
 
         public static ExecutionContextStash Capture()
         {
             return new ExecutionContextStash(ExecutionContext.Capture());
         }
 
-        private ExecutionContextStash(ExecutionContext context)
+        private ExecutionContextStash(ExecutionContext? context)
         {
             this.executionContext = context;
         }
 
         /// <summary>
-        /// Gets an awaiter to <c>await</c> in order to enter the Captured execution context.
+        /// Restores the captured execution context.
         /// </summary>
         public void RestoreExecutionContext()
         {
