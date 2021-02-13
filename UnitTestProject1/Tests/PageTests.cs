@@ -209,10 +209,10 @@ namespace WikiClientLibrary.Tests.UnitTestProject1.Tests
             var file = new WikiPage(site, "File:Empress Suiko.jpg");
             await file.RefreshAsync();
             ShallowTrace(file);
-            //Assert.True(file.Exists);   //It's on WikiMedia!
-            Assert.Equal(58865, file.LastFileRevision.Size);
+            //Assert.True(file.Exists);   //It's on Wikimedia!
+            Assert.Equal(58865, file.LastFileRevision!.Size);
             Assert.Equal("7aa12c613c156dd125212d85a072b250625ae39f", file.LastFileRevision.Sha1.ToLowerInvariant());
-            Assert.Null(file.LastFileRevision.ExtMetadata);
+            Assert.Empty(file.LastFileRevision.ExtMetadata);
         }
 
         [Fact]
