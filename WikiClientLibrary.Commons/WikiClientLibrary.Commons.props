@@ -6,6 +6,6 @@
   </PropertyGroup>
 
   <PropertyGroup Condition=" $([System.Text.RegularExpressions.Regex]::IsMatch($(TargetFramework), `^(netstandard2\.[2-9]|net(coreapp)?[3-9]\.\d+)$`)) ">
-    <DefineConstants>$(DefineConstants);BCL_FEATURE_EXECUTION_CONTEXT_RESTORE</DefineConstants>
+    <DefineConstants>$(DefineConstants);BCL_FEATURE_EXECUTION_CONTEXT_RESTORE;BCL_FEATURE_MEMBER_NOT_NULL_ATTR</DefineConstants>
   </PropertyGroup>
 </Project>

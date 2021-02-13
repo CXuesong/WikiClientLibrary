@@ -57,10 +57,9 @@ namespace WikiClientLibrary
         /// canonical name for the specified built-in namespace.
         /// OR <c>null</c> if no such namespace is found.
         /// </returns>
-        public static string GetCanonicalName(int namespaceId)
+        public static string? GetCanonicalName(int namespaceId)
         {
-            string name;
-            if (_CanonicalNameDict.TryGetValue(namespaceId, out name)) return name;
+            if (_CanonicalNameDict.TryGetValue(namespaceId, out var name)) return name;
             return null;
         }
     }

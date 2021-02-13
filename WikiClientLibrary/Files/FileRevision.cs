@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Linq;
@@ -36,6 +37,7 @@ namespace WikiClientLibrary.Files
         /// <seealso cref="FileInfoPropertyProvider.QueryExtMetadata"/>
         [JsonProperty]
         public IReadOnlyDictionary<string, FileRevisionExtMetadataValue> ExtMetadata { get; private set; }
+            = ImmutableDictionary<string, FileRevisionExtMetadataValue>.Empty;
 
         /// <summary>
         /// Whether the file is anonymous. (MW ~1.33-)
@@ -53,7 +55,7 @@ namespace WikiClientLibrary.Files
         /// MIME type of the file.
         /// </summary>
         [JsonProperty]
-        public string Mime { get; private set; }
+        public string Mime { get; private set; } = "";
 
         /// <summary>
         /// The time and date of the revision.
@@ -65,25 +67,25 @@ namespace WikiClientLibrary.Files
         /// Name of the user uploading this file revision.
         /// </summary>
         [JsonProperty("user")]
-        public string UserName { get; private set; }
+        public string UserName { get; private set; } = "";
 
         /// <summary>
         /// The comment associated with the upload of this revision.
         /// </summary>
         [JsonProperty]
-        public string Comment { get; private set; }
+        public string Comment { get; private set; } = "";
 
         /// <summary>
         /// Url of the file.
         /// </summary>
         [JsonProperty]
-        public string Url { get; private set; }
+        public string Url { get; private set; } = "";
 
         /// <summary>
         /// Url of the description page.
         /// </summary>
         [JsonProperty]
-        public string DescriptionUrl { get; private set; }
+        public string DescriptionUrl { get; private set; } = "";
 
         /// <summary>
         /// Size of the file. In bytes.
@@ -101,7 +103,7 @@ namespace WikiClientLibrary.Files
         /// The file's SHA-1 hash.
         /// </summary>
         [JsonProperty]
-        public string Sha1 { get; private set; }
+        public string Sha1 { get; private set; } = "";
     }
 
     /// <summary>
@@ -137,7 +139,7 @@ namespace WikiClientLibrary.Files
         /// the file key to be passed into the next upload attempt. 
         /// </summary>
         [JsonProperty]
-        public string FileKey { get; private set; }
+        public string? FileKey { get; private set; }
 
         // Same as filekey, maintained for backward compatibility (deprecated in 1.18)
         [JsonProperty]
@@ -176,7 +178,7 @@ namespace WikiClientLibrary.Files
         /// for the uploaded file.
         /// </summary>
         [JsonProperty("imageinfo")]
-        public FileRevision FileRevision { get; private set; }
+        public FileRevision? FileRevision { get; private set; }
 
         /// <summary>
         /// 返回表示当前对象的字符串。
@@ -243,7 +245,7 @@ namespace WikiClientLibrary.Files
         /// File exists with different extension as the value of this property. (<c>exists-normalized</c>)
         /// </summary>
         /// <value><c>null</c> if there is no such warning in the response.</value>
-        public string ExistingAlternativeExtension => GetStringValue("exists-normalized");
+        public string? ExistingAlternativeExtension => GetStringValue("exists-normalized");
 
         /// <summary>
         /// Target filename is invalid. (<c>badfilename</c>)
@@ -311,9 +313,9 @@ namespace WikiClientLibrary.Files
         /// user-friendly warning message. If there's no match, a string containing
         /// warningCode and context will be returned.
         /// </returns>
-        public static string FormatWarning(string warningCode, JToken context)
+        public static string FormatWarning(string warningCode, JToken? context)
         {
-            string contextString = null;
+            string? contextString = null;
             if (context != null)
             {
                 switch (warningCode)
@@ -363,15 +365,15 @@ namespace WikiClientLibrary.Files
         /// You need to cast the returned value into your expected CLR type before working on it.
         /// </remarks>
         [JsonProperty]
-        public JToken Value { get; private set; }
+        public JToken? Value { get; private set; }
 
         /// <summary>Source of the metadata value.</summary>
         /// <remarks>See <see cref="FileRevisionExtMetadataValueSources"/> for a list of possible metadata sources.</remarks>
         [JsonProperty]
-        public string Source { get; private set; }
+        public string Source { get; private set; } = "";
 
         // https://github.com/wikimedia/mediawiki/blob/a638c0dce0b5a71c3c42ddf7e38e11e7bcd61f7a/includes/media/FormatMetadata.php#L1712
-        /// <summary>Whether this metadata field is visible on File page by default.</summary>
+        /// <summary>Whether this metadata field is hidden on File page by default.</summary>
         [JsonProperty]
         public bool Hidden { get; private set; }
 

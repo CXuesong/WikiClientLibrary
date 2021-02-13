@@ -104,7 +104,7 @@ namespace WikiClientLibrary.Sites
         /// <exception cref="InvalidOperationException">
         /// Trying to fetch all the messages with "*" input.
         /// </exception>
-        public Task<string> GetMessageAsync(string message)
+        public Task<string?> GetMessageAsync(string message)
         {
             return GetMessageAsync(message, CancellationToken.None);
         }
@@ -123,7 +123,7 @@ namespace WikiClientLibrary.Sites
         /// <exception cref="InvalidOperationException">
         /// Trying to fetch all the messages with "*" input.
         /// </exception>
-        public async Task<string> GetMessageAsync(string message, CancellationToken cancellationToken)
+        public async Task<string?> GetMessageAsync(string message, CancellationToken cancellationToken)
         {
             if (message == null) throw new ArgumentNullException(nameof(message));
             var result = await GetMessagesAsync(new[] {message}, cancellationToken);
@@ -149,7 +149,7 @@ namespace WikiClientLibrary.Sites
                 meta = "siteinfo",
                 siprop = "statistics",
             }), cancellationToken);
-            var jstat = (JObject) jobj["query"]?["statistics"];
+            var jstat = (JObject?) jobj["query"]?["statistics"];
             if (jstat == null) throw new UnexpectedDataException();
             var parsed = jstat.ToObject<SiteStatistics>();
             return parsed;

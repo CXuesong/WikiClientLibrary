@@ -44,9 +44,9 @@ namespace WikiClientLibrary.Client
     /// <typeparam name="T">The type of parsed response value.</typeparam>
     /// <remarks>
     /// <para>It's suggested you start from derive from this class to implement <see cref="IWikiResponseMessageParser{T}"/>.</para>
-    /// <para>For the role this interface plays in invoking wiki API, see <see cref="IWikiClient.InvokeAsync"/>.</para>
+    /// <para>For the role this interface plays in invoking wiki API, see <see cref="IWikiClient.InvokeAsync{T}"/>.</para>
     /// </remarks>
-    public abstract class WikiResponseMessageParser<T> : IWikiResponseMessageParser<T>
+    public abstract class WikiResponseMessageParser<T> : IWikiResponseMessageParser<T> where T : notnull
     {
 
         /// <summary>

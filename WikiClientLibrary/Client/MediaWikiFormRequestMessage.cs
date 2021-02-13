@@ -65,9 +65,9 @@ namespace WikiClientLibrary.Client
     {
 
         private readonly IList<KeyValuePair<string, object>> fields;
-        private IList<KeyValuePair<string, object>> readonlyFields;
+        private IList<KeyValuePair<string, object>>? readonlyFields;
         // Memorizes the stream position upon first request.
-        private IDictionary<Stream, long> streamPositions;
+        private IDictionary<Stream, long>? streamPositions;
 
         private volatile int status;
         // Created
@@ -121,7 +121,7 @@ namespace WikiClientLibrary.Client
         public override HttpMethod GetHttpMethod() => HttpMethod.Post;
 
         /// <inheritdoc />
-        public override string GetHttpQuery() => null;
+        public override string? GetHttpQuery() => null;
 
         /// <inheritdoc />
         public override HttpContent GetHttpContent()
@@ -130,7 +130,7 @@ namespace WikiClientLibrary.Client
             switch (status)
             {
                 case STATUS_CREATED:
-                    IDictionary<Stream, long> sps = null;
+                    IDictionary<Stream, long>? sps = null;
                     foreach (var p in fields)
                     {
                         if (p.Value is Stream s)

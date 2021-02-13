@@ -31,12 +31,12 @@ namespace WikiClientLibrary.Sites
         /// <para>If this value is <c>null</c>, WikiClientLibrary will try to
         /// infer the disambiguation template from [[MediaWiki:Disambiguationspage]].</para>
         /// </remarks>
-        public IList<string> DisambiguationTemplates { get; set; }
+        public IList<string>? DisambiguationTemplates { get; set; }
 
         /// <summary>
         /// Sets the URL of MediaWiki API endpoint.
         /// </summary>
-        public string ApiEndpoint { get; set; }
+        public string? ApiEndpoint { get; set; }
 
         /// <summary>
         /// Gets/sets the account rights assertion behavior when performing the requests.
@@ -49,14 +49,13 @@ namespace WikiClientLibrary.Sites
         /// </summary>
         public SiteOptions()
         {
-
         }
 
         /// <summary>
         /// Initializes with API endpoint URL.
         /// </summary>
         /// <param name="apiEndpoint">The URL of MediaWiki API endpoint.</param>
-        public SiteOptions(string apiEndpoint)
+        public SiteOptions(string? apiEndpoint)
         {
             ApiEndpoint = apiEndpoint;
         }

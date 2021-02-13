@@ -53,7 +53,7 @@ namespace WikiClientLibrary.Client
         /// to the endpoint URL.</value>
         /// <remarks>Returning <see cref="string.Empty"/> will cause a single question mark be appended to the
         /// endpoint URL when sending the request.</remarks>
-        public abstract string GetHttpQuery();
+        public abstract string? GetHttpQuery();
 
         /// <summary>
         /// Gets the <see cref="HttpContent"/> corresponding to this message.

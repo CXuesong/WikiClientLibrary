@@ -151,7 +151,7 @@ namespace WikiClientLibrary.Infrastructures.Logging
             private readonly object? target;
             private readonly string? action;
             private readonly IList parameters;
-            private string str;
+            private string? str;
 
             public ActionLogScopeState(object? target, string? action, IEnumerable? parameters)
             {
@@ -189,15 +189,15 @@ namespace WikiClientLibrary.Infrastructures.Logging
             public int Count => 3;
 
             /// <inheritdoc />
-            public KeyValuePair<string, object> this[int index]
+            public KeyValuePair<string, object?> this[int index]
             {
                 get
                 {
                     return index switch
                     {
-                        0 => new KeyValuePair<string, object>("Target", target),
-                        1 => new KeyValuePair<string, object>("Action", action),
-                        2 => new KeyValuePair<string, object>("Parameters", parameters),
+                        0 => new KeyValuePair<string, object?>("Target", target),
+                        1 => new KeyValuePair<string, object?>("Action", action),
+                        2 => new KeyValuePair<string, object?>("Parameters", parameters),
                         _ => throw new IndexOutOfRangeException()
                     };
                 }
@@ -230,7 +230,7 @@ namespace WikiClientLibrary.Infrastructures.Logging
                 {
                     if (isCollection) builder.Append('[');
                     var type = localTarget.GetType();
-                    if (!type.IsPrimitive && !type.Namespace.StartsWith("System."))
+                    if (!type.IsPrimitive && (type.Namespace == null || type.Namespace.StartsWith("System.")))
                         builder.Append(type.Name);
                     builder.Append('{');
                     builder.Append(localTarget);

@@ -4,6 +4,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.Serialization;
@@ -49,7 +50,7 @@ namespace WikiClientLibrary.Pages
             if (string.IsNullOrWhiteSpace(title)) throw new ArgumentNullException(nameof(title));
             Site = site;
             var parsedTitle = WikiLink.Parse(site, title, defaultNamespaceId);
-            PageStub = new WikiPageStub(parsedTitle.FullTitle, parsedTitle.Namespace.Id);
+            PageStub = new WikiPageStub(parsedTitle.FullTitle, parsedTitle.Namespace!.Id);
         }
 
         /// <summary>
@@ -81,17 +82,16 @@ namespace WikiClientLibrary.Pages
         /// </summary>
         public int NamespaceId => PageStub.NamespaceId;
 
-        private List<IWikiPagePropertyGroup> propertyGroups;
-
-        private IReadOnlyCollection<IWikiPagePropertyGroup> readonlyPropertyGroups;
-        private PageInfoPropertyGroup pageInfo;
+        private List<IWikiPagePropertyGroup>? propertyGroups;
+        private IReadOnlyCollection<IWikiPagePropertyGroup>? readonlyPropertyGroups;
+        private PageInfoPropertyGroup? pageInfo;
 
         /// <summary>
         /// Gets the property group of specified type that is attached to this page.
         /// </summary>
         /// <param name="propertyGroupType">Type of the desired property group. Must be a type implementing <see cref="IWikiPagePropertyGroup"/>.</param>
-        /// <returns>The property group instance of the specified type, or <c>default(T)</c> if no such item can be found.</returns>
-        public IWikiPagePropertyGroup GetPropertyGroup(Type propertyGroupType)
+        /// <returns>The property group instance of the specified type, or <c>null</c> if no such item can be found.</returns>
+        public IWikiPagePropertyGroup? GetPropertyGroup(Type propertyGroupType)
         {
             var ti = propertyGroupType.GetTypeInfo();
             if (!typeof(IWikiPagePropertyGroup).IsAssignableFrom(ti))
@@ -109,6 +109,7 @@ namespace WikiClientLibrary.Pages
         /// </summary>
         /// <returns>The property group instance of the specified type, or <c>default(T)</c> if no such item can be found.</returns>
         /// <typeparam name="T">The type of the desired property group.</typeparam>
+        [return: MaybeNull]
         public T GetPropertyGroup<T>() where T : IWikiPagePropertyGroup
         {
             if (propertyGroups == null) return default;
@@ -158,12 +159,12 @@ namespace WikiClientLibrary.Pages
         /// <remarks>See https://www.mediawiki.org/wiki/Manual:Page_table#page_touched .</remarks>
         public DateTime LastTouched => pageInfo?.LastTouched ?? DateTime.MinValue;
 
-        public IReadOnlyCollection<ProtectionInfo> Protections => pageInfo?.Protections;
+        public IReadOnlyCollection<ProtectionInfo>? Protections => pageInfo?.Protections;
 
         /// <summary>
         /// Applicable protection types. (MediaWiki 1.25)
         /// </summary>
-        public IReadOnlyCollection<string> RestrictionTypes => pageInfo?.RestrictionTypes;
+        public IReadOnlyCollection<string>? RestrictionTypes => pageInfo?.RestrictionTypes;
 
         /// <summary>
         /// Gets whether the page exists.
@@ -185,13 +186,13 @@ namespace WikiClientLibrary.Pages
         /// </summary>
         /// <remarks>See <see cref="ContentModels"/> for a list of commonly-used content model names.</remarks>
         /// <seealso cref="Revision.ContentModel"/>
-        public string ContentModel { get; private set; }
+        public string? ContentModel { get; private set; }
 
         /// <summary>
         /// Page language. (MediaWiki 1.24)
         /// </summary>
         /// <remarks>See https://www.mediawiki.org/wiki/API:PageLanguage .</remarks>
-        public string PageLanguage => pageInfo?.PageLanguage;
+        public string? PageLanguage => pageInfo?.PageLanguage;
 
         /// <summary>
         /// Gets the normalized full title of the page.
@@ -200,7 +201,7 @@ namespace WikiClientLibrary.Pages
         /// Normalized title is a title with underscores(_) replaced by spaces,
         /// and the first letter is usually upper-case.
         /// </remarks>
-        public string Title => PageStub.HasTitle ? PageStub.Title : null;
+        public string? Title => PageStub.HasTitle ? PageStub.Title : null;
 
         /// <summary>
         /// Gets / Sets the content of the page.
@@ -212,7 +213,7 @@ namespace WikiClientLibrary.Pages
         /// specify <see cref="PageQueryOptions.FetchContent"/>
         /// when calling <see cref="RefreshAsync(PageQueryOptions)"/>.</para>
         /// </remarks>
-        public string Content { get; set; }
+        public string? Content { get; set; }
 
         /// <summary>
         /// Gets the latest revision of the page.
@@ -238,6 +239,7 @@ namespace WikiClientLibrary.Pages
         /// </remarks>
         public async Task<bool> IsDisambiguationAsync()
         {
+            AssertTitleExists();
             AssertExists();
             // If the Disambiguator extension is loaded, use it
             if (Site.Extensions.Contains("Disambiguator"))
@@ -285,8 +287,9 @@ namespace WikiClientLibrary.Pages
         /// <c>Page.RefreshAsync(PageQueryOptions.ResolveRedirects)</c>
         /// to resolve the redirects.
         /// </remarks>
-        public async Task<WikiPage> GetRedirectTargetAsync()
+        public async Task<WikiPage?> GetRedirectTargetAsync()
         {
+            AssertTitleExists();
             var newPage = new WikiPage(Site, Title);
             await newPage.RefreshAsync(PageQueryOptions.ResolveRedirects);
             if (newPage.RedirectPath.Count > 0) return newPage;
@@ -296,6 +299,12 @@ namespace WikiClientLibrary.Pages
         #endregion
 
         #region Query
+        [MemberNotNull(nameof(Title))]
+        protected void AssertTitleExists()
+        {
+            if (string.IsNullOrEmpty(Title))
+                throw new InvalidOperationException("Page title is not available. Use RefreshAsync to fetch it.");
+        }
 
         protected void AssertExists()
         {
@@ -480,7 +489,7 @@ namespace WikiClientLibrary.Pages
                     return true;
                 }
                 // No "errors" in json result but result is not Success.
-                throw new OperationFailedException(result, (string)null);
+                throw new OperationFailedException(result, (string?)null);
             }
         }
 
@@ -557,7 +566,7 @@ namespace WikiClientLibrary.Pages
                         case "protectedtitle":
                             throw new UnauthorizedOperationException(ex);
                         default:
-                            if (ex.ErrorCode.StartsWith("cantmove"))
+                            if (ex.ErrorCode != null && ex.ErrorCode.StartsWith("cantmove"))
                                 throw new UnauthorizedOperationException(ex);
                             throw;
                     }
@@ -566,6 +575,7 @@ namespace WikiClientLibrary.Pages
                 var toTitle = (string)jresult["move"]["to"];
                 Site.Logger.LogInformation("Page [[{fromTitle}]] has been moved to [[{toTitle}]].", fromTitle, toTitle);
                 var link = WikiLink.Parse(Site, toTitle);
+                Debug.Assert(link.Namespace != null);
                 PageStub = new WikiPageStub(PageStub.Id, toTitle, link.Namespace.Id);
             }
         }
@@ -788,10 +798,10 @@ namespace WikiClientLibrary.Pages
     {
 
         [JsonProperty]
-        public string Type { get; private set; }
+        public string Type { get; private set; } = "";
 
         [JsonProperty]
-        public string Level { get; private set; }
+        public string Level { get; private set; } = "";
 
         [JsonProperty("expiry")]
         public DateTime Expiry { get; private set; }
@@ -827,12 +837,12 @@ namespace WikiClientLibrary.Pages
         /// This is raw value and only works when Extension:Disambiguator presents.
         /// Please use <see cref="WikiPage.IsDisambiguationAsync"/> instead.
         /// </summary>
-        public bool Disambiguation => this["disambiguation"] != null;
+        public bool Disambiguation => GetBooleanValue("disambiguation");
 
-        public string DisplayTitle => (string)this["displaytitle"];
+        public string? DisplayTitle => GetStringValue("displaytitle");
 
-        public string PageImage => (string)this["page_image"];
+        public string? PageImage => GetStringValue("page_image");
 
-        public bool IsHiddenCategory => this["hiddencat"] != null;
+        public bool IsHiddenCategory => GetBooleanValue("hiddencat");
     }
 }

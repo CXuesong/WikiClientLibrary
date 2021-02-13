@@ -196,17 +196,14 @@ namespace WikiClientLibrary
                 return null;
             }
             //Parse title parts.
-            var parsedTitle = await TitlePartitionAsync(site, family, title, defaultNamespaceId);
-            if (parsedTitle == null)
+            var parsedParts = await TitlePartitionAsync(site, family, title, defaultNamespaceId);
+            if (parsedParts == null)
             {
                 if (exceptionOnFailure)
                     throw new ArgumentException(string.Format(Prompts.ExceptionTitleIsEmpty1, title));
                 return null;
             }
-            var targetSite = parsedTitle.Item1;
-            var interwikiPrefix = parsedTitle.Item2;
-            var nsPrefix = parsedTitle.Item3;
-            var localTitle = parsedTitle.Item4;
+            var (targetSite, interwikiPrefix, nsPrefix, localTitle) = parsedParts.Value;
             if (targetSite == null)
             {
                 if (interwikiPrefix == null)
@@ -276,7 +273,7 @@ namespace WikiClientLibrary
         /// e.g. parsed with only <seealso cref="IWikiFamily"/> provided.
         /// </remarks>
         /// <seealso cref="TargetSite"/>
-        public WikiSite Site { get; }
+        public WikiSite? Site { get; }
 
         /// <summary>
         /// Gets the wiki site containing the specified page title, if such information is available.
@@ -288,17 +285,17 @@ namespace WikiClientLibrary
         /// while it contains interwiki prefix, this property will be <c>null</c>.
         /// </value>
         /// <seealso cref="Site"/>
-        public WikiSite TargetSite { get; private set; }
+        public WikiSite? TargetSite { get; private set; }
 
-        private WikiLink(WikiSite site, string originalText)
+        private WikiLink(WikiSite? site, string originalText)
         {
             this.Site = site;
             this.OriginalText = originalText;
         }
 
-        private static async Task<Tuple<WikiSite, string, string, string>> TitlePartitionAsync(WikiSite site, IWikiFamily family, string rawTitle, int defaultNamespace)
+        private static async Task<(WikiSite? TargetSite, string? Interwiki, string? Namespace, string Title)?>
+            TitlePartitionAsync(WikiSite? site, IWikiFamily? family, string rawTitle, int defaultNamespace)
         {
-            // Tuple<interwiki, namespace, title, targetSite>
             Debug.Assert(site != null || family != null);
             Debug.Assert(rawTitle != null);
             var title = rawTitle;
@@ -380,14 +377,14 @@ namespace WikiClientLibrary
             if (nsname == null && interwiki == null)
                 // If site is (still) null, we will have error reported in the caller.
                 nsname = site?.Namespaces[defaultNamespace].CustomName;
-            return Tuple.Create(site, interwiki, nsname, pagetitle);
+            return (site, interwiki, nsname, pagetitle);
         }
 
         /// <summary>
         /// Gets interwiki prefix of the wikilink.
         /// </summary>
         /// <value>Interwiki prefix of the wikilink. If this link is not an interwiki link, the value is <c>null</c>.</value>
-        public string InterwikiPrefix { get; private set; }
+        public string? InterwikiPrefix { get; private set; }
 
         /// <summary>
         /// Gets the namespace name.
@@ -397,12 +394,12 @@ namespace WikiClientLibrary
         /// If this is not applicable (e.g. parsed a interwiki link without family information given),
         /// the value is <c>null</c>.
         /// </value>
-        public string NamespaceName { get; private set; }
+        public string? NamespaceName { get; private set; }
 
         /// <summary>
         /// Gets the namespace information.
         /// </summary>
-        public NamespaceInfo Namespace { get; private set; }
+        public NamespaceInfo? Namespace { get; private set; }
 
         /// <summary>
         /// Gets the target page title, excluding all the prefix and section. (<c>Title</c>)
@@ -424,7 +421,7 @@ namespace WikiClientLibrary
         /// The section title of a section on the page, without leading #.
         /// <c>null</c> if the link does not have section information.
         /// </value>
-        public string Section { get; private set; }
+        public string? Section { get; private set; }
 
         /// <summary>
         /// Gets the full wikilink target expression. (<c>interwiki:Namespace:Title#Section</c>)
@@ -449,7 +446,7 @@ namespace WikiClientLibrary
         /// gets the actual displayed text (<c>anchor</c>) for the link.
         /// </summary>
         /// <remarks>For the actual text this wikilink should show, use <see cref="DisplayText"/>.</remarks>
-        public string Anchor { get; private set; }
+        public string? Anchor { get; private set; }
 
         private string _DisplayText;
 

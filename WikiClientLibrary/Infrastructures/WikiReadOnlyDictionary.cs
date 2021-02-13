@@ -38,8 +38,8 @@ namespace WikiClientLibrary.Infrastructures
         {
             get
             {
-                var value = GetValueDirect(key);
-                if (_IsReadOnly) value = value?.DeepClone();
+                var value = myDict[key];
+                if (_IsReadOnly) value = value.DeepClone();
                 return value;
             }
             set
@@ -52,7 +52,7 @@ namespace WikiClientLibrary.Infrastructures
         /// <summary>
         /// Tries to directly gets the value of the specified property.
         /// </summary>
-        protected JToken GetValueDirect(string key)
+        protected JToken? GetValueDirect(string key)
         {
             if (myDict.TryGetValue(key, out var value)) return value;
             return null;
@@ -90,7 +90,7 @@ namespace WikiClientLibrary.Infrastructures
         /// <param name="key">The property name.</param>
         /// <remarks>
         /// This method returns true if the specified key exists,
-        /// and its value is something other than <c>null</c> (typically it's <c>""</c>).
+        /// and its value is something other than <c>null</c> (typically <c>""</c>).
         /// </remarks>
         public bool GetBooleanValue(string key)
         {
@@ -102,7 +102,7 @@ namespace WikiClientLibrary.Infrastructures
         /// </summary>
         /// <param name="key">The property name.</param>
         /// <returns>The converted value - or - <c>null</c> if the specified key does not exist.</returns>
-        public string GetStringValue(string key)
+        public string? GetStringValue(string key)
         {
             if (myDict.TryGetValue(key, out var value)) return (string)value;
             return null;

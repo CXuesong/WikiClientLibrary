@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Net.Http;
 using System.Threading;
@@ -44,9 +45,9 @@ namespace WikiClientLibrary.Sites
         /// <summary>
         /// A handler used to re-login when account assertion fails.
         /// </summary>
-        public IAccountAssertionFailureHandler AccountAssertionFailureHandler { get; set; }
+        public IAccountAssertionFailureHandler? AccountAssertionFailureHandler { get; set; }
 
-        private Throttler _ModificationThrottler;
+        private Throttler? _ModificationThrottler;
         private readonly TokensManager tokensManager;
 
         /// <summary>
@@ -111,7 +112,11 @@ namespace WikiClientLibrary.Sites
         /// <param name="options">Site options.</param>
         /// <param name="userName">The user name used to login before fetching for site information. Pass <c>null</c> to fetch site information without login first.</param>
         /// <param name="password">The password used to login before fetching for site information.</param>
-        /// <exception cref="ArgumentNullException"><paramref name="wikiClient"/> or <paramref name="options"/> is <c>null</c>.</exception>
+        /// <exception cref="ArgumentNullException">
+        /// <paramref name="wikiClient"/> or <paramref name="options"/> is <c>null</c>.
+        /// - OR -
+        /// <paramref name="userName"/> is not <c>null</c>, but <paramref name="password"/> is <c>null</c>.
+        /// </exception>
         /// <exception cref="ArgumentException">One or more settings in <paramref name="options"/> is invalid.</exception>
         /// <remarks>
         /// <para>For the private wiki where anonymous users cannot access query API, you can use this
@@ -121,6 +126,7 @@ namespace WikiClientLibrary.Sites
         {
             if (wikiClient == null) throw new ArgumentNullException(nameof(wikiClient));
             if (options == null) throw new ArgumentNullException(nameof(options));
+            if (userName == null && password != null) throw new ArgumentNullException(nameof(password));
             if (string.IsNullOrEmpty(options.ApiEndpoint))
                 throw new ArgumentException(Prompts.ExceptionInvalidMediaWikiApiEndpointUrl, nameof(options));
             WikiClient = wikiClient;
@@ -149,6 +155,7 @@ namespace WikiClientLibrary.Sites
             {
                 if (userName != null)
                 {
+                    Debug.Assert(password != null);
                     await LoginAsync(userName, password);
                     await RefreshSiteInfoAsync();
                 }
@@ -218,11 +225,11 @@ namespace WikiClientLibrary.Sites
             }
         }
 
-        private SiteInfo _SiteInfo;
+        private SiteInfo? _SiteInfo;
         private AccountInfo? _AccountInfo;
-        private NamespaceCollection _Namespaces;
-        private InterwikiMap _InterwikiMap;
-        private ExtensionCollection _Extensions;
+        private NamespaceCollection? _Namespaces;
+        private InterwikiMap? _InterwikiMap;
+        private ExtensionCollection? _Extensions;
 
         /// <summary>
         /// Gets the basic site information.
@@ -232,6 +239,7 @@ namespace WikiClientLibrary.Sites
             get
             {
                 AsyncInitializationHelper.EnsureInitialized(typeof(WikiSite), localInitialization);
+                Debug.Assert(_SiteInfo != null);
                 return _SiteInfo;
             }
         }
@@ -247,7 +255,7 @@ namespace WikiClientLibrary.Sites
                 var ai = _AccountInfo;
                 // User has logged out.
                 if (ai == null) throw new InvalidOperationException("The AccountInfo is not initialized.");
-                return _AccountInfo;
+                return ai;
             }
         }
 
@@ -259,7 +267,7 @@ namespace WikiClientLibrary.Sites
             get
             {
                 AsyncInitializationHelper.EnsureInitialized(typeof(WikiSite), localInitialization);
-                return _Namespaces;
+                return _Namespaces!;
             }
         }
 
@@ -271,7 +279,7 @@ namespace WikiClientLibrary.Sites
             get
             {
                 AsyncInitializationHelper.EnsureInitialized(typeof(WikiSite), localInitialization);
-                return _InterwikiMap;
+                return _InterwikiMap!;
             }
         }
 
@@ -283,14 +291,14 @@ namespace WikiClientLibrary.Sites
             get
             {
                 AsyncInitializationHelper.EnsureInitialized(typeof(WikiSite), localInitialization);
-                return _Extensions;
+                return _Extensions!;
             }
         }
 
         /// <summary>
         /// The endpoint URL for MediaWiki API.
         /// </summary>
-        public string ApiEndpoint => options.ApiEndpoint;
+        public string ApiEndpoint => options.ApiEndpoint!;
 
         /// <summary>
         /// Gets the default result limit per page for current user.
@@ -383,7 +391,7 @@ namespace WikiClientLibrary.Sites
                 localRequest, suppressAccountAssertion);
             try
             {
-                return await WikiClient.InvokeAsync(options.ApiEndpoint, localRequest, responseParser, cancellationToken);
+                return await WikiClient.InvokeAsync(options.ApiEndpoint!, localRequest, responseParser, cancellationToken);
             }
             catch (AccountAssertionFailureException)
             {
@@ -408,7 +416,7 @@ namespace WikiClientLibrary.Sites
             {
                 // Allows retrying once.
                 if (form == null || badTokenRetries >= 1) throw;
-                string invalidatedToken = null;
+                string? invalidatedToken = null;
                 foreach (var tokenField in form.Fields.Where(p => p.Value is WikiSiteToken))
                 {
                     invalidatedToken = ((WikiSiteToken)tokenField.Value).Type;
@@ -530,7 +538,7 @@ namespace WikiClientLibrary.Sites
             {
                 try
                 {
-                    string token = null;
+                    string? token = null;
                     // For MediaWiki 1.27+
                     if (_SiteInfo != null && _SiteInfo.Version >= new MediaWikiVersion(1, 27))
                         token = await GetTokenAsync("login", true, cancellationToken);
@@ -548,12 +556,13 @@ namespace WikiClientLibrary.Sites
                         lgdomain = domain,
                     }), true, cancellationToken);
                     var result = (string)jobj["login"]["result"];
-                    string message = null;
+                    string? message = null;
                     switch (result)
                     {
                         case "Success":
                             tokensManager.ClearCache();
                             await RefreshAccountInfoAsync();
+                            Debug.Assert(_AccountInfo != null);
                             Logger.LogInformation("Logged in as {Account}.", _AccountInfo);
                             Debug.Assert(_AccountInfo.IsUser,
                                 "API result indicates the login is successful, but you are not currently in \"user\" group. Are you logging out on the other Site instance with the same API endpoint and the same WikiClient?");
@@ -631,7 +640,7 @@ namespace WikiClientLibrary.Sites
         protected virtual async Task SendLogoutRequestAsync()
         {
             Debug.Assert(isLoggingInOut == 1);
-            string token = null;
+            string? token = null;
             if (SiteInfo.Version >= new MediaWikiVersion(1, 34, MediaWikiDevChannel.Wmf, 3))
             {
                 // 1.34-wmf3
@@ -659,7 +668,7 @@ namespace WikiClientLibrary.Sites
         #endregion
 
         /// <inheritdoc/>
-        public override string ToString()
+        public override string? ToString()
         {
             return string.IsNullOrEmpty(_SiteInfo?.SiteName) ? options.ApiEndpoint : _SiteInfo.SiteName;
         }

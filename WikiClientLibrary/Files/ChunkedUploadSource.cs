@@ -137,7 +137,7 @@ namespace WikiClientLibrary.Files
         /// <summary>
         /// When <see cref="IsStashed"/> is <c>true</c>, gets the filekey used for file upload.
         /// </summary>
-        public string FileKey { get; private set; }
+        public string FileKey { get; private set; } = null!;
 
         /// <inheritdoc />
         public override IEnumerable<KeyValuePair<string, object>> GetUploadParameters(SiteInfo siteInfo)
@@ -232,7 +232,7 @@ namespace WikiClientLibrary.Files
                         if (copiedSize == 0)
                             throw new InvalidOperationException(Prompts.ExceptionUnexpectedStreamEof);
                         chunkStream.Position = 0;
-                        var jparams = new Dictionary<string, object>
+                        var jparams = new Dictionary<string, object?>
                         {
                             {"action", "upload"},
                             {"token", WikiSiteToken.Edit},

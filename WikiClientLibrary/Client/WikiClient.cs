@@ -34,6 +34,7 @@ namespace WikiClientLibrary.Client
 
         public WikiClient() : this(new HttpClientHandler(), true)
         {
+            Debug.Assert(_HttpClientHandler != null);
             _HttpClientHandler.UseCookies = true;
             // https://www.mediawiki.org/wiki/API:Client_code
             // Please use GZip compression when making API calls (Accept-Encoding: gzip).
@@ -67,7 +68,7 @@ namespace WikiClientLibrary.Client
         #region Configurations
 
         private string? _ClientUserAgent;
-        private readonly HttpClientHandler _HttpClientHandler;
+        private readonly HttpClientHandler? _HttpClientHandler;
         private int _MaxRetries = 3;
         private ILogger _Logger = NullLogger.Instance;
 
@@ -123,7 +124,12 @@ namespace WikiClientLibrary.Client
         /// <exception cref="NotSupportedException">You have initialized this Client with a HttpMessageHandler that is not a HttpClientHandler.</exception>
         public CookieContainer CookieContainer
         {
-            get { return _HttpClientHandler.CookieContainer; }
+            get
+            {
+                if (_HttpClientHandler == null)
+                    throw new NotSupportedException(Prompts.ExceptionWikiClientNonHttpClientHandler);
+                return _HttpClientHandler.CookieContainer;
+            }
             set
             {
                 if (_HttpClientHandler == null)

@@ -15,10 +15,10 @@ namespace WikiClientLibrary.AbuseFilters
         public int Id { get; private set; }
 
         [JsonProperty]
-        public string Description { get; set; }
+        public string Description { get; set; } = "";
 
         [JsonProperty]
-        public string Pattern { get; set; }
+        public string Pattern { get; set; } = "";
 
         public IReadOnlyCollection<string> Actions { get; private set; } = Array.Empty<string>();
 
@@ -37,10 +37,10 @@ namespace WikiClientLibrary.AbuseFilters
         public int Hits { get; private set; }
 
         [JsonProperty]
-        public string Comments { get; set; }
+        public string Comments { get; set; } = "";
 
         [JsonProperty]
-        public string LastEditor { get; private set; }
+        public string LastEditor { get; private set; } = "";
 
         [JsonProperty]
         public DateTime LastEditTime { get; private set; }

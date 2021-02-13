@@ -180,7 +180,7 @@ namespace WikiClientLibrary.Client
                                         ? Convert.ToString(v1.Value, CultureInfo.InvariantCulture)
                                         : jPermissions.ToString()
                                 };
-                            throw new UnauthorizedOperationException(errorCode, fullMessage, permissions.ToList());
+                            throw new UnauthorizedOperationException(errorCode, fullMessage, permissions.ToList()!);
                         }
                     }
                     throw new UnauthorizedOperationException(errorCode, fullMessage);
