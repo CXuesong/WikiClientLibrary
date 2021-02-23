@@ -4,9 +4,8 @@ using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
-using System.Reflection;
-using System.Reflection.Emit;
 using System.Text;
+using System.Web;
 
 namespace WikiClientLibrary.Infrastructures
 {
@@ -16,8 +15,6 @@ namespace WikiClientLibrary.Infrastructures
     /// </summary>
     internal class FormLongUrlEncodedContent : ByteArrayContent
     {
-        // as defined in System.Uri.c_MaxUriBufferSize, .NET 4.6.2
-        public const int c_MaxUriBufferSize = 0xFFF0;
 
         // as defined in HttpRuleParser.DefaultHttpEncoding
         public static readonly Encoding DefaultHttpEncoding = Encoding.GetEncoding("iso-8859-1");
@@ -37,24 +34,14 @@ namespace WikiClientLibrary.Infrastructures
             {
                 if (sb.Length > 0)
                     sb.Append('&');
-                Encode(sb, nameValue.Key);
+
+                sb.Append(HttpUtility.UrlEncode(nameValue.Key));
                 sb.Append('=');
-                Encode(sb, nameValue.Value);
+                sb.Append(HttpUtility.UrlEncode(nameValue.Value));
             }
 
-            sb.Replace("%20", "+");
             return DefaultHttpEncoding.GetBytes(sb.ToString());
         }
 
-        private static void Encode(StringBuilder sb, string? data)
-        {
-            const int partitionSize = c_MaxUriBufferSize - 10;
-            if (string.IsNullOrEmpty(data)) return;
-            for (int i = 0; i < data.Length; i += partitionSize)
-            {
-                var ps = Math.Min(partitionSize, data.Length - i);
-                sb.Append(Uri.EscapeDataString(data.Substring(i, ps)));
-            }
-        }
     }
 }
