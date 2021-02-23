@@ -25,7 +25,7 @@ namespace WikiClientLibrary.Pages.Queries.Properties
         public bool QueryExtMetadata { get; set; }
 
         /// <inheritdoc />
-        public override IEnumerable<KeyValuePair<string, object>> EnumParameters(MediaWikiVersion version)
+        public override IEnumerable<KeyValuePair<string, object?>> EnumParameters(MediaWikiVersion version)
         {
             var properties = new List<string> { "timestamp", "user", "comment", "url", "size", "sha1" };
             if (QueryExtMetadata)
@@ -44,7 +44,7 @@ namespace WikiClientLibrary.Pages.Queries.Properties
         }
 
         /// <inheritdoc />
-        public override string PropertyName => "imageinfo";
+        public override string? PropertyName => "imageinfo";
     }
 
     /// <summary>

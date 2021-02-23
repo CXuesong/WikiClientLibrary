@@ -17,7 +17,7 @@ namespace WikiClientLibrary.Pages.Queries.Properties
             });
 
         /// <inheritdoc />
-        public override IEnumerable<KeyValuePair<string, object>> EnumParameters(MediaWikiVersion version)
+        public override IEnumerable<KeyValuePair<string, object?>> EnumParameters(MediaWikiVersion version)
         {
             return fixedProp;
         }
@@ -29,7 +29,7 @@ namespace WikiClientLibrary.Pages.Queries.Properties
         }
 
         /// <inheritdoc />
-        public override string PropertyName => "info";
+        public override string? PropertyName => "info";
     }
 
     public class PageInfoPropertyGroup : WikiPagePropertyGroup

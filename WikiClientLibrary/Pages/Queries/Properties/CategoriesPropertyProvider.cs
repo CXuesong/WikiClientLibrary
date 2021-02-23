@@ -20,12 +20,12 @@ namespace WikiClientLibrary.Pages.Queries.Properties
         /// <summary>
         /// Only list these categories. Useful for checking whether a certain page is in a certain category.
         /// </summary>
-        public IEnumerable<string> CategorySelection { get; set; }
+        public IEnumerable<string>? CategorySelection { get; set; }
 
         /// <inheritdoc />
-        public override IEnumerable<KeyValuePair<string, object>> EnumParameters(MediaWikiVersion version)
+        public override IEnumerable<KeyValuePair<string, object?>> EnumParameters(MediaWikiVersion version)
         {
-            var p = new OrderedKeyValuePairs<string, object>
+            var p = new OrderedKeyValuePairs<string, object?>
             {
                 {"clprop", "sortkey|timestamp|hidden"},
                 {"clshow", HiddenCategoryFilter.ToString("hidden", "!hidden", null)}
@@ -41,13 +41,13 @@ namespace WikiClientLibrary.Pages.Queries.Properties
         }
 
         /// <inheritdoc />
-        public override string PropertyName => "categories";
+        public override string? PropertyName => "categories";
     }
 
     /// <summary>
     /// Contains information about a page's belonging category.
     /// </summary>
-    public struct WikiPageCategoryInfo
+    public readonly struct WikiPageCategoryInfo
     {
         public WikiPageCategoryInfo(WikiPageStub page, bool isHidden, string sortKey, string fullSortKey, DateTime timeStamp)
         {
@@ -67,7 +67,7 @@ namespace WikiClientLibrary.Pages.Queries.Properties
         /// <summary>
         /// Full name of the category.
         /// </summary>
-        public string Title => Page.HasTitle ? Page.Title : null;
+        public string? Title => Page.HasTitle ? Page.Title : null;
 
         /// <summary>Gets a value that indicates whether the category is hidden.</summary>
         public bool IsHidden { get; }

@@ -92,7 +92,7 @@ namespace WikiClientLibrary
         #region Page/Revision query
 
         public static async IAsyncEnumerable<JObject> QueryWithContinuation(WikiSite site,
-            IEnumerable<KeyValuePair<string, object>> parameters,
+            IEnumerable<KeyValuePair<string, object?>> parameters,
             Func<IDisposable>? beginActionScope,
             bool distinctPages = false,
             [EnumeratorCancellation] CancellationToken cancellationToken = default)
@@ -102,13 +102,13 @@ namespace WikiClientLibrary
             using var actionScopeDisposable = beginActionScope?.Invoke();
             var baseQueryParams = parameters.ToDictionary(p => p.Key, p => p.Value);
             Debug.Assert("query".Equals(baseQueryParams["action"]));
-            var continuationParams = new Dictionary<string, object>();
+            var continuationParams = new Dictionary<string, object?>();
             while (true)
             {
-                var queryParams = new Dictionary<string, object>(baseQueryParams);
+                var queryParams = new Dictionary<string, object?>(baseQueryParams);
                 queryParams.MergeFrom(continuationParams);
                 var jresult = await site.InvokeMediaWikiApiAsync(new MediaWikiFormRequestMessage(queryParams), cancellationToken);
-                var jpages = (JObject)FindQueryResponseItemsRoot(jresult, "pages");
+                var jpages = (JObject?)FindQueryResponseItemsRoot(jresult, "pages");
                 if (jpages != null)
                 {
                     if (retrievedPageIds != null)
@@ -150,51 +150,10 @@ namespace WikiClientLibrary
             }
         }
 
-        private struct WikiPageGroupKey : IEquatable<WikiPageGroupKey>
+        private static (WikiSite Site, bool HasTitle) BuildWikiPageGroupKey(WikiPage page)
         {
-
-            public readonly WikiSite Site;
-
-            public readonly bool HasTitle;
-
-            public WikiPageGroupKey(WikiPage page)
-            {
-                if (page == null) throw new ArgumentNullException(nameof(page));
-                Site = page.Site;
-                HasTitle = page.PageStub.HasTitle;
-            }
-
-            /// <inheritdoc />
-            public bool Equals(WikiPageGroupKey other)
-            {
-                return Site.Equals(other.Site) && HasTitle == other.HasTitle;
-            }
-
-            /// <inheritdoc />
-            public override bool Equals(object obj)
-            {
-                if (obj is null) return false;
-                return obj is WikiPageGroupKey key && Equals(key);
-            }
-
-            /// <inheritdoc />
-            public override int GetHashCode()
-            {
-                unchecked
-                {
-                    return (Site == null ? 0 : Site.GetHashCode() * 397) ^ HasTitle.GetHashCode();
-                }
-            }
-
-            public static bool operator ==(WikiPageGroupKey left, WikiPageGroupKey right)
-            {
-                return left.Equals(right);
-            }
-
-            public static bool operator !=(WikiPageGroupKey left, WikiPageGroupKey right)
-            {
-                return !left.Equals(right);
-            }
+            if (page == null) throw new ArgumentNullException(nameof(page));
+            return (page.Site, page.PageStub.HasTitle);
         }
 
         /// <summary>
@@ -204,7 +163,7 @@ namespace WikiClientLibrary
         {
             if (pages == null) throw new ArgumentNullException(nameof(pages));
             // You can even fetch pages from different sites.
-            foreach (var sitePages in pages.GroupBy(p => new WikiPageGroupKey(p)))
+            foreach (var sitePages in pages.GroupBy(BuildWikiPageGroupKey))
             {
                 var site = sitePages.Key.Site;
                 var queryParams = options.EnumParameters(site.SiteInfo.Version).ToDictionary();
@@ -232,8 +191,8 @@ namespace WikiClientLibrary
                         // Process continuation caused by props (e.g. langlinks) that contain a list that is too long.
                         if (continuationStatus != CONTINUATION_DONE)
                         {
-                            var queryParams1 = new Dictionary<string, object>();
-                            var continuationParams = new Dictionary<string, object>();
+                            var queryParams1 = new Dictionary<string, object?>();
+                            var continuationParams = new Dictionary<string, object?>();
                             var jobj1 = jobj;
                             ParseContinuationParameters(jobj1, queryParams1, continuationParams);
                             while (continuationStatus != CONTINUATION_DONE)
@@ -266,6 +225,7 @@ namespace WikiClientLibrary
                             foreach (var page in partition)
                             {
                                 var title = page.Title;
+                                Debug.Assert(title != null);
                                 // Normalize the title first.
                                 if (normalized?.ContainsKey(title) ?? false)
                                     title = normalized[title];
@@ -361,7 +321,7 @@ namespace WikiClientLibrary
             if (pages == null) throw new ArgumentNullException(nameof(pages));
             List<PurgeFailureInfo> failedPages = null;
             // You can even purge pages from different sites.
-            foreach (var sitePages in pages.GroupBy(p => new WikiPageGroupKey(p)))
+            foreach (var sitePages in pages.GroupBy(BuildWikiPageGroupKey))
             {
                 var site = sitePages.Key.Site;
                 var titleLimit = site.AccountInfo.HasRight(UserRights.ApiHighLimits)
@@ -503,9 +463,12 @@ namespace WikiClientLibrary
         /// </summary>
         public static IAsyncEnumerable<string> EnumLinksAsync(WikiSite site, string titlesExpr, /* optional */ IEnumerable<int> namespaces)
         {
-            var pa = new Dictionary<string, object>
+            var pa = new Dictionary<string, object?>
             {
-                {"action", "query"}, {"prop", "links"}, {"pllimit", site.ListingPagingSize}, {"plnamespace", namespaces == null ? null : MediaWikiHelper.JoinValues(namespaces)},
+                { "action", "query" },
+                { "prop", "links" },
+                { "pllimit", site.ListingPagingSize },
+                { "plnamespace", namespaces == null ? null : MediaWikiHelper.JoinValues(namespaces) },
             };
             pa["titles"] = titlesExpr;
             var resultCounter = 0;
@@ -513,7 +476,7 @@ namespace WikiClientLibrary
                 .SelectMany(jpages =>
                 {
                     var page = jpages.Values().First();
-                    var links = (JArray)page?["links"];
+                    var links = (JArray?)page?["links"];
                     if (links != null)
                     {
                         resultCounter += links.Count;
@@ -530,9 +493,13 @@ namespace WikiClientLibrary
         public static IAsyncEnumerable<string> EnumTransclusionsAsync(WikiSite site, string titlesExpr, IEnumerable<int>? namespaces = null, IEnumerable<string>? transcludedTitlesExpr = null, int limit = -1)
         {
             // transcludedTitlesExpr should be full titles with ns prefix.
-            var pa = new Dictionary<string, object>
+            var pa = new Dictionary<string, object?>
             {
-                {"action", "query"}, {"prop", "templates"}, {"tllimit", limit > 0 ? limit : site.ListingPagingSize}, {"tlnamespace", namespaces == null ? null : MediaWikiHelper.JoinValues(namespaces)}, {"tltemplates", transcludedTitlesExpr == null ? null : MediaWikiHelper.JoinValues(transcludedTitlesExpr)}
+                { "action", "query" },
+                { "prop", "templates" },
+                { "tllimit", limit > 0 ? limit : site.ListingPagingSize },
+                { "tlnamespace", namespaces == null ? null : MediaWikiHelper.JoinValues(namespaces) },
+                { "tltemplates", transcludedTitlesExpr == null ? null : MediaWikiHelper.JoinValues(transcludedTitlesExpr) }
             };
             pa["titles"] = titlesExpr;
             var resultCounter = 0;
@@ -540,7 +507,7 @@ namespace WikiClientLibrary
                 .SelectMany(jpages =>
                 {
                     var page = jpages.Values().First();
-                    var links = (JArray)page?["templates"];
+                    var links = (JArray?)page?["templates"];
                     if (links != null)
                     {
                         resultCounter += links.Count;

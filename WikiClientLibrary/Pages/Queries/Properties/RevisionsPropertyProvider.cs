@@ -41,7 +41,7 @@ namespace WikiClientLibrary.Pages.Queries.Properties
         public IEnumerable<string> Slots { get; set; }
 
         /// <inheritdoc />
-        public override IEnumerable<KeyValuePair<string, object>> EnumParameters(MediaWikiVersion version)
+        public override IEnumerable<KeyValuePair<string, object?>> EnumParameters(MediaWikiVersion version)
         {
             var p = new OrderedKeyValuePairs<string, object>
             {
@@ -63,7 +63,7 @@ namespace WikiClientLibrary.Pages.Queries.Properties
         public override int GetMaxPaginationSize(MediaWikiVersion version, bool apiHighLimits) => base.GetMaxPaginationSize(version, apiHighLimits) / 10;
 
         /// <inheritdoc />
-        public override string PropertyName => "revisions";
+        public override string? PropertyName => "revisions";
 
         /// <inheritdoc />
         public override RevisionsPropertyGroup ParsePropertyGroup(JObject json)

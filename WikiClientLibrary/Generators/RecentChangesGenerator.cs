@@ -47,23 +47,23 @@ namespace WikiClientLibrary.Generators
         /// <summary>
         /// Only list pages in these namespaces.
         /// </summary>
-        /// <value>Selected ids of namespace, or null if all the namespaces are selected.</value>
-        public IEnumerable<int> NamespaceIds { get; set; }
+        /// <value>Selected ids of namespace, or <c>null</c> if all the namespaces are selected.</value>
+        public IEnumerable<int>? NamespaceIds { get; set; }
 
         /// <summary>
         /// Only list changes made by this user.
         /// </summary>
-        public string UserName { get; set; }
+        public string? UserName { get; set; }
 
         /// <summary>
         /// Do not list changes made by this user.
         /// </summary>
-        public string ExcludedUserName { get; set; }
+        public string? ExcludedUserName { get; set; }
 
         /// <summary>
         /// Only list changes tagged with this tag.
         /// </summary>
-        public string Tag { get; set; }
+        public string? Tag { get; set; }
 
         /// <summary>
         /// Only list certain types of changes.
@@ -115,7 +115,7 @@ namespace WikiClientLibrary.Generators
             return types[1..];
         }
 
-        private string ParseFilters()
+        private string? ParseFilters()
         {
             var types = MinorFilter.ToString("|minor", "|!minor", "")
                         + BotFilter.ToString("|bot", "|!bot", "")
@@ -125,10 +125,10 @@ namespace WikiClientLibrary.Generators
             return types.Length > 1 ? types[1..] : null;
         }
 
-        private IEnumerable<KeyValuePair<string, object>> EnumParams(bool isList)
+        private IEnumerable<KeyValuePair<string, object?>> EnumParams(bool isList)
         {
             var prefix = isList ? null : "g";
-            var dict = new Dictionary<string, object>
+            var dict = new Dictionary<string, object?>
             {
                 {prefix + "rcdir", TimeAscending ? "newer" : "older"},
                 {prefix + "rcstart", StartTime},
@@ -158,7 +158,7 @@ namespace WikiClientLibrary.Generators
         }
 
         /// <inheritdoc />
-        public override IEnumerable<KeyValuePair<string, object>> EnumGeneratorParameters()
+        public override IEnumerable<KeyValuePair<string, object?>> EnumGeneratorParameters()
         {
             return EnumParams(false);
         }
@@ -176,7 +176,7 @@ namespace WikiClientLibrary.Generators
         /// <inheritdoc />
         public override string ListName => "recentchanges";
 
-        private JsonSerializer rcitemSerializer;
+        private JsonSerializer? rcitemSerializer;
 
         /// <inheritdoc />
         protected override RecentChangeItem ItemFromJson(JToken json)

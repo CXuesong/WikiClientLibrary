@@ -9,8 +9,10 @@ using WikiClientLibrary.Infrastructures;
 namespace WikiClientLibrary.Pages.Queries.Properties
 {
     public class PagePropertiesPropertyProvider : WikiPagePropertyProvider<PagePropertiesPropertyGroup>
-    {        /// <inheritdoc />
-        public override IEnumerable<KeyValuePair<string, object>> EnumParameters(MediaWikiVersion version)
+    {
+
+        /// <inheritdoc />
+        public override IEnumerable<KeyValuePair<string, object?>> EnumParameters(MediaWikiVersion version)
         {
             return new OrderedKeyValuePairs<string, object>
             {
@@ -32,7 +34,7 @@ namespace WikiClientLibrary.Pages.Queries.Properties
         public IEnumerable<string> SelectedProperties { get; set; }
 
         /// <inheritdoc />
-        public override string PropertyName => "pageprops";
+        public override string? PropertyName => "pageprops";
     }
 
     public class PagePropertiesPropertyGroup : WikiPagePropertyGroup
@@ -57,7 +59,7 @@ namespace WikiClientLibrary.Pages.Queries.Properties
 
         private PagePropertiesPropertyGroup(JObject jPage)
         {
-            PageProperties = jPage["pageprops"]?.ToObject<PagePropertyCollection>(Utility.WikiJsonSerializer);
+            PageProperties = jPage["pageprops"]?.ToObject<PagePropertyCollection>(Utility.WikiJsonSerializer) ?? PagePropertyCollection.Empty;
         }
 
         /// <summary>
@@ -66,7 +68,7 @@ namespace WikiClientLibrary.Pages.Queries.Properties
         public PagePropertyCollection PageProperties { get; }
 
         /// <inheritdoc />
-        public override string ToString()
+        public override string? ToString()
         {
             return PageProperties.ToString();
         }

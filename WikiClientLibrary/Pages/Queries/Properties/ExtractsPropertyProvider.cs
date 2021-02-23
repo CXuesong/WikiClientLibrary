@@ -44,7 +44,7 @@ namespace WikiClientLibrary.Pages.Queries.Properties
         public bool AsPlainText { get; set; }
 
         /// <inheritdoc />
-        public override IEnumerable<KeyValuePair<string, object>> EnumParameters(MediaWikiVersion version)
+        public override IEnumerable<KeyValuePair<string, object?>> EnumParameters(MediaWikiVersion version)
         {
             var p = new OrderedKeyValuePairs<string, object>
             {
@@ -65,7 +65,7 @@ namespace WikiClientLibrary.Pages.Queries.Properties
         }
 
         /// <inheritdoc />
-        public override string PropertyName => "extracts";
+        public override string? PropertyName => "extracts";
 
         /// <inheritdoc />
         public override ExtractsPropertyGroup ParsePropertyGroup(JObject json)

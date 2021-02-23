@@ -41,7 +41,7 @@ namespace WikiClientLibrary.Pages.Queries.Properties
         public string QueryDistanceFromPage { get; set; }
 
         /// <inheritdoc />
-        public override IEnumerable<KeyValuePair<string, object>> EnumParameters(MediaWikiVersion version)
+        public override IEnumerable<KeyValuePair<string, object?>> EnumParameters(MediaWikiVersion version)
         {
             var p = new OrderedKeyValuePairs<string, object>
             {
@@ -67,7 +67,7 @@ namespace WikiClientLibrary.Pages.Queries.Properties
         }
 
         /// <inheritdoc />
-        public override string PropertyName => "coordinates";
+        public override string? PropertyName => "coordinates";
 
         /// <inheritdoc />
         public override GeoCoordinatesPropertyGroup ParsePropertyGroup(JObject json)

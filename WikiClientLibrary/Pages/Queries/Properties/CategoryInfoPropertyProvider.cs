@@ -15,9 +15,9 @@ namespace WikiClientLibrary.Pages.Queries.Properties
     {
 
         /// <inheritdoc />
-        public override IEnumerable<KeyValuePair<string, object>> EnumParameters(MediaWikiVersion version)
+        public override IEnumerable<KeyValuePair<string, object?>> EnumParameters(MediaWikiVersion version)
         {
-            return Enumerable.Empty<KeyValuePair<string, object>>();
+            return Enumerable.Empty<KeyValuePair<string, object?>>();
         }
 
         /// <inheritdoc />
@@ -27,7 +27,7 @@ namespace WikiClientLibrary.Pages.Queries.Properties
         }
 
         /// <inheritdoc />
-        public override string PropertyName => "categoryinfo";
+        public override string? PropertyName => "categoryinfo";
     }
 
     /// <summary>

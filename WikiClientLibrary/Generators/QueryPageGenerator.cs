@@ -57,7 +57,7 @@ namespace WikiClientLibrary.Generators
         /// <summary>
         /// Gets/sets the name of the special page. The name is case sensitive.
         /// </summary>
-        public string QueryPageName { get; set; }
+        public string QueryPageName { get; set; } = "";
 
         /// <inheritdoc />
         public override string ListName => "querypage";
@@ -67,7 +67,7 @@ namespace WikiClientLibrary.Generators
         {
             if (string.IsNullOrWhiteSpace(QueryPageName))
                 throw new InvalidOperationException(string.Format(Prompts.ExceptionArgumentNullOrWhitespace1, nameof(QueryPageName)));
-            return new Dictionary<string, object>
+            return new Dictionary<string, object?>
             {
                 {"qppage", QueryPageName},
                 {"qplimit", PaginationSize}

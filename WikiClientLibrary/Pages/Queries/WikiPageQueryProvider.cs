@@ -16,12 +16,11 @@ namespace WikiClientLibrary.Pages.Queries
     /// <remarks>The default implementation of this interface is <see cref="WikiPageQueryProvider"/>.</remarks>
     public interface IWikiPageQueryProvider
     {
-
         /// <summary>
         /// Enumerates the MediaWiki API request parameters for <c>action=query</c> request.
         /// </summary>
         /// <param name="version"></param>
-        IEnumerable<KeyValuePair<string, object>> EnumParameters(MediaWikiVersion version);
+        IEnumerable<KeyValuePair<string, object?>> EnumParameters(MediaWikiVersion version);
 
         /// <summary>
         /// Gets the maximum allowed count of titles in each MediaWiki API request.
@@ -53,7 +52,7 @@ namespace WikiClientLibrary.Pages.Queries
     public class WikiPageQueryProvider : IWikiPageQueryProvider
     {
 
-        private ICollection<IWikiPagePropertyProvider<IWikiPagePropertyGroup>> _Properties;
+        private ICollection<IWikiPagePropertyProvider<IWikiPagePropertyGroup>>? _Properties;
 
         /// <summary>
         /// Initializes a <see cref="WikiPageQueryProvider"/> from the given <see cref="PageQueryOptions"/> value.
@@ -103,7 +102,7 @@ namespace WikiClientLibrary.Pages.Queries
 
         /// <param name="version"></param>
         /// <inheritdoc />
-        public virtual IEnumerable<KeyValuePair<string, object>> EnumParameters(MediaWikiVersion version)
+        public virtual IEnumerable<KeyValuePair<string, object?>> EnumParameters(MediaWikiVersion version)
         {
             var propBuilder = new StringBuilder();
             var p = new OrderedKeyValuePairs<string, object>
@@ -165,7 +164,7 @@ namespace WikiClientLibrary.Pages.Queries
 
         /// <param name="version"></param>
         /// <inheritdoc />
-        public IEnumerable<KeyValuePair<string, object>> EnumParameters(MediaWikiVersion version)
+        public IEnumerable<KeyValuePair<string, object?>> EnumParameters(MediaWikiVersion version)
         {
             return underlyingProvider.EnumParameters(version);
         }

@@ -143,7 +143,7 @@ namespace WikiClientLibrary.Generators.Primitive
                 queryParams.MergeFrom(baseQueryParams);
                 queryParams.MergeFrom(continuationParams);
                 JToken jresult;
-                JToken listNode;
+                JToken? listNode;
                 try
                 {
                     jresult = await Site.InvokeMediaWikiApiAsync(new MediaWikiFormRequestMessage(queryParams), cancellationToken);

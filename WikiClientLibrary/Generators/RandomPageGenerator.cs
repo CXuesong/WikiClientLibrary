@@ -36,7 +36,7 @@ namespace WikiClientLibrary.Generators
         /// Only list pages in these namespaces.
         /// </summary>
         /// <value>Selected ids of namespace, or <c>null</c> if all the namespaces are selected.</value>
-        public IEnumerable<int> NamespaceIds { get; set; }
+        public IEnumerable<int>? NamespaceIds { get; set; }
 
         /// <summary>
         /// How to filter redirects.
@@ -49,7 +49,7 @@ namespace WikiClientLibrary.Generators
         /// <inheritdoc/>
         public override IEnumerable<KeyValuePair<string, object?>> EnumListParameters()
         {
-            var dict = new Dictionary<string, object>
+            var dict = new Dictionary<string, object?>
             {
                 {"rnnamespace", NamespaceIds == null ? null : MediaWikiHelper.JoinValues(NamespaceIds)},
                 {"rnlimit", PaginationSize},

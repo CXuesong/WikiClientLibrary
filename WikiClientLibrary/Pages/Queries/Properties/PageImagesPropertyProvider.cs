@@ -32,7 +32,7 @@ namespace WikiClientLibrary.Pages.Queries.Properties
         }
 
         /// <inheritdoc />
-        public override IEnumerable<KeyValuePair<string, object>> EnumParameters(MediaWikiVersion version)
+        public override IEnumerable<KeyValuePair<string, object?>> EnumParameters(MediaWikiVersion version)
         {
             var p = new OrderedKeyValuePairs<string, object>();
             if (QueryOriginalImage && ThumbnailSize > 0)
@@ -49,7 +49,7 @@ namespace WikiClientLibrary.Pages.Queries.Properties
         }
 
         /// <inheritdoc />
-        public override string PropertyName => "pageimages";
+        public override string? PropertyName => "pageimages";
 
         /// <inheritdoc />
         public override PageImagesPropertyGroup ParsePropertyGroup(JObject json)
@@ -91,23 +91,14 @@ namespace WikiClientLibrary.Pages.Queries.Properties
         }
 
         /// <inheritdoc />
-        public override bool Equals(object obj)
+        public override bool Equals(object? obj)
         {
-            if (ReferenceEquals(null, obj)) return false;
-            return obj is PageImageInfo && Equals((PageImageInfo)obj);
+            if (obj is null) return false;
+            return obj is PageImageInfo info && Equals(info);
         }
 
         /// <inheritdoc />
-        public override int GetHashCode()
-        {
-            unchecked
-            {
-                var hashCode = Url != null ? Url.GetHashCode() : 0;
-                hashCode = (hashCode * 397) ^ Width;
-                hashCode = (hashCode * 397) ^ Height;
-                return hashCode;
-            }
-        }
+        public override int GetHashCode() => HashCode.Combine(Url, Width, Height);
 
         public static bool operator ==(PageImageInfo left, PageImageInfo right)
         {

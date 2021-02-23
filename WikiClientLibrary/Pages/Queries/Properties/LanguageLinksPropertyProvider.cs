@@ -27,7 +27,7 @@ namespace WikiClientLibrary.Pages.Queries.Properties
         }
 
         /// <inheritdoc />
-        public override string PropertyName => "langlinks";
+        public override string? PropertyName => "langlinks";
 
         /// <summary>
         /// Specify the additional language link properties to retrieve.
@@ -45,7 +45,7 @@ namespace WikiClientLibrary.Pages.Queries.Properties
         /// </summary>
         public string LanguageName { get; set; }
 
-        public override IEnumerable<KeyValuePair<string, object>> EnumParameters(MediaWikiVersion version)
+        public override IEnumerable<KeyValuePair<string, object?>> EnumParameters(MediaWikiVersion version)
         {
             // Limit is 500 for user, and 5000 for bots. We take 300 in a batch.
             var p = new OrderedKeyValuePairs<string, object> { { "lllimit", 300 } };

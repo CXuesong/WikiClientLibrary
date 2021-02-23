@@ -14,12 +14,11 @@ namespace WikiClientLibrary.Pages.Queries.Properties
     /// <seealso cref="WikiPage.RefreshAsync(IWikiPageQueryProvider)"/>
     public interface IWikiPagePropertyProvider<out T> where T : IWikiPagePropertyGroup
     {
-
         /// <summary>
         /// Enumerates the MediaWiki API request parameters for <c>action=query</c> request.
         /// </summary>
         /// <param name="version">MediaWiki API version. Use <seealso cref="MediaWikiVersion.Zero"/> for unknown version or compatible mode.</param>
-        IEnumerable<KeyValuePair<string, object>> EnumParameters(MediaWikiVersion version);
+        IEnumerable<KeyValuePair<string, object?>> EnumParameters(MediaWikiVersion version);
 
         /// <summary>
         /// Gets the maximum allowed count of titles in each MediaWiki API request.
@@ -44,7 +43,7 @@ namespace WikiClientLibrary.Pages.Queries.Properties
         /// </summary>
         /// <value>A property name used as a part of <c>prop=</c> parameter, or <c>null</c> if this
         /// property provider does not require extra value added to <c>prop=</c> parameter.</value>
-        string PropertyName { get; }
+        string? PropertyName { get; }
 
         /// <summary>
         /// Parses the properties from the given<c>action=query</c> JSON response.
@@ -65,7 +64,7 @@ namespace WikiClientLibrary.Pages.Queries.Properties
     {
 
         /// <inheritdoc />
-        public abstract IEnumerable<KeyValuePair<string, object>> EnumParameters(MediaWikiVersion version);
+        public abstract IEnumerable<KeyValuePair<string, object?>> EnumParameters(MediaWikiVersion version);
 
         /// <inheritdoc />
         public virtual int GetMaxPaginationSize(MediaWikiVersion version, bool apiHighLimits)
@@ -77,7 +76,7 @@ namespace WikiClientLibrary.Pages.Queries.Properties
         public abstract T ParsePropertyGroup(JObject json);
 
         /// <inheritdoc />
-        public abstract string PropertyName { get; }
+        public abstract string? PropertyName { get; }
 
 
     }

@@ -31,13 +31,13 @@ namespace WikiClientLibrary.Generators
         /// <summary>
         /// List pages transcluding this title. The title does not need to exist.
         /// </summary>
-        public string TargetTitle { get; set; }
+        public string TargetTitle { get; set; } = "";
 
         /// <summary>
         /// Only list pages in these namespaces.
         /// </summary>
         /// <value>Selected ids of namespace, or <c>null</c> if all the namespaces are selected.</value>
-        public IEnumerable<int> NamespaceIds { get; set; }
+        public IEnumerable<int>? NamespaceIds { get; set; }
 
         /// <summary>
         /// How to filter redirects in the results.
@@ -50,7 +50,7 @@ namespace WikiClientLibrary.Generators
         /// <inheritdoc />
         public override IEnumerable<KeyValuePair<string, object?>> EnumListParameters()
         {
-            return new Dictionary<string, object>
+            return new Dictionary<string, object?>
             {
                 {"eititle", TargetTitle},
                 {"einamespace", NamespaceIds == null ? null : MediaWikiHelper.JoinValues(NamespaceIds)},

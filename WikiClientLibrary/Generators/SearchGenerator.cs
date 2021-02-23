@@ -46,7 +46,7 @@ namespace WikiClientLibrary.Generators
         /// <summary>
         /// Search for all page titles (or content) that have this value.
         /// </summary>
-        public string Keyword { get; set; }
+        public string Keyword { get; set; } = "";
 
         /// <summary>
         /// Only list pages in these namespaces.
@@ -78,7 +78,7 @@ namespace WikiClientLibrary.Generators
         /// <summary>
         /// Class name of search back-end to use (Default: $wgSearchType, MediaWiki 1.22+)
         /// </summary>
-        public string BackendName { get; set; }
+        public string? BackendName { get; set; }
 
         /// <inheritdoc />
         public override string ListName => "search";
@@ -86,7 +86,7 @@ namespace WikiClientLibrary.Generators
         /// <inheritdoc />
         public override IEnumerable<KeyValuePair<string, object?>> EnumListParameters()
         {
-            var dict = new Dictionary<string, object>
+            var dict = new Dictionary<string, object?>
             {
                 {"srsearch", Keyword},
                 {"srnamespace", NamespaceIds == null ? "*" : MediaWikiHelper.JoinValues(NamespaceIds)},
