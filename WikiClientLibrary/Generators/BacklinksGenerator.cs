@@ -21,7 +21,7 @@ namespace WikiClientLibrary.Generators
 
         /// <inheritdoc />
         /// <param name="targetTitle">List pages linking to this title. The title does not need to exist.</param>
-        public BacklinksGenerator(WikiSite site, string targetTitle) : base(site)
+        public BacklinksGenerator(WikiSite site, string? targetTitle) : base(site)
         {
             TargetTitle = targetTitle;
         }
@@ -29,7 +29,7 @@ namespace WikiClientLibrary.Generators
         /// <summary>
         /// List pages linking to this title. The title does not need to exist.
         /// </summary>
-        public string TargetTitle { get; set; }
+        public string? TargetTitle { get; set; }
 
         /// <summary>
         /// List pages linking to this page ID.
@@ -40,7 +40,7 @@ namespace WikiClientLibrary.Generators
         /// Only list pages in these namespaces.
         /// </summary>
         /// <value>Selected ids of namespace, or <c>null</c> if all the namespaces are selected.</value>
-        public IEnumerable<int> NamespaceIds { get; set; }
+        public IEnumerable<int>? NamespaceIds { get; set; }
 
         /// <summary>
         /// How to filter redirects in the results.
@@ -56,7 +56,7 @@ namespace WikiClientLibrary.Generators
         public override string ListName => "backlinks";
 
         /// <inheritdoc />
-        public override IEnumerable<KeyValuePair<string, object>> EnumListParameters()
+        public override IEnumerable<KeyValuePair<string, object?>> EnumListParameters()
         {
             if ((TargetTitle != null) == (TargetPageId != null))
                 throw new ArgumentException(string.Format(Prompts.ExceptionArgumentExpectEitherNull2, nameof(TargetTitle), nameof(TargetPageId)));
@@ -70,7 +70,7 @@ namespace WikiClientLibrary.Generators
                 // Continuing queries also works differently.
                 actualPaginationSize = Math.Max(1, PaginationSize / 2);
             }
-            return new Dictionary<string, object>
+            return new Dictionary<string, object?>
             {
                 {"bltitle", TargetTitle},
                 {"blpageid", TargetPageId},

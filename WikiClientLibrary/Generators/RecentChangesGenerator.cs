@@ -152,7 +152,7 @@ namespace WikiClientLibrary.Generators
         }
 
         /// <inheritdoc />
-        public override IEnumerable<KeyValuePair<string, object>> EnumListParameters()
+        public override IEnumerable<KeyValuePair<string, object?>> EnumListParameters()
         {
             return EnumParams(true);
         }

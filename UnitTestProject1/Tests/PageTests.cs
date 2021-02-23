@@ -210,7 +210,8 @@ namespace WikiClientLibrary.Tests.UnitTestProject1.Tests
             await file.RefreshAsync();
             ShallowTrace(file);
             //Assert.True(file.Exists);   //It's on Wikimedia!
-            Assert.Equal(58865, file.LastFileRevision!.Size);
+            Assert.NotNull(file.LastFileRevision);
+            Assert.Equal(58865, file.LastFileRevision.Size);
             Assert.Equal("7aa12c613c156dd125212d85a072b250625ae39f", file.LastFileRevision.Sha1.ToLowerInvariant());
             Assert.Empty(file.LastFileRevision.ExtMetadata);
         }
@@ -230,6 +231,7 @@ namespace WikiClientLibrary.Tests.UnitTestProject1.Tests
 
             Output.WriteLine("Fetched file:");
             ShallowTrace(file);
+            Assert.NotNull(file.LastFileRevision);
             Output.WriteLine("ExtMetadata:");
             ShallowTrace(file.LastFileRevision.ExtMetadata);
 

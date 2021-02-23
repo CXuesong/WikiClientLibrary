@@ -38,7 +38,7 @@ namespace WikiClientLibrary.Generators
         /// When this property is set to a non-null value,
         /// <see cref="TargetCoordinate"/> and <see cref="BoundingRectangle"/> will be ignored.
         /// </remarks>
-        public string TargetTitle { get; set; }
+        public string? TargetTitle { get; set; }
 
         /// <summary>
         /// Geographical bounding box to search in.
@@ -65,7 +65,7 @@ namespace WikiClientLibrary.Generators
         /// Only list pages in these namespaces.
         /// </summary>
         /// <value>Selected ids of namespace, or <c>null</c> to use default settings (i.e. only in main namespace).</value>
-        public IEnumerable<int> NamespaceIds { get; set; }
+        public IEnumerable<int>? NamespaceIds { get; set; }
 
         /// <summary>
         /// Gets/set a value indicating whether to include secondary coordinates in the search results.
@@ -86,9 +86,9 @@ namespace WikiClientLibrary.Generators
         }
 
         /// <inheritdoc />
-        public override IEnumerable<KeyValuePair<string, object>> EnumListParameters()
+        public override IEnumerable<KeyValuePair<string, object?>> EnumListParameters()
         {
-            var prop = new Dictionary<string, object>
+            var prop = new Dictionary<string, object?>
             {
                 {"gsradius", Radius},
                 {"gsnamespace", NamespaceIds == null ? null : MediaWikiHelper.JoinValues(NamespaceIds)},

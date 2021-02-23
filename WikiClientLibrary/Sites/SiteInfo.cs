@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Net;
 using System.Runtime.Serialization;
@@ -301,7 +302,7 @@ namespace WikiClientLibrary.Sites
         /// <summary>
         /// Namespace alias names.
         /// </summary>
-        public IList<string> Aliases { get; private set; } = (IList<string>) Array.Empty<string>();
+        public IList<string> Aliases { get; private set; } = Array.Empty<string>();
 
         // In JSON, prior to MediaWiki 1.25, the parameter name was *.
         [JsonProperty("*")]
@@ -437,7 +438,7 @@ namespace WikiClientLibrary.Sites
         /// <summary>
         /// Tries to get the namespace info with specified namespace id.
         /// </summary>
-        public bool TryGetValue(int id, out NamespaceInfo ns)
+        public bool TryGetValue(int id, [NotNullWhen(true)] out NamespaceInfo? ns)
         {
             return idNsDict.TryGetValue(id, out ns);
         }
@@ -445,17 +446,17 @@ namespace WikiClientLibrary.Sites
         /// <summary>
         /// Tries to get the namespace info with specified namespace name.
         /// </summary>
-        public bool TryGetValue(string name, out NamespaceInfo ns)
+        public bool TryGetValue(string name, [NotNullWhen(true)] out NamespaceInfo? ns)
         {
             ns = TryGetNamespace(name);
             return ns != null;
         }
 
-        private NamespaceInfo TryGetNamespace(string name)
+        private NamespaceInfo? TryGetNamespace(string name)
         {
             // Namespace name is case-insensitive.
             var nn = Utility.NormalizeTitlePart(name, true).ToLowerInvariant();
-            return nameNsDict.TryGetValue(nn, out NamespaceInfo ns) ? ns : null;
+            return nameNsDict.TryGetValue(nn, out var ns) ? ns : null;
         }
 
         public bool Contains(int index)
@@ -570,6 +571,12 @@ namespace WikiClientLibrary.Sites
     public class InterwikiEntry
     {
         private string _Prefix;
+
+#pragma warning disable CS8618 // 在退出构造函数时，不可为 null 的字段必须包含非 null 值。请考虑声明为可以为 null。
+        public InterwikiEntry()
+#pragma warning restore CS8618 // 在退出构造函数时，不可为 null 的字段必须包含非 null 值。请考虑声明为可以为 null。
+        {
+        }
 
         /// <summary>
         /// The prefix of the interwiki link;
@@ -828,98 +835,57 @@ namespace WikiClientLibrary.Sites
 
 #region ICollection
 
-        /// <summary>
-        /// 返回一个循环访问集合的枚举器。
-        /// </summary>
-        /// <returns>
-        /// 可用于循环访问集合的 <see cref="T:System.Collections.Generic.IEnumerator`1"/>。
-        /// </returns>
+        /// <inheritdoc />
         public IEnumerator<ExtensionInfo> GetEnumerator()
         {
             return extensions.GetEnumerator();
         }
 
-        /// <summary>
-        /// 返回一个循环访问集合的枚举器。
-        /// </summary>
-        /// <returns>
-        /// 可用于循环访问集合的 <see cref="T:System.Collections.IEnumerator"/> 对象。
-        /// </returns>
+        /// <inheritdoc />
         IEnumerator IEnumerable.GetEnumerator()
         {
             return GetEnumerator();
         }
 
-        /// <summary>
-        /// 将某项添加到 <see cref="T:System.Collections.Generic.ICollection`1"/> 中。
-        /// </summary>
-        /// <param name="item">要添加到 <see cref="T:System.Collections.Generic.ICollection`1"/> 的对象。</param>
-        /// <exception cref="T:System.NotSupportedException"><see cref="T:System.Collections.Generic.ICollection`1"/> 为只读。</exception>
+        /// <inheritdoc />
         void ICollection<ExtensionInfo>.Add(ExtensionInfo item)
         {
             throw new NotSupportedException();
         }
 
-        /// <summary>
-        /// 从 <see cref="T:System.Collections.Generic.ICollection`1"/> 中移除所有项。
-        /// </summary>
-        /// <exception cref="T:System.NotSupportedException"><see cref="T:System.Collections.Generic.ICollection`1"/> 为只读。</exception>
+        /// <inheritdoc />
         void ICollection<ExtensionInfo>.Clear()
         {
             throw new NotSupportedException();
         }
 
-        /// <summary>
-        /// 确定 <see cref="T:System.Collections.Generic.ICollection`1"/> 是否包含特定值。
-        /// </summary>
-        /// <returns>
-        /// 如果在 <see cref="T:System.Collections.Generic.ICollection`1"/> 中找到 <paramref name="item"/>，则为 true；否则为 false。
-        /// </returns>
-        /// <param name="item">要在 <see cref="T:System.Collections.Generic.ICollection`1"/> 中定位的对象。</param>
+        /// <inheritdoc />
         bool ICollection<ExtensionInfo>.Contains(ExtensionInfo item)
         {
             return extensions.Contains(item);
         }
 
-        /// <summary>
-        /// 从特定的 <see cref="T:System.Array"/> 索引开始，将 <see cref="T:System.Collections.Generic.ICollection`1"/> 的元素复制到一个 <see cref="T:System.Array"/> 中。
-        /// </summary>
-        /// <param name="array">作为从 <see cref="T:System.Collections.Generic.ICollection`1"/> 复制的元素的目标的一维 <see cref="T:System.Array"/>。 <see cref="T:System.Array"/> 必须具有从零开始的索引。</param><param name="arrayIndex"><paramref name="array"/> 中从零开始的索引，从此索引处开始进行复制。</param><exception cref="T:System.ArgumentNullException"><paramref name="array"/> 为 null。</exception><exception cref="T:System.ArgumentOutOfRangeException"><paramref name="arrayIndex"/> 小于 0。</exception><exception cref="T:System.ArgumentException">源 <see cref="T:System.Collections.Generic.ICollection`1"/> 中的元素数目大于从 <paramref name="arrayIndex"/> 到目标 <paramref name="array"/> 末尾之间的可用空间。</exception>
+        /// <inheritdoc />
         public void CopyTo(ExtensionInfo[] array, int arrayIndex)
         {
             extensions.CopyTo(array, arrayIndex);
         }
 
-        /// <summary>
-        /// 从 <see cref="T:System.Collections.Generic.ICollection`1"/> 中移除特定对象的第一个匹配项。
-        /// </summary>
-        /// <returns>
-        /// 如果已从 <see cref="T:System.Collections.Generic.ICollection`1"/> 中成功移除 <paramref name="item"/>，则为 true；否则为 false。 如果在原始 <see cref="T:System.Collections.Generic.ICollection`1"/> 中没有找到 <paramref name="item"/>，该方法也会返回 false。
-        /// </returns>
-        /// <param name="item">要从 <see cref="T:System.Collections.Generic.ICollection`1"/> 中移除的对象。</param><exception cref="T:System.NotSupportedException"><see cref="T:System.Collections.Generic.ICollection`1"/> 为只读。</exception>
+        /// <inheritdoc />
         bool ICollection<ExtensionInfo>.Remove(ExtensionInfo item)
         {
             throw new NotSupportedException();
         }
 
-        /// <summary>
-        /// 获取 <see cref="T:System.Collections.Generic.ICollection`1"/> 中包含的元素数。
-        /// </summary>
-        /// <returns>
-        /// <see cref="T:System.Collections.Generic.ICollection`1"/> 中包含的元素个数。
-        /// </returns>
+        /// <inheritdoc />
         public int Count => extensions.Count;
 
-        /// <summary>
-        /// 获取一个值，该值指示 <see cref="T:System.Collections.Generic.ICollection`1"/> 是否为只读。
-        /// </summary>
-        /// <returns>
-        /// 如果 <see cref="T:System.Collections.Generic.ICollection`1"/> 为只读，则为 true；否则为 false。
-        /// </returns>
+        /// <inheritdoc />
         bool ICollection<ExtensionInfo>.IsReadOnly => true;
 
 #endregion
     }
+
     [JsonObject(MemberSerialization.OptIn)]
     public class ExtensionInfo
     {

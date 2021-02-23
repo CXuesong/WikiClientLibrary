@@ -24,10 +24,10 @@ namespace WikiClientLibrary.AbuseFilters
         public override string ListName => "abusefilters";
 
         /// <inheritdoc />
-        public override IEnumerable<KeyValuePair<string, object>> EnumListParameters()
+        public override IEnumerable<KeyValuePair<string, object?>> EnumListParameters()
         {
             // TODO abfshow
-            return new Dictionary<string, object>
+            return new Dictionary<string, object?>
             {
                 {"abfprop", "id|pattern|description|actions|comments|lasteditor|lastedittime|private|status|hits"},
                 {"abflimit", PaginationSize},

@@ -37,7 +37,7 @@ namespace WikiClientLibrary
             return (JObject?)(jresult["continue"] ?? ((JProperty)jresult["query-continue"]?.First)?.Value);
         }
 
-        public static int ParseContinuationParameters(JToken jresult, IDictionary<string, object> queryParams, IDictionary<string, object>? continuationParams)
+        public static int ParseContinuationParameters(JToken jresult, IDictionary<string, object?> queryParams, IDictionary<string, object?>? continuationParams)
         {
             var continuation = FindQueryContinuationParameterRoot(jresult);
             // No more results.
@@ -71,10 +71,10 @@ namespace WikiClientLibrary
             }
         }
 
-        public static JToken FindQueryResponseItemsRoot(JToken jresult, string actionName)
+        public static JToken? FindQueryResponseItemsRoot(JToken jresult, string actionName)
         {
             // If there's no result, "query" node will not exist.
-            var queryNode = (JObject)jresult["query"];
+            var queryNode = (JObject?)jresult["query"];
             if (queryNode != null && queryNode.HasValues)
             {
                 var listNode = queryNode[actionName];

@@ -106,7 +106,7 @@ namespace WikiClientLibrary.Generators
         public string? Tag { get; set; }
 
         /// <inheritdoc />
-        public override IEnumerable<KeyValuePair<string, object>> EnumListParameters()
+        public override IEnumerable<KeyValuePair<string, object?>> EnumListParameters()
         {
             if (fullLogAction == null && LogAction != null)
             {
@@ -114,7 +114,7 @@ namespace WikiClientLibrary.Generators
                 else fullLogAction = LogAction;
             }
 
-            return new Dictionary<string, object>
+            return new Dictionary<string, object?>
             {
                 {"leprop", "user|userid|comment|parsedcomment|timestamp|title|ids|details|type|tags"},
                 {"ledir", TimeAscending ? "newer" : "older"},
@@ -178,9 +178,10 @@ namespace WikiClientLibrary.Generators
     {
 
         [JsonConstructor]
+#pragma warning disable CS8618 // 在退出构造函数时，不可为 null 的字段必须包含非 null 值。请考虑声明为可以为 null。
         private LogEventItem()
+#pragma warning restore CS8618 // 在退出构造函数时，不可为 null 的字段必须包含非 null 值。请考虑声明为可以为 null。
         {
-
         }
 
         internal static LogEventItem FromRecentChangeItem(RecentChangeItem rc)
@@ -192,7 +193,7 @@ namespace WikiClientLibrary.Generators
                 Action = rc.LogAction,
                 Params = rc.LogParams,
                 TimeStamp = rc.TimeStamp,
-                LogId = (int)rc.LogId,
+                LogId = (int)rc.LogId!,
                 UserId = rc.UserId,
                 UserName = rc.UserName,
                 Comment = rc.Comment,
@@ -337,7 +338,7 @@ namespace WikiClientLibrary.Generators
         /// <summary>
         /// (<see cref="LogActions.Move"/>) Full title of the move target.
         /// </summary>
-        public string TargetTitle => GetStringValue("target_title");
+        public string? TargetTitle => GetStringValue("target_title");
 
         /// <summary>
         /// (<see cref="LogActions.Move"/>) Whether to suppress the creation of redirect when moving the page.

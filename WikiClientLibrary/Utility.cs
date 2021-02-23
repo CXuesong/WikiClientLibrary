@@ -68,11 +68,11 @@ namespace WikiClientLibrary
         /// of strings, the values will be returned with no further processing.
         /// </para>
         /// </remarks>
-        public static IEnumerable<KeyValuePair<string, string>> ToWikiStringValuePairs(object values)
+        public static IEnumerable<KeyValuePair<string, string?>> ToWikiStringValuePairs(object values)
         {
-            if (values is IEnumerable<KeyValuePair<string, string>> pc) return pc;
+            if (values is IEnumerable<KeyValuePair<string, string?>> pc) return pc;
             return MediaWikiHelper.EnumValues(values)
-                .Select(p => new KeyValuePair<string, string>(p.Key, ToWikiQueryValue(p.Value)));
+                .Select(p => new KeyValuePair<string, string?>(p.Key, ToWikiQueryValue(p.Value)));
         }
 
         public static void MergeFrom<TKey, TValue>(this IDictionary<TKey, TValue> dict, IEnumerable<KeyValuePair<TKey, TValue>> items)
@@ -262,6 +262,7 @@ namespace WikiClientLibrary
         }
 
         public static Dictionary<TKey, TValue> ToDictionary<TKey, TValue>(this IEnumerable<KeyValuePair<TKey, TValue>> source)
+            where TKey : notnull
         {
             return source.ToDictionary(p => p.Key, p => p.Value);
         }

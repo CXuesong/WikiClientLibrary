@@ -48,7 +48,7 @@ namespace WikiClientLibrary.Generators
         public override string ListName => "embeddedin";
 
         /// <inheritdoc />
-        public override IEnumerable<KeyValuePair<string, object>> EnumListParameters()
+        public override IEnumerable<KeyValuePair<string, object?>> EnumListParameters()
         {
             return new Dictionary<string, object>
             {

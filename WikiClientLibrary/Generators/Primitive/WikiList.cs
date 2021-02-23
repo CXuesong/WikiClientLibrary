@@ -52,7 +52,7 @@ namespace WikiClientLibrary.Generators.Primitive
         /// <summary>
         /// Gets/sets the compatibility options used with this list.
         /// </summary>
-        public WikiListCompatibilityOptions CompatibilityOptions { get; set; }
+        public WikiListCompatibilityOptions? CompatibilityOptions { get; set; }
 
         /// <summary>Gets the MediaWiki site this instance applies to.</summary>
         public WikiSite Site { get; }
@@ -91,7 +91,7 @@ namespace WikiClientLibrary.Generators.Primitive
         /// When overridden, fills generator parameters for <c>action=query&amp;list={ListName}</c> request.
         /// </summary>
         /// <returns>A sequence of fields, which will override the basic query parameters.</returns>
-        public abstract IEnumerable<KeyValuePair<string, object>> EnumListParameters();
+        public abstract IEnumerable<KeyValuePair<string, object?>> EnumListParameters();
 
         /// <summary>
         /// Parses an item contained in the <c>action=query&amp;list=</c> JSON response.
@@ -129,14 +129,14 @@ namespace WikiClientLibrary.Generators.Primitive
         /// </exception>
         public async IAsyncEnumerable<T> EnumItemsAsync([EnumeratorCancellation] CancellationToken cancellationToken = default)
         {
-            var baseQueryParams = new Dictionary<string, object> { { "action", "query" }, { "maxlag", 5 }, { "list", ListName }, };
+            var baseQueryParams = new Dictionary<string, object?> { { "action", "query" }, { "maxlag", 5 }, { "list", ListName }, };
             foreach (var p in EnumListParameters())
                 baseQueryParams.Add(p.Key, p.Value);
             cancellationToken.ThrowIfCancellationRequested();
-            var continuationParams = new Dictionary<string, object>();
+            var continuationParams = new Dictionary<string, object?>();
             using var scope = Site.BeginActionScope(this);
             // query parameters for this batch. The content/ref will be modified below.
-            var queryParams = new Dictionary<string, object>();
+            var queryParams = new Dictionary<string, object?>();
             while (true)
             {
                 queryParams.Clear();

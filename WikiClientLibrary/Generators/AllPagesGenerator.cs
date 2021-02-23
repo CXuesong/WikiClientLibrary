@@ -72,9 +72,9 @@ namespace WikiClientLibrary.Generators
         public override string ListName => "allpages";
 
         /// <inheritdoc/>
-        public override IEnumerable<KeyValuePair<string, object>> EnumListParameters()
+        public override IEnumerable<KeyValuePair<string, object?>> EnumListParameters()
         {
-            return new Dictionary<string, object>
+            return new Dictionary<string, object?>
             {
                 {"apfrom", StartTitle},
                 {"apto", EndTitle},

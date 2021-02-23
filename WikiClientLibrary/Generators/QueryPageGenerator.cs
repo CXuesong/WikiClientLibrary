@@ -63,7 +63,7 @@ namespace WikiClientLibrary.Generators
         public override string ListName => "querypage";
 
         /// <inheritdoc/>
-        public override IEnumerable<KeyValuePair<string, object>> EnumListParameters()
+        public override IEnumerable<KeyValuePair<string, object?>> EnumListParameters()
         {
             if (string.IsNullOrWhiteSpace(QueryPageName))
                 throw new InvalidOperationException(string.Format(Prompts.ExceptionArgumentNullOrWhitespace1, nameof(QueryPageName)));

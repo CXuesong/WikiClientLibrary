@@ -84,7 +84,7 @@ namespace WikiClientLibrary.Generators
         public override string ListName => "search";
 
         /// <inheritdoc />
-        public override IEnumerable<KeyValuePair<string, object>> EnumListParameters()
+        public override IEnumerable<KeyValuePair<string, object?>> EnumListParameters()
         {
             var dict = new Dictionary<string, object>
             {

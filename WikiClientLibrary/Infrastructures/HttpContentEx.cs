@@ -22,13 +22,13 @@ namespace WikiClientLibrary.Infrastructures
         // as defined in HttpRuleParser.DefaultHttpEncoding
         public static readonly Encoding DefaultHttpEncoding = Encoding.GetEncoding("iso-8859-1");
 
-        public FormLongUrlEncodedContent(IEnumerable<KeyValuePair<string, string>> nameValueCollection)
+        public FormLongUrlEncodedContent(IEnumerable<KeyValuePair<string, string?>> nameValueCollection)
             : base(GetContentByteArray(nameValueCollection))
         {
             Headers.ContentType = new MediaTypeHeaderValue("application/x-www-form-urlencoded");
         }
 
-        private static byte[] GetContentByteArray(IEnumerable<KeyValuePair<string, string>> pairs)
+        private static byte[] GetContentByteArray(IEnumerable<KeyValuePair<string, string?>> pairs)
         {
             if (pairs == null)
                 throw new ArgumentNullException(nameof(pairs));
@@ -46,7 +46,7 @@ namespace WikiClientLibrary.Infrastructures
             return DefaultHttpEncoding.GetBytes(sb.ToString());
         }
 
-        private static void Encode(StringBuilder sb, string data)
+        private static void Encode(StringBuilder sb, string? data)
         {
             const int partitionSize = c_MaxUriBufferSize - 10;
             if (string.IsNullOrEmpty(data)) return;

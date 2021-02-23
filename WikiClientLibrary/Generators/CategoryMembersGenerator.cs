@@ -36,6 +36,7 @@ namespace WikiClientLibrary.Generators
         public CategoryMembersGenerator(WikiPage category) : base(category.Site)
         {
             if (category == null) throw new ArgumentNullException(nameof(category));
+            if (category.Title == null) throw new InvalidOperationException("Specified category does not have title available.");
             CategoryTitle = category.Title;
         }
 
@@ -43,13 +44,13 @@ namespace WikiClientLibrary.Generators
         /// The category to enumerate (required unless cmpageid is used).
         /// Must include "Category:" prefix. Cannot be used together with cmpageid.
         /// </summary>
-        public string CategoryTitle { get; set; }
+        public string CategoryTitle { get; set; } = "";
 
         /// <summary>
         /// Only list pages in these namespaces.
         /// </summary>
         /// <value>Selected ids of namespace, or null if all the namespaces are selected.</value>
-        public IEnumerable<int> NamespaceIds { get; set; }
+        public IEnumerable<int>? NamespaceIds { get; set; }
 
         /// <summary>
         /// Type of category members to include. Ignored when cmsort=timestamp is set.
@@ -71,11 +72,11 @@ namespace WikiClientLibrary.Generators
         public override string ListName => "categorymembers";
 
         /// <inheritdoc/>
-        public override IEnumerable<KeyValuePair<string, object>> EnumListParameters()
+        public override IEnumerable<KeyValuePair<string, object?>> EnumListParameters()
         {
             if (string.IsNullOrEmpty(CategoryTitle))
                 throw new InvalidOperationException(string.Format(Prompts.ExceptionArgumentIsEmpty1, nameof(CategoryTitle)));
-            return new Dictionary<string, object>
+            return new Dictionary<string, object?>
             {
                 {"cmtitle", CategoryTitle},
                 {"cmlimit", PaginationSize},
