@@ -88,19 +88,19 @@ namespace WikiClientLibrary.Infrastructures
         /// where <c>TKey</c> should be <see cref="string"/>, while <c>TValue</c> can either be <see cref="string"/> or <see cref="object"/>.
         /// Or an anonymous object, in which case, its properties and values are enumerated.</param>
         /// <returns>A sequence containing the enumerated key-value pairs.</returns>
-        public static IEnumerable<KeyValuePair<string, object>> EnumValues(object dict)
+        public static IEnumerable<KeyValuePair<string, object?>> EnumValues(object dict)
         {
             if (dict == null) throw new ArgumentNullException(nameof(dict));
-            if (dict is IEnumerable<KeyValuePair<string, object>> objEnu)
+            if (dict is IEnumerable<KeyValuePair<string, object?>> objEnu)
                 return objEnu;
-            if (dict is IEnumerable<KeyValuePair<string, string>> stringEnu)
-                return stringEnu.Select(p => new KeyValuePair<string, object>(p.Key, p.Value));
+            if (dict is IEnumerable<KeyValuePair<string, string?>> stringEnu)
+                return stringEnu.Select(p => new KeyValuePair<string, object?>(p.Key, p.Value));
             if (dict is IDictionary idict0)
             {
-                static IEnumerable<KeyValuePair<string, object>> Enumerator(IDictionary idict)
+                static IEnumerable<KeyValuePair<string, object?>> Enumerator(IDictionary idict)
                 {
                     var de = idict.GetEnumerator();
-                    while (de.MoveNext()) yield return new KeyValuePair<string, object>((string)de.Key, de.Value);
+                    while (de.MoveNext()) yield return new KeyValuePair<string, object?>((string)de.Key, de.Value);
                 }
 
                 return Enumerator(idict0);
@@ -112,7 +112,7 @@ namespace WikiClientLibrary.Infrastructures
                 "We only want to marshal anonymous types. Did you accidentally pass in a wrong object?");
             return from p in dict.GetType().GetProperties()
                    let value = p.GetValue(dict)
-                   select new KeyValuePair<string, object>(p.Name, value);
+                   select new KeyValuePair<string, object?>(p.Name, value);
         }
 
         internal const string ExceptionTroubleshootingHelpLink = "https://github.com/CXuesong/WikiClientLibrary/wiki/Troubleshooting";

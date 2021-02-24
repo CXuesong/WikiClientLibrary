@@ -46,7 +46,7 @@ namespace WikiClientLibrary
     /// </remarks>
     /// <seealso cref="MediaWikiDevChannel"/>
     /// <seealso cref="SiteInfo.Version"/>
-    public struct MediaWikiVersion : IEquatable<MediaWikiVersion>, IComparable<MediaWikiVersion>, IComparable
+    public readonly struct MediaWikiVersion : IEquatable<MediaWikiVersion>, IComparable<MediaWikiVersion>, IComparable
     {
 
         private static readonly char[] dashCharArray = { '-' };
@@ -339,10 +339,7 @@ namespace WikiClientLibrary
         public int DevVersion => fullDevVersion & 0x0FFF;
 
         /// <inheritdoc />
-        public override int GetHashCode()
-        {
-            return unchecked(_Major * 113 + _Minor * 57 + _Revision * 23 + fullDevVersion);
-        }
+        public override int GetHashCode() => HashCode.Combine(_Major, _Minor, _Revision, fullDevVersion);
 
         /// <inheritdoc />
         public int CompareTo(MediaWikiVersion other)
@@ -412,7 +409,7 @@ namespace WikiClientLibrary
         }
 
         /// <inheritdoc />
-        public override bool Equals(object obj)
+        public override bool Equals(object? obj)
         {
             return obj is MediaWikiVersion other && Equals(other);
         }
@@ -428,9 +425,9 @@ namespace WikiClientLibrary
         }
 
         /// <inheritdoc />
-        public int CompareTo(object obj)
+        public int CompareTo(object? obj)
         {
-            if (ReferenceEquals(null, obj)) return 1;
+            if (obj is null) return 1;
             return obj is MediaWikiVersion other ? CompareTo(other) : throw new ArgumentException($"Object must be of type {nameof(MediaWikiVersion)}");
         }
 

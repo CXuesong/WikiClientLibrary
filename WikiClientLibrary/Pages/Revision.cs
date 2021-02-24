@@ -23,6 +23,12 @@ namespace WikiClientLibrary.Pages
     public class Revision
     {
 
+#pragma warning disable CS8618 // 在退出构造函数时，不可为 null 的字段必须包含非 null 值。请考虑声明为可以为 null。
+        public Revision()
+#pragma warning restore CS8618 // 在退出构造函数时，不可为 null 的字段必须包含非 null 值。请考虑声明为可以为 null。
+        {
+        }
+
         /// <summary>
         /// Fetch a revision by revid. This overload will also fetch the content of revision.
         /// </summary>
@@ -35,29 +41,29 @@ namespace WikiClientLibrary.Pages
         /// <exception cref="ArgumentException"><paramref name="revisionId"/> is not an existing revision id.</exception>
         public static ValueTask<Revision> FetchRevisionAsync(WikiSite site, int revisionId)
         {
-            return FetchRevisionsAsync(site, new[] { revisionId }, PageQueryOptions.FetchContent).FirstAsync();
+            return FetchRevisionsAsync(site, new[] { revisionId }, PageQueryOptions.FetchContent).FirstAsync()!;
         }
 
         /// <inheritdoc cref="FetchRevisionsAsync(WikiSite,IEnumerable{int},IWikiPageQueryProvider,CancellationToken)"/>
-        public static IAsyncEnumerable<Revision> FetchRevisionsAsync(WikiSite site, params int[] revisionIds)
+        public static IAsyncEnumerable<Revision?> FetchRevisionsAsync(WikiSite site, params int[] revisionIds)
         {
             return FetchRevisionsAsync(site, revisionIds, PageQueryOptions.FetchContent, CancellationToken.None);
         }
 
         /// <inheritdoc cref="FetchRevisionsAsync(WikiSite,IEnumerable{int},IWikiPageQueryProvider,CancellationToken)"/>
-        public static IAsyncEnumerable<Revision> FetchRevisionsAsync(WikiSite site, IEnumerable<int> revisionIds)
+        public static IAsyncEnumerable<Revision?> FetchRevisionsAsync(WikiSite site, IEnumerable<int> revisionIds)
         {
             return FetchRevisionsAsync(site, revisionIds, PageQueryOptions.FetchContent, CancellationToken.None);
         }
 
         /// <inheritdoc cref="FetchRevisionsAsync(WikiSite,IEnumerable{int},IWikiPageQueryProvider,CancellationToken)"/>
-        public static IAsyncEnumerable<Revision> FetchRevisionsAsync(WikiSite site, IEnumerable<int> revisionIds, PageQueryOptions options)
+        public static IAsyncEnumerable<Revision?> FetchRevisionsAsync(WikiSite site, IEnumerable<int> revisionIds, PageQueryOptions options)
         {
             return FetchRevisionsAsync(site, revisionIds, options, CancellationToken.None);
         }
 
         /// <inheritdoc cref="FetchRevisionsAsync(WikiSite,IEnumerable{int},IWikiPageQueryProvider,CancellationToken)"/>
-        public static IAsyncEnumerable<Revision> FetchRevisionsAsync(WikiSite site, IEnumerable<int> revisionIds, PageQueryOptions options, CancellationToken cancellationToken)
+        public static IAsyncEnumerable<Revision?> FetchRevisionsAsync(WikiSite site, IEnumerable<int> revisionIds, PageQueryOptions options, CancellationToken cancellationToken)
         {
             return FetchRevisionsAsync(site, revisionIds, MediaWikiHelper.QueryProviderFromOptions(options), cancellationToken);
         }
@@ -80,7 +86,7 @@ namespace WikiClientLibrary.Pages
         /// <para>If there's invalid revision id in <paramref name="revisionIds"/>, an <see cref="ArgumentException"/>
         /// will be thrown while enumerating.</para>
         /// </remarks>
-        public static IAsyncEnumerable<Revision> FetchRevisionsAsync(WikiSite site, IEnumerable<int> revisionIds, IWikiPageQueryProvider options, CancellationToken cancellationToken)
+        public static IAsyncEnumerable<Revision?> FetchRevisionsAsync(WikiSite site, IEnumerable<int> revisionIds, IWikiPageQueryProvider options, CancellationToken cancellationToken)
         {
             if (site == null) throw new ArgumentNullException(nameof(site));
             if (revisionIds == null) throw new ArgumentNullException(nameof(revisionIds));
@@ -184,13 +190,13 @@ namespace WikiClientLibrary.Pages
         /// <remarks>See https://www.mediawiki.org/wiki/Help:RevisionDelete .</remarks>
         public RevisionHiddenFields HiddenFields { get; private set; }
 
-#pragma warning disable IDE0044 // Add readonly modifier
+#pragma warning disable IDE0044, CS0649 // Add readonly modifier
         [JsonProperty] private bool Minor;
         [JsonProperty] private bool Bot;
         [JsonProperty] private bool New;
         [JsonProperty] private bool Anon;
         [JsonProperty] private bool UserHidden;
-#pragma warning restore IDE0044 // Add readonly modifier
+#pragma warning restore IDE0044, CS0649 // Add readonly modifier
 
         [OnDeserialized]
         private void OnDeserialized(StreamingContext context)
@@ -234,6 +240,12 @@ namespace WikiClientLibrary.Pages
     [JsonObject(MemberSerialization.OptIn)]
     public class RevisionSlot
     {
+
+#pragma warning disable CS8618 // 在退出构造函数时，不可为 null 的字段必须包含非 null 值。请考虑声明为可以为 null。
+        public RevisionSlot()
+#pragma warning restore CS8618 // 在退出构造函数时，不可为 null 的字段必须包含非 null 值。请考虑声明为可以为 null。
+        {
+        }
 
         /// <summary>
         /// Revision slot name for main revisions.

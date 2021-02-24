@@ -66,7 +66,7 @@ namespace WikiClientLibrary
         /// Gets/set the globe identifier of the coordinate.
         /// </summary>
         /// <seealso cref="Earth"/>
-        public string Globe { get; set; }
+        public string? Globe { get; set; }
 
         /// <summary>
         /// Gets a value that indicates if all the members in the structure have their uninitialized values.
@@ -139,24 +139,14 @@ namespace WikiClientLibrary
         }
 
         /// <inheritdoc />
-        public override bool Equals(object obj)
+        public override bool Equals(object? obj)
         {
-            if (ReferenceEquals(null, obj)) return false;
+            if (obj is null) return false;
             return obj is GeoCoordinate coordinate && Equals(coordinate);
         }
 
         /// <inheritdoc />
-        public override int GetHashCode()
-        {
-            unchecked
-            {
-                var hashCode = Longitude.GetHashCode();
-                hashCode = (hashCode * 397) ^ Latitude.GetHashCode();
-                hashCode = (hashCode * 397) ^ Dimension.GetHashCode();
-                hashCode = (hashCode * 397) ^ (Globe != null ? Globe.GetHashCode() : 0);
-                return hashCode;
-            }
-        }
+        public override int GetHashCode() => HashCode.Combine(Longitude, Latitude, Dimension, Globe);
 
         public static bool operator ==(GeoCoordinate left, GeoCoordinate right)
         {

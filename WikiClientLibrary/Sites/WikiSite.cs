@@ -75,7 +75,7 @@ namespace WikiClientLibrary.Sites
         /// <exception cref="ArgumentNullException"><paramref name="client"/> or <paramref name="urlExpression"/> is <c>null</c>.</exception>
         /// <exception cref="TimeoutException">A time-out has been reached during test requests.</exception>
         /// <returns>The URL of Api Endpoint. OR <c>null</c> if such search has failed.</returns>
-        public static Task<string> SearchApiEndpointAsync(WikiClient client, string urlExpression)
+        public static Task<string?> SearchApiEndpointAsync(WikiClient client, string urlExpression)
         {
             return MediaWikiUtility.SearchApiEndpointAsync(client, urlExpression);
         }
@@ -369,10 +369,9 @@ namespace WikiClientLibrary.Sites
                 var newFields = new List<KeyValuePair<string, object>>(form.Fields.Count + 3) { new KeyValuePair<string, object>("format", "json") };
                 foreach (var tokenField in form.Fields)
                 {
-                    var value = tokenField.Value;
-                    if (value is WikiSiteToken)
-                        value = await tokensManager.GetTokenAsync(
-                            ((WikiSiteToken)tokenField.Value).Type, false, cancellationToken);
+                    object? value = tokenField.Value;
+                    if (value is WikiSiteToken token)
+                        value = await tokensManager.GetTokenAsync(token.Type, false, cancellationToken);
                     newFields.Add(new KeyValuePair<string, object>(tokenField.Key, value));
                 }
                 // Apply account assertions

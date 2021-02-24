@@ -8,10 +8,17 @@ namespace WikiClientLibrary.Sites
     /// <summary>
     /// Provides read-only access to the current logged-in information.
     /// </summary>
-    /// <remarks>See https://www.mediawiki.org/wiki/API:Userinfo .</remarks>
+    /// <remarks>See <a href="https://www.mediawiki.org/wiki/API:Userinfo">mw:API:UserInfo</a>.</remarks>
     [JsonObject(MemberSerialization.OptIn)]
     public class AccountInfo
     {
+
+#pragma warning disable CS8618 // 在退出构造函数时，不可为 null 的字段必须包含非 null 值。请考虑声明为可以为 null。
+        internal AccountInfo()
+#pragma warning restore CS8618 // 在退出构造函数时，不可为 null 的字段必须包含非 null 值。请考虑声明为可以为 null。
+        {
+        }
+
         [JsonProperty]
         public int Id { get; private set; }
 
@@ -127,10 +134,6 @@ namespace WikiClientLibrary.Sites
             return Name;
         }
 
-        internal AccountInfo()
-        {
-            
-        }
     }
 
     /// <summary>

@@ -29,7 +29,7 @@ namespace WikiClientLibrary
         }
 
         // See Site.SearchApiEndpointAsync .
-        public static async Task<string> SearchApiEndpointAsync(WikiClient client, string urlExpression)
+        public static async Task<string?> SearchApiEndpointAsync(WikiClient client, string urlExpression)
         {
             if (client == null) throw new ArgumentNullException(nameof(client));
             if (urlExpression == null) throw new ArgumentNullException(nameof(urlExpression));
@@ -42,12 +42,12 @@ namespace WikiClientLibrary
                 var current = await TestApiEndpointAsync(client, urlExpression);
                 if (current != null) return current;
                 // Try to infer from the page content.
-                var result = await DownloadStringAsync(client, urlExpression, true);
-                if (result != null)
+                var (url, content) = await DownloadStringAsync(client, urlExpression, true);
+                if (url != null && !string.IsNullOrEmpty(content))
                 {
-                    current = result.Item1;
+                    current = url;
                     // <link rel="EditURI" type="application/rsd+xml" href="http://..../api.php?action=rsd"/>
-                    var match = Regex.Match(result.Item2, @"(?<=href\s*=\s*[""']?)[^\?""']+(?=\?action=rsd)");
+                    var match = Regex.Match(content, @"(?<=href\s*=\s*[""']?)[^\?""']+(?=\?action=rsd)");
                     if (match.Success)
                     {
                         var v = NavigateTo(current, match.Value);
@@ -59,9 +59,7 @@ namespace WikiClientLibrary
             }
         }
 
-        // Tuple<final URL, downloaded string>
-        private static async Task<Tuple<string, string>> DownloadStringAsync(WikiClient client, string url,
-            bool accept400)
+        private static async Task<(string? FinalUrl, string? Content)> DownloadStringAsync(WikiClient client, string url, bool accept400)
         {
             const int timeout = 10000;
             HttpResponseMessage resp;
@@ -82,21 +80,21 @@ namespace WikiClientLibrary
                     throw new TimeoutException();
                 }
             }
-            var status = (int) resp.StatusCode;
-            if (status == 200 || (accept400 && status >= 400 && status < 500) )
+            var status = (int)resp.StatusCode;
+            if (status == 200 || (accept400 && status >= 400 && status < 500))
             {
                 var fianlUrl = resp.RequestMessage.RequestUri.ToString();
                 var content = await resp.Content.ReadAsStringAsync();
-                return Tuple.Create(fianlUrl, content);
+                return (fianlUrl, content);
             }
-            return null;
+            return (null, null);
         }
 
         /// <summary>
         /// Tests whether the specific URL is a valid MediaWiki API endpoint, and
         /// returns the final URL, if redirected.
         /// </summary>
-        private static async Task<string> TestApiEndpointAsync(WikiClient client, string url)
+        private static async Task<string?> TestApiEndpointAsync(WikiClient client, string url)
         {
             // Append default protocol.
             if (!ProtocolMatcher.IsMatch(url))
@@ -107,14 +105,12 @@ namespace WikiClientLibrary
             try
             {
                 client.Logger.LogDebug("Test MediaWiki API endpoint: {Url}.", url);
-                var result = await DownloadStringAsync(client, url + "?action=query&format=json", false);
-                if (result == null) return null;
-                var content = result.Item2;
+                var (finalUrl, content) = await DownloadStringAsync(client, url + "?action=query&format=json", false);
+                if (finalUrl == null) return null;
                 // Ref: {"batchcomplete":""}
-                if (content.Length < 2) return null;
+                if (string.IsNullOrEmpty(content) || content.Length < 2) return null;
                 if (content[0] != '{' && content[0] != '[') return null;
                 JToken.Parse(content);
-                var finalUrl = result.Item1;
                 // Remove query string in the result
                 var querySplitter = finalUrl.IndexOf('?');
                 if (querySplitter > 0) finalUrl = finalUrl.Substring(0, querySplitter);

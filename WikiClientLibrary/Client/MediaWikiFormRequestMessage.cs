@@ -64,8 +64,8 @@ namespace WikiClientLibrary.Client
     public class MediaWikiFormRequestMessage : WikiRequestMessage
     {
 
-        private readonly IList<KeyValuePair<string, object>> fields;
-        private IList<KeyValuePair<string, object>>? readonlyFields;
+        private readonly IList<KeyValuePair<string, object?>> fields;
+        private IList<KeyValuePair<string, object?>>? readonlyFields;
         // Memorizes the stream position upon first request.
         private IDictionary<Stream, long>? streamPositions;
 
@@ -94,7 +94,7 @@ namespace WikiClientLibrary.Client
         public MediaWikiFormRequestMessage(string? id, object fieldCollection, bool forceMultipartFormData) : base(id)
         {
             if (fieldCollection == null) throw new ArgumentNullException(nameof(fieldCollection));
-            fields = new List<KeyValuePair<string, object>>(MediaWikiHelper.EnumValues(fieldCollection));
+            fields = new List<KeyValuePair<string, object?>>(MediaWikiHelper.EnumValues(fieldCollection));
             AsMultipartFormData = forceMultipartFormData || fields.Any(p => p.Value is Stream);
         }
 
@@ -106,14 +106,14 @@ namespace WikiClientLibrary.Client
         /// <summary>
         /// Gets a read-only list of all the fields in the form.
         /// </summary>
-        public IList<KeyValuePair<string, object>> Fields
+        public IList<KeyValuePair<string, object?>> Fields
         {
             get
             {
                 if (readonlyFields != null) return readonlyFields;
-                var local = new ReadOnlyCollection<KeyValuePair<string, object>>(fields);
+                var local = new ReadOnlyCollection<KeyValuePair<string, object?>>(fields);
                 Volatile.Write(ref readonlyFields, local);
-                return readonlyFields;
+                return local;
             }
         }
 

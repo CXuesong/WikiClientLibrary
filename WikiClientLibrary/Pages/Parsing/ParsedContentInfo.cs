@@ -323,7 +323,7 @@ namespace WikiClientLibrary.Pages.Parsing
             Value = Limit = null;
             if (_Content != null)
             {
-                if (_Content.TryGetValue("0", out JToken jt))
+                if (_Content.TryGetValue("0", out var jt))
                     Value = TryParseAsDouble(jt);
                 if (_Content.TryGetValue("1", out jt))
                     Limit = TryParseAsDouble(jt);
