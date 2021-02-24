@@ -203,9 +203,6 @@ namespace WikiClientLibrary.Pages
         /// </remarks>
         public string? Title => PageStub.HasTitle ? PageStub.Title : null;
 
-        internal string GetTitleRequired()
-            => Title ?? throw new InvalidOperationException("Specified WikiPage does not have title information.");
-
         /// <summary>
         /// Gets / Sets the content of the page.
         /// </summary>
@@ -673,9 +670,19 @@ namespace WikiClientLibrary.Pages
         #endregion
 
         /// <summary>
-        /// Gets a initialized <see cref="WikiPageStub"/> from the current instance.
+        /// Gets an initialized <see cref="WikiPageStub"/> from the current instance.
         /// </summary>
         public WikiPageStub PageStub { get; private set; }
+
+        /// <summary>
+        /// Implicitly converts the WikiPage instance into PageStub.
+        /// </summary>
+        /// <param name="page">source WikiPage; can be <c>null</c>.</param>
+        public static implicit operator WikiPageStub(WikiPage? page)
+        {
+            if (page == null) return WikiPageStub.Empty;
+            return page.PageStub;
+        }
 
         /// <inheritdoc/>
         public override string ToString()

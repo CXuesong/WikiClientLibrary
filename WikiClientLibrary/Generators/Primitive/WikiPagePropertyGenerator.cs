@@ -40,6 +40,11 @@ namespace WikiClientLibrary.Generators.Primitive
         {
         }
 
+        /// <inheritdoc/>
+        protected WikiPagePropertyGenerator(WikiSite site, WikiPageStub pageStub) : base(site, pageStub)
+        {
+        }
+
         public virtual string GeneratorName => PropertyName;
 
         /// <summary>
@@ -107,6 +112,11 @@ namespace WikiClientLibrary.Generators.Primitive
     {
         /// <inheritdoc />
         protected WikiPagePropertyGenerator(WikiSite site) : base(site)
+        {
+        }
+
+        /// <inheritdoc/>
+        protected WikiPagePropertyGenerator(WikiSite site, WikiPageStub pageStub) : base(site, pageStub)
         {
         }
 

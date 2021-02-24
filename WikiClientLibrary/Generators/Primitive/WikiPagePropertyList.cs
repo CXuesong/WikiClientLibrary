@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading;
 using Newtonsoft.Json.Linq;
 using WikiClientLibrary.Infrastructures.Logging;
+using WikiClientLibrary.Pages;
 using WikiClientLibrary.Sites;
 
 namespace WikiClientLibrary.Generators.Primitive
@@ -28,6 +29,22 @@ namespace WikiClientLibrary.Generators.Primitive
         protected WikiPagePropertyList(WikiSite site)
         {
             Site = site ?? throw new ArgumentNullException(nameof(site));
+        }
+
+        /// <param name="site">The MediaWiki site this instance applies to.</param>
+        /// <param name="pageStub">
+        /// The page from which to retrieve the property.
+        /// <see cref="PageTitle"/> will be assigned as <see cref="WikiPageStub.Title"/> if title information is available;
+        /// otherwise <see cref="PageId"/> will be assigned as <see cref="WikiPageStub.Id"/> if id information is available;
+        /// if <see cref="WikiPageStub.Empty"/> is specified, it will be ignored.
+        /// </param>
+        protected WikiPagePropertyList(WikiSite site, WikiPageStub pageStub)
+        {
+            Site = site ?? throw new ArgumentNullException(nameof(site));
+            if (pageStub.HasTitle)
+                PageTitle = pageStub.Title;
+            else if (pageStub.HasId)
+                PageId = pageStub.Id;
         }
 
         /// <summary>Gets the MediaWiki site this instance applies to.</summary>

@@ -22,10 +22,8 @@ namespace WikiClientLibrary.Generators
         }
 
         /// <inheritdoc />
-        /// <param name="pageTitle">The page title from which to enumerate links.</param>
-        public LinksGenerator(WikiSite site, string pageTitle) : base(site)
+        public LinksGenerator(WikiSite site, WikiPageStub pageStub) : base(site, pageStub)
         {
-            PageTitle = pageTitle;
         }
 
         /// <summary>

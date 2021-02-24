@@ -4,6 +4,7 @@ using System.Text;
 using Newtonsoft.Json.Linq;
 using WikiClientLibrary.Generators.Primitive;
 using WikiClientLibrary.Infrastructures;
+using WikiClientLibrary.Pages;
 using WikiClientLibrary.Pages.Queries.Properties;
 using WikiClientLibrary.Sites;
 
@@ -21,10 +22,8 @@ namespace WikiClientLibrary.Generators
         }
 
         /// <inheritdoc />
-        /// <param name="pageTitle">List the categories on this page.</param>
-        public CategoriesGenerator(WikiSite site, string pageTitle) : base(site)
+        public CategoriesGenerator(WikiSite site, WikiPageStub pageStub) : base(site, pageStub)
         {
-            PageTitle = pageTitle;
         }
 
         /// <summary>

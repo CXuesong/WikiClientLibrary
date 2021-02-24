@@ -23,23 +23,25 @@ namespace WikiClientLibrary.Pages
     /// a page name, not both. For the missing page with the given page ID, its <see cref="Title"/> should be
     /// <see cref="MissingPageTitle"/>; for the missing page with the given page title, the <see cref="Id"/>
     /// should be <ses cref="MissingPageIdMask"/>. You can use <see cref="IsMissing"/> property to check for missing pages.</para>
+    /// <para>Since this structure can be implicitly converted from <see cref="string"/> (page title) and <see cref="int"/> (page ID),
+    /// you can use literal page title or page ID in the place where <see cref="WikiPageStub"/> is needed.</para>
     /// </remarks>
-    public struct WikiPageStub : IEquatable<WikiPageStub>
+    public readonly struct WikiPageStub : IEquatable<WikiPageStub>
     {
 
         /// <summary>The <see cref="Id"/> value used for missing page.</summary>
-        /// <remarks>For how the missing pages are handled, see the "remarks" section of <see cref="WikiPage"/>.</remarks>
+        /// <remarks>For how the missing pages are handled, see the "remarks" section of <see cref="WikiPageStub"/>.</remarks>
         public const int MissingPageIdMask = unchecked((int)0x8F000001);
 
         /// <summary>The <see cref="Id"/> value used for invalid page.</summary>
-        /// <remarks>For how the missing pages are handled, see the "remarks" section of <see cref="WikiPage"/>.</remarks>
+        /// <remarks>For how the missing pages are handled, see the "remarks" section of <see cref="WikiPageStub"/>.</remarks>
         public const int InvalidPageIdMask = unchecked((int)0x8F000002);
 
         /// <summary>The <see cref="Id"/> value used for Special page.</summary>
         public const int SpecialPageIdMask = unchecked((int)0x8F000011);
 
         /// <summary>The <see cref="Title"/> value used for missing page.</summary>
-        /// <remarks>For how the missing pages are handled, see the "remarks" section of <see cref="WikiPage"/>.</remarks>
+        /// <remarks>For how the missing pages are handled, see the "remarks" section of <see cref="WikiPageStub"/>.</remarks>
         public const string MissingPageTitle = "#Missing";
 
         /// <summary>The <see cref="NamespaceId"/> used when the constructor do not have namespace information about the page.</summary>
@@ -61,11 +63,16 @@ namespace WikiClientLibrary.Pages
         {
         }
 
+        /// <inheritdoc cref="WikiPageStub(int,string,int)"/>
+        public WikiPageStub(string title) : this(0, title, UnknownNamespaceId)
+        {
+        }
+
         /// <summary>
         /// Initializes a new instance of <see cref="WikiPageStub"/>.
         /// </summary>
         /// <param name="id">Page ID. <c>0</c> for unknown.</param>
-        /// <param name="title">Page full title. <c>null</c> for unknown.</param>
+        /// <param name="title">Page full title. <c>null</c> for unknown. <see cref="string.Empty"/> will be normalized into <c>null</c>.</param>
         /// <param name="namespaceId">Page namespace ID. <see cref="UnknownNamespaceId"/> for unknown.</param>
         public WikiPageStub(int id, string? title, int namespaceId) : this()
         {
@@ -74,7 +81,7 @@ namespace WikiClientLibrary.Pages
                 throw new ArgumentOutOfRangeException(nameof(id),
                     "Invalid page ID. ID should be positive; 0 for unknown; bitwise-or of one or more WikiPageStub.****Mask fields.");
             Id = id;
-            Title = title;
+            Title = string.IsNullOrEmpty(title) ? null : title;
             NamespaceId = namespaceId;
         }
 
@@ -166,24 +173,14 @@ namespace WikiClientLibrary.Pages
         }
 
         /// <inheritdoc />
-        public override bool Equals(object obj)
+        public override bool Equals(object? obj)
         {
-            if (ReferenceEquals(null, obj)) return false;
-            return obj is WikiPageStub && Equals((WikiPageStub)obj);
+            if (obj is null) return false;
+            return obj is WikiPageStub other && Equals(other);
         }
 
         /// <inheritdoc />
-        public override int GetHashCode()
-        {
-            unchecked
-            {
-                if (IsEmpty) return 0;
-                var hashCode = Id;
-                hashCode = (hashCode * 397) ^ (Title != null ? Title.GetHashCode() : 0);
-                hashCode = (hashCode * 397) ^ NamespaceId;
-                return hashCode;
-            }
-        }
+        public override int GetHashCode() => HashCode.Combine(Id, Title, NamespaceId);
 
         /// <inheritdoc />
         public override string ToString()
@@ -201,6 +198,21 @@ namespace WikiClientLibrary.Pages
         public static bool operator !=(WikiPageStub left, WikiPageStub right)
         {
             return !left.Equals(right);
+        }
+
+        public static implicit operator WikiPageStub(string? pageTitle)
+        {
+            return string.IsNullOrEmpty(pageTitle) ? Empty : new WikiPageStub(pageTitle);
+        }
+
+        public static implicit operator WikiPageStub(int pageId)
+        {
+            return new WikiPageStub(pageId);
+        }
+
+        public static implicit operator WikiPageStub(int? pageId)
+        {
+            return new WikiPageStub(pageId ?? 0);
         }
 
         /// <summary>

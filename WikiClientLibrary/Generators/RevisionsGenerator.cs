@@ -38,17 +38,8 @@ namespace WikiClientLibrary.Generators
         }
 
         /// <inheritdoc />
-        /// <param name="pageTitle">Title of the page from which to generate revisions.</param>
-        public RevisionsGenerator(WikiSite site, string pageTitle) : base(site)
+        public RevisionsGenerator(WikiSite site, WikiPageStub pageStub) : base(site, pageStub)
         {
-            PageTitle = pageTitle;
-        }
-
-        /// <inheritdoc />
-        /// <param name="pageId">ID of the page from which to generate revisions.</param>
-        public RevisionsGenerator(WikiSite site, int pageId) : base(site)
-        {
-            PageId = pageId;
         }
 
         /// <inheritdoc />
