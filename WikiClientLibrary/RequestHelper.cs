@@ -388,7 +388,6 @@ namespace WikiClientLibrary
             //    throw new ArgumentException("Either recentChangeId or revisionId should be set, not both.");
             if (revisionId != null && site.SiteInfo.Version < new MediaWikiVersion(1, 22))
                 throw new InvalidOperationException(Prompts.ExceptionPatrolledByRevisionNotSupported);
-            var token = await site.GetTokenAsync("patrol", cancellationToken);
             try
             {
                 var jresult = await site.InvokeMediaWikiApiAsync(new MediaWikiFormRequestMessage(new
@@ -396,7 +395,7 @@ namespace WikiClientLibrary
                     action = "patrol",
                     rcid = recentChangeId,
                     revid = revisionId,
-                    token = token,
+                    token = WikiSiteToken.Patrol,
                 }), cancellationToken);
                 if (recentChangeId != null) Debug.Assert((int)jresult["patrol"]["rcid"] == recentChangeId.Value);
             }
