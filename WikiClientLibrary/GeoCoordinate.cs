@@ -424,7 +424,7 @@ namespace WikiClientLibrary
         }
 
         /// <inheritdoc />
-        public override bool Equals(object obj)
+        public override bool Equals(object? obj)
         {
             return obj is GeoCoordinateRectangle other && Equals(other);
         }

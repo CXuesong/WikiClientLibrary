@@ -83,9 +83,9 @@ namespace WikiClientLibrary
             var status = (int)resp.StatusCode;
             if (status == 200 || (accept400 && status >= 400 && status < 500))
             {
-                var fianlUrl = resp.RequestMessage.RequestUri.ToString();
+                var finalUrl = resp.RequestMessage!.RequestUri!.ToString();
                 var content = await resp.Content.ReadAsStringAsync();
-                return (fianlUrl, content);
+                return (finalUrl, content);
             }
             return (null, null);
         }

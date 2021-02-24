@@ -366,23 +366,23 @@ namespace WikiClientLibrary.Sites
             if (form != null)
             {
                 // Apply tokens
-                var newFields = new List<KeyValuePair<string, object>>(form.Fields.Count + 3) { new KeyValuePair<string, object>("format", "json") };
+                var newFields = new OrderedKeyValuePairs<string, object?> { { "format", "json" } };
                 foreach (var tokenField in form.Fields)
                 {
                     object? value = tokenField.Value;
                     if (value is WikiSiteToken token)
                         value = await tokensManager.GetTokenAsync(token.Type, false, cancellationToken);
-                    newFields.Add(new KeyValuePair<string, object>(tokenField.Key, value));
+                    newFields.Add(tokenField.Key, value);
                 }
                 // Apply account assertions
                 if (!suppressAccountAssertion && _AccountInfo != null)
                 {
                     if ((options.AccountAssertion & AccountAssertionBehavior.AssertBot) ==
                         AccountAssertionBehavior.AssertBot && _AccountInfo.IsBot)
-                        newFields.Add(new KeyValuePair<string, object>("assert", "bot"));
+                        newFields.Add("assert", "bot");
                     else if ((options.AccountAssertion & AccountAssertionBehavior.AssertUser) ==
                              AccountAssertionBehavior.AssertUser && _AccountInfo.IsUser)
-                        newFields.Add(new KeyValuePair<string, object>("assert", "user"));
+                        newFields.Add("assert", "user");
                 }
                 localRequest = new MediaWikiFormRequestMessage(form.Id, newFields, form.AsMultipartFormData);
             }
@@ -418,7 +418,7 @@ namespace WikiClientLibrary.Sites
                 string? invalidatedToken = null;
                 foreach (var tokenField in form.Fields.Where(p => p.Value is WikiSiteToken))
                 {
-                    invalidatedToken = ((WikiSiteToken)tokenField.Value).Type;
+                    invalidatedToken = ((WikiSiteToken)tokenField.Value!).Type;
                     tokensManager.ClearCache(invalidatedToken);
                 }
                 if (invalidatedToken == null) throw;

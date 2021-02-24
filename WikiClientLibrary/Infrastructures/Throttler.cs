@@ -52,7 +52,7 @@ namespace WikiClientLibrary.Infrastructures
                         {
                             // With cancellation support.
                             var tcs = new TaskCompletionSource<bool>();
-                            using (ct.Register(o => ((TaskCompletionSource<bool>) o).SetCanceled(), tcs))
+                            using (ct.Register(o => ((TaskCompletionSource<bool>) o!).SetCanceled(), tcs))
                             {
                                 await Task.WhenAny(previousWork.Completion, tcs.Task);
                             }

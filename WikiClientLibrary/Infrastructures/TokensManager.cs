@@ -146,7 +146,7 @@ namespace WikiClientLibrary.Infrastructures
             if (cancellationToken.CanBeCanceled)
             {
                 var cancellationTcs = new TaskCompletionSource<string>();
-                using (cancellationToken.Register(o => ((TaskCompletionSource<string>)o).TrySetCanceled(),
+                using (cancellationToken.Register(o => ((TaskCompletionSource<string>)o!).TrySetCanceled(),
                     cancellationTcs))
                 {
                     // p.Value completes/failed, or cancellationTcs cancelled.

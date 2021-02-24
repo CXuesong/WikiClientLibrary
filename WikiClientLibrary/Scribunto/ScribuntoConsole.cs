@@ -47,7 +47,7 @@ namespace WikiClientLibrary.Scribunto
         /// Gets the currently used full module title, including the <c>Module:</c> namespace prefix.
         /// The title does not necessarily exist on the MediaWiki site.
         /// </summary>
-        public string ModuleTitle { get; private set; }
+        public string? ModuleTitle { get; private set; }
 
         /// <summary>
         /// Gets the current evaluation session ID.
@@ -85,7 +85,7 @@ namespace WikiClientLibrary.Scribunto
             if (moduleTitle == null)
                 moduleTitle = AdhocModuleTitlePrefix;
             ModuleTitle = moduleTitle;
-            ScribuntoEvaluationResult result = null;
+            ScribuntoEvaluationResult? result = null;
             try
             {
                 result = await InvokeApiAsync(Site, _SessionId, moduleTitle, moduleContent, "=_VERSION", true, cancellationToken);
