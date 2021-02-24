@@ -44,5 +44,16 @@ namespace WikiClientLibrary.Generators
             return new RevisionsGenerator(page.Site, page.PageStub);
         }
 
+        /// <summary>
+        /// Creates a <see cref="CategoriesGenerator"/> instance from the specified page,
+        /// which enumerates the categories used on the page.
+        /// </summary>
+        /// <param name="page">The page.</param>
+        public static CategoriesGenerator CreateCategoriesGenerator(this WikiPage page)
+        {
+            if (page == null) throw new ArgumentNullException(nameof(page));
+            return new CategoriesGenerator(page.Site, page.PageStub);
+        }
+
     }
 }
