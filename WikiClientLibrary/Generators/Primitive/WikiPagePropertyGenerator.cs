@@ -46,9 +46,9 @@ namespace WikiClientLibrary.Generators.Primitive
         /// Fills generator parameters for <c>action=query&amp;generator=</c> request.
         /// </summary>
         /// <returns>A sequence of fields, which will override the basic query parameters.</returns>
-        public virtual IEnumerable<KeyValuePair<string, object>> EnumGeneratorParameters()
+        public virtual IEnumerable<KeyValuePair<string, object?>> EnumGeneratorParameters()
         {
-            return EnumListParameters().Select(p => new KeyValuePair<string, object>("g" + p.Key, p.Value));
+            return EnumListParameters().Select(p => new KeyValuePair<string, object?>("g" + p.Key, p.Value));
         }
 
         /// <summary>

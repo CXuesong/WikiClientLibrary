@@ -38,17 +38,17 @@ namespace WikiClientLibrary.Pages.Queries.Properties
         /// When <see cref="LanguageLinkProperties"/> has <see cref="Properties.LanguageLinkProperties.LanguageName"/> set,
         /// specifies the display language of the language names.
         /// </summary>
-        public string LanguageNameLanguage { get; set; }
+        public string? LanguageNameLanguage { get; set; }
 
         /// <summary>
         /// Only returns the interwiki link for this language code.
         /// </summary>
-        public string LanguageName { get; set; }
+        public string? LanguageName { get; set; }
 
         public override IEnumerable<KeyValuePair<string, object?>> EnumParameters(MediaWikiVersion version)
         {
             // Limit is 500 for user, and 5000 for bots. We take 300 in a batch.
-            var p = new OrderedKeyValuePairs<string, object> { { "lllimit", 300 } };
+            var p = new OrderedKeyValuePairs<string, object?> { { "lllimit", 300 } };
             if (LanguageLinkProperties != LanguageLinkProperties.None)
             {
                 if (version >= new MediaWikiVersion(1, 23))
@@ -78,7 +78,7 @@ namespace WikiClientLibrary.Pages.Queries.Properties
             return p;
         }
 
-        public override LanguageLinksPropertyGroup ParsePropertyGroup(JObject json)
+        public override LanguageLinksPropertyGroup? ParsePropertyGroup(JObject json)
         {
             if (json == null) throw new ArgumentNullException(nameof(json));
             return LanguageLinksPropertyGroup.Create(json);
@@ -110,6 +110,12 @@ namespace WikiClientLibrary.Pages.Queries.Properties
     [JsonObject(MemberSerialization.OptIn)]
     public class LanguageLinkInfo
     {
+
+#pragma warning disable CS8618 // 在退出构造函数时，不可为 null 的字段必须包含非 null 值。请考虑声明为可以为 null。
+        public LanguageLinkInfo()
+#pragma warning restore CS8618 // 在退出构造函数时，不可为 null 的字段必须包含非 null 值。请考虑声明为可以为 null。
+        {
+        }
 
         [JsonProperty("lang")]
         public string Language { get; private set; }

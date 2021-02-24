@@ -36,8 +36,7 @@ namespace WikiClientLibrary.Generators
         public CategoryMembersGenerator(WikiPage category) : base(category.Site)
         {
             if (category == null) throw new ArgumentNullException(nameof(category));
-            if (category.Title == null) throw new InvalidOperationException("Specified category does not have title available.");
-            CategoryTitle = category.Title;
+            CategoryTitle = category.GetTitleRequired();
         }
 
         /// <summary>

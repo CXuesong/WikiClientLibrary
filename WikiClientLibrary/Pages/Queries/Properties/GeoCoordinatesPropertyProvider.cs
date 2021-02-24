@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.Linq;
 using Newtonsoft.Json.Linq;
 using WikiClientLibrary.Infrastructures;
@@ -38,12 +39,12 @@ namespace WikiClientLibrary.Pages.Queries.Properties
         /// </summary>
         /// <remarks>A page title, or <c>null</c> if no distance querying is required.</remarks>
         /// <seealso cref="QueryDistanceFromPoint"/>
-        public string QueryDistanceFromPage { get; set; }
+        public string? QueryDistanceFromPage { get; set; }
 
         /// <inheritdoc />
         public override IEnumerable<KeyValuePair<string, object?>> EnumParameters(MediaWikiVersion version)
         {
-            var p = new OrderedKeyValuePairs<string, object>
+            var p = new OrderedKeyValuePairs<string, object?>
             {
                 {"coprop", "globe|dim"},
             };
@@ -70,7 +71,7 @@ namespace WikiClientLibrary.Pages.Queries.Properties
         public override string? PropertyName => "coordinates";
 
         /// <inheritdoc />
-        public override GeoCoordinatesPropertyGroup ParsePropertyGroup(JObject json)
+        public override GeoCoordinatesPropertyGroup? ParsePropertyGroup(JObject json)
         {
             if (json == null) throw new ArgumentNullException(nameof(json));
             return GeoCoordinatesPropertyGroup.Create((JArray)json["coordinates"]);
@@ -80,39 +81,28 @@ namespace WikiClientLibrary.Pages.Queries.Properties
 
     public class GeoCoordinatesPropertyGroup : WikiPagePropertyGroup
     {
-        private static readonly GeoCoordinatesPropertyGroup Empty = new GeoCoordinatesPropertyGroup();
 
-        private IReadOnlyCollection<GeoCoordinate> _Coordinates;
+        private IReadOnlyCollection<GeoCoordinate>? _Coordinates;
 
-        internal static GeoCoordinatesPropertyGroup Create(JArray jcoordinates)
+        internal static GeoCoordinatesPropertyGroup? Create(JArray? jcoordinates)
         {
-            if (jcoordinates == null) return Empty;
-            if (!jcoordinates.HasValues) return Empty;
+            if (jcoordinates == null || !jcoordinates.HasValues) return null;
             return new GeoCoordinatesPropertyGroup(jcoordinates);
-        }
-
-        private GeoCoordinatesPropertyGroup()
-        {
-            PrimaryCoordinate = GeoCoordinate.Empty;
-            PrimaryDistance = 0;
-            _Coordinates = Array.Empty<GeoCoordinate>();
         }
 
         private GeoCoordinatesPropertyGroup(JArray jcoordinates)
         {
-            if (jcoordinates != null && jcoordinates.HasValues)
+            Debug.Assert(jcoordinates != null && jcoordinates.HasValues);
+            var jprimary = jcoordinates.FirstOrDefault(c => c["primary"] != null);
+            if (jprimary != null)
             {
-                var jprimary = jcoordinates.FirstOrDefault(c => c["primary"] != null);
-                if (jprimary != null)
-                {
-                    PrimaryCoordinate = MediaWikiHelper.GeoCoordinateFromJson((JObject)jcoordinates.First);
-                    PrimaryDistance = (int?)jcoordinates.First["dist"] ?? 0;
-                }
-                if (jprimary == null || jcoordinates.Count > 1)
-                {
-                    var coordinates = jcoordinates.Select(c => MediaWikiHelper.GeoCoordinateFromJson((JObject)c)).ToArray();
-                    _Coordinates = new ReadOnlyCollection<GeoCoordinate>(coordinates);
-                }
+                PrimaryCoordinate = MediaWikiHelper.GeoCoordinateFromJson((JObject)jcoordinates.First);
+                PrimaryDistance = (int?)jcoordinates.First["dist"] ?? 0;
+            }
+            if (jprimary == null || jcoordinates.Count > 1)
+            {
+                var coordinates = jcoordinates.Select(c => MediaWikiHelper.GeoCoordinateFromJson((JObject)c)).ToArray();
+                _Coordinates = new ReadOnlyCollection<GeoCoordinate>(coordinates);
             }
         }
 

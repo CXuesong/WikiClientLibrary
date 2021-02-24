@@ -35,7 +35,7 @@ namespace WikiClientLibrary.Pages.Queries.Properties
         }
 
         /// <inheritdoc />
-        public override CategoriesPropertyGroup ParsePropertyGroup(JObject json)
+        public override CategoriesPropertyGroup? ParsePropertyGroup(JObject json)
         {
             throw new NotImplementedException();
         }
@@ -94,7 +94,7 @@ namespace WikiClientLibrary.Pages.Queries.Properties
 
         private static readonly CategoriesPropertyGroup empty = new CategoriesPropertyGroup();
 
-        internal CategoriesPropertyGroup Create(JArray jcats)
+        internal CategoriesPropertyGroup? Create(JArray? jcats)
         {
             if (jcats == null) return null;
             if (!jcats.HasValues) return empty;

@@ -124,7 +124,9 @@ namespace WikiClientLibrary.Infrastructures
         }
 
         /// <inheritdoc />
+#pragma warning disable CS8767 // 参数类型中引用类型的为 Null 性与隐式实现的成员不匹配(可能是由于为 Null 性特性)。
         public bool TryGetValue(string key, [MaybeNullWhen(false)] out JToken value)
+#pragma warning restore CS8767 // 参数类型中引用类型的为 Null 性与隐式实现的成员不匹配(可能是由于为 Null 性特性)。
         {
             if (myDict.TryGetValue(key, out var v))
             {

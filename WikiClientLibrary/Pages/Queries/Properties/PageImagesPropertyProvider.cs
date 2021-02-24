@@ -34,7 +34,7 @@ namespace WikiClientLibrary.Pages.Queries.Properties
         /// <inheritdoc />
         public override IEnumerable<KeyValuePair<string, object?>> EnumParameters(MediaWikiVersion version)
         {
-            var p = new OrderedKeyValuePairs<string, object>();
+            var p = new OrderedKeyValuePairs<string, object?>();
             if (QueryOriginalImage && ThumbnailSize > 0)
                 p.Add("piprop", "original|thumbnail|name");
             else if (QueryOriginalImage)
@@ -52,7 +52,7 @@ namespace WikiClientLibrary.Pages.Queries.Properties
         public override string? PropertyName => "pageimages";
 
         /// <inheritdoc />
-        public override PageImagesPropertyGroup ParsePropertyGroup(JObject json)
+        public override PageImagesPropertyGroup? ParsePropertyGroup(JObject json)
         {
             if (json == null) throw new ArgumentNullException(nameof(json));
             return PageImagesPropertyGroup.Create(json);

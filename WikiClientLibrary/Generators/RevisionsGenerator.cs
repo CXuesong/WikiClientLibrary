@@ -57,7 +57,7 @@ namespace WikiClientLibrary.Generators
         /// <inheritdoc />
         public override IEnumerable<KeyValuePair<string, object?>> EnumListParameters()
         {
-            var p = new OrderedKeyValuePairs<string, object>
+            var p = new OrderedKeyValuePairs<string, object?>
             {
                 { "rvlimit", PaginationSize },
                 { "rvdir", TimeAscending ? "newer" : "older" },
@@ -111,12 +111,12 @@ namespace WikiClientLibrary.Generators
         /// <summary>
         /// Only list revisions made by this user.
         /// </summary>
-        public string UserName { get; set; }
+        public string? UserName { get; set; }
 
         /// <summary>
         /// Do not list revisions made by this user.
         /// </summary>
-        public string ExcludedUserName { get; set; }
+        public string? ExcludedUserName { get; set; }
 
         /// <summary>
         /// Gets/sets the page query options for <see cref="WikiPagePropertyList{T}.EnumItemsAsync"/>

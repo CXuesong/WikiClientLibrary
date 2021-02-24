@@ -106,7 +106,7 @@ namespace WikiClientLibrary.Infrastructures
             // Tokens that does not exist in local cache.
             // For Csrf tokens, only "csrf" will be included in the set.
             var realTokenType = tokenType;
-            Task<string> tokenTask = null;
+            Task<string>? tokenTask = null;
             // Patrol was added in v1.14.
             // Until v1.16, the patrol token is same as the edit token.
             if (site.SiteInfo.Version < v117 && tokenType == "patrol")

@@ -203,6 +203,9 @@ namespace WikiClientLibrary.Pages
         /// </remarks>
         public string? Title => PageStub.HasTitle ? PageStub.Title : null;
 
+        internal string GetTitleRequired()
+            => Title ?? throw new InvalidOperationException("Specified WikiPage does not have title information.");
+
         /// <summary>
         /// Gets / Sets the content of the page.
         /// </summary>

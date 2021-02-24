@@ -90,7 +90,7 @@ namespace WikiClientLibrary.Generators.Primitive
         /// <inheritdoc />
         public IAsyncEnumerable<T> EnumItemsAsync(CancellationToken cancellationToken = default)
         {
-            var queryParams = new Dictionary<string, object>
+            var queryParams = new Dictionary<string, object?>
             {
                 {"action", "query"},
                 {"maxlag", 5},

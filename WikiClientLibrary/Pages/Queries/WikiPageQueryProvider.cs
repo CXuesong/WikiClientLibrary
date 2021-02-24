@@ -105,7 +105,7 @@ namespace WikiClientLibrary.Pages.Queries
         public virtual IEnumerable<KeyValuePair<string, object?>> EnumParameters(MediaWikiVersion version)
         {
             var propBuilder = new StringBuilder();
-            var p = new OrderedKeyValuePairs<string, object>
+            var p = new OrderedKeyValuePairs<string, object?>
             {
                 {"action", "query"},
                 {"redirects", ResolveRedirects},
@@ -130,8 +130,7 @@ namespace WikiClientLibrary.Pages.Queries
         /// <inheritdoc />
         public virtual int GetMaxPaginationSize(MediaWikiVersion version, bool apiHighLimits)
         {
-            int limit;
-            limit = apiHighLimits ? 500 : 5000;
+            var limit = apiHighLimits ? 500 : 5000;
             if (_Properties != null)
             {
                 foreach (var prop in _Properties)
@@ -145,6 +144,7 @@ namespace WikiClientLibrary.Pages.Queries
         /// <inheritdoc />
         public virtual IEnumerable<IWikiPagePropertyGroup> ParsePropertyGroups(JObject json)
         {
+            if (_Properties == null) yield break;
             foreach (var provider in _Properties)
             {
                 var group = provider.ParsePropertyGroup(json);

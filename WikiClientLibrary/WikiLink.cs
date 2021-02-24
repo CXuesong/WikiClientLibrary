@@ -287,7 +287,9 @@ namespace WikiClientLibrary
         /// <seealso cref="Site"/>
         public WikiSite? TargetSite { get; private set; }
 
+#pragma warning disable CS8618 // 在退出构造函数时，不可为 null 的字段必须包含非 null 值。请考虑声明为可以为 null。
         private WikiLink(WikiSite? site, string originalText)
+#pragma warning restore CS8618 // 在退出构造函数时，不可为 null 的字段必须包含非 null 值。请考虑声明为可以为 null。
         {
             this.Site = site;
             this.OriginalText = originalText;
@@ -324,7 +326,7 @@ namespace WikiClientLibrary
                     case 1:
                         // Make sure there's a colon ahead; otherwise we just treat it as a normal title.
                         if (parts.Length == 1) goto case 2;
-                        string normalizedInterwikiPrefix;
+                        string? normalizedInterwikiPrefix;
                         if (site != null && site.Namespaces.TryGetValue(part, out var ns))
                         {
                             // This is a namespace name.
@@ -491,7 +493,7 @@ namespace WikiClientLibrary
         /// </summary>
         public string OriginalText { get; }
 
-        private string _TargetUrl;
+        private string? _TargetUrl;
 
         /// <summary>
         /// Gets the full URL of the wikilink target.
@@ -504,6 +506,7 @@ namespace WikiClientLibrary
                 var localValue = _TargetUrl;
                 if (localValue == null)
                 {
+                    // TODO We may split WikiLink into multiple derived classes by their origination.
                     localValue = TargetSite == null
                         ? Site.SiteInfo.MakeArticleUrl(Target)
                         : TargetSite.SiteInfo.MakeArticleUrl(FullTitleAndSection);

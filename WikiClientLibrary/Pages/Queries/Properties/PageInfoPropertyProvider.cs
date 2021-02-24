@@ -10,8 +10,8 @@ namespace WikiClientLibrary.Pages.Queries.Properties
 {
     public class PageInfoPropertyProvider : WikiPagePropertyProvider<PageInfoPropertyGroup>
     {
-        private static readonly IEnumerable<KeyValuePair<string, object>> fixedProp = new ReadOnlyCollection<KeyValuePair<string, object>>(
-            new OrderedKeyValuePairs<string, object>
+        private static readonly IEnumerable<KeyValuePair<string, object?>> fixedProp = new ReadOnlyCollection<KeyValuePair<string, object?>>(
+            new OrderedKeyValuePairs<string, object?>
             {
                 {"inprop", "protection"}
             });
@@ -23,7 +23,7 @@ namespace WikiClientLibrary.Pages.Queries.Properties
         }
 
         /// <inheritdoc />
-        public override PageInfoPropertyGroup ParsePropertyGroup(JObject json)
+        public override PageInfoPropertyGroup? ParsePropertyGroup(JObject json)
         {
             return new PageInfoPropertyGroup(json);
         }
@@ -43,11 +43,11 @@ namespace WikiClientLibrary.Pages.Queries.Properties
             IsRedirect = jPage["redirect"] != null;
             Protections = Array.Empty<ProtectionInfo>();
             LastTouched = DateTime.MinValue;
+            RestrictionTypes = Array.Empty<string>();
             if (jPage["missing"] != null || jPage["invalid"] != null || jPage["special"] != null)
             {
                 ContentLength = 0;
                 LastRevisionId = 0;
-                RestrictionTypes = Array.Empty<string>();
             }
             else
             {

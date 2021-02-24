@@ -16,6 +16,12 @@ namespace WikiClientLibrary.Pages.Parsing
     [JsonObject(MemberSerialization.OptIn)]
     public class ParsedContentInfo
     {
+#pragma warning disable CS8618 // 在退出构造函数时，不可为 null 的字段必须包含非 null 值。请考虑声明为可以为 null。
+        public ParsedContentInfo()
+#pragma warning restore CS8618 // 在退出构造函数时，不可为 null 的字段必须包含非 null 值。请考虑声明为可以为 null。
+        {
+        }
+
         /// <summary>
         /// The title of the page.
         /// </summary>
@@ -96,6 +102,12 @@ namespace WikiClientLibrary.Pages.Parsing
     [JsonObject(MemberSerialization.OptIn)]
     public class ContentRedirectInfo
     {
+#pragma warning disable CS8618 // 在退出构造函数时，不可为 null 的字段必须包含非 null 值。请考虑声明为可以为 null。
+        public ContentRedirectInfo()
+#pragma warning restore CS8618 // 在退出构造函数时，不可为 null 的字段必须包含非 null 值。请考虑声明为可以为 null。
+        {
+        }
+
         [JsonProperty]
         public string From { get; private set; }
 
@@ -106,6 +118,12 @@ namespace WikiClientLibrary.Pages.Parsing
     [JsonObject(MemberSerialization.OptIn)]
     public class ContentPropertyInfo
     {
+#pragma warning disable CS8618 // 在退出构造函数时，不可为 null 的字段必须包含非 null 值。请考虑声明为可以为 null。
+        public ContentPropertyInfo()
+#pragma warning restore CS8618 // 在退出构造函数时，不可为 null 的字段必须包含非 null 值。请考虑声明为可以为 null。
+        {
+        }
+
         [JsonProperty]
         public string Name { get; private set; }
 
@@ -120,6 +138,12 @@ namespace WikiClientLibrary.Pages.Parsing
     [JsonObject(MemberSerialization.OptIn)]
     public class ContentSectionInfo
     {
+#pragma warning disable CS8618 // 在退出构造函数时，不可为 null 的字段必须包含非 null 值。请考虑声明为可以为 null。
+        public ContentSectionInfo()
+#pragma warning restore CS8618 // 在退出构造函数时，不可为 null 的字段必须包含非 null 值。请考虑声明为可以为 null。
+        {
+        }
+
         /// <summary>
         /// Index of the section.
         /// </summary>
@@ -190,6 +214,12 @@ namespace WikiClientLibrary.Pages.Parsing
     [JsonObject(MemberSerialization.OptIn)]
     public class ContentCategoryInfo
     {
+#pragma warning disable CS8618 // 在退出构造函数时，不可为 null 的字段必须包含非 null 值。请考虑声明为可以为 null。
+        public ContentCategoryInfo()
+#pragma warning restore CS8618 // 在退出构造函数时，不可为 null 的字段必须包含非 null 值。请考虑声明为可以为 null。
+        {
+        }
+
         /// <summary>
         /// Title of the category.
         /// </summary>
@@ -213,6 +243,12 @@ namespace WikiClientLibrary.Pages.Parsing
     [JsonObject(MemberSerialization.OptIn)]
     public class ContentTransclusionInfo
     {
+#pragma warning disable CS8618 // 在退出构造函数时，不可为 null 的字段必须包含非 null 值。请考虑声明为可以为 null。
+        public ContentTransclusionInfo()
+#pragma warning restore CS8618 // 在退出构造函数时，不可为 null 的字段必须包含非 null 值。请考虑声明为可以为 null。
+        {
+        }
+
         /// <summary>
         /// Title of the transcluded page.
         /// </summary>
@@ -241,6 +277,12 @@ namespace WikiClientLibrary.Pages.Parsing
     [JsonObject(MemberSerialization.OptIn)]
     public class ParserLimitReport
     {
+#pragma warning disable CS8618 // 在退出构造函数时，不可为 null 的字段必须包含非 null 值。请考虑声明为可以为 null。
+        public ParserLimitReport()
+#pragma warning restore CS8618 // 在退出构造函数时，不可为 null 的字段必须包含非 null 值。请考虑声明为可以为 null。
+        {
+        }
+
         /// <summary>
         /// Limit report name.
         /// </summary>
@@ -265,12 +307,10 @@ namespace WikiClientLibrary.Pages.Parsing
             return null;
         }
 
-#pragma warning disable CS0649  // Field is never assigned to, and will always have its default value null
         /// <summary>
         /// All the content of the report.
         /// </summary>
-        [JsonExtensionData] private IDictionary<string, JToken> _Content;
-#pragma warning restore CS0649
+        [JsonExtensionData] private IDictionary<string, JToken>? _Content;
 
         public IReadOnlyDictionary<string, JToken> Content { get; private set; }
 

@@ -21,7 +21,7 @@ namespace WikiClientLibrary.Pages.Queries.Properties
         }
 
         /// <inheritdoc />
-        public override CategoryInfoPropertyGroup ParsePropertyGroup(JObject json)
+        public override CategoryInfoPropertyGroup? ParsePropertyGroup(JObject json)
         {
             return CategoryInfoPropertyGroup.Create(json);
         }
@@ -39,7 +39,7 @@ namespace WikiClientLibrary.Pages.Queries.Properties
     public class CategoryInfoPropertyGroup : WikiPagePropertyGroup
     {
 
-        public static CategoryInfoPropertyGroup Create(JObject jPage)
+        public static CategoryInfoPropertyGroup? Create(JObject jPage)
         {
             var cat = jPage["categoryinfo"];
             // jpage["imageinfo"] == null indicates the page may not be a valid Category.

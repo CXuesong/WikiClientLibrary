@@ -19,7 +19,7 @@ namespace WikiClientLibrary.Infrastructures
     public class Throttler : IWikiClientLoggable
     {
 
-        private WorkItem lastWork;
+        private WorkItem? lastWork;
         private int _QueuedWorkCount;
         private readonly object workQueueLock = new object();
         private TimeSpan _ThrottleTime = TimeSpan.FromSeconds(5);
@@ -36,7 +36,7 @@ namespace WikiClientLibrary.Infrastructures
         public Task<IDisposable> QueueWorkAsync(string name, CancellationToken cancellationToken)
         {
             // Returns an IDisposable after the delay.
-            async Task<IDisposable> RunWorkAsync(WorkItem previousWork, WorkItem thisWork, CancellationToken ct)
+            async Task<IDisposable> RunWorkAsync(WorkItem? previousWork, WorkItem thisWork, CancellationToken ct)
             {
                 Debug.Assert(thisWork != null);
                 try

@@ -34,7 +34,7 @@ namespace WikiClientLibrary
 
         public static JObject? FindQueryContinuationParameterRoot(JToken jresult)
         {
-            return (JObject?)(jresult["continue"] ?? ((JProperty)jresult["query-continue"]?.First)?.Value);
+            return (JObject?)(jresult["continue"] ?? ((JProperty?)jresult["query-continue"]?.First)?.Value);
         }
 
         public static int ParseContinuationParameters(JToken jresult, IDictionary<string, object?> queryParams, IDictionary<string, object?>? continuationParams)
@@ -52,11 +52,11 @@ namespace WikiClientLibrary
                 else parsed = p.Value.ToString(Formatting.None);
                 if (!queryParams.TryGetValue(p.Name, out var existingValue) || !ValueEquals(existingValue, parsed))
                     anyNewValue = true;
-                continuationParams?.Add(new KeyValuePair<string, object>(p.Name, parsed));
+                continuationParams?.Add(new KeyValuePair<string, object?>(p.Name, parsed));
             }
             return anyNewValue ? CONTINUATION_AVAILABLE : CONTINUATION_LOOP;
 
-            static bool ValueEquals(object existing, object incoming)
+            static bool ValueEquals(object? existing, object? incoming)
             {
                 if (Equals(existing, incoming)) return true;
                 if (existing is DateTime dt && incoming is string s)
@@ -260,12 +260,12 @@ namespace WikiClientLibrary
         }
 
         /// <summary>
-        /// Refresh a sequence of revisions by revid, along with their owner pages.
+        /// Retrieve a sequence of revisions by revid, along with their owner pages.
         /// </summary>
         /// <remarks>
         /// <para>If there's invalid revision id in <paramref name="revIds"/>, an <see cref="ArgumentException"/> will be thrown while enumerating.</para>
         /// </remarks>
-        public static async IAsyncEnumerable<Revision> FetchRevisionsAsync(WikiSite site, IEnumerable<int> revIds,
+        public static async IAsyncEnumerable<Revision?> FetchRevisionsAsync(WikiSite site, IEnumerable<int> revIds,
             IWikiPageQueryProvider options, [EnumeratorCancellation] CancellationToken cancellationToken = default)
         {
             if (revIds == null) throw new ArgumentNullException(nameof(revIds));
@@ -319,7 +319,7 @@ namespace WikiClientLibrary
         public static async Task<IReadOnlyCollection<PurgeFailureInfo>> PurgePagesAsync(IEnumerable<WikiPage> pages, PagePurgeOptions options, CancellationToken cancellationToken)
         {
             if (pages == null) throw new ArgumentNullException(nameof(pages));
-            List<PurgeFailureInfo> failedPages = null;
+            List<PurgeFailureInfo>? failedPages = null;
             // You can even purge pages from different sites.
             foreach (var sitePages in pages.GroupBy(BuildWikiPageGroupKey))
             {
@@ -331,8 +331,8 @@ namespace WikiClientLibrary
                 {
                     foreach (var partition in sitePages.Partition(titleLimit).Select(partition => partition.ToList()))
                     {
-                        string titles;
-                        string ids;
+                        string? titles;
+                        string? ids;
                         if (sitePages.Key.HasTitle)
                         {
                             // If a page has both title and ID information,

@@ -38,12 +38,12 @@ namespace WikiClientLibrary.Pages.Queries.Properties
         /// <remarks>
         /// <para>See <see cref="RevisionSlot"/> for more information on "slot"s.</para>
         /// </remarks>
-        public IEnumerable<string> Slots { get; set; }
+        public IEnumerable<string>? Slots { get; set; }
 
         /// <inheritdoc />
         public override IEnumerable<KeyValuePair<string, object?>> EnumParameters(MediaWikiVersion version)
         {
-            var p = new OrderedKeyValuePairs<string, object>
+            var p = new OrderedKeyValuePairs<string, object?>
             {
                 {
                     "rvprop", FetchContent
@@ -66,7 +66,7 @@ namespace WikiClientLibrary.Pages.Queries.Properties
         public override string? PropertyName => "revisions";
 
         /// <inheritdoc />
-        public override RevisionsPropertyGroup ParsePropertyGroup(JObject json)
+        public override RevisionsPropertyGroup? ParsePropertyGroup(JObject json)
         {
             if (json == null) throw new ArgumentNullException(nameof(json));
             return RevisionsPropertyGroup.Create(json);
@@ -80,7 +80,7 @@ namespace WikiClientLibrary.Pages.Queries.Properties
 
         private object _Revisions;
 
-        internal static RevisionsPropertyGroup Create(JObject jpage)
+        internal static RevisionsPropertyGroup? Create(JObject jpage)
         {
             var jrevisions = jpage["revisions"];
             if (jrevisions == null) return null;
@@ -118,7 +118,7 @@ namespace WikiClientLibrary.Pages.Queries.Properties
             }
         }
 
-        public Revision LatestRevision
+        public Revision? LatestRevision
         {
             get
             {
@@ -126,7 +126,7 @@ namespace WikiClientLibrary.Pages.Queries.Properties
                 if (localRev is Revision rev) return rev;
                 var revs = (IReadOnlyList<Revision>)localRev;
                 if (revs.Count == 0) return null;
-                if (revs[0].TimeStamp >= revs[revs.Count - 1].TimeStamp)
+                if (revs[0].TimeStamp >= revs[^1].TimeStamp)
                     return revs[0];
                 return revs[revs.Count - 1];
             }

@@ -14,14 +14,14 @@ namespace WikiClientLibrary.Pages.Queries.Properties
         /// <inheritdoc />
         public override IEnumerable<KeyValuePair<string, object?>> EnumParameters(MediaWikiVersion version)
         {
-            return new OrderedKeyValuePairs<string, object>
+            return new OrderedKeyValuePairs<string, object?>
             {
                 {"ppprop", SelectedProperties == null ? null : MediaWikiHelper.JoinValues(SelectedProperties)}
             };
         }
 
         /// <inheritdoc />
-        public override PagePropertiesPropertyGroup ParsePropertyGroup(JObject json)
+        public override PagePropertiesPropertyGroup? ParsePropertyGroup(JObject json)
         {
             return PagePropertiesPropertyGroup.Create(json);
         }
@@ -31,7 +31,7 @@ namespace WikiClientLibrary.Pages.Queries.Properties
         /// Useful for checking whether pages use a certain page property.
         /// </summary>
         /// <value>A sequence of selected property names, or <c>null</c> to select all of the properties.</value>
-        public IEnumerable<string> SelectedProperties { get; set; }
+        public IEnumerable<string>? SelectedProperties { get; set; }
 
         /// <inheritdoc />
         public override string? PropertyName => "pageprops";

@@ -32,14 +32,14 @@ namespace WikiClientLibrary.Generators
         /// Only list pages in these namespaces.
         /// </summary>
         /// <value>Selected IDs of namespace, or <c>null</c> if all the namespaces are selected.</value>
-        public IEnumerable<int> NamespaceIds { get; set; }
+        public IEnumerable<int>? NamespaceIds { get; set; }
 
         /// <summary>
         /// Only list transclusion to these titles. Useful for checking whether a certain page links to a certain title.
         /// (MediaWiki 1.17+)
         /// </summary>
         /// <value>A sequence of page titles, or <c>null</c> to list all the linked pages.</value>
-        public IEnumerable<string> MatchingTitles { get; set; }
+        public IEnumerable<string>? MatchingTitles { get; set; }
 
         /// <summary>
         /// Gets/sets a value that indicates whether the links should be listed in
@@ -53,10 +53,12 @@ namespace WikiClientLibrary.Generators
         /// <inheritdoc />
         public override IEnumerable<KeyValuePair<string, object?>> EnumListParameters()
         {
-            return new Dictionary<string, object>
+            return new Dictionary<string, object?>
             {
-                {"tlnamespace", NamespaceIds == null ? null : MediaWikiHelper.JoinValues(NamespaceIds)}, {"tllimit", PaginationSize}, {"tltemplates", MatchingTitles == null ? null : MediaWikiHelper.JoinValues(MatchingTitles)},
-                {"tldir", OrderDescending ? "descending" : "ascending"}
+                { "tlnamespace", NamespaceIds == null ? null : MediaWikiHelper.JoinValues(NamespaceIds) },
+                { "tllimit", PaginationSize },
+                { "tltemplates", MatchingTitles == null ? null : MediaWikiHelper.JoinValues(MatchingTitles) },
+                { "tldir", OrderDescending ? "descending" : "ascending" }
             };
         }
     }

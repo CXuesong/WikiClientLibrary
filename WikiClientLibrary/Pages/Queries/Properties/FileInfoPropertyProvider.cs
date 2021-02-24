@@ -31,14 +31,14 @@ namespace WikiClientLibrary.Pages.Queries.Properties
             if (QueryExtMetadata)
                 properties.Add("extmetadata");
 
-            return new OrderedKeyValuePairs<string, object>
+            return new OrderedKeyValuePairs<string, object?>
             {
                 {"iiprop", string.Join("|", properties)},
             };
         }
 
         /// <inheritdoc />
-        public override FileInfoPropertyGroup ParsePropertyGroup(JObject json)
+        public override FileInfoPropertyGroup? ParsePropertyGroup(JObject json)
         {
             return FileInfoPropertyGroup.Create(json);
         }
@@ -59,7 +59,7 @@ namespace WikiClientLibrary.Pages.Queries.Properties
 
         private object _Revisions;
 
-        internal static FileInfoPropertyGroup Create(JObject jpage)
+        internal static FileInfoPropertyGroup? Create(JObject jpage)
         {
             var info = jpage["imageinfo"];
             // jpage["imageinfo"] == null indicates the page may not be a valid File.
@@ -101,7 +101,7 @@ namespace WikiClientLibrary.Pages.Queries.Properties
         /// <summary>
         /// Gets the latest file revision information.
         /// </summary>
-        public FileRevision LatestRevision
+        public FileRevision? LatestRevision
         {
             get
             {

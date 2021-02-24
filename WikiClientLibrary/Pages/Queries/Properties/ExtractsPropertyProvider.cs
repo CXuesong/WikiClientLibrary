@@ -46,7 +46,7 @@ namespace WikiClientLibrary.Pages.Queries.Properties
         /// <inheritdoc />
         public override IEnumerable<KeyValuePair<string, object?>> EnumParameters(MediaWikiVersion version)
         {
-            var p = new OrderedKeyValuePairs<string, object>
+            var p = new OrderedKeyValuePairs<string, object?>
             {
                 {"exlimit", "max"},
                 {"exintro", IntroductionOnly},
@@ -68,7 +68,7 @@ namespace WikiClientLibrary.Pages.Queries.Properties
         public override string? PropertyName => "extracts";
 
         /// <inheritdoc />
-        public override ExtractsPropertyGroup ParsePropertyGroup(JObject json)
+        public override ExtractsPropertyGroup? ParsePropertyGroup(JObject json)
         {
             if (json == null) throw new ArgumentNullException(nameof(json));
             var jextract = json["extract"];

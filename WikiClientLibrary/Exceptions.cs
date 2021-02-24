@@ -17,12 +17,12 @@ namespace WikiClientLibrary
 
         }
 
-        public WikiClientException(string message) : base(message)
+        public WikiClientException(string? message) : base(message)
         {
 
         }
 
-        public WikiClientException(string message, Exception innerException) : base(message, innerException)
+        public WikiClientException(string? message, Exception? innerException) : base(message, innerException)
         {
 
         }
@@ -154,11 +154,13 @@ namespace WikiClientLibrary
         public UnauthorizedOperationException(string? message, Exception? innerException)
             : base(message, innerException)
         {
+            DesiredPermissions = Array.Empty<string>();
         }
 
         public UnauthorizedOperationException(OperationFailedException ex)
             : base(ex.ErrorCode, ex.ErrorMessage)
         {
+            DesiredPermissions = Array.Empty<string>();
         }
 
         /// <summary>

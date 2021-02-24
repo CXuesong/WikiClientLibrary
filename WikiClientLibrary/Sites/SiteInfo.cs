@@ -26,6 +26,12 @@ namespace WikiClientLibrary.Sites
 
         private string _Generator;
 
+#pragma warning disable CS8618 // 在退出构造函数时，不可为 null 的字段必须包含非 null 值。请考虑声明为可以为 null。
+        public SiteInfo()
+#pragma warning restore CS8618 // 在退出构造函数时，不可为 null 的字段必须包含非 null 值。请考虑声明为可以为 null。
+        {
+        }
+
         /// <summary>
         /// The title of the main page, as found in MediaWiki:Mainpage. (MediaWiki 1.8+)
         /// </summary>
@@ -254,6 +260,12 @@ namespace WikiClientLibrary.Sites
     public class NamespaceInfo
     {
 
+#pragma warning disable CS8618 // 在退出构造函数时，不可为 null 的字段必须包含非 null 值。请考虑声明为可以为 null。
+        public NamespaceInfo()
+#pragma warning restore CS8618 // 在退出构造函数时，不可为 null 的字段必须包含非 null 值。请考虑声明为可以为 null。
+        {
+        }
+
         /// <summary>
         /// An integer identification number which is unique for each namespace.
         /// </summary>
@@ -320,7 +332,7 @@ namespace WikiClientLibrary.Sites
         [JsonProperty]
         public string DefaultContentModel { get; private set; }
 
-        private IList<string> _Aliases;
+        private IList<string>? _Aliases;
 
         internal void AddAlias(string title)
         {
@@ -337,7 +349,7 @@ namespace WikiClientLibrary.Sites
         {
             // Try to get canonical name for built-in namespace.
             // This is used especially for NS_MAIN .
-            if (CanonicalName == null) CanonicalName = BuiltInNamespaces.GetCanonicalName(Id);
+            if (CanonicalName == null) CanonicalName = BuiltInNamespaces.GetCanonicalName(Id)!;
             Debug.Assert(CanonicalName != null);
         }
 
@@ -589,7 +601,7 @@ namespace WikiClientLibrary.Sites
             get { return _Prefix; }
             private set
             {
-                if (value != null) Debug.Assert(value == value.ToLowerInvariant());
+                Debug.Assert(value == value.ToLowerInvariant());
                 _Prefix = value;
             }
         }
@@ -889,6 +901,13 @@ namespace WikiClientLibrary.Sites
     [JsonObject(MemberSerialization.OptIn)]
     public class ExtensionInfo
     {
+
+#pragma warning disable CS8618 // 在退出构造函数时，不可为 null 的字段必须包含非 null 值。请考虑声明为可以为 null。
+        public ExtensionInfo()
+#pragma warning restore CS8618 // 在退出构造函数时，不可为 null 的字段必须包含非 null 值。请考虑声明为可以为 null。
+        {
+        }
+
         [JsonProperty]
         public string Type { get; private set; }
 
