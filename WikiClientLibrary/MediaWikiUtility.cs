@@ -29,20 +29,21 @@ namespace WikiClientLibrary
         }
 
         // See Site.SearchApiEndpointAsync .
-        public static async Task<string?> SearchApiEndpointAsync(WikiClient client, string urlExpression)
+        public static async Task<string?> SearchApiEndpointAsync(WikiClient client, string urlExpression, CancellationToken cancellationToken)
         {
             if (client == null) throw new ArgumentNullException(nameof(client));
             if (urlExpression == null) throw new ArgumentNullException(nameof(urlExpression));
+            cancellationToken.ThrowIfCancellationRequested();
             urlExpression = urlExpression.Trim();
             if (urlExpression.Length == 0) return null;
             using (client.BeginActionScope(null))
             {
                 client.Logger.LogInformation("Search MediaWiki API endpoint starting from {Url}.", urlExpression);
                 // Directly try the given URL.
-                var current = await TestApiEndpointAsync(client, urlExpression);
+                var current = await TestApiEndpointAsync(client, urlExpression, cancellationToken);
                 if (current != null) return current;
                 // Try to infer from the page content.
-                var (url, content) = await DownloadStringAsync(client, urlExpression, true);
+                var (url, content) = await DownloadStringAsync(client, urlExpression, true, cancellationToken);
                 if (url != null && !string.IsNullOrEmpty(content))
                 {
                     current = url;
@@ -51,7 +52,7 @@ namespace WikiClientLibrary
                     if (match.Success)
                     {
                         var v = NavigateTo(current, match.Value);
-                        v = await TestApiEndpointAsync(client, v);
+                        v = await TestApiEndpointAsync(client, v, cancellationToken);
                         if (v != null) return v;
                     }
                 }
@@ -59,9 +60,10 @@ namespace WikiClientLibrary
             }
         }
 
-        private static async Task<(string? FinalUrl, string? Content)> DownloadStringAsync(WikiClient client, string url, bool accept400)
+        private static async Task<(string? FinalUrl, string? Content)> DownloadStringAsync(WikiClient client, string url, bool accept400, CancellationToken cancellationToken)
         {
             const int timeout = 10000;
+            cancellationToken.ThrowIfCancellationRequested();
             HttpResponseMessage resp;
             // Append default protocol.
             if (!ProtocolMatcher.IsMatch(url))
@@ -69,13 +71,14 @@ namespace WikiClientLibrary
             // Resolve relative protocol.
             else if (url.StartsWith("//"))
                 url = "http:" + url;
-            using (var cts = new CancellationTokenSource(timeout))
+            using (var cts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken))
             {
+                cts.CancelAfter(timeout);
                 try
                 {
                     resp = await client.HttpClient.SendAsync(new HttpRequestMessage(HttpMethod.Get, url), cts.Token);
                 }
-                catch (TaskCanceledException)
+                catch (TaskCanceledException) when (cancellationToken.IsCancellationRequested)
                 {
                     throw new TimeoutException();
                 }
@@ -84,7 +87,11 @@ namespace WikiClientLibrary
             if (status == 200 || (accept400 && status >= 400 && status < 500))
             {
                 var finalUrl = resp.RequestMessage!.RequestUri!.ToString();
+#if NETSTANDARD2_1
                 var content = await resp.Content.ReadAsStringAsync();
+#else
+                var content = await resp.Content.ReadAsStringAsync(cancellationToken);
+#endif
                 return (finalUrl, content);
             }
             return (null, null);
@@ -94,8 +101,9 @@ namespace WikiClientLibrary
         /// Tests whether the specific URL is a valid MediaWiki API endpoint, and
         /// returns the final URL, if redirected.
         /// </summary>
-        private static async Task<string?> TestApiEndpointAsync(WikiClient client, string url)
+        private static async Task<string?> TestApiEndpointAsync(WikiClient client, string url, CancellationToken cancellationToken)
         {
+            cancellationToken.ThrowIfCancellationRequested();
             // Append default protocol.
             if (!ProtocolMatcher.IsMatch(url))
                 url = "http://" + url;
@@ -105,7 +113,7 @@ namespace WikiClientLibrary
             try
             {
                 client.Logger.LogDebug("Test MediaWiki API endpoint: {Url}.", url);
-                var (finalUrl, content) = await DownloadStringAsync(client, url + "?action=query&format=json", false);
+                var (finalUrl, content) = await DownloadStringAsync(client, url + "?action=query&format=json", false, cancellationToken);
                 if (finalUrl == null) return null;
                 // Ref: {"batchcomplete":""}
                 if (string.IsNullOrEmpty(content) || content.Length < 2) return null;

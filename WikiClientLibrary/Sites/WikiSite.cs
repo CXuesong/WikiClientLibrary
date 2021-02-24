@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Net.Http;
 using System.Threading;
@@ -11,7 +10,6 @@ using Microsoft.Extensions.Logging.Abstractions;
 using Newtonsoft.Json.Linq;
 using WikiClientLibrary.Client;
 using WikiClientLibrary.Infrastructures;
-using WikiClientLibrary.Pages;
 using WikiClientLibrary.Infrastructures.Logging;
 
 namespace WikiClientLibrary.Sites
@@ -71,13 +69,15 @@ namespace WikiClientLibrary.Sites
         /// Given a site or page URL of a MediaWiki site, try to look for the Api Endpoint URL of it.
         /// </summary>
         /// <param name="client">WikiClient instance.</param>
-        /// <param name="urlExpression">The URL of MediaWiki site. It can be with or without protocol prefix.</param>
+        /// <param name="urlExpression">URL of MediaWiki site, or any page on that site. It can be with or without protocol prefix.</param>
+        /// <param name="cancellationToken">a token used to cancel the operation.</param>
         /// <exception cref="ArgumentNullException"><paramref name="client"/> or <paramref name="urlExpression"/> is <c>null</c>.</exception>
         /// <exception cref="TimeoutException">A time-out has been reached during test requests.</exception>
+        /// <exception cref="OperationCanceledException">Operation has been cancelled.</exception>
         /// <returns>The URL of Api Endpoint. OR <c>null</c> if such search has failed.</returns>
-        public static Task<string?> SearchApiEndpointAsync(WikiClient client, string urlExpression)
+        public static Task<string?> SearchApiEndpointAsync(WikiClient client, string urlExpression, CancellationToken cancellationToken = default)
         {
-            return MediaWikiUtility.SearchApiEndpointAsync(client, urlExpression);
+            return MediaWikiUtility.SearchApiEndpointAsync(client, urlExpression, cancellationToken);
         }
 
         /// <inheritdoc cref="WikiSite(IWikiClient,SiteOptions,string,string)"/>
