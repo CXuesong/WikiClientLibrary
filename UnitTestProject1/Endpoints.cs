@@ -32,8 +32,8 @@ namespace WikiClientLibrary.Tests.UnitTestProject1
 
         public const string WikidataBeta = "https://wikidata.beta.wmflabs.org/w/api.php";
 
-        // TODO This is a rather unofficial test site. Replace it in the future.
-        public const string WikiaTest = "https://mediawiki119.wikia.org/api.php";
+        // Suggested by KockaAdmiralac.
+        public const string WikiaTest = "https://dman.fandom.com/api.php";
 
         public const string RuWarriorsWiki = "https://warriors-cats.fandom.com/ru/api.php";
 
