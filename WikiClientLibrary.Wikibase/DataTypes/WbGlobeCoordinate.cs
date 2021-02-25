@@ -62,14 +62,7 @@ namespace WikiClientLibrary.Wikibase.DataTypes
         /// <inheritdoc />
         public override int GetHashCode()
         {
-            unchecked
-            {
-                var hashCode = Latitude.GetHashCode();
-                hashCode = (hashCode * 397) ^ Longitude.GetHashCode();
-                hashCode = (hashCode * 397) ^ Precision.GetHashCode();
-                hashCode = (hashCode * 397) ^ (Globe != null ? Globe.GetHashCode() : 0);
-                return hashCode;
-            }
+            return HashCode.Combine(Latitude, Longitude, Precision, Globe);
         }
 
         public static bool operator ==(WbGlobeCoordinate left, WbGlobeCoordinate right)

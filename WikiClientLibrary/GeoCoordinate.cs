@@ -432,14 +432,7 @@ namespace WikiClientLibrary
         /// <inheritdoc />
         public override int GetHashCode()
         {
-            unchecked
-            {
-                var hashCode = _Width.GetHashCode();
-                hashCode = (hashCode * 397) ^ _Height.GetHashCode();
-                hashCode = (hashCode * 397) ^ Left.GetHashCode();
-                hashCode = (hashCode * 397) ^ Top.GetHashCode();
-                return hashCode;
-            }
+            return HashCode.Combine(_Width, _Height, Left, Top);
         }
 
         /// <inheritdoc />

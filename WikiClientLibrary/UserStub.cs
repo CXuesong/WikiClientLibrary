@@ -71,14 +71,7 @@ namespace WikiClientLibrary
         /// <inheritdoc />
         public override int GetHashCode()
         {
-            unchecked
-            {
-                var hashCode = Id;
-                hashCode = (hashCode * 397) ^ (Name != null ? Name.GetHashCode() : 0);
-                hashCode = (hashCode * 397) ^ (int)Gender;
-                hashCode = (hashCode * 397) ^ (SiteName != null ? SiteName.GetHashCode() : 0);
-                return hashCode;
-            }
+            return HashCode.Combine(Id, Name, Gender, SiteName);
         }
 
         public static bool operator ==(UserStub left, UserStub right)
