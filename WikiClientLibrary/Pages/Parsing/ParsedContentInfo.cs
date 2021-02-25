@@ -310,7 +310,9 @@ namespace WikiClientLibrary.Pages.Parsing
         /// <summary>
         /// All the content of the report.
         /// </summary>
+#pragma warning disable CS0649
         [JsonExtensionData] private IDictionary<string, JToken>? _Content;
+#pragma warning restore CS0649
 
         public IReadOnlyDictionary<string, JToken> Content { get; private set; }
 

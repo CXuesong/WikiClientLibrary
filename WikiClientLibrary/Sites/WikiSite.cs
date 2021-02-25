@@ -397,16 +397,18 @@ namespace WikiClientLibrary.Sites
                 if (AccountAssertionFailureHandler != null)
                 {
                     // ISSUE Relogin might be called multiple times.
-                    if (reLoginTask == null)
+                    var localReloginTask = reLoginTask;
+                    if (localReloginTask == null)
                     {
                         Logger.LogWarning("Account assertion failed. Try to relogin.");
-                        Volatile.Write(ref reLoginTask, Relogin());
+                        localReloginTask = Relogin();
+                        Volatile.Write(ref reLoginTask, localReloginTask);
                     }
                     else
                     {
                         Logger.LogWarning("Account assertion failed. Waiting for relongin.");
                     }
-                    var result = await reLoginTask;
+                    var result = await localReloginTask;
                     if (result) goto RETRY;
                 }
                 throw;

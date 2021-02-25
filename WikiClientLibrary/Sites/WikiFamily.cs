@@ -71,7 +71,7 @@ namespace WikiClientLibrary.Sites
         /// Raised when a new <see cref="WikiSite"/> has been instantiated, but before it is
         /// stored into the site cache.
         /// </summary>
-        public event EventHandler<WikiFamilySiteCreatedEventArgs> SiteCreated;
+        public event EventHandler<WikiFamilySiteCreatedEventArgs>? SiteCreated;
 
         /// <summary>
         /// Initializes the instance with a <see cref="Client.WikiClient"/> and family name.
@@ -133,16 +133,16 @@ namespace WikiClientLibrary.Sites
             if (sites.TryGetValue(prefix, out var entry))
             {
                 var task = entry.Task;
-                if (task != null) return task;
+                if (task != null) return task!;
                 lock (entry)
                 {
                     task = entry.Task;
                     if (task == null)
                         entry.Task = task = CreateSiteAsync(entry.Prefix, entry.ApiEndpoint);
-                    return task;
+                    return task!;
                 }
             }
-            return Task.FromResult((WikiSite) null);
+            return Task.FromResult((WikiSite?) null);
         }
 
         /// <summary>
@@ -191,7 +191,7 @@ namespace WikiClientLibrary.Sites
 
         private class SiteEntry
         {
-            private volatile Task<WikiSite> _Task;
+            private volatile Task<WikiSite>? _Task;
 
             public SiteEntry(string prefix, string apiEndpoint)
             {
@@ -205,7 +205,7 @@ namespace WikiClientLibrary.Sites
 
             public string ApiEndpoint { get; }
 
-            public Task<WikiSite> Task
+            public Task<WikiSite>? Task
             {
                 get => _Task;
                 set => _Task = value;

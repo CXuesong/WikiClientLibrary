@@ -1,13 +1,10 @@
 ﻿using System;
-using System.Collections;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Reflection;
-using System.Runtime.Serialization;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
@@ -15,7 +12,6 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using WikiClientLibrary.Client;
 using WikiClientLibrary.Files;
-using WikiClientLibrary.Generators;
 using WikiClientLibrary.Generators.Primitive;
 using WikiClientLibrary.Infrastructures;
 using WikiClientLibrary.Infrastructures.Logging;
@@ -239,7 +235,7 @@ namespace WikiClientLibrary.Pages
         /// </remarks>
         public async Task<bool> IsDisambiguationAsync()
         {
-            AssertTitleExists();
+            var title = RequiresTitle();
             AssertExists();
             // If the Disambiguator extension is loaded, use it
             if (Site.Extensions.Contains("Disambiguator"))
@@ -250,7 +246,7 @@ namespace WikiClientLibrary.Pages
             }
             // Check whether the page has transcluded one of the DAB templates.
             var dabt = await Site.DisambiguationTemplatesAsync;
-            var dabp = await RequestHelper.EnumTransclusionsAsync(Site, Title,
+            var dabp = await RequestHelper.EnumTransclusionsAsync(Site, title,
                 new[] { BuiltInNamespaces.Template }, dabt, 1).AnyAsync();
             return dabp;
         }
@@ -275,7 +271,7 @@ namespace WikiClientLibrary.Pages
         public IList<string> RedirectPath { get; internal set; } = Array.Empty<string>();
 
         /// <summary>
-        /// Tries to get the final target of the redirect page.
+        /// If current page is a redirect, tries to get the final target of the redirect.
         /// </summary>
         /// <returns>
         /// A <see cref="WikiPage"/> of the target.
@@ -289,8 +285,7 @@ namespace WikiClientLibrary.Pages
         /// </remarks>
         public async Task<WikiPage?> GetRedirectTargetAsync()
         {
-            AssertTitleExists();
-            var newPage = new WikiPage(Site, Title);
+            var newPage = new WikiPage(Site, RequiresTitle());
             await newPage.RefreshAsync(PageQueryOptions.ResolveRedirects);
             if (newPage.RedirectPath.Count > 0) return newPage;
             return null;
@@ -299,11 +294,13 @@ namespace WikiClientLibrary.Pages
         #endregion
 
         #region Query
+
         [MemberNotNull(nameof(Title))]
-        protected void AssertTitleExists()
+        protected string RequiresTitle()
         {
             if (string.IsNullOrEmpty(Title))
                 throw new InvalidOperationException("Page title is not available. Use RefreshAsync to fetch it.");
+            return Title;
         }
 
         protected void AssertExists()

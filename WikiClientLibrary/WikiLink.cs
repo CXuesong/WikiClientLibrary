@@ -507,8 +507,10 @@ namespace WikiClientLibrary
                 if (localValue == null)
                 {
                     // TODO We may split WikiLink into multiple derived classes by their origination.
+                    Debug.Assert(Site != null || TargetSite != null);
+                    // If targetSite exists (interwiki foreign site), prefer making URL on targetSite.
                     localValue = TargetSite == null
-                        ? Site.SiteInfo.MakeArticleUrl(Target)
+                        ? Site!.SiteInfo.MakeArticleUrl(Target)
                         : TargetSite.SiteInfo.MakeArticleUrl(FullTitleAndSection);
                     _TargetUrl = localValue;
                 }
