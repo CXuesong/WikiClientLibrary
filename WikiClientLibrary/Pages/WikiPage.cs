@@ -296,7 +296,7 @@ namespace WikiClientLibrary.Pages
         #region Query
 
         [MemberNotNull(nameof(Title))]
-        protected string RequiresTitle()
+        protected internal string RequiresTitle()
         {
             if (string.IsNullOrEmpty(Title))
                 throw new InvalidOperationException("Page title is not available. Use RefreshAsync to fetch it.");

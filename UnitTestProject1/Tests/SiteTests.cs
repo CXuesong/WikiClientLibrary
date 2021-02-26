@@ -81,7 +81,7 @@ namespace WikiClientLibrary.Tests.UnitTestProject1.Tests
         {
             var site = await WikiaTestSiteAsync;
             ShallowTrace(site);
-            Assert.Equal("Mediawiki 1.19 test Wiki", site.SiteInfo.SiteName);
+            Assert.Equal("Dman Wikia", site.SiteInfo.SiteName);
             ValidateNamespaces(site);
         }
 
@@ -193,10 +193,10 @@ namespace WikiClientLibrary.Tests.UnitTestProject1.Tests
             var client = CreateWikiClient();
             var result = await WikiSite.SearchApiEndpointAsync(client, "en.wikipedia.org");
             Assert.Equal("https://en.wikipedia.org/w/api.php", result);
-            result = await WikiSite.SearchApiEndpointAsync(client, "mediawiki119.wikia.com");
-            Assert.Equal("https://mediawiki119.wikia.org/api.php", result);
-            result = await WikiSite.SearchApiEndpointAsync(client, "mediawiki119.wikia.com/abc/def");
-            Assert.Equal("https://mediawiki119.wikia.org/api.php", result);
+            result = await WikiSite.SearchApiEndpointAsync(client, "warriors.fandom.com");
+            Assert.Equal("https://warriors.fandom.com/api.php", result);
+            result = await WikiSite.SearchApiEndpointAsync(client, "warriors.fandom.com/abc/def");
+            Assert.Equal("https://warriors.fandom.com/api.php", result);
             result = await WikiSite.SearchApiEndpointAsync(client, "wikipedia.org");
             Assert.Null(result);
         }
