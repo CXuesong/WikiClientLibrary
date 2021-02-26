@@ -36,7 +36,7 @@ namespace WikiClientLibrary.Sites
         /// <summary>
         /// Sets the URL of MediaWiki API endpoint.
         /// </summary>
-        public string? ApiEndpoint { get; set; }
+        public string ApiEndpoint { get; set; } = "";
 
         /// <summary>
         /// Gets/sets the account rights assertion behavior when performing the requests.

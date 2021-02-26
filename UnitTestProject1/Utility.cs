@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using WikiClientLibrary;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Reflection;
 using System.Text.RegularExpressions;
@@ -18,12 +19,12 @@ namespace WikiClientLibrary.Tests.UnitTestProject1
 {
     internal static class Utility
     {
-        private static string DumpObject(object obj, int indention, int maxDepth)
+        private static string DumpObject(object? obj, int indention, int maxDepth)
         {
             if (obj == null) return "null";
             if ("".Equals(obj)) return "<String.Empty>";
             var sb = new StringBuilder();
-            if (obj.GetType().GetMethod("ToString", Type.EmptyTypes).DeclaringType == typeof(object))
+            if (obj.GetType().GetMethod("ToString", Type.EmptyTypes)!.DeclaringType == typeof(object))
             {
                 sb.Append('{');
                 sb.Append(obj.GetType().Name);
@@ -85,7 +86,7 @@ namespace WikiClientLibrary.Tests.UnitTestProject1
             return sb.ToString();
         }
 
-        public static string DumpObject(object obj, int maxDepth)
+        public static string DumpObject(object? obj, int maxDepth)
         {
             return DumpObject(obj, 0, maxDepth);
         }
@@ -102,7 +103,7 @@ namespace WikiClientLibrary.Tests.UnitTestProject1
             var assembly = typeof(Utility).Assembly;
             var content = assembly.GetManifestResourceStream($"WikiClientLibrary.Tests.UnitTestProject1.DemoImages.{imageName}.jpg");
             if (content == null) throw new ArgumentException("Invalid imageName.");
-            using var r = new StreamReader(assembly.GetManifestResourceStream($"WikiClientLibrary.Tests.UnitTestProject1.DemoImages.{imageName}.txt"));
+            using var r = new StreamReader(assembly.GetManifestResourceStream($"WikiClientLibrary.Tests.UnitTestProject1.DemoImages.{imageName}.txt")!);
             var desc = r.ReadToEnd();
             return new DemoFileInfo(content, desc);
         }
@@ -126,11 +127,26 @@ namespace WikiClientLibrary.Tests.UnitTestProject1
             return sb.ToString();
         }
 
+        /// <summary>
+        /// Equivalent to <see cref="Utility.AssertNotNull"/>, but with NRT annotation.
+        /// </summary>
+        public static void AssertNotNull([NotNull] object? obj)
+        {
+            // TODO Remove this function when xunit v3 comes out
+            // See https://github.com/xunit/assert.xunit/blob/main/NullAsserts.cs
+            // See https://github.com/xunit/xunit/issues/2133
+            if (obj is null)
+            {
+                Assert.NotNull(obj);
+                Debug.Fail("Assertion should already fail. Should not reach here.");
+            }
+        }
+
     }
 
     internal struct DemoFileInfo
     {
-        public DemoFileInfo(Stream contentStream, string description)
+        public DemoFileInfo(Stream contentStream, string? description)
         {
             ContentStream = contentStream;
             Description = description;
@@ -144,9 +160,9 @@ namespace WikiClientLibrary.Tests.UnitTestProject1
 
         public Stream ContentStream { get; }
 
-        public string Description { get; }
+        public string? Description { get; }
 
-        public string Sha1 { get; }
+        public string? Sha1 { get; }
 
     }
 }

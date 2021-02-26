@@ -41,7 +41,7 @@ namespace WikiClientLibrary.Tests.UnitTestProject1.Tests
             Assert.Equal("Wikipedia:Sandbox", page.Title);
             Assert.Equal(4, page.NamespaceId);
             Assert.Equal("en", page.PageLanguage);
-            Assert.NotNull(page.Content);
+            Utility.AssertNotNull(page.Content);
             // Chars vs. Bytes
             Assert.True(page.Content.Length <= page.ContentLength);
             Output.WriteLine(new string('-', 10));
@@ -78,6 +78,7 @@ namespace WikiClientLibrary.Tests.UnitTestProject1.Tests
             Assert.True(page.IsRedirect);
             var target = await page.GetRedirectTargetAsync();
             ShallowTrace(target);
+            Utility.AssertNotNull(target);
             Assert.Equal("Foo24", target.Title);
             Assert.True(target.RedirectPath.SequenceEqual(new[] { "Foo", "Foo2", "Foo23" }));
         }
@@ -96,7 +97,7 @@ namespace WikiClientLibrary.Tests.UnitTestProject1.Tests
             });
             ShallowTrace(page);
             var coordinate = page.GetPropertyGroup<GeoCoordinatesPropertyGroup>();
-            Assert.NotNull(coordinate);
+            Utility.AssertNotNull(coordinate);
             ShallowTrace(coordinate);
             Assert.False(coordinate.PrimaryCoordinate.IsEmpty);
             Assert.Equal(48.856613, coordinate.PrimaryCoordinate.Latitude, 5);
@@ -122,7 +123,7 @@ namespace WikiClientLibrary.Tests.UnitTestProject1.Tests
                 }
             });
             ShallowTrace(page);
-            Assert.Equal("莎拉·伯恩哈特，一八四四年生，法國巴黎人也。", page.GetPropertyGroup<ExtractsPropertyGroup>().Extract);
+            Assert.Equal("莎拉·伯恩哈特，一八四四年生，法國巴黎人也。", page.GetPropertyGroup<ExtractsPropertyGroup>()!.Extract);
         }
 
         [Fact]
@@ -143,6 +144,7 @@ namespace WikiClientLibrary.Tests.UnitTestProject1.Tests
             });
             var group = page.GetPropertyGroup<PageImagesPropertyGroup>();
             ShallowTrace(group);
+            Utility.AssertNotNull(group);
             Assert.Equal("Flag_of_Norway.svg", group.ImageTitle);
             Assert.Equal("https://upload.wikimedia.org/wikipedia/commons/d/d9/Flag_of_Norway.svg", group.OriginalImage.Url);
             Assert.Equal("https://upload.wikimedia.org/wikipedia/commons/thumb/d/d9/Flag_of_Norway.svg/100px-Flag_of_Norway.svg.png", group.ThumbnailImage.Url);
@@ -157,10 +159,10 @@ namespace WikiClientLibrary.Tests.UnitTestProject1.Tests
             await page.RefreshAsync(new WikiPageQueryProvider { Properties = { new LanguageLinksPropertyProvider(LanguageLinkProperties.Autonym) } });
             var langLinks = page.GetPropertyGroup<LanguageLinksPropertyGroup>()?.LanguageLinks;
             ShallowTrace(langLinks);
-            Assert.NotNull(langLinks);
+            Utility.AssertNotNull(langLinks);
             Assert.True(langLinks.Count > 120);
             var langLink = langLinks.FirstOrDefault(l => l.Language == "en");
-            Assert.NotNull(langLink);
+            Utility.AssertNotNull(langLink);
             Assert.Equal("Sarah Bernhardt", langLink.Title);
             Assert.Equal("English", langLink.Autonym);
             // We didn't ask for URL so this should be null.
@@ -171,9 +173,9 @@ namespace WikiClientLibrary.Tests.UnitTestProject1.Tests
             Output.WriteLine("Language links ----");
             foreach (var p in pages)
                 Output.WriteLine("{0}: {1}", p, p.GetPropertyGroup<LanguageLinksPropertyGroup>()?.LanguageLinks.Count);
-            Assert.All(pages, p => Assert.True(p.GetPropertyGroup<LanguageLinksPropertyGroup>().LanguageLinks.Count > 50));
+            Assert.All(pages, p => Assert.True(p.GetPropertyGroup<LanguageLinksPropertyGroup>()!.LanguageLinks.Count > 50));
             Assert.Equal(langLinks.ToDictionary(l => l.Language, l => l.Title),
-                page.GetPropertyGroup<LanguageLinksPropertyGroup>().LanguageLinks.ToDictionary(l => l.Language, l => l.Title));
+                page.GetPropertyGroup<LanguageLinksPropertyGroup>()!.LanguageLinks.ToDictionary(l => l.Language, l => l.Title));
         }
 
         [Fact]
@@ -195,11 +197,11 @@ namespace WikiClientLibrary.Tests.UnitTestProject1.Tests
             var pageTitles = new[] { "清", "清", "香草" };
             var rev = await Revision.FetchRevisionsAsync(site, revIds).ToListAsync();
             ShallowTrace(rev);
-            Assert.Equal(revIds, rev.Select(r => r.Id));
-            Assert.Equal(pageTitles, rev.Select(r => r.Page.Title));
+            Assert.Equal(revIds, rev.Select(r => r!.Id));
+            Assert.Equal(pageTitles, rev.Select(r => r!.Page.Title));
             // Asserts that pages with the same title shares the same reference
             // Or an Exception will raise.
-            var pageDict = rev.Select(r => r.Page).Distinct().ToDictionary(p => p.Title);
+            var pageDict = rev.Select(r => r!.Page).Distinct().ToDictionary(p => p.Title!);
         }
 
         [Fact]
@@ -209,8 +211,8 @@ namespace WikiClientLibrary.Tests.UnitTestProject1.Tests
             var file = new WikiPage(site, "File:Empress Suiko.jpg");
             await file.RefreshAsync();
             ShallowTrace(file);
-            //Assert.True(file.Exists);   //It's on Wikimedia!
-            Assert.NotNull(file.LastFileRevision);
+            Assert.False(file.Exists);      //It's on Wikimedia!
+            Utility.AssertNotNull(file.LastFileRevision);
             Assert.Equal(58865, file.LastFileRevision.Size);
             Assert.Equal("7aa12c613c156dd125212d85a072b250625ae39f", file.LastFileRevision.Sha1.ToLowerInvariant());
             Assert.Empty(file.LastFileRevision.ExtMetadata);
@@ -231,11 +233,11 @@ namespace WikiClientLibrary.Tests.UnitTestProject1.Tests
 
             Output.WriteLine("Fetched file:");
             ShallowTrace(file);
-            Assert.NotNull(file.LastFileRevision);
+            Utility.AssertNotNull(file.LastFileRevision);
             Output.WriteLine("ExtMetadata:");
             ShallowTrace(file.LastFileRevision.ExtMetadata);
 
-            Assert.NotNull(file.LastFileRevision.ExtMetadata);
+            Utility.AssertNotNull(file.LastFileRevision.ExtMetadata);
             Assert.True(new DateTime(2013, 11, 14, 12, 15, 30) <= (DateTime)file.LastFileRevision.ExtMetadata["DateTime"].Value);
             Assert.Equal(FileRevisionExtMetadataValueSources.MediaWikiMetadata, file.LastFileRevision.ExtMetadata["DateTime"]?.Source);
         }

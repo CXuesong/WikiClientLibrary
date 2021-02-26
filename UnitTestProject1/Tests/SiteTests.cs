@@ -19,7 +19,7 @@ namespace WikiClientLibrary.Tests.UnitTestProject1.Tests
         {
         }
 
-        private void ValidateNamespace(WikiSite site, int id, string name, bool isContent, string normalizedName = null)
+        private void ValidateNamespace(WikiSite site, int id, string name, bool isContent, string? normalizedName = null)
         {
             Assert.True(site.Namespaces.Contains(id), $"Cannot find namespace id={id}.");
             var ns = site.Namespaces[id];

@@ -78,7 +78,7 @@ namespace WikiClientLibrary.Tests.UnitTestProject1.Tests
             var cqContext = new LolCargoQueryContext(site) { PaginationSize = 50 };
             var q = cqContext.Skins
                 .OrderBy(s => s.ReleaseDate)
-                .Select(s => new { SkinName = s.Name, s.Champion, s.ReleaseDate, s.ReleaseDate.Value.Year })
+                .Select(s => new { SkinName = s.Name, s.Champion, s.ReleaseDate, s.ReleaseDate!.Value.Year })
                 .Where(s => s.Year >= 2019 && s.Year <= 2020)
                 .Take(100);
             // Call .AsAsyncEnumerable to ensure we use async Linq call.
@@ -151,6 +151,12 @@ namespace WikiClientLibrary.Tests.UnitTestProject1.Tests
         [Table("Skins")]
         private class LolSkin
         {
+
+#pragma warning disable CS8618 // 在退出构造函数时，不可为 null 的字段必须包含非 null 值。请考虑声明为可以为 null。
+            public LolSkin()
+#pragma warning restore CS8618 // 在退出构造函数时，不可为 null 的字段必须包含非 null 值。请考虑声明为可以为 null。
+            {
+            }
 
             [Column(CargoSpecialColumnNames.PageName)]
             public string Page { get; set; }

@@ -31,7 +31,15 @@ namespace WikiClientLibrary.Tests.UnitTestProject1.Tests
         // The following pages will NOT be created at first.
         private const string TestPage12Title = "WCL test page 1/2";
 
-        public Task<WikiSite> SiteAsync => GetWikiSiteAsync(CredentialManager.DirtyTestsEntryPointUrl);
+        public Task<WikiSite> SiteAsync
+        {
+            get
+            {
+                if (string.IsNullOrEmpty(CredentialManager.DirtyTestsEntryPointUrl))
+                    throw new NotSupportedException();
+                return GetWikiSiteAsync(CredentialManager.DirtyTestsEntryPointUrl);
+            }
+        }
 
         /// <inheritdoc />
         public PageTestsDirty(ITestOutputHelper output) : base(output)
@@ -105,7 +113,7 @@ The original title of the page is '''{title}'''.
                     Assert.True(result.Warnings.TitleExists || result.Warnings.DuplicateTitles != null);
                     WriteOutput("Title exists.");
                     result = await site.UploadAsync(fileName,
-                        new FileKeyUploadSource(result.FileKey), file.Description + ReuploadSuffix, true);
+                        new FileKeyUploadSource(result.FileKey!), file.Description + ReuploadSuffix, true);
                     ShallowTrace(result);
                     Assert.Equal(UploadResultCode.Success, result.ResultCode);
                 }
@@ -122,7 +130,7 @@ The original title of the page is '''{title}'''.
             await page.RefreshAsync();
             ShallowTrace(page);
             Assert.True(page.Exists);
-            Assert.Equal(file.Sha1, page.LastFileRevision.Sha1.ToUpperInvariant());
+            Assert.Equal(file.Sha1, page.LastFileRevision!.Sha1.ToUpperInvariant());
         }
 
         [Fact]
@@ -177,7 +185,7 @@ In some countries this may not be legally possible; if so:
 JasonHise grants anyone the right to use this work for any purpose, without any conditions, unless such conditions are required by law.";
             const string reuploadSuffix = "\n\nReuploaded.";
             const string fileName = "File:8-cell-simple.gif";
-            var site = await CreateIsolatedWikiSiteAsync(CredentialManager.DirtyTestsEntryPointUrl);
+            var site = await CreateIsolatedWikiSiteAsync(CredentialManager.DirtyTestsEntryPointUrl!);
             // Allow for more time to wait.
             ((WikiClient)site.WikiClient).Timeout = TimeSpan.FromSeconds(30);
             try
@@ -186,7 +194,7 @@ JasonHise grants anyone the right to use this work for any purpose, without any 
                 // Usually we should notify the user, then perform the re-upload ignoring the warning.
                 if (result.Warnings.TitleExists)
                     result = await site.UploadAsync(fileName,
-                        new FileKeyUploadSource(result.FileKey), Description + reuploadSuffix, true);
+                        new FileKeyUploadSource(result.FileKey!), Description + reuploadSuffix, true);
                 Assert.Equal(UploadResultCode.Success, result.ResultCode);
             }
             catch (OperationFailedException ex)

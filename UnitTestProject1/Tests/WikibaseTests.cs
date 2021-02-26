@@ -205,7 +205,7 @@ namespace WikiClientLibrary.Tests.UnitTestProject1.Tests
             Assert.Equal(3, entity.Claims[prop.Id].Count);
             Assert.Contains(entity.Claims[prop.Id], c => entity.Id.Equals(c.MainSnak.DataValue));
             var claim2 = entity.Claims[prop.Id].FirstOrDefault(c => ArbitaryItemEntityId.Equals(c.MainSnak.DataValue));
-            Assert.NotNull(claim2);
+            Utility.AssertNotNull(claim2);
             Assert.Equal(entity.Id, claim2.References[0].Snaks[0].DataValue);
 
             //  Check consistency on the claim with qualifier
@@ -258,8 +258,8 @@ namespace WikiClientLibrary.Tests.UnitTestProject1.Tests
             sb.Append("/* */ ]");
             var entities = SerializableEntity.ParseAll(sb.ToString()).ToList();
             Assert.Equal(3, entities.Count);
-            Assert.NotNull(entities[0]);
-            Assert.NotNull(entities[1]);
+            Utility.AssertNotNull(entities[0]);
+            Utility.AssertNotNull(entities[1]);
             Assert.Null(entities[2]);
             Assert.Equal("P3", entities[0].Id);
             Assert.Equal(entities[0].Id, entities[1].Id);

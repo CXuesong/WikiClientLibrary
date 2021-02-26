@@ -76,7 +76,7 @@ namespace WikiClientLibrary.Tests.UnitTestProject1.Tests
             var generator = new AllPagesGenerator(site) { StartTitle = "W", PaginationSize = 20 };
             var pages = await generator.EnumPagesAsync(PageQueryOptions.FetchContent).Take(100).ToListAsync();
             TracePages(pages);
-            Assert.True(pages[0].Title[0] == 'W');
+            Assert.StartsWith("W", pages[0].Title!);
             AssertTitlesDistinct(pages);
         }
 
@@ -125,6 +125,7 @@ namespace WikiClientLibrary.Tests.UnitTestProject1.Tests
             TracePages(pages);
             AssertTitlesDistinct(pages);
             var catInfo = cat.GetPropertyGroup<CategoryInfoPropertyGroup>();
+            Utility.AssertNotNull(catInfo);
             Assert.Equal(catInfo.MembersCount, pages.Count);
         }
 
@@ -140,6 +141,7 @@ namespace WikiClientLibrary.Tests.UnitTestProject1.Tests
             TracePages(pages);
             AssertTitlesDistinct(pages);
             var catInfo = cat.GetPropertyGroup<CategoryInfoPropertyGroup>();
+            Utility.AssertNotNull(catInfo);
             Assert.Equal(catInfo.MembersCount, pages.Count);
         }
 
@@ -170,7 +172,7 @@ namespace WikiClientLibrary.Tests.UnitTestProject1.Tests
             AssertTitlesDistinct(pages);
             foreach (var p in pages)
             {
-                var flags = p.LastRevision.Flags;
+                var flags = p.LastRevision!.Flags;
                 Assert.True(flags != RevisionFlags.None);
                 Assert.False(flags.HasFlag(RevisionFlags.Anonymous));
                 Assert.True(flags.HasFlag(RevisionFlags.Minor));
@@ -261,8 +263,8 @@ namespace WikiClientLibrary.Tests.UnitTestProject1.Tests
                 Assert.Equal(LogActions.Move, log.Action);
                 // Wikia doesn't have `params` node in the logevent content,
                 // but LogEventsList should have taken care of it properly.
-                Assert.NotNull(log.Params);
-                Assert.NotNull(log.Params.TargetTitle);
+                Utility.AssertNotNull(log.Params);
+                Utility.AssertNotNull(log.Params.TargetTitle);
                 // Should not throw KeyNotFoundException
                 var ns = log.Params.TargetNamespaceId;
             }
@@ -395,7 +397,7 @@ namespace WikiClientLibrary.Tests.UnitTestProject1.Tests
             // in the result might have different order between each request.
             // We will take care of the situation. Just ensure we have most of the desired items.
             Assert.ProperSuperset(new HashSet<string>(searchResults.Select(r => r.Title).Take(40)),
-                new HashSet<string>(pages.Select(p => p.Title)));
+                new HashSet<string>(pages.Select(p => p.Title!)));
         }
 
         [Fact]
@@ -452,7 +454,7 @@ namespace WikiClientLibrary.Tests.UnitTestProject1.Tests
             var gen = new GeoSearchGenerator(site) { TargetCoordinate = new GeoCoordinate(47.01, 2), Radius = 2000 };
             var result = await gen.EnumItemsAsync().Take(10).FirstOrDefaultAsync(r => r.Page.Title == "France");
             ShallowTrace(result);
-            Assert.NotNull(result);
+            Utility.AssertNotNull(result);
             Assert.InRange(result.Distance, 1110, 1113);
             Assert.True(result.IsPrimaryCoordinate);
         }
@@ -464,7 +466,7 @@ namespace WikiClientLibrary.Tests.UnitTestProject1.Tests
             var gen = new GeoSearchGenerator(site) { BoundingRectangle = new GeoCoordinateRectangle(1.9, 47.1, 0.2, 0.2) };
             var result = await gen.EnumItemsAsync().Take(20).FirstOrDefaultAsync(r => r.Page.Title == "France");
             ShallowTrace(result);
-            Assert.NotNull(result);
+            Utility.AssertNotNull(result);
             Assert.True(result.IsPrimaryCoordinate);
         }
 

@@ -72,17 +72,17 @@ namespace WikiClientLibrary.Tests.UnitTestProject1
         private class LoggingScope : IDisposable
         {
 
-            private static readonly AsyncLocal<LoggingScope> currentScope = new AsyncLocal<LoggingScope>();
+            private static readonly AsyncLocal<LoggingScope?> currentScope = new AsyncLocal<LoggingScope?>();
 
-            private LoggingScope(object state, LoggingScope parent)
+            private LoggingScope(object? state, LoggingScope? parent)
             {
                 State = state;
                 Parent = parent;
             }
 
-            public object State { get; }
+            public object? State { get; }
 
-            public LoggingScope Parent { get; }
+            public LoggingScope? Parent { get; }
 
             public static IEnumerable<LoggingScope> Trace()
             {
@@ -97,9 +97,9 @@ namespace WikiClientLibrary.Tests.UnitTestProject1
                 return stack;
             }
 
-            public static LoggingScope Current => currentScope.Value;
+            public static LoggingScope? Current => currentScope.Value;
 
-            public static LoggingScope Push(object state)
+            public static LoggingScope Push(object? state)
             {
                 var current = currentScope.Value;
                 var next = new LoggingScope(state, current);

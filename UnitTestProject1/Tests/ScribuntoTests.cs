@@ -81,14 +81,14 @@ return p
         {
             var site = await WpTest2SiteAsync;
             var atomWeights = await site.ScribuntoLoadDataAsync<Dictionary<string, double>>("Module:Standard atomic weight");
-            Assert.NotNull(atomWeights);
+            Utility.AssertNotNull(atomWeights);
             Assert.Equal(32, atomWeights.Count);
             Assert.Equal(107.8682, atomWeights["Ag"]);
             Assert.Equal(74.921595, atomWeights["As"]);
             Assert.Equal(196.966569, atomWeights["Au"]);
             Assert.Equal(65.38, atomWeights["Zn"]);
             var data = await site.ScribuntoLoadDataAsync<JObject>("Icon/data", "return {project=p.project, meta=p.meta}");
-            Assert.NotNull(data);
+            Utility.AssertNotNull(data);
             Assert.Equal(2, data.Count);
             Assert.Equal("Symbol information vote.svg", (string)data["project"]["image"]);
             Assert.Equal("Project page", (string)data["project"]["tooltip"]);

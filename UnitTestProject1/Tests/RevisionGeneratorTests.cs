@@ -76,7 +76,7 @@ namespace WikiClientLibrary.Tests.UnitTestProject1.Tests
             var gen = page.CreateRevisionsGenerator();
             gen.PaginationSize = 20;
             var revisions = await gen.EnumItemsAsync().Skip(5).Take(5).ToListAsync();
-            Assert.All(revisions, Assert.NotNull);
+            Assert.All(revisions, Utility.AssertNotNull);
             Assert.Equal(5, revisions.Count);
             Assert.True(revisions.SequenceEqual(revisions.OrderByDescending(r => r.TimeStamp)));
             ShallowTrace(revisions);

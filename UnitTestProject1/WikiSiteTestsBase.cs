@@ -38,22 +38,22 @@ namespace WikiClientLibrary.Tests.UnitTestProject1
 
         public ITestOutputHelper Output { get; }
         
-        protected void WriteOutput(object value)
+        protected void WriteOutput(object? value)
         {
             WriteOutput(value == null ? "<null>" : value.ToString());
         }
 
-        protected void WriteOutput(string message)
+        protected void WriteOutput(string? message)
         {
             Output.WriteLine(message);
         }
 
-        protected void WriteOutput(string format, params object[] args)
+        protected void WriteOutput(string format, params object?[] args)
         {
             WriteOutput(string.Format(format, args));
         }
 
-        protected void ShallowTrace(object obj, int depth = 2)
+        protected void ShallowTrace(object? obj, int depth = 2)
         {
             var rawTrace = Utility.DumpObject(obj, depth);
 #if ENV_CI_BUILD
@@ -192,13 +192,15 @@ namespace WikiClientLibrary.Tests.UnitTestProject1
 
         protected Task<WikiSite> WikiSiteFromNameAsync(string sitePropertyName)
         {
-            static async Task<TDest> CastAsync<TSource, TDest>(Task<TSource> sourceTask)
+            static async Task<TDest> CastAsync<TSource, TDest>(Task<TSource> sourceTask) 
+                where TSource: class
+                where TDest : class
             {
                 return (TDest)(object)await sourceTask;
             }
             var task = GetType()
                 .GetProperty(sitePropertyName, BindingFlags.NonPublic | BindingFlags.Instance)
-                .GetValue(this);
+                !.GetValue(this);
             if (task is Task<WikiSite> ws) return ws;
             if (task is Task<WikiaSite> was) return CastAsync<WikiaSite, WikiSite>(was);
             throw new NotSupportedException();

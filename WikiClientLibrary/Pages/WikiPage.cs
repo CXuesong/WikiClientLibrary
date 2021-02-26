@@ -155,12 +155,12 @@ namespace WikiClientLibrary.Pages
         /// <remarks>See https://www.mediawiki.org/wiki/Manual:Page_table#page_touched .</remarks>
         public DateTime LastTouched => pageInfo?.LastTouched ?? DateTime.MinValue;
 
-        public IReadOnlyCollection<ProtectionInfo>? Protections => pageInfo?.Protections;
+        public IReadOnlyCollection<ProtectionInfo> Protections => pageInfo == null ? Array.Empty<ProtectionInfo>() : pageInfo.Protections;
 
         /// <summary>
         /// Applicable protection types. (MediaWiki 1.25)
         /// </summary>
-        public IReadOnlyCollection<string>? RestrictionTypes => pageInfo?.RestrictionTypes;
+        public IReadOnlyCollection<string> RestrictionTypes => pageInfo == null ? Array.Empty<string>() : pageInfo.RestrictionTypes;
 
         /// <summary>
         /// Gets whether the page exists.

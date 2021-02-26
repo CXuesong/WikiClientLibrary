@@ -16,7 +16,7 @@ namespace WikiClientLibrary.Tests.UnitTestProject1
         /// <summary>
         /// The API EntryPoint used for performing page moving/deletion and file uploads.
         /// </summary>
-        public static string DirtyTestsEntryPointUrl { get; private set; }
+        public static string? DirtyTestsEntryPointUrl { get; private set; }
 
         /// <summary>
         /// The API EntryPoint used for performing private wiki API tests.
@@ -29,14 +29,16 @@ namespace WikiClientLibrary.Tests.UnitTestProject1
         /// $wgGroupPermissions['*']['createaccount'] = false;
         /// </code>
         /// </remarks>
-        public static string PrivateWikiTestsEntryPointUrl { get; private set; }
+        public static string? PrivateWikiTestsEntryPointUrl { get; private set; }
 
         /// <summary>
         /// When implemented in your own credential file,
         /// set this property to a function that can login into specific site.
         /// You can use <see cref="WikiSite.ApiEndpoint"/> to determine which site to login into.
         /// </summary>
-        private static Func<WikiSite, Task> LoginCoreAsyncHandler { get; set; }
+        private static Func<WikiSite, Task> LoginCoreAsyncHandler { get; set; } = _ =>
+            throw new NotSupportedException(
+                "To enable login feature, you should set `LoginCoreAsyncHandler` in `Initialize` private function. See http://github.com/cxuesong/WikiClientLibrary for more information.");
 
         /// <summary>
         /// When implemented in your own credential file,
@@ -45,7 +47,9 @@ namespace WikiClientLibrary.Tests.UnitTestProject1
         /// to login to the site during initialization.
         /// You can use <see cref="SiteOptions.ApiEndpoint"/> to determine which site to login into.
         /// </summary>
-        private static Func<IWikiClient, SiteOptions, Task<WikiSite>> EarlyLoginCoreAsyncHandler { get; set; }
+        private static Func<IWikiClient, SiteOptions, Task<WikiSite>> EarlyLoginCoreAsyncHandler { get; set; } = (_, __) =>
+            throw new NotSupportedException(
+                "To enable login feature, you should set `EarlyLoginCoreAsyncHandler` in `Initialize` private function. See http://github.com/cxuesong/WikiClientLibrary for more information.");
 
         /// <summary>
         /// Initialize confidential information.
@@ -59,10 +63,6 @@ namespace WikiClientLibrary.Tests.UnitTestProject1
         public static async Task LoginAsync(WikiSite site)
         {
             if (site == null) throw new ArgumentNullException(nameof(site));
-            if (LoginCoreAsyncHandler == null)
-            {
-                throw new NotSupportedException("To enable login feature, you should set `LoginCoreAsyncHandler` in `Initialize` private function. See http://github.com/cxuesong/WikiClientLibrary for more information.");
-            }
             await LoginCoreAsyncHandler(site);
             if (!site.AccountInfo.IsUser)
                 throw new NotSupportedException("Failed to login into: " + site + " . Check your LoginCoreAsyncHandler implementation.");
@@ -75,10 +75,6 @@ namespace WikiClientLibrary.Tests.UnitTestProject1
         {
             if (wikiClient == null) throw new ArgumentNullException(nameof(wikiClient));
             if (options == null) throw new ArgumentNullException(nameof(options));
-            if (EarlyLoginCoreAsyncHandler == null)
-            {
-                throw new NotSupportedException("To enable login feature, you should set `EarlyLoginCoreAsyncHandler` in `Initialize` private function. See http://github.com/cxuesong/WikiClientLibrary for more information.");
-            }
             var site = await EarlyLoginCoreAsyncHandler(wikiClient, options);
             if (!site.Initialization.IsCompleted)
                 throw new InvalidOperationException("You forgot to await WikiSite.Initialization in your EarlyLoginCoreAsyncHandler implementation.");
