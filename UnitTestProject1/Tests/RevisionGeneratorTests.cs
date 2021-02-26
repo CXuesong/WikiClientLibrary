@@ -72,7 +72,7 @@ namespace WikiClientLibrary.Tests.UnitTestProject1.Tests
         public async Task WikiaEnumRevisionsTest1()
         {
             var site = await WikiaTestSiteAsync;
-            var page = new WikiPage(site, "Project:Sandbox");
+            var page = new WikiPage(site, "Dman Wikia");
             var gen = page.CreateRevisionsGenerator();
             gen.PaginationSize = 20;
             var revisions = await gen.EnumItemsAsync().Skip(5).Take(5).ToListAsync();

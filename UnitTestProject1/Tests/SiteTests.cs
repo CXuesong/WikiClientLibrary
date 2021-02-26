@@ -178,12 +178,12 @@ namespace WikiClientLibrary.Tests.UnitTestProject1.Tests
         public async Task WikiaOpenSearchTest()
         {
             var site = await WikiaTestSiteAsync;
-            var result = await Task.WhenAll(site.OpenSearchAsync("San"),
-                site.OpenSearchAsync("THIS_TITLE_DOES_NOT_EXIST"));
+            var result = await Task.WhenAll(site.OpenSearchAsync("Dman Wi"),
+                site.OpenSearchAsync("THISTITLEDOESNOTEXIST"));
             ShallowTrace(result[0]);
             ShallowTrace(result[1]);
             Assert.True(result[0].Count > 0);
-            Assert.Contains(result[0], e => e.Title == "Sandbox");
+            Assert.Contains(result[0], e => e.Title == "Dman Wikia");
             Assert.True(result[1].Count == 0);
         }
 
