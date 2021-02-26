@@ -107,11 +107,6 @@ namespace WikiClientLibrary.Tests.UnitTestProject1
             return new DemoFileInfo(content, desc);
         }
 
-        public static HashSet<T> ToHashSet<T>(this IEnumerable<T> source)
-        {
-            return new HashSet<T>(source);
-        }
-
         private static readonly Random random = new Random();
 
         public static string RandomTitleString(int length = 8)
