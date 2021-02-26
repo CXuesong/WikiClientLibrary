@@ -38,12 +38,12 @@ jobs:
       - name: Build
         shell: pwsh
         run: ./WikiClientLibrary.Commons/CI/Build.ps1
-      - name: Test
-        shell: pwsh
-        run: ./WikiClientLibrary.Commons/CI/Test.ps1
       - name: CollectArtifacts
         shell: pwsh
         run: './WikiClientLibrary.Commons/CI/CollectArtifacts -Configuration Release'
+      - name: Test
+        shell: pwsh
+        run: ./WikiClientLibrary.Commons/CI/Test.ps1
       - uses: actions/upload-artifact@master
         with:
           name: BuildArtifacts-CIRelease
@@ -55,7 +55,6 @@ jobs:
     strategy:
       matrix:
         config: ["Debug", "Release"]
-      fail-fast: true
     env:
       DOTNET_SKIP_FIRST_TIME_EXPERIENCE: 1
       DOTNET_CLI_TELEMETRY_OPTOUT: 1
