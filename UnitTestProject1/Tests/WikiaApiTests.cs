@@ -56,7 +56,7 @@ namespace WikiClientLibrary.Tests.UnitTestProject1.Tests
             var data = site.WikiVariables;
             ShallowTrace(data);
             Assert.Equal(203236, data.Id);
-            Assert.Equal("Mediawiki 1.19 test Wiki", data.SiteName);
+            Assert.Equal("Dman Wikia", data.SiteName);
             Assert.Equal("https://mediawiki119.wikia.org", data.BasePath);
             Assert.Equal("/wiki/", data.ArticlePath);
             Assert.Equal(new[] { 0 }, data.ContentNamespaceIds);

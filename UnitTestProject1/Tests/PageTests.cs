@@ -249,7 +249,7 @@ namespace WikiClientLibrary.Tests.UnitTestProject1.Tests
             var site = await WikiaTestSiteAsync;
             var page = new WikiPage(site, "Project:Sandbox");
             await page.RefreshAsync(PageQueryOptions.FetchContent);
-            Assert.Equal("Mediawiki 1.19 test Wiki:Sandbox", page.Title);
+            Assert.Equal("Dman Wikia:Sandbox", page.Title);
             Assert.Equal(4, page.NamespaceId);
             ShallowTrace(page);
         }
@@ -259,9 +259,9 @@ namespace WikiClientLibrary.Tests.UnitTestProject1.Tests
         public async Task WikiaPageReadByIdTest()
         {
             var site = await WikiaTestSiteAsync;
-            var page = new WikiPage(site, 190273);
+            var page = new WikiPage(site, 637);
             await page.RefreshAsync();
-            Assert.Equal("Mediawiki 1.19 test Wiki:Sandbox", page.Title);
+            Assert.Equal("Dman Wikia:Sandbox", page.Title);
             Assert.Equal(4, page.NamespaceId);
             ShallowTrace(page);
         }
@@ -271,6 +271,7 @@ namespace WikiClientLibrary.Tests.UnitTestProject1.Tests
         public async Task WikiaPageReadDisambigTest()
         {
             var site = await WikiaTestSiteAsync;
+            Output.WriteLine("Is there Disambiguator on this site? {0}", site.Extensions.Contains("Disambiguator"));
             var page = new WikiPage(site, "Test (Disambiguation)");
             await page.RefreshAsync();
             Assert.True(await page.IsDisambiguationAsync());
