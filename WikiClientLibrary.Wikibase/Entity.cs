@@ -41,20 +41,39 @@ namespace WikiClientLibrary.Wikibase
         /// <summary>
         /// Asynchronously gets the entity IDs with specified sequence of titles on the specified site.
         /// </summary>
-        /// <param name="site">The Wikibase repository site.</param>
-        /// <param name="siteName">The site name of the sitelinks.</param>
-        /// <param name="titles">The article titles on the site <paramref name="siteName"/> to check for entity IDs.</param>
+        /// <param name="site">the Wikibase repository site.</param>
+        /// <param name="siteName">the site name of the sitelinks.</param>
+        /// <param name="titles">the article titles on the site <paramref name="siteName"/> to check for corresponding entity IDs.</param>
+        /// <param name="cancellationToken">a token used to cancel the operation.</param>
         /// <exception cref="ArgumentNullException">Either <paramref name="site"/>, <paramref name="siteName"/>, or <paramref name="titles"/> is <c>null</c>.</exception>
         /// <returns>
-        /// A asynchronous sequence of entity IDs in the identical order with <paramref name="titles"/>.
+        /// A asynchronous sequence of entity IDs (e.g. <c>Q1234</c>) in the identical order with <paramref name="titles"/>.
         /// If one or more entities are missing, the corresponding entity ID will be <c>null</c>.
         /// </returns>
-        public static IAsyncEnumerable<string?> IdsFromSiteLinksAsync(WikiSite site, string siteName, IEnumerable<string> titles)
+        public static IAsyncEnumerable<string?> IdsFromSiteLinksAsync(WikiSite site, string siteName, IEnumerable<string> titles, CancellationToken cancellationToken = default)
         {
             if (site == null) throw new ArgumentNullException(nameof(site));
             if (siteName == null) throw new ArgumentNullException(nameof(siteName));
             if (titles == null) throw new ArgumentNullException(nameof(titles));
-            return WikibaseRequestHelper.EntityIdsFromSiteLinksAsync(site, siteName, titles);
+            return WikibaseRequestHelper.EntityIdsFromSiteLinksAsync(site, siteName, titles, cancellationToken);
+        }
+
+        /// <summary>
+        /// Asynchronously gets the entity IDs with specified sequence of titles on the specified site.
+        /// </summary>
+        /// <param name="site">The Wikibase repository site.</param>
+        /// <param name="siteName">The site name of the sitelink.</param>
+        /// <param name="title">The article title on the site <paramref name="siteName"/> to check for corresponding entity ID.</param>
+        /// <param name="cancellationToken">a token used to cancel the operation.</param>
+        /// <exception cref="ArgumentNullException">Either <paramref name="site"/>, <paramref name="siteName"/>, or <paramref name="title"/> is <c>null</c>.</exception>
+        /// <returns>corresponding entity ID (e.g. <c>Q1234</c>), or <c>null</c> if no such entity can be found.</returns>
+        public static async Task<string?> IdFromSiteLinkAsync(WikiSite site, string siteName, string title, CancellationToken cancellationToken = default)
+        {
+            if (site == null) throw new ArgumentNullException(nameof(site));
+            if (siteName == null) throw new ArgumentNullException(nameof(siteName));
+            if (title == null) throw new ArgumentNullException(nameof(title));
+            var result = await WikibaseRequestHelper.EntityIdsFromSiteLinksAsync(site, siteName, new[] { title }, cancellationToken).FirstAsync(cancellationToken);
+            return result;
         }
 
         #endregion
@@ -257,27 +276,27 @@ namespace WikiClientLibrary.Wikibase
                 LastRevisionId = (int)extensionData["lastrevid"];
             }
 
-            Labels = (options & EntityQueryOptions.FetchLabels) == EntityQueryOptions.FetchLabels && Labels.Count > 0
+            Labels = (options & EntityQueryOptions.FetchLabels) == EntityQueryOptions.FetchLabels && serializable.Labels.Count > 0
                 ? serializable.Labels
                 : emptyStringDict;
             Labels.IsReadOnly = true;
 
-            Aliases = ((options & EntityQueryOptions.FetchAliases) == EntityQueryOptions.FetchAliases) && serializable.Aliases.Count > 0
+            Aliases = (options & EntityQueryOptions.FetchAliases) == EntityQueryOptions.FetchAliases && serializable.Aliases.Count > 0
                 ? serializable.Aliases
                 : emptyStringsDict;
             Aliases.IsReadOnly = true;
 
-            Descriptions = ((options & EntityQueryOptions.FetchDescriptions) == EntityQueryOptions.FetchDescriptions) && serializable.Descriptions.Count > 0
+            Descriptions = (options & EntityQueryOptions.FetchDescriptions) == EntityQueryOptions.FetchDescriptions && serializable.Descriptions.Count > 0
                 ? serializable.Descriptions
                 : emptyStringDict;
             Descriptions.IsReadOnly = true;
 
-            SiteLinks = ((options & EntityQueryOptions.FetchClaims) == EntityQueryOptions.FetchClaims) && serializable.SiteLinks.Count > 0
+            SiteLinks = (options & EntityQueryOptions.FetchSiteLinks) == EntityQueryOptions.FetchSiteLinks && serializable.SiteLinks.Count > 0
                 ? serializable.SiteLinks
                 : emptySiteLinks;
             SiteLinks.IsReadOnly = true;
 
-            Claims = ((options & EntityQueryOptions.FetchClaims) == EntityQueryOptions.FetchClaims) && serializable.Claims.Count > 0
+            Claims = (options & EntityQueryOptions.FetchClaims) == EntityQueryOptions.FetchClaims && serializable.Claims.Count > 0
                 ? serializable.Claims
                 : emptyClaims;
             Claims.IsReadOnly = true;

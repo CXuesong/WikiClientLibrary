@@ -123,8 +123,10 @@ namespace WikiClientLibrary.Wikibase.Infrastructures
             get { return _IsReadOnly; }
             set
             {
-                AssertMutable();
-                _IsReadOnly = value;
+                if (value)
+                    _IsReadOnly = true;
+                else
+                    AssertMutable();
             }
         }
 

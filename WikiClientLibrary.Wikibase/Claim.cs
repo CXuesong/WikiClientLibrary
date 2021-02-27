@@ -138,8 +138,8 @@ namespace WikiClientLibrary.Wikibase
         {
             Debug.Assert(claim != null);
             Id = claim.Id;
-            Type = claim.Type;
-            Rank = claim.Rank;
+            Type = claim.Type ?? "";
+            Rank = claim.Rank ?? "";
             _Qualifiers.Clear();
             if (claim.Qualifiers != null)
                 _Qualifiers.AddRange(EnumWithOrder(claim.Qualifiers, claim.QualifiersOrder).Select(Snak.FromContract));
@@ -203,7 +203,7 @@ namespace WikiClientLibrary.Wikibase
             {
                 _Snaks.AddRange(Claim.EnumWithOrder(reference.Snaks, reference.SnaksOrder).Select(Snak.FromContract));
             }
-            Hash = reference.Hash;
+            Hash = reference.Hash ?? "";
         }
 
         internal Contracts.Reference ToContract()
@@ -211,8 +211,8 @@ namespace WikiClientLibrary.Wikibase
             return new Contracts.Reference
             {
                 Hash = Hash,
-                Snaks = Snaks == null ? null : Claim.GroupIntoDictionary(Snaks.Select(s => s.ToContract()), s => s.Property),
-                SnaksOrder = Snaks?.Select(s => s.PropertyId).Distinct().ToList()
+                Snaks = Claim.GroupIntoDictionary(Snaks.Select(s => s.ToContract()), s => s.Property),
+                SnaksOrder = Snaks.Select(s => s.PropertyId).Distinct().ToList()
             };
         }
 
@@ -426,8 +426,8 @@ namespace WikiClientLibrary.Wikibase
         private void LoadFromContract(Contracts.Snak snak)
         {
             Debug.Assert(snak != null);
-            SnakType = ParseSnakType(snak.SnakType);
-            Hash = snak.Hash;
+            SnakType = ParseSnakType(snak.SnakType!);
+            Hash = snak.Hash ?? "";
             RawDataValue = snak.DataValue;
             DataType = string.IsNullOrEmpty(snak.DataType)
                 ? null

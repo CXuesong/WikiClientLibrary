@@ -127,9 +127,23 @@ namespace WikiClientLibrary.Tests.UnitTestProject1.Tests
             AssertModify();
 
             const string ArbitaryItemEntityId = "Q487"; // An item ID that exists on test wiki site.
+            var testSiteLink = new EntitySiteLink("testwiki", "Foo");
 
             options |= EntityEditOptions.Bot;
+
             var site = await WikidataTestSiteAsync;
+
+            // Precondition
+            var existingEntityId = await Entity.IdFromSiteLinkAsync(site, testSiteLink.Site, testSiteLink.Title);
+            if (existingEntityId != null)
+            {
+                Output.WriteLine("Detected existing entity ID: {0}. Will perform cleanup.", existingEntityId);
+                var existingEntity = new Entity(site, existingEntityId);
+                await existingEntity.EditAsync(new[] { new EntityEditEntry(nameof(Entity.SiteLinks), testSiteLink, EntityEditEntryState.Removed) },
+                    "Cleanup for unit test.");
+                Output.WriteLine("Cleanup finished.");
+            }
+
             var rand = Convert.ToBase64String(Guid.NewGuid().ToByteArray());
             // Create
             var entity = new Entity(site, EntityType.Item);
@@ -141,7 +155,7 @@ namespace WikiClientLibrary.Tests.UnitTestProject1.Tests
                     new WbMonolingualText("en",
                         "This is a test entity for unit test. If you see this entity outside the test site, please check the revision history and notify the editor.")),
                 new EntityEditEntry(nameof(Entity.Descriptions), new WbMonolingualText("zh", "此实体仅用于测试之用。如果你在非测试维基见到此实体，请检查修订历史并告知编辑者。")),
-                new EntityEditEntry(nameof(entity.SiteLinks), new EntitySiteLink("testwiki", "Foo")),
+                new EntityEditEntry(nameof(entity.SiteLinks), testSiteLink),
             };
             await entity.EditAsync(changelist, "Create test entity.", options);
             if ((options & EntityEditOptions.Bulk) != EntityEditOptions.Bulk)
@@ -242,10 +256,12 @@ namespace WikiClientLibrary.Tests.UnitTestProject1.Tests
         public void SerializableEntityTest()
         {
             var entity = SerializableEntity.Parse(Resources.WikibaseP3);
+            Utility.AssertNotNull(entity);
             Assert.Equal("P3", entity.Id);
             Assert.Equal("instance of", entity.Labels["en"]);
             Assert.Contains(entity.Claims["P5"], c => (string?)c.MainSnak.DataValue == "Q25");
             entity = SerializableEntity.Parse(entity.ToJsonString());
+            Utility.AssertNotNull(entity);
             Assert.Equal("P3", entity.Id);
             Assert.Equal("instance of", entity.Labels["en"]);
             Assert.Contains(entity.Claims["P5"], c => (string?)c.MainSnak.DataValue == "Q25");
@@ -279,6 +295,7 @@ namespace WikiClientLibrary.Tests.UnitTestProject1.Tests
         public void SerializableEntityEofTest()
         {
             Assert.Null(SerializableEntity.Parse(""));
+            Assert.Null(SerializableEntity.Parse("    \t\t    "));
             Assert.Null(SerializableEntity.Load(TextReader.Null));
             Assert.Empty(SerializableEntity.ParseAll(""));
             Assert.Empty(SerializableEntity.LoadAll(TextReader.Null));

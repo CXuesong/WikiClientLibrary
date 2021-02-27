@@ -110,7 +110,7 @@ namespace WikiClientLibrary.Wikibase
                 throw new ArgumentOutOfRangeException(nameof(value));
         }
 
-        internal static EntityType ParseEntityType(string value)
+        internal static EntityType ParseEntityType(string? value)
         {
             return value switch
             {
@@ -194,25 +194,27 @@ namespace WikiClientLibrary.Wikibase
         }
 
         /// <summary>
-        /// Populates the current entity from <see cref="TextReader"/>.
+        /// Loads 1 <see cref="SerializableEntity"/> from text reader.
         /// </summary>
         /// <param name="reader">The reader from which to read serialized entity JSON.</param>
         /// <returns>The deserialized entity, or <c>null</c> if EOF has been reached.</returns>
-        public static SerializableEntity Load(TextReader reader)
+        public static SerializableEntity? Load(TextReader reader)
         {
             if (reader == null) throw new ArgumentNullException(nameof(reader));
-            return Load(Utility.WikiJsonSerializer.Deserialize<Contracts.Entity>(reader));
+            var contract = Utility.WikiJsonSerializer.Deserialize<Contracts.Entity>(reader);
+            return contract == null ? null : Load(contract);
         }
 
         /// <summary>
-        /// Populates the current entity from <see cref="JsonReader"/>.
+        /// Loads 1 <see cref="SerializableEntity"/> from JSON reader.
         /// </summary>
         /// <param name="reader">The reader from which to read serialized entity JSON.</param>
         /// <returns>The deserialized entity, or <c>null</c> if EOF has been reached.</returns>
-        public static SerializableEntity Load(JsonReader reader)
+        public static SerializableEntity? Load(JsonReader reader)
         {
             if (reader == null) throw new ArgumentNullException(nameof(reader));
-            return Load(Utility.WikiJsonSerializer.Deserialize<Contracts.Entity>(reader));
+            var contract = Utility.WikiJsonSerializer.Deserialize<Contracts.Entity>(reader);
+            return contract == null ? null : Load(contract);
         }
 
         /// <inheritdoc cref="LoadAll(JsonReader)"/>
@@ -302,15 +304,16 @@ namespace WikiClientLibrary.Wikibase
 
         /// <inheritdoc cref="Load(JsonReader)"/>
         /// <summary>
-        /// Enumerates all the entities from JSON array contained in the file.
+        /// Loads 1 <see cref="SerializableEntity"/> from the specified file.
         /// </summary>
         /// <param name="fileName">The path of file containing the serialized JSON of a single entity.</param>
         /// <seealso cref="LoadAll(string)"/>
-        public static SerializableEntity Load(string fileName)
+        public static SerializableEntity? Load(string fileName)
         {
             if (fileName == null) throw new ArgumentNullException(nameof(fileName));
             using var reader = File.OpenText(fileName);
-            return Load(Utility.WikiJsonSerializer.Deserialize<Contracts.Entity>(reader));
+            var contract = Utility.WikiJsonSerializer.Deserialize<Contracts.Entity>(reader);
+            return contract == null ? null : Load(contract);
         }
 
         /// <inheritdoc cref="LoadAll(JsonReader)"/>
@@ -332,10 +335,12 @@ namespace WikiClientLibrary.Wikibase
         /// Creates a new instance of <see cref="SerializableEntity"/> from JSON string.
         /// </summary>
         /// <param name="entityJson">The serialized entity JSON string.</param>
-        public static SerializableEntity Parse(string entityJson)
+        /// <returns>the first parsed entity, or <c>null</c> if the input is empty or does not contain JSON object.</returns>
+        public static SerializableEntity? Parse(string entityJson)
         {
             if (entityJson == null) throw new ArgumentNullException(nameof(entityJson));
-            return Load(Utility.WikiJsonSerializer.Deserialize<Contracts.Entity>(entityJson));
+            var contract = Utility.WikiJsonSerializer.Deserialize<Contracts.Entity>(entityJson);
+            return contract == null ? null : Load(contract);
         }
 
         private static IDictionary<string, Contracts.MonolingualText> ToContract(WbMonolingualTextCollection value)

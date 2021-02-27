@@ -60,13 +60,13 @@ namespace WikiClientLibrary.Wikibase
             return writer.ToString();
         }
 
-        public static T Deserialize<T>(this JsonSerializer serializer, TextReader reader)
+        public static T? Deserialize<T>(this JsonSerializer serializer, TextReader reader) where T : class
         {
             using var jreader = new JsonTextReader(reader);
             return serializer.Deserialize<T>(jreader);
         }
 
-        public static T Deserialize<T>(this JsonSerializer serializer, string json)
+        public static T? Deserialize<T>(this JsonSerializer serializer, string json) where T : class
         {
             using var reader = new StringReader(json);
             return serializer.Deserialize<T>(reader);

@@ -14,10 +14,10 @@ namespace WikiClientLibrary.Wikibase.Contracts
         public IDictionary<string, JToken>? ExtensionData { get; set; }
 
         [JsonProperty]
-        public string Type { get; set; } = "";
+        public string? Type { get; set; }
 
         [JsonProperty]
-        public string DataType { get; set; } = "";
+        public string? DataType { get; set; }
 
         [JsonProperty]
         public string? Id { get; set; }
@@ -62,7 +62,7 @@ namespace WikiClientLibrary.Wikibase.Contracts
         public Snak? MainSnak { get; set; }
 
         [JsonProperty]
-        public string Type { get; set; } = "";
+        public string? Type { get; set; }
 
         [JsonProperty]
         public IDictionary<string, ICollection<Snak>>? Qualifiers { get; set; }
@@ -74,7 +74,7 @@ namespace WikiClientLibrary.Wikibase.Contracts
         public string? Id { get; set; }
 
         [JsonProperty]
-        public string Rank { get; set; } = "";
+        public string? Rank { get; set; }
 
         [JsonProperty]
         public IList<Reference>? References { get; set; }
@@ -87,14 +87,13 @@ namespace WikiClientLibrary.Wikibase.Contracts
     internal class Snak
     {
         [JsonProperty]
-        public string SnakType { get; set; } = "";
+        public string? SnakType { get; set; }
 
         [JsonProperty]
-
         public string Property { get; set; } = "";
 
         [JsonProperty]
-        public string Hash { get; set; } = "";
+        public string? Hash { get; set; }
 
         [JsonProperty]
         public JObject? DataValue { get; set; }
@@ -107,7 +106,7 @@ namespace WikiClientLibrary.Wikibase.Contracts
     internal class Reference
     {
         [JsonProperty]
-        public string Hash { get; set; } = "";
+        public string? Hash { get; set; }
 
         [JsonProperty]
         public IDictionary<string, ICollection<Snak>>? Snaks { get; set; }
