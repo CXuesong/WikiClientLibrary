@@ -63,7 +63,7 @@ namespace WikiClientLibrary.Cargo.Schema
             return new CargoTableFieldDefinition(CargoModelUtility.ColumnNameFromProperty(property), fieldType, isCollection ? listAttr?.Delimiter ?? "," : null, !isNullable);
         }
 
-        public CargoTableFieldDefinition(string name, CargoTableFieldType fieldType, string listDelimiter, bool isMandatory)
+        public CargoTableFieldDefinition(string name, CargoTableFieldType fieldType, string? listDelimiter, bool isMandatory)
         {
             Name = name;
             FieldType = fieldType;
@@ -75,9 +75,12 @@ namespace WikiClientLibrary.Cargo.Schema
 
         public CargoTableFieldType FieldType { get; }
 
+        /// <summary>Whether this field is of List type.</summary>
         public bool IsList => ListDelimiter != null;
 
-        public string ListDelimiter { get; }
+        /// <summary>For fields of List type, this is the delimiter of the list item.</summary>
+        /// <value>delimiter of the list item, or <c>null</c> if this field is not of List type.</value>
+        public string? ListDelimiter { get; }
 
         /// <summary>
         /// If set, the field is declared as mandatory, i.e. blank values are not allowed.

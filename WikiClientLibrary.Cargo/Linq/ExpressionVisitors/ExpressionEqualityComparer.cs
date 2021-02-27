@@ -11,7 +11,7 @@ namespace WikiClientLibrary.Cargo.Linq.ExpressionVisitors
         public static new ExpressionEqualityComparer Default { get; } = new ExpressionEqualityComparer();
 
         /// <inheritdoc />
-        public override bool Equals(Expression x, Expression y)
+        public override bool Equals(Expression? x, Expression? y)
         {
             if (ReferenceEquals(x, y)) return true;
             if (x == null || y == null) return false;
@@ -34,7 +34,7 @@ namespace WikiClientLibrary.Cargo.Linq.ExpressionVisitors
         }
 
         /// <inheritdoc />
-        public override int GetHashCode(Expression obj)
+        public override int GetHashCode(Expression? obj)
         {
             return obj switch
             {

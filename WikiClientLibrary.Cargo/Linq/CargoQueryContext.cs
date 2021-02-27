@@ -12,14 +12,13 @@ namespace WikiClientLibrary.Cargo.Linq
     /// </summary>
     public interface ICargoQueryContext
     {
-
         /// <summary>
         /// Starts a Linq query expression on the specified Cargo model and Cargo table.
         /// </summary>
         /// <typeparam name="T">type of the model.</typeparam>
         /// <param name="name">name of the Cargo table. Specify <c>null</c> to use default table name corresponding to the model.</param>
         /// <returns>LINQ root.</returns>
-        ICargoRecordSet<T> Table<T>(string name);
+        ICargoRecordSet<T> Table<T>(string? name);
 
         /// <summary>
         /// Starts a Linq query expression on the specified table.
@@ -56,7 +55,7 @@ namespace WikiClientLibrary.Cargo.Linq
         }
 
         /// <inheritdoc />
-        public ICargoRecordSet<T> Table<T>(string name)
+        public ICargoRecordSet<T> Table<T>(string? name)
         {
             return new CargoRecordSet<T>(CargoModel.FromClrType(typeof(T), name), new CargoQueryProvider(WikiSite) { PaginationSize = _PaginationSize });
         }

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Text;
@@ -22,8 +23,8 @@ namespace WikiClientLibrary.Cargo.Linq.ExpressionVisitors
 
         private readonly HashSet<Expression> _nonEvaluableExpressions = new HashSet<Expression>(ExpressionEqualityComparer.Default)
         {
-            Expression.MakeMemberAccess(null, typeof(DateTime).GetProperty(nameof(DateTime.Now))),
-            Expression.MakeMemberAccess(null, typeof(DateTimeOffset).GetProperty(nameof(DateTimeOffset.Now))),
+            Expression.MakeMemberAccess(null, typeof(DateTime).GetProperty(nameof(DateTime.Now))!),
+            Expression.MakeMemberAccess(null, typeof(DateTimeOffset).GetProperty(nameof(DateTimeOffset.Now))!),
         };
 
         public ExpressionTreePartialEvaluator()
@@ -45,7 +46,7 @@ namespace WikiClientLibrary.Cargo.Linq.ExpressionVisitors
             }
         }
 
-        private bool IsWellKnownNonEvaluable(Expression expr)
+        private static bool IsWellKnownNonEvaluable(Expression expr)
         {
             Debug.Assert(expr != null);
             if (expr.NodeType == ExpressionType.Parameter || expr.NodeType == ExpressionType.Extension)
@@ -56,14 +57,15 @@ namespace WikiClientLibrary.Cargo.Linq.ExpressionVisitors
         }
 
         /// <inheritdoc />
-        public override Expression Visit(Expression node)
+        [return: NotNullIfNotNull("node")]
+        public override Expression? Visit(Expression? node)
         {
             if (node == null)
                 return null;
             // Debug.WriteLine("Visit {0}：{1}", node.NodeType, node);
             var state = new TraversalStateFrame(node, !IsWellKnownNonEvaluable(node));
             _traversalStack.Push(state);
-            Expression result;
+            Expression? result;
             try
             {
                 result = base.Visit(node);
@@ -74,11 +76,11 @@ namespace WikiClientLibrary.Cargo.Linq.ExpressionVisitors
                 Debug.Assert(popped == state);
             }
             // Tell parent `node` is not evaluable.
-            var nodeEvaluable = state.IsEvaulable && !_nonEvaluableExpressions.Contains(result);
+            var nodeEvaluable = state.IsEvaluable && !_nonEvaluableExpressions.Contains(result);
             CurrentStateFrame.LastVisitEvaluable = nodeEvaluable;
             // Also set parent as non-evaluable automatically. Parent can reset this flag later if necessary.
             if (!nodeEvaluable)
-                CurrentStateFrame.IsEvaulable = false;
+                CurrentStateFrame.IsEvaluable = false;
             return result;
         }
 
@@ -90,7 +92,8 @@ namespace WikiClientLibrary.Cargo.Linq.ExpressionVisitors
             // Do full evaluate expression at lambda body, if possible.
             if (CurrentStateFrame.LastVisitEvaluable)
                 body = Evaluate(body);
-            node = node.Update(body, node.Parameters);
+            // Looks like a NRT annotation error in BCL.
+            node = node.Update(body, node.Parameters)!;
             return node;
         }
 
@@ -149,16 +152,16 @@ namespace WikiClientLibrary.Cargo.Linq.ExpressionVisitors
         private sealed class TraversalStateFrame
         {
             // For debugging purpose.
-            public readonly Expression OriginalExpression;
+            public readonly Expression? OriginalExpression;
 
-            public bool IsEvaulable;
+            public bool IsEvaluable;
 
             public bool LastVisitEvaluable;
 
-            public TraversalStateFrame(Expression originalExpression, bool isEvaulable)
+            public TraversalStateFrame(Expression? originalExpression, bool isEvaluable)
             {
                 OriginalExpression = originalExpression;
-                IsEvaulable = isEvaulable;
+                IsEvaluable = isEvaluable;
             }
         }
 

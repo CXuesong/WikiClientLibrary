@@ -17,11 +17,11 @@ namespace WikiClientLibrary.Cargo.Linq
     public class CargoModel
     {
 
-        public static CargoModel FromClrType(Type clrType, string nameOverride = null)
+        public static CargoModel FromClrType(Type clrType, string? nameOverride = null)
         {
             var tableAttr = clrType.GetCustomAttribute<TableAttribute>();
             var fields = clrType.GetProperties()
-                .Where(p => p.CanRead && p.CanWrite && p.GetMethod.IsPublic && p.SetMethod.IsPublic)
+                .Where(p => p.CanRead && p.CanWrite && p.GetMethod!.IsPublic && p.SetMethod!.IsPublic)
                 .Select(p => new CargoModelProperty(p))
                 .ToImmutableList();
             var tableDefinition = new CargoTableDefinition(nameOverride ?? tableAttr?.Name ?? clrType.Name, fields.Select(f => f.FieldDefinition));

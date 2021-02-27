@@ -8,6 +8,7 @@
       WikiClientLibrary.Cargo is a .NET Standard &amp; asynchronous client library for MediaWiki sites with Cargo support.
     </Description>
     <PackageTags>$(PackageTags) Cargo</PackageTags>
+    <Nullable>Enable</Nullable>
   </PropertyGroup>
 
   <ItemGroup>

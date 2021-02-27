@@ -34,11 +34,13 @@ namespace WikiClientLibrary.Cargo.Linq.ExpressionVisitors
         protected override Expression VisitMember(MemberExpression node)
         {
             var declaringType = node.Member.DeclaringType;
+            if (declaringType == null) return base.VisitMember(node);
             if (node.Member.Name == nameof(Nullable<int>.Value))
             {
                 var nullableUnderlyingType = Nullable.GetUnderlyingType(declaringType);
                 if (nullableUnderlyingType != null)
                 {
+                    Debug.Assert(node.Expression != null);
                     // Normalize `field.Value` into `(T)field`.
                     return Expression.Convert(node.Expression, nullableUnderlyingType);
                 }
@@ -49,7 +51,7 @@ namespace WikiClientLibrary.Cargo.Linq.ExpressionVisitors
                 {
                     case nameof(DateTimeOffset.Now):
                         // Converts "NOW" as NOW() server-side function call.
-                        return new CargoFunctionExpression("NOW", node.Member.DeclaringType);
+                        return new CargoFunctionExpression("NOW", node.Member.DeclaringType!);
                 }
             }
             return base.VisitMember(node);

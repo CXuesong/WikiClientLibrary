@@ -45,7 +45,9 @@ namespace WikiClientLibrary.Cargo.Linq
             var queryableType = expression.Type.GetInterfaces()
                 .First(i => i.IsConstructedGenericType && i.GetGenericTypeDefinition() == typeof(IQueryable<>));
             var elementType = queryableType.GenericTypeArguments[0];
-            return (IQueryable)Activator.CreateInstance(typeof(CargoRecordQueryable<>).MakeGenericType(elementType), this, expression);
+            // Note: CreateInstance returns null for Nullable<T>, e.g. CreateInstance(typeof(int?)) returns null.
+            // c.f. https://github.com/dotnet/runtime/blob/master/src/libraries/System.Private.CoreLib/src/System/Activator.RuntimeType.cs#L19
+            return (IQueryable)Activator.CreateInstance(typeof(CargoRecordQueryable<>).MakeGenericType(elementType), this, expression)!;
         }
 
         /// <inheritdoc />

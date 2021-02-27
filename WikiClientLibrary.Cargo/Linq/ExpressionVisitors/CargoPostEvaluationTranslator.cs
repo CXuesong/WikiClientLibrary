@@ -119,6 +119,7 @@ namespace WikiClientLibrary.Cargo.Linq.ExpressionVisitors
             }
             else if (node.Method.DeclaringType == typeof(DateTime) || node.Method.DeclaringType == typeof(DateTimeOffset))
             {
+                Debug.Assert(node.Object != null);
                 switch (node.Method.Name)
                 {
                     case nameof(DateTimeOffset.Add):
@@ -136,6 +137,7 @@ namespace WikiClientLibrary.Cargo.Linq.ExpressionVisitors
             var declaringType = node.Member.DeclaringType;
             if (declaringType == typeof(string))
             {
+                Debug.Assert(node.Expression != null);
                 switch (node.Member.Name)
                 {
                     case nameof(string.Length):
@@ -144,6 +146,7 @@ namespace WikiClientLibrary.Cargo.Linq.ExpressionVisitors
             }
             else if (declaringType == typeof(DateTime) || declaringType == typeof(DateTimeOffset))
             {
+                Debug.Assert(node.Expression != null);
                 switch (node.Member.Name)
                 {
                     case nameof(DateTimeOffset.Year):

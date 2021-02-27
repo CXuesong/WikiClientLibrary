@@ -13,12 +13,10 @@ namespace WikiClientLibrary.Cargo.Linq
         public static string ColumnNameFromProperty(MemberInfo member)
         {
             var columnAttr = member.GetCustomAttribute<ColumnAttribute>();
-            if (columnAttr != null)
-                return columnAttr.Name;
-            return member.Name;
+            return columnAttr?.Name ?? member.Name;
         }
 
-        public static Type GetCollectionElementType(Type collectionType)
+        public static Type? GetCollectionElementType(Type collectionType)
         {
             if (!collectionType.IsConstructedGenericType)
                 return null;

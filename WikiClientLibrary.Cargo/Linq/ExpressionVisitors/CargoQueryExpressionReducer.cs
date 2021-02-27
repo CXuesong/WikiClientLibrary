@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
@@ -18,7 +19,8 @@ namespace WikiClientLibrary.Cargo.Linq.ExpressionVisitors
     {
 
         /// <inheritdoc />
-        public override Expression Visit(Expression node)
+        [return:NotNullIfNotNull("node")]
+        public override Expression? Visit(Expression? node)
         {
             Debug.WriteLine(node == null ? "<null>" : (node.GetType().Name + ":" + node));
             Debug.WriteLine("");
@@ -88,8 +90,7 @@ namespace WikiClientLibrary.Cargo.Linq.ExpressionVisitors
 
             if (predicate.Body is ConstantExpression predicateBody)
             {
-                var predicateVal = (bool)predicateBody.Value;
-                return predicateVal ? source : source.SetPredicate(predicateBody);
+                return Equals(predicateBody.Value, true) ? source : source.SetPredicate(predicateBody);
             }
 
             if (source.Limit != null || source.Offset != 0)
@@ -103,7 +104,7 @@ namespace WikiClientLibrary.Cargo.Linq.ExpressionVisitors
 
         private CargoQueryExpression ProcessTakeCall(CargoQueryExpression source, ConstantExpression count)
         {
-            var countVal = (int)count.Value;
+            var countVal = (int)count.Value!;
             if (source.Limit == null || source.Limit > countVal)
                 return source.SetLimit(countVal);
             return source;
@@ -111,7 +112,7 @@ namespace WikiClientLibrary.Cargo.Linq.ExpressionVisitors
 
         private CargoQueryExpression ProcessSkipCall(CargoQueryExpression source, ConstantExpression count)
         {
-            var countVal = (int)count.Value;
+            var countVal = (int)count.Value!;
             return source.Skip(countVal);
         }
 

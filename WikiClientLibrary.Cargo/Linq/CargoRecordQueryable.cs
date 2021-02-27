@@ -18,7 +18,7 @@ namespace WikiClientLibrary.Cargo.Linq
     internal abstract class CargoRecordQueryable
     {
 
-        private CargoQueryExpression _reducedQueryExpression;
+        private CargoQueryExpression? _reducedQueryExpression;
 
         internal CargoRecordQueryable(CargoQueryProvider provider, Expression expression, Type elementType)
         {
@@ -110,7 +110,7 @@ namespace WikiClientLibrary.Cargo.Linq
                             r.Properties().Select(p => (proj: queryExpr.TryGetProjectionByAlias(p.Name), value: p.Value))
                                 .Where(t => t.proj != null)
                                 .ToDictionary(
-                                    t => t.proj.TargetMember,
+                                    t => t.proj!.TargetMember,
                                     t => t.value
                                 ), typeof(T));
                     }

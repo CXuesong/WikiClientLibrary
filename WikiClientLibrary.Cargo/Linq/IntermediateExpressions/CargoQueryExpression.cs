@@ -18,10 +18,6 @@ namespace WikiClientLibrary.Cargo.Linq.IntermediateExpressions
 
         private IReadOnlyDictionary<string, ProjectionExpression> aliasProjectionDict;
 
-        private CargoQueryExpression()
-        {
-        }
-
         /// <summary>
         /// Initialize a query expression from the specified model.
         /// </summary>
@@ -45,16 +41,16 @@ namespace WikiClientLibrary.Cargo.Linq.IntermediateExpressions
         public Type RecordType { get; private set; }
 
         /// <summary>Field projections (<c>SELECT ...</c>).</summary>
-        public IImmutableList<ProjectionExpression> Fields { get; private set; } = ImmutableList<ProjectionExpression>.Empty;
+        public IImmutableList<ProjectionExpression> Fields { get; private set; }
 
         /// <summary>Filter condition (<c>WHERE ...</c>).</summary>
-        public Expression Predicate { get; private set; } = null;
+        public Expression? Predicate { get; private set; }
 
         /// <summary>Sort condition.</summary>
         public IImmutableList<OrderByExpression> OrderBy { get; private set; } = ImmutableList<OrderByExpression>.Empty;
 
         /// <summary>Table and alias.</summary>
-        public IImmutableList<TableProjectionExpression> Tables { get; private set; } = ImmutableList<TableProjectionExpression>.Empty;
+        public IImmutableList<TableProjectionExpression> Tables { get; private set; }
 
         public int Offset { get; private set; }
 
@@ -65,7 +61,7 @@ namespace WikiClientLibrary.Cargo.Linq.IntermediateExpressions
         /// </summary>
         public ProjectionExpression GetProjectionByAlias(string alias) => aliasProjectionDict[alias];
 
-        public ProjectionExpression TryGetProjectionByAlias(string alias) => aliasProjectionDict.TryGetValue(alias, out var p) ? p : null;
+        public ProjectionExpression? TryGetProjectionByAlias(string alias) => aliasProjectionDict.TryGetValue(alias, out var p) ? p : null;
 
         public CargoQueryExpression Project(IImmutableList<ProjectionExpression> fields, Type recordType)
         {

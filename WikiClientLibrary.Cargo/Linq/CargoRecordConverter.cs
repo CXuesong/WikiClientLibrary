@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Linq;
 using System.Reflection;
@@ -26,33 +28,35 @@ namespace WikiClientLibrary.Cargo.Linq
     {
 
         private static readonly MethodInfo dictIndexer
-            = typeof(IReadOnlyDictionary<string, JToken>).GetProperty("Item").GetMethod;
+            = typeof(IReadOnlyDictionary<string, JToken>).GetProperty("Item")!.GetMethod!;
 
         private static readonly MethodInfo dictTryGetValue
-            = typeof(IReadOnlyDictionary<string, JToken>).GetMethod(nameof(IReadOnlyDictionary<string, JToken>.TryGetValue));
+            = typeof(IReadOnlyDictionary<string, JToken>).GetMethod(nameof(IReadOnlyDictionary<string, JToken>.TryGetValue))!;
 
         private static readonly MethodInfo deserializeCollectionMethod = typeof(CargoRecordConverter)
-            .GetMethod(nameof(DeserializeCollection), BindingFlags.Static | BindingFlags.NonPublic);
+            .GetMethod(nameof(DeserializeCollection), BindingFlags.Static | BindingFlags.NonPublic)!;
 
         private static readonly MethodInfo deserializeStringCollectionMethod = typeof(CargoRecordConverter)
-            .GetMethod(nameof(DeserializeStringCollection), BindingFlags.Static | BindingFlags.NonPublic);
+            .GetMethod(nameof(DeserializeStringCollection), BindingFlags.Static | BindingFlags.NonPublic)!;
 
         private readonly ConcurrentDictionary<Type, Func<IReadOnlyDictionary<string, JToken>, object>> cachedDeserializers =
             new ConcurrentDictionary<Type, Func<IReadOnlyDictionary<string, JToken>, object>>();
 
-        private static IList<T> DeserializeCollection<T>(JToken value, string separator)
+        [return: NotNullIfNotNull("value")]
+        private static IList<T>? DeserializeCollection<T>(JToken? value, string separator)
         {
             var values = (string)value;
             if (values == null) return default;
             if (values.Length == 0) return Array.Empty<T>();
             return values.Split(new[] { separator }, StringSplitOptions.None)
                 .Select(i => (T)Convert.ChangeType(i, typeof(T), CultureInfo.InvariantCulture))
-                .ToList();
+                .ToList()!;
         }
 
-        private static IList<string> DeserializeStringCollection(JToken value, string separator)
+        [return:NotNullIfNotNull("value")]
+        private static IList<string>? DeserializeStringCollection(JToken? value, string separator)
         {
-            var values = (string)value;
+            var values = (string?)value;
             if (values == null) return default;
             if (values.Length == 0) return Array.Empty<string>();
             var result = values.Split(new[] { separator }, StringSplitOptions.None);
@@ -61,7 +65,7 @@ namespace WikiClientLibrary.Cargo.Linq
             return result;
         }
 
-        private static void EmitDeserializeValue(ILGenerator gen, Type targetType, CargoListAttribute listAttr)
+        private static void EmitDeserializeValue(ILGenerator gen, Type targetType, CargoListAttribute? listAttr)
         {
             var elementType = CargoModelUtility.GetCollectionElementType(targetType);
             // Collection property
@@ -109,6 +113,7 @@ namespace WikiClientLibrary.Cargo.Linq
                 // Assignment from ctor (for anonymous types)
                 foreach (var p in ctor.GetParameters())
                 {
+                    Debug.Assert(p.Name != null);
                     gen.Emit(OpCodes.Ldarg_0);
                     gen.Emit(OpCodes.Ldstr, p.Name);
                     gen.EmitCall(OpCodes.Callvirt, dictIndexer, null);
@@ -128,6 +133,8 @@ namespace WikiClientLibrary.Cargo.Linq
                     gen.Emit(OpCodes.Stloc, modelLocal);
                     foreach (var p in assignableProps)
                     {
+                        Debug.Assert(p.SetMethod != null);
+
                         var label = gen.DefineLabel();
 
                         gen.Emit(OpCodes.Ldarg_0);
@@ -155,10 +162,9 @@ namespace WikiClientLibrary.Cargo.Linq
         private static class ValueConverters
         {
 
-            private static readonly MethodInfo deserializeValueMethod = typeof(ValueConverters).GetMethod(nameof(DeserializeValue));
+            private static readonly MethodInfo deserializeValueMethod = typeof(ValueConverters).GetMethod(nameof(DeserializeValue))!;
 
-            private static readonly MethodInfo deserializeNullableValueMethod
-                = typeof(ValueConverters).GetMethod(nameof(DeserializeNullableValue));
+            private static readonly MethodInfo deserializeNullableValueMethod = typeof(ValueConverters).GetMethod(nameof(DeserializeNullableValue))!;
 
             private static readonly Dictionary<Type, MethodInfo> wellKnownValueDeserializers
                 = typeof(ValueConverters)
@@ -176,7 +182,11 @@ namespace WikiClientLibrary.Cargo.Linq
                 return deserializeValueMethod.MakeGenericMethod(valueType);
             }
 
-            public static T DeserializeValue<T>(JToken value) => value == null ? default : value.ToObject<T>();
+#if NETSTANDARD2_1
+            public static T DeserializeValue<T>(JToken? value) => value == null ? default! : value.ToObject<T>();
+#else
+            public static T? DeserializeValue<T>(JToken? value) => value == null ? default : value.ToObject<T>();
+#endif
 
             public static bool IsNullableNull(JToken value)
             {
