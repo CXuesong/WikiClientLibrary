@@ -22,7 +22,7 @@ namespace WikiClientLibrary.Wikia.Sites
     /// because this class contains more Wikia-specific APIs, and properly handles Wikia-specific API peculiarities
     /// (such as user logout).
     /// </para>
-    /// <para>See <see cref="WikiClientLibrary.Wikia.Sites"/> for a summary on FANDOM-and-Wikia.org-specific APIs.</para>
+    /// <para>See <see cref="WikiClientLibrary.Wikia"/> for a summary on FANDOM-and-Wikia.org-specific APIs.</para>
     /// </remarks>
     public class WikiaSite : WikiSite
     {

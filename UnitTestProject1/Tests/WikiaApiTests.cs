@@ -16,6 +16,7 @@ namespace WikiClientLibrary.Tests.UnitTestProject1.Tests
 {
 
     // Wikia doesn't allow us to login on CI environment.
+    // Wikia API has been revamped a lot. Wait for some time until to gets more stable.
     [CISkipped]
     public class WikiaApiTests : WikiSiteTestsBase
     {
@@ -55,9 +56,9 @@ namespace WikiClientLibrary.Tests.UnitTestProject1.Tests
             var site = await WikiaTestSiteAsync;
             var data = site.WikiVariables;
             ShallowTrace(data);
-            Assert.Equal(203236, data.Id);
-            Assert.Equal("Dman Wikia", data.SiteName);
-            Assert.Equal("https://mediawiki119.wikia.org", data.BasePath);
+            Assert.Equal(1362703, data.Id);
+            Assert.Equal("Dman Wikia | Fandom", data.SiteName);
+            Assert.Equal("https://dman.fandom.com", data.BasePath);
             Assert.Equal("/wiki/", data.ArticlePath);
             Assert.Equal(new[] { 0 }, data.ContentNamespaceIds);
             Assert.Equal("en", data.LanguageInfo.ContentLanguage);
@@ -129,7 +130,7 @@ namespace WikiClientLibrary.Tests.UnitTestProject1.Tests
         public async Task ArticlePostCommentTest()
         {
             var site = await WikiaTestSiteAsync;
-            var commentArea = new Board(site, "Random40156");
+            var commentArea = new Board(site, "Project:Sandbox");
             await commentArea.RefreshAsync();
             Skip.IfNot(commentArea.Exists, $"Page [[{commentArea}]] is gone. There is nothing we can do for it.");
             var post = await commentArea.NewPostAsync("Test [[comment]].");

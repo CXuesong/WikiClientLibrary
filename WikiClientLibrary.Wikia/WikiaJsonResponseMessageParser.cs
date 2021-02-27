@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using WikiClientLibrary.Client;
@@ -21,7 +22,7 @@ namespace WikiClientLibrary.Wikia
 
         /// <inheritdoc />
         /// <remarks>
-        /// <para>This method do not check the HTTP status code, because for certain JSON responses,
+        /// <para>This method does not check the HTTP status code, because for certain JSON responses,
         /// the status code might has its semantic meanings.</para>
         /// <para>Then the content will be parsed as JSON, in <see cref="JToken"/>. If there is
         /// <see cref="JsonException"/> thrown while parsing the response, a retry will be requested.</para>
@@ -51,8 +52,7 @@ namespace WikiClientLibrary.Wikia
             JToken jroot;
             try
             {
-                jroot = await MediaWikiHelper.ParseJsonAsync(await response.Content.ReadAsStreamAsync(),
-                    context.CancellationToken);
+                jroot = await MediaWikiHelper.ParseJsonAsync(await response.Content.ReadAsStreamAsync(), context.CancellationToken);
             }
             catch (JsonException)
             {
@@ -75,6 +75,26 @@ namespace WikiClientLibrary.Wikia
                         "NotFoundApiException" => new NotFoundApiException(type, message, code, details, traceId),
                         _ => new WikiaApiException(type, message, code, details, traceId)
                     };
+                }
+                // Check for exception node: {"status":404,"error":"ControllerNotFoundException","details":"Controller not found: ApiDocs"}
+                {
+                    var status = (int?)obj["status"] ?? (int)response.StatusCode;
+                    var error = (string)obj["error"];
+                    if (status >= 400)
+                    {
+                        var details = (string)obj["details"];
+                        obj.Remove("status");
+                        obj.Remove("error");
+                        obj.Remove("details");
+                        throw new WikiaApiException(error, details, status, obj.HasValues ? obj.ToString() : null, null);
+                    }
+                    if (error != null)
+                    {
+                        context.Logger.LogWarning(
+                            "Detected `error` node in the response, but status code does not signal any error. Status code: {Status}. Error: {Error}.",
+                            status, (string)obj["error"]
+                        );
+                    }
                 }
             }
             return jroot;
