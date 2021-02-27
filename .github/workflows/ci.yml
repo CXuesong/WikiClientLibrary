@@ -14,6 +14,8 @@ on:
       - '*.txt'
   schedule:
     - cron: "7 0 * * MON"
+    - cron: "10 6 * * WED"
+    - cron: "30 12 * * FRI"
 
 jobs:
   build_linux:
@@ -41,13 +43,13 @@ jobs:
       - name: CollectArtifacts
         shell: pwsh
         run: './WikiClientLibrary.Commons/CI/CollectArtifacts -Configuration Release'
-      - name: Test
-        shell: pwsh
-        run: ./WikiClientLibrary.Commons/CI/Test.ps1
       - uses: actions/upload-artifact@master
         with:
           name: BuildArtifacts-CIRelease
           path: ./CollectedArtifacts
+      - name: Test
+        shell: pwsh
+        run: ./WikiClientLibrary.Commons/CI/Test.ps1
   build_windows:
     if: success()
     name: Windows Build
