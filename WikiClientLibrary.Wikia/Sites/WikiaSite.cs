@@ -27,6 +27,8 @@ namespace WikiClientLibrary.Wikia.Sites
     public class WikiaSite : WikiSite
     {
 
+        internal static readonly MediaWikiVersion mw119Version = new MediaWikiVersion(1, 19);
+
         protected new WikiaSiteOptions Options => (WikiaSiteOptions)base.Options;
 
         /// <inheritdoc />
@@ -156,32 +158,44 @@ namespace WikiClientLibrary.Wikia.Sites
         /// <remarks>
         /// To logout the user, this override sends a POST request to <c>https://www.wikia.com/logout</c>.
         /// </remarks>
-        protected override async Task SendLogoutRequestAsync()
+        protected override Task SendLogoutRequestAsync()
         {
-            string logoutUrl;
-            if (SiteInfo.ServerUrl.EndsWith(".wikia.com", StringComparison.OrdinalIgnoreCase))
+            if (SiteInfo.Version > mw119Version)
             {
-                logoutUrl = "https://www.wikia.com/logout";
+                // After MW version upgrade, Wikia sites should accept
+                return base.SendLogoutRequestAsync();
             }
-            else if (SiteInfo.ServerUrl.EndsWith(".wikia.org", StringComparison.OrdinalIgnoreCase))
+
+            this.Logger.LogInformation("Using legacy (Wikia MW 1.19 fork) logout approach.");
+            return MW119LogoutAsync();
+
+            async Task MW119LogoutAsync()
             {
-                logoutUrl = "https://www.wikia.org/logout";
+                string logoutUrl;
+                if (SiteInfo.ServerUrl.EndsWith(".wikia.com", StringComparison.OrdinalIgnoreCase))
+                {
+                    logoutUrl = "https://www.wikia.com/logout";
+                }
+                else if (SiteInfo.ServerUrl.EndsWith(".wikia.org", StringComparison.OrdinalIgnoreCase))
+                {
+                    logoutUrl = "https://www.wikia.org/logout";
+                }
+                else if (SiteInfo.ServerUrl.EndsWith(".fandom.com", StringComparison.OrdinalIgnoreCase))
+                {
+                    logoutUrl = "https://www.fandom.com/logout";
+                }
+                else
+                {
+                    logoutUrl = MediaWikiHelper.MakeAbsoluteUrl(SiteInfo.ServerUrl, "logout");
+                    // User is using WikiaSite instance outside Wikia… I wish you good luck.
+                    this.Logger.LogWarning("WikiaSite is instantiated with a non-FANDOM site URL: {Url}. Assuming logout URL as {LogoutUrl}.",
+                        SiteInfo.ServerUrl, logoutUrl);
+                }
+                await WikiClient.InvokeAsync(logoutUrl,
+                    new MediaWikiFormRequestMessage(new { redirect = "" }),
+                    DiscardingResponseMessageParser.Instance,
+                    CancellationToken.None);
             }
-            else if (SiteInfo.ServerUrl.EndsWith(".fandom.com", StringComparison.OrdinalIgnoreCase))
-            {
-                logoutUrl = "https://www.fandom.com/logout";
-            }
-            else
-            {
-                logoutUrl = MediaWikiHelper.MakeAbsoluteUrl(SiteInfo.ServerUrl, "logout");
-                // User is using WikiaSite instance outside Wikia… I wish you good luck.
-                this.Logger.LogWarning("WikiaSite is instantiated with a non-FANDOM site URL: {Url}. Assuming logout URL as {LogoutUrl}.",
-                    SiteInfo.ServerUrl, logoutUrl);
-            }
-            await WikiClient.InvokeAsync(logoutUrl,
-                new MediaWikiFormRequestMessage(new { redirect = "" }),
-                DiscardingResponseMessageParser.Instance,
-                CancellationToken.None);
         }
 
         /// <summary>

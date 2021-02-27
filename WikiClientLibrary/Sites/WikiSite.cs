@@ -642,7 +642,16 @@ namespace WikiClientLibrary.Sites
         {
             Debug.Assert(isLoggingInOut == 1);
             string? token = null;
-            if (SiteInfo.Version >= new MediaWikiVersion(1, 34, MediaWikiDevChannel.Wmf, 3))
+            var version = SiteInfo.Version;
+            if ( // https://www.mediawiki.org/wiki/MediaWiki_1.34/wmf.3
+                version.Above(1, 34, MediaWikiDevChannel.Wmf, 3)
+                // Back-ported security fix: https://www.mediawiki.org/wiki/Release_notes/1.33
+                || version.In(1, 33) && version.Above(1, 33, MediaWikiDevChannel.RC, 0)
+                || version.In(1, 32, 2..)
+                || version.In(1, 31, 2..)
+                || version.In(1, 30, 2..)
+                || version.In(1, 27, 6..)
+            )
             {
                 // 1.34-wmf3
                 // git #d965b0b4 - [SECURITY] [API BREAKING CHANGE] Require logout token. (task T25227) by sbassett

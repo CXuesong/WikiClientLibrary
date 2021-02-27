@@ -57,7 +57,7 @@ namespace WikiClientLibrary
         // bitmap for -wmf.3
         // DevChannel | DevVersion
         //       0001 | 0000 0000 0011
-        private readonly short fullDevVersion;
+        private readonly ushort fullDevVersion;
 
         /// <summary>
         /// Gets the default zero value of <see cref="MediaWikiVersion"/>, i.e. <c>v0.0.0</c>.
@@ -133,7 +133,7 @@ namespace WikiClientLibrary
             short major;
             short minor = 0, revision = 0;
             var devChannel = MediaWikiDevChannel.None;
-            var devVersion = 0;
+            short devVersion = 0;
             try
             {
                 major = short.Parse(components2[0]);
@@ -201,7 +201,7 @@ namespace WikiClientLibrary
                     }
                     try
                     {
-                        devVersion = int.Parse(devFullVersion[devVersionStartsAt..]);
+                        devVersion = short.Parse(devFullVersion[devVersionStartsAt..]);
                     }
                     catch (Exception ex)
                     {
@@ -218,27 +218,11 @@ namespace WikiClientLibrary
             return false;
         }
 
-        private MediaWikiVersion(short major, short minor, short revision, MediaWikiDevChannel devChannel, int devVersion)
-        {
-            if (major < 0)
-                throw new ArgumentOutOfRangeException(nameof(major));
-            if (minor < 0)
-                throw new ArgumentOutOfRangeException(nameof(minor));
-            if (revision < 0)
-                throw new ArgumentOutOfRangeException(nameof(revision));
-            if (devVersion < 0 || devVersion > 0x0FFF)
-                throw new ArgumentOutOfRangeException(nameof(devVersion));
-            _Major = major;
-            _Minor = minor;
-            _Revision = revision;
-            fullDevVersion = (short)(((int)devChannel << 12) | devVersion);
-        }
-
         /// <summary>
         /// Initializes a new <seealso cref="MediaWikiVersion"/> instance with major and minor versions.
         /// </summary>
-        /// <inheritdoc cref="MediaWikiVersion(int,int,int,MediaWikiDevChannel,int)"/>
-        public MediaWikiVersion(int major, int minor)
+        /// <inheritdoc cref="MediaWikiVersion(short,short,short,MediaWikiDevChannel,short)"/>
+        public MediaWikiVersion(short major, short minor)
             : this(major, minor, 0, MediaWikiDevChannel.None, 0)
         {
         }
@@ -246,8 +230,8 @@ namespace WikiClientLibrary
         /// <summary>
         /// Initializes a new <seealso cref="MediaWikiVersion"/> instance with major, minor, revision versions.
         /// </summary>
-        /// <inheritdoc cref="MediaWikiVersion(int,int,int,MediaWikiDevChannel,int)"/>
-        public MediaWikiVersion(int major, int minor, int revision)
+        /// <inheritdoc cref="MediaWikiVersion(short,short,short,MediaWikiDevChannel,short)"/>
+        public MediaWikiVersion(short major, short minor, short revision)
             : this(major, minor, revision, MediaWikiDevChannel.None, 0)
         {
         }
@@ -256,8 +240,8 @@ namespace WikiClientLibrary
         /// Initializes a new <seealso cref="MediaWikiVersion"/> instance with major, minor, revision versions and
         /// dev-channel.
         /// </summary>
-        /// <inheritdoc cref="MediaWikiVersion(int,int,int,MediaWikiDevChannel,int)"/>
-        public MediaWikiVersion(int major, int minor, int revision, MediaWikiDevChannel devChannel)
+        /// <inheritdoc cref="MediaWikiVersion(short,short,short,MediaWikiDevChannel,short)"/>
+        public MediaWikiVersion(short major, short minor, short revision, MediaWikiDevChannel devChannel)
             : this(major, minor, revision, devChannel, 0)
         {
         }
@@ -266,8 +250,8 @@ namespace WikiClientLibrary
         /// Initializes a new <seealso cref="MediaWikiVersion"/> instance with major, minor versions and
         /// dev-version.
         /// </summary>
-        /// <inheritdoc cref="MediaWikiVersion(int,int,int,MediaWikiDevChannel,int)"/>
-        public MediaWikiVersion(int major, int minor, MediaWikiDevChannel devChannel, int devVersion)
+        /// <inheritdoc cref="MediaWikiVersion(short,short,short,MediaWikiDevChannel,short)"/>
+        public MediaWikiVersion(short major, short minor, MediaWikiDevChannel devChannel, short devVersion)
             : this(major, minor, 0, devChannel, devVersion)
         {
         }
@@ -286,31 +270,18 @@ namespace WikiClientLibrary
         /// <paramref name="devChannel"/> is <see cref="MediaWikiDevChannel.None"/>,
         /// but <paramref name="devVersion"/> is non-zero.
         /// </exception>
-        public MediaWikiVersion(int major, int minor, int revision, MediaWikiDevChannel devChannel, int devVersion)
+        public MediaWikiVersion(short major, short minor, short revision, MediaWikiDevChannel devChannel, short devVersion)
         {
-            if (major < 0 || major > short.MaxValue)
+            if (major < 0)
                 throw new ArgumentOutOfRangeException(nameof(major));
-            if (minor < 0 || minor > short.MaxValue)
+            if (minor < 0)
                 throw new ArgumentOutOfRangeException(nameof(minor));
-            if (revision < 0 || revision > short.MaxValue)
+            if (revision < 0)
                 throw new ArgumentOutOfRangeException(nameof(revision));
-            if (devChannel < MediaWikiDevChannel.None || devChannel > MediaWikiDevChannel.RC)
-                throw new ArgumentOutOfRangeException(nameof(devChannel));
-            if (devVersion < 0 || devVersion > 0x0FFF)
-                throw new ArgumentOutOfRangeException(nameof(devVersion));
-            _Major = (short)major;
-            _Minor = (short)minor;
-            _Revision = (short)revision;
-            if (devChannel == MediaWikiDevChannel.None)
-            {
-                if (devVersion != 0)
-                    throw new ArgumentException(Prompts.ExceptionDevVersionRequiresDevChannel, nameof(devVersion));
-                fullDevVersion = 0;
-            }
-            else
-            {
-                fullDevVersion = (short)(((int)devChannel << 12) | devVersion);
-            }
+            _Major = major;
+            _Minor = minor;
+            _Revision = revision;
+            fullDevVersion = MakeFullDevVersion(devChannel, devVersion);
         }
 
         /// <summary>
@@ -450,5 +421,117 @@ namespace WikiClientLibrary
         {
             return left.CompareTo(right) >= 0;
         }
+
+        private static ushort MakeFullDevVersion(MediaWikiDevChannel devChannel, short devVersion)
+        {
+            if (devChannel < MediaWikiDevChannel.None || devChannel > MediaWikiDevChannel.RC)
+                throw new ArgumentOutOfRangeException(nameof(devChannel));
+            if (devVersion < 0 || devVersion > 0x0FFF)
+                throw new ArgumentOutOfRangeException(nameof(devVersion));
+            if (devChannel == MediaWikiDevChannel.None && devVersion != 0)
+                throw new ArgumentException(Prompts.ExceptionDevVersionRequiresDevChannel, nameof(devVersion));
+            return (ushort)(((uint)devChannel << 12) | (ushort)devVersion);
+        }
+
+        private static bool IsVersionSegmentInRange(int value, Range range, string rangeParamName)
+        {
+            var start = range.Start;
+            var end = range.End;
+            if (start.IsFromEnd)
+                throw new ArgumentException("Lower bound of version segment cannot count from end.", rangeParamName);
+            if (end.IsFromEnd && end.Value > 0)
+                throw new ArgumentException("Upper bound of version segment cannot count more than 0 from end.", rangeParamName);
+            return value >= start.Value && (end.IsFromEnd || value < end.Value);
+        }
+
+        /// <summary>Determines whether the version is in the specified range.</summary>
+        /// <param name="major">major version.</param>
+        public bool In(short major)
+        {
+            return _Major == major;
+        }
+
+        /// <summary>Determines whether the version is in the specified range.</summary>
+        /// <param name="major">range of major version.</param>
+        public bool In(Range major)
+        {
+            return IsVersionSegmentInRange(_Major, major, nameof(major));
+        }
+
+        /// <summary>Determines whether the version is in the specified range.</summary>
+        /// <param name="major">major version.</param>
+        /// <param name="minor">minor version.</param>
+        public bool In(short major, short minor)
+        {
+            return _Major == major && _Minor == minor;
+        }
+
+        /// <summary>Determines whether the version is in the specified range.</summary>
+        /// <param name="major">major version.</param>
+        /// <param name="minor">range of minor version.</param>
+        public bool In(short major, Range minor)
+        {
+            if (_Major != major) return false;
+            return IsVersionSegmentInRange(_Minor, minor, nameof(minor));
+        }
+
+        /// <summary>Determines whether the version is in the specified range.</summary>
+        /// <param name="major">major version.</param>
+        /// <param name="minor">minor version.</param>
+        /// <param name="revision">revision number.</param>
+        public bool In(short major, short minor, short revision)
+        {
+            return _Major == major && _Minor == minor && _Revision == revision;
+        }
+
+        /// <summary>Determines whether the version is in the specified range.</summary>
+        /// <param name="major">major version.</param>
+        /// <param name="minor">minor version.</param>
+        /// <param name="revision">range of revision number.</param>
+        public bool In(short major, short minor, Range revision)
+        {
+            if (_Major != major) return false;
+            if (_Minor != minor) return false;
+            return IsVersionSegmentInRange(_Revision, revision, nameof(revision));
+        }
+
+        /// <summary>Determines whether the version is equal to or above than the specified official release version.</summary>
+        /// <param name="major">major version.</param>
+        /// <param name="minor">minor version.</param>
+        /// <param name="revision">revision number.</param>
+        public bool Above(short major, short minor, short revision)
+        {
+            if (_Major != major) return _Major > major;
+            if (_Minor != minor) return _Minor > minor;
+            if (_Revision != revision) return _Revision > revision;
+            return fullDevVersion != 0;
+        }
+
+        /// <inheritdoc cref="Above(short,short,short,MediaWikiDevChannel,short)"/>
+        public bool Above(short major, short minor, MediaWikiDevChannel devChannel, short devVersion)
+            => Above(major, minor, 0, devChannel, devVersion);
+
+        /// <summary>Determines whether the version is equal to or above than the specified version.</summary>
+        /// <param name="major">major version.</param>
+        /// <param name="minor">minor version.</param>
+        /// <param name="revision">revision number.</param>
+        /// <param name="devChannel">Channel of development.</param>
+        /// <param name="devVersion">DevVersion. Should be between 0 and 4095.</param>
+        /// <exception cref="ArgumentOutOfRangeException">Any one of the version numbers is out of range.</exception>
+        /// <exception cref="ArgumentException">
+        /// <paramref name="devChannel"/> is <see cref="MediaWikiDevChannel.None"/>,
+        /// but <paramref name="devVersion"/> is non-zero.
+        /// </exception>
+        public bool Above(short major, short minor, short revision, MediaWikiDevChannel devChannel, short devVersion)
+        {
+            var fdv = MakeFullDevVersion(devChannel, devVersion);
+            if (_Major != major) return _Major > major;
+            if (_Minor != minor) return _Minor > minor;
+            if (_Revision != revision) return _Revision > revision;
+            // 0: official release
+            if (fdv == 0) return fullDevVersion == 0;
+            return fullDevVersion >= fdv;
+        }
+
     }
 }
