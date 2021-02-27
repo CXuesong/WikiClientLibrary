@@ -91,7 +91,7 @@ The original title of the page is '''{title}'''.
             await page2.DeleteAsync(SummaryPrefix + "Delete the moved page.");
         }
 
-        [Theory]
+        [SkippableTheory]
         [InlineData("File:Test image {0}.jpg", "1")]
         [InlineData("File:Test image {0}.jpg", "2")]
         [InlineData("Test image {0}.jpg", "1")]
@@ -112,8 +112,12 @@ The original title of the page is '''{title}'''.
                     Assert.Equal(UploadResultCode.Warning, result.ResultCode);
                     Assert.True(result.Warnings.TitleExists || result.Warnings.DuplicateTitles != null);
                     WriteOutput("Title exists.");
+                    // Sometimes there is backend stash error. We may ignore it for now.
+                    // TODO expose stasherror node
+                    // Utility.AssertNotNull(result.FileKey);
+                    Skip.If(string.IsNullOrEmpty(result.FileKey), "No FileKey available. No good retry uploading.");
                     result = await site.UploadAsync(fileName,
-                        new FileKeyUploadSource(result.FileKey!), file.Description + ReuploadSuffix, true);
+                        new FileKeyUploadSource(result.FileKey), file.Description + ReuploadSuffix, true);
                     ShallowTrace(result);
                     Assert.Equal(UploadResultCode.Success, result.ResultCode);
                 }
@@ -205,22 +209,31 @@ JasonHise grants anyone the right to use this work for any purpose, without any 
         }
 
         [SkippableFact]
-        public async Task ChunkedFileUploadTask()
+        public async Task ChunkedFileUploadTest()
         {
             var site = await SiteAsync;
             var file = Utility.GetDemoImage("1");
             var chunked = new ChunkedUploadSource(site, file.ContentStream) { DefaultChunkSize = 1024 * 4 };
-            do
+            try
             {
-                var result = await chunked.StashNextChunkAsync();
-                Assert.NotEqual(UploadResultCode.Warning, result.ResultCode);
-                if (result.ResultCode == UploadResultCode.Success)
+                do
                 {
-                    // As of 2019-10, this does not hold.
-                    // Assert.True(result.FileRevision.IsAnonymous);
-                    Assert.Equal(file.Sha1, result.FileRevision!.Sha1, StringComparer.OrdinalIgnoreCase);
-                }
-            } while (!chunked.IsStashed);
+                    var result = await chunked.StashNextChunkAsync();
+                    Assert.NotEqual(UploadResultCode.Warning, result.ResultCode);
+                    if (result.ResultCode == UploadResultCode.Success)
+                    {
+                        // As of 2019-10, this does not hold.
+                        // Assert.True(result.FileRevision.IsAnonymous);
+                        Assert.Equal(file.Sha1, result.FileRevision!.Sha1, StringComparer.OrdinalIgnoreCase);
+                    }
+                } while (!chunked.IsStashed);
+            }
+            catch (OperationFailedException ex) when (ex.ErrorCode == "uploadstash-exception")
+            {
+                Skip.If(ex.ErrorMessage != null && ex.ErrorMessage.Contains("An unknown error occurred in storage backend"),
+                    "MW server backend fails: " + ex.Message);
+                throw;
+            }
             try
             {
                 // This is to attempt to prevent the following error:

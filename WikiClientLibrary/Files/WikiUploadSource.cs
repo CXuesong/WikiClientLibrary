@@ -51,8 +51,6 @@ namespace WikiClientLibrary.Files
     public class FileKeyUploadSource : WikiUploadSource
     {
 
-        private static readonly MediaWikiVersion v118 = new MediaWikiVersion(1, 18);
-
         /// <param name="fileKey">File key (or session key before MW1.17) of the previously stashed result.</param>
         public FileKeyUploadSource(string fileKey)
         {
@@ -67,11 +65,7 @@ namespace WikiClientLibrary.Files
         {
             if (siteInfo == null) throw new ArgumentNullException(nameof(siteInfo));
             if (FileKey == null) throw new ArgumentNullException(nameof(FileKey));
-            return new[]
-            {
-                new KeyValuePair<string, object>(
-                    siteInfo.Version >= v118 ? "filekey" : "sessionkey", FileKey)
-            };
+            return new[] { new KeyValuePair<string, object>(siteInfo.Version.Above(1, 18) ? "filekey" : "sessionkey", FileKey) };
         }
 
         /// <inheritdoc />

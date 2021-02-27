@@ -243,7 +243,6 @@ namespace WikiClientLibrary.Tests.UnitTestProject1.Tests
         }
 
         [Fact]
-        [CISkipped]
         public async Task WikiaPageReadTest()
         {
             var site = await WikiaTestSiteAsync;
@@ -255,7 +254,6 @@ namespace WikiClientLibrary.Tests.UnitTestProject1.Tests
         }
 
         [Fact]
-        [CISkipped]
         public async Task WikiaPageReadByIdTest()
         {
             var site = await WikiaTestSiteAsync;
@@ -267,7 +265,6 @@ namespace WikiClientLibrary.Tests.UnitTestProject1.Tests
         }
 
         [Fact]
-        [CISkipped]
         public async Task WikiaPageReadDisambigTest()
         {
             var site = await WikiaTestSiteAsync;
@@ -364,7 +361,6 @@ namespace WikiClientLibrary.Tests.UnitTestProject1.Tests
         }
 
         [SkippableFact]
-        [CISkipped]
         public async Task WikiaPageWriteTest1()
         {
             AssertModify();

@@ -495,6 +495,10 @@ namespace WikiClientLibrary
             return IsVersionSegmentInRange(_Revision, revision, nameof(revision));
         }
 
+        /// <inheritdoc cref="Above(short,short,short)"/>
+        public bool Above(short major, short minor)
+            => Above(major, minor, 0);
+
         /// <summary>Determines whether the version is equal to or above than the specified official release version.</summary>
         /// <param name="major">major version.</param>
         /// <param name="minor">minor version.</param>
