@@ -150,7 +150,6 @@ namespace WikiClientLibrary.Tests.UnitTestProject1.Tests
         }
 
         [Fact]
-        [CISkipped]
         public async Task LoginWikiaTest_1()
         {
             var site = await CreateIsolatedWikiSiteAsync(Endpoints.WikiaTest);
@@ -202,8 +201,6 @@ namespace WikiClientLibrary.Tests.UnitTestProject1.Tests
         }
 
         [Theory]
-        // Do not test this on CI, because this test is destined to fail if we are using Bot Password.
-        [CISkipped]
         [InlineData(Endpoints.WikipediaEn)]
         [InlineData(Endpoints.WikiaTest)]
         [InlineData(Endpoints.WikipediaTest2)]
@@ -216,12 +213,11 @@ namespace WikiClientLibrary.Tests.UnitTestProject1.Tests
             await CredentialManager.LoginAsync(site2);
             await site2.LogoutAsync();
             await site1.RefreshAccountInfoAsync();
-            // This is a known issue of MediaWiki.
             // MediaWiki Phabricator Task T51890: Logging out on a different device logs me out everywhere else
-            Assert.False(site1.AccountInfo.IsUser,
+            Assert.True(site1.AccountInfo.IsUser,
                 "If you are logged in with your normal password instead of Bot Password, " +
-                "this means T51890 seems have been resolved. " +
-                "If this test continue to fail, please re-open the issue: " +
+                "This case will fail due to [[phab:T51890]] and you can safely ignore it." +
+                "If you are logged in with Bot Password, please re-open the issue: " +
                 "https://github.com/CXuesong/WikiClientLibrary/issues/11 .");
         }
 
