@@ -225,7 +225,7 @@ namespace WikiClientLibrary.Tests.UnitTestProject1.Tests
             var site = await CreateIsolatedWikiSiteAsync(Endpoints.WikipediaTest2);
             Assert.False(site.AccountInfo.IsUser, "You should have not logged in… Wierd.");
             // Make believe that we're bots…
-            typeof(AccountInfo).GetProperty("Groups").SetValue(site.AccountInfo, new[] {"*", "user", "bot"});
+            typeof(AccountInfo).GetProperty(nameof(AccountInfo.Groups))!.SetValue(site.AccountInfo, new[] {"*", "user", "bot"});
             Assert.True(site.AccountInfo.IsUser, "Cannot militate user information.");
             // Send a request…
             await Assert.ThrowsAsync<AccountAssertionFailureException>(() => site.GetMessageAsync("edit"));
@@ -243,7 +243,7 @@ namespace WikiClientLibrary.Tests.UnitTestProject1.Tests
             });
             Assert.False(site.AccountInfo.IsUser, "You should have not logged in… Wierd.");
             // Make believe that we're bots…
-            typeof(AccountInfo).GetProperty("Groups").SetValue(site.AccountInfo, new[] {"*", "user", "bot"});
+            typeof(AccountInfo).GetProperty(nameof(AccountInfo.Groups))!.SetValue(site.AccountInfo, new[] {"*", "user", "bot"});
             Assert.True(site.AccountInfo.IsUser, "Cannot militate user information.");
             // Send a request…
             var message = await site.GetMessageAsync("edit");

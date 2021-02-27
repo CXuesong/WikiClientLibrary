@@ -55,7 +55,7 @@ namespace WikiClientLibrary.Sites
         /// Initializes with API endpoint URL.
         /// </summary>
         /// <param name="apiEndpoint">The URL of MediaWiki API endpoint.</param>
-        public SiteOptions(string? apiEndpoint)
+        public SiteOptions(string apiEndpoint)
         {
             ApiEndpoint = apiEndpoint;
         }

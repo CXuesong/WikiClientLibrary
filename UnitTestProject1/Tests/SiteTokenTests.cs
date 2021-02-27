@@ -69,9 +69,9 @@ namespace WikiClientLibrary.Tests.UnitTestProject1.Tests
             await page.RefreshAsync(PageQueryOptions.FetchContent);
             Skip.IfNot(page.Exists, $"The page {sandboxPageTitle} doesn't exist on {site}.");
             var tokensManager = typeof(WikiSite)
-                .GetField("tokensManager", BindingFlags.Instance | BindingFlags.NonPublic).GetValue(site);
-            var tokensCache = (IDictionary<string, object>)tokensManager.GetType()
-                .GetField("tokensCache", BindingFlags.Instance | BindingFlags.NonPublic).GetValue(tokensManager);
+                .GetField("tokensManager", BindingFlags.Instance | BindingFlags.NonPublic)!.GetValue(site);
+            var tokensCache = (IDictionary<string, object>)tokensManager!.GetType()
+                .GetField("tokensCache", BindingFlags.Instance | BindingFlags.NonPublic)!.GetValue(tokensManager)!;
             // Place an invalid token in the cache.
             tokensCache["edit"] = invalidToken;
             tokensCache["csrf"] = invalidToken;

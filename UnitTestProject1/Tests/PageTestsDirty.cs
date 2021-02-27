@@ -139,7 +139,7 @@ The original title of the page is '''{title}'''.
             // This is to attempt to prevent the following error:
             // backend-fail-alreadyexists: The file "mwstore://local-swift-eqiad/local-public/archive/9/95/20191116051316!Test_image.jpg" already exists.
             var fileName = $"File:Test image {Utility.RandomTitleString()}.jpg";
-            var localSite = await CreateIsolatedWikiSiteAsync(CredentialManager.DirtyTestsEntryPointUrl);
+            var localSite = await CreateIsolatedWikiSiteAsync(CredentialManager.DirtyTestsEntryPointUrl!);
             // Cache the token first so it won't be affected by the short timeout.
             await localSite.GetTokenAsync("edit");
             WriteOutput("Try uploading…");
@@ -218,7 +218,7 @@ JasonHise grants anyone the right to use this work for any purpose, without any 
                 {
                     // As of 2019-10, this does not hold.
                     // Assert.True(result.FileRevision.IsAnonymous);
-                    Assert.Equal(file.Sha1, result.FileRevision.Sha1, StringComparer.OrdinalIgnoreCase);
+                    Assert.Equal(file.Sha1, result.FileRevision!.Sha1, StringComparer.OrdinalIgnoreCase);
                 }
             } while (!chunked.IsStashed);
             try

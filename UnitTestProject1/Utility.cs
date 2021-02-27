@@ -51,11 +51,11 @@ namespace WikiClientLibrary.Tests.UnitTestProject1
             }
             if (obj is IDictionary dict)
             {
-                foreach (DictionaryEntry p in dict)
+                foreach (DictionaryEntry? p in dict)
                 {
                     sb.AppendLine();
                     sb.Append(' ', indention * 2);
-                    sb.AppendFormat("[{0}] = ", p.Key);
+                    sb.AppendFormat("[{0}] = ", p!.Value.Key);
                     sb.Append(DumpObject(p.Value, indention + 1, maxDepth - 1));
                 }
             }

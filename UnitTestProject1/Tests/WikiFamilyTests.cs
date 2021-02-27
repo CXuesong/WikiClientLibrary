@@ -34,7 +34,7 @@ namespace WikiClientLibrary.Tests.UnitTestProject1.Tests
             return "https://" + prefix + ".wikipedia.org/w/api.php";
         }
 
-        private void AssertWikiLink(WikiLink link, string interwiki, string ns, string localTitle)
+        private void AssertWikiLink(WikiLink link, string? interwiki, string? ns, string localTitle)
         {
             Assert.Equal(interwiki, link.InterwikiPrefix);
             Assert.Equal(ns, link.NamespaceName);
@@ -46,6 +46,7 @@ namespace WikiClientLibrary.Tests.UnitTestProject1.Tests
         {
             // We will not login onto any site…
             var originSite = await Family.GetSiteAsync("test2");
+            Utility.AssertNotNull(originSite);
             // With originating WikiSite
             var link = await WikiLink.ParseAsync(originSite, Family, "WikiPedia:SANDBOX");
             AssertWikiLink(link, null, "Wikipedia", "SANDBOX");
