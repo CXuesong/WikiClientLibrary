@@ -73,20 +73,23 @@ namespace WikiClientLibrary.Tests.UnitTestProject1.Tests
             //Assert.Contains(WikidataItems.Asia, parts);
 
             claim = entity.Claims[WikidataProperties.CoordinateLocation].First();
+            Utility.AssertNotNull(claim.MainSnak.DataValue);
             var location = (WbGlobeCoordinate)claim.MainSnak.DataValue;
             Assert.Equal(27.988055555556, location.Latitude, 12);
             Assert.Equal(86.925277777778, location.Longitude, 12);
 
-            claim = entity.Claims[WikidataProperties.ElevationAboveSeaLevel].First(c => Math.Abs(((WbQuantity)c.MainSnak.DataValue).Amount - 8848) < 0.0001);
+            claim = entity.Claims[WikidataProperties.ElevationAboveSeaLevel].First(c => Math.Abs(((WbQuantity)c.MainSnak.DataValue!).Amount - 8848) < 0.0001);
+            Utility.AssertNotNull(claim.MainSnak.DataValue);
             var height = (WbQuantity)claim.MainSnak.DataValue;
             Assert.Equal(8848, height.Amount, 4);
             Assert.Equal(WikidataProperties.ReferenceUrl, claim.References[0].Snaks[0].PropertyId);
             Assert.Equal("https://www.peakware.com/peaks.php?pk=80", claim.References[0].Snaks[0].DataValue);
 
-            var topiso = (WbQuantity)entity.Claims[WikidataProperties.TopographicIsolation]
+            var topiso = (WbQuantity?)entity.Claims[WikidataProperties.TopographicIsolation]
                 .First().MainSnak.DataValue;
-            Assert.Equal(40008, topiso.Amount, 12);
-            Assert.Equal(WikibaseUriFactory.Get(WikidataEntityUriPrefix + WikidataItems.KiloMeter), topiso.Unit);
+            Utility.AssertNotNull(topiso);
+            Assert.Equal(40008, topiso.Value.Amount, 12);
+            Assert.Equal(WikibaseUriFactory.Get(WikidataEntityUriPrefix + WikidataItems.KiloMeter), topiso.Value.Unit);
         }
 
         [Fact]
@@ -170,6 +173,7 @@ namespace WikiClientLibrary.Tests.UnitTestProject1.Tests
                                           | EntityQueryOptions.FetchAliases
                                           | EntityQueryOptions.FetchSiteLinks);
             ShallowTrace(entity);
+            Utility.AssertNotNull(entity.Id);
             Assert.Null(entity.Descriptions["zh"]);
             Assert.Equal("测试实体" + rand, entity.Labels["zh-hans"]);
             Assert.Equal("測試實體" + rand, entity.Labels["zh-hant"]);
@@ -187,6 +191,8 @@ namespace WikiClientLibrary.Tests.UnitTestProject1.Tests
             await prop.EditAsync(changelist, "Create a property for test.");
             // Refill basic information, esp. WbEntity.DataType
             await prop.RefreshAsync(EntityQueryOptions.FetchInfo);
+
+            Utility.AssertNotNull(prop.Id);
 
             //  Add the claims.
             changelist = new[]
@@ -238,11 +244,11 @@ namespace WikiClientLibrary.Tests.UnitTestProject1.Tests
             var entity = SerializableEntity.Parse(Resources.WikibaseP3);
             Assert.Equal("P3", entity.Id);
             Assert.Equal("instance of", entity.Labels["en"]);
-            Assert.Contains(entity.Claims["P5"], c => (string)c.MainSnak.DataValue == "Q25");
+            Assert.Contains(entity.Claims["P5"], c => (string?)c.MainSnak.DataValue == "Q25");
             entity = SerializableEntity.Parse(entity.ToJsonString());
             Assert.Equal("P3", entity.Id);
             Assert.Equal("instance of", entity.Labels["en"]);
-            Assert.Contains(entity.Claims["P5"], c => (string)c.MainSnak.DataValue == "Q25");
+            Assert.Contains(entity.Claims["P5"], c => (string?)c.MainSnak.DataValue == "Q25");
         }
 
 
@@ -261,10 +267,12 @@ namespace WikiClientLibrary.Tests.UnitTestProject1.Tests
             Utility.AssertNotNull(entities[0]);
             Utility.AssertNotNull(entities[1]);
             Assert.Null(entities[2]);
+#pragma warning disable 8602
             Assert.Equal("P3", entities[0].Id);
             Assert.Equal(entities[0].Id, entities[1].Id);
             Assert.Equal(entities[0].Labels.ToHashSet(), entities[1].Labels.ToHashSet());
             Assert.Equal(entities[0].Descriptions.ToHashSet(), entities[1].Descriptions.ToHashSet());
+#pragma warning restore 8602
         }
 
         [Fact]
