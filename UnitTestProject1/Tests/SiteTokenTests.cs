@@ -10,8 +10,6 @@ using Xunit.Abstractions;
 namespace WikiClientLibrary.Tests.UnitTestProject1.Tests
 {
 
-    // Our IP of CI is blocked from editing by WP and blocked from login by Wikia. Sad story.
-    // By using Bot Password, we may bypass this issue.
     public class SiteTokenTests : WikiSiteTestsBase
     {
 
@@ -76,8 +74,18 @@ namespace WikiClientLibrary.Tests.UnitTestProject1.Tests
             tokensCache["edit"] = invalidToken;
             tokensCache["csrf"] = invalidToken;
             Assert.Equal(invalidToken, await site.GetTokenAsync("edit"));
-            // This should cause token cache invalidation.
-            await page.UpdateContentAsync("Make an empty update.", true);
+            try
+            {
+                // This should cause token cache invalidation.
+                await page.UpdateContentAsync("Make an empty update.", true);
+            }
+            catch (OperationFailedException ex) when ((ex.ErrorCode ?? "").Contains("ipblocked-range"))
+            {
+                // wikimedia-globalblocking-ipblocked-range
+                Output.WriteLine("UpdateContentAsync fails due to IP block: " + ex);
+                // However, this does not affect our retrieving a new valid token.
+                // Continue testing.
+            }
             // This is a valid token
             var editToken = await site.GetTokenAsync("edit");
             Assert.Matches(@"^[0-9a-f]{32,}\+\\$", editToken);
