@@ -209,22 +209,31 @@ JasonHise grants anyone the right to use this work for any purpose, without any 
         }
 
         [SkippableFact]
-        public async Task ChunkedFileUploadTask()
+        public async Task ChunkedFileUploadTest()
         {
             var site = await SiteAsync;
             var file = Utility.GetDemoImage("1");
             var chunked = new ChunkedUploadSource(site, file.ContentStream) { DefaultChunkSize = 1024 * 4 };
-            do
+            try
             {
-                var result = await chunked.StashNextChunkAsync();
-                Assert.NotEqual(UploadResultCode.Warning, result.ResultCode);
-                if (result.ResultCode == UploadResultCode.Success)
+                do
                 {
-                    // As of 2019-10, this does not hold.
-                    // Assert.True(result.FileRevision.IsAnonymous);
-                    Assert.Equal(file.Sha1, result.FileRevision!.Sha1, StringComparer.OrdinalIgnoreCase);
-                }
-            } while (!chunked.IsStashed);
+                    var result = await chunked.StashNextChunkAsync();
+                    Assert.NotEqual(UploadResultCode.Warning, result.ResultCode);
+                    if (result.ResultCode == UploadResultCode.Success)
+                    {
+                        // As of 2019-10, this does not hold.
+                        // Assert.True(result.FileRevision.IsAnonymous);
+                        Assert.Equal(file.Sha1, result.FileRevision!.Sha1, StringComparer.OrdinalIgnoreCase);
+                    }
+                } while (!chunked.IsStashed);
+            }
+            catch (OperationFailedException ex) when (ex.ErrorCode == "uploadstash-exception")
+            {
+                Skip.If(ex.ErrorMessage != null && ex.ErrorMessage.Contains("An unknown error occurred in storage backend"),
+                    "MW server backend fails: " + ex.Message);
+                throw;
+            }
             try
             {
                 // This is to attempt to prevent the following error:
