@@ -19,6 +19,7 @@ namespace WikiClientLibrary.Wikibase
     /// </remarks>
     public class SerializableEntity : IEntity
     {
+
         private WbMonolingualTextCollection _Labels;
         private WbMonolingualTextCollection _Descriptions;
         private WbMonolingualTextsCollection _Aliases;
@@ -40,13 +41,22 @@ namespace WikiClientLibrary.Wikibase
                 _SiteLinks = new EntitySiteLinkCollection();
                 _Claims = new ClaimCollection();
             }
+            else
+            {
+                // Initialize with readonly placeholders. Caller needs to replace the whole property value afterwards.
+                _Labels = Entity.emptyStringDict;
+                _Descriptions = Entity.emptyStringDict;
+                _Aliases = Entity.emptyStringsDict;
+                _SiteLinks = Entity.emptySiteLinks;
+                _Claims = Entity.emptyClaims;
+            }
         }
 
         /// <inheritdoc />
-        public string Id { get; set; }
+        public string? Id { get; set; }
 
         /// <inheritdoc />
-        public WikibaseDataType DataType { get; set; }
+        public WikibaseDataType? DataType { get; set; }
 
         /// <inheritdoc />
         public WbMonolingualTextCollection Labels
@@ -133,11 +143,11 @@ namespace WikiClientLibrary.Wikibase
                 Type = entity.Type,
                 DataType = entity.DataType,
                 Id = entity.Id,
-                Aliases = new WbMonolingualTextsCollection(entity.Aliases ?? Entity.emptyStringsDict),
-                Descriptions = new WbMonolingualTextCollection(entity.Descriptions ?? Entity.emptyStringDict),
-                Labels = new WbMonolingualTextCollection(entity.Labels ?? Entity.emptyStringDict),
-                Claims = new ClaimCollection(entity.Claims ?? Entity.emptyClaims),
-                SiteLinks = new EntitySiteLinkCollection(entity.SiteLinks ?? Entity.emptySiteLinks)
+                Aliases = new WbMonolingualTextsCollection(entity.Aliases),
+                Descriptions = new WbMonolingualTextCollection(entity.Descriptions),
+                Labels = new WbMonolingualTextCollection(entity.Labels),
+                Claims = new ClaimCollection(entity.Claims),
+                SiteLinks = new EntitySiteLinkCollection(entity.SiteLinks)
             };
             return inst;
         }
@@ -145,13 +155,9 @@ namespace WikiClientLibrary.Wikibase
         internal static SerializableEntity Load(Contracts.Entity entity)
         {
             // If caller deserializes entity from EOF-ed stream, the caller can get null.
-            if (entity == null) return null;
-            var inst = new SerializableEntity(false)
-            {
-                Id = entity.Id,
-                Type = ParseEntityType(entity.Type)
-            };
-            if (entity.DataType != null)
+            Debug.Assert(entity != null);
+            var inst = new SerializableEntity(false) { Id = entity.Id, Type = ParseEntityType(entity.Type) };
+            if (!string.IsNullOrEmpty(entity.DataType))
                 inst.DataType = BuiltInDataTypes.Get(entity.DataType) ?? MissingPropertyType.Get(entity.DataType, entity.DataType);
             inst.Labels = new WbMonolingualTextCollection(
                 entity.Labels?.Values.Select(v => new WbMonolingualText(v.Language, v.Value))
@@ -163,8 +169,7 @@ namespace WikiClientLibrary.Wikibase
                 entity.Aliases?.Values.SelectMany(vs => vs).Select(v => new WbMonolingualText(v.Language, v.Value))
                 ?? Enumerable.Empty<WbMonolingualText>());
             inst.SiteLinks = new EntitySiteLinkCollection(
-                entity.Sitelinks?.Values.Select(v => new EntitySiteLink(v.Site, v.Title,
-                    new ReadOnlyCollection<string>(v.Badges)))
+                entity.Sitelinks?.Values.Select(v => new EntitySiteLink(v.Site, v.Title, v.Badges))
                 ?? Enumerable.Empty<EntitySiteLink>());
             if (entity.Claims == null || entity.Claims.Count == 0)
             {
@@ -216,7 +221,7 @@ namespace WikiClientLibrary.Wikibase
         /// </summary>
         /// <param name="entitiesJson">The serialized entities JSON string.</param>
         /// <remarks></remarks>
-        public static IEnumerable<SerializableEntity> ParseAll(string entitiesJson)
+        public static IEnumerable<SerializableEntity?> ParseAll(string entitiesJson)
         {
             if (entitiesJson == null) throw new ArgumentNullException(nameof(entitiesJson));
             using var sr = new StringReader(entitiesJson);
@@ -225,7 +230,7 @@ namespace WikiClientLibrary.Wikibase
         }
 
         /// <inheritdoc cref="LoadAll(JsonReader)"/>
-        public static IEnumerable<SerializableEntity> LoadAll(TextReader reader)
+        public static IEnumerable<SerializableEntity?> LoadAll(TextReader reader)
         {
             using var jr = new JsonTextReader(reader) {CloseInput = false};
             foreach (var i in LoadAll(jr)) yield return i;
@@ -239,6 +244,7 @@ namespace WikiClientLibrary.Wikibase
         /// <returns>
         /// A sequence that, when enumerated, will read a JSON array from reader, and parses it
         /// into a sequence of <see cref="SerializableEntity"/>s.
+        /// If there is <c>null</c> in the JSON array, <c>null</c> will be enumerated in the sequence.
         /// </returns>
         /// <remarks>
         /// <para>This method is recommended when you are working with a large JSON dump of Wikibase entities,
@@ -247,7 +253,7 @@ namespace WikiClientLibrary.Wikibase
         /// <para>If you stopped enumerating the returned sequence, the <paramref name="reader"/> will stop
         /// in the middle of array, at the end of current enumerated entity.</para>
         /// </remarks>
-        public static IEnumerable<SerializableEntity> LoadAll(JsonReader reader)
+        public static IEnumerable<SerializableEntity?> LoadAll(JsonReader reader)
         {
             // Skip comments
             while (reader.TokenType == JsonToken.None || reader.TokenType == JsonToken.Comment)
@@ -314,7 +320,7 @@ namespace WikiClientLibrary.Wikibase
         /// <param name="fileName">The path of file containing the serialized JSON of a single entity.</param>
         /// <remarks></remarks>
         /// <seealso cref="Load(string)"/>
-        public static IEnumerable<SerializableEntity> LoadAll(string fileName)
+        public static IEnumerable<SerializableEntity?> LoadAll(string fileName)
         {
             if (fileName == null) throw new ArgumentNullException(nameof(fileName));
             using var reader = File.OpenText(fileName);
@@ -334,12 +340,12 @@ namespace WikiClientLibrary.Wikibase
 
         private static IDictionary<string, Contracts.MonolingualText> ToContract(WbMonolingualTextCollection value)
         {
-            return value?.ToDictionary(p => p.Language, p => new Contracts.MonolingualText {Language = p.Language, Value = p.Text});
+            return value.ToDictionary(p => p.Language, p => new Contracts.MonolingualText {Language = p.Language, Value = p.Text});
         }
 
         private static IDictionary<string, ICollection<Contracts.MonolingualText>> ToContract(WbMonolingualTextsCollection value)
         {
-            return value?.Languages.ToDictionary(lang => lang,
+            return value.Languages.ToDictionary(lang => lang,
                 lang => (ICollection<Contracts.MonolingualText>)value[lang]
                     .Select(t => new Contracts.MonolingualText {Language = lang, Value = t}).ToList());
         }

@@ -16,13 +16,13 @@ namespace WikiClientLibrary.Wikibase
         /// Id of the entity.
         /// </summary>
         /// <value>Item or Property ID, OR <c>null</c> if this is a new entity that has not made any changes.</value>
-        string Id { get; }
+        string? Id { get; }
 
         /// <summary>
         /// For property entity, gets the data type of the property.
         /// </summary>
-        /// <value>The data type of the value when this property is used in a <see cref="Snak"/>, or <c>null</c> if not applicable.</value>
-        WikibaseDataType DataType { get; }
+        /// <value>the data type of the value when this property is used in a <see cref="Snak"/>, or <c>null</c> if not applicable.</value>
+        WikibaseDataType? DataType { get; }
 
         /// <summary>Gets the labels (aka. names) of the entity.</summary>
         WbMonolingualTextCollection Labels { get; }

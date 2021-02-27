@@ -54,7 +54,7 @@ namespace WikiClientLibrary.Wikibase.DataTypes
         }
 
         /// <inheritdoc />
-        public override bool Equals(object obj)
+        public override bool Equals(object? obj)
         {
             return obj is WbGlobeCoordinate coordinate && Equals(coordinate);
         }

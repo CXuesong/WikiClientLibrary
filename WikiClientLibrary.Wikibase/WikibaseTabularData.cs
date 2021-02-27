@@ -20,19 +20,19 @@ namespace WikiClientLibrary.Wikibase
     {
 
         [JsonProperty]
-        public string License { get; set; }
+        public string? License { get; set; }
 
         [JsonProperty]
-        public IDictionary<string, string> Description { get; set; }
+        public IDictionary<string, string>? Description { get; set; }
 
         [JsonProperty]
-        public string Sources { get; set; }
+        public string? Sources { get; set; }
 
         [JsonProperty]
-        public JObject Schema { get; set; }
+        public JObject? Schema { get; set; }
 
         [JsonProperty]
-        public JArray Data { get; set; }
+        public JArray? Data { get; set; }
 
     }
 

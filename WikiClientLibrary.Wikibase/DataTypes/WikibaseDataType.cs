@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using System.Text;
@@ -62,7 +63,7 @@ namespace WikiClientLibrary.Wikibase.DataTypes
         }
     }
 
-    internal sealed class DelegatePropertyType<T> : WikibaseDataType
+    internal sealed class DelegatePropertyType<T> : WikibaseDataType where T : notnull
     {
 
         private readonly Func<JToken, T> parseHandler;
@@ -97,7 +98,8 @@ namespace WikiClientLibrary.Wikibase.DataTypes
 
         public override JToken ToJson(object value)
         {
-            if (value == null) return null;
+            if (value == null)
+                throw new ArgumentNullException(nameof(value));
             if (value is T t)
                 return toJsonHandler(t);
             throw new ArgumentException($"Value type is incompatible for {Name}: expected {typeof(T)}, received {value.GetType()}.", nameof(value));
@@ -113,7 +115,7 @@ namespace WikiClientLibrary.Wikibase.DataTypes
             ValueTypeName = valueTypeName;
         }
 
-        public static MissingPropertyType Get(string name, string valueTypeName)
+        public static MissingPropertyType Get(string name, string? valueTypeName)
         {
             if (name == null) throw new ArgumentNullException(nameof(name));
             // TODO Make atomic.
@@ -165,7 +167,7 @@ namespace WikiClientLibrary.Wikibase.DataTypes
             {
                 "item" => "Q",
                 "property" => "P",
-                _ => throw new ArgumentException("Invalid entity-type: " + type + ".", nameof(value))
+                _ => throw new ArgumentException($"Invalid entity-type: {type}.", nameof(value))
             };
             id += (string)value["numeric-id"];
             return id;
@@ -383,7 +385,8 @@ namespace WikiClientLibrary.Wikibase.DataTypes
             foreach (var p in typeof(BuiltInDataTypes).GetProperties()
                 .Where(p => p.PropertyType == typeof(WikibaseDataType)))
             {
-                var value = (WikibaseDataType)p.GetValue(null);
+                var value = (WikibaseDataType?)p.GetValue(null);
+                Debug.Assert(value != null);
                 typeDict.Add(value.Name, value);
             }
         }
@@ -394,7 +397,7 @@ namespace WikiClientLibrary.Wikibase.DataTypes
         /// <param name="typeName">Internal name of the desired property type.</param>
         /// <exception cref="ArgumentNullException"><paramref name="typeName"/> is <c>null</c>.</exception>
         /// <returns>The matching type, or <c>null</c> if cannot find one.</returns>
-        public static WikibaseDataType Get(string typeName)
+        public static WikibaseDataType? Get(string typeName)
         {
             if (typeName == null) throw new ArgumentNullException(nameof(typeName));
             if (typeDict.TryGetValue(typeName, out var t)) return t;

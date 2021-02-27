@@ -14,8 +14,8 @@ namespace WikiClientLibrary.Wikibase.Infrastructures
     /// <typeparam name="TKey">Type of the key.</typeparam>
     /// <typeparam name="TItem">Type of the item.</typeparam>
     [DebuggerDisplay("Count = {Count}")]
-    [DebuggerTypeProxy(typeof(UnorderedKeyedCollection<, >.DebugView))]
-    public abstract class UnorderedKeyedCollection<TKey, TItem> : ICollection<TItem>, ICollection
+    [DebuggerTypeProxy(typeof(UnorderedKeyedCollection<,>.DebugView))]
+    public abstract class UnorderedKeyedCollection<TKey, TItem> : ICollection<TItem>, ICollection where TKey : notnull
     {
 
         private readonly Dictionary<TKey, TItem> dict;
@@ -83,7 +83,7 @@ namespace WikiClientLibrary.Wikibase.Infrastructures
         {
             if (item == null) return false;
             var key = GetKeyForItem(item);
-            return dict.TryGetValue(key, out var value) && value.Equals(item);
+            return dict.TryGetValue(key, out var value) && Equals(value, item);
         }
 
         /// <inheritdoc />

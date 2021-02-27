@@ -76,7 +76,7 @@ namespace WikiClientLibrary.Wikibase.DataTypes
         /// <exception cref="ArgumentNullException"><paramref name="language"/> is <c>null</c>.</exception>
         /// <returns>The text associated to the language,
         /// or <c>null</c> if the language does not have any associated text.</returns>
-        public string this[string language]
+        public string? this[string language]
         {
             get
             {
@@ -175,8 +175,10 @@ namespace WikiClientLibrary.Wikibase.DataTypes
             get { return _IsReadOnly; }
             set
             {
-                AssertMutable();
-                _IsReadOnly = value;
+                if (value)
+                    _IsReadOnly = true;
+                else
+                    AssertMutable();
             }
         }
 
@@ -433,8 +435,10 @@ namespace WikiClientLibrary.Wikibase.DataTypes
             get { return _IsReadOnly; }
             set
             {
-                AssertMutable();
-                _IsReadOnly = value;
+                if (value)
+                    _IsReadOnly = true;
+                else
+                    AssertMutable();
             }
         }
 

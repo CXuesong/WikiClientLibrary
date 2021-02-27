@@ -60,7 +60,7 @@ namespace WikiClientLibrary.Wikibase
 
         /// <summary>Claim ID.</summary>
         /// <value>Claim GUID, or <c>null</c> for a newly-created claim yet to be submitted.</value>
-        public string Id { get; set; }
+        public string? Id { get; set; }
 
         /// <summary>The type of the claim.</summary>
         /// <remarks>The value often is <c>statement</c>.</remarks>
@@ -86,7 +86,7 @@ namespace WikiClientLibrary.Wikibase
             return MainSnak.ToString();
         }
 
-        internal static IEnumerable<TValue> EnumWithOrder<TValue>(IDictionary<string, ICollection<TValue>> dict, IList<string> order)
+        internal static IEnumerable<TValue> EnumWithOrder<TValue>(IDictionary<string, ICollection<TValue>> dict, IList<string>? order)
         {
             // Before #84516 Wikibase did not implement snaks-order.
             // https://gerrit.wikimedia.org/r/#/c/84516/
@@ -185,7 +185,7 @@ namespace WikiClientLibrary.Wikibase
 
         public IList<Snak> Snaks => _Snaks;
 
-        public string Hash { get; set; }
+        public string Hash { get; set; } = "";
 
         internal static ClaimReference FromContract(Contracts.Reference reference)
         {
@@ -230,8 +230,8 @@ namespace WikiClientLibrary.Wikibase
 
         private static readonly JObject DirtyDataValuePlaceholder = new JObject();
 
-        private object _DataValue;
-        private JObject _RawDataValue;
+        private object? _DataValue;
+        private JObject? _RawDataValue;
 
         /// <summary>
         /// Initializes a snak with specified property ID and empty value.
@@ -314,11 +314,11 @@ namespace WikiClientLibrary.Wikibase
         public string PropertyId { get; }
 
         /// <summary>Snak hash.</summary>
-        public string Hash { get; set; }
+        public string Hash { get; set; } = "";
 
         /// <summary>Raw JSON value of <c>datavalue</c> node.</summary>
         /// <remarks>For the cases when <see cref="SnakType"/> is not <see cref="SnakType.Value"/>, this property should be <c>null</c>.</remarks>
-        public JObject RawDataValue
+        public JObject? RawDataValue
         {
             get
             {
@@ -348,22 +348,23 @@ namespace WikiClientLibrary.Wikibase
 
         /// <summary>Parsed value of <c>datavalue</c> node.</summary>
         /// <remarks>For the cases when <see cref="SnakType"/> is not <see cref="Wikibase.SnakType.Value"/>, this property should be <c>null</c>.</remarks>
-        public object DataValue
+        public object? DataValue
         {
             get
             {
                 if (_DataValue != DirtyDataValuePlaceholder) return _DataValue;
-                if (_RawDataValue == null)
+                var raw = _RawDataValue;
+                if (raw == null)
                 {
                     _DataValue = null;
                     return null;
                 }
-                Debug.Assert(_RawDataValue != DirtyDataValuePlaceholder);
+                Debug.Assert(raw != DirtyDataValuePlaceholder);
                 if (DataType == null) throw new InvalidOperationException("DataType is null.");
-                var valueType = (string)RawDataValue["type"];
+                var valueType = (string?)raw["type"];
                 if (valueType != null && valueType != DataType.ValueTypeName)
                     throw new NotSupportedException($"Parsing value type \"{valueType}\" is not supported by {DataType}.");
-                var value = DataType.Parse(_RawDataValue["value"]);
+                var value = DataType.Parse(raw["value"]);
                 _DataValue = value;
                 return value;
             }
@@ -375,7 +376,7 @@ namespace WikiClientLibrary.Wikibase
         }
 
         /// <summary>Data value type.</summary>
-        public WikibaseDataType DataType { get; set; }
+        public WikibaseDataType? DataType { get; set; }
 
         /// <inheritdoc />
         public override string ToString()
@@ -428,8 +429,9 @@ namespace WikiClientLibrary.Wikibase
             SnakType = ParseSnakType(snak.SnakType);
             Hash = snak.Hash;
             RawDataValue = snak.DataValue;
-            DataType = BuiltInDataTypes.Get(snak.DataType)
-                       ?? MissingPropertyType.Get(snak.DataType, (string)snak.DataValue?["type"]);
+            DataType = string.IsNullOrEmpty(snak.DataType)
+                ? null
+                : BuiltInDataTypes.Get(snak.DataType) ?? MissingPropertyType.Get(snak.DataType, (string)snak.DataValue?["type"]);
         }
 
         internal Contracts.Snak ToContract()

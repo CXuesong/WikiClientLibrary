@@ -9,6 +9,7 @@
       It also contains API for working with Wikibase offline JSON dump.
     </Description>
     <PackageTags>$(PackageTags) Wikibase Wikidata WikibaseDump</PackageTags>
+    <Nullable>Enable</Nullable>
   </PropertyGroup>
 
   <ItemGroup>

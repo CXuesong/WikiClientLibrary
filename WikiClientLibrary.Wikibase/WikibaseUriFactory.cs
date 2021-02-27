@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Concurrent;
+using System.Diagnostics;
 using System.Threading;
 using Newtonsoft.Json;
 
@@ -25,7 +26,7 @@ namespace WikiClientLibrary.Wikibase
         public static Uri Get(string uri)
         {
             if (uri == null) throw new ArgumentNullException(nameof(uri));
-            Uri inst = null;
+            Uri? inst = null;
             // Fast route
             if (cacheDict.TryGetValue(uri, out var r) && r.TryGetTarget(out inst))
                 return inst;
@@ -43,6 +44,7 @@ namespace WikiClientLibrary.Wikibase
                 });
             var c = cacheDict.Count;
             if (c >= nextTrimTrigger) TrimExcess();
+            Debug.Assert(inst != null);
             return inst;
         }
 

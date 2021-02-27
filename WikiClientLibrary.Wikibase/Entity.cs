@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Linq;
@@ -48,7 +49,7 @@ namespace WikiClientLibrary.Wikibase
         /// A asynchronous sequence of entity IDs in the identical order with <paramref name="titles"/>.
         /// If one or more entities are missing, the corresponding entity ID will be <c>null</c>.
         /// </returns>
-        public static IAsyncEnumerable<string> IdsFromSiteLinksAsync(WikiSite site, string siteName, IEnumerable<string> titles)
+        public static IAsyncEnumerable<string?> IdsFromSiteLinksAsync(WikiSite site, string siteName, IEnumerable<string> titles)
         {
             if (site == null) throw new ArgumentNullException(nameof(site));
             if (siteName == null) throw new ArgumentNullException(nameof(siteName));
@@ -95,7 +96,7 @@ namespace WikiClientLibrary.Wikibase
         /// Id of the entity.
         /// </summary>
         /// <value>Item or Property ID, OR <c>null</c> if this is a new entity that has not made any changes.</value>
-        public string Id { get; private set; }
+        public string? Id { get; private set; }
 
         /// <summary>
         /// ID of the entity page.
@@ -119,7 +120,7 @@ namespace WikiClientLibrary.Wikibase
         /// <para>The property value is invalidated after you have performed edits on this instance.
         /// To fetch the latest value, use <see cref="RefreshAsync(EntityQueryOptions)"/>.</para>
         /// </remarks>
-        public string Title { get; private set; }
+        public string? Title { get; private set; }
 
         /// <inheritdoc />
         public EntityType Type { get; private set; }
@@ -127,7 +128,7 @@ namespace WikiClientLibrary.Wikibase
         /// <summary>
         /// For property entity, gets the data type of the property.
         /// </summary>
-        public WikibaseDataType DataType { get; private set; }
+        public WikibaseDataType? DataType { get; private set; }
 
         /// <summary>
         /// Whether the entity exists.
@@ -186,7 +187,7 @@ namespace WikiClientLibrary.Wikibase
 
         /// <inheritdoc cref="RefreshAsync(EntityQueryOptions,ICollection{string},CancellationToken)"/>
         /// <seealso cref="EntityExtensions.RefreshAsync(IEnumerable{Entity},EntityQueryOptions,ICollection{string})"/>
-        public Task RefreshAsync(EntityQueryOptions options, ICollection<string> languages)
+        public Task RefreshAsync(EntityQueryOptions options, ICollection<string>? languages)
         {
             return RefreshAsync(options, languages, CancellationToken.None);
         }
@@ -201,7 +202,7 @@ namespace WikiClientLibrary.Wikibase
         /// </param>
         /// <param name="cancellationToken">The token used to cancel the operation.</param>
         /// <seealso cref="EntityExtensions.RefreshAsync(IEnumerable{Entity},EntityQueryOptions,ICollection{string},CancellationToken)"/>
-        public Task RefreshAsync(EntityQueryOptions options, ICollection<string> languages, CancellationToken cancellationToken)
+        public Task RefreshAsync(EntityQueryOptions options, ICollection<string>? languages, CancellationToken cancellationToken)
         {
             return WikibaseRequestHelper.RefreshEntitiesAsync(new[] { this }, options, languages, cancellationToken);
         }
@@ -237,15 +238,12 @@ namespace WikiClientLibrary.Wikibase
             Title = null;
             LastModified = DateTime.MinValue;
             LastRevisionId = 0;
-            Labels = null;
-            Aliases = null;
-            Descriptions = null;
-            SiteLinks = null;
             QueryOptions = options;
             if (serializable == null) return;
             serializable = SerializableEntity.Load(entity);
             Type = serializable.Type;
             DataType = serializable.DataType;
+
             if ((options & EntityQueryOptions.FetchInfo) == EntityQueryOptions.FetchInfo)
             {
                 if (!isPostEditing)
@@ -258,46 +256,31 @@ namespace WikiClientLibrary.Wikibase
                 }
                 LastRevisionId = (int)extensionData["lastrevid"];
             }
-            if ((options & EntityQueryOptions.FetchLabels) == EntityQueryOptions.FetchLabels)
-            {
-                Labels = serializable.Labels;
-                if (Labels.Count == 0)
-                    Labels = emptyStringDict;
-                else
-                    Labels.IsReadOnly = true;
-            }
-            if ((options & EntityQueryOptions.FetchAliases) == EntityQueryOptions.FetchAliases)
-            {
-                Aliases = serializable.Aliases;
-                if (Aliases.Count == 0)
-                    Aliases = emptyStringsDict;
-                else
-                    Aliases.IsReadOnly = true;
-            }
-            if ((options & EntityQueryOptions.FetchDescriptions) == EntityQueryOptions.FetchDescriptions)
-            {
-                Descriptions = serializable.Descriptions;
-                if (Descriptions.Count == 0)
-                    Descriptions = emptyStringDict;
-                else
-                    Descriptions.IsReadOnly = true;
-            }
-            if ((options & EntityQueryOptions.FetchSiteLinks) == EntityQueryOptions.FetchSiteLinks)
-            {
-                SiteLinks = serializable.SiteLinks;
-                if (SiteLinks.Count == 0)
-                    SiteLinks = emptySiteLinks;
-                else
-                    SiteLinks.IsReadOnly = true;
-            }
-            if ((options & EntityQueryOptions.FetchClaims) == EntityQueryOptions.FetchClaims)
-            {
-                Claims = serializable.Claims;
-                if (Claims.Count == 0)
-                    Claims = emptyClaims;
-                else
-                    Claims.IsReadOnly = true;
-            }
+
+            Labels = (options & EntityQueryOptions.FetchLabels) == EntityQueryOptions.FetchLabels && Labels.Count > 0
+                ? serializable.Labels
+                : emptyStringDict;
+            Labels.IsReadOnly = true;
+
+            Aliases = ((options & EntityQueryOptions.FetchAliases) == EntityQueryOptions.FetchAliases) && serializable.Aliases.Count > 0
+                ? serializable.Aliases
+                : emptyStringsDict;
+            Aliases.IsReadOnly = true;
+
+            Descriptions = ((options & EntityQueryOptions.FetchDescriptions) == EntityQueryOptions.FetchDescriptions) && serializable.Descriptions.Count > 0
+                ? serializable.Descriptions
+                : emptyStringDict;
+            Descriptions.IsReadOnly = true;
+
+            SiteLinks = ((options & EntityQueryOptions.FetchClaims) == EntityQueryOptions.FetchClaims) && serializable.SiteLinks.Count > 0
+                ? serializable.SiteLinks
+                : emptySiteLinks;
+            SiteLinks.IsReadOnly = true;
+
+            Claims = ((options & EntityQueryOptions.FetchClaims) == EntityQueryOptions.FetchClaims) && serializable.Claims.Count > 0
+                ? serializable.Claims
+                : emptyClaims;
+            Claims.IsReadOnly = true;
         }
 
         /// <inheritdoc />
@@ -385,25 +368,25 @@ namespace WikiClientLibrary.Wikibase
     public sealed class EntitySiteLink
     {
 
-        private static readonly IReadOnlyList<string> emptyBadges = new ReadOnlyCollection<string>(Array.Empty<string>());
-
         public EntitySiteLink(string site, string title) : this(site, title, null, null)
         {
         }
 
-        public EntitySiteLink(string site, string title, IReadOnlyList<string> badges) : this(site, title, badges, null)
+        public EntitySiteLink(string site, string title, IEnumerable<string>? badges) : this(site, title, badges, null)
         {
         }
 
         [JsonConstructor]
-        public EntitySiteLink(string site, string title, IReadOnlyList<string> badges, string url)
+        public EntitySiteLink(string site, string title, IEnumerable<string>? badges, string? url)
         {
             Site = site;
             Title = title;
-            if (badges is ICollection<string> cb && !cb.IsReadOnly)
-                Badges = new ReadOnlyCollection<string>(badges as IList<string> ?? badges.ToList());
-            else
-                Badges = badges ?? emptyBadges;
+            Badges = badges switch
+            {
+                null => ImmutableList<string>.Empty,
+                IImmutableList<string> imBadges => imBadges,
+                var b => b.ToImmutableList()
+            };
             Url = url;
         }
 
@@ -427,7 +410,7 @@ namespace WikiClientLibrary.Wikibase
         /// <summary>
         /// The URL to the title on the specified wiki site.
         /// </summary>
-        public string Url { get; }
+        public string? Url { get; }
 
     }
 

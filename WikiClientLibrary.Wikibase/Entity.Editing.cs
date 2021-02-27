@@ -31,12 +31,15 @@ namespace WikiClientLibrary.Wikibase
                 switch (prop.Key)
                 {
                     case nameof(DataType):
-                        contract.DataType = ((WikibaseDataType)prop.Last().Value).Name;
+                        var lastEntry = prop.Last();
+                        Debug.Assert(lastEntry.Value != null);
+                        contract.DataType = ((WikibaseDataType)lastEntry.Value).Name;
                         break;
                     case nameof(Labels):
                         contract.Labels = new Dictionary<string, Contracts.MonolingualText>();
                         foreach (var entry in prop)
                         {
+                            Debug.Assert(entry.Value != null);
                             var value = (WbMonolingualText)entry.Value;
                             var item = entry.State == EntityEditEntryState.Removed
                                 ? new Contracts.MonolingualText {Language = value.Language, Remove = true}
@@ -48,6 +51,7 @@ namespace WikiClientLibrary.Wikibase
                         contract.Descriptions = new Dictionary<string, Contracts.MonolingualText>();
                         foreach (var entry in prop)
                         {
+                            Debug.Assert(entry.Value != null);
                             var value = (WbMonolingualText)entry.Value;
                             var item = entry.State == EntityEditEntryState.Removed
                                 ? new Contracts.MonolingualText { Language = value.Language, Remove = true }
@@ -59,6 +63,7 @@ namespace WikiClientLibrary.Wikibase
                         contract.Aliases = new Dictionary<string, ICollection<MonolingualText>>();
                         foreach (var entry in prop)
                         {
+                            Debug.Assert(entry.Value != null);
                             var value = (WbMonolingualText)entry.Value;
                             var item = entry.State == EntityEditEntryState.Removed
                                 ? new Contracts.MonolingualText { Language = value.Language, Remove = true }
@@ -75,6 +80,7 @@ namespace WikiClientLibrary.Wikibase
                         contract.Sitelinks = new Dictionary<string, SiteLink>();
                         foreach (var entry in prop)
                         {
+                            Debug.Assert(entry.Value != null);
                             var value = (EntitySiteLink)entry.Value;
                             var item = entry.State == EntityEditEntryState.Removed
                                 ? new Contracts.SiteLink {Site = value.Site, Remove = true}
@@ -86,6 +92,7 @@ namespace WikiClientLibrary.Wikibase
                         contract.Claims = new Dictionary<string, ICollection<Contracts.Claim>>();
                         foreach (var entry in prop)
                         {
+                            Debug.Assert(entry.Value != null);
                             var value = (Claim)entry.Value;
                             Contracts.Claim item;
                             if (entry.State == EntityEditEntryState.Removed)
@@ -248,6 +255,7 @@ namespace WikiClientLibrary.Wikibase
                     case nameof(Labels):
                         foreach (var p in prop)
                         {
+                            Debug.Assert(p.Value != null);
                             var value = (WbMonolingualText)p.Value;
                             var jresult = await Site.InvokeMediaWikiApiAsync(new MediaWikiFormRequestMessage(new
                             {
@@ -268,6 +276,7 @@ namespace WikiClientLibrary.Wikibase
                     case nameof(Descriptions):
                         foreach (var p in prop)
                         {
+                            Debug.Assert(p.Value != null);
                             var value = (WbMonolingualText)p.Value;
                             var jresult = await Site.InvokeMediaWikiApiAsync(new MediaWikiFormRequestMessage(new
                             {
@@ -287,15 +296,15 @@ namespace WikiClientLibrary.Wikibase
                         break;
                     case nameof(Aliases):
                         {
-                            var entries = prop.GroupBy(t => ((WbMonolingualText)t.Value).Language);
+                            var entries = prop.GroupBy(t => ((WbMonolingualText)t.Value!).Language);
                             foreach (var langGroup in entries)
                             {
                                 var addExpr = MediaWikiHelper.JoinValues(langGroup
                                     .Where(e => e.State == EntityEditEntryState.Updated)
-                                    .Select(e => ((WbMonolingualText)e.Value).Text));
+                                    .Select(e => ((WbMonolingualText)e.Value!).Text));
                                 var removeExpr = MediaWikiHelper.JoinValues(langGroup
                                     .Where(e => e.State == EntityEditEntryState.Removed)
-                                    .Select(e => ((WbMonolingualText)e.Value).Text));
+                                    .Select(e => ((WbMonolingualText)e.Value!).Text));
                                 var jresult = await Site.InvokeMediaWikiApiAsync(new MediaWikiFormRequestMessage(new
                                 {
                                     action = "wbsetaliases",
@@ -316,16 +325,16 @@ namespace WikiClientLibrary.Wikibase
                         }
                     case nameof(SiteLinks):
                         {
-                            var entries = prop.GroupBy(t => ((EntitySiteLink)t.Value).Site);
+                            var entries = prop.GroupBy(t => ((EntitySiteLink)t.Value!).Site);
                             foreach (var siteGroup in entries)
                             {
-                                string link = null, badges = null;
+                                string? link = null, badges = null;
                                 try
                                 {
                                     var item = siteGroup.Single();
                                     if (item.State == EntityEditEntryState.Updated)
                                     {
-                                        var value = (EntitySiteLink)item.Value;
+                                        var value = (EntitySiteLink)item.Value!;
                                         link = value.Title;
                                         badges = MediaWikiHelper.JoinValues(value.Badges);
                                     }
@@ -355,7 +364,7 @@ namespace WikiClientLibrary.Wikibase
                     case nameof(Claims):
                         foreach (var entry in prop.Where(e => e.State == EntityEditEntryState.Updated))
                         {
-                            var value = (Claim)entry.Value;
+                            var value = (Claim)entry.Value!;
                             var claimContract = value.ToContract(false);
                             if (value.Id == null)
                             {
@@ -370,12 +379,13 @@ namespace WikiClientLibrary.Wikibase
                                         token = WikiSiteToken.Edit,
                                         @new = FormatEntityType(Type),
                                         bot = isBot,
-                                        summary = (string)null,
+                                        summary = (string?)null,
                                         data = "{}"
                                     }), cancellationToken);
                                     if (!strict) checkbaseRev = false;
                                     LoadEntityMinimal(jresult1["entity"]);
                                 }
+                                Debug.Assert(Id != null, "Id is expected to be loaded after entity creation.");
                                 claimContract.Id = Utility.NewClaimGuid(Id);
                             }
                             var jresult = await Site.InvokeMediaWikiApiAsync(new MediaWikiFormRequestMessage(new
@@ -393,7 +403,7 @@ namespace WikiClientLibrary.Wikibase
                             if (!strict) checkbaseRev = false;
                         }
                         foreach (var batch in prop.Where(e => e.State == EntityEditEntryState.Removed)
-                            .Select(e => ((Claim)e.Value).Id).Partition(50))
+                            .Select(e => ((Claim)e.Value!).Id).Partition(50))
                         {
                             var jresult = await Site.InvokeMediaWikiApiAsync(new MediaWikiFormRequestMessage(new
                             {

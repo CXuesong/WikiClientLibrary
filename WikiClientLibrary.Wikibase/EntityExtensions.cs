@@ -39,7 +39,7 @@ namespace WikiClientLibrary.Wikibase
         /// <param name="cancellationToken">The token used to cancel the operation.</param>
         /// <seealso cref="Entity.RefreshAsync()"/>
         public static Task RefreshAsync(this IEnumerable<Entity> entities, EntityQueryOptions options,
-            ICollection<string> languages, CancellationToken cancellationToken)
+            ICollection<string>? languages, CancellationToken cancellationToken)
         {
             return WikibaseRequestHelper.RefreshEntitiesAsync(entities, options, languages, cancellationToken);
         }

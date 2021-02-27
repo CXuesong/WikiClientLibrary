@@ -19,10 +19,10 @@ namespace WikiClientLibrary.Wikibase
 
         private static readonly Dictionary<EntityQueryOptions, string> propdict = new Dictionary<EntityQueryOptions, string>();
 
-        private static IDictionary<string, object> BuildQueryOptions(string languages, EntityQueryOptions options)
+        private static IDictionary<string, object?> BuildQueryOptions(string? languages, EntityQueryOptions options)
         {
             var propValue = options & EntityQueryOptions.FetchAllProperties;
-            string props;
+            string? props;
             if (propValue == EntityQueryOptions.None)
             {
                 props = "";
@@ -48,7 +48,7 @@ namespace WikiClientLibrary.Wikibase
                 }
             }
 
-            return new Dictionary<string, object>
+            return new Dictionary<string, object?>
             {
                 {
                     "redirects",
@@ -62,7 +62,7 @@ namespace WikiClientLibrary.Wikibase
         }
 
         public static async Task RefreshEntitiesAsync(IEnumerable<Entity> entities, EntityQueryOptions options,
-            IEnumerable<string> languages, CancellationToken cancellationToken)
+            IEnumerable<string>? languages, CancellationToken cancellationToken)
         {
             if (entities == null) throw new ArgumentNullException(nameof(entities));
             var langs = languages == null ? null : MediaWikiHelper.JoinValues(languages);
@@ -101,7 +101,7 @@ namespace WikiClientLibrary.Wikibase
 
         private static readonly char[] whitespaceAndUnderscore = {' ', '\t', '\v', '　', '_'};
 
-        public static async IAsyncEnumerable<string> EntityIdsFromSiteLinksAsync(WikiSite site,
+        public static async IAsyncEnumerable<string?> EntityIdsFromSiteLinksAsync(WikiSite site,
             string siteName, IEnumerable<string> siteLinks, 
             [EnumeratorCancellation] CancellationToken cancellationToken = default)
         {
