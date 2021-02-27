@@ -11,7 +11,7 @@ namespace WikiClientLibrary.Tests.UnitTestProject1.Tests
 {
 
     // Our IP of CI is blocked from editing by WP and blocked from login by Wikia. Sad story.
-    [CISkipped]
+    // By using Bot Password, we may bypass this issue.
     public class SiteTokenTests : WikiSiteTestsBase
     {
 
