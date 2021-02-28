@@ -4,7 +4,7 @@
   <PropertyGroup>
     <!-- Here are the default targets. Projects may override on this value with higher requirements. -->
     <TargetFrameworks>netstandard2.1;net5.0</TargetFrameworks>
-    <Version>0.8.0</Version>
+    <Version>0.8.0-int.0</Version>
     <AssemblyVersion>0.8.0.0</AssemblyVersion>
     <FileVersion>0.8.0.0</FileVersion>
     <Copyright>Copyright (C) CXuesong 2021</Copyright>
@@ -27,7 +27,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0-beta2-19554-01" PrivateAssets="All" />
+    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All" />
   </ItemGroup>
 
 </Project>
