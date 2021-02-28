@@ -45,7 +45,7 @@ jobs:
         run: './WikiClientLibrary.Commons/CI/CollectArtifacts -Configuration Release'
       - uses: actions/upload-artifact@master
         with:
-          name: BuildArtifacts-CIRelease
+          name: BuildArtifacts-Linux-Release
           path: ./CollectedArtifacts
       - name: Test
         shell: pwsh
@@ -81,7 +81,7 @@ jobs:
         run: './WikiClientLibrary.Commons/CI/CollectArtifacts -Configuration ${{ matrix.config }}'
       - uses: actions/upload-artifact@master
         with:
-          name: BuildArtifacts-${{ matrix.config }}
+          name: BuildArtifacts-Windows-${{ matrix.config }}
           path: ./CollectedArtifacts
       - name: Test
         shell: pwsh
