@@ -135,9 +135,6 @@ namespace WikiClientLibrary.Pages.Queries.Properties
         [JsonProperty("*")]
         public string Title { get; private set; }
 
-        [Obsolete("Use Title property instead.")]
-        public string PageTitle => Title;
-
         /// <inheritdoc />
         public override string ToString()
         {

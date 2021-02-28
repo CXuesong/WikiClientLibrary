@@ -66,9 +66,6 @@ namespace WikiClientLibrary.Pages.Parsing
         [JsonProperty("langlinks")]
         public IReadOnlyCollection<LanguageLinkInfo> LanguageLinks { get; private set; }
 
-        [Obsolete("Use LanguageLinks instead of this property.")]
-        public IReadOnlyCollection<LanguageLinkInfo> Interlanguages => LanguageLinks;
-
         [JsonProperty]
         public IReadOnlyCollection<ContentCategoryInfo> Categories { get; private set; }
 
