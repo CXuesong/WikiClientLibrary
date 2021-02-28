@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Linq;
@@ -29,13 +30,13 @@ namespace WpfTestApplication1
     public partial class MainWindow : Window
     {
         private WikiClient client;
-        private WikiSite site;
-        private CancellationTokenSource LastNavigationCancellation;
-        private Regex articleUrlMatcher = null;
+        private WikiSite? site;
+        private CancellationTokenSource? lastNavigationCancellation;
+        private Regex? articleUrlMatcher;
 
         public const string EndPointUrl = "https://en.wikipedia.org/w/api.php";
 
-        private string PageTemplate;
+        private readonly string pageTemplate;
 
         public MainWindow()
         {
@@ -43,10 +44,14 @@ namespace WpfTestApplication1
             using var s = typeof (MainWindow).Assembly.GetManifestResourceStream("WpfTestApplication1.WikiPageTemplate.html");
             if (s == null) throw new MissingManifestResourceException("Wiki page template file is missing.");
             using var reader = new StreamReader(s);
-            PageTemplate = reader.ReadToEnd();
+            pageTemplate = reader.ReadToEnd();
+            client = new WikiClient
+            {
+                ClientUserAgent = "WpfApplicationTest/1.0 (.NET CLR " + Environment.Version + ")",
+            };
         }
 
-        private void SetStatus(string status = null)
+        private void SetStatus(string? status = null)
         {
             StatusLabel.Content = status;
         }
@@ -56,6 +61,7 @@ namespace WpfTestApplication1
             TitleTextBox.Text = title;
             SetStatus("Navigating to: " + title);
             ParsedContentInfo parsed;
+            Debug.Assert(site != null);
             try
             {
                 parsed = await site.ParsePageAsync(title, ParsingOptions.DisableToc, token);
@@ -70,7 +76,7 @@ namespace WpfTestApplication1
             SetStatus("Parsing: " + parsed.Title);
             TitleTextBox.Text = parsed.Title;
             // Fill the page.
-            var text = PageTemplate;
+            var text = pageTemplate;
             void FillParam(string name, string value) => text = text.Replace("<!-- " + name + " -->", value);
             FillParam("SITE NAME", site.SiteInfo.SiteName);
             FillParam("DISPLAY TITLE", parsed.DisplayTitle);
@@ -90,18 +96,14 @@ namespace WpfTestApplication1
 
         private void Navigate(string title)
         {
-            LastNavigationCancellation?.Cancel();
-            LastNavigationCancellation = new CancellationTokenSource();
-            var task = NavigateCoreAsync(title, LastNavigationCancellation.Token);
+            lastNavigationCancellation?.Cancel();
+            lastNavigationCancellation = new CancellationTokenSource();
+            var task = NavigateCoreAsync(title, lastNavigationCancellation.Token);
         }
 
         private async void Window_Loaded(object sender, RoutedEventArgs e)
         {
             // Play with some real wiki.
-            client = new WikiClient
-            {
-                ClientUserAgent = "WpfApplicationTest/1.0 (.NET CLR " + Environment.Version + ")",
-            };
             SetStatus("Loading wiki site info: " + EndPointUrl);
             site = new WikiSite(client, EndPointUrl);
             await site.Initialization;
@@ -138,7 +140,7 @@ namespace WpfTestApplication1
 
         private void PageFrame_Navigating(object sender, NavigatingCancelEventArgs e)
         {
-            if (e.Uri != null)
+            if (e.Uri != null && articleUrlMatcher != null)
             {
                 // Actual navigation is to take place.
                 TocListBox.Items.Clear();

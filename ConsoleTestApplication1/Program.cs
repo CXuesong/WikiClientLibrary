@@ -18,9 +18,6 @@ namespace ConsoleTestApplication1
     {
         static void Main(string[] args)
         {
-            // We want TLS 1.2 support. This statement is needed until .NET Framework 4.7 / .NET Core
-            // https://github.com/CXuesong/WikiClientLibrary/issues/66
-            ServicePointManager.SecurityProtocol |= SecurityProtocolType.Tls12;
             try
             {
                 HelloWikiWorld().Wait();
@@ -36,8 +33,10 @@ namespace ConsoleTestApplication1
 
         static async Task HelloWikiWorld()
         {
-            var loggerFactory = new LoggerFactory();
-            loggerFactory.AddConsole(LogLevel.Information, true);
+            var loggerFactory = LoggerFactory.Create(c => c
+                .SetMinimumLevel(LogLevel.Information)
+                .AddSimpleConsole(o => o.IncludeScopes = true)
+            );
             // Create a MediaWiki API client.
             var wikiClient = new WikiClient
             {
@@ -64,7 +63,7 @@ namespace ConsoleTestApplication1
                 LOGIN_RETRY:
                 try
                 {
-                await site.LoginAsync(Input("User name"), Input("Password"));
+                    await site.LoginAsync(Input("User name"), Input("Password"));
                 }
                 catch (OperationFailedException ex)
                 {
@@ -81,12 +80,14 @@ namespace ConsoleTestApplication1
             // Page Operations
             // Fetch information and content
             var page = new WikiPage(site, site.SiteInfo.MainPage);
-            Console.WriteLine("Retrieving {0}...", page);
+            Console.WriteLine("Retrieving {0}…", page);
             await page.RefreshAsync(PageQueryOptions.FetchContent);
 
             Console.WriteLine("Last touched at {0}.", page.LastTouched);
-            Console.WriteLine("Last revision {0} by {1} at {2}.", page.LastRevisionId,
-                page.LastRevision.UserName, page.LastRevision.TimeStamp);
+            if (page.LastRevision == null)
+                Console.WriteLine("No last revision available: {0}", page.LastRevisionId);
+            else
+                Console.WriteLine("Last revision {0} by {1} at {2}.", page.LastRevisionId, page.LastRevision.UserName, page.LastRevision.TimeStamp);
             Console.WriteLine("Content length: {0} bytes ----------", page.ContentLength);
             Console.WriteLine(page.Content);
             // Purge the page
@@ -195,10 +196,10 @@ namespace ConsoleTestApplication1
             {
                 var rev = await Revision.FetchRevisionsAsync(site, rc.OldRevisionId, rc.RevisionId).ToListAsync();
                 // Maybe we'll use some 3rd party diff lib
-                Console.WriteLine("Before, RevId={0}, {1}", rev[0].Id, rev[0].TimeStamp);
-                Console.WriteLine(rev[0].Content);
-                Console.WriteLine("After, RevId={0}, {1}", rev[1].Id, rev[1].TimeStamp);
-                Console.WriteLine(rev[1].Content);
+                Console.WriteLine("Before, RevId={0}, {1}", rev[0]!.Id, rev[0]!.TimeStamp);
+                Console.WriteLine(rev[0]!.Content);
+                Console.WriteLine("After, RevId={0}, {1}", rev[1]!.Id, rev[1]!.TimeStamp);
+                Console.WriteLine(rev[1]!.Content);
             }
             else if (rc.RevisionId > 0)
             {
@@ -219,7 +220,7 @@ namespace ConsoleTestApplication1
         {
             Console.Write(prompt);
             Console.Write("> ");
-            return Console.ReadLine();
+            return Console.ReadLine() ?? throw new InvalidOperationException("EOF reached.");
         }
 
         static bool Confirm(string prompt)
@@ -228,7 +229,7 @@ namespace ConsoleTestApplication1
             Console.Write("[Y/N]> ");
             while (true)
             {
-                var input = Console.ReadLine().ToUpperInvariant();
+                var input = Console.ReadLine()!.ToUpperInvariant();
                 if (input == "Y") return true;
                 if (input == "N") return false;
                 Console.Write("> ");

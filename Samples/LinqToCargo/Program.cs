@@ -70,20 +70,22 @@ class LolCargoQueryContext : CargoQueryContext
 class RosterChanges
 {
 
+    // `default!` is how we are bypassing NRT warning in EF for now.
+    // Alternatively, you can initialize with ctor but you'll need a lot of params in ctor for sure.
     [Column(CargoSpecialColumnNames.PageName)]
-    public string Page { get; set; }
+    public string Page { get; set; } = default!;
 
     [Column("Date_Sort")]
     public DateTime DateSort { get; set; }
 
-    public string Player { get; set; }
+    public string Player { get; set; } = default!;
 
-    public string Direction { get; set; }
+    public string Direction { get; set; } = default!;
 
-    public ICollection<string> Roles { get; set; }
+    public ICollection<string> Roles { get; set; } = default!;
 
-    public ICollection<string> Tags { get; set; }
+    public ICollection<string> Tags { get; set; } = default!;
 
-    public ICollection<string> Tournaments { get; set; }
+    public ICollection<string> Tournaments { get; set; } = default!;
 
 }

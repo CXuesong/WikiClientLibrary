@@ -60,11 +60,11 @@ namespace WikiClientLibrary.Demos.ScribuntoInteractive
                 }
                 catch (ScribuntoConsoleException ex)
                 {
-                    if (!string.IsNullOrEmpty(ex.EvaluationResult.Output))
+                    if (!string.IsNullOrEmpty(ex.EvaluationResult?.Output))
                     {
                         Console.WriteLine(ex.EvaluationResult.Output);
                     }
-                    WriteError(string.Format("{0}: {1}", ex.ErrorCode, ex.ErrorMessage));
+                    WriteError($"{ex.ErrorCode}: {ex.ErrorMessage}");
                 }
             }
         }
@@ -104,7 +104,7 @@ namespace WikiClientLibrary.Demos.ScribuntoInteractive
             var commands = typeof(Program).GetMethods(BindingFlags.Static | BindingFlags.NonPublic)
                 .Select(m => (method: m, attr: m.GetCustomAttribute<ConsoleCommandAttribute>()))
                 .Where(t => t.attr != null)
-                .Select(t => (command: t.attr.Command, desc: t.attr.Description, method: t.method))
+                .Select(t => (command: t.attr!.Command, desc: t.attr.Description, method: t.method))
                 .OrderBy(t => t.command);
             foreach ((string command, string desc, _) in commands)
             {
@@ -132,13 +132,13 @@ namespace WikiClientLibrary.Demos.ScribuntoInteractive
 
         public string Command { get; }
 
-        public string Description { get; }
+        public string? Description { get; }
 
         public ConsoleCommandAttribute(string command) : this(command, null)
         {
         }
 
-        public ConsoleCommandAttribute(string command, string description)
+        public ConsoleCommandAttribute(string command, string? description)
         {
             Command = command;
             Description = description;
