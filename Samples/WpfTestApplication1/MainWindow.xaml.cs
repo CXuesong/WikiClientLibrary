@@ -22,14 +22,14 @@ using WikiClientLibrary.Client;
 using WikiClientLibrary.Pages.Parsing;
 using WikiClientLibrary.Sites;
 
-namespace WpfTestApplication1
+namespace WikiClientLibrary.Samples.WpfTestApplication1
 {
     /// <summary>
     /// MainWindow.xaml 的交互逻辑
     /// </summary>
     public partial class MainWindow : Window
     {
-        private WikiClient client;
+        private readonly WikiClient client;
         private WikiSite? site;
         private CancellationTokenSource? lastNavigationCancellation;
         private Regex? articleUrlMatcher;
@@ -41,7 +41,7 @@ namespace WpfTestApplication1
         public MainWindow()
         {
             InitializeComponent();
-            using var s = typeof (MainWindow).Assembly.GetManifestResourceStream("WpfTestApplication1.WikiPageTemplate.html");
+            using var s = typeof (MainWindow).Assembly.GetManifestResourceStream("WikiClientLibrary.Samples.WpfTestApplication1.WikiPageTemplate.html");
             if (s == null) throw new MissingManifestResourceException("Wiki page template file is missing.");
             using var reader = new StreamReader(s);
             pageTemplate = reader.ReadToEnd();

@@ -3,11 +3,12 @@
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <TargetFramework>net5.0</TargetFramework>
+    <RootNamespace>WikiClientLibrary.Samples.ScribuntoInteractive</RootNamespace>
     <Nullable>Enable</Nullable>
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\WikiClientLibrary\WikiClientLibrary.csproj" />
+    <ProjectReference Include="..\..\WikiClientLibrary\WikiClientLibrary.csproj" />
   </ItemGroup>
 
 </Project>

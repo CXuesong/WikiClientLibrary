@@ -3,6 +3,7 @@
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
     <TargetFramework>net5.0-windows</TargetFramework>
+    <RootNamespace>WikiClientLibrary.Samples.WpfTestApplication1</RootNamespace>
     <UseWPF>true</UseWPF>
     <Nullable>Enable</Nullable>
   </PropertyGroup>
@@ -12,7 +13,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\WikiClientLibrary\WikiClientLibrary.csproj" />
+    <ProjectReference Include="..\..\WikiClientLibrary\WikiClientLibrary.csproj" />
   </ItemGroup>
 
 </Project>

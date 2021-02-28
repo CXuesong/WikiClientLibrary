@@ -7,7 +7,7 @@ using WikiClientLibrary.Client;
 using WikiClientLibrary.Scribunto;
 using WikiClientLibrary.Sites;
 
-namespace WikiClientLibrary.Demos.ScribuntoInteractive
+namespace WikiClientLibrary.Samples.ScribuntoInteractive
 {
     internal static class Program
     {
