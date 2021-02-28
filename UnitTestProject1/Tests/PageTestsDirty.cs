@@ -113,9 +113,11 @@ The original title of the page is '''{title}'''.
                     Assert.True(result.Warnings.TitleExists || result.Warnings.DuplicateTitles != null);
                     WriteOutput("Title exists.");
                     // Sometimes there is backend stash error. We may ignore it for now.
-                    // TODO expose stasherror node
-                    // Utility.AssertNotNull(result.FileKey);
-                    Skip.If(string.IsNullOrEmpty(result.FileKey), "No FileKey available. No good retry uploading.");
+                    if (result.StashErrors.Any(e => e.Code == "uploadstash-exception"))
+                    {
+                        Skip.If(string.IsNullOrEmpty(result.FileKey), "Stash error: " + string.Join(';', result.StashErrors));
+                    }
+                    Utility.AssertNotNull(result.FileKey);
                     result = await site.UploadAsync(fileName,
                         new FileKeyUploadSource(result.FileKey), file.Description + ReuploadSuffix, true);
                     ShallowTrace(result);

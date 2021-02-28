@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Linq;
@@ -66,7 +67,7 @@ namespace WikiClientLibrary.Files
         /// Gets a collection of warnings resulted from this upload.
         /// </summary>
         /// <value>
-        /// A read-only dictionary of warning code - context pairs.
+        /// a read-only dictionary of warning code - context pairs.
         /// The list is guaranteed not to be <c>null</c>,
         /// but it can be empty.
         /// </value>
@@ -74,8 +75,15 @@ namespace WikiClientLibrary.Files
         /// <para>You can use <see cref="UploadWarningCollection.FormatWarning"/> to get user-friendly warning messages.</para>
         /// <para>If you have suppressed warnings, the warnings will still be here, but <see cref="ResultCode"/> will be <see cref="UploadResultCode.Success"/>.</para>
         /// </remarks>
-        [JsonProperty("warnings", ObjectCreationHandling = ObjectCreationHandling.Replace)]
+        [JsonProperty(ObjectCreationHandling = ObjectCreationHandling.Replace)]
         public UploadWarningCollection Warnings { get; private set; } = UploadWarningCollection.Empty;
+
+        /// <summary>
+        /// Gets a collection of errors during stashing the chunk or the file to be uploaded.
+        /// (MW 1.29+)
+        /// </summary>
+        [JsonProperty]
+        public IReadOnlyList<StashError> StashErrors { get; private set; } = ImmutableList<StashError>.Empty;
 
         /// <summary>
         /// For a successful upload or stashing, gets the revision information
@@ -252,6 +260,33 @@ namespace WikiClientLibrary.Files
         {
             return string.Join("\n", this.Select(p => FormatWarning(p.Key, p.Value)));
         }
+    }
+
+    /// <summary>
+    /// Represents an stash error entry in the MediaWiki file upload result.
+    /// </summary>
+    [JsonObject(MemberSerialization.OptIn)]
+    public class StashError
+    {
+
+        /// <summary>Error code.</summary>
+        [JsonProperty]
+        public string Code { get; private set; }
+
+        /// <summary>Error message.</summary>
+        [JsonProperty]
+        public string Message { get; private set; }
+
+        /// <summary>Additional error details.</summary>
+        [JsonProperty]
+        public IReadOnlyList<string> Params { get; private set; } = ImmutableList<string>.Empty;
+
+        /// <summary>Error type. The value is usually one of <c>"error"</c> or <c>"warning"</c>.</summary>
+        [JsonProperty]
+        public string Type { get; private set; } = "";
+
+        /// <inheritdoc />
+        public override string ToString() => $"{Code}: {Message}";
     }
 
 }
