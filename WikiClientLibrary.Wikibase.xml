@@ -265,18 +265,62 @@
             Id of the entity.
             </summary>
     </member>
-    <member name="M:WikiClientLibrary.Wikibase.Entity.IdsFromSiteLinksAsync(WikiClientLibrary.Sites.WikiSite,System.String,System.Collections.Generic.IEnumerable{System.String})">
+    <member name="M:WikiClientLibrary.Wikibase.Entity.IdFromSiteLinkAsync(WikiClientLibrary.Sites.WikiSite,System.String,System.String,System.Threading.CancellationToken)">
       <summary>
             Asynchronously gets the entity IDs with specified sequence of titles on the specified site.
             </summary>
       <param name="site">The Wikibase repository site.</param>
-      <param name="siteName">The site name of the sitelinks.</param>
-      <param name="titles">The article titles on the site <paramref name="siteName" /> to check for entity IDs.</param>
-      <returns>
-            A asynchronous sequence of entity IDs in the identical order with <paramref name="titles" />.
-            If one or more entities are missing, the corresponding entity ID will be <c>null</c>.
-            </returns>
-      <exception cref="T:System.ArgumentNullException">Either <paramref name="site" />, <paramref name="siteName" />, or <paramref name="titles" /> is <c>null</c>.</exception>
+      <param name="siteName">The site name of the sitelink.</param>
+      <param name="title">The article title on the site <paramref name="siteName" /> to check for corresponding entity ID.</param>
+      <param name="cancellationToken">a token used to cancel the operation.</param>
+      <returns>corresponding entity ID (e.g. <c>Q1234</c>), or <c>null</c> if no such entity can be found.</returns>
+      <exception cref="T:System.ArgumentNullException">Either <paramref name="site" />, <paramref name="siteName" />, or <paramref name="title" /> is <c>null</c>.</exception>
+    </member>
+    <member name="M:WikiClientLibrary.Wikibase.Entity.IdsFromSiteLinksAsync(System.Void,System.String,WikiClientLibrary.Sites.WikiSite,System.String)">
+      <summary>
+        <markup>
+          <include item="SMCMissingTag">
+            <parameter>summary</parameter>
+            <parameter>M:WikiClientLibrary.Wikibase.Entity.IdsFromSiteLinksAsync(System.Void,System.String,WikiClientLibrary.Sites.WikiSite,System.String)</parameter>
+          </include>
+        </markup>
+      </summary>
+      <param name="site">
+        <markup>
+          <include item="SMCMissingParamTag">
+            <parameter>param</parameter>
+            <parameter>site</parameter>
+            <parameter>M:WikiClientLibrary.Wikibase.Entity.IdsFromSiteLinksAsync(System.Void,System.String,WikiClientLibrary.Sites.WikiSite,System.String)</parameter>
+          </include>
+        </markup>
+      </param>
+      <param name="siteName">
+        <markup>
+          <include item="SMCMissingParamTag">
+            <parameter>param</parameter>
+            <parameter>siteName</parameter>
+            <parameter>M:WikiClientLibrary.Wikibase.Entity.IdsFromSiteLinksAsync(System.Void,System.String,WikiClientLibrary.Sites.WikiSite,System.String)</parameter>
+          </include>
+        </markup>
+      </param>
+      <param name="titles">
+        <markup>
+          <include item="SMCMissingParamTag">
+            <parameter>param</parameter>
+            <parameter>titles</parameter>
+            <parameter>M:WikiClientLibrary.Wikibase.Entity.IdsFromSiteLinksAsync(System.Void,System.String,WikiClientLibrary.Sites.WikiSite,System.String)</parameter>
+          </include>
+        </markup>
+      </param>
+      <param name="cancellationToken">
+        <markup>
+          <include item="SMCMissingParamTag">
+            <parameter>param</parameter>
+            <parameter>cancellationToken</parameter>
+            <parameter>M:WikiClientLibrary.Wikibase.Entity.IdsFromSiteLinksAsync(System.Void,System.String,WikiClientLibrary.Sites.WikiSite,System.String)</parameter>
+          </include>
+        </markup>
+      </param>
     </member>
     <member name="P:WikiClientLibrary.Wikibase.Entity.Labels">
       <summary>Gets the labels (aka. names) of the entity.</summary>
@@ -378,7 +422,7 @@
             Represents an item of coarse-grained modification information on <see cref="T:WikiClientLibrary.Wikibase.Entity" />.
             </summary>
     </member>
-    <member name="M:WikiClientLibrary.Wikibase.EntityEditEntry.#ctor">
+    <member name="M:WikiClientLibrary.Wikibase.EntityEditEntry.#ctor(System.String)">
       <summary>
         <markup>
           <include item="SMCAutoDocConstructor">
@@ -386,6 +430,15 @@
           </include>
         </markup>
       </summary>
+      <param name="propertyName">
+        <markup>
+          <include item="SMCMissingParamTag">
+            <parameter>param</parameter>
+            <parameter>propertyName</parameter>
+            <parameter>M:WikiClientLibrary.Wikibase.EntityEditEntry.#ctor(System.String)</parameter>
+          </include>
+        </markup>
+      </param>
     </member>
     <member name="M:WikiClientLibrary.Wikibase.EntityEditEntry.#ctor(System.String,System.Object)">
       <summary>
@@ -604,7 +657,7 @@
             Fetch all the properties that is supported by WCL.
             </summary>
     </member>
-    <member name="F:WikiClientLibrary.Wikibase.EntityQueryOptions.SupressRedirects">
+    <member name="F:WikiClientLibrary.Wikibase.EntityQueryOptions.SuppressRedirects">
       <summary>
             Do not resolve redirect. Treat them like deleted entities.
             </summary>
@@ -641,7 +694,7 @@
         </markup>
       </param>
     </member>
-    <member name="M:WikiClientLibrary.Wikibase.EntitySiteLink.#ctor(System.String,System.String,System.Collections.Generic.IReadOnlyList{System.String})">
+    <member name="M:WikiClientLibrary.Wikibase.EntitySiteLink.#ctor(System.String,System.String,System.Collections.Generic.IEnumerable{System.String})">
       <summary>
         <markup>
           <include item="SMCAutoDocConstructor">
@@ -654,7 +707,7 @@
           <include item="SMCMissingParamTag">
             <parameter>param</parameter>
             <parameter>site</parameter>
-            <parameter>M:WikiClientLibrary.Wikibase.EntitySiteLink.#ctor(System.String,System.String,System.Collections.Generic.IReadOnlyList{System.String})</parameter>
+            <parameter>M:WikiClientLibrary.Wikibase.EntitySiteLink.#ctor(System.String,System.String,System.Collections.Generic.IEnumerable{System.String})</parameter>
           </include>
         </markup>
       </param>
@@ -663,7 +716,7 @@
           <include item="SMCMissingParamTag">
             <parameter>param</parameter>
             <parameter>title</parameter>
-            <parameter>M:WikiClientLibrary.Wikibase.EntitySiteLink.#ctor(System.String,System.String,System.Collections.Generic.IReadOnlyList{System.String})</parameter>
+            <parameter>M:WikiClientLibrary.Wikibase.EntitySiteLink.#ctor(System.String,System.String,System.Collections.Generic.IEnumerable{System.String})</parameter>
           </include>
         </markup>
       </param>
@@ -672,12 +725,12 @@
           <include item="SMCMissingParamTag">
             <parameter>param</parameter>
             <parameter>badges</parameter>
-            <parameter>M:WikiClientLibrary.Wikibase.EntitySiteLink.#ctor(System.String,System.String,System.Collections.Generic.IReadOnlyList{System.String})</parameter>
+            <parameter>M:WikiClientLibrary.Wikibase.EntitySiteLink.#ctor(System.String,System.String,System.Collections.Generic.IEnumerable{System.String})</parameter>
           </include>
         </markup>
       </param>
     </member>
-    <member name="M:WikiClientLibrary.Wikibase.EntitySiteLink.#ctor(System.String,System.String,System.Collections.Generic.IReadOnlyList{System.String},System.String)">
+    <member name="M:WikiClientLibrary.Wikibase.EntitySiteLink.#ctor(System.String,System.String,System.Collections.Generic.IEnumerable{System.String},System.String)">
       <summary>
         <markup>
           <include item="SMCAutoDocConstructor">
@@ -690,7 +743,7 @@
           <include item="SMCMissingParamTag">
             <parameter>param</parameter>
             <parameter>site</parameter>
-            <parameter>M:WikiClientLibrary.Wikibase.EntitySiteLink.#ctor(System.String,System.String,System.Collections.Generic.IReadOnlyList{System.String},System.String)</parameter>
+            <parameter>M:WikiClientLibrary.Wikibase.EntitySiteLink.#ctor(System.String,System.String,System.Collections.Generic.IEnumerable{System.String},System.String)</parameter>
           </include>
         </markup>
       </param>
@@ -699,7 +752,7 @@
           <include item="SMCMissingParamTag">
             <parameter>param</parameter>
             <parameter>title</parameter>
-            <parameter>M:WikiClientLibrary.Wikibase.EntitySiteLink.#ctor(System.String,System.String,System.Collections.Generic.IReadOnlyList{System.String},System.String)</parameter>
+            <parameter>M:WikiClientLibrary.Wikibase.EntitySiteLink.#ctor(System.String,System.String,System.Collections.Generic.IEnumerable{System.String},System.String)</parameter>
           </include>
         </markup>
       </param>
@@ -708,7 +761,7 @@
           <include item="SMCMissingParamTag">
             <parameter>param</parameter>
             <parameter>badges</parameter>
-            <parameter>M:WikiClientLibrary.Wikibase.EntitySiteLink.#ctor(System.String,System.String,System.Collections.Generic.IReadOnlyList{System.String},System.String)</parameter>
+            <parameter>M:WikiClientLibrary.Wikibase.EntitySiteLink.#ctor(System.String,System.String,System.Collections.Generic.IEnumerable{System.String},System.String)</parameter>
           </include>
         </markup>
       </param>
@@ -717,7 +770,7 @@
           <include item="SMCMissingParamTag">
             <parameter>param</parameter>
             <parameter>url</parameter>
-            <parameter>M:WikiClientLibrary.Wikibase.EntitySiteLink.#ctor(System.String,System.String,System.Collections.Generic.IReadOnlyList{System.String},System.String)</parameter>
+            <parameter>M:WikiClientLibrary.Wikibase.EntitySiteLink.#ctor(System.String,System.String,System.Collections.Generic.IEnumerable{System.String},System.String)</parameter>
           </include>
         </markup>
       </param>
@@ -870,7 +923,7 @@
     </member>
     <member name="M:WikiClientLibrary.Wikibase.SerializableEntity.Load(Newtonsoft.Json.JsonReader)">
       <summary>
-            Populates the current entity from <see cref="T:Newtonsoft.Json.JsonReader" />.
+            Loads 1 <see cref="T:WikiClientLibrary.Wikibase.SerializableEntity" /> from JSON reader.
             </summary>
       <param name="reader">The reader from which to read serialized entity JSON.</param>
       <returns>The deserialized entity, or <c>null</c> if EOF has been reached.</returns>
@@ -883,8 +936,16 @@
     </member>
     <member name="M:WikiClientLibrary.Wikibase.SerializableEntity.Load(System.IO.TextReader)">
       <summary>
-            Populates the current entity from <see cref="T:System.IO.TextReader" />.
+            Loads 1 <see cref="T:WikiClientLibrary.Wikibase.SerializableEntity" /> from text reader.
             </summary>
+      <param name="reader">The reader from which to read serialized entity JSON.</param>
+      <returns>The deserialized entity, or <c>null</c> if EOF has been reached.</returns>
+    </member>
+    <member name="M:WikiClientLibrary.Wikibase.SerializableEntity.Load(System.String)">
+      <summary>
+            Loads 1 <see cref="T:WikiClientLibrary.Wikibase.SerializableEntity" /> from the specified file.
+            </summary>
+      <param name="fileName">The path of file containing the serialized JSON of a single entity.</param>
       <param name="reader">The reader from which to read serialized entity JSON.</param>
       <returns>The deserialized entity, or <c>null</c> if EOF has been reached.</returns>
     </member>
@@ -903,6 +964,7 @@
       <returns>
             A sequence that, when enumerated, will read a JSON array from reader, and parses it
             into a sequence of <see cref="T:WikiClientLibrary.Wikibase.SerializableEntity" />s.
+            If there is <c>null</c> in the JSON array, <c>null</c> will be enumerated in the sequence.
             </returns>
       <exception cref="T:Newtonsoft.Json.JsonException">The JSON is invalid.</exception>
     </member>
@@ -914,6 +976,20 @@
       <returns>
             A sequence that, when enumerated, will read a JSON array from reader, and parses it
             into a sequence of <see cref="T:WikiClientLibrary.Wikibase.SerializableEntity" />s.
+            If there is <c>null</c> in the JSON array, <c>null</c> will be enumerated in the sequence.
+            </returns>
+      <exception cref="T:Newtonsoft.Json.JsonException">The JSON is invalid.</exception>
+    </member>
+    <member name="M:WikiClientLibrary.Wikibase.SerializableEntity.LoadAll(System.String)">
+      <summary>
+            Creates a new instance of <see cref="T:WikiClientLibrary.Wikibase.SerializableEntity" /> from JSON contained in the file.
+            </summary>
+      <param name="fileName">The path of file containing the serialized JSON of a single entity.</param>
+      <param name="reader">The reader from which to read serialized entity JSON.</param>
+      <returns>
+            A sequence that, when enumerated, will read a JSON array from reader, and parses it
+            into a sequence of <see cref="T:WikiClientLibrary.Wikibase.SerializableEntity" />s.
+            If there is <c>null</c> in the JSON array, <c>null</c> will be enumerated in the sequence.
             </returns>
       <exception cref="T:Newtonsoft.Json.JsonException">The JSON is invalid.</exception>
     </member>
@@ -922,6 +998,7 @@
             Creates a new instance of <see cref="T:WikiClientLibrary.Wikibase.SerializableEntity" /> from JSON string.
             </summary>
       <param name="entityJson">The serialized entity JSON string.</param>
+      <returns>the first parsed entity, or <c>null</c> if the input is empty or does not contain JSON object.</returns>
     </member>
     <member name="M:WikiClientLibrary.Wikibase.SerializableEntity.ParseAll(System.String)">
       <summary>
@@ -932,6 +1009,7 @@
       <returns>
             A sequence that, when enumerated, will read a JSON array from reader, and parses it
             into a sequence of <see cref="T:WikiClientLibrary.Wikibase.SerializableEntity" />s.
+            If there is <c>null</c> in the JSON array, <c>null</c> will be enumerated in the sequence.
             </returns>
       <exception cref="T:Newtonsoft.Json.JsonException">The JSON is invalid.</exception>
     </member>

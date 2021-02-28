@@ -262,31 +262,11 @@
     </member>
     <member name="M:WikiClientLibrary.Wikia.WikiaHtmlResponseParser.ParseResponseAsync(System.Net.Http.HttpResponseMessage,WikiClientLibrary.Client.WikiResponseParsingContext)">
       <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>M:WikiClientLibrary.Wikia.WikiaHtmlResponseParser.ParseResponseAsync(System.Net.Http.HttpResponseMessage,WikiClientLibrary.Client.WikiResponseParsingContext)</parameter>
-          </include>
-        </markup>
-      </summary>
-      <param name="response">
-        <markup>
-          <include item="SMCMissingParamTag">
-            <parameter>param</parameter>
-            <parameter>response</parameter>
-            <parameter>M:WikiClientLibrary.Wikia.WikiaHtmlResponseParser.ParseResponseAsync(System.Net.Http.HttpResponseMessage,WikiClientLibrary.Client.WikiResponseParsingContext)</parameter>
-          </include>
-        </markup>
-      </param>
-      <param name="context">
-        <markup>
-          <include item="SMCMissingParamTag">
-            <parameter>param</parameter>
-            <parameter>context</parameter>
-            <parameter>M:WikiClientLibrary.Wikia.WikiaHtmlResponseParser.ParseResponseAsync(System.Net.Http.HttpResponseMessage,WikiClientLibrary.Client.WikiResponseParsingContext)</parameter>
-          </include>
-        </markup>
-      </param>
+            Parses the specified HTTP response message.
+            </summary>
+      <param name="response">The HTTP response message to parse.</param>
+      <param name="context">The parsing context.</param>
+      <returns>A strongly-typed object containing the desired response.</returns>
     </member>
     <member name="T:WikiClientLibrary.Wikia.WikiaJsonResponseParser">
       <summary>
@@ -304,31 +284,11 @@
     </member>
     <member name="M:WikiClientLibrary.Wikia.WikiaJsonResponseParser.ParseResponseAsync(System.Net.Http.HttpResponseMessage,WikiClientLibrary.Client.WikiResponseParsingContext)">
       <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>M:WikiClientLibrary.Wikia.WikiaJsonResponseParser.ParseResponseAsync(System.Net.Http.HttpResponseMessage,WikiClientLibrary.Client.WikiResponseParsingContext)</parameter>
-          </include>
-        </markup>
-      </summary>
-      <param name="response">
-        <markup>
-          <include item="SMCMissingParamTag">
-            <parameter>param</parameter>
-            <parameter>response</parameter>
-            <parameter>M:WikiClientLibrary.Wikia.WikiaJsonResponseParser.ParseResponseAsync(System.Net.Http.HttpResponseMessage,WikiClientLibrary.Client.WikiResponseParsingContext)</parameter>
-          </include>
-        </markup>
-      </param>
-      <param name="context">
-        <markup>
-          <include item="SMCMissingParamTag">
-            <parameter>param</parameter>
-            <parameter>context</parameter>
-            <parameter>M:WikiClientLibrary.Wikia.WikiaJsonResponseParser.ParseResponseAsync(System.Net.Http.HttpResponseMessage,WikiClientLibrary.Client.WikiResponseParsingContext)</parameter>
-          </include>
-        </markup>
-      </param>
+            Parses the specified HTTP response message.
+            </summary>
+      <param name="response">The HTTP response message to parse.</param>
+      <param name="context">The parsing context.</param>
+      <returns>A strongly-typed object containing the desired response.</returns>
     </member>
     <member name="T:WikiClientLibrary.Wikia.WikiaNamespaces">
       <summary>
@@ -569,11 +529,24 @@
             </summary>
       <param name="options">The options used to fetch the post.</param>
     </member>
-    <member name="M:WikiClientLibrary.Wikia.Discussions.Board.EnumPostsAsync(WikiClientLibrary.Wikia.Discussions.PostQueryOptions)">
+    <member name="M:WikiClientLibrary.Wikia.Discussions.Board.EnumPostsAsync(System.Void)">
       <summary>
-            Asynchronously enumerates all the comments on the specified page.
-            </summary>
-      <param name="options">The options used to fetch the post.</param>
+        <markup>
+          <include item="SMCMissingTag">
+            <parameter>summary</parameter>
+            <parameter>M:WikiClientLibrary.Wikia.Discussions.Board.EnumPostsAsync(System.Void)</parameter>
+          </include>
+        </markup>
+      </summary>
+      <param name="options">
+        <markup>
+          <include item="SMCMissingParamTag">
+            <parameter>param</parameter>
+            <parameter>options</parameter>
+            <parameter>M:WikiClientLibrary.Wikia.Discussions.Board.EnumPostsAsync(System.Void)</parameter>
+          </include>
+        </markup>
+      </param>
     </member>
     <member name="P:WikiClientLibrary.Wikia.Discussions.Board.Exists">
       <summary>Gets a value, determining whether the page exists.</summary>
@@ -1542,7 +1515,10 @@
       <param name="password">The password used to login before fetching for site information.</param>
       <exception cref="T:WikiClientLibrary.UnauthorizedOperationException">Cannot access query API module due to target site permission settings. You may need to use <see cref="M:WikiClientLibrary.Sites.WikiSite.#ctor(WikiClientLibrary.Client.IWikiClient,WikiClientLibrary.Sites.SiteOptions,System.String,System.String)" /> to login before any other API requests.</exception>
       <exception cref="T:System.ArgumentNullException">
-        <paramref name="wikiClient" /> or <paramref name="options" /> is <c>null</c>.</exception>
+        <paramref name="wikiClient" /> or <paramref name="options" /> is <c>null</c>.
+            - OR -
+            <paramref name="userName" /> is not <c>null</c>, but <paramref name="password" /> is <c>null</c>.
+            </exception>
       <exception cref="T:System.ArgumentException">One or more settings in <paramref name="options" /> is invalid.</exception>
     </member>
     <member name="M:WikiClientLibrary.Wikia.Sites.WikiaSite.#ctor(WikiClientLibrary.Client.IWikiClient,WikiClientLibrary.Wikia.WikiaSiteOptions)">
@@ -1762,10 +1738,24 @@
       <param name="site">The Wikia site this list-like object is applied to.</param>
       <param name="keyword">Search for all page titles (or content) that have this value.</param>
     </member>
-    <member name="M:WikiClientLibrary.Wikia.WikiaApi.LocalWikiSearchList.EnumItemsAsync">
+    <member name="M:WikiClientLibrary.Wikia.WikiaApi.LocalWikiSearchList.EnumItemsAsync(System.Void)">
       <summary>
-            Asynchronously enumerates all the items in the list.
-            </summary>
+        <markup>
+          <include item="SMCMissingTag">
+            <parameter>summary</parameter>
+            <parameter>M:WikiClientLibrary.Wikia.WikiaApi.LocalWikiSearchList.EnumItemsAsync(System.Void)</parameter>
+          </include>
+        </markup>
+      </summary>
+      <param name="cancellationToken">
+        <markup>
+          <include item="SMCMissingParamTag">
+            <parameter>param</parameter>
+            <parameter>cancellationToken</parameter>
+            <parameter>M:WikiClientLibrary.Wikia.WikiaApi.LocalWikiSearchList.EnumItemsAsync(System.Void)</parameter>
+          </include>
+        </markup>
+      </param>
     </member>
     <member name="P:WikiClientLibrary.Wikia.WikiaApi.LocalWikiSearchList.Keyword">
       <summary>
@@ -2035,17 +2025,42 @@
       <returns>A task that returns the requested user information, or <c>null</c> for inexistent user.</returns>
       <exception cref="T:System.ArgumentNullException">Either <paramref name="site" /> or <paramref name="userName" /> is <c>null</c>.</exception>
     </member>
-    <member name="M:WikiClientLibrary.Wikia.WikiaApi.WikiaSiteWikiaApiExtensions.FetchUsersAsync(WikiClientLibrary.Wikia.Sites.WikiaSite,System.Collections.Generic.IEnumerable{System.String})">
+    <member name="M:WikiClientLibrary.Wikia.WikiaApi.WikiaSiteWikiaApiExtensions.FetchUsersAsync(System.Void,WikiClientLibrary.Wikia.WikiaApi.UserInfo,WikiClientLibrary.Wikia.Sites.WikiaSite)">
       <summary>
-            Asynchronously fetches the specified users' information.
-            </summary>
-      <param name="site">The site to issue the request.</param>
-      <param name="userNames">The user names to be fetched.</param>
-      <returns>
-            An asynchronous sequence containing the detailed user information.
-            The user names are normalized by the server. Inexistent user names are skipped.
-            </returns>
-      <exception cref="T:System.ArgumentNullException">Either <paramref name="site" /> or <paramref name="userNames" /> is <c>null</c>.</exception>
+        <markup>
+          <include item="SMCMissingTag">
+            <parameter>summary</parameter>
+            <parameter>M:WikiClientLibrary.Wikia.WikiaApi.WikiaSiteWikiaApiExtensions.FetchUsersAsync(System.Void,WikiClientLibrary.Wikia.WikiaApi.UserInfo,WikiClientLibrary.Wikia.Sites.WikiaSite)</parameter>
+          </include>
+        </markup>
+      </summary>
+      <param name="site">
+        <markup>
+          <include item="SMCMissingParamTag">
+            <parameter>param</parameter>
+            <parameter>site</parameter>
+            <parameter>M:WikiClientLibrary.Wikia.WikiaApi.WikiaSiteWikiaApiExtensions.FetchUsersAsync(System.Void,WikiClientLibrary.Wikia.WikiaApi.UserInfo,WikiClientLibrary.Wikia.Sites.WikiaSite)</parameter>
+          </include>
+        </markup>
+      </param>
+      <param name="userNames">
+        <markup>
+          <include item="SMCMissingParamTag">
+            <parameter>param</parameter>
+            <parameter>userNames</parameter>
+            <parameter>M:WikiClientLibrary.Wikia.WikiaApi.WikiaSiteWikiaApiExtensions.FetchUsersAsync(System.Void,WikiClientLibrary.Wikia.WikiaApi.UserInfo,WikiClientLibrary.Wikia.Sites.WikiaSite)</parameter>
+          </include>
+        </markup>
+      </param>
+      <param name="cancellationToken">
+        <markup>
+          <include item="SMCMissingParamTag">
+            <parameter>param</parameter>
+            <parameter>cancellationToken</parameter>
+            <parameter>M:WikiClientLibrary.Wikia.WikiaApi.WikiaSiteWikiaApiExtensions.FetchUsersAsync(System.Void,WikiClientLibrary.Wikia.WikiaApi.UserInfo,WikiClientLibrary.Wikia.Sites.WikiaSite)</parameter>
+          </include>
+        </markup>
+      </param>
     </member>
   </members>
 </doc>

@@ -397,14 +397,33 @@
         </markup>
       </summary>
     </member>
-    <member name="M:WikiClientLibrary.Cargo.Linq.CargoRecordQueryableExtensions.AsAsyncEnumerable``1(System.Linq.IQueryable{``0})">
+    <member name="M:WikiClientLibrary.Cargo.Linq.CargoRecordQueryableExtensions.AsAsyncEnumerable``1(System.Void)">
       <summary>
-            Casts the input <see cref="T:System.Linq.IQueryable`1" /> instance into <see cref="T:System.Collections.Generic.IAsyncEnumerable`1" /> instance.
-            </summary>
-      <param name="queryable">the input queryable that should have implemented <see cref="T:System.Collections.Generic.IAsyncEnumerable`1" />.</param>
-      <typeparam name="T">type of the item.</typeparam>
-      <returns>the same object reference as <paramref name="queryable" />.</returns>
-      <exception cref="T:System.InvalidOperationException">input <paramref name="queryable" /> does not implement <see cref="T:System.Collections.Generic.IAsyncEnumerable`1" />.</exception>
+        <markup>
+          <include item="SMCMissingTag">
+            <parameter>summary</parameter>
+            <parameter>M:WikiClientLibrary.Cargo.Linq.CargoRecordQueryableExtensions.AsAsyncEnumerable``1(System.Void)</parameter>
+          </include>
+        </markup>
+      </summary>
+      <param name="queryable">
+        <markup>
+          <include item="SMCMissingParamTag">
+            <parameter>param</parameter>
+            <parameter>queryable</parameter>
+            <parameter>M:WikiClientLibrary.Cargo.Linq.CargoRecordQueryableExtensions.AsAsyncEnumerable``1(System.Void)</parameter>
+          </include>
+        </markup>
+      </param>
+      <typeparam name="T">
+        <markup>
+          <include item="SMCMissingParamTag">
+            <parameter>typeparam</parameter>
+            <parameter>T</parameter>
+            <parameter>M:WikiClientLibrary.Cargo.Linq.CargoRecordQueryableExtensions.AsAsyncEnumerable``1(System.Void)</parameter>
+          </include>
+        </markup>
+      </typeparam>
     </member>
     <member name="T:WikiClientLibrary.Cargo.Linq.ICargoQueryContext">
       <summary>
@@ -821,14 +840,7 @@
       </summary>
     </member>
     <member name="P:WikiClientLibrary.Cargo.Schema.CargoTableFieldDefinition.IsList">
-      <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>P:WikiClientLibrary.Cargo.Schema.CargoTableFieldDefinition.IsList</parameter>
-          </include>
-        </markup>
-      </summary>
+      <summary>Whether this field is of List type.</summary>
     </member>
     <member name="P:WikiClientLibrary.Cargo.Schema.CargoTableFieldDefinition.IsMandatory">
       <summary>
@@ -836,14 +848,7 @@
             </summary>
     </member>
     <member name="P:WikiClientLibrary.Cargo.Schema.CargoTableFieldDefinition.ListDelimiter">
-      <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>P:WikiClientLibrary.Cargo.Schema.CargoTableFieldDefinition.ListDelimiter</parameter>
-          </include>
-        </markup>
-      </summary>
+      <summary>For fields of List type, this is the delimiter of the list item.</summary>
     </member>
     <member name="P:WikiClientLibrary.Cargo.Schema.CargoTableFieldDefinition.Name">
       <summary>
