@@ -15,8 +15,9 @@ namespace WikiClientLibrary.Wikibase.Infrastructures
     /// <typeparam name="TKey">Type of the key.</typeparam>
     /// <typeparam name="TItem">Type of the item.</typeparam>
     [DebuggerDisplay("Keys.Count = {Keys.Count}, Count = {Count}")]
-    [DebuggerTypeProxy(typeof(UnorderedKeyedMultiCollection<, >.DebugView))]
+    [DebuggerTypeProxy(typeof(UnorderedKeyedMultiCollection<,>.DebugView))]
     public abstract class UnorderedKeyedMultiCollection<TKey, TItem> : ICollection<TItem>, ICollection
+        where TKey : notnull
     {
 
         private readonly Dictionary<TKey, Slot> dict;

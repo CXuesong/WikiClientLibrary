@@ -271,11 +271,11 @@ namespace WikiClientLibrary.Files
 
         /// <summary>Error code.</summary>
         [JsonProperty]
-        public string Code { get; private set; }
+        public string Code { get; private set; } = "";
 
         /// <summary>Error message.</summary>
         [JsonProperty]
-        public string Message { get; private set; }
+        public string Message { get; private set; } = "";
 
         /// <summary>Additional error details.</summary>
         [JsonProperty]
