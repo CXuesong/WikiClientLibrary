@@ -4,6 +4,7 @@
 
 using System;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 using WikiClientLibrary;
 using WikiClientLibrary.Files;
@@ -19,7 +20,7 @@ namespace WikiClientLibrary.Tests.UnitTestProject1.Tests
 
     public class PageTests : WikiSiteTestsBase
     {
-        private const string SummaryPrefix = "WikiClientLibrary test. ";
+        private const string SummaryPrefix = "WikiClientLibrary test.";
 
 
         /// <inheritdoc />
@@ -31,22 +32,23 @@ namespace WikiClientLibrary.Tests.UnitTestProject1.Tests
         }
 
         [Fact]
-        public async Task WpTest2PageReadTest1()
+        public async Task WpEnPageReadTest1()
         {
-            var site = await WpTest2SiteAsync;
-            var page = new WikiPage(site, "project:sandbox");
+            var site = await WpEnSiteAsync;
+            var page = new WikiPage(site, "test");
             await page.RefreshAsync(PageQueryOptions.FetchContent);
             ShallowTrace(page);
             Assert.True(page.Exists);
-            Assert.Equal("Wikipedia:Sandbox", page.Title);
-            Assert.Equal(4, page.NamespaceId);
+            Assert.Equal("Test", page.Title);
+            Assert.Equal(BuiltInNamespaces.Main, page.NamespaceId);
             Assert.Equal("en", page.PageLanguage);
             Utility.AssertNotNull(page.Content);
-            // Chars vs. Bytes
-            Assert.True(page.Content.Length <= page.ContentLength);
+            // Bytes v.s. Chars
+            Assert.Equal(page.ContentLength, Encoding.UTF8.GetByteCount(page.Content));
+            Assert.True(page.Content.Length > 100, "The page content looks abnormally too short.");
             Output.WriteLine(new string('-', 10));
 
-            var page2 = new WikiPage(site, 2076);
+            var page2 = new WikiPage(site, 11089416);
             await page2.RefreshAsync();
             Assert.Equal(page.PageStub, page2.PageStub);
 
@@ -55,7 +57,7 @@ namespace WikiClientLibrary.Tests.UnitTestProject1.Tests
             ShallowTrace(page3);
             Assert.False(page3.Exists);
             Assert.Equal("File:Inexistent file.jpg", page3.Title);
-            Assert.Equal(6, page3.NamespaceId);
+            Assert.Equal(BuiltInNamespaces.File, page3.NamespaceId);
             Assert.Equal("en", page3.PageLanguage);
         }
 

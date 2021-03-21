@@ -33,7 +33,8 @@ namespace WikiClientLibrary.Pages.Queries.Properties
         /// Gets/sets the names of the revision slot from which to retrieve the revisions. (MediaWiki 1.32+)
         /// </summary>
         /// <value>
-        /// A sequence of slot names, or <c>null</c> to use default slot names (<c>["main"]</c>).
+        /// a sequence of slot names, or <c>null</c> to use default slot names (<c>["main"]</c>).
+        /// Some example of predefined slot names are <see cref="RevisionSlot.MainSlotName"/> and <see cref="RevisionSlot.DocumentationSlotName"/>.
         /// </value>
         /// <remarks>
         /// <para>See <see cref="RevisionSlot"/> for more information on "slot"s.</para>
@@ -51,7 +52,7 @@ namespace WikiClientLibrary.Pages.Queries.Properties
                         : "ids|timestamp|flags|comment|user|userid|contentmodel|sha1|tags|size"
                 }
             };
-            if (Slots != null || version >= new MediaWikiVersion(1, 32))
+            if (Slots != null || version.Above(1, 32))
             {
                 // If user specified Slots explicitly, then we will respect it regardless of MW version.
                 p.Add("rvslots", Slots == null ? RevisionSlot.MainSlotName : MediaWikiHelper.JoinValues(Slots));

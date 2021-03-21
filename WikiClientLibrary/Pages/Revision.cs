@@ -107,7 +107,13 @@ namespace WikiClientLibrary.Pages
         /// <summary>
         /// Gets the content of the revision.
         /// </summary>
-        /// <value>Wikitext source code. OR <c>null</c> if content has not been fetched.</value>
+        /// <value>
+        /// Wikitext source code. OR <c>null</c> if content has not been fetched.
+        /// For MediaWiki version with slot support, this is the content of <c>main</c> slot.
+        /// </value>
+        /// <remarks>
+        /// See <see cref="RevisionSlot"/> for more information on the revision slots.
+        /// </remarks>
         /// <seealso cref="RevisionsPropertyProvider.FetchContent"/>
         [JsonProperty("*")]
         public string Content { get; private set; } = "";
@@ -209,13 +215,13 @@ namespace WikiClientLibrary.Pages
             HiddenFields = RevisionHiddenFields.None;
             if (UserHidden) HiddenFields |= RevisionHiddenFields.User;
             // Make compatible with the slot-based revision JSON
-            if (Slots != null && Slots.TryGetValue(RevisionSlot.MainSlotName, out var mainSlot))
+            if (Slots.TryGetValue(RevisionSlot.MainSlotName, out var mainSlot))
             {
                 Debug.Assert(mainSlot != null);
-                if (Content == null) Content = mainSlot.Content;
+                if (string.IsNullOrEmpty(Content)) Content = mainSlot.Content;
                 if (ContentLength == 0) ContentLength = mainSlot.ContentLength;
-                if (ContentModel == null) ContentModel = mainSlot.ContentModel;
-                if (Sha1 == null) Sha1 = mainSlot.Sha1;
+                if (string.IsNullOrEmpty(ContentModel)) ContentModel = mainSlot.ContentModel;
+                if (string.IsNullOrEmpty(Sha1)) Sha1 = mainSlot.Sha1;
             }
         }
 
