@@ -8,7 +8,7 @@ namespace WikiClientLibrary
     /// Represents basic information of a user.
     /// </summary>
     /// <remarks>Not all the fields are required to be available. But <see cref="Name"/> is mandatory.</remarks>
-    public struct UserStub : IEquatable<UserStub>
+    public readonly struct UserStub : IEquatable<UserStub>
     {
 
         public static readonly UserStub Empty = new UserStub();

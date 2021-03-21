@@ -151,7 +151,7 @@ namespace WikiClientLibrary.Client
         {
             var fullMessage = errorMessage;
             // Append additional messages from WMF, if any.
-            var jmessages = (JArray)errorNode["messages"];
+            var jmessages = (JArray?)errorNode["messages"];
             if (jmessages != null && jmessages.Count > 1 && jmessages[0]["html"] != null)
             {
                 // jmessages[0] usually is the same as errorMessage

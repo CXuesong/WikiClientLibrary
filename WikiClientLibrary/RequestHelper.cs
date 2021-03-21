@@ -364,7 +364,7 @@ namespace WikiClientLibrary
                                 if (jitem["missing"] != null || jitem["invalid"] != null)
                                 {
                                     if (failedPages == null) failedPages = new List<PurgeFailureInfo>();
-                                    failedPages.Add(new PurgeFailureInfo(MediaWikiHelper.PageStubFromJson((JObject)jitem), (string)jitem["invalidreason"]));
+                                    failedPages.Add(new PurgeFailureInfo(MediaWikiHelper.PageStubFromJson((JObject)jitem), (string?)jitem["invalidreason"]));
                                 }
                             }
                         }

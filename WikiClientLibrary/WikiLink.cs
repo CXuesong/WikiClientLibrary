@@ -450,7 +450,7 @@ namespace WikiClientLibrary
         /// <remarks>For the actual text this wikilink should show, use <see cref="DisplayText"/>.</remarks>
         public string? Anchor { get; private set; }
 
-        private string _DisplayText;
+        private string? _DisplayText;
 
         /// <summary>
         /// Gets the actual link text that should be shown.

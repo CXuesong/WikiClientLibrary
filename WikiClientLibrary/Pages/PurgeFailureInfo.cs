@@ -4,10 +4,14 @@ using System.Text;
 
 namespace WikiClientLibrary.Pages
 {
+    /// <summary>
+    /// Represents the details of purge failure on a MediaWiki page.
+    /// </summary>
+    /// <seealso cref="WikiPage.PurgeAsync()"/>
     public class PurgeFailureInfo
     {
 
-        internal PurgeFailureInfo(WikiPageStub page, string invalidReason)
+        internal PurgeFailureInfo(WikiPageStub page, string? invalidReason)
         {
             Page = page;
             InvalidReason = invalidReason;
@@ -19,7 +23,7 @@ namespace WikiClientLibrary.Pages
 
         public bool IsInvalid => Page.IsInvalid;
 
-        public string InvalidReason { get; }
+        public string? InvalidReason { get; }
 
         /// <inheritdoc />
         public override string ToString()
