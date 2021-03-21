@@ -7121,13 +7121,8 @@
     </member>
     <member name="T:WikiClientLibrary.Pages.PurgeFailureInfo">
       <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>T:WikiClientLibrary.Pages.PurgeFailureInfo</parameter>
-          </include>
-        </markup>
-      </summary>
+            Represents the details of purge failure on a MediaWiki page.
+            </summary>
     </member>
     <member name="P:WikiClientLibrary.Pages.PurgeFailureInfo.InvalidReason">
       <summary>
