@@ -85,11 +85,11 @@ namespace WikiClientLibrary.Tests.UnitTestProject1.Tests
             Assert.Equal(WikidataProperties.ReferenceUrl, claim.References[0].Snaks[0].PropertyId);
             Assert.Equal("https://www.peakware.com/peaks.php?pk=80", claim.References[0].Snaks[0].DataValue);
 
-            var topiso = (WbQuantity?)entity.Claims[WikidataProperties.TopographicIsolation]
+            var toppro = (WbQuantity?)entity.Claims[WikidataProperties.TopographicProminence]
                 .First().MainSnak.DataValue;
-            Utility.AssertNotNull(topiso);
-            Assert.Equal(40008, topiso.Value.Amount, 12);
-            Assert.Equal(WikibaseUriFactory.Get(WikidataEntityUriPrefix + WikidataItems.KiloMeter), topiso.Value.Unit);
+            Utility.AssertNotNull(toppro);
+            Assert.Equal(8848.86, toppro.Value.Amount, 6);
+            Assert.Equal(WikibaseUriFactory.Get(WikidataEntityUriPrefix + WikidataItems.Meter), toppro.Value.Unit);
         }
 
         [Fact]
