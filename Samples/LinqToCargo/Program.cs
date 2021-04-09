@@ -23,7 +23,7 @@ using var client = new WikiClient
     ClientUserAgent = "WikiClientLibrary.Samples.CargoLinq/1.0",
     Logger = loggerFactory.CreateLogger<WikiClient>()
 };
-var site = new WikiSite(client, "https://lol.gamepedia.com/api.php");
+var site = new WikiSite(client, "https://lol.fandom.com/api.php");
 site.Logger = loggerFactory.CreateLogger<WikiSite>();
 await site.Initialization;
 
@@ -66,7 +66,7 @@ class LolCargoQueryContext : CargoQueryContext
 
 }
 
-/// <summary>https://lol.gamepedia.com/Special:CargoTables/RosterChanges</summary>
+/// <summary>https://lol.fandom.com/Special:CargoTables/RosterChanges</summary>
 class RosterChanges
 {
 
