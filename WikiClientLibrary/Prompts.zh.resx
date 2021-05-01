@@ -264,20 +264,14 @@
   <data name="ExceptionUserNotInGroup1" xml:space="preserve">
     <value>当前用户不在{0}用户组中。</value>
   </data>
-  <data name="ExceptionVersionIncompleteDevVersion" xml:space="preserve">
-    <value>不完整的DevVersion表达式。</value>
-  </data>
   <data name="ExceptionVersionInvalidDevVersion" xml:space="preserve">
     <value>无效的DevVersion取值。</value>
   </data>
   <data name="ExceptionVersionInvalidNumber" xml:space="preserve">
     <value>无效的版本号数值。</value>
   </data>
-  <data name="ExceptionVersionTooManyComponents" xml:space="preserve">
-    <value>版本号的段位过多。</value>
-  </data>
-  <data name="ExceptionVersionUnknownDevVersionPrefix1" xml:space="preserve">
-    <value>未知的DevVersion前缀：{0}。解析设置不允许截断版本号。</value>
+  <data name="ExceptionVersionTruncated1" xml:space="preserve">
+    <value>无法解析版本号后缀“{0}”。解析设置不允许截断版本号。</value>
   </data>
   <data name="ExceptionWikiClientGeneral" xml:space="preserve">
     <value>在执行MediaWiki API操作时发生异常。</value>
