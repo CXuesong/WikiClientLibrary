@@ -270,14 +270,11 @@
   <data name="ExceptionCollectionReadOnly" xml:space="preserve">
     <value>Collection is read-only.</value>
   </data>
-  <data name="ExceptionVersionTooManyComponents" xml:space="preserve">
-    <value>Version has too many components.</value>
-  </data>
   <data name="ExceptionVersionInvalidNumber" xml:space="preserve">
     <value>Invalid version number component.</value>
   </data>
-  <data name="ExceptionVersionUnknownDevVersionPrefix1" xml:space="preserve">
-    <value>Unrecognizable DevVersion prefix: {0}. Version truncation is not allowed by parsing setting.</value>
+  <data name="ExceptionVersionTruncated1" xml:space="preserve">
+    <value>Unparsable suffix "{0}". Version truncation is not allowed by parsing setting.</value>
   </data>
   <data name="ExceptionVersionIncompleteDevVersion" xml:space="preserve">
     <value>Incomplete DevVersion expression.</value>
@@ -311,5 +308,8 @@
   </data>
   <data name="ExceptionSecureChannelFailureHint" xml:space="preserve">
     <value>If you are accessing Wikimedia site, ensure your TLS version is compatible (TLS 1.2). See https://github.com/CXuesong/WikiClientLibrary/wiki/Troubleshooting for more information.</value>
+  </data>
+  <data name="ExceptionVersionMalformed" xml:space="preserve">
+    <value>Malformed MediaWiki version expression.</value>
   </data>
 </root>

@@ -5,7 +5,6 @@ using System.Text;
 using System.Threading.Tasks;
 using WikiClientLibrary.Generators;
 using WikiClientLibrary.Infrastructures;
-using WikiClientLibrary.Wikia;
 using WikiClientLibrary.Wikia.Sites;
 using Xunit;
 using Xunit.Abstractions;
@@ -58,6 +57,17 @@ namespace WikiClientLibrary.Tests.UnitTestProject1.Tests
             Assert.Throws<FormatException>(() => MediaWikiVersion.Parse("1.19.5-1+deb7u1"));
             var version = MediaWikiVersion.Parse("1.19.5-1+deb7u1", true);
             Assert.Equal(new MediaWikiVersion(1, 19, 5), version);
+        }
+
+        /// <summary>
+        /// [B]Debian package release adds +dfsg to revision number, breaking version parsing.
+        /// </summary>
+        [Fact]
+        public void Issue86()
+        {
+            Assert.Throws<FormatException>(() => MediaWikiVersion.Parse("1.19.20+dfsg-0+deb7u3"));
+            var version = MediaWikiVersion.Parse("1.19.20+dfsg-0+deb7u3", true);
+            Assert.Equal(new MediaWikiVersion(1, 19, 20), version);
         }
 
     }

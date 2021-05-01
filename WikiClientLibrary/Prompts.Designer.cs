@@ -556,20 +556,20 @@ namespace WikiClientLibrary {
         }
         
         /// <summary>
-        ///   查找类似 Version has too many components. 的本地化字符串。
+        ///   查找类似 Malformed MediaWiki version expression. 的本地化字符串。
         /// </summary>
-        internal static string ExceptionVersionTooManyComponents {
+        internal static string ExceptionVersionMalformed {
             get {
-                return ResourceManager.GetString("ExceptionVersionTooManyComponents", resourceCulture);
+                return ResourceManager.GetString("ExceptionVersionMalformed", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   查找类似 Unrecognizable DevVersion prefix: {0}. Version truncation is not allowed by parsing setting. 的本地化字符串。
+        ///   查找类似 Unparsable suffix &quot;{0}&quot;. Version truncation is not allowed by parsing setting. 的本地化字符串。
         /// </summary>
-        internal static string ExceptionVersionUnknownDevVersionPrefix1 {
+        internal static string ExceptionVersionTruncated1 {
             get {
-                return ResourceManager.GetString("ExceptionVersionUnknownDevVersionPrefix1", resourceCulture);
+                return ResourceManager.GetString("ExceptionVersionTruncated1", resourceCulture);
             }
         }
         

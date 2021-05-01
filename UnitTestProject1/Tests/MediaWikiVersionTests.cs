@@ -79,8 +79,7 @@ namespace WikiClientLibrary.Tests.UnitTestProject1.Tests
             Assert.Equal(new MediaWikiVersion(1, 28, 0, MediaWikiDevChannel.Wmf, 17), MediaWikiVersion.Parse("1.28.0-wmf-17"));
             Assert.Equal(new MediaWikiVersion(1, 28, 0, MediaWikiDevChannel.Wmf, 17), MediaWikiVersion.Parse("1.28.0-wmf17"));
             Assert.Equal(new MediaWikiVersion(1, 28, 7), MediaWikiVersion.Parse("  1.28. 7  "));
-            // Unrecognizable DevVersion prefix: <space>wmf<space>
-            Assert.Throws<FormatException>(() => MediaWikiVersion.Parse("  1.28.7 - wmf .12"));
+            Assert.Equal(new MediaWikiVersion(1, 28, 7, MediaWikiDevChannel.Wmf, 12), MediaWikiVersion.Parse("  1.28. 7 - wmf .12 "));
         }
 
         [Fact]

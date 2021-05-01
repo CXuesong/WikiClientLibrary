@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Text;
+using System.Text.RegularExpressions;
 using WikiClientLibrary.Sites;
 
 namespace WikiClientLibrary
@@ -49,8 +50,18 @@ namespace WikiClientLibrary
     public readonly struct MediaWikiVersion : IEquatable<MediaWikiVersion>, IComparable<MediaWikiVersion>, IComparable
     {
 
-        private static readonly char[] dashCharArray = { '-' };
-        private static readonly char[] dotCharArray = { '.' };
+        private static readonly Regex versionRegex = new Regex(@"
+^\s*(?<Major>\d+)\s*
+(\.\s*(?<Minor>\d+)\s*)?
+(\.\s*(?<Revision>\d+)\s*)?
+(
+    -\s*(?<DevChannel>wmf|alpha|beta|rc)\s*
+    ((\.|-)?\s*?(?<DevVersion>\d+))?
+)?\s*
+(?<UnknownSuffix>.+)?",
+            RegexOptions.IgnorePatternWhitespace
+            | RegexOptions.IgnoreCase
+            | RegexOptions.CultureInvariant);
 
         private readonly short _Major, _Minor, _Revision;
 
@@ -122,25 +133,21 @@ namespace WikiClientLibrary
                 if (!raiseError) goto SILENT_FAIL;
                 throw new ArgumentException(Prompts.ExceptionArgumentNullOrEmpty, nameof(version));
             }
+
             // 1.0.0-rc-1
-            var components1 = version.Split(dashCharArray, 2);
-            var components2 = components1[0].Split(dotCharArray, 4);
-            if (components2.Length > 3)
+            var match = versionRegex.Match(version);
+            if (!match.Success)
             {
                 if (!raiseError) goto SILENT_FAIL;
-                throw new FormatException(Prompts.ExceptionVersionTooManyComponents);
+                throw new FormatException(Prompts.ExceptionVersionMalformed);
             }
-            short major;
-            short minor = 0, revision = 0;
-            var devChannel = MediaWikiDevChannel.None;
-            short devVersion = 0;
+
+            short major,minor, revision;
             try
             {
-                major = short.Parse(components2[0]);
-                if (components2.Length > 1)
-                    minor = short.Parse(components2[1]);
-                if (components2.Length > 2)
-                    revision = short.Parse(components2[2]);
+                major = match.Groups["Major"].Success ? short.Parse(match.Groups["Major"].Value) : (short)0;
+                minor = match.Groups["Minor"].Success ? short.Parse(match.Groups["Minor"].Value) : (short)0;
+                revision = match.Groups["Revision"].Success ? short.Parse(match.Groups["Revision"].Value) : (short)0;
             }
             catch (Exception ex)
             {
@@ -148,67 +155,46 @@ namespace WikiClientLibrary
                 throw new FormatException(Prompts.ExceptionVersionInvalidNumber, ex);
             }
 
-            if (components1.Length > 1)
+            var devChannel = MediaWikiDevChannel.None;
+            short devVersion = 0;
+            if (match.Groups["DevChannel"].Success)
             {
-                var devFullVersion = components1[1];
-                int devVersionStartsAt;
-                // Parse prefix.
-                if (devFullVersion.StartsWith("wmf", StringComparison.OrdinalIgnoreCase))
+                var devChannelExpr = match.Groups["DevChannel"].Value;
+                if (string.Equals(devChannelExpr, "wmf", StringComparison.OrdinalIgnoreCase))
                 {
                     devChannel = MediaWikiDevChannel.Wmf;
-                    devVersionStartsAt = 3;
                 }
-                else if (devFullVersion.StartsWith("rc", StringComparison.OrdinalIgnoreCase))
-                {
-                    devChannel = MediaWikiDevChannel.RC;
-                    devVersionStartsAt = 2;
-                }
-                else if (devFullVersion.StartsWith("alpha", StringComparison.OrdinalIgnoreCase))
+                else if (string.Equals(devChannelExpr, "alpha", StringComparison.OrdinalIgnoreCase))
                 {
                     devChannel = MediaWikiDevChannel.Alpha;
-                    devVersionStartsAt = 5;
                 }
-                else if (devFullVersion.StartsWith("beta", StringComparison.OrdinalIgnoreCase))
+                else if (string.Equals(devChannelExpr, "beta", StringComparison.OrdinalIgnoreCase))
                 {
                     devChannel = MediaWikiDevChannel.Beta;
-                    devVersionStartsAt = 4;
                 }
-                else if (allowTruncation)
+                else if (string.Equals(devChannelExpr, "rc", StringComparison.OrdinalIgnoreCase))
                 {
-                    // truncate unknown -suffix.
-                    devVersionStartsAt = devFullVersion.Length;
+                    devChannel = MediaWikiDevChannel.RC;
                 }
                 else
+                {
+                    Debug.Fail("Have you forgotten to add MediaWikiDevChannel enum member?");
+                }
+                try
+                {
+                    devVersion = match.Groups["DevVersion"].Success ? short.Parse(match.Groups["DevVersion"].Value) : (short)0;
+                }
+                catch (Exception ex)
                 {
                     if (!raiseError) goto SILENT_FAIL;
-                    throw new FormatException(string.Format(Prompts.ExceptionVersionUnknownDevVersionPrefix1, devFullVersion));
+                    throw new FormatException(Prompts.ExceptionVersionInvalidDevVersion, ex);
                 }
+            }
 
-                // Parse version.
-                if (devFullVersion.Length == devVersionStartsAt)
-                {
-                    devVersion = 0;
-                }
-                else
-                {
-                    if (devFullVersion[devVersionStartsAt] == '.' || devFullVersion[devVersionStartsAt] == '-')
-                        devVersionStartsAt++;
-                    // If . or - detected, we expect a number after it.
-                    if (devFullVersion.Length <= devVersionStartsAt)
-                    {
-                        if (!raiseError) goto SILENT_FAIL;
-                        throw new FormatException(Prompts.ExceptionVersionIncompleteDevVersion);
-                    }
-                    try
-                    {
-                        devVersion = short.Parse(devFullVersion[devVersionStartsAt..]);
-                    }
-                    catch (Exception ex)
-                    {
-                        if (!raiseError) goto SILENT_FAIL;
-                        throw new FormatException(Prompts.ExceptionVersionInvalidDevVersion, ex);
-                    }
-                }
+            if (!allowTruncation && match.Groups["UnknownSuffix"].Success)
+            {
+                if (!raiseError) goto SILENT_FAIL;
+                throw new FormatException(string.Format(Prompts.ExceptionVersionTruncated1, match.Groups["UnknownSuffix"].Value));
             }
 
             parsed = new MediaWikiVersion(major, minor, revision, devChannel, devVersion);
