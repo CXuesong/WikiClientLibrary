@@ -582,7 +582,6 @@ namespace WikiClientLibrary.Sites
     [JsonObject(MemberSerialization.OptIn)]
     public class InterwikiEntry
     {
-        private string _Prefix;
 
 #pragma warning disable CS8618 // 在退出构造函数时，不可为 null 的字段必须包含非 null 值。请考虑声明为可以为 null。
         public InterwikiEntry()
@@ -594,17 +593,12 @@ namespace WikiClientLibrary.Sites
         /// The prefix of the interwiki link;
         /// this is used the same way as a namespace is used when editing.
         /// </summary>
-        /// <remarks>Prefixes must be all lower-case.</remarks>
+        /// <remarks>
+        /// Prefixes must be all lower-case.
+        /// See <a href="https://www.mediawiki.org/wiki/Manual:Interwiki#Field_documentation">mw:Manual:Interwiki#Field documentation</a> for more information.
+        /// </remarks>
         [JsonProperty]
-        public string Prefix
-        {
-            get { return _Prefix; }
-            private set
-            {
-                Debug.Assert(value == value.ToLowerInvariant());
-                _Prefix = value;
-            }
-        }
+        public string Prefix { get; private set; }
 
         /// <summary>
         /// Whether the interwiki prefix points to a site belonging to the current wiki farm.
@@ -661,12 +655,7 @@ namespace WikiClientLibrary.Sites
         [JsonProperty]
         public string WikiId { get; set; }
 
-        /// <summary>
-        /// 返回表示当前对象的字符串。
-        /// </summary>
-        /// <returns>
-        /// 表示当前对象的字符串。
-        /// </returns>
+        /// <inheritdoc />
         public override string ToString()
         {
             return Prefix + ":" + LanguageAutonym;
@@ -690,6 +679,11 @@ namespace WikiClientLibrary.Sites
             foreach (var entry in entries)
             {
                 var prefix = entry.Prefix.ToLowerInvariant();
+                if (prefix != entry.Prefix)
+                {
+                    // c.f. https://www.mediawiki.org/wiki/Manual:Interwiki#Field_documentation
+                    logger.LogWarning("Detected non-compliant Interwiki prefix {Prefix}. Interwiki prefix must be all lower-case.", entry.Prefix);
+                }
                 if (!entryDict.TryAdd(prefix, entry))
                 {
                     // Duplicate key. We will just keep the first occurrence.
