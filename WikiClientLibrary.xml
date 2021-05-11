@@ -11773,12 +11773,8 @@
             </summary>
     </member>
     <member name="M:WikiClientLibrary.Sites.InterwikiEntry.ToString">
-      <summary>
-            返回表示当前对象的字符串。
-            </summary>
-      <returns>
-            表示当前对象的字符串。
-            </returns>
+      <summary>Returns a string that represents the current object.</summary>
+      <returns>A string that represents the current object.</returns>
     </member>
     <member name="P:WikiClientLibrary.Sites.InterwikiEntry.Url">
       <summary>
