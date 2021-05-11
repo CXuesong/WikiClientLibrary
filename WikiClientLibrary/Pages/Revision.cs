@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Diagnostics;
 using System.Linq;
 using System.Runtime.Serialization;
@@ -22,12 +23,6 @@ namespace WikiClientLibrary.Pages
     [JsonObject(MemberSerialization.OptIn)]
     public class Revision
     {
-
-#pragma warning disable CS8618 // 在退出构造函数时，不可为 null 的字段必须包含非 null 值。请考虑声明为可以为 null。
-        public Revision()
-#pragma warning restore CS8618 // 在退出构造函数时，不可为 null 的字段必须包含非 null 值。请考虑声明为可以为 null。
-        {
-        }
 
         /// <summary>
         /// Fetch a revision by revid. This overload will also fetch the content of revision.
@@ -81,7 +76,7 @@ namespace WikiClientLibrary.Pages
         /// <para>The returned sequence will have the SAME order as specified in <paramref name="revisionIds"/>.</para>
         /// <para>The <see cref="WikiPage"/> of returned <see cref="Revision"/> will be a valid object.
         /// However, its <see cref="WikiPage.LastRevision"/> and <see cref="WikiPage.Content"/> will corresponds
-        /// to the lastest revision fetched in this invocation, and pages with the same title
+        /// to the latest revision fetched in this invocation, and pages with the same title
         /// share the same reference.</para>
         /// <para>If there's invalid revision id in <paramref name="revisionIds"/>, an <see cref="ArgumentException"/>
         /// will be thrown while enumerating.</para>
@@ -169,7 +164,7 @@ namespace WikiClientLibrary.Pages
         /// Any tags for this revision, such as those added by <a href="https://www.mediawiki.org/wiki/Extension:AbuseFilter">AbuseFilter</a>.
         /// </summary>
         [JsonProperty]
-        public IList<string> Tags { get; private set; }
+        public IList<string> Tags { get; private set; } = Array.Empty<string>();
 
         /// <summary>
         /// The timestamp of revision.
@@ -185,10 +180,10 @@ namespace WikiClientLibrary.Pages
         /// <summary>
         /// Revision slots. (MW 1.32+)
         /// </summary>
-        /// <value>Revision slots, or <c>null</c> if the MediaWiki site does not support slots.</value>
+        /// <value>Revision slots, or empty dictionary if the site does not support revision slot.</value>
         /// <seealso cref="RevisionSlot"/>
         [JsonProperty]
-        public IDictionary<string, RevisionSlot> Slots { get; private set; }
+        public IDictionary<string, RevisionSlot> Slots { get; private set; } = ImmutableDictionary<string, RevisionSlot>.Empty;
 
         /// <summary>
         /// Gets a indicator of whether one or more fields has been hidden.
@@ -217,7 +212,6 @@ namespace WikiClientLibrary.Pages
             // Make compatible with the slot-based revision JSON
             if (Slots.TryGetValue(RevisionSlot.MainSlotName, out var mainSlot))
             {
-                Debug.Assert(mainSlot != null);
                 if (string.IsNullOrEmpty(Content)) Content = mainSlot.Content;
                 if (ContentLength == 0) ContentLength = mainSlot.ContentLength;
                 if (string.IsNullOrEmpty(ContentModel)) ContentModel = mainSlot.ContentModel;
@@ -228,7 +222,7 @@ namespace WikiClientLibrary.Pages
         /// <inheritdoc/>
         public override string ToString()
         {
-            var tags = Tags == null ? null : MediaWikiHelper.JoinValues(Tags);
+            var tags = MediaWikiHelper.JoinValues(Tags);
             return $"Revision#{Id}, {Flags}, {tags}, SHA1={Sha1}";
         }
     }
