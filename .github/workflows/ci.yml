@@ -21,6 +21,7 @@ jobs:
   build_linux:
     name: Linux Build & Test
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     env:
       DOTNET_SKIP_FIRST_TIME_EXPERIENCE: 1
       DOTNET_CLI_TELEMETRY_OPTOUT: 1
@@ -52,8 +53,9 @@ jobs:
         run: ./WikiClientLibrary.Commons/CI/Test.ps1
   build_windows:
     if: success()
-    name: Windows Build
+    name: Windows Build & Test
     runs-on: windows-latest
+    timeout-minutes: 30
     strategy:
       matrix:
         config: ["Debug", "Release"]
