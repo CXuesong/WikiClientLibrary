@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Runtime.Serialization;
 using System.Text;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -84,7 +85,7 @@ namespace WikiClientLibrary.Generators
         /// <remarks>
         /// <para>See <see cref="LogActions"/> for a list of predefined values.</para>
         /// <para>
-        /// Note that for MediaWiki 1.19 and before, using the same action name as log type name is not allowed.
+        /// For MediaWiki 1.19 and before, using the same <see cref="LogAction"/> as <see cref="LogType"/> is not allowed.
         /// For example, you should set <see cref="LogType"/> to <c>"move"</c>,
         /// and <see cref="LogAction"/> to <c>null</c> instead of <c>"move"</c>,
         /// or <c>"move/move"</c>, to filter in all the page move events.
@@ -287,6 +288,25 @@ namespace WikiClientLibrary.Generators
         [JsonProperty(ObjectCreationHandling = ObjectCreationHandling.Replace)]
         public LogParameterCollection Params { get; private set; } = LogParameterCollection.Empty;
 
+        /// <summary>
+        /// Gets a combination of flags indicating which fields have been hidden.
+        /// (<a href="https://www.mediawiki.org/wiki/Manual:RevisionDelete">mw:Manual:RevisionDelete</a>)
+        /// </summary>
+        public LogEventHiddenFields HiddenFields { get; private set; }
+
+        [JsonProperty] private bool ActionHidden;
+        [JsonProperty] private bool UserHidden;
+        [JsonProperty] private bool CommentHidden;
+
+        [OnDeserialized]
+        private void OnDeserialized(StreamingContext context)
+        {
+            HiddenFields = LogEventHiddenFields.None;
+            if (ActionHidden) HiddenFields |= LogEventHiddenFields.Action;
+            if (UserHidden) HiddenFields |= LogEventHiddenFields.User;
+            if (CommentHidden) HiddenFields |= LogEventHiddenFields.Comment;
+        }
+
         /// <inheritdoc/>
         public override string ToString()
         {
@@ -302,18 +322,48 @@ namespace WikiClientLibrary.Generators
                 sb.Append(Action);
             }
             sb.Append(',');
-            sb.Append(Title);
+            sb.Append(string.IsNullOrEmpty(Title) && (HiddenFields & LogEventHiddenFields.Action) == LogEventHiddenFields.Action
+                ? "<Hidden>"
+                : Title);
             sb.Append(",{");
             if (Params.Count > 0)
             {
                 sb.Append(string.Join(",", Params.Select(p => p.Key + "=" + p.Value.ToString(Formatting.None))));
+            } else if ((HiddenFields & LogEventHiddenFields.Action) == LogEventHiddenFields.Action)
+            {
+                sb.Append("<Hidden>");
             }
             sb.Append("},");
-            sb.Append(UserName);
+            sb.Append(string.IsNullOrEmpty(UserName) && (HiddenFields & LogEventHiddenFields.User) == LogEventHiddenFields.User
+                ? "<Hidden>"
+                : UserName);
             return sb.ToString();
         }
     }
 
+    /// <summary>
+    /// Represents a possible set of fields that can be hidden by "suppress" or "oversight" group.
+    /// </summary>
+    /// <remarks>
+    /// See <a href="https://www.mediawiki.org/wiki/Manual:RevisionDelete">mw:Manual:RevisionDelete</a> for more information on hiding page revision.
+    /// </remarks>
+    [Flags]
+    public enum LogEventHiddenFields
+    {
+        None = 0,
+        /// <summary>
+        /// <see cref="LogEventItem.UserName"/> and <see cref="LogEventItem.UserId"/> are hidden.
+        /// </summary>
+        User = 1,
+        /// <summary>
+        /// <see cref="LogEventItem.Comment"/> and <see cref="LogEventItem.ParsedComment"/> are hidden.
+        /// </summary>
+        Comment = 2,
+        /// <summary>
+        /// The log event itself is hidden. This usually means the operation target is hidden.
+        /// </summary>
+        Action = 4,
+    }
 
     /// <summary>
     /// A collection of extensible log parameters.

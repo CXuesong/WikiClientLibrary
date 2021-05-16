@@ -164,14 +164,12 @@ namespace WikiClientLibrary.Generators
 
         public PatrolStatus PatrolStatus { get; private set; }
 
-#pragma warning disable 649
         [JsonProperty] private bool Minor;
         [JsonProperty] private bool Bot;
         [JsonProperty] private bool New;
         [JsonProperty] private bool Anon;
         [JsonProperty] private bool Patrolled;
         [JsonProperty] private bool Unpatrolled;
-#pragma warning restore 649
 
         [OnDeserialized]
         private void OnDeserialized(StreamingContext context)
