@@ -59,20 +59,26 @@ namespace WikiClientLibrary.Tests.UnitTestProject1.Tests
             }
         }
 
-        [Fact]
-        public async Task WpAllPagesGeneratorTest1()
+        [Theory]
+        [InlineData(nameof(WpTest2SiteAsync))]
+        [InlineData(nameof(WikiaTestSiteAsync))]
+        [InlineData(nameof(TFWikiSiteAsync))]
+        public async Task AllPagesGeneratorTest1(string siteName)
         {
-            var site = await WpTest2SiteAsync;
+            var site = await WikiSiteFromNameAsync(siteName);
             var generator = new AllPagesGenerator(site) { PaginationSize = 500 };
             var pages = await generator.EnumPagesAsync().Take(2000).ToListAsync();
             TracePages(pages);
             AssertTitlesDistinct(pages);
         }
 
-        [Fact]
-        public async Task WpAllPagesGeneratorTest2()
+        [Theory]
+        [InlineData(nameof(WpTest2SiteAsync))]
+        [InlineData(nameof(WikiaTestSiteAsync))]
+        [InlineData(nameof(TFWikiSiteAsync))]
+        public async Task AllPagesGeneratorTest2(string siteName)
         {
-            var site = await WpTest2SiteAsync;
+            var site = await WikiSiteFromNameAsync(siteName);
             var generator = new AllPagesGenerator(site) { StartTitle = "W", PaginationSize = 20 };
             var pages = await generator.EnumPagesAsync(PageQueryOptions.FetchContent).Take(100).ToListAsync();
             TracePages(pages);
@@ -80,20 +86,26 @@ namespace WikiClientLibrary.Tests.UnitTestProject1.Tests
             AssertTitlesDistinct(pages);
         }
 
-        [Fact]
-        public async Task WikiaAllPagesGeneratorTest()
+        [Theory]
+        [InlineData(nameof(WpTest2SiteAsync))]
+        [InlineData(nameof(WikiaTestSiteAsync))]
+        [InlineData(nameof(TFWikiSiteAsync))]
+        public async Task AllPagesGeneratorTest3(string siteName)
         {
-            var site = await WikiaTestSiteAsync;
+            var site = await WikiSiteFromNameAsync(siteName);
             var generator = new AllPagesGenerator(site) { NamespaceId = BuiltInNamespaces.Template, PaginationSize = 500 };
             var pages = await generator.EnumPagesAsync().Take(2000).ToListAsync();
             TracePages(pages);
             AssertTitlesDistinct(pages);
         }
 
-        [Fact]
-        public async Task WpAllCategoriesGeneratorTest()
+        [Theory]
+        [InlineData(nameof(WpTest2SiteAsync))]
+        [InlineData(nameof(WikiaTestSiteAsync))]
+        [InlineData(nameof(TFWikiSiteAsync))]
+        public async Task AllCategoriesGeneratorTest1(string siteName)
         {
-            var site = await WpTest2SiteAsync;
+            var site = await WikiSiteFromNameAsync(siteName);
             var generator = new AllCategoriesGenerator(site) { PaginationSize = 500 };
             var pages = await generator.EnumPagesAsync().Take(2000).ToListAsync();
             TracePages(pages);
@@ -103,21 +115,14 @@ namespace WikiClientLibrary.Tests.UnitTestProject1.Tests
             AssertTitlesDistinct(pages);
         }
 
-        [Fact]
-        public async Task WikiaAllCategoriesGeneratorTest()
+        [Theory]
+        [InlineData(nameof(WpTest2SiteAsync), "Category:Template documentation pages‏‎")]
+        [InlineData(nameof(WikiaTestSiteAsync), "BlogListingPage‏‎‏‎")]
+        [InlineData(nameof(TFWikiSiteAsync), "Category:Autobot subgroups‏‎")]
+        public async Task CategoryMembersGeneratorTest(string siteName, string categoryName)
         {
-            var site = await WikiaTestSiteAsync;
-            var generator = new AllCategoriesGenerator(site) { PaginationSize = 500 };
-            var pages = await generator.EnumPagesAsync().Take(2000).ToListAsync();
-            TracePages(pages);
-            AssertTitlesDistinct(pages);
-        }
-
-        [Fact]
-        public async Task WpCategoryMembersGeneratorTest()
-        {
-            var site = await WpTest2SiteAsync;
-            var cat = new WikiPage(site, "Category:Template documentation pages‏‎");
+            var site = await WikiSiteFromNameAsync(siteName);
+            var cat = new WikiPage(site, categoryName, BuiltInNamespaces.Category);
             await cat.RefreshAsync();
             WriteOutput(cat);
             var generator = new CategoryMembersGenerator(cat) { PaginationSize = 50 };
@@ -129,36 +134,26 @@ namespace WikiClientLibrary.Tests.UnitTestProject1.Tests
             Assert.Equal(catInfo.MembersCount, pages.Count);
         }
 
-        [Fact]
-        public async Task WikiaCategoryMembersGeneratorTest()
+        [Theory]
+        [InlineData(nameof(WpTest2SiteAsync))]
+        [InlineData(nameof(WikiaTestSiteAsync))]
+        [InlineData(nameof(TFWikiSiteAsync))]
+        public async Task RecentChangesGeneratorTest1(string siteName)
         {
-            var site = await WikiaTestSiteAsync;
-            var cat = new WikiPage(site, "Category:BlogListingPage‏‎‏‎");
-            await cat.RefreshAsync();
-            WriteOutput(cat);
-            var generator = new CategoryMembersGenerator(cat) { PaginationSize = 50 };
-            var pages = await generator.EnumPagesAsync().ToListAsync();
-            TracePages(pages);
-            AssertTitlesDistinct(pages);
-            var catInfo = cat.GetPropertyGroup<CategoryInfoPropertyGroup>();
-            Utility.AssertNotNull(catInfo);
-            Assert.Equal(catInfo.MembersCount, pages.Count);
-        }
-
-        [Fact]
-        public async Task WpTest2RecentChangesGeneratorTest1()
-        {
-            var site = await WpTest2SiteAsync;
+            var site = await WikiSiteFromNameAsync(siteName);
             var generator = new RecentChangesGenerator(site) { LastRevisionsOnly = true, PaginationSize = 20 };
-            var pages = await generator.EnumPagesAsync().Take(1000).ToListAsync();
+            var pages = await generator.EnumPagesAsync().Take(200).ToListAsync();
             TracePages(pages);
             AssertTitlesDistinct(pages);
         }
 
-        [Fact]
-        public async Task WpLzhRecentChangesGeneratorTest1()
+        [Theory]
+        [InlineData(nameof(WpTest2SiteAsync))]
+        [InlineData(nameof(WikiaTestSiteAsync))]
+        [InlineData(nameof(TFWikiSiteAsync))]
+        public async Task RecentChangesGeneratorTest2(string siteName)
         {
-            var site = await WpLzhSiteAsync;
+            var site = await WikiSiteFromNameAsync(siteName);
             var generator = new RecentChangesGenerator(site)
             {
                 LastRevisionsOnly = true,
@@ -179,10 +174,13 @@ namespace WikiClientLibrary.Tests.UnitTestProject1.Tests
             }
         }
 
-        [Fact]
-        public async Task WikiaRecentChangesGeneratorTest1()
+        [Theory]
+        [InlineData(nameof(WpTest2SiteAsync))]
+        [InlineData(nameof(WikiaTestSiteAsync))]
+        [InlineData(nameof(TFWikiSiteAsync))]
+        public async Task RecentChangesGeneratorTest3(string siteName)
         {
-            var site = await WikiaTestSiteAsync;
+            var site = await WikiSiteFromNameAsync(siteName);
             var generator = new RecentChangesGenerator(site)
             {
                 LastRevisionsOnly = true,
@@ -195,36 +193,17 @@ namespace WikiClientLibrary.Tests.UnitTestProject1.Tests
             AssertTitlesDistinct(pages);
         }
 
-        [Fact]
-        public async Task WpLzhRecentChangesListTest()
+        [Theory]
+        [InlineData(nameof(WpTest2SiteAsync))]
+        [InlineData(nameof(WikiaTestSiteAsync))]
+        // [InlineData(nameof(TFWikiSiteAsync))]        // there is no move/move_redirect leaction on TFWiki.
+        public async Task LogEventsListTest1(string siteName)
         {
-            var site = await WpLzhSiteAsync;
-            var generator = new RecentChangesGenerator(site)
-            {
-                LastRevisionsOnly = true,
-                BotFilter = PropertyFilterOption.WithProperty,
-                MinorFilter = PropertyFilterOption.WithProperty,
-                PaginationSize = 500
-            };
-            var rc = await generator.EnumItemsAsync().Take(2000).ToListAsync();
-            ShallowTrace(rc, 1);
-            foreach (var p in rc)
-            {
-                var flags = p.Flags;
-                Assert.True(flags != RevisionFlags.None);
-                Assert.True(flags.HasFlag(RevisionFlags.Bot));
-                Assert.True(flags.HasFlag(RevisionFlags.Minor));
-            }
-        }
-
-        [Fact]
-        public async Task WpLzhLogEventsListTest()
-        {
-            var site = await WpLzhSiteAsync;
+            var site = await WikiSiteFromNameAsync(siteName);
             var generator = new LogEventsList(site)
             {
                 PaginationSize = 100,
-                LogType = LogTypes.Move,
+                LogType = LogActions.Move,
                 LogAction = LogActions.MoveOverRedirect,
                 TimeAscending = false,
                 // Local time should be converted to UTC in Utility.ToWikiQueryValue
@@ -242,32 +221,49 @@ namespace WikiClientLibrary.Tests.UnitTestProject1.Tests
             }
         }
 
-        [Fact]
-        public async Task WikiaLogEventsListTest()
+        [Theory]
+        [InlineData(nameof(WpTest2SiteAsync))]
+        [InlineData(nameof(WikiaTestSiteAsync))]
+        [InlineData(nameof(TFWikiSiteAsync))]
+        public async Task LogEventsListTest2(string siteName)
         {
-            var site = await WikiaTestSiteAsync;
+            var site = await WikiSiteFromNameAsync(siteName);
+            var startTime = DateTime.UtcNow - TimeSpan.FromDays(30);
             var generator = new LogEventsList(site)
             {
                 PaginationSize = 100,
                 LogType = LogTypes.Move,
+                StartTime = startTime,
                 TimeAscending = false,
             };
             var logs = await generator.EnumItemsAsync().Take(200).ToListAsync();
             ShallowTrace(logs, 1);
             var lastTimestamp = DateTime.MaxValue;
-            foreach (var log in logs)
+            Assert.All(logs, log =>
             {
+                Assert.True(log.TimeStamp <= startTime);
                 Assert.True(log.TimeStamp <= lastTimestamp);
                 lastTimestamp = log.TimeStamp;
                 Assert.Equal(LogTypes.Move, log.Type);
-                Assert.Equal(LogActions.Move, log.Action);
+                Assert.Contains(log.Action, new[] { LogActions.Move, LogActions.MoveOverRedirect });
+
                 // Wikia doesn't have `params` node in the logevent content,
                 // but LogEventsList should have taken care of it properly.
                 Utility.AssertNotNull(log.Params);
-                Utility.AssertNotNull(log.Params.TargetTitle);
-                // Should not throw KeyNotFoundException
-                var ns = log.Params.TargetNamespaceId;
-            }
+
+                if ((log.HiddenFields & LogEventHiddenFields.Action) != LogEventHiddenFields.Action)
+                {
+                    Utility.AssertNotNull(log.Params.TargetTitle);
+                    // Should not throw KeyNotFoundException
+                    _ = log.Params.TargetNamespaceId;
+                }
+
+                if ((log.HiddenFields & LogEventHiddenFields.User) != LogEventHiddenFields.User)
+                {
+                    Assert.NotEqual(0, log.UserId);
+                    Utility.AssertNotNull(log.UserName);
+                }
+            });
         }
 
         // The test will not hold since ruwarriorswiki has upgraded into MW 1.33
@@ -310,10 +306,13 @@ namespace WikiClientLibrary.Tests.UnitTestProject1.Tests
             }
         }
 
-        [Fact]
-        public async Task WikiaRecentChangesListTest()
+        [Theory]
+        [InlineData(nameof(WpTest2SiteAsync))]
+        [InlineData(nameof(WikiaTestSiteAsync))]
+        [InlineData(nameof(TFWikiSiteAsync))]
+        public async Task RecentChangesListTest(string siteName)
         {
-            var site = await WikiaTestSiteAsync;
+            var site = await WikiSiteFromNameAsync(siteName);
             var generator = new RecentChangesGenerator(site)
             {
                 LastRevisionsOnly = true,
@@ -337,30 +336,26 @@ namespace WikiClientLibrary.Tests.UnitTestProject1.Tests
             await Assert.ThrowsAsync<UnauthorizedOperationException>(() => rc[0].PatrolAsync());
         }
 
-        [Fact]
-        public async Task WpQueryPageGeneratorTest1()
+        [Theory]
+        [InlineData(nameof(WpTest2SiteAsync))]
+        [InlineData(nameof(WikiaTestSiteAsync))]
+        [InlineData(nameof(TFWikiSiteAsync))]
+        public async Task QueryPageGeneratorTest1(string siteName)
         {
-            var site = await WpTest2SiteAsync;
+            var site = await WikiSiteFromNameAsync(siteName);
             var generator = new QueryPageGenerator(site, "Ancientpages") { PaginationSize = 500 };
             var pages = await generator.EnumPagesAsync().Take(2000).ToListAsync();
             TracePages(pages);
             AssertTitlesDistinct(pages);
         }
 
-        [Fact]
-        public async Task WikiaQueryPageGeneratorTest1()
+        [Theory]
+        [InlineData(nameof(WpTest2SiteAsync))]
+        [InlineData(nameof(WikiaTestSiteAsync))]
+        [InlineData(nameof(TFWikiSiteAsync))]
+        public async Task GetQueryPageNamesTest(string siteName)
         {
-            var site = await WikiaTestSiteAsync;
-            var generator = new QueryPageGenerator(site, "Ancientpages") { PaginationSize = 500 };
-            var pages = await generator.EnumPagesAsync().Take(2000).ToListAsync();
-            TracePages(pages);
-            AssertTitlesDistinct(pages);
-        }
-
-        [Fact]
-        public async Task WpGetQueryPageNamesTest()
-        {
-            var site = await WpTest2SiteAsync;
+            var site = await WikiSiteFromNameAsync(siteName);
             var sp = await QueryPageGenerator.GetQueryPageNamesAsync(site);
             Assert.Contains("Uncategorizedpages", sp);
             ShallowTrace(sp);
@@ -483,15 +478,18 @@ namespace WikiClientLibrary.Tests.UnitTestProject1.Tests
         }
 
         [Theory]
-        [InlineData(Endpoints.WikipediaBetaEn, new[] { BuiltInNamespaces.Main })]
-        [InlineData(Endpoints.WikipediaBetaEn, new[] { BuiltInNamespaces.Category })]
-        [InlineData(Endpoints.WikipediaBetaEn, new[] { BuiltInNamespaces.Project, BuiltInNamespaces.Help })]
-        [InlineData(Endpoints.WikiaTest, new[] { BuiltInNamespaces.Main })]
-        [InlineData(Endpoints.WikiaTest, new[] { BuiltInNamespaces.Category })]
-        [InlineData(Endpoints.WikiaTest, new[] { BuiltInNamespaces.Project, BuiltInNamespaces.Help })]
-        public async Task WpTest2RandomGeneratorTests(string endpoint, int[] namespaces)
+        [InlineData(nameof(WpBetaSiteAsync), new[] { BuiltInNamespaces.Main })]
+        [InlineData(nameof(WpBetaSiteAsync), new[] { BuiltInNamespaces.Category })]
+        [InlineData(nameof(WpBetaSiteAsync), new[] { BuiltInNamespaces.Project, BuiltInNamespaces.Help })]
+        [InlineData(nameof(WikiaTestSiteAsync), new[] { BuiltInNamespaces.Main })]
+        [InlineData(nameof(WikiaTestSiteAsync), new[] { BuiltInNamespaces.Category })]
+        [InlineData(nameof(WikiaTestSiteAsync), new[] { BuiltInNamespaces.Project, BuiltInNamespaces.Help })]
+        [InlineData(nameof(TFWikiSiteAsync), new[] { BuiltInNamespaces.Main })]
+        [InlineData(nameof(TFWikiSiteAsync), new[] { BuiltInNamespaces.Category })]
+        [InlineData(nameof(TFWikiSiteAsync), new[] { BuiltInNamespaces.Project, BuiltInNamespaces.Help })]
+        public async Task RandomGeneratorTest(string siteName, int[] namespaces)
         {
-            var site = await GetWikiSiteAsync(endpoint);
+            var site = await WikiSiteFromNameAsync(siteName);
             var generator = new RandomPageGenerator(site) { NamespaceIds = namespaces, PaginationSize = 10 };
             var stubs = await generator.EnumItemsAsync().Take(20).ToListAsync();
             Assert.All(stubs, s => Assert.Contains(s.NamespaceId, namespaces));

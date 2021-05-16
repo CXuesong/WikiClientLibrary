@@ -180,6 +180,8 @@ namespace WikiClientLibrary.Tests.UnitTestProject1
             }
         }
 
+        protected Task<WikiSite> TFWikiSiteAsync => GetWikiSiteAsync(Endpoints.TFWiki);
+
         protected Task<WikiSite> WpLzhSiteAsync => GetWikiSiteAsync(Endpoints.WikipediaLzh);
 
         protected Task<WikiSite> WpBetaSiteAsync => GetWikiSiteAsync(Endpoints.WikipediaBetaEn);
