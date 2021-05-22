@@ -9,11 +9,15 @@ using WikiClientLibrary.Client;
 using WikiClientLibrary.Sites;
 using WikiClientLibrary.Wikia;
 using WikiClientLibrary.Wikia.Sites;
-using Xunit.Abstractions;
 
 namespace WikiClientLibrary.Tests.UnitTestProject1.Fixtures
 {
-
+    /// <summary>
+    /// Provides cached <see cref="WikiSite"/> instance across the same UT class.
+    /// </summary>
+    /// <remarks>
+    /// This is a xUnit fixture intended to be shared within the same UT class. (no concurrency support)
+    /// </remarks>
     public sealed class WikiSiteProvider : IAsyncDisposable
     {
 
@@ -77,9 +81,10 @@ namespace WikiClientLibrary.Tests.UnitTestProject1.Fixtures
                 if (!siteCache.TryGetValue(endpointUrl, out var task) || task.IsFaulted)
                 {
                     logger.LogInformation("Creating WikiSite instance for {EndpointUrl}.", endpointUrl);
-                    task = CreateWikiSiteAsync(GetWikiClient(loggerFactory), endpointUrl, loggerFactory);
-                    siteCache.Add(endpointUrl, task);
-                } else if (task.IsCompleted)
+                    task = CreateWikiSiteAsync(GetWikiClient(loggerFactory), endpointUrl, loggerFactory, false);
+                    siteCache[endpointUrl] = task;
+                }
+                else if (task.IsCompleted)
                 {
                     logger.LogInformation("Reusing existing WikiSite instance for {EndpointUrl}.", endpointUrl);
                     // Cached WikiSite. Replace logger.
@@ -91,9 +96,9 @@ namespace WikiClientLibrary.Tests.UnitTestProject1.Fixtures
         }
 
         /// <summary>
-        /// Create a wiki site, login if necessary.
+        /// Create a wiki site, login if specified.
         /// </summary>
-        public async Task<WikiSite> CreateWikiSiteAsync(IWikiClient wikiClient, string url, ILoggerFactory loggerFactory)
+        public async Task<WikiSite> CreateWikiSiteAsync(IWikiClient wikiClient, string url, ILoggerFactory loggerFactory, bool noLogin)
         {
             WikiSite site;
             if (url.Contains(".wikia.com") || url.Contains(".wikia.org") || url.Contains(".fandom.com"))
@@ -115,7 +120,7 @@ namespace WikiClientLibrary.Tests.UnitTestProject1.Fixtures
                 site = new WikiSite(wikiClient, options) { Logger = loggerFactory.CreateLogger<WikiSite>() };
             }
             await site.Initialization;
-            if (sitesNeedsLogin.Contains(url))
+            if (!noLogin && sitesNeedsLogin.Contains(url))
             {
                 await CredentialManager.LoginAsync(site);
             }

@@ -92,10 +92,11 @@ namespace WikiClientLibrary.Tests.UnitTestProject1
         /// Creates a <see cref="WikiSite"/> instance with a dedicated <see cref="WikiClient"/> instance.
         /// </summary>
         /// <remarks>This method can be handy for you to maul a certain WikiClient without affecting other WikiSite instances.</remarks>
-        protected Task<WikiSite> CreateIsolatedWikiSiteAsync(string apiEndpoint)
+        protected Task<WikiSite> CreateIsolatedWikiSiteAsync(string apiEndpoint, bool noLogin = false)
         {
             var isolatedClient = WikiSiteProvider.CreateWikiClient();
-            return WikiSiteProvider.CreateWikiSiteAsync(isolatedClient, apiEndpoint, OutputLoggerFactory);
+            isolatedClient.Logger = OutputLoggerFactory.CreateLogger<WikiClient>();
+            return WikiSiteProvider.CreateWikiSiteAsync(isolatedClient, apiEndpoint, OutputLoggerFactory, noLogin);
         }
 
         /// <summary>

@@ -86,17 +86,44 @@ namespace WikiClientLibrary.Tests.UnitTestProject1.Tests
             ValidateNamespaces(site);
         }
 
-        [Fact]
-        public async Task LoginWpTest2_1()
+        [Theory]
+        [InlineData(Endpoints.WikipediaEn)]
+        [InlineData(Endpoints.WikiaTest)]
+        [InlineData(Endpoints.WikipediaTest2)]
+        [InlineData(Endpoints.TFWiki)]
+        public async Task LoginWikiSiteFailureTest(string endpointUrl)
         {
-            var site = await WpTest2SiteAsync;
-            await Assert.ThrowsAsync<OperationFailedException>(() => site.LoginAsync("user", "password"));
+            var site = await CreateIsolatedWikiSiteAsync(endpointUrl, true);
+            var ex = await Assert.ThrowsAsync<OperationFailedException>(() => site.LoginAsync("wcl_login_failure_test", "password"));
+            Output.WriteLine(ex.ToString());
+        }
+
+        [Theory]
+        [InlineData(Endpoints.WikipediaEn)]
+        [InlineData(Endpoints.WikiaTest)]
+        [InlineData(Endpoints.WikipediaTest2)]
+        [InlineData(Endpoints.TFWiki)]
+        public async Task LoginWikiSiteTest(string endpointUrl)
+        {
+            var site = await CreateIsolatedWikiSiteAsync(endpointUrl, true);
+            Assert.False(site.AccountInfo.IsUser);
+            Assert.True(site.AccountInfo.IsAnonymous);
+
+            await CredentialManager.LoginAsync(site);
+            Assert.True(site.AccountInfo.IsUser);
+            Assert.False(site.AccountInfo.IsAnonymous);
+            Output.WriteLine($"{site.AccountInfo.Name} has logged into {site}");
+
+            await site.LogoutAsync();
+            Assert.False(site.AccountInfo.IsUser);
+            Assert.True(site.AccountInfo.IsAnonymous);
+            Output.WriteLine($"{site.AccountInfo.Name} has logged out.");
         }
 
         [Fact]
         public async Task LoginWpTest2_2()
         {
-            var site = await CreateIsolatedWikiSiteAsync(Endpoints.WikipediaTest2);
+            var site = await CreateIsolatedWikiSiteAsync(Endpoints.WikipediaTest2, true);
             await CredentialManager.LoginAsync(site);
             Assert.True(site.AccountInfo.IsUser);
             Assert.False(site.AccountInfo.IsAnonymous);
@@ -151,20 +178,6 @@ namespace WikiClientLibrary.Tests.UnitTestProject1.Tests
         }
 
         [Fact]
-        public async Task LoginWikiaTest_1()
-        {
-            var site = await CreateIsolatedWikiSiteAsync(Endpoints.WikiaTest);
-            await CredentialManager.LoginAsync(site);
-            Assert.True(site.AccountInfo.IsUser);
-            Assert.False(site.AccountInfo.IsAnonymous);
-            Output.WriteLine($"{site.AccountInfo.Name} has logged into {site}");
-            await site.LogoutAsync();
-            Assert.False(site.AccountInfo.IsUser);
-            Assert.True(site.AccountInfo.IsAnonymous);
-            Output.WriteLine($"{site.AccountInfo.Name} has logged out.");
-        }
-
-        [Fact]
         public async Task WpTest2OpenSearchTest()
         {
             var site = await WpTest2SiteAsync;
@@ -205,11 +218,14 @@ namespace WikiClientLibrary.Tests.UnitTestProject1.Tests
         [InlineData(Endpoints.WikipediaEn)]
         [InlineData(Endpoints.WikiaTest)]
         [InlineData(Endpoints.WikipediaTest2)]
+        [InlineData(Endpoints.TFWiki)]
         public async Task InterlacingLoginLogoutTest(string endpointUrl)
         {
             // The two sites belong to different WikiClient instances.
-            var site1 = await CreateIsolatedWikiSiteAsync(endpointUrl);
-            var site2 = await CreateIsolatedWikiSiteAsync(endpointUrl);
+            var site1 = await CreateIsolatedWikiSiteAsync(endpointUrl, true);
+            var site2 = await CreateIsolatedWikiSiteAsync(endpointUrl, true);
+            Assert.False(site1.AccountInfo.IsUser);
+            Assert.False(site1.AccountInfo.IsUser);
             await CredentialManager.LoginAsync(site1);
             await CredentialManager.LoginAsync(site2);
             await site2.LogoutAsync();
@@ -222,33 +238,41 @@ namespace WikiClientLibrary.Tests.UnitTestProject1.Tests
                 "https://github.com/CXuesong/WikiClientLibrary/issues/11 .");
         }
 
-        [Fact]
-        public async Task AccountAssertionTest1()
+        [Theory]
+        [InlineData(Endpoints.WikipediaEn)]
+        [InlineData(Endpoints.WikiaTest)]
+        [InlineData(Endpoints.WikipediaTest2)]
+        // [InlineData(Endpoints.TFWiki)] account assertion does not work on MW 1.19.
+        public async Task AccountAssertionTest1(string endpointUrl)
         {
-            // This method will militate the Site instance…
-            var site = await CreateIsolatedWikiSiteAsync(Endpoints.WikipediaTest2);
-            Assert.False(site.AccountInfo.IsUser, "You should have not logged in… Wierd.");
+            // This method will fiddle with the Site instance…
+            var site = await CreateIsolatedWikiSiteAsync(endpointUrl, true);
+            Assert.False(site.AccountInfo.IsUser, "You should have not logged in.");
             // Make believe that we're bots…
             typeof(AccountInfo).GetProperty(nameof(AccountInfo.Groups))!.SetValue(site.AccountInfo, new[] { "*", "user", "bot" });
-            Assert.True(site.AccountInfo.IsUser, "Cannot militate user information.");
+            Assert.True(site.AccountInfo.IsUser, "Failed to fiddle with user information.");
             // Send a request…
             await Assert.ThrowsAsync<AccountAssertionFailureException>(() => site.GetMessageAsync("edit"));
         }
 
-        [Fact]
-        public async Task AccountAssertionTest2()
+        [Theory]
+        [InlineData(Endpoints.WikipediaEn)]
+        [InlineData(Endpoints.WikiaTest)]
+        [InlineData(Endpoints.WikipediaTest2)]
+        [InlineData(Endpoints.TFWiki)]
+        public async Task AccountAssertionTest2(string endpointUrl)
         {
-            // This method will militate the Site instance…
-            var site = await CreateIsolatedWikiSiteAsync(Endpoints.WikipediaTest2);
+            // This method will fiddle with the Site instance…
+            var site = await CreateIsolatedWikiSiteAsync(endpointUrl, true);
             site.AccountAssertionFailureHandler = new MyAccountAssertionFailureHandler(async s =>
             {
                 await CredentialManager.LoginAsync(site);
                 return true;
             });
-            Assert.False(site.AccountInfo.IsUser, "You should have not logged in… Wierd.");
+            Assert.False(site.AccountInfo.IsUser, "You should have not logged in.");
             // Make believe that we're bots…
             typeof(AccountInfo).GetProperty(nameof(AccountInfo.Groups))!.SetValue(site.AccountInfo, new[] { "*", "user", "bot" });
-            Assert.True(site.AccountInfo.IsUser, "Cannot militate user information.");
+            Assert.True(site.AccountInfo.IsUser, "Failed to fiddle with user information.");
             // Send a request…
             var message = await site.GetMessageAsync("edit");
             Output.WriteLine("Message(edit) = " + message);

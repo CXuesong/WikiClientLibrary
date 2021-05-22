@@ -39,7 +39,7 @@ namespace WikiClientLibrary.Sites
         public string ApiEndpoint { get; set; } = "";
 
         /// <summary>
-        /// Gets/sets the account rights assertion behavior when performing the requests.
+        /// Gets/sets the account rights assertion behavior when performing the requests. (MW 1.25+)
         /// </summary>
         /// <remarks>Defaults to <see cref="AccountAssertionBehavior.AssertAll"/>.</remarks>
         public AccountAssertionBehavior AccountAssertion { get; set; } = AccountAssertionBehavior.AssertAll;
