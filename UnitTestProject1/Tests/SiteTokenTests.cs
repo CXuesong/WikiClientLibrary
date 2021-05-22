@@ -59,17 +59,17 @@ namespace WikiClientLibrary.Tests.UnitTestProject1.Tests
             await Assert.ThrowsAsync<ArgumentException>(() => site.GetTokenAsync("invalid_token_type"));
         }
 
-        [SkippableTheory]
+        [Theory]
         [InlineData(Endpoints.WikipediaTest2, "Project:Sandbox")]
         [InlineData(Endpoints.WikiaTest, "Project:Sandbox")]
-        [InlineData(Endpoints.TFWiki, "Project:Sandbox")]
+        [InlineData(Endpoints.TFWiki, "User:FuncGammaBot/Sandbox")]
         public async Task BadTokenTest(string endpointUrl, string sandboxPageTitle)
         {
             const string invalidToken = @"INVALID_TOKEN+\";
             var site = await CreateIsolatedWikiSiteAsync(endpointUrl);
             var page = new WikiPage(site, sandboxPageTitle);
             await page.RefreshAsync(PageQueryOptions.FetchContent);
-            Skip.IfNot(page.Exists, $"The page {sandboxPageTitle} doesn't exist on {site}.");
+            Assert.True(page.Exists, $"The page {sandboxPageTitle} doesn't exist on {site}.");
             var tokensManager = typeof(WikiSite)
                 .GetField("tokensManager", BindingFlags.Instance | BindingFlags.NonPublic)!.GetValue(site);
             var tokensCache = (IDictionary<string, object>)tokensManager!.GetType()
