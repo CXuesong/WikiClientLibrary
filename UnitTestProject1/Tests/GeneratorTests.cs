@@ -101,17 +101,17 @@ namespace WikiClientLibrary.Tests.UnitTestProject1.Tests
         }
 
         [Theory]
-        [InlineData(nameof(WpTest2SiteAsync))]
-        [InlineData(nameof(WikiaTestSiteAsync))]
-        [InlineData(nameof(TFWikiSiteAsync))]
-        public async Task AllCategoriesGeneratorTest1(string siteName)
+        [InlineData(nameof(WpTest2SiteAsync), 4)]
+        [InlineData(nameof(WikiaTestSiteAsync), 4)]
+        [InlineData(nameof(TFWikiSiteAsync), 2)] // query page on TFWiki is slow.
+        public async Task AllCategoriesGeneratorTest1(string siteName, int batches)
         {
             var site = await WikiSiteFromNameAsync(siteName);
-            var generator = new AllCategoriesGenerator(site) { PaginationSize = 500 };
-            var pages = await generator.EnumPagesAsync().Take(2000).ToListAsync();
+            var generator = new AllCategoriesGenerator(site) { PaginationSize = 200 };
+            var pages = await generator.EnumPagesAsync().Take(200 * batches).ToListAsync();
             TracePages(pages);
-            generator = new AllCategoriesGenerator(site) { StartTitle = "C", PaginationSize = 20 };
-            pages = await generator.EnumPagesAsync(PageQueryOptions.FetchContent).Take(100).ToListAsync();
+            generator = new AllCategoriesGenerator(site) { StartTitle = "C", PaginationSize = 200 };
+            pages = await generator.EnumPagesAsync(PageQueryOptions.FetchContent).Take(200 * batches).ToListAsync();
             TracePages(pages);
             AssertTitlesDistinct(pages);
         }
@@ -341,14 +341,14 @@ namespace WikiClientLibrary.Tests.UnitTestProject1.Tests
         }
 
         [Theory]
-        [InlineData(nameof(WpTest2SiteAsync))]
-        [InlineData(nameof(WikiaTestSiteAsync))]
-        [InlineData(nameof(TFWikiSiteAsync))]
-        public async Task QueryPageGeneratorTest1(string siteName)
+        [InlineData(nameof(WpTest2SiteAsync), 4)]
+        [InlineData(nameof(WikiaTestSiteAsync), 4)]
+        [InlineData(nameof(TFWikiSiteAsync), 2)] // query page on TFWiki is slow.
+        public async Task QueryPageGeneratorTest1(string siteName, int batches)
         {
             var site = await WikiSiteFromNameAsync(siteName);
-            var generator = new QueryPageGenerator(site, "Ancientpages") { PaginationSize = 500 };
-            var pages = await generator.EnumPagesAsync().Take(2000).ToListAsync();
+            var generator = new QueryPageGenerator(site, "Ancientpages") { PaginationSize = 100 };
+            var pages = await generator.EnumPagesAsync().Take(100 * batches).ToListAsync();
             TracePages(pages);
             AssertTitlesDistinct(pages);
         }
