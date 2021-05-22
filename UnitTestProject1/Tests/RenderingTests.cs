@@ -2,16 +2,18 @@
 using System.Threading.Tasks;
 using WikiClientLibrary.Pages.Parsing;
 using WikiClientLibrary.Sites;
+using WikiClientLibrary.Tests.UnitTestProject1.Fixtures;
 using Xunit;
 using Xunit.Abstractions;
 
 namespace WikiClientLibrary.Tests.UnitTestProject1.Tests
 {
 
-    public class RenderingTests : WikiSiteTestsBase
+    public class RenderingTests : WikiSiteTestsBase, IClassFixture<WikiSiteProvider>
     {
+
         /// <inheritdoc />
-        public RenderingTests(ITestOutputHelper output) : base(output)
+        public RenderingTests(ITestOutputHelper output, WikiSiteProvider wikiSiteProvider) : base(output, wikiSiteProvider)
         {
         }
 

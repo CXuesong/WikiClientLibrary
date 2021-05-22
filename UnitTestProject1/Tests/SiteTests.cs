@@ -4,6 +4,7 @@ using System.Reflection;
 using System.Threading.Tasks;
 using WikiClientLibrary;
 using WikiClientLibrary.Sites;
+using WikiClientLibrary.Tests.UnitTestProject1.Fixtures;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -11,11 +12,11 @@ namespace WikiClientLibrary.Tests.UnitTestProject1.Tests
 {
 
     [Trait("Category", "SiteTests")]
-    public class SiteTests : WikiSiteTestsBase
+    public class SiteTests : WikiSiteTestsBase, IClassFixture<WikiSiteProvider>
     {
 
         /// <inheritdoc />
-        public SiteTests(ITestOutputHelper output) : base(output)
+        public SiteTests(ITestOutputHelper output, WikiSiteProvider wikiSiteProvider) : base(output, wikiSiteProvider)
         {
         }
 

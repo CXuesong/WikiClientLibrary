@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using WikiClientLibrary.Generators;
 using WikiClientLibrary.Infrastructures;
+using WikiClientLibrary.Tests.UnitTestProject1.Fixtures;
 using WikiClientLibrary.Wikia.Sites;
 using Xunit;
 using Xunit.Abstractions;
@@ -15,10 +16,10 @@ namespace WikiClientLibrary.Tests.UnitTestProject1.Tests
     /// <summary>
     /// Contains tests that confirm certain issues have been resolved.
     /// </summary>
-    public class ValidationTests : WikiSiteTestsBase
+    public class ValidationTests : WikiSiteTestsBase, IClassFixture<WikiSiteProvider>
     {
 
-        public ValidationTests(ITestOutputHelper output) : base(output)
+        public ValidationTests(ITestOutputHelper output, WikiSiteProvider wikiSiteProvider) : base(output, wikiSiteProvider)
         {
 
         }
@@ -30,8 +31,7 @@ namespace WikiClientLibrary.Tests.UnitTestProject1.Tests
         public async Task Issue39()
         {
             // Cause: cacheBuster=7030077030012 in /api/v1/Mercury/WikiVariables request exceeds Int32 limit.
-            var site = new WikiaSite(WikiClient, "https://theedgechronicles.fandom.com/");
-            await site.Initialization;
+            await CreateIsolatedWikiSiteAsync("https://theedgechronicles.fandom.com/");
         }
 
         /// <summary>

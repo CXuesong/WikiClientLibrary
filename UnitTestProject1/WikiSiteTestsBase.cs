@@ -15,6 +15,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using WikiClientLibrary.Client;
 using WikiClientLibrary.Sites;
+using WikiClientLibrary.Tests.UnitTestProject1.Fixtures;
 using WikiClientLibrary.Wikia;
 using WikiClientLibrary.Wikia.Sites;
 using Xunit;
@@ -80,36 +81,12 @@ namespace WikiClientLibrary.Tests.UnitTestProject1
     public class WikiSiteTestsBase : UnitTestsBase
     {
 
-        public WikiSiteTestsBase(ITestOutputHelper output) : base(output)
+        public WikiSiteTestsBase(ITestOutputHelper output, WikiSiteProvider wikiSiteProvider) : base(output)
         {
-            WikiClient = CreateWikiClient();
+            WikiSiteProvider = wikiSiteProvider;
         }
 
-        public WikiClient WikiClient { get; }
-
-        private readonly HashSet<string> sitesNeedsLogin = new HashSet<string>();
-        private readonly Dictionary<string, Task<WikiSite>> siteCache = new Dictionary<string, Task<WikiSite>>();
-
-        protected void SiteNeedsLogin(string endpointUrl)
-        {
-            sitesNeedsLogin.Add(endpointUrl);
-        }
-
-        /// <summary>
-        /// Create or get a wiki site from local cache.
-        /// </summary>
-        protected Task<WikiSite> GetWikiSiteAsync(string endpointUrl)
-        {
-            lock (siteCache)
-            {
-                if (!siteCache.TryGetValue(endpointUrl, out var task))
-                {
-                    task = CreateWikiSiteAsync(WikiClient, endpointUrl);
-                    siteCache.Add(endpointUrl, task);
-                }
-                return task;
-            }
-        }
+        protected WikiSiteProvider WikiSiteProvider { get; }
 
         /// <summary>
         /// Creates a <see cref="WikiSite"/> instance with a dedicated <see cref="WikiClient"/> instance.
@@ -117,41 +94,16 @@ namespace WikiClientLibrary.Tests.UnitTestProject1
         /// <remarks>This method can be handy for you to maul a certain WikiClient without affecting other WikiSite instances.</remarks>
         protected Task<WikiSite> CreateIsolatedWikiSiteAsync(string apiEndpoint)
         {
-            var isolatedClient = CreateWikiClient();
-            return CreateWikiSiteAsync(isolatedClient, apiEndpoint);
+            var isolatedClient = WikiSiteProvider.CreateWikiClient();
+            return WikiSiteProvider.CreateWikiSiteAsync(isolatedClient, apiEndpoint, OutputLoggerFactory);
         }
 
         /// <summary>
-        /// Create a wiki site, login if necessary.
+        /// Create or get a wiki site from local cache.
         /// </summary>
-        private async Task<WikiSite> CreateWikiSiteAsync(IWikiClient wikiClient, string url)
-        {
-            WikiSite site;
-            if (url.Contains(".wikia.com") || url.Contains(".wikia.org") || url.Contains(".fandom.com"))
-            {
-                var uri = new Uri(url, UriKind.Absolute);
-                var rootUrl = new Uri(uri, ".").ToString();
-                var options = new WikiaSiteOptions(rootUrl)
-                {
-                    AccountAssertion = AccountAssertionBehavior.AssertAll,
-                };
-                site = new WikiaSite(wikiClient, options) { Logger = OutputLoggerFactory.CreateLogger<WikiaSite>() };
-            }
-            else
-            {
-                var options = new SiteOptions(url)
-                {
-                    AccountAssertion = AccountAssertionBehavior.AssertAll,
-                };
-                site = new WikiSite(wikiClient, options) { Logger = OutputLoggerFactory.CreateLogger<WikiSite>() };
-            }
-            await site.Initialization;
-            if (sitesNeedsLogin.Contains(url))
-            {
-                await CredentialManager.LoginAsync(site);
-            }
-            return site;
-        }
+        public Task<WikiSite> GetWikiSiteAsync(string endpointUrl) => WikiSiteProvider.GetWikiSiteAsync(endpointUrl, OutputLoggerFactory);
+
+
 
         /// <summary>
         /// Asserts that modifications to wiki site can be done in unit tests.
@@ -194,12 +146,13 @@ namespace WikiClientLibrary.Tests.UnitTestProject1
 
         protected Task<WikiSite> WikiSiteFromNameAsync(string sitePropertyName)
         {
-            static async Task<TDest> CastAsync<TSource, TDest>(Task<TSource> sourceTask) 
-                where TSource: class
+            static async Task<TDest> CastAsync<TSource, TDest>(Task<TSource> sourceTask)
+                where TSource : class
                 where TDest : class
             {
                 return (TDest)(object)await sourceTask;
             }
+
             var task = GetType()
                 .GetProperty(sitePropertyName, BindingFlags.NonPublic | BindingFlags.Instance)
                 !.GetValue(this);
@@ -210,37 +163,10 @@ namespace WikiClientLibrary.Tests.UnitTestProject1
 
         protected WikiClient CreateWikiClient()
         {
-            var client = new WikiClient
-            {
-                Timeout = TimeSpan.FromSeconds(20),
-                RetryDelay = TimeSpan.FromSeconds(5),
-#if ENV_CI_BUILD
-                ClientUserAgent = $"UnitTest/1.0 ({RuntimeInformation.FrameworkDescription}; ENV_CI_BUILD)",
-#else
-                ClientUserAgent = $"UnitTest/1.0 ({RuntimeInformation.FrameworkDescription})",
-#endif
-                Logger = OutputLoggerFactory.CreateLogger<WikiClient>(),
-            };
+            var client = WikiSiteProvider.CreateWikiClient();
+            client.Logger = OutputLoggerFactory.CreateLogger<WikiClient>();
             return client;
         }
 
-        /// <inheritdoc />
-        protected override async ValueTask DisposeAsync(bool disposing)
-        {
-            if (disposing)
-            {
-                // Logout all the sites.
-                List<Task<WikiSite>> sites;
-                lock (siteCache)
-                    sites = siteCache.Values.ToList();
-                foreach (var s in sites)
-                {
-                    var site = await s;
-                    if (site.AccountInfo.IsUser)
-                        await site.LogoutAsync();
-                }
-            }
-            await base.DisposeAsync(disposing);
-        }
     }
 }

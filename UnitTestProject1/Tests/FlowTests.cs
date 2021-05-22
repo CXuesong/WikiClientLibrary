@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using WikiClientLibrary;
 using WikiClientLibrary.Flow;
+using WikiClientLibrary.Tests.UnitTestProject1.Fixtures;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -13,13 +14,12 @@ namespace WikiClientLibrary.Tests.UnitTestProject1.Tests
     // https://www.mediawiki.org/wiki/Structured_Discussions
     // Structured Discussions is no longer in feature development, and new deployments have been suspended for now.
     [CISkipped(Reason = CISkippedReason.Deprecated)]
-    public class FlowTests : WikiSiteTestsBase
+    public class FlowTests : WikiSiteTestsBase, IClassFixture<WikiSiteProvider>
     {
 
         /// <inheritdoc />
-        public FlowTests(ITestOutputHelper output) : base(output)
+        public FlowTests(ITestOutputHelper output, WikiSiteProvider wikiSiteProvider) : base(output, wikiSiteProvider)
         {
-            SiteNeedsLogin(Endpoints.WikipediaBetaEn);
         }
 
         private IEnumerable<Post> ExpandPosts(IEnumerable<Post> posts)

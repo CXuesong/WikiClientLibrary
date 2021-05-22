@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using WikiClientLibrary.Pages;
 using WikiClientLibrary.Sites;
+using WikiClientLibrary.Tests.UnitTestProject1.Fixtures;
 using WikiClientLibrary.Wikia;
 using WikiClientLibrary.Wikia.Discussions;
 using WikiClientLibrary.Wikia.WikiaApi;
@@ -18,12 +19,12 @@ namespace WikiClientLibrary.Tests.UnitTestProject1.Tests
     // Wikia doesn't allow us to login on CI environment.
     // Wikia API has been revamped a lot. Wait for some time until to gets more stable.
     [CISkipped]
-    public class WikiaApiTests : WikiSiteTestsBase
+    public class WikiaApiTests : WikiSiteTestsBase, IClassFixture<WikiSiteProvider>
     {
+
         /// <inheritdoc />
-        public WikiaApiTests(ITestOutputHelper output) : base(output)
+        public WikiaApiTests(ITestOutputHelper output, WikiSiteProvider wikiSiteProvider) : base(output, wikiSiteProvider)
         {
-            SiteNeedsLogin(Endpoints.WikiaTest);
         }
 
         [Fact]

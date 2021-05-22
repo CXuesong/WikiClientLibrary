@@ -2,13 +2,14 @@
 using System.Threading.Tasks;
 using WikiClientLibrary;
 using WikiClientLibrary.Sites;
+using WikiClientLibrary.Tests.UnitTestProject1.Fixtures;
 using Xunit;
 using Xunit.Abstractions;
 
 namespace WikiClientLibrary.Tests.UnitTestProject1.Tests
 {
 
-    public class WikiFamilyTests : WikiSiteTestsBase
+    public class WikiFamilyTests : WikiSiteTestsBase, IClassFixture<WikiSiteProvider>
     {
 
         private readonly Lazy<WikiFamily> _Family;
@@ -16,7 +17,7 @@ namespace WikiClientLibrary.Tests.UnitTestProject1.Tests
         private WikiFamily Family => _Family.Value;
 
         /// <inheritdoc />
-        public WikiFamilyTests(ITestOutputHelper output) : base(output)
+        public WikiFamilyTests(ITestOutputHelper output, WikiSiteProvider wikiSiteProvider) : base(output, wikiSiteProvider)
         {
             _Family = new Lazy<WikiFamily>(() =>
             {

@@ -12,23 +12,21 @@ using WikiClientLibrary.Generators;
 using WikiClientLibrary.Pages;
 using WikiClientLibrary.Pages.Queries;
 using WikiClientLibrary.Pages.Queries.Properties;
+using WikiClientLibrary.Tests.UnitTestProject1.Fixtures;
 using Xunit;
 using Xunit.Abstractions;
 
 namespace WikiClientLibrary.Tests.UnitTestProject1.Tests
 {
 
-    public class PageTests : WikiSiteTestsBase
+    public class PageTests : WikiSiteTestsBase, IClassFixture<WikiSiteProvider>
     {
+
         private const string SummaryPrefix = "WikiClientLibrary test.";
 
-
         /// <inheritdoc />
-        public PageTests(ITestOutputHelper output) : base(output)
+        public PageTests(ITestOutputHelper output, WikiSiteProvider wikiSiteProvider) : base(output, wikiSiteProvider)
         {
-            SiteNeedsLogin(Endpoints.WikipediaTest2);
-            SiteNeedsLogin(Endpoints.WikiaTest);
-            SiteNeedsLogin(Endpoints.WikipediaLzh);
         }
 
         [Fact]

@@ -4,20 +4,19 @@ using System.Reflection;
 using System.Threading.Tasks;
 using WikiClientLibrary.Pages;
 using WikiClientLibrary.Sites;
+using WikiClientLibrary.Tests.UnitTestProject1.Fixtures;
 using Xunit;
 using Xunit.Abstractions;
 
 namespace WikiClientLibrary.Tests.UnitTestProject1.Tests
 {
 
-    public class SiteTokenTests : WikiSiteTestsBase
+    public class SiteTokenTests : WikiSiteTestsBase, IClassFixture<WikiSiteProvider>
     {
 
         /// <inheritdoc />
-        public SiteTokenTests(ITestOutputHelper output) : base(output)
+        public SiteTokenTests(ITestOutputHelper output, WikiSiteProvider wikiSiteProvider) : base(output, wikiSiteProvider)
         {
-            SiteNeedsLogin(Endpoints.WikipediaTest2);
-            SiteNeedsLogin(Endpoints.WikiaTest);
         }
 
         [SkippableTheory]
@@ -59,6 +58,7 @@ namespace WikiClientLibrary.Tests.UnitTestProject1.Tests
         [SkippableTheory]
         [InlineData(Endpoints.WikipediaTest2, "Project:Sandbox")]
         [InlineData(Endpoints.WikiaTest, "Project:Sandbox")]
+        [InlineData(Endpoints.TFWiki, "Project:Sandbox")]
         public async Task BadTokenTest(string endpointUrl, string sandboxPageTitle)
         {
             const string invalidToken = @"INVALID_TOKEN+\";

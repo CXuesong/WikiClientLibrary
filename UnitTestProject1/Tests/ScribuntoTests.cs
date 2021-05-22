@@ -4,16 +4,17 @@ using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
 using WikiClientLibrary.Scribunto;
+using WikiClientLibrary.Tests.UnitTestProject1.Fixtures;
 using Xunit;
 using Xunit.Abstractions;
 
 namespace WikiClientLibrary.Tests.UnitTestProject1.Tests
 {
-    public class ScribuntoTests : WikiSiteTestsBase
+    public class ScribuntoTests : WikiSiteTestsBase, IClassFixture<WikiSiteProvider>
     {
 
         /// <inheritdoc />
-        public ScribuntoTests(ITestOutputHelper output) : base(output)
+        public ScribuntoTests(ITestOutputHelper output, WikiSiteProvider wikiSiteProvider) : base(output, wikiSiteProvider)
         {
         }
 

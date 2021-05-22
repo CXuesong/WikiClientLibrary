@@ -1,17 +1,18 @@
 ﻿using System;
 using System.Threading.Tasks;
 using WikiClientLibrary;
+using WikiClientLibrary.Tests.UnitTestProject1.Fixtures;
 using Xunit;
 using Xunit.Abstractions;
 
 namespace WikiClientLibrary.Tests.UnitTestProject1.Tests
 {
 
-    public class WikiLinkTests : WikiSiteTestsBase
+    public class WikiLinkTests : WikiSiteTestsBase, IClassFixture<WikiSiteProvider>
     {
 
         /// <inheritdoc />
-        public WikiLinkTests(ITestOutputHelper output) : base(output)
+        public WikiLinkTests(ITestOutputHelper output, WikiSiteProvider wikiSiteProvider) : base(output, wikiSiteProvider)
         {
         }
 

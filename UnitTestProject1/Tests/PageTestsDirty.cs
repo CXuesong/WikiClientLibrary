@@ -9,6 +9,7 @@ using WikiClientLibrary.Client;
 using WikiClientLibrary.Files;
 using WikiClientLibrary.Pages;
 using WikiClientLibrary.Sites;
+using WikiClientLibrary.Tests.UnitTestProject1.Fixtures;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -17,8 +18,9 @@ namespace WikiClientLibrary.Tests.UnitTestProject1.Tests
     /// <summary>
     /// The tests in this class requires a site administrator (i.e. sysop) account.
     /// </summary>
-    public class PageTestsDirty : WikiSiteTestsBase
+    public class PageTestsDirty : WikiSiteTestsBase, IClassFixture<WikiSiteProvider>
     {
+
         private const string SummaryPrefix = "WikiClientLibrary test. ";
 
         // The following pages will be created.
@@ -42,13 +44,11 @@ namespace WikiClientLibrary.Tests.UnitTestProject1.Tests
         }
 
         /// <inheritdoc />
-        public PageTestsDirty(ITestOutputHelper output) : base(output)
+        public PageTestsDirty(ITestOutputHelper output, WikiSiteProvider wikiSiteProvider) : base(output, wikiSiteProvider)
         {
             if (CredentialManager.DirtyTestsEntryPointUrl == null)
                 throw new SkipException(
                     "You need to specify CredentialManager.DirtyTestsEntryPointUrl before running this group of tests.");
-            SiteNeedsLogin(CredentialManager.DirtyTestsEntryPointUrl);
-            SiteNeedsLogin(Endpoints.WikiaTest);
         }
 
         private async Task<WikiPage> GetOrCreatePage(WikiSite site, string title)

@@ -8,17 +8,18 @@ using WikiClientLibrary.Generators;
 using WikiClientLibrary.Generators.Primitive;
 using WikiClientLibrary.Pages;
 using WikiClientLibrary.Pages.Queries.Properties;
+using WikiClientLibrary.Tests.UnitTestProject1.Fixtures;
 using Xunit;
 using Xunit.Abstractions;
 
 namespace WikiClientLibrary.Tests.UnitTestProject1.Tests
 {
 
-    public class GeneratorTests : WikiSiteTestsBase
+    public class GeneratorTests : WikiSiteTestsBase, IClassFixture<WikiSiteProvider>
     {
 
         /// <inheritdoc />
-        public GeneratorTests(ITestOutputHelper output) : base(output)
+        public GeneratorTests(ITestOutputHelper output, WikiSiteProvider wikiSiteProvider) : base(output, wikiSiteProvider)
         {
         }
 

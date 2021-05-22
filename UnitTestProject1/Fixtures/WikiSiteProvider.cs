@@ -1,0 +1,144 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Runtime.InteropServices;
+using System.Text;
+using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
+using WikiClientLibrary.Client;
+using WikiClientLibrary.Sites;
+using WikiClientLibrary.Wikia;
+using WikiClientLibrary.Wikia.Sites;
+using Xunit.Abstractions;
+
+namespace WikiClientLibrary.Tests.UnitTestProject1.Fixtures
+{
+
+    public sealed class WikiSiteProvider : IAsyncDisposable
+    {
+
+        private readonly HashSet<string> sitesNeedsLogin = new HashSet<string>
+        {
+            Endpoints.WikipediaBetaEn,
+            Endpoints.WikipediaTest2,
+            Endpoints.WikiaTest,
+            Endpoints.WikipediaLzh,
+            Endpoints.WikiaTest,
+            Endpoints.WikipediaTest2,
+            Endpoints.WikiaTest,
+            Endpoints.WikiaTest,
+            Endpoints.WikidataTest,
+            Endpoints.WikipediaTest2,
+            Endpoints.WikimediaCommonsBeta,
+            Endpoints.TFWiki,
+        };
+
+        private readonly Dictionary<string, Task<WikiSite>> siteCache = new Dictionary<string, Task<WikiSite>>();
+        private readonly WikiClient _WikiClient;
+
+        public WikiSiteProvider()
+        {
+            if (!string.IsNullOrEmpty(CredentialManager.DirtyTestsEntryPointUrl))
+                sitesNeedsLogin.Add(CredentialManager.DirtyTestsEntryPointUrl);
+            // Ensures caller has a chance to initialize LoggerFactory before access WikiClient.
+            _WikiClient = CreateWikiClient();
+        }
+
+        public WikiClient CreateWikiClient()
+        {
+            var client = new WikiClient
+            {
+                Timeout = TimeSpan.FromSeconds(20),
+                RetryDelay = TimeSpan.FromSeconds(5),
+#if ENV_CI_BUILD
+                ClientUserAgent = $"UnitTest/1.0 ({RuntimeInformation.FrameworkDescription}; ENV_CI_BUILD)",
+#else
+                ClientUserAgent = $"UnitTest/1.0 ({RuntimeInformation.FrameworkDescription})",
+#endif
+            };
+            return client;
+        }
+
+        private WikiClient GetWikiClient(ILoggerFactory loggerFactory)
+        {
+            loggerFactory.CreateLogger<WikiSiteProvider>().LogInformation("GetWikiClient returning cached WikiClient.");
+            _WikiClient.Logger = loggerFactory.CreateLogger<WikiClient>();
+            return _WikiClient;
+        }
+
+        /// <summary>
+        /// Create or get a wiki site from local cache.
+        /// </summary>
+        public Task<WikiSite> GetWikiSiteAsync(string endpointUrl, ILoggerFactory loggerFactory)
+        {
+            var logger = loggerFactory.CreateLogger<WikiSiteProvider>();
+            lock (siteCache)
+            {
+                if (!siteCache.TryGetValue(endpointUrl, out var task) || task.IsFaulted)
+                {
+                    logger.LogInformation("Creating WikiSite instance for {EndpointUrl}.", endpointUrl);
+                    task = CreateWikiSiteAsync(GetWikiClient(loggerFactory), endpointUrl, loggerFactory);
+                    siteCache.Add(endpointUrl, task);
+                } else if (task.IsCompleted)
+                {
+                    logger.LogInformation("Reusing existing WikiSite instance for {EndpointUrl}.", endpointUrl);
+                    // Cached WikiSite. Replace logger.
+                    var site = task.Result;
+                    site.Logger = loggerFactory.CreateLogger(site.GetType());
+                }
+                return task;
+            }
+        }
+
+        /// <summary>
+        /// Create a wiki site, login if necessary.
+        /// </summary>
+        public async Task<WikiSite> CreateWikiSiteAsync(IWikiClient wikiClient, string url, ILoggerFactory loggerFactory)
+        {
+            WikiSite site;
+            if (url.Contains(".wikia.com") || url.Contains(".wikia.org") || url.Contains(".fandom.com"))
+            {
+                var uri = new Uri(url, UriKind.Absolute);
+                var rootUrl = new Uri(uri, ".").ToString();
+                var options = new WikiaSiteOptions(rootUrl)
+                {
+                    AccountAssertion = AccountAssertionBehavior.AssertAll,
+                };
+                site = new WikiaSite(wikiClient, options) { Logger = loggerFactory.CreateLogger<WikiaSite>() };
+            }
+            else
+            {
+                var options = new SiteOptions(url)
+                {
+                    AccountAssertion = AccountAssertionBehavior.AssertAll,
+                };
+                site = new WikiSite(wikiClient, options) { Logger = loggerFactory.CreateLogger<WikiSite>() };
+            }
+            await site.Initialization;
+            if (sitesNeedsLogin.Contains(url))
+            {
+                await CredentialManager.LoginAsync(site);
+            }
+            return site;
+        }
+
+        /// <inheritdoc />
+        public async ValueTask DisposeAsync()
+        {
+            // Logout all the sites.
+            List<Task<WikiSite>> sites;
+            lock (siteCache)
+            {
+                sites = siteCache.Values.ToList();
+                sites.Clear();
+            }
+            foreach (var s in sites)
+            {
+                var site = await s;
+                if (site.AccountInfo.IsUser)
+                    await site.LogoutAsync();
+            }
+        }
+    }
+
+}

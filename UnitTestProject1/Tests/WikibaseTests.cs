@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using WikiClientLibrary.Tests.UnitTestProject1.Fixtures;
 using WikiClientLibrary.Tests.UnitTestProject1.Properties;
 using WikiClientLibrary.Wikibase;
 using WikiClientLibrary.Wikibase.DataTypes;
@@ -13,15 +14,15 @@ using Xunit.Abstractions;
 
 namespace WikiClientLibrary.Tests.UnitTestProject1.Tests
 {
-    public class WikibaseTests : WikiSiteTestsBase
+
+    public class WikibaseTests : WikiSiteTestsBase, IClassFixture<WikiSiteProvider>
     {
 
         private const string WikidataEntityUriPrefix = "http://www.wikidata.org/entity/";
 
         /// <inheritdoc />
-        public WikibaseTests(ITestOutputHelper output) : base(output)
+        public WikibaseTests(ITestOutputHelper output, WikiSiteProvider wikiSiteProvider) : base(output, wikiSiteProvider)
         {
-            SiteNeedsLogin(Endpoints.WikidataTest);
         }
 
         private void CheckEntity(Entity entity, string id, string labelEn)

@@ -3,17 +3,18 @@ using System.Linq;
 using System.Threading.Tasks;
 using WikiClientLibrary.Generators;
 using WikiClientLibrary.Pages;
+using WikiClientLibrary.Tests.UnitTestProject1.Fixtures;
 using Xunit;
 using Xunit.Abstractions;
 
 namespace WikiClientLibrary.Tests.UnitTestProject1.Tests
 {
 
-    public class RevisionGeneratorTests : WikiSiteTestsBase
+    public class RevisionGeneratorTests : WikiSiteTestsBase, IClassFixture<WikiSiteProvider>
     {
 
         /// <inheritdoc />
-        public RevisionGeneratorTests(ITestOutputHelper output) : base(output)
+        public RevisionGeneratorTests(ITestOutputHelper output, WikiSiteProvider wikiSiteProvider) : base(output, wikiSiteProvider)
         {
         }
 

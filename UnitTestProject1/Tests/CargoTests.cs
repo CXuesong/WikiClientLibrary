@@ -9,17 +9,18 @@ using WikiClientLibrary.Cargo;
 using WikiClientLibrary.Cargo.Linq;
 using WikiClientLibrary.Cargo.Schema;
 using WikiClientLibrary.Sites;
+using WikiClientLibrary.Tests.UnitTestProject1.Fixtures;
 using Xunit;
 using Xunit.Abstractions;
 
 namespace WikiClientLibrary.Tests.UnitTestProject1.Tests
 {
 
-    public class CargoTests : WikiSiteTestsBase
+    public class CargoTests : WikiSiteTestsBase, IClassFixture<WikiSiteProvider>
     {
 
         /// <inheritdoc />
-        public CargoTests(ITestOutputHelper output) : base(output)
+        public CargoTests(ITestOutputHelper output, WikiSiteProvider wikiSiteProvider) : base(output, wikiSiteProvider)
         {
         }
 

@@ -33,9 +33,11 @@ namespace WikiClientLibrary.Tests.UnitTestProject1
             var message = formatter(state, exception);
             if (string.IsNullOrEmpty(message)) return;
             var sb = new StringBuilder();
+            sb.Append(DateTime.Now.ToString("O"));
+            sb.Append(" ");
             sb.Append(logLevel);
             sb.Append(": ");
-            var leftMargin = sb.Length;
+            var leftMargin = 4;
             sb.Append(Name);
             if (LoggingScope.Current != null)
             {
