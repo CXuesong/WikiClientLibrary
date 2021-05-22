@@ -88,6 +88,8 @@ namespace WikiClientLibrary.Tests.UnitTestProject1
 
         protected WikiSiteProvider WikiSiteProvider { get; }
 
+        protected void SiteNeedsLogin(string endpointUrl) => WikiSiteProvider.SiteNeedsLogin(endpointUrl);
+
         /// <summary>
         /// Creates a <see cref="WikiSite"/> instance with a dedicated <see cref="WikiClient"/> instance.
         /// </summary>

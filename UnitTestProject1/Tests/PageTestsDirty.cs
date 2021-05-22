@@ -49,6 +49,8 @@ namespace WikiClientLibrary.Tests.UnitTestProject1.Tests
             if (CredentialManager.DirtyTestsEntryPointUrl == null)
                 throw new SkipException(
                     "You need to specify CredentialManager.DirtyTestsEntryPointUrl before running this group of tests.");
+            SiteNeedsLogin(CredentialManager.DirtyTestsEntryPointUrl);
+            SiteNeedsLogin(Endpoints.WikiaTest);
         }
 
         private async Task<WikiPage> GetOrCreatePage(WikiSite site, string title)

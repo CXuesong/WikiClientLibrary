@@ -21,22 +21,7 @@ namespace WikiClientLibrary.Tests.UnitTestProject1.Fixtures
     public sealed class WikiSiteProvider : IAsyncDisposable
     {
 
-        private readonly HashSet<string> sitesNeedsLogin = new HashSet<string>
-        {
-            Endpoints.WikipediaBetaEn,
-            Endpoints.WikipediaTest2,
-            Endpoints.WikiaTest,
-            Endpoints.WikipediaLzh,
-            Endpoints.WikiaTest,
-            Endpoints.WikipediaTest2,
-            Endpoints.WikiaTest,
-            Endpoints.WikiaTest,
-            Endpoints.WikidataTest,
-            Endpoints.WikipediaTest2,
-            Endpoints.WikimediaCommonsBeta,
-            Endpoints.TFWiki,
-        };
-
+        private readonly HashSet<string> sitesNeedsLogin = new HashSet<string>();
         private readonly Dictionary<string, Task<WikiSite>> siteCache = new Dictionary<string, Task<WikiSite>>();
         private readonly WikiClient _WikiClient;
 
@@ -46,6 +31,11 @@ namespace WikiClientLibrary.Tests.UnitTestProject1.Fixtures
                 sitesNeedsLogin.Add(CredentialManager.DirtyTestsEntryPointUrl);
             // Ensures caller has a chance to initialize LoggerFactory before access WikiClient.
             _WikiClient = CreateWikiClient();
+        }
+
+        public void SiteNeedsLogin(string endpointUrl)
+        {
+            sitesNeedsLogin.Add(endpointUrl);
         }
 
         public WikiClient CreateWikiClient()

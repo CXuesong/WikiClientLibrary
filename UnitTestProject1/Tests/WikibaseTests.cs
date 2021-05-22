@@ -23,6 +23,7 @@ namespace WikiClientLibrary.Tests.UnitTestProject1.Tests
         /// <inheritdoc />
         public WikibaseTests(ITestOutputHelper output, WikiSiteProvider wikiSiteProvider) : base(output, wikiSiteProvider)
         {
+            SiteNeedsLogin(Endpoints.WikidataTest);
         }
 
         private void CheckEntity(Entity entity, string id, string labelEn)

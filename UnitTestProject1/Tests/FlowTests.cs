@@ -20,6 +20,7 @@ namespace WikiClientLibrary.Tests.UnitTestProject1.Tests
         /// <inheritdoc />
         public FlowTests(ITestOutputHelper output, WikiSiteProvider wikiSiteProvider) : base(output, wikiSiteProvider)
         {
+            SiteNeedsLogin(Endpoints.WikipediaBetaEn);
         }
 
         private IEnumerable<Post> ExpandPosts(IEnumerable<Post> posts)

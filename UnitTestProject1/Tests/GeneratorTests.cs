@@ -324,6 +324,7 @@ namespace WikiClientLibrary.Tests.UnitTestProject1.Tests
         }
 
         [SkippableFact]
+        [CISkipped(Reason=CISkippedReason.AgentBlocked)]
         public async Task WpTest2PatrolTest1()
         {
             var site = await WpTest2SiteAsync;

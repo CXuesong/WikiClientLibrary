@@ -14,6 +14,7 @@ namespace WikiClientLibrary.Tests.UnitTestProject1
         Unknown = 0,
         Unstable,
         Deprecated,
+        AgentBlocked
     }
 
     /// <summary>

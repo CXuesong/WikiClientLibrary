@@ -17,6 +17,8 @@ namespace WikiClientLibrary.Tests.UnitTestProject1.Tests
         /// <inheritdoc />
         public SiteTokenTests(ITestOutputHelper output, WikiSiteProvider wikiSiteProvider) : base(output, wikiSiteProvider)
         {
+            SiteNeedsLogin(Endpoints.WikipediaTest2);
+            SiteNeedsLogin(Endpoints.WikiaTest);
         }
 
         [SkippableTheory]

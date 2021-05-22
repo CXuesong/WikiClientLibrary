@@ -27,6 +27,9 @@ namespace WikiClientLibrary.Tests.UnitTestProject1.Tests
         /// <inheritdoc />
         public PageTests(ITestOutputHelper output, WikiSiteProvider wikiSiteProvider) : base(output, wikiSiteProvider)
         {
+            SiteNeedsLogin(Endpoints.WikipediaTest2);
+            SiteNeedsLogin(Endpoints.WikiaTest);
+            SiteNeedsLogin(Endpoints.WikipediaLzh);
         }
 
         [Fact]
