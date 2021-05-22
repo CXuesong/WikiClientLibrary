@@ -63,14 +63,52 @@ namespace WikiClientLibrary.Tests.UnitTestProject1.Tests
             Assert.Equal("en", page3.PageLanguage);
         }
 
-        [Fact]
-        public async Task WpTest2PageReadTest2()
+        [Theory]
+        [InlineData(nameof(WpTest2SiteAsync), "Project:sandbox", "Wikipedia:Sandbox", BuiltInNamespaces.Project, 2076)]
+        [InlineData(nameof(WikiaTestSiteAsync), "Project:sandbox", "Dman Wikia:Sandbox", BuiltInNamespaces.Project, 637)]
+        [InlineData(nameof(TFWikiSiteAsync), "Help:coming soon", "Help:Coming soon", BuiltInNamespaces.Help, 10122)]
+        public async Task WikiPageReadTest2(string siteName, string fetchTitle, string expectedTitle, int expectedNs, int expectedId)
         {
-            var site = await WpTest2SiteAsync;
-            var search = await site.OpenSearchAsync("A", 10);
-            var pages = search.Select(e => new WikiPage(site, e.Title)).ToList();
-            await pages.RefreshAsync();
-            ShallowTrace(pages);
+            var site = await WikiSiteFromNameAsync(siteName);
+            var page = new WikiPage(site, fetchTitle);
+            await page.RefreshAsync(PageQueryOptions.FetchContent);
+            Output.WriteLine("Fetch by title: {0}", fetchTitle);
+            ShallowTrace(page);
+            Assert.True(page.Exists);
+            Assert.Equal(expectedTitle, page.Title);
+            Assert.Equal(expectedNs, page.NamespaceId);
+            Assert.Equal(expectedId, page.Id);
+            Utility.AssertNotNull(page.Content);
+            Assert.True(page.ContentLength >= page.Content.Length, "ContentLength (in bytes) should be equal or greater than content characters.");
+
+            Output.WriteLine("Fetch by ID: {0}", expectedId);
+            page = new WikiPage(site, expectedId);
+            page.Content = "Aaabbbccc";
+            await page.RefreshAsync();
+            ShallowTrace(page);
+            Assert.True(page.Exists);
+            Assert.Equal(expectedTitle, page.Title);
+            Assert.Equal(expectedNs, page.NamespaceId);
+            Assert.Equal(expectedId, page.Id);
+            // Since we are not fetching content, content should be remain untouched.
+            Assert.Equal("Aaabbbccc", page.Content);
+            // but reivision info should exist.
+            Assert.NotNull(page.LastRevision);
+        }
+
+        [Theory]
+        [InlineData(nameof(WikiaTestSiteAsync), "Test (Disambiguation)", true)]
+        [InlineData(nameof(WpLzhSiteAsync), "莎拉伯恩哈特", false)]
+        [InlineData(nameof(WpLzhSiteAsync), "中國_(釋義)", true)]
+        [InlineData(nameof(TFWikiSiteAsync), "Cybertron (disambiguation)", true)]
+        public async Task WikiPageReadDisambigTest(string siteName, string pageTitle, bool isDab)
+        {
+            var site = await WikiSiteFromNameAsync(siteName);
+            Output.WriteLine("Is there Disambiguator on this site? {0}", site.Extensions.Contains("Disambiguator"));
+            var page = new WikiPage(site, pageTitle);
+            await page.RefreshAsync();
+            Assert.True(page.Exists);
+            Assert.Equal(isDab, await page.IsDisambiguationAsync());
         }
 
         [Fact]
@@ -183,17 +221,6 @@ namespace WikiClientLibrary.Tests.UnitTestProject1.Tests
         }
 
         [Fact]
-        public async Task WpLzhPageReadDisambigTest()
-        {
-            var site = await WpLzhSiteAsync;
-            var page1 = new WikiPage(site, "莎拉伯恩哈特");
-            var page2 = new WikiPage(site, "中國_(釋義)");
-            await new[] { page1, page2 }.RefreshAsync();
-            Assert.False(await page1.IsDisambiguationAsync());
-            Assert.True(await page2.IsDisambiguationAsync());
-        }
-
-        [Fact]
         public async Task WpLzhFetchRevisionsTest()
         {
             var site = await WpLzhSiteAsync;
@@ -247,38 +274,6 @@ namespace WikiClientLibrary.Tests.UnitTestProject1.Tests
         }
 
         [Fact]
-        public async Task WikiaPageReadTest()
-        {
-            var site = await WikiaTestSiteAsync;
-            var page = new WikiPage(site, "Project:Sandbox");
-            await page.RefreshAsync(PageQueryOptions.FetchContent);
-            Assert.Equal("Dman Wikia:Sandbox", page.Title);
-            Assert.Equal(4, page.NamespaceId);
-            ShallowTrace(page);
-        }
-
-        [Fact]
-        public async Task WikiaPageReadByIdTest()
-        {
-            var site = await WikiaTestSiteAsync;
-            var page = new WikiPage(site, 637);
-            await page.RefreshAsync();
-            Assert.Equal("Dman Wikia:Sandbox", page.Title);
-            Assert.Equal(4, page.NamespaceId);
-            ShallowTrace(page);
-        }
-
-        [Fact]
-        public async Task WikiaPageReadDisambigTest()
-        {
-            var site = await WikiaTestSiteAsync;
-            Output.WriteLine("Is there Disambiguator on this site? {0}", site.Extensions.Contains("Disambiguator"));
-            var page = new WikiPage(site, "Test (Disambiguation)");
-            await page.RefreshAsync();
-            Assert.True(await page.IsDisambiguationAsync());
-        }
-
-        [Fact]
         public async Task WpLzhRedirectedPageReadTest()
         {
             var site = await WpLzhSiteAsync;
@@ -291,6 +286,7 @@ namespace WikiClientLibrary.Tests.UnitTestProject1.Tests
 
         [SkippableTheory]
         [InlineData(nameof(WpTest2SiteAsync), "project:sandbox")]
+        [InlineData(nameof(WikiaTestSiteAsync), "project:sandbox")]
         [InlineData(nameof(TFWikiSiteAsync), "User:FuncGammaBot/Sandbox")]
         public async Task WikiPageWriteTest1(string siteName, string pageTitle)
         {
@@ -371,17 +367,5 @@ namespace WikiClientLibrary.Tests.UnitTestProject1.Tests
             Assert.False(result);
         }
 
-        [SkippableFact]
-        public async Task WikiaPageWriteTest1()
-        {
-            AssertModify();
-            var site = await WikiaTestSiteAsync;
-            Utility.AssertLoggedIn(site);
-            var page = new WikiPage(site, "project:sandbox");
-            await page.RefreshAsync(PageQueryOptions.FetchContent);
-            page.Content += "\n\nTest from WikiClientLibrary.";
-            Output.WriteLine(page.Content);
-            await page.UpdateContentAsync(SummaryPrefix + "Edit sandbox page.");
-        }
     }
 }

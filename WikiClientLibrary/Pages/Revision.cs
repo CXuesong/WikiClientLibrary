@@ -111,7 +111,7 @@ namespace WikiClientLibrary.Pages
         /// </remarks>
         /// <seealso cref="RevisionsPropertyProvider.FetchContent"/>
         [JsonProperty("*")]
-        public string Content { get; private set; } = "";
+        public string? Content { get; private set; }
 
         /// <summary>
         /// Editor's edit summary (editor's comment on revision).

@@ -19,11 +19,13 @@ namespace WikiClientLibrary.Tests.UnitTestProject1.Tests
         {
             SiteNeedsLogin(Endpoints.WikipediaTest2);
             SiteNeedsLogin(Endpoints.WikiaTest);
+            SiteNeedsLogin(Endpoints.TFWiki);
         }
 
         [SkippableTheory]
         [InlineData(nameof(WpTest2SiteAsync))]
         [InlineData(nameof(WikiaTestSiteAsync))]
+        [InlineData(nameof(TFWikiSiteAsync))]
         public async Task TokenTest(string testSiteName)
         {
             var site = await WikiSiteFromNameAsync(testSiteName);
