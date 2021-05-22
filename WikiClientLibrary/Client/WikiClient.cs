@@ -253,7 +253,8 @@ namespace WikiClientLibrary.Client
                         };
                     }
                 }
-                throw;
+                if (!await PrepareForRetry(RetryDelay)) throw;
+                goto RETRY;
             }
             using (response)
             {
