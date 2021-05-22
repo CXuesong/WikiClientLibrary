@@ -30,6 +30,7 @@ namespace WikiClientLibrary.Tests.UnitTestProject1.Tests
             SiteNeedsLogin(Endpoints.WikipediaTest2);
             SiteNeedsLogin(Endpoints.WikiaTest);
             SiteNeedsLogin(Endpoints.WikipediaLzh);
+            SiteNeedsLogin(Endpoints.TFWiki);
         }
 
         [Fact]
@@ -288,24 +289,29 @@ namespace WikiClientLibrary.Tests.UnitTestProject1.Tests
             ShallowTrace(page);
         }
 
-        [SkippableFact]
-        public async Task WpTest2PageWriteTest1()
+        [SkippableTheory]
+        [InlineData(nameof(WpTest2SiteAsync), "project:sandbox")]
+        [InlineData(nameof(TFWikiSiteAsync), "User:FuncGammaBot/Sandbox")]
+        public async Task WikiPageWriteTest1(string siteName, string pageTitle)
         {
             AssertModify();
-            var site = await WpTest2SiteAsync;
-            var page = new WikiPage(site, "project:sandbox");
+            var site = await WikiSiteFromNameAsync(siteName);
+            var page = new WikiPage(site, pageTitle);
             await page.RefreshAsync(PageQueryOptions.FetchContent);
+            // As a precaution, we don't create new page by editing.
+            Assert.True(page.Exists);
             page.Content += "\n\nTest from WikiClientLibrary.";
             Output.WriteLine(page.Content);
-            await page.UpdateContentAsync(SummaryPrefix + "Edit sandbox page.");
+            await page.UpdateContentAsync(SummaryPrefix + "Edit sandbox page.", true, true);
         }
 
-        [SkippableFact]
-        public async Task WpTest2PageWriteTest2()
+        [SkippableTheory]
+        [InlineData(nameof(WpTest2SiteAsync), "Test page")]
+        public async Task WikiPageWriteTest2(string siteName, string pageTitle)
         {
             AssertModify();
-            var site = await WpTest2SiteAsync;
-            var page = new WikiPage(site, "Test page");
+            var site = await WikiSiteFromNameAsync(siteName);
+            var page = new WikiPage(site, pageTitle);
             await page.RefreshAsync(PageQueryOptions.FetchContent);
             Assert.True(page.Protections.Any(), "To perform this test, the working page should be protected.");
             page.Content += "\n\nTest from WikiClientLibrary.";
@@ -313,11 +319,13 @@ namespace WikiClientLibrary.Tests.UnitTestProject1.Tests
                 page.UpdateContentAsync(SummaryPrefix + "Attempt to edit a protected page."));
         }
 
-        [SkippableFact]
-        public async Task WpTest2PageWriteTest3()
+        [SkippableTheory]
+        [InlineData(nameof(WpTest2SiteAsync))]
+        [InlineData(nameof(TFWikiSiteAsync))]
+        public async Task WikiPageWriteTest3(string siteName)
         {
             AssertModify();
-            var site = await WpTest2SiteAsync;
+            var site = await WikiSiteFromNameAsync(siteName);
             var page = new WikiPage(site, "Special:RecentChanges");
             await page.RefreshAsync(PageQueryOptions.FetchContent);
             Assert.True(page.IsSpecialPage);
