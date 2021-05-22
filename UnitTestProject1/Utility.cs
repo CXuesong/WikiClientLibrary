@@ -11,6 +11,7 @@ using System.IO;
 using System.Reflection;
 using System.Text.RegularExpressions;
 using WikiClientLibrary.Client;
+using WikiClientLibrary.Pages;
 using WikiClientLibrary.Sites;
 using Xunit;
 using Xunit.Abstractions;
@@ -125,6 +126,17 @@ namespace WikiClientLibrary.Tests.UnitTestProject1
                 }
             }
             return sb.ToString();
+        }
+        
+        public static void AssertTitlesDistinct(IList<WikiPage> pages)
+        {
+            var distinctTitles = pages.GroupBy(p => p.Title);
+            foreach (var group in distinctTitles)
+            {
+                var count = group.Count();
+                var indices = string.Join(',', group.Select(pages.IndexOf));
+                Assert.True(count == 1, $"Page instance [[{group.Key}]] is not unique. Found {count} instances with indices {indices}.");
+            }
         }
 
         /// <summary>

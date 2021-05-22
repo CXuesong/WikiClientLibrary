@@ -14,6 +14,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using WikiClientLibrary.Client;
+using WikiClientLibrary.Pages;
+using WikiClientLibrary.Pages.Queries.Properties;
 using WikiClientLibrary.Sites;
 using WikiClientLibrary.Tests.UnitTestProject1.Fixtures;
 using WikiClientLibrary.Wikia;
@@ -106,7 +108,31 @@ namespace WikiClientLibrary.Tests.UnitTestProject1
         /// </summary>
         public Task<WikiSite> GetWikiSiteAsync(string endpointUrl) => WikiSiteProvider.GetWikiSiteAsync(endpointUrl, OutputLoggerFactory);
 
-
+        protected void TracePages(IReadOnlyCollection<WikiPage> pages)
+        {
+            const string lineFormat = "{0,-20} {1,10} {2,10} {3,10} {4,10}";
+#if ENV_CI_BUILD
+            const int ITEMS_LIMIT = 10;
+#else
+            const int ITEMS_LIMIT = int.MaxValue;
+#endif
+            WriteOutput("{0} pages.", pages.Count);
+            WriteOutput(lineFormat, "Title", "Length", "Last Revision", "Last Touched", "Children");
+            foreach (var page in pages.Take(ITEMS_LIMIT))
+            {
+                var childrenField = "";
+                var cat = page.GetPropertyGroup<CategoryInfoPropertyGroup>();
+                if (cat != null)
+                    childrenField = $"{cat.MembersCount}(sub:{cat.SubcategoriesCount})";
+                WriteOutput(lineFormat, page.Title, page.ContentLength, page.LastRevisionId, page.LastTouched, childrenField);
+                if (page.Content != null)
+                    WriteOutput(page.Content.Length > 100 ? page.Content.Substring(0, 100) + "..." : page.Content);
+            }
+            if (pages.Count > ITEMS_LIMIT)
+            {
+                WriteOutput("[+{0} pages]", pages.Count - ITEMS_LIMIT);
+            }
+        }
 
         /// <summary>
         /// Asserts that modifications to wiki site can be done in unit tests.

@@ -23,6 +23,142 @@ namespace WikiClientLibrary.Tests.UnitTestProject1.Tests
         {
         }
 
+
+
+        // The test will not hold since ruwarriorswiki has upgraded into MW 1.33
+        // [Fact]
+        internal async Task WikiaLogEventsListLoopTest()
+        {
+            // This is a known scenario. There are a lot of logs on ruwarriorswiki with the same timestamp.
+            var site = await GetWikiSiteAsync(Endpoints.RuWarriorsWiki);
+            var generator = new LogEventsList(site)
+            {
+                PaginationSize = 50,
+                LogType = LogTypes.Move,
+                StartTime = DateTime.Parse("2019-09-28T07:31:07Z", CultureInfo.InvariantCulture),
+                EndTime = DateTime.Parse("2019-10-03T15:29:10Z", CultureInfo.InvariantCulture),
+                TimeAscending = true,
+            };
+            // Take only first page, fine.
+            var logs = await generator.EnumItemsAsync().Take(50).ToListAsync();
+            Output.WriteLine("{0}", logs.FirstOrDefault());
+            Output.WriteLine("{0}", logs.LastOrDefault());
+            Assert.Equal("FANDOMbot", logs.First().UserName);
+            Assert.Equal("FANDOMbot", logs.Last().UserName);
+            // Take the second page, it throws.
+            await Assert.ThrowsAsync<UnexpectedDataException>(() => generator.EnumItemsAsync().Take(51).ToListAsync().AsTask());
+            // Introduce some last-resorts.
+            generator.CompatibilityOptions = new WikiListCompatibilityOptions
+            {
+                ContinuationLoopBehaviors = WikiListContinuationLoopBehaviors.FetchMore
+            };
+            var logs2 = await generator.EnumItemsAsync().Take(100).ToListAsync();
+            Output.WriteLine("logs = {0}", string.Join(",", logs.Select(l => l.LogId)));
+            Output.WriteLine("logs2 = {0}", string.Join(",", logs2.Select(l => l.LogId)));
+            // The first 50 items should be the same.
+            Assert.Equal(logs.Select(l => l.LogId), logs2.Take(50).Select(l => l.LogId));
+            // The next 50 items should not be duplicate with the first 100 items.
+            var logs2Id = logs2.Skip(50).Select(l => l.LogId).ToHashSet();
+            foreach (var l in logs)
+            {
+                Assert.DoesNotContain(l.LogId, logs2Id);
+            }
+        }
+
+
+        [Theory]
+        [InlineData(nameof(WpTest2SiteAsync))]
+        [InlineData(nameof(WikiaTestSiteAsync))]
+        [InlineData(nameof(TFWikiSiteAsync))]
+        public async Task RecentChangesGeneratorTest1(string siteName)
+        {
+            var site = await WikiSiteFromNameAsync(siteName);
+            var generator = new RecentChangesGenerator(site) { LastRevisionsOnly = true, PaginationSize = 20 };
+            var pages = await generator.EnumPagesAsync().Take(200).ToListAsync();
+            TracePages(pages);
+            Utility.AssertTitlesDistinct(pages);
+        }
+
+        [Theory]
+        [InlineData(nameof(WpTest2SiteAsync))]
+        [InlineData(nameof(WikiaTestSiteAsync))]
+        [InlineData(nameof(TFWikiSiteAsync))]
+        public async Task RecentChangesGeneratorTest2(string siteName)
+        {
+            var site = await WikiSiteFromNameAsync(siteName);
+            var generator = new RecentChangesGenerator(site)
+            {
+                LastRevisionsOnly = true,
+                // BotFilter = PropertyFilterOption.WithProperty,
+                MinorFilter = PropertyFilterOption.WithProperty,
+                AnonymousFilter = PropertyFilterOption.WithoutProperty,
+                TypeFilters = RecentChangesFilterTypes.Create | RecentChangesFilterTypes.Edit,
+            };
+            var pages = await generator.EnumPagesAsync(PageQueryOptions.FetchContent).Take(100).ToListAsync();
+            TracePages(pages);
+            Utility.AssertTitlesDistinct(pages);
+            foreach (var p in pages)
+            {
+                var flags = p.LastRevision!.Flags;
+                Assert.True(flags != RevisionFlags.None);
+                Assert.False(flags.HasFlag(RevisionFlags.Anonymous));
+                Assert.True(flags.HasFlag(RevisionFlags.Minor));
+            }
+        }
+
+        [Theory]
+        [InlineData(nameof(WpTest2SiteAsync))]
+        [InlineData(nameof(WikiaTestSiteAsync))]
+        [InlineData(nameof(TFWikiSiteAsync))]
+        public async Task RecentChangesGeneratorTest3(string siteName)
+        {
+            var site = await WikiSiteFromNameAsync(siteName);
+            var generator = new RecentChangesGenerator(site)
+            {
+                LastRevisionsOnly = true,
+                TypeFilters = RecentChangesFilterTypes.Edit,
+                PaginationSize = 500
+            };
+            var pages = await generator.EnumPagesAsync().Take(2000).ToListAsync();
+            TracePages(pages);
+            // Sometimes the assertion fails for wikia.
+            Utility.AssertTitlesDistinct(pages);
+        }
+
+        [Theory]
+        [InlineData(nameof(WpTest2SiteAsync))]
+        [InlineData(nameof(WikiaTestSiteAsync))]
+        [InlineData(nameof(TFWikiSiteAsync))]
+        public async Task RecentChangesListTest(string siteName)
+        {
+            var site = await WikiSiteFromNameAsync(siteName);
+            var generator = new RecentChangesGenerator(site)
+            {
+                LastRevisionsOnly = true,
+                PaginationSize = 500
+            };
+            var rc = await generator.EnumItemsAsync().Take(2000).ToListAsync();
+            ShallowTrace(rc, 1);
+        }
+
+        [SkippableFact]
+        [CISkipped(Reason = CISkippedReason.AgentBlocked)]
+        public async Task WpTest2PatrolTest1()
+        {
+            var site = await WpTest2SiteAsync;
+            var generator = new RecentChangesGenerator(site)
+            {
+                LastRevisionsOnly = true,
+                PatrolledFilter = PropertyFilterOption.WithoutProperty
+            };
+            var rc = await generator.EnumItemsAsync().Take(2).ToListAsync();
+            Output.WriteLine("Changes to patrol:");
+            ShallowTrace(rc);
+            Skip.If(rc.Count < 1);
+            // We require the user has patrol permission on WpTest2 site.
+            await rc[0].PatrolAsync();
+        }
+
         [Theory]
         [InlineData(nameof(WpTest2SiteAsync))]
         [InlineData(nameof(WikiaTestSiteAsync))]
@@ -204,6 +340,40 @@ namespace WikiClientLibrary.Tests.UnitTestProject1.Tests
             });
             // We are obtaining random sequence.
             if (stubs.Count > 0) Assert.NotEqual(stubs.Select(s => s.Title), pages.Select(p => p.Title));
+        }
+
+        [Fact]
+        public async Task WpTestGetSearchTest()
+        {
+            var site = await WpTest2SiteAsync;
+            var generator = new SearchGenerator(site, "test") { PaginationSize = 20 };
+            var pages = await generator.EnumPagesAsync().Take(200).ToListAsync();
+            TracePages(pages);
+            Utility.AssertTitlesDistinct(pages);
+        }
+
+        [Fact]
+        public async Task WpLzhSearchTest()
+        {
+            var site = await WpLzhSiteAsync;
+            var generator = new SearchGenerator(site, "維基") { PaginationSize = 50 };
+            var searchResults = await generator.EnumItemsAsync().Take(50).ToListAsync();
+            var pages = await generator.EnumPagesAsync().Take(50).ToListAsync();
+            ShallowTrace(searchResults, 1);
+            TracePages(pages);
+            Utility.AssertTitlesDistinct(pages);
+            // Note as 2017-03-07, [[維基]] actually exists on lzh wiki, but it's a redirect to [[維基媒體基金會]].
+            // Maybe that's why it's not included in the search result.
+            //Assert.True(pages.Any(p => p.Title == "維基"));
+            Assert.Contains(pages, p => p.Title == "維基媒體基金會");
+            Assert.Contains(pages, p => p.Title == "維基大典");
+            Assert.Contains(pages, p => p.Title == "文言維基大典");
+            Assert.All(searchResults, r => Assert.Contains(generator.Keyword, r.Snippet));
+            // Note there might be pages in the list with equal score, in which case, some adjacent items
+            // in the result might have different order between each request.
+            // We will take care of the situation. Just ensure we have most of the desired items.
+            Assert.ProperSuperset(new HashSet<string>(searchResults.Select(r => r.Title).Take(40)),
+                new HashSet<string>(pages.Select(p => p.Title!)));
         }
 
     }
