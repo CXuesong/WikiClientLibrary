@@ -327,14 +327,16 @@ namespace WikiClientLibrary.Tests.UnitTestProject1.Tests
         public async Task WpTest2PatrolTest1()
         {
             var site = await WpTest2SiteAsync;
-            var generator = new RecentChangesGenerator(site)
-            {
+            var generator = new RecentChangesGenerator(site) { 
                 LastRevisionsOnly = true,
+                PatrolledFilter = PropertyFilterOption.WithoutProperty
             };
             var rc = await generator.EnumItemsAsync().Take(2).ToListAsync();
+            Output.WriteLine("Changes to patrol:");
+            ShallowTrace(rc);
             Skip.If(rc.Count < 1);
-            // We haven't logged in.
-            await Assert.ThrowsAsync<UnauthorizedOperationException>(() => rc[0].PatrolAsync());
+            // We require the user has patrol permission on WpTest2 site.
+            await rc[0].PatrolAsync();
         }
 
         [Theory]
