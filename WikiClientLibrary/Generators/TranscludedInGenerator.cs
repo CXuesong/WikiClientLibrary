@@ -9,7 +9,7 @@ namespace WikiClientLibrary.Generators
     /// Generates all the pages that transclude the specified title.
     /// </summary>
     /// <seealso cref="BacklinksGenerator"/>
-    /// <seealso cref="FileusageGenerator"/>
+    /// <seealso cref="FileUsageGenerator"/>
     /// <seealso cref="TransclusionsGenerator"/>
     public class TranscludedInGenerator : WikiPageGenerator
     {

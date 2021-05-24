@@ -265,10 +265,10 @@ namespace WikiClientLibrary.Tests.UnitTestProject1.Tests
         [Theory]
         [InlineData("File:This.png", "User:Pbm/gallery")] // image
         [InlineData("File:Ae Fond Kiss local.ogg", "User:JanGerber/sandbox")] // audio
-        public async Task WpFileusageGeneratorTest(string target, string expected)
+        public async Task WpFileUsageGeneratorTest(string target, string expected)
         {
             var site = await WpTest2SiteAsync;
-            var fug = new FileusageGenerator(site, target) { PaginationSize = 100 };
+            var fug = new FileUsageGenerator(site, target) { PaginationSize = 100 };
             var pages = await fug.EnumPagesAsync().Take(100).ToListAsync();
             ShallowTrace(pages, 1);
             Assert.Contains(pages, p => p.Title == expected);

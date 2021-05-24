@@ -11,17 +11,17 @@ namespace WikiClientLibrary.Generators
     /// <seealso cref="BacklinksGenerator"/>
     /// <seealso cref="TranscludedInGenerator"/>
     /// <seealso cref="TransclusionsGenerator"/>
-    public class FileusageGenerator : WikiPageGenerator
+    public class FileUsageGenerator : WikiPageGenerator
     {
 
         /// <inheritdoc />
-        public FileusageGenerator(WikiSite site) : base(site)
+        public FileUsageGenerator(WikiSite site) : base(site)
         {
         }
 
         /// <inheritdoc />
         /// <param name="targetTitle">List pages transclude this file. The file does not need to exist.</param>
-        public FileusageGenerator(WikiSite site, string targetTitle) : base(site)
+        public FileUsageGenerator(WikiSite site, string targetTitle) : base(site)
         {
             TargetTitle = targetTitle;
         }
