@@ -3,11 +3,9 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
-using WikiClientLibrary;
 using WikiClientLibrary.Generators;
 using WikiClientLibrary.Generators.Primitive;
 using WikiClientLibrary.Pages;
-using WikiClientLibrary.Pages.Queries.Properties;
 using WikiClientLibrary.Tests.UnitTestProject1.Fixtures;
 using Xunit;
 using Xunit.Abstractions;
@@ -262,6 +260,18 @@ namespace WikiClientLibrary.Tests.UnitTestProject1.Tests
             var pages = await tig.EnumPagesAsync().Take(100).ToListAsync();
             ShallowTrace(pages, 1);
             Assert.Contains(pages, p => p.Title == "Template:Portal bar");
+        }
+
+        [Theory]
+        [InlineData("File:This.png", "User:Pbm/gallery")] // image
+        [InlineData("File:Ae Fond Kiss local.ogg", "User:JanGerber/sandbox")] // audio
+        public async Task WpFileUsageGeneratorTest(string target, string expected)
+        {
+            var site = await WpTest2SiteAsync;
+            var fug = new FileUsageGenerator(site, target) { PaginationSize = 100 };
+            var pages = await fug.EnumPagesAsync().Take(100).ToListAsync();
+            ShallowTrace(pages, 1);
+            Assert.Contains(pages, p => p.Title == expected);
         }
 
         [Fact]

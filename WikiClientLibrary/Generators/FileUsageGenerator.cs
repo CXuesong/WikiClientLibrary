@@ -6,28 +6,28 @@ using WikiClientLibrary.Sites;
 namespace WikiClientLibrary.Generators
 {
     /// <summary>
-    /// Generates all the pages that transclude the specified title.
+    /// Generates all the pages that transclude the specified file.
     /// </summary>
     /// <seealso cref="BacklinksGenerator"/>
-    /// <seealso cref="FileUsageGenerator"/>
+    /// <seealso cref="TranscludedInGenerator"/>
     /// <seealso cref="TransclusionsGenerator"/>
-    public class TranscludedInGenerator : WikiPageGenerator
+    public class FileUsageGenerator : WikiPageGenerator
     {
 
         /// <inheritdoc />
-        public TranscludedInGenerator(WikiSite site) : base(site)
+        public FileUsageGenerator(WikiSite site) : base(site)
         {
         }
 
         /// <inheritdoc />
-        /// <param name="targetTitle">List pages transclude this title. The title does not need to exist.</param>
-        public TranscludedInGenerator(WikiSite site, string targetTitle) : base(site)
+        /// <param name="targetTitle">List pages transclude this file. The file does not need to exist.</param>
+        public FileUsageGenerator(WikiSite site, string targetTitle) : base(site)
         {
             TargetTitle = targetTitle;
         }
 
         /// <summary>
-        /// List pages transcluding this title. The title does not need to exist.
+        /// List pages transcluding this file. The file does not need to exist.
         /// </summary>
         public string TargetTitle { get; set; } = "";
 
@@ -43,17 +43,17 @@ namespace WikiClientLibrary.Generators
         public PropertyFilterOption RedirectsFilter { get; set; }
 
         /// <inheritdoc />
-        public override string ListName => "embeddedin";
+        public override string ListName => "imageusage";
 
         /// <inheritdoc />
         public override IEnumerable<KeyValuePair<string, object?>> EnumListParameters()
         {
             return new Dictionary<string, object?>
             {
-                {"eititle", TargetTitle},
-                {"einamespace", NamespaceIds == null ? null : MediaWikiHelper.JoinValues(NamespaceIds)},
-                {"eifilterredir", RedirectsFilter.ToString("redirects", "nonredirects")},
-                {"eilimit", PaginationSize}
+                {"iutitle", TargetTitle},
+                {"iunamespace", NamespaceIds == null ? null : MediaWikiHelper.JoinValues(NamespaceIds)},
+                {"iufilterredir", RedirectsFilter.ToString("redirects", "nonredirects")},
+                {"iulimit", PaginationSize}
             };
         }
     }
