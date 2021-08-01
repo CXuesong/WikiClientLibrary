@@ -439,6 +439,9 @@
       <summary>
             Gets the URI query part for the endpoint invocation.
             </summary>
+      <value>The URI query part is the part of the request URI on the right-hand-side of
+            the first question mark(<c>?</c>), or <c>null</c> if no question mark or query is appended
+            to the endpoint URL.</value>
     </member>
     <member name="P:WikiClientLibrary.Wikia.WikiaQueryRequestMessage.UseHttpPost">
       <summary>
@@ -529,24 +532,11 @@
             </summary>
       <param name="options">The options used to fetch the post.</param>
     </member>
-    <member name="M:WikiClientLibrary.Wikia.Discussions.Board.EnumPostsAsync(System.Void)">
+    <member name="M:WikiClientLibrary.Wikia.Discussions.Board.EnumPostsAsync(WikiClientLibrary.Wikia.Discussions.PostQueryOptions)">
       <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>M:WikiClientLibrary.Wikia.Discussions.Board.EnumPostsAsync(System.Void)</parameter>
-          </include>
-        </markup>
-      </summary>
-      <param name="options">
-        <markup>
-          <include item="SMCMissingParamTag">
-            <parameter>param</parameter>
-            <parameter>options</parameter>
-            <parameter>M:WikiClientLibrary.Wikia.Discussions.Board.EnumPostsAsync(System.Void)</parameter>
-          </include>
-        </markup>
-      </param>
+            Asynchronously enumerates all the comments on the specified page.
+            </summary>
+      <param name="options">The options used to fetch the post.</param>
     </member>
     <member name="P:WikiClientLibrary.Wikia.Discussions.Board.Exists">
       <summary>Gets a value, determining whether the page exists.</summary>
@@ -715,6 +705,7 @@
     </member>
     <member name="P:WikiClientLibrary.Wikia.Discussions.Post.LastUpdated">
       <summary>Gets the time when the post is last edited.</summary>
+      <value>The time when the post is last edited, or <c>null</c>, if the post has not been edited at all.</value>
     </member>
     <member name="P:WikiClientLibrary.Wikia.Discussions.Post.OwnerPage">
       <summary>Gets the stub of the page that owns the comment.</summary>
@@ -1738,21 +1729,16 @@
       <param name="site">The Wikia site this list-like object is applied to.</param>
       <param name="keyword">Search for all page titles (or content) that have this value.</param>
     </member>
-    <member name="M:WikiClientLibrary.Wikia.WikiaApi.LocalWikiSearchList.EnumItemsAsync(System.Void)">
+    <member name="M:WikiClientLibrary.Wikia.WikiaApi.LocalWikiSearchList.EnumItemsAsync(System.Threading.CancellationToken)">
       <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>M:WikiClientLibrary.Wikia.WikiaApi.LocalWikiSearchList.EnumItemsAsync(System.Void)</parameter>
-          </include>
-        </markup>
-      </summary>
+            Asynchronously enumerates all the items in the list.
+            </summary>
       <param name="cancellationToken">
         <markup>
           <include item="SMCMissingParamTag">
             <parameter>param</parameter>
             <parameter>cancellationToken</parameter>
-            <parameter>M:WikiClientLibrary.Wikia.WikiaApi.LocalWikiSearchList.EnumItemsAsync(System.Void)</parameter>
+            <parameter>M:WikiClientLibrary.Wikia.WikiaApi.LocalWikiSearchList.EnumItemsAsync(System.Threading.CancellationToken)</parameter>
           </include>
         </markup>
       </param>
@@ -1766,16 +1752,25 @@
       <summary>
             Minimal value of article quality. 
             </summary>
+      <value>Ranges from 0 to 99.</value>
     </member>
     <member name="P:WikiClientLibrary.Wikia.WikiaApi.LocalWikiSearchList.NamespaceIds">
       <summary>
             Only list pages in these namespaces.
             </summary>
+      <value>The namespace(s) to enumerate. No more than 50 (500 for bots) allowed.
+            See <see cref="T:WikiClientLibrary.BuiltInNamespaces" /> for a list of MediaWiki built-in namespace IDs.
+            Set to <c>null</c> to use default namespace selection.
+            (Default: [0, 14], i.e. <see cref="F:WikiClientLibrary.BuiltInNamespaces.Main" /> &amp; <see cref="F:WikiClientLibrary.BuiltInNamespaces.Category" />)</value>
     </member>
     <member name="P:WikiClientLibrary.Wikia.WikiaApi.LocalWikiSearchList.PaginationSize">
       <summary>
             Gets/sets maximum items returned per API invocation.
             </summary>
+      <value>
+            Maximum count of items returned per MediaWiki API invocation.
+            This limit is 25 by default, and can be set as high as 200 for regular users.
+            </value>
     </member>
     <member name="P:WikiClientLibrary.Wikia.WikiaApi.LocalWikiSearchList.RankingType">
       <summary>
@@ -2025,42 +2020,26 @@
       <returns>A task that returns the requested user information, or <c>null</c> for inexistent user.</returns>
       <exception cref="T:System.ArgumentNullException">Either <paramref name="site" /> or <paramref name="userName" /> is <c>null</c>.</exception>
     </member>
-    <member name="M:WikiClientLibrary.Wikia.WikiaApi.WikiaSiteWikiaApiExtensions.FetchUsersAsync(System.Void,WikiClientLibrary.Wikia.WikiaApi.UserInfo,WikiClientLibrary.Wikia.Sites.WikiaSite)">
+    <member name="M:WikiClientLibrary.Wikia.WikiaApi.WikiaSiteWikiaApiExtensions.FetchUsersAsync(WikiClientLibrary.Wikia.Sites.WikiaSite,System.Collections.Generic.IEnumerable{System.String},System.Threading.CancellationToken)">
       <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>M:WikiClientLibrary.Wikia.WikiaApi.WikiaSiteWikiaApiExtensions.FetchUsersAsync(System.Void,WikiClientLibrary.Wikia.WikiaApi.UserInfo,WikiClientLibrary.Wikia.Sites.WikiaSite)</parameter>
-          </include>
-        </markup>
-      </summary>
-      <param name="site">
-        <markup>
-          <include item="SMCMissingParamTag">
-            <parameter>param</parameter>
-            <parameter>site</parameter>
-            <parameter>M:WikiClientLibrary.Wikia.WikiaApi.WikiaSiteWikiaApiExtensions.FetchUsersAsync(System.Void,WikiClientLibrary.Wikia.WikiaApi.UserInfo,WikiClientLibrary.Wikia.Sites.WikiaSite)</parameter>
-          </include>
-        </markup>
-      </param>
-      <param name="userNames">
-        <markup>
-          <include item="SMCMissingParamTag">
-            <parameter>param</parameter>
-            <parameter>userNames</parameter>
-            <parameter>M:WikiClientLibrary.Wikia.WikiaApi.WikiaSiteWikiaApiExtensions.FetchUsersAsync(System.Void,WikiClientLibrary.Wikia.WikiaApi.UserInfo,WikiClientLibrary.Wikia.Sites.WikiaSite)</parameter>
-          </include>
-        </markup>
-      </param>
+            Asynchronously fetches the specified users' information.
+            </summary>
+      <param name="site">The site to issue the request.</param>
+      <param name="userNames">The user names to be fetched.</param>
       <param name="cancellationToken">
         <markup>
           <include item="SMCMissingParamTag">
             <parameter>param</parameter>
             <parameter>cancellationToken</parameter>
-            <parameter>M:WikiClientLibrary.Wikia.WikiaApi.WikiaSiteWikiaApiExtensions.FetchUsersAsync(System.Void,WikiClientLibrary.Wikia.WikiaApi.UserInfo,WikiClientLibrary.Wikia.Sites.WikiaSite)</parameter>
+            <parameter>M:WikiClientLibrary.Wikia.WikiaApi.WikiaSiteWikiaApiExtensions.FetchUsersAsync(WikiClientLibrary.Wikia.Sites.WikiaSite,System.Collections.Generic.IEnumerable{System.String},System.Threading.CancellationToken)</parameter>
           </include>
         </markup>
       </param>
+      <returns>
+            An asynchronous sequence containing the detailed user information.
+            The user names are normalized by the server. Inexistent user names are skipped.
+            </returns>
+      <exception cref="T:System.ArgumentNullException">Either <paramref name="site" /> or <paramref name="userNames" /> is <c>null</c>.</exception>
     </member>
   </members>
 </doc>

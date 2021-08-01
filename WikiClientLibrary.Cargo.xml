@@ -34,6 +34,8 @@
     </member>
     <member name="P:WikiClientLibrary.Cargo.CargoQueryParameters.JoinOn">
       <summary>Conditions for joining multiple tables (LEFT OUTER JOIN), corresponding to an SQL JOIN ON clause.</summary>
+      <value>a sequence containing search conditions (<c>ON table1a.field1a = table1b.field1b, ... </c>) for the JOIN clause.
+            Conditions will be concatenated with comma (<c>,</c>).</value>
     </member>
     <member name="P:WikiClientLibrary.Cargo.CargoQueryParameters.Limit">
       <summary>A limit on the number of results returned.</summary>
@@ -397,33 +399,14 @@
         </markup>
       </summary>
     </member>
-    <member name="M:WikiClientLibrary.Cargo.Linq.CargoRecordQueryableExtensions.AsAsyncEnumerable``1(System.Void)">
+    <member name="M:WikiClientLibrary.Cargo.Linq.CargoRecordQueryableExtensions.AsAsyncEnumerable``1(System.Linq.IQueryable{``0})">
       <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>M:WikiClientLibrary.Cargo.Linq.CargoRecordQueryableExtensions.AsAsyncEnumerable``1(System.Void)</parameter>
-          </include>
-        </markup>
-      </summary>
-      <param name="queryable">
-        <markup>
-          <include item="SMCMissingParamTag">
-            <parameter>param</parameter>
-            <parameter>queryable</parameter>
-            <parameter>M:WikiClientLibrary.Cargo.Linq.CargoRecordQueryableExtensions.AsAsyncEnumerable``1(System.Void)</parameter>
-          </include>
-        </markup>
-      </param>
-      <typeparam name="T">
-        <markup>
-          <include item="SMCMissingParamTag">
-            <parameter>typeparam</parameter>
-            <parameter>T</parameter>
-            <parameter>M:WikiClientLibrary.Cargo.Linq.CargoRecordQueryableExtensions.AsAsyncEnumerable``1(System.Void)</parameter>
-          </include>
-        </markup>
-      </typeparam>
+            Casts the input <see cref="T:System.Linq.IQueryable`1" /> instance into <see cref="T:System.Collections.Generic.IAsyncEnumerable`1" /> instance.
+            </summary>
+      <param name="queryable">the input queryable that should have implemented <see cref="T:System.Collections.Generic.IAsyncEnumerable`1" />.</param>
+      <typeparam name="T">type of the item.</typeparam>
+      <returns>the same object reference as <paramref name="queryable" />.</returns>
+      <exception cref="T:System.InvalidOperationException">input <paramref name="queryable" /> does not implement <see cref="T:System.Collections.Generic.IAsyncEnumerable`1" />.</exception>
     </member>
     <member name="T:WikiClientLibrary.Cargo.Linq.ICargoQueryContext">
       <summary>
@@ -849,6 +832,7 @@
     </member>
     <member name="P:WikiClientLibrary.Cargo.Schema.CargoTableFieldDefinition.ListDelimiter">
       <summary>For fields of List type, this is the delimiter of the list item.</summary>
+      <value>delimiter of the list item, or <c>null</c> if this field is not of List type.</value>
     </member>
     <member name="P:WikiClientLibrary.Cargo.Schema.CargoTableFieldDefinition.Name">
       <summary>
