@@ -2,7 +2,9 @@
 
 [![Build Status](https://github.com/CXuesong/WikiClientLibrary/workflows/CI/badge.svg?branch=master)](https://github.com/CXuesong/WikiClientLibrary/actions?query=workflow%3ACI) [![Gitter](https://badges.gitter.im/CXuesong/WikiClientLibrary.svg?style=flat-square)](https://gitter.im/CXuesong/WikiClientLibrary?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
 
-A hand-crafted asynchronous [MediaWiki](https://www.mediawiki.org/) API client library for wiki sites (including [Wikipedia](https://www.wikipedia.org/) and its sister projects, as well as [FANDOM](<https://community.fandom.com/wiki/Community_Central>) and [Wikia.org](<https://www.wikia.org/>). The library targets at .NET Standard 2.1 & .NET 5.0 (See [Supported Platforms](https://docs.microsoft.com/en-us/dotnet/standard/net-standard#net-platforms-support)), and focuses on the API compatibility with MediaWiki 1.19 (Wikia), as well as the state-of-art APIs of MediaWiki (i.e. 1.34-wmf, as in 2019-05). Other versions in between are hopefully also compatible.
+A hand-crafted asynchronous [MediaWiki](https://www.mediawiki.org/) API client library for wiki sites (including [Wikipedia](https://www.wikipedia.org/) and its sister projects, as well as [FANDOM](<https://community.fandom.com/wiki/Community_Central>) and [Wikia.org](<https://www.wikia.org/>). The library targets at .NET Standard 2.1 & .NET 5.0 (See [Supported Platforms](https://docs.microsoft.com/en-us/dotnet/standard/net-standard#net-platforms-support)), and focuses on the API compatibility with MediaWiki 1.19, as well as the state-of-art APIs of MediaWiki (i.e. 1.34-wmf, as in 2019-05). Other versions in between are hopefully also compatible.
+
+> For migrated FANDOM sites on MW 1.33+ (See [UCP migration post](https://community.fandom.com/wiki/User_blog:MisterWoodhouse/The_first_migrations_to_the_Unified_Community_Platform)), you may need to use Bot Password in order to login successfully.
 
 > If you are on prior versions of .NET Core or .NET Framework, you may use prior version of the WCL packages. WCL v0.7.x libraries target .NET Standard 1.1 and should support lower versions of the .NET implementations.
 
