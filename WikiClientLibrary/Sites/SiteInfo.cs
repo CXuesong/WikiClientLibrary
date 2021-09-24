@@ -1,18 +1,17 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
-using System.Net;
 using System.Runtime.Serialization;
 using System.Threading;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using WikiClientLibrary.Infrastructures;
-using WikiClientLibrary.Pages;
 
 namespace WikiClientLibrary.Sites
 {
@@ -21,7 +20,7 @@ namespace WikiClientLibrary.Sites
     /// </summary>
     /// <seealso cref="WikiSite"/>
     [JsonObject(MemberSerialization.OptIn)]
-    public class SiteInfo
+    public sealed class SiteInfo
     {
 
         private string _Generator;
@@ -38,7 +37,7 @@ namespace WikiClientLibrary.Sites
         [JsonProperty] // This should be kept or private setter will be ignored by Newtonsoft.JSON.
         public string MainPage { get; private set; }
 
-        #region URL & Path
+#region URL & Path
 
         /// <summary>
         /// The absolute path to the main page. (MediaWiki 1.8+)
@@ -121,9 +120,9 @@ namespace WikiClientLibrary.Sites
             return cache.Item2.Replace("$1", Uri.EscapeUriString(title));
         }
 
-        #endregion
+#endregion
 
-        #region General
+#region General
 
         [JsonProperty]
         public string SiteName { get; private set; }
@@ -142,20 +141,18 @@ namespace WikiClientLibrary.Sites
             private set
             {
                 _Generator = value;
-                if (value != null)
-                {
-                    var pos = 0;
+                if (value == null) return;
+                var pos = 0;
                 NEXT:
-                    pos = value.IndexOf(' ', pos) + 1;
-                    if (pos <= 0 || pos >= value.Length)
-                    {
-                        Version = MediaWikiVersion.Zero;
-                        return;
-                    }
-                    if (value[pos] < '0' && value[pos] > '9')
-                        goto NEXT;
-                    Version = MediaWikiVersion.Parse(value[pos..], true);
+                pos = value.IndexOf(' ', pos) + 1;
+                if (pos <= 0 || pos >= value.Length)
+                {
+                    Version = MediaWikiVersion.Zero;
+                    return;
                 }
+                if (value[pos] < '0' && value[pos] > '9')
+                    goto NEXT;
+                Version = MediaWikiVersion.Parse(value[pos..], true);
             }
         }
 
@@ -170,20 +167,9 @@ namespace WikiClientLibrary.Sites
         /// </remarks>
         public MediaWikiVersion Version { get; private set; }
 
-        /// <summary>
-        /// A list of magic words and their aliases (MW 1.14+)
-        /// </summary>
-        public IReadOnlyCollection<string> MagicWords { get; private set; }
+#endregion
 
-        [JsonProperty("magicwords")]
-        private JObject MagicWordsProxy
-        {
-            set { MagicWords = value.Properties().Select(p => p.Name).ToList().AsReadOnly(); }
-        }
-
-        #endregion
-
-        #region Limitations
+#region Limitations
 
         [JsonProperty]
         public long MaxUploadSize { get; private set; }
@@ -191,7 +177,7 @@ namespace WikiClientLibrary.Sites
         [JsonProperty]
         public int MinUploadChunkSize { get; private set; }
 
-        #endregion
+#endregion
 
         [JsonProperty]
         private string Case
@@ -811,85 +797,55 @@ namespace WikiClientLibrary.Sites
     /// <summary>
     /// Provides read-only access to extension collection.
     /// </summary>
-    public class ExtensionCollection : ICollection<ExtensionInfo>
+    public class ExtensionCollection : ReadOnlyCollection<ExtensionInfo>
     {
-        private readonly IList<ExtensionInfo> extensions;
         private readonly ILookup<string, ExtensionInfo> nameLookup;
 
         internal ExtensionCollection(WikiSite site, JArray jextensions)
+            : base(jextensions.ToObject<IList<ExtensionInfo>>(Utility.WikiJsonSerializer))
         {
             // extensions : query.extensions
             if (site == null) throw new ArgumentNullException(nameof(site));
             if (jextensions == null) throw new ArgumentNullException(nameof(jextensions));
-            extensions = jextensions.ToObject<IList<ExtensionInfo>>(Utility.WikiJsonSerializer);
-            nameLookup = extensions.ToLookup(e => e.Name);
+            nameLookup = this.Items.ToLookup(e => e.Name);
         }
 
         /// <summary>
-        /// Get the extensions with specified name. The match is case-sensitive.
+        /// Gets the extension with specified name. The match is case-sensitive.
         /// </summary>
-        public IEnumerable<ExtensionInfo> this[string name] => nameLookup[name];
+        /// <param name="name">extension name to look for.</param>
+        /// <exception cref="ArgumentNullException"><paramref name="name"/> is <c>null</c>.</exception>
+        /// <exception cref="KeyNotFoundException">there is no matching extension in the collection.</exception>
+        /// <see cref="TryGet"/>
+        public ExtensionInfo this[string name]
+        {
+            get
+            {
+                var match = TryGet(name);
+                if (match == null)
+                    throw new KeyNotFoundException(string.Format(Prompts.ExceptionExtensionNotFound1, name));
+                return match;
+            }
+        }
+
+        /// <summary>
+        /// Tries to get the extension with specified name. The match is case-sensitive.
+        /// </summary>
+        /// <param name="name">extension name to look for.</param>
+        /// <returns>extension information, if available; or <c>null</c> if the extension is not found.</returns>
+        /// <exception cref="ArgumentNullException"><paramref name="name"/> is <c>null</c>.</exception>
+        public ExtensionInfo? TryGet(string name)
+        {
+            if (name == null) throw new ArgumentNullException(nameof(name));
+            return nameLookup[name].FirstOrDefault();
+        }
 
         /// <summary>
         /// Determines whether there's an extensions with specified name.
         /// The match is case-sensitive.
         /// </summary>
-        public bool Contains(string name)
-        {
-            return nameLookup[name].Any();
-        }
+        public bool Contains(string name) => nameLookup[name].Any();
 
-#region ICollection
-
-        /// <inheritdoc />
-        public IEnumerator<ExtensionInfo> GetEnumerator()
-        {
-            return extensions.GetEnumerator();
-        }
-
-        /// <inheritdoc />
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return GetEnumerator();
-        }
-
-        /// <inheritdoc />
-        void ICollection<ExtensionInfo>.Add(ExtensionInfo item)
-        {
-            throw new NotSupportedException();
-        }
-
-        /// <inheritdoc />
-        void ICollection<ExtensionInfo>.Clear()
-        {
-            throw new NotSupportedException();
-        }
-
-        /// <inheritdoc />
-        bool ICollection<ExtensionInfo>.Contains(ExtensionInfo item)
-        {
-            return extensions.Contains(item);
-        }
-
-        /// <inheritdoc />
-        public void CopyTo(ExtensionInfo[] array, int arrayIndex)
-        {
-            extensions.CopyTo(array, arrayIndex);
-        }
-
-        /// <inheritdoc />
-        bool ICollection<ExtensionInfo>.Remove(ExtensionInfo item)
-        {
-            throw new NotSupportedException();
-        }
-
-        /// <inheritdoc />
-        public int Count => extensions.Count;
-
-        /// <inheritdoc />
-        bool ICollection<ExtensionInfo>.IsReadOnly => true;
-
-#endregion
     }
 
     [JsonObject(MemberSerialization.OptIn)]
@@ -947,16 +903,12 @@ namespace WikiClientLibrary.Sites
         [JsonProperty]
         public string Credits { get; private set; }
 
-        /// <summary>
-        /// 返回表示当前对象的字符串。
-        /// </summary>
-        /// <returns>
-        /// 表示当前对象的字符串。
-        /// </returns>
+        /// <inheritdoc />
         public override string ToString()
         {
             return $"{Type}: {Name} - {Version}";
         }
+
     }
 
     /// <summary>
@@ -998,6 +950,121 @@ namespace WikiClientLibrary.Sites
 
         [JsonProperty("queued-massmessages")]
         public int MassMessageQueueLength { get; private set; }
+    }
+
+    /// <summary>
+    /// Contains information for an available magic word on MediaWiki site.
+    /// </summary>
+    /// <remarks>
+    /// See <a href="https://www.mediawiki.org/wiki/Manual:Magic_words">mw:Manual:Magic words</a>.
+    /// </remarks>
+    [JsonObject(MemberSerialization.OptIn)]
+    public class MagicWordInfo
+    {
+        /// <summary>Name of the magic word. This is a case-sensitive magic word ID.</summary>
+        [JsonProperty]
+        public string Name { get; private set; } = "";
+
+        /// <summary>Aliases of the magic word. These are the valid wikitext expression when magic word is to be invoked.</summary>
+        [JsonProperty]
+        public IReadOnlyCollection<string> Aliases { get; private set; } = ImmutableList<string>.Empty;
+
+        /// <summary>Whether the magic word aliases are case-sensitive.</summary>
+        /// <remarks>The value of this property affects the behavior of <see cref="MagicWordCollection.TryGetByAlias(string)"/></remarks>
+        [JsonProperty("case-sensitive")]
+        public bool CaseSensitive { get; private set; }
+
+        /// <inheritdoc />
+        public override string ToString()
+        {
+            return Aliases.Count == 0 ? Name : $"{Name} ({string.Join(',', Aliases)})";
+        }
+    }
+
+    /// <summary>
+    /// Provides read-only access to MediaWiki magic words collection.
+    /// </summary>
+    /// <remarks>
+    /// See <a href="https://www.mediawiki.org/wiki/Manual:Magic_words">mw:Manual:Magic words</a>.
+    /// </remarks>
+    public class MagicWordCollection : ReadOnlyCollection<MagicWordInfo>
+    {
+
+        private readonly ILookup<string, MagicWordInfo> magicWordLookup;
+        private readonly ILookup<string, MagicWordInfo> magicWordAliasLookup;
+
+        /// <inheritdoc />
+        internal MagicWordCollection(JArray jMagicWords)
+            : base(jMagicWords.ToObject<IList<MagicWordInfo>>(Utility.WikiJsonSerializer))
+        {
+            this.magicWordLookup = this.Items.ToLookup(i => i.Name);
+            this.magicWordAliasLookup = this.Items
+                .SelectMany(i => i.Aliases.Select(a => (Alias: a, Item: i)))
+                .ToLookup(p => p.Alias, p => p.Item, StringComparer.InvariantCultureIgnoreCase);
+        }
+
+        /// <summary>
+        /// Gets the magic word with specified name (magic word ID). The match is case-sensitive.
+        /// </summary>
+        /// <param name="name">name of the magic word (magic word ID).</param>
+        /// <exception cref="ArgumentNullException"><paramref name="name"/> is <c>null</c>.</exception>
+        /// <exception cref="KeyNotFoundException">there is no matching magic word in the collection.</exception>
+        /// <remarks>To look for a magic word by its alias (wikitext), use <see cref="TryGetByAlias"/>.</remarks>
+        /// <see cref="TryGet"/>
+        /// <see cref="TryGetByAlias"/>
+        public MagicWordInfo this[string name]
+        {
+            get
+            {
+                var match = TryGet(name);
+                if (match == null)
+                    throw new KeyNotFoundException(string.Format(Prompts.ExceptionMagicWordNotFound1, name));
+                return match;
+            }
+        }
+
+        /// <summary>
+        /// Determines whether there's a magic word with specified name (magic word ID). The match is case-sensitive.
+        /// </summary>
+        /// <exception cref="ArgumentNullException"><paramref name="name"/> is <c>null</c>.</exception>
+        public bool ContainsName(string name) => TryGet(name) != null;
+
+        /// <summary>
+        /// Determines whether there's a magic word with specified alias (wikitext).
+        /// </summary>
+        /// <exception cref="ArgumentNullException"><paramref name="alias"/> is <c>null</c>.</exception>
+        public bool ContainsAlias(string alias) => TryGetByAlias(alias) != null;
+
+        /// <summary>
+        /// Tries to lookup a magic word by name (magic word ID) in the collection. The match is case-sensitive.
+        /// </summary>
+        /// <param name="name">the magic word name.</param>
+        /// <returns>a magic word entry, or <c>null</c> if a matching magic word cannot be found.</returns>
+        /// <remarks>To look for a magic word by its alias (wikitext), use <see cref="TryGetByAlias"/>.</remarks>
+        /// <exception cref="ArgumentNullException"><paramref name="name"/> is <c>null</c>.</exception>
+        public MagicWordInfo? TryGet(string name)
+        {
+            if (name == null) throw new ArgumentNullException(nameof(name));
+            return magicWordLookup[name].FirstOrDefault();
+        }
+
+        /// <summary>
+        /// Tries to lookup a magic word by alias (wikitext) in the collection.
+        /// </summary>
+        /// <param name="alias">the magic word alias.</param>
+        /// <returns>a magic word entry, or <c>null</c> if a matching magic word cannot be found.</returns>
+        /// <remarks>
+        /// <para>This function checks <see cref="MagicWordInfo.CaseSensitive"/> for case-sensitivity during lookup.</para>
+        /// <para>To look for a magic word by its magic word ID, use <see cref="TryGet"/> or <see cref="this[string]"/>.</para>
+        /// </remarks>
+        /// <exception cref="ArgumentNullException"><paramref name="alias"/> is <c>null</c>.</exception>
+        public MagicWordInfo? TryGetByAlias(string alias)
+        {
+            if (alias == null) throw new ArgumentNullException(nameof(alias));
+            return magicWordAliasLookup[alias].FirstOrDefault(i => i.Aliases.Any(a =>
+                string.Equals(a, alias, i.CaseSensitive ? StringComparison.InvariantCulture : StringComparison.InvariantCultureIgnoreCase)
+            ));
+        }
     }
 
 }

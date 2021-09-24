@@ -19,7 +19,7 @@ namespace WikiClientLibrary {
     // 类通过类似于 ResGen 或 Visual Studio 的工具自动生成的。
     // 若要添加或移除成员，请编辑 .ResX 文件，然后重新运行 ResGen
     // (以 /str 作为命令选项)，或重新生成 VS 项目。
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "16.0.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "17.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
     internal class Prompts {
@@ -241,6 +241,24 @@ namespace WikiClientLibrary {
         }
         
         /// <summary>
+        ///   查找类似 Enum flags {0} and {1} cannot be specified at the same time. 的本地化字符串。
+        /// </summary>
+        internal static string ExceptionEnumFlagConflict2 {
+            get {
+                return ResourceManager.GetString("ExceptionEnumFlagConflict2", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 Extension &quot;{0}&quot; is not found. 的本地化字符串。
+        /// </summary>
+        internal static string ExceptionExtensionNotFound1 {
+            get {
+                return ResourceManager.GetString("ExceptionExtensionNotFound1", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   查找类似 The GeoCoordinateRectangle instance is not normalizable. 的本地化字符串。
         /// </summary>
         internal static string ExceptionGeoCoordinateRectangleNotNormalizable {
@@ -318,6 +336,15 @@ namespace WikiClientLibrary {
         internal static string ExceptionLoginAborted {
             get {
                 return ResourceManager.GetString("ExceptionLoginAborted", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 Magic word or alias &quot;{0}&quot; is not found. 的本地化字符串。
+        /// </summary>
+        internal static string ExceptionMagicWordNotFound1 {
+            get {
+                return ResourceManager.GetString("ExceptionMagicWordNotFound1", resourceCulture);
             }
         }
         

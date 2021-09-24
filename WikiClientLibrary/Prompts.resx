@@ -312,4 +312,13 @@
   <data name="ExceptionVersionMalformed" xml:space="preserve">
     <value>Malformed MediaWiki version expression.</value>
   </data>
+  <data name="ExceptionEnumFlagConflict2" xml:space="preserve">
+    <value>Enum flags {0} and {1} cannot be specified at the same time.</value>
+  </data>
+  <data name="ExceptionMagicWordNotFound1" xml:space="preserve">
+    <value>Magic word or alias "{0}" is not found.</value>
+  </data>
+  <data name="ExceptionExtensionNotFound1" xml:space="preserve">
+    <value>Extension "{0}" is not found.</value>
+  </data>
 </root>

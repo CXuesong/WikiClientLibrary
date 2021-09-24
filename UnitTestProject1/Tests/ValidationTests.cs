@@ -70,5 +70,29 @@ namespace WikiClientLibrary.Tests.UnitTestProject1.Tests
             Assert.Equal(new MediaWikiVersion(1, 19, 20), version);
         }
 
+        /// <summary>
+        /// [B]Debian package release adds +dfsg to revision number, breaking version parsing.
+        /// </summary>
+        [Fact]
+        public async Task Issue89()
+        {
+            var site = await WpEnSiteAsync;
+            ShallowTrace(site.MagicWords);
+            Assert.NotEmpty(site.MagicWords);
+            Assert.True(site.MagicWords.ContainsName("if"));
+            // Magic word id is case-sensitive.
+            Assert.False(site.MagicWords.ContainsName("IF"));
+            Assert.True(site.MagicWords.ContainsAlias("if"));
+            Assert.True(site.MagicWords.ContainsAlias("IF"));
+            Assert.True(site.MagicWords.ContainsAlias("ifExpr"));
+            Assert.True(site.MagicWords.ContainsAlias("__TOC__"));
+            Assert.True(site.MagicWords.ContainsAlias("__toc__"));
+            // Case-sensitive magic
+            Assert.True(site.MagicWords.ContainsAlias("NAMESPACE"));
+            Assert.False(site.MagicWords.ContainsAlias("namespace"));
+            // Non-existing magic
+            Assert.False(site.MagicWords.ContainsAlias("__non_existing_magic__"));
+        }
+
     }
 }

@@ -188,17 +188,19 @@ namespace WikiClientLibrary.Sites
                 {
                     action = "query",
                     meta = "siteinfo",
-                    siprop = "general|namespaces|namespacealiases|interwikimap|extensions"
+                    siprop = "general|namespaces|namespacealiases|interwikimap|extensions|magicwords"
                 }), true, CancellationToken.None);
                 var qg = (JObject)jobj["query"]["general"];
                 var ns = (JObject)jobj["query"]["namespaces"];
                 var aliases = (JArray)jobj["query"]["namespacealiases"];
                 var interwiki = (JArray)jobj["query"]["interwikimap"];
                 var extensions = (JArray)jobj["query"]["extensions"];
+                var magicwords = (JArray)jobj["query"]["magicwords"];
                 _SiteInfo = qg.ToObject<SiteInfo>(Utility.WikiJsonSerializer);
                 _Namespaces = new NamespaceCollection(this, ns, aliases);
                 _InterwikiMap = new InterwikiMap(this, interwiki, _Logger);
                 _Extensions = new ExtensionCollection(this, extensions);
+                _MagicWords = new MagicWordCollection(magicwords);
             }
         }
 
@@ -230,6 +232,7 @@ namespace WikiClientLibrary.Sites
         private NamespaceCollection? _Namespaces;
         private InterwikiMap? _InterwikiMap;
         private ExtensionCollection? _Extensions;
+        private MagicWordCollection? _MagicWords;
 
         /// <summary>
         /// Gets the basic site information.
@@ -292,6 +295,19 @@ namespace WikiClientLibrary.Sites
             {
                 AsyncInitializationHelper.EnsureInitialized(typeof(WikiSite), localInitialization);
                 return _Extensions!;
+            }
+        }
+
+
+        /// <summary>
+        /// Gets a list of magic words and their aliases on this MediaWiki site. (MW 1.14+)
+        /// </summary>
+        public MagicWordCollection MagicWords
+        {
+            get
+            {
+                AsyncInitializationHelper.EnsureInitialized(typeof(WikiSite), localInitialization);
+                return _MagicWords!;
             }
         }
 
