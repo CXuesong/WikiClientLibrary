@@ -157,7 +157,7 @@ namespace WikiClientLibrary.Generators
         public string LogAction { get; private set; }
 
         /// <summary>For log items, gets additional log parameters.</summary>
-        [JsonProperty]
+        [JsonProperty(ObjectCreationHandling = ObjectCreationHandling.Replace)]
         public LogParameterCollection LogParams { get; private set; } = LogParameterCollection.Empty;
 
         public RevisionFlags Flags { get; private set; }
