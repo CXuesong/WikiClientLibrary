@@ -124,19 +124,27 @@ namespace WikiClientLibrary.Tests.UnitTestProject1.Tests
         }
 
         [Theory]
-        [InlineData(nameof(WpTest2SiteAsync))]
-        [InlineData(nameof(WikiaTestSiteAsync))]
-        [InlineData(nameof(TFWikiSiteAsync))]
-        public async Task RecentChangesListTest(string siteName)
+        [InlineData(nameof(WpTest2SiteAsync), RecentChangesFilterTypes.All)]
+        [InlineData(nameof(WikiaTestSiteAsync), RecentChangesFilterTypes.All)]
+        [InlineData(nameof(TFWikiSiteAsync), RecentChangesFilterTypes.All)]
+        [InlineData(nameof(WpTest2SiteAsync), RecentChangesFilterTypes.Log)]
+        [InlineData(nameof(WikiaTestSiteAsync), RecentChangesFilterTypes.Log)]
+        [InlineData(nameof(TFWikiSiteAsync), RecentChangesFilterTypes.Log)]
+        public async Task RecentChangesListTest(string siteName, RecentChangesFilterTypes typeFilter)
         {
             var site = await WikiSiteFromNameAsync(siteName);
-            var generator = new RecentChangesGenerator(site)
-            {
-                LastRevisionsOnly = true,
-                PaginationSize = 500
-            };
+            // Without timestamp constraint
+            var generator = new RecentChangesGenerator(site) { LastRevisionsOnly = true, PaginationSize = 500, TypeFilters = typeFilter };
             var rc = await generator.EnumItemsAsync().Take(2000).ToListAsync();
             ShallowTrace(rc, 1);
+            Assert.All(rc, i =>
+            {
+                if (typeFilter != RecentChangesFilterTypes.All)
+                    Assert.Equal(typeFilter.ToString(), i.Type.ToString());
+                Assert.NotEqual(0, i.Id);
+                Assert.NotEqual(DateTime.MinValue, i.TimeStamp);
+            });
+            // With 
         }
 
         [SkippableFact]
