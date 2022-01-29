@@ -370,7 +370,7 @@ namespace WikiClientLibrary.Sites
             nameNsDict = new Dictionary<string, NamespaceInfo>();
             foreach (var value in idNsDict.Values)
             {
-                var normalizedName = value.CanonicalName.ToLowerInvariant();
+                var normalizedName = value.CanonicalName.ToUpperInvariant();
                 if (!nameNsDict.TryAdd(normalizedName, value))
                 {
                     site.Logger.LogWarning(
@@ -382,7 +382,7 @@ namespace WikiClientLibrary.Sites
             foreach (var ns in idNsDict.Values)
             {
                 if (ns.CustomName != ns.CanonicalName)
-                    nameNsDict.Add(ns.CustomName.ToLowerInvariant(), ns);
+                    nameNsDict.Add(ns.CustomName.ToUpperInvariant(), ns);
             }
             // Add aliases.
             if (jaliases != null)
@@ -394,7 +394,7 @@ namespace WikiClientLibrary.Sites
                     if (idNsDict.TryGetValue(id, out var ns))
                     {
                         ns.AddAlias(name);
-                        var normalizedName = name.ToLowerInvariant();
+                        var normalizedName = name.ToUpperInvariant();
                         if (!nameNsDict.TryAdd(normalizedName, ns))
                         {
                             // If the namespace alias already exists, check if they're pointing
@@ -454,7 +454,8 @@ namespace WikiClientLibrary.Sites
         private NamespaceInfo? TryGetNamespace(string name)
         {
             // Namespace name is case-insensitive.
-            var nn = Utility.NormalizeTitlePart(name, true).ToLowerInvariant();
+            // c.f. https://docs.microsoft.com/en-us/dotnet/fundamentals/code-analysis/quality-rules/ca1308
+            var nn = Utility.NormalizeTitlePart(name, true).ToUpperInvariant();
             return nameNsDict.TryGetValue(nn, out var ns) ? ns : null;
         }
 
@@ -624,7 +625,7 @@ namespace WikiClientLibrary.Sites
             var entryDict = new Dictionary<string, InterwikiEntry>(entries.Count);
             foreach (var entry in entries)
             {
-                var prefix = entry.Prefix.ToLowerInvariant();
+                var prefix = entry.Prefix.ToUpperInvariant();
                 if (prefix != entry.Prefix)
                 {
                     // c.f. https://www.mediawiki.org/wiki/Manual:Interwiki#Field_documentation
@@ -647,8 +648,8 @@ namespace WikiClientLibrary.Sites
         /// Get the interwiki entry with specified prefix. The match is case-insensitive.
         /// </summary>
         /// <exception cref="KeyNotFoundException">The specified prefix cannot be found.</exception>
-        public InterwikiEntry this[string prefix] 
-            => nameIwDict[Utility.NormalizeTitlePart(prefix, false).ToLowerInvariant()];
+        public InterwikiEntry this[string prefix]
+            => nameIwDict[Utility.NormalizeTitlePart(prefix, false).ToUpperInvariant()];
 
         /// <summary>
         /// Determines whether there's an interwiki entry with specified prefix.
@@ -656,7 +657,7 @@ namespace WikiClientLibrary.Sites
         /// </summary>
         public bool Contains(string name)
         {
-            name = Utility.NormalizeTitlePart(name, false).ToLowerInvariant();
+            name = Utility.NormalizeTitlePart(name, false).ToUpperInvariant();
             return nameIwDict.ContainsKey(name);
         }
 
