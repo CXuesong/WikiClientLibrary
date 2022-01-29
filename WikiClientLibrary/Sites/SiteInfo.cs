@@ -470,94 +470,52 @@ namespace WikiClientLibrary.Sites
 
 #region ICollection
 
-        /// <summary>
-        /// 返回一个循环访问集合的枚举器。
-        /// </summary>
-        /// <returns>
-        /// 可用于循环访问集合的 <see cref="T:System.Collections.Generic.IEnumerator`1"/>。
-        /// </returns>
+        /// <inheritdoc />
         public IEnumerator<NamespaceInfo> GetEnumerator()
         {
             return idNsDict.Values.GetEnumerator();
         }
 
-        /// <summary>
-        /// 返回一个循环访问集合的枚举器。
-        /// </summary>
-        /// <returns>
-        /// 可用于循环访问集合的 <see cref="T:System.Collections.IEnumerator"/> 对象。
-        /// </returns>
+        /// <inheritdoc />
         IEnumerator IEnumerable.GetEnumerator()
         {
             return GetEnumerator();
         }
 
-        /// <summary>
-        /// 将某项添加到 <see cref="T:System.Collections.Generic.ICollection`1"/> 中。
-        /// </summary>
-        /// <param name="item">要添加到 <see cref="T:System.Collections.Generic.ICollection`1"/> 的对象。</param>
-        /// <exception cref="T:System.NotSupportedException"><see cref="T:System.Collections.Generic.ICollection`1"/> 为只读。</exception>
+        /// <inheritdoc />
         void ICollection<NamespaceInfo>.Add(NamespaceInfo item)
         {
             throw new NotSupportedException();
         }
 
-        /// <summary>
-        /// 从 <see cref="T:System.Collections.Generic.ICollection`1"/> 中移除所有项。
-        /// </summary>
-        /// <exception cref="T:System.NotSupportedException"><see cref="T:System.Collections.Generic.ICollection`1"/> 为只读。</exception>
+        /// <inheritdoc />
         void ICollection<NamespaceInfo>.Clear()
         {
             throw new NotSupportedException();
         }
 
-        /// <summary>
-        /// 确定 <see cref="T:System.Collections.Generic.ICollection`1"/> 是否包含特定值。
-        /// </summary>
-        /// <returns>
-        /// 如果在 <see cref="T:System.Collections.Generic.ICollection`1"/> 中找到 <paramref name="item"/>，则为 true；否则为 false。
-        /// </returns>
-        /// <param name="item">要在 <see cref="T:System.Collections.Generic.ICollection`1"/> 中定位的对象。</param>
+        /// <inheritdoc />
         bool ICollection<NamespaceInfo>.Contains(NamespaceInfo item)
         {
             return idNsDict.Values.Contains(item);
         }
 
-        /// <summary>
-        /// 从特定的 <see cref="T:System.Array"/> 索引开始，将 <see cref="T:System.Collections.Generic.ICollection`1"/> 的元素复制到一个 <see cref="T:System.Array"/> 中。
-        /// </summary>
-        /// <param name="array">作为从 <see cref="T:System.Collections.Generic.ICollection`1"/> 复制的元素的目标的一维 <see cref="T:System.Array"/>。 <see cref="T:System.Array"/> 必须具有从零开始的索引。</param><param name="arrayIndex"><paramref name="array"/> 中从零开始的索引，从此索引处开始进行复制。</param><exception cref="T:System.ArgumentNullException"><paramref name="array"/> 为 null。</exception><exception cref="T:System.ArgumentOutOfRangeException"><paramref name="arrayIndex"/> 小于 0。</exception><exception cref="T:System.ArgumentException">源 <see cref="T:System.Collections.Generic.ICollection`1"/> 中的元素数目大于从 <paramref name="arrayIndex"/> 到目标 <paramref name="array"/> 末尾之间的可用空间。</exception>
+        /// <inheritdoc />
         public void CopyTo(NamespaceInfo[] array, int arrayIndex)
         {
             idNsDict.Values.CopyTo(array, arrayIndex);
         }
 
-        /// <summary>
-        /// 从 <see cref="T:System.Collections.Generic.ICollection`1"/> 中移除特定对象的第一个匹配项。
-        /// </summary>
-        /// <returns>
-        /// 如果已从 <see cref="T:System.Collections.Generic.ICollection`1"/> 中成功移除 <paramref name="item"/>，则为 true；否则为 false。 如果在原始 <see cref="T:System.Collections.Generic.ICollection`1"/> 中没有找到 <paramref name="item"/>，该方法也会返回 false。
-        /// </returns>
-        /// <param name="item">要从 <see cref="T:System.Collections.Generic.ICollection`1"/> 中移除的对象。</param><exception cref="T:System.NotSupportedException"><see cref="T:System.Collections.Generic.ICollection`1"/> 为只读。</exception>
+        /// <inheritdoc />
         bool ICollection<NamespaceInfo>.Remove(NamespaceInfo item)
         {
             throw new NotSupportedException();
         }
 
-        /// <summary>
-        /// 获取 <see cref="T:System.Collections.Generic.ICollection`1"/> 中包含的元素数。
-        /// </summary>
-        /// <returns>
-        /// <see cref="T:System.Collections.Generic.ICollection`1"/> 中包含的元素个数。
-        /// </returns>
+        /// <inheritdoc />
         public int Count => idNsDict.Count;
 
-        /// <summary>
-        /// 获取一个值，该值指示 <see cref="T:System.Collections.Generic.ICollection`1"/> 是否为只读。
-        /// </summary>
-        /// <returns>
-        /// 如果 <see cref="T:System.Collections.Generic.ICollection`1"/> 为只读，则为 true；否则为 false。
-        /// </returns>
+        /// <inheritdoc />
         bool ICollection<NamespaceInfo>.IsReadOnly => true;
 
 #endregion
