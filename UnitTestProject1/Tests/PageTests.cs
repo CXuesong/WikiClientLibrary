@@ -122,7 +122,7 @@ namespace WikiClientLibrary.Tests.UnitTestProject1.Tests
             ShallowTrace(target);
             Utility.AssertNotNull(target);
             Assert.Equal("Foo24", target.Title);
-            Assert.True(target.RedirectPath.SequenceEqual(new[] { "Foo", "Foo2", "Foo23" }));
+            Assert.Equal(new[] { "Foo", "Foo2", "Foo23" }, target.RedirectPath);
         }
 
         [Fact]
