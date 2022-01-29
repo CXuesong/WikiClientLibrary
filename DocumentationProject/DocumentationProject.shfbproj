@@ -13,7 +13,7 @@
     <RootNamespace>DocumentationProject</RootNamespace>
     <Name>DocumentationProject</Name>
     <!-- SHFB properties -->
-    <FrameworkVersion>Cross-platform (.NET Core/.NET Standard)</FrameworkVersion>
+    <FrameworkVersion>.NET Core/.NET Standard/.NET 5.0+</FrameworkVersion>
     <OutputPath>Help\</OutputPath>
     <HtmlHelpName>WikiClientLibrary</HtmlHelpName>
     <Language>en-US</Language>
@@ -44,7 +44,8 @@
       <ComponentConfig id="API Token Resolution" enabled="True">
         <component id="API Token Resolution">
           {@TokenFiles}
-          <replace elements="/*//token" item="string(.)" /></component>
+          <replace elements="/*//token" item="string(.)" />
+        </component>
       </ComponentConfig>
       <ComponentConfig id="Code Block Component" enabled="True">
         <component id="Code Block Component">
@@ -52,7 +53,7 @@
           <outputPaths>{@HelpFormatOutputPaths}</outputPaths>
           <allowMissingSource value="false" />
           <removeRegionMarkers value="false" />
-          <colorizer syntaxFile="{@SHFBFolder}PresentationStyles\Colorizer\highlight.xml" styleFile="{@SHFBFolder}PresentationStyles\Colorizer\highlight.xsl" stylesheet="{@SHFBFolder}PresentationStyles\Colorizer\highlight.css" scriptFile="{@SHFBFolder}PresentationStyles\Colorizer\highlight.js" disabled="{@DisableCodeBlockComponent}" language="cs" tabSize="0" numberLines="false" outlining="false" keepSeeTags="false" defaultTitle="true" />
+          <colorizer syntaxFile="{@CoreComponentsFolder}Colorizer\highlight.xml" styleFile="{@CoreComponentsFolder}Colorizer\highlight.xsl" stylesheet="{@CoreComponentsFolder}Colorizer\highlight.css" scriptFile="{@CoreComponentsFolder}Colorizer\highlight.js" disabled="{@DisableCodeBlockComponent}" language="cs" tabSize="0" numberLines="false" outlining="false" keepSeeTags="false" defaultTitle="true" />
         </component>
       </ComponentConfig>
       <ComponentConfig id="Syntax Component" enabled="True">
@@ -105,7 +106,7 @@
     <NamingMethod>Guid</NamingMethod>
     <HelpTitle>Wiki Client Library</HelpTitle>
     <ContentPlacement>AboveNamespaces</ContentPlacement>
-    <CopyrightText>Copyright %28C%29 CXuesong 2020</CopyrightText>
+    <CopyrightText>Copyright %28C%29 CXuesong 2022</CopyrightText>
     <VisibleItems>Attributes, ExplicitInterfaceImplementations, InheritedMembers, InheritedFrameworkMembers, Protected, ProtectedInternalAsProtected, EditorBrowsableNever, NonBrowsable</VisibleItems>
     <HeaderText>
     </HeaderText>
