@@ -366,6 +366,7 @@ namespace WikiClientLibrary.Sites
             if (site == null) throw new ArgumentNullException(nameof(site));
             if (namespaces == null) throw new ArgumentNullException(nameof(namespaces));
             idNsDict = namespaces.ToObject<Dictionary<int, NamespaceInfo>>(Utility.WikiJsonSerializer);
+            // Not using StringComparer.InvariantCultureIgnoreCase since we will perform normalization during entry queries.
             nameNsDict = new Dictionary<string, NamespaceInfo>();
             foreach (var value in idNsDict.Values)
             {
@@ -661,6 +662,7 @@ namespace WikiClientLibrary.Sites
             if (site == null) throw new ArgumentNullException(nameof(site));
             if (interwikiMap == null) throw new ArgumentNullException(nameof(interwikiMap));
             var entries = interwikiMap.ToObject<IList<InterwikiEntry>>(Utility.WikiJsonSerializer);
+            // Not using StringComparer.InvariantCultureIgnoreCase since we will perform normalization during entry queries.
             var entryDict = new Dictionary<string, InterwikiEntry>(entries.Count);
             foreach (var entry in entries)
             {
@@ -687,7 +689,8 @@ namespace WikiClientLibrary.Sites
         /// Get the interwiki entry with specified prefix. The match is case-insensitive.
         /// </summary>
         /// <exception cref="KeyNotFoundException">The specified prefix cannot be found.</exception>
-        public InterwikiEntry this[string prefix] => nameIwDict[prefix];
+        public InterwikiEntry this[string prefix] 
+            => nameIwDict[Utility.NormalizeTitlePart(prefix, false).ToLowerInvariant()];
 
         /// <summary>
         /// Determines whether there's an interwiki entry with specified prefix.
@@ -695,7 +698,7 @@ namespace WikiClientLibrary.Sites
         /// </summary>
         public bool Contains(string name)
         {
-            name = name.ToLowerInvariant().Trim(' ', '_');
+            name = Utility.NormalizeTitlePart(name, false).ToLowerInvariant();
             return nameIwDict.ContainsKey(name);
         }
 

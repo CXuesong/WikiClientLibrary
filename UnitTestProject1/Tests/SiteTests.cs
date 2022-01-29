@@ -22,11 +22,15 @@ namespace WikiClientLibrary.Tests.UnitTestProject1.Tests
 
         private void ValidateNamespace(WikiSite site, int id, string name, bool isContent, string? normalizedName = null)
         {
+            // normalizedName: null means using `name` as normalized name
             Assert.True(site.Namespaces.Contains(id), $"Cannot find namespace id={id}.");
             var ns = site.Namespaces[id];
-            var n = normalizedName ?? name;
-            Assert.True(ns.CanonicalName == n || ns.Aliases.Contains(n));
+            var expectedName = normalizedName ?? name;
+            Assert.True(ns.CanonicalName == expectedName || ns.Aliases.Contains(expectedName));
             Assert.Equal(isContent, site.Namespaces[id].IsContent);
+            // Should also be able to retrieve namespaces via name.
+            Assert.True(site.Namespaces.Contains(name), $"Cannot find namespace {name} (id={id}).");
+            Assert.Equal(ns, site.Namespaces[name]);
         }
 
         private void ValidateNamespaces(WikiSite site)
@@ -43,6 +47,24 @@ namespace WikiClientLibrary.Tests.UnitTestProject1.Tests
             ValidateNamespace(site, 14, "Category", false);
         }
 
+        private void ValidateWpInterwikiMap(WikiSite site)
+        {
+            // Standard names
+            Assert.True(site.InterwikiMap.Contains("en"));
+            Assert.True(site.InterwikiMap.Contains("zh"));
+            Assert.True(site.InterwikiMap.Contains("fr"));
+            Assert.Equal("English", site.InterwikiMap["en"].LanguageAutonym);
+            Assert.Equal("中文", site.InterwikiMap["zh"].LanguageAutonym);
+            Assert.Equal("français", site.InterwikiMap["fr"].LanguageAutonym);
+            // Normalization
+            Assert.True(site.InterwikiMap.Contains("EN"));
+            Assert.True(site.InterwikiMap.Contains(" _zh__"));
+            Assert.True(site.InterwikiMap.Contains(" FR "));
+            Assert.Equal("English", site.InterwikiMap["EN"].LanguageAutonym);
+            Assert.Equal("中文", site.InterwikiMap[" _zh__"].LanguageAutonym);
+            Assert.Equal("français", site.InterwikiMap[" FR "].LanguageAutonym);
+        }
+
         [Fact]
         public async Task TestWpTest2()
         {
@@ -55,6 +77,7 @@ namespace WikiClientLibrary.Tests.UnitTestProject1.Tests
             var messages = await site.GetMessagesAsync(new[] { "august" });
             Assert.Equal("August", messages["august"]);
             ValidateNamespaces(site);
+            ValidateWpInterwikiMap(site);
             //ShallowTrace(site.InterwikiMap);
             var stat = await site.GetStatisticsAsync();
             ShallowTrace(stat);
@@ -73,6 +96,7 @@ namespace WikiClientLibrary.Tests.UnitTestProject1.Tests
             Assert.Equal("維基大典", site.SiteInfo.SiteName);
             Assert.Equal("維基大典:卷首", site.SiteInfo.MainPage);
             ValidateNamespaces(site);
+            ValidateWpInterwikiMap(site);
             ValidateNamespace(site, BuiltInNamespaces.Project, "Wikipedia", false);
             ValidateNamespace(site, 100, "門", false);
         }
