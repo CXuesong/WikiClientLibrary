@@ -2498,7 +2498,7 @@
       <summary>
             Parses an item contained in the <c>action=query&amp;list=</c> JSON response.
             </summary>
-      <param name="json">One of the item node under the JSON path <c>query/{listname}</c>.</param>
+      <param name="json">One of the item node under the .</param>
       <returns>The item that will be returned in the sequence from <see cref="M:WikiClientLibrary.Generators.Primitive.WikiList`1.EnumItemsAsync(System.Threading.CancellationToken)" />.</returns>
     </member>
     <member name="P:WikiClientLibrary.AbuseFilters.AbuseFilterList.ListName">
@@ -4077,7 +4077,7 @@
       <summary>
             Parses an item contained in the <c>action=query&amp;list=</c> JSON response.
             </summary>
-      <param name="json">One of the item node under the JSON path <c>query/{listname}</c>.</param>
+      <param name="json">One of the item node under the .</param>
       <returns>The item that will be returned in the sequence from <see cref="M:WikiClientLibrary.Generators.Primitive.WikiList`1.EnumItemsAsync(System.Threading.CancellationToken)" />.</returns>
     </member>
     <member name="P:WikiClientLibrary.Generators.GeoSearchGenerator.ListName">
@@ -4393,7 +4393,7 @@
       <summary>
             Parses an item contained in the <c>action=query&amp;list=</c> JSON response.
             </summary>
-      <param name="json">One of the item node under the JSON path <c>query/{listname}</c>.</param>
+      <param name="json">One of the item node under the .</param>
       <returns>The item that will be returned in the sequence from <see cref="M:WikiClientLibrary.Generators.Primitive.WikiList`1.EnumItemsAsync(System.Threading.CancellationToken)" />.</returns>
     </member>
     <member name="P:WikiClientLibrary.Generators.LogEventsList.ListName">
@@ -4696,6 +4696,29 @@
       <param name="site">MediaWiki site.</param>
       <returns>A list of titles of available QueryPage-based special pages.</returns>
     </member>
+    <member name="M:WikiClientLibrary.Generators.QueryPageGenerator.GetQueryPageResultInfoAsync(System.Threading.CancellationToken)">
+      <summary>
+            Retrieve the basic information of the result set of the currently specified MediaWiki query page.
+            </summary>
+      <param name="cancellationToken">a token used to cancel the operation.</param>
+      <returns>a task that resolves into the query page result set information.</returns>
+      <exception cref="T:WikiClientLibrary.UnexpectedDataException">Received unexpected JSON data from MediaWiki server.</exception>
+    </member>
+    <member name="M:WikiClientLibrary.Generators.QueryPageGenerator.ItemFromJson(Newtonsoft.Json.Linq.JToken)">
+      <summary>
+            Parses an item contained in the <c>action=query&amp;list=</c> JSON response.
+            </summary>
+      <param name="json">One of the item node under the .</param>
+      <returns>The item that will be returned in the sequence from <see cref="M:WikiClientLibrary.Generators.Primitive.WikiList`1.EnumItemsAsync(System.Threading.CancellationToken)" />.</returns>
+    </member>
+    <member name="M:WikiClientLibrary.Generators.QueryPageGenerator.ItemsFromResponse(Newtonsoft.Json.Linq.JToken)">
+      <summary>
+            From the given MediaWiki API response of the MediaWiki <c>list</c> request,
+            locates the array of items whose items will be processed by <see cref="M:WikiClientLibrary.Generators.Primitive.WikiList`1.ItemFromJson(Newtonsoft.Json.Linq.JToken)" />.
+            </summary>
+      <param name="response">JSON root of MediaWiki API response. This is usually one page of the list.</param>
+      <returns>a JSON array, or <c>null</c> if <paramref name="response" /> contains no item to yield.</returns>
+    </member>
     <member name="P:WikiClientLibrary.Generators.QueryPageGenerator.ListName">
       <summary>
             The name of list, used as the value of <c>list</c> parameter in <c>action=query</c> request.
@@ -4709,6 +4732,70 @@
     <member name="M:WikiClientLibrary.Generators.QueryPageGenerator.ToString">
       <summary>Returns a string that represents the current object.</summary>
       <returns>A string that represents the current object.</returns>
+    </member>
+    <member name="T:WikiClientLibrary.Generators.QueryPageResultInfo">
+      <summary>
+            Contains the basic information of a specific MediaWiki query page result set.
+            </summary>
+    </member>
+    <member name="P:WikiClientLibrary.Generators.QueryPageResultInfo.CachedTimestamp">
+      <summary>Timestamp of the cached result set, if <see cref="P:WikiClientLibrary.Generators.QueryPageResultInfo.IsCached" /> is <c>true</c>.</summary>
+    </member>
+    <member name="P:WikiClientLibrary.Generators.QueryPageResultInfo.IsCached">
+      <summary>Whether the returned query page result is a cached result set.</summary>
+    </member>
+    <member name="P:WikiClientLibrary.Generators.QueryPageResultInfo.MaxResultCount">
+      <summary>Maximum result count, if available.</summary>
+    </member>
+    <member name="P:WikiClientLibrary.Generators.QueryPageResultInfo.Name">
+      <summary>Name of the query page.</summary>
+    </member>
+    <member name="T:WikiClientLibrary.Generators.QueryPageResultItem">
+      <summary>
+        <markup>
+          <include item="SMCMissingTag">
+            <parameter>summary</parameter>
+            <parameter>T:WikiClientLibrary.Generators.QueryPageResultItem</parameter>
+          </include>
+        </markup>
+      </summary>
+    </member>
+    <member name="M:WikiClientLibrary.Generators.QueryPageResultItem.#ctor">
+      <summary>
+        <markup>
+          <include item="SMCAutoDocConstructor">
+            <parameter>WikiClientLibrary.Generators.QueryPageResultItem</parameter>
+          </include>
+        </markup>
+      </summary>
+    </member>
+    <member name="P:WikiClientLibrary.Generators.QueryPageResultItem.NamespaceId">
+      <summary>Namespace of the page.</summary>
+    </member>
+    <member name="P:WikiClientLibrary.Generators.QueryPageResultItem.PageStub">
+      <summary>
+            If applicable, retrieves a wiki page stub from the current entry.
+            </summary>
+      <value>
+            a wiki page stub with <see cref="P:WikiClientLibrary.Generators.QueryPageResultItem.Title" /> and <see cref="P:WikiClientLibrary.Generators.QueryPageResultItem.NamespaceId" /> information from in this class.
+            <see cref="P:WikiClientLibrary.Pages.WikiPageStub.Id" /> is not assigned, and <see cref="P:WikiClientLibrary.Pages.WikiPageStub.IsMissing" /> is always <c>false</c>.
+            </value>
+    </member>
+    <member name="P:WikiClientLibrary.Generators.QueryPageResultItem.Timestamp">
+      <summary>
+            Timestamp associated with the query page result item, if applicable.
+            </summary>
+      <value>timestamp value of the entry, or <see cref="F:System.DateTime.MinValue" /> if there is no such information available.</value>
+    </member>
+    <member name="P:WikiClientLibrary.Generators.QueryPageResultItem.Title">
+      <summary>Title of the page, or title of the entry, depending on the nature of query page.</summary>
+    </member>
+    <member name="M:WikiClientLibrary.Generators.QueryPageResultItem.ToString">
+      <summary>Returns a string that represents the current object.</summary>
+      <returns>A string that represents the current object.</returns>
+    </member>
+    <member name="P:WikiClientLibrary.Generators.QueryPageResultItem.Value">
+      <summary>Value associated with the page or the entry specified by <see cref="P:WikiClientLibrary.Generators.QueryPageResultItem.Title" />, if applicable.</summary>
     </member>
     <member name="T:WikiClientLibrary.Generators.RandomPageGenerator">
       <summary>
@@ -4736,7 +4823,7 @@
       <summary>
             Parses an item contained in the <c>action=query&amp;list=</c> JSON response.
             </summary>
-      <param name="json">One of the item node under the JSON path <c>query/{listname}</c>.</param>
+      <param name="json">One of the item node under the .</param>
       <returns>The item that will be returned in the sequence from <see cref="M:WikiClientLibrary.Generators.Primitive.WikiList`1.EnumItemsAsync(System.Threading.CancellationToken)" />.</returns>
     </member>
     <member name="P:WikiClientLibrary.Generators.RandomPageGenerator.ListName">
@@ -4994,7 +5081,7 @@
       <summary>
             Parses an item contained in the <c>action=query&amp;list=</c> JSON response.
             </summary>
-      <param name="json">One of the item node under the JSON path <c>query/{listname}</c>.</param>
+      <param name="json">One of the item node under the .</param>
       <returns>The item that will be returned in the sequence from <see cref="M:WikiClientLibrary.Generators.Primitive.WikiList`1.EnumItemsAsync(System.Threading.CancellationToken)" />.</returns>
     </member>
     <member name="P:WikiClientLibrary.Generators.RecentChangesGenerator.LastRevisionsOnly">
@@ -5272,7 +5359,7 @@
       <summary>
             Parses an item contained in the <c>action=query&amp;list=</c> JSON response.
             </summary>
-      <param name="json">One of the item node under the JSON path <c>query/{listname}</c>.</param>
+      <param name="json">One of the item node under the .</param>
       <returns>The item that will be returned in the sequence from <see cref="M:WikiClientLibrary.Generators.Primitive.WikiList`1.EnumItemsAsync(System.Threading.CancellationToken)" />.</returns>
     </member>
     <member name="P:WikiClientLibrary.Generators.SearchGenerator.Keyword">
@@ -5591,8 +5678,16 @@
       <summary>
             Parses an item contained in the <c>action=query&amp;list=</c> JSON response.
             </summary>
-      <param name="json">One of the item node under the JSON path <c>query/{listname}</c>.</param>
+      <param name="json">One of the item node under the .</param>
       <returns>The item that will be returned in the sequence from <see cref="M:WikiClientLibrary.Generators.Primitive.WikiList`1.EnumItemsAsync(System.Threading.CancellationToken)" />.</returns>
+    </member>
+    <member name="M:WikiClientLibrary.Generators.Primitive.WikiList`1.ItemsFromResponse(Newtonsoft.Json.Linq.JToken)">
+      <summary>
+            From the given MediaWiki API response of the MediaWiki <c>list</c> request,
+            locates the array of items whose items will be processed by <see cref="M:WikiClientLibrary.Generators.Primitive.WikiList`1.ItemFromJson(Newtonsoft.Json.Linq.JToken)" />.
+            </summary>
+      <param name="response">JSON root of MediaWiki API response. This is usually one page of the list.</param>
+      <returns>a JSON array, or <c>null</c> if <paramref name="response" /> contains no item to yield.</returns>
     </member>
     <member name="P:WikiClientLibrary.Generators.Primitive.WikiList`1.ListName">
       <summary>
@@ -5679,7 +5774,7 @@
       <summary>
             Parses an item contained in the <c>action=query&amp;list=</c> JSON response.
             </summary>
-      <param name="json">One of the item node under the JSON path <c>query/{listname}</c>.</param>
+      <param name="json">One of the item node under the .</param>
       <returns>The item that will be returned in the sequence from <see cref="M:WikiClientLibrary.Generators.Primitive.WikiList`1.EnumItemsAsync(System.Threading.CancellationToken)" />.</returns>
     </member>
     <member name="T:WikiClientLibrary.Generators.Primitive.WikiPageGenerator`1">
@@ -11523,59 +11618,23 @@
         </markup>
       </param>
     </member>
-    <member name="M:WikiClientLibrary.Sites.ExtensionCollection.CopyTo(WikiClientLibrary.Sites.ExtensionInfo[],System.Int32)">
-      <summary>Copies the elements of the <see cref="T:System.Collections.Generic.ICollection`1" /> to an <see cref="T:System.Array" />, starting at a particular <see cref="T:System.Array" /> index.</summary>
-      <param name="array">The one-dimensional <see cref="T:System.Array" /> that is the destination of the elements copied from <see cref="T:System.Collections.Generic.ICollection`1" />. The <see cref="T:System.Array" /> must have zero-based indexing.</param>
-      <param name="arrayIndex">The zero-based index in <paramref name="array" /> at which copying begins.</param>
-      <exception cref="T:System.ArgumentNullException">
-        <paramref name="array" /> is <see langword="null" />.</exception>
-      <exception cref="T:System.ArgumentOutOfRangeException">
-        <paramref name="arrayIndex" /> is less than 0.</exception>
-      <exception cref="T:System.ArgumentException">The number of elements in the source <see cref="T:System.Collections.Generic.ICollection`1" /> is greater than the available space from <paramref name="arrayIndex" /> to the end of the destination <paramref name="array" />.</exception>
-    </member>
-    <member name="P:WikiClientLibrary.Sites.ExtensionCollection.Count">
-      <summary>Gets the number of elements contained in the <see cref="T:System.Collections.Generic.ICollection`1" />.</summary>
-      <returns>The number of elements contained in the <see cref="T:System.Collections.Generic.ICollection`1" />.</returns>
-    </member>
-    <member name="M:WikiClientLibrary.Sites.ExtensionCollection.GetEnumerator">
-      <summary>Returns an enumerator that iterates through the collection.</summary>
-      <returns>An enumerator that can be used to iterate through the collection.</returns>
-    </member>
     <member name="P:WikiClientLibrary.Sites.ExtensionCollection.Item(System.String)">
       <summary>
-            Get the extensions with specified name. The match is case-sensitive.
+            Gets the extension with specified name. The match is case-sensitive.
             </summary>
+      <param name="name">extension name to look for.</param>
+      <exception cref="T:System.ArgumentNullException">
+        <paramref name="name" /> is <c>null</c>.</exception>
+      <exception cref="T:System.Collections.Generic.KeyNotFoundException">there is no matching extension in the collection.</exception>
     </member>
-    <member name="M:WikiClientLibrary.Sites.ExtensionCollection.System#Collections#Generic#ICollection{WikiClientLibrary#Sites#ExtensionInfo}#Add(WikiClientLibrary.Sites.ExtensionInfo)">
-      <summary>Adds an item to the <see cref="T:System.Collections.Generic.ICollection`1" />.</summary>
-      <param name="item">The object to add to the <see cref="T:System.Collections.Generic.ICollection`1" />.</param>
-      <exception cref="T:System.NotSupportedException">The <see cref="T:System.Collections.Generic.ICollection`1" /> is read-only.</exception>
-    </member>
-    <member name="M:WikiClientLibrary.Sites.ExtensionCollection.System#Collections#Generic#ICollection{WikiClientLibrary#Sites#ExtensionInfo}#Clear">
-      <summary>Removes all items from the <see cref="T:System.Collections.Generic.ICollection`1" />.</summary>
-      <exception cref="T:System.NotSupportedException">The <see cref="T:System.Collections.Generic.ICollection`1" /> is read-only.</exception>
-    </member>
-    <member name="M:WikiClientLibrary.Sites.ExtensionCollection.System#Collections#Generic#ICollection{WikiClientLibrary#Sites#ExtensionInfo}#Contains(WikiClientLibrary.Sites.ExtensionInfo)">
-      <summary>Determines whether the <see cref="T:System.Collections.Generic.ICollection`1" /> contains a specific value.</summary>
-      <param name="item">The object to locate in the <see cref="T:System.Collections.Generic.ICollection`1" />.</param>
-      <returns>
-        <see langword="true" /> if <paramref name="item" /> is found in the <see cref="T:System.Collections.Generic.ICollection`1" />; otherwise, <see langword="false" />.</returns>
-    </member>
-    <member name="P:WikiClientLibrary.Sites.ExtensionCollection.System#Collections#Generic#ICollection{WikiClientLibrary#Sites#ExtensionInfo}#IsReadOnly">
-      <summary>Gets a value indicating whether the <see cref="T:System.Collections.Generic.ICollection`1" /> is read-only.</summary>
-      <returns>
-        <see langword="true" /> if the <see cref="T:System.Collections.Generic.ICollection`1" /> is read-only; otherwise, <see langword="false" />.</returns>
-    </member>
-    <member name="M:WikiClientLibrary.Sites.ExtensionCollection.System#Collections#Generic#ICollection{WikiClientLibrary#Sites#ExtensionInfo}#Remove(WikiClientLibrary.Sites.ExtensionInfo)">
-      <summary>Removes the first occurrence of a specific object from the <see cref="T:System.Collections.Generic.ICollection`1" />.</summary>
-      <param name="item">The object to remove from the <see cref="T:System.Collections.Generic.ICollection`1" />.</param>
-      <returns>
-        <see langword="true" /> if <paramref name="item" /> was successfully removed from the <see cref="T:System.Collections.Generic.ICollection`1" />; otherwise, <see langword="false" />. This method also returns <see langword="false" /> if <paramref name="item" /> is not found in the original <see cref="T:System.Collections.Generic.ICollection`1" />.</returns>
-      <exception cref="T:System.NotSupportedException">The <see cref="T:System.Collections.Generic.ICollection`1" /> is read-only.</exception>
-    </member>
-    <member name="M:WikiClientLibrary.Sites.ExtensionCollection.System#Collections#IEnumerable#GetEnumerator">
-      <summary>Returns an enumerator that iterates through a collection.</summary>
-      <returns>An <see cref="T:System.Collections.IEnumerator" /> object that can be used to iterate through the collection.</returns>
+    <member name="M:WikiClientLibrary.Sites.ExtensionCollection.TryGet(System.String)">
+      <summary>
+            Tries to get the extension with specified name. The match is case-sensitive.
+            </summary>
+      <param name="name">extension name to look for.</param>
+      <returns>extension information, if available; or <c>null</c> if the extension is not found.</returns>
+      <exception cref="T:System.ArgumentNullException">
+        <paramref name="name" /> is <c>null</c>.</exception>
     </member>
     <member name="T:WikiClientLibrary.Sites.ExtensionInfo">
       <summary>
@@ -11677,12 +11736,8 @@
       </summary>
     </member>
     <member name="M:WikiClientLibrary.Sites.ExtensionInfo.ToString">
-      <summary>
-            返回表示当前对象的字符串。
-            </summary>
-      <returns>
-            表示当前对象的字符串。
-            </returns>
+      <summary>Returns a string that represents the current object.</summary>
+      <returns>A string that represents the current object.</returns>
     </member>
     <member name="P:WikiClientLibrary.Sites.ExtensionInfo.Type">
       <summary>
@@ -11863,33 +11918,22 @@
       </param>
     </member>
     <member name="M:WikiClientLibrary.Sites.InterwikiMap.CopyTo(WikiClientLibrary.Sites.InterwikiEntry[],System.Int32)">
-      <summary>
-            从特定的 <see cref="T:System.Array" /> 索引开始，将 <see cref="T:System.Collections.Generic.ICollection`1" /> 的元素复制到一个 <see cref="T:System.Array" /> 中。
-            </summary>
-      <param name="array">作为从 <see cref="T:System.Collections.Generic.ICollection`1" /> 复制的元素的目标的一维 <see cref="T:System.Array" />。 <see cref="T:System.Array" /> 必须具有从零开始的索引。</param>
-      <param name="arrayIndex">
-        <paramref name="array" /> 中从零开始的索引，从此索引处开始进行复制。</param>
+      <summary>Copies the elements of the <see cref="T:System.Collections.Generic.ICollection`1" /> to an <see cref="T:System.Array" />, starting at a particular <see cref="T:System.Array" /> index.</summary>
+      <param name="array">The one-dimensional <see cref="T:System.Array" /> that is the destination of the elements copied from <see cref="T:System.Collections.Generic.ICollection`1" />. The <see cref="T:System.Array" /> must have zero-based indexing.</param>
+      <param name="arrayIndex">The zero-based index in <paramref name="array" /> at which copying begins.</param>
       <exception cref="T:System.ArgumentNullException">
-        <paramref name="array" /> 为 null。</exception>
+        <paramref name="array" /> is <see langword="null" />.</exception>
       <exception cref="T:System.ArgumentOutOfRangeException">
-        <paramref name="arrayIndex" /> 小于 0。</exception>
-      <exception cref="T:System.ArgumentException">源 <see cref="T:System.Collections.Generic.ICollection`1" /> 中的元素数目大于从 <paramref name="arrayIndex" /> 到目标 <paramref name="array" /> 末尾之间的可用空间。</exception>
+        <paramref name="arrayIndex" /> is less than 0.</exception>
+      <exception cref="T:System.ArgumentException">The number of elements in the source <see cref="T:System.Collections.Generic.ICollection`1" /> is greater than the available space from <paramref name="arrayIndex" /> to the end of the destination <paramref name="array" />.</exception>
     </member>
     <member name="P:WikiClientLibrary.Sites.InterwikiMap.Count">
-      <summary>
-            获取 <see cref="T:System.Collections.Generic.ICollection`1" /> 中包含的元素数。
-            </summary>
-      <returns>
-        <see cref="T:System.Collections.Generic.ICollection`1" /> 中包含的元素个数。
-            </returns>
+      <summary>Gets the number of elements contained in the <see cref="T:System.Collections.Generic.ICollection`1" />.</summary>
+      <returns>The number of elements contained in the <see cref="T:System.Collections.Generic.ICollection`1" />.</returns>
     </member>
     <member name="M:WikiClientLibrary.Sites.InterwikiMap.GetEnumerator">
-      <summary>
-            返回一个循环访问集合的枚举器。
-            </summary>
-      <returns>
-            可用于循环访问集合的 <see cref="T:System.Collections.Generic.IEnumerator`1" />。
-            </returns>
+      <summary>Returns an enumerator that iterates through the collection.</summary>
+      <returns>An enumerator that can be used to iterate through the collection.</returns>
     </member>
     <member name="P:WikiClientLibrary.Sites.InterwikiMap.Item(System.String)">
       <summary>
@@ -11898,55 +11942,35 @@
       <exception cref="T:System.Collections.Generic.KeyNotFoundException">The specified prefix cannot be found.</exception>
     </member>
     <member name="M:WikiClientLibrary.Sites.InterwikiMap.System#Collections#Generic#ICollection{WikiClientLibrary#Sites#InterwikiEntry}#Add(WikiClientLibrary.Sites.InterwikiEntry)">
-      <summary>
-            将某项添加到 <see cref="T:System.Collections.Generic.ICollection`1" /> 中。
-            </summary>
-      <param name="item">要添加到 <see cref="T:System.Collections.Generic.ICollection`1" /> 的对象。</param>
-      <exception cref="T:System.NotSupportedException">
-        <see cref="T:System.Collections.Generic.ICollection`1" /> 为只读。</exception>
+      <summary>Adds an item to the <see cref="T:System.Collections.Generic.ICollection`1" />.</summary>
+      <param name="item">The object to add to the <see cref="T:System.Collections.Generic.ICollection`1" />.</param>
+      <exception cref="T:System.NotSupportedException">The <see cref="T:System.Collections.Generic.ICollection`1" /> is read-only.</exception>
     </member>
     <member name="M:WikiClientLibrary.Sites.InterwikiMap.System#Collections#Generic#ICollection{WikiClientLibrary#Sites#InterwikiEntry}#Clear">
-      <summary>
-            从 <see cref="T:System.Collections.Generic.ICollection`1" /> 中移除所有项。
-            </summary>
-      <exception cref="T:System.NotSupportedException">
-        <see cref="T:System.Collections.Generic.ICollection`1" /> 为只读。</exception>
+      <summary>Removes all items from the <see cref="T:System.Collections.Generic.ICollection`1" />.</summary>
+      <exception cref="T:System.NotSupportedException">The <see cref="T:System.Collections.Generic.ICollection`1" /> is read-only.</exception>
     </member>
     <member name="M:WikiClientLibrary.Sites.InterwikiMap.System#Collections#Generic#ICollection{WikiClientLibrary#Sites#InterwikiEntry}#Contains(WikiClientLibrary.Sites.InterwikiEntry)">
-      <summary>
-            确定 <see cref="T:System.Collections.Generic.ICollection`1" /> 是否包含特定值。
-            </summary>
-      <param name="item">要在 <see cref="T:System.Collections.Generic.ICollection`1" /> 中定位的对象。</param>
+      <summary>Determines whether the <see cref="T:System.Collections.Generic.ICollection`1" /> contains a specific value.</summary>
+      <param name="item">The object to locate in the <see cref="T:System.Collections.Generic.ICollection`1" />.</param>
       <returns>
-            如果在 <see cref="T:System.Collections.Generic.ICollection`1" /> 中找到 <paramref name="item" />，则为 true；否则为 false。
-            </returns>
+        <see langword="true" /> if <paramref name="item" /> is found in the <see cref="T:System.Collections.Generic.ICollection`1" />; otherwise, <see langword="false" />.</returns>
     </member>
     <member name="P:WikiClientLibrary.Sites.InterwikiMap.System#Collections#Generic#ICollection{WikiClientLibrary#Sites#InterwikiEntry}#IsReadOnly">
-      <summary>
-            获取一个值，该值指示 <see cref="T:System.Collections.Generic.ICollection`1" /> 是否为只读。
-            </summary>
+      <summary>Gets a value indicating whether the <see cref="T:System.Collections.Generic.ICollection`1" /> is read-only.</summary>
       <returns>
-            如果 <see cref="T:System.Collections.Generic.ICollection`1" /> 为只读，则为 true；否则为 false。
-            </returns>
+        <see langword="true" /> if the <see cref="T:System.Collections.Generic.ICollection`1" /> is read-only; otherwise, <see langword="false" />.</returns>
     </member>
     <member name="M:WikiClientLibrary.Sites.InterwikiMap.System#Collections#Generic#ICollection{WikiClientLibrary#Sites#InterwikiEntry}#Remove(WikiClientLibrary.Sites.InterwikiEntry)">
-      <summary>
-            从 <see cref="T:System.Collections.Generic.ICollection`1" /> 中移除特定对象的第一个匹配项。
-            </summary>
-      <param name="item">要从 <see cref="T:System.Collections.Generic.ICollection`1" /> 中移除的对象。</param>
+      <summary>Removes the first occurrence of a specific object from the <see cref="T:System.Collections.Generic.ICollection`1" />.</summary>
+      <param name="item">The object to remove from the <see cref="T:System.Collections.Generic.ICollection`1" />.</param>
       <returns>
-            如果已从 <see cref="T:System.Collections.Generic.ICollection`1" /> 中成功移除 <paramref name="item" />，则为 true；否则为 false。 如果在原始 <see cref="T:System.Collections.Generic.ICollection`1" /> 中没有找到 <paramref name="item" />，该方法也会返回 false。
-            </returns>
-      <exception cref="T:System.NotSupportedException">
-        <see cref="T:System.Collections.Generic.ICollection`1" /> 为只读。</exception>
+        <see langword="true" /> if <paramref name="item" /> was successfully removed from the <see cref="T:System.Collections.Generic.ICollection`1" />; otherwise, <see langword="false" />. This method also returns <see langword="false" /> if <paramref name="item" /> is not found in the original <see cref="T:System.Collections.Generic.ICollection`1" />.</returns>
+      <exception cref="T:System.NotSupportedException">The <see cref="T:System.Collections.Generic.ICollection`1" /> is read-only.</exception>
     </member>
     <member name="M:WikiClientLibrary.Sites.InterwikiMap.System#Collections#IEnumerable#GetEnumerator">
-      <summary>
-            返回一个循环访问集合的枚举器。
-            </summary>
-      <returns>
-            可用于循环访问集合的 <see cref="T:System.Collections.IEnumerator" /> 对象。
-            </returns>
+      <summary>Returns an enumerator that iterates through a collection.</summary>
+      <returns>An <see cref="T:System.Collections.IEnumerator" /> object that can be used to iterate through the collection.</returns>
     </member>
     <member name="T:WikiClientLibrary.Sites.IWikiFamily">
       <summary>
@@ -11975,6 +11999,97 @@
       <returns>The normalized wiki name, if the specified name exists. Otherwise <c>null</c>.</returns>
       <exception cref="T:System.ArgumentNullException">
         <paramref name="prefix" /> is <c>null</c>.</exception>
+    </member>
+    <member name="T:WikiClientLibrary.Sites.MagicWordCollection">
+      <summary>
+            Provides read-only access to MediaWiki magic words collection.
+            </summary>
+    </member>
+    <member name="M:WikiClientLibrary.Sites.MagicWordCollection.ContainsAlias(System.String)">
+      <summary>
+            Determines whether there's a magic word with specified alias (wikitext).
+            </summary>
+      <param name="alias">
+        <markup>
+          <include item="SMCMissingParamTag">
+            <parameter>param</parameter>
+            <parameter>alias</parameter>
+            <parameter>M:WikiClientLibrary.Sites.MagicWordCollection.ContainsAlias(System.String)</parameter>
+          </include>
+        </markup>
+      </param>
+      <exception cref="T:System.ArgumentNullException">
+        <paramref name="alias" /> is <c>null</c>.</exception>
+    </member>
+    <member name="M:WikiClientLibrary.Sites.MagicWordCollection.ContainsName(System.String)">
+      <summary>
+            Determines whether there's a magic word with specified name (magic word ID). The match is case-sensitive.
+            </summary>
+      <param name="name">
+        <markup>
+          <include item="SMCMissingParamTag">
+            <parameter>param</parameter>
+            <parameter>name</parameter>
+            <parameter>M:WikiClientLibrary.Sites.MagicWordCollection.ContainsName(System.String)</parameter>
+          </include>
+        </markup>
+      </param>
+      <exception cref="T:System.ArgumentNullException">
+        <paramref name="name" /> is <c>null</c>.</exception>
+    </member>
+    <member name="P:WikiClientLibrary.Sites.MagicWordCollection.Item(System.String)">
+      <summary>
+            Gets the magic word with specified name (magic word ID). The match is case-sensitive.
+            </summary>
+      <param name="name">name of the magic word (magic word ID).</param>
+      <exception cref="T:System.ArgumentNullException">
+        <paramref name="name" /> is <c>null</c>.</exception>
+      <exception cref="T:System.Collections.Generic.KeyNotFoundException">there is no matching magic word in the collection.</exception>
+    </member>
+    <member name="M:WikiClientLibrary.Sites.MagicWordCollection.TryGet(System.String)">
+      <summary>
+            Tries to lookup a magic word by name (magic word ID) in the collection. The match is case-sensitive.
+            </summary>
+      <param name="name">the magic word name.</param>
+      <returns>a magic word entry, or <c>null</c> if a matching magic word cannot be found.</returns>
+      <exception cref="T:System.ArgumentNullException">
+        <paramref name="name" /> is <c>null</c>.</exception>
+    </member>
+    <member name="M:WikiClientLibrary.Sites.MagicWordCollection.TryGetByAlias(System.String)">
+      <summary>
+            Tries to lookup a magic word by alias (wikitext) in the collection.
+            </summary>
+      <param name="alias">the magic word alias.</param>
+      <returns>a magic word entry, or <c>null</c> if a matching magic word cannot be found.</returns>
+      <exception cref="T:System.ArgumentNullException">
+        <paramref name="alias" /> is <c>null</c>.</exception>
+    </member>
+    <member name="T:WikiClientLibrary.Sites.MagicWordInfo">
+      <summary>
+            Contains information for an available magic word on MediaWiki site.
+            </summary>
+    </member>
+    <member name="M:WikiClientLibrary.Sites.MagicWordInfo.#ctor">
+      <summary>
+        <markup>
+          <include item="SMCAutoDocConstructor">
+            <parameter>WikiClientLibrary.Sites.MagicWordInfo</parameter>
+          </include>
+        </markup>
+      </summary>
+    </member>
+    <member name="P:WikiClientLibrary.Sites.MagicWordInfo.Aliases">
+      <summary>Aliases of the magic word. These are the valid wikitext expression when magic word is to be invoked.</summary>
+    </member>
+    <member name="P:WikiClientLibrary.Sites.MagicWordInfo.CaseSensitive">
+      <summary>Whether the magic word aliases are case-sensitive.</summary>
+    </member>
+    <member name="P:WikiClientLibrary.Sites.MagicWordInfo.Name">
+      <summary>Name of the magic word. This is a case-sensitive magic word ID.</summary>
+    </member>
+    <member name="M:WikiClientLibrary.Sites.MagicWordInfo.ToString">
+      <summary>Returns a string that represents the current object.</summary>
+      <returns>A string that represents the current object.</returns>
     </member>
     <member name="T:WikiClientLibrary.Sites.NamespaceCollection">
       <summary>
@@ -12020,33 +12135,22 @@
       </param>
     </member>
     <member name="M:WikiClientLibrary.Sites.NamespaceCollection.CopyTo(WikiClientLibrary.Sites.NamespaceInfo[],System.Int32)">
-      <summary>
-            从特定的 <see cref="T:System.Array" /> 索引开始，将 <see cref="T:System.Collections.Generic.ICollection`1" /> 的元素复制到一个 <see cref="T:System.Array" /> 中。
-            </summary>
-      <param name="array">作为从 <see cref="T:System.Collections.Generic.ICollection`1" /> 复制的元素的目标的一维 <see cref="T:System.Array" />。 <see cref="T:System.Array" /> 必须具有从零开始的索引。</param>
-      <param name="arrayIndex">
-        <paramref name="array" /> 中从零开始的索引，从此索引处开始进行复制。</param>
+      <summary>Copies the elements of the <see cref="T:System.Collections.Generic.ICollection`1" /> to an <see cref="T:System.Array" />, starting at a particular <see cref="T:System.Array" /> index.</summary>
+      <param name="array">The one-dimensional <see cref="T:System.Array" /> that is the destination of the elements copied from <see cref="T:System.Collections.Generic.ICollection`1" />. The <see cref="T:System.Array" /> must have zero-based indexing.</param>
+      <param name="arrayIndex">The zero-based index in <paramref name="array" /> at which copying begins.</param>
       <exception cref="T:System.ArgumentNullException">
-        <paramref name="array" /> 为 null。</exception>
+        <paramref name="array" /> is <see langword="null" />.</exception>
       <exception cref="T:System.ArgumentOutOfRangeException">
-        <paramref name="arrayIndex" /> 小于 0。</exception>
-      <exception cref="T:System.ArgumentException">源 <see cref="T:System.Collections.Generic.ICollection`1" /> 中的元素数目大于从 <paramref name="arrayIndex" /> 到目标 <paramref name="array" /> 末尾之间的可用空间。</exception>
+        <paramref name="arrayIndex" /> is less than 0.</exception>
+      <exception cref="T:System.ArgumentException">The number of elements in the source <see cref="T:System.Collections.Generic.ICollection`1" /> is greater than the available space from <paramref name="arrayIndex" /> to the end of the destination <paramref name="array" />.</exception>
     </member>
     <member name="P:WikiClientLibrary.Sites.NamespaceCollection.Count">
-      <summary>
-            获取 <see cref="T:System.Collections.Generic.ICollection`1" /> 中包含的元素数。
-            </summary>
-      <returns>
-        <see cref="T:System.Collections.Generic.ICollection`1" /> 中包含的元素个数。
-            </returns>
+      <summary>Gets the number of elements contained in the <see cref="T:System.Collections.Generic.ICollection`1" />.</summary>
+      <returns>The number of elements contained in the <see cref="T:System.Collections.Generic.ICollection`1" />.</returns>
     </member>
     <member name="M:WikiClientLibrary.Sites.NamespaceCollection.GetEnumerator">
-      <summary>
-            返回一个循环访问集合的枚举器。
-            </summary>
-      <returns>
-            可用于循环访问集合的 <see cref="T:System.Collections.Generic.IEnumerator`1" />。
-            </returns>
+      <summary>Returns an enumerator that iterates through the collection.</summary>
+      <returns>An enumerator that can be used to iterate through the collection.</returns>
     </member>
     <member name="P:WikiClientLibrary.Sites.NamespaceCollection.Item(System.Int32)">
       <summary>
@@ -12061,55 +12165,35 @@
       <exception cref="T:System.Collections.Generic.KeyNotFoundException">The specified namespace id cannot be found.</exception>
     </member>
     <member name="M:WikiClientLibrary.Sites.NamespaceCollection.System#Collections#Generic#ICollection{WikiClientLibrary#Sites#NamespaceInfo}#Add(WikiClientLibrary.Sites.NamespaceInfo)">
-      <summary>
-            将某项添加到 <see cref="T:System.Collections.Generic.ICollection`1" /> 中。
-            </summary>
-      <param name="item">要添加到 <see cref="T:System.Collections.Generic.ICollection`1" /> 的对象。</param>
-      <exception cref="T:System.NotSupportedException">
-        <see cref="T:System.Collections.Generic.ICollection`1" /> 为只读。</exception>
+      <summary>Adds an item to the <see cref="T:System.Collections.Generic.ICollection`1" />.</summary>
+      <param name="item">The object to add to the <see cref="T:System.Collections.Generic.ICollection`1" />.</param>
+      <exception cref="T:System.NotSupportedException">The <see cref="T:System.Collections.Generic.ICollection`1" /> is read-only.</exception>
     </member>
     <member name="M:WikiClientLibrary.Sites.NamespaceCollection.System#Collections#Generic#ICollection{WikiClientLibrary#Sites#NamespaceInfo}#Clear">
-      <summary>
-            从 <see cref="T:System.Collections.Generic.ICollection`1" /> 中移除所有项。
-            </summary>
-      <exception cref="T:System.NotSupportedException">
-        <see cref="T:System.Collections.Generic.ICollection`1" /> 为只读。</exception>
+      <summary>Removes all items from the <see cref="T:System.Collections.Generic.ICollection`1" />.</summary>
+      <exception cref="T:System.NotSupportedException">The <see cref="T:System.Collections.Generic.ICollection`1" /> is read-only.</exception>
     </member>
     <member name="M:WikiClientLibrary.Sites.NamespaceCollection.System#Collections#Generic#ICollection{WikiClientLibrary#Sites#NamespaceInfo}#Contains(WikiClientLibrary.Sites.NamespaceInfo)">
-      <summary>
-            确定 <see cref="T:System.Collections.Generic.ICollection`1" /> 是否包含特定值。
-            </summary>
-      <param name="item">要在 <see cref="T:System.Collections.Generic.ICollection`1" /> 中定位的对象。</param>
+      <summary>Determines whether the <see cref="T:System.Collections.Generic.ICollection`1" /> contains a specific value.</summary>
+      <param name="item">The object to locate in the <see cref="T:System.Collections.Generic.ICollection`1" />.</param>
       <returns>
-            如果在 <see cref="T:System.Collections.Generic.ICollection`1" /> 中找到 <paramref name="item" />，则为 true；否则为 false。
-            </returns>
+        <see langword="true" /> if <paramref name="item" /> is found in the <see cref="T:System.Collections.Generic.ICollection`1" />; otherwise, <see langword="false" />.</returns>
     </member>
     <member name="P:WikiClientLibrary.Sites.NamespaceCollection.System#Collections#Generic#ICollection{WikiClientLibrary#Sites#NamespaceInfo}#IsReadOnly">
-      <summary>
-            获取一个值，该值指示 <see cref="T:System.Collections.Generic.ICollection`1" /> 是否为只读。
-            </summary>
+      <summary>Gets a value indicating whether the <see cref="T:System.Collections.Generic.ICollection`1" /> is read-only.</summary>
       <returns>
-            如果 <see cref="T:System.Collections.Generic.ICollection`1" /> 为只读，则为 true；否则为 false。
-            </returns>
+        <see langword="true" /> if the <see cref="T:System.Collections.Generic.ICollection`1" /> is read-only; otherwise, <see langword="false" />.</returns>
     </member>
     <member name="M:WikiClientLibrary.Sites.NamespaceCollection.System#Collections#Generic#ICollection{WikiClientLibrary#Sites#NamespaceInfo}#Remove(WikiClientLibrary.Sites.NamespaceInfo)">
-      <summary>
-            从 <see cref="T:System.Collections.Generic.ICollection`1" /> 中移除特定对象的第一个匹配项。
-            </summary>
-      <param name="item">要从 <see cref="T:System.Collections.Generic.ICollection`1" /> 中移除的对象。</param>
+      <summary>Removes the first occurrence of a specific object from the <see cref="T:System.Collections.Generic.ICollection`1" />.</summary>
+      <param name="item">The object to remove from the <see cref="T:System.Collections.Generic.ICollection`1" />.</param>
       <returns>
-            如果已从 <see cref="T:System.Collections.Generic.ICollection`1" /> 中成功移除 <paramref name="item" />，则为 true；否则为 false。 如果在原始 <see cref="T:System.Collections.Generic.ICollection`1" /> 中没有找到 <paramref name="item" />，该方法也会返回 false。
-            </returns>
-      <exception cref="T:System.NotSupportedException">
-        <see cref="T:System.Collections.Generic.ICollection`1" /> 为只读。</exception>
+        <see langword="true" /> if <paramref name="item" /> was successfully removed from the <see cref="T:System.Collections.Generic.ICollection`1" />; otherwise, <see langword="false" />. This method also returns <see langword="false" /> if <paramref name="item" /> is not found in the original <see cref="T:System.Collections.Generic.ICollection`1" />.</returns>
+      <exception cref="T:System.NotSupportedException">The <see cref="T:System.Collections.Generic.ICollection`1" /> is read-only.</exception>
     </member>
     <member name="M:WikiClientLibrary.Sites.NamespaceCollection.System#Collections#IEnumerable#GetEnumerator">
-      <summary>
-            返回一个循环访问集合的枚举器。
-            </summary>
-      <returns>
-            可用于循环访问集合的 <see cref="T:System.Collections.IEnumerator" /> 对象。
-            </returns>
+      <summary>Returns an enumerator that iterates through a collection.</summary>
+      <returns>An <see cref="T:System.Collections.IEnumerator" /> object that can be used to iterate through the collection.</returns>
     </member>
     <member name="M:WikiClientLibrary.Sites.NamespaceCollection.TryGetValue(System.Int32,WikiClientLibrary.Sites.NamespaceInfo@)">
       <summary>
@@ -12346,11 +12430,6 @@
           </include>
         </markup>
       </summary>
-    </member>
-    <member name="P:WikiClientLibrary.Sites.SiteInfo.MagicWords">
-      <summary>
-            A list of magic words and their aliases (MW 1.14+)
-            </summary>
     </member>
     <member name="P:WikiClientLibrary.Sites.SiteInfo.MainPage">
       <summary>
@@ -13154,6 +13233,11 @@
       <param name="invalidateAccountInfo">Whether to invalidate <see cref="P:WikiClientLibrary.Sites.WikiSite.AccountInfo" />
             instead of calling <see cref="M:WikiClientLibrary.Sites.WikiSite.RefreshAccountInfoAsync" /> to retrieve the latest account information after logging out.</param>
       <exception cref="T:System.InvalidOperationException">Attempt to login/logout concurrently.</exception>
+    </member>
+    <member name="P:WikiClientLibrary.Sites.WikiSite.MagicWords">
+      <summary>
+            Gets a list of magic words and their aliases on this MediaWiki site. (MW 1.14+)
+            </summary>
     </member>
     <member name="P:WikiClientLibrary.Sites.WikiSite.ModificationThrottler">
       <summary>
