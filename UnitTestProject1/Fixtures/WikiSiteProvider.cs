@@ -78,7 +78,9 @@ namespace WikiClientLibrary.Tests.UnitTestProject1.Fixtures
                 {
                     logger.LogInformation("Reusing existing WikiSite instance for {EndpointUrl}.", endpointUrl);
                     // Cached WikiSite. Replace logger.
+#pragma warning disable VSTHRD103 // 当在异步方法中时，调用异步方法
                     var site = task.Result;
+#pragma warning restore VSTHRD103 // 当在异步方法中时，调用异步方法
                     site.Logger = loggerFactory.CreateLogger(site.GetType());
                 }
                 return task;

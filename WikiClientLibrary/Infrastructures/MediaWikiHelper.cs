@@ -312,7 +312,6 @@ namespace WikiClientLibrary.Infrastructures
                 throw new ArgumentNullException(nameof(expression));
             if (expression.Length == 0)
                 throw new ArgumentException(Prompts.ExceptionArgumentIsEmpty, nameof(expression));
-            result = DateTime.MinValue;
             if (expression.Length <= infinityExpressionMaxLength && infinityValues.Contains(expression.ToLowerInvariant()))
             {
                 result = DateTime.MaxValue;
