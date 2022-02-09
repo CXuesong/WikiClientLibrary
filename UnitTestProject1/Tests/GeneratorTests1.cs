@@ -146,7 +146,7 @@ namespace WikiClientLibrary.Tests.UnitTestProject1.Tests
             var items = await generator.EnumItemsAsync().Take(50).ToListAsync();
             ShallowTrace(items, 1);
             Assert.NotEmpty(items);
-            Assert.All(items, i => Assert.StartsWith("Gadget", i.Title, StringComparison.OrdinalIgnoreCase));
+            Assert.All(items, i => Assert.Contains("Gadget", i.Title, StringComparison.OrdinalIgnoreCase));
             var pages = await generator.EnumPagesAsync().Take(50).ToListAsync();
             TracePages(pages);
             Assert.All(pages, p => Assert.False(p.Exists));
