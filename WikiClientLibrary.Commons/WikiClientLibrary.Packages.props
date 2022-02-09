@@ -4,9 +4,9 @@
   <PropertyGroup>
     <!-- Here are the default targets. Projects may override on this value with higher requirements. -->
     <TargetFrameworks>netstandard2.1;net5.0</TargetFrameworks>
-    <Version>0.8.0-int.5</Version>
-    <AssemblyVersion>0.8.0.5</AssemblyVersion>
-    <FileVersion>0.8.0.5</FileVersion>
+    <Version>0.8.0-int.6</Version>
+    <AssemblyVersion>0.8.0.6</AssemblyVersion>
+    <FileVersion>0.8.0.6</FileVersion>
     <Copyright>Copyright (C) CXuesong 2022</Copyright>
     <PackageReleaseNotes>See https://github.com/CXuesong/WikiClientLibrary/releases .</PackageReleaseNotes>
     <PackageTags>MediaWiki API Client</PackageTags>
