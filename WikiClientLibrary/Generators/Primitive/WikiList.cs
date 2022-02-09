@@ -94,9 +94,23 @@ namespace WikiClientLibrary.Generators.Primitive
         public abstract IEnumerable<KeyValuePair<string, object?>> EnumListParameters();
 
         /// <summary>
+        /// From the given MediaWiki API response of the MediaWiki <c>list</c> request,
+        /// locates the array of items whose items will be processed by <see cref="ItemFromJson"/>.
+        /// </summary>
+        /// <param name="response">JSON root of MediaWiki API response. This is usually one page of the list.</param>
+        /// <returns>a JSON array, or <c>null</c> if <paramref name="response"/> contains no item to yield.</returns>
+        /// <remarks>
+        /// The default implementation expects there is an array under JSON path <c>query.{listname}</c> and returns it.
+        /// </remarks>
+        protected virtual JArray? ItemsFromResponse(JToken response)
+        {
+            return (JArray?)RequestHelper.FindQueryResponseItemsRoot(response, ListName);
+        }
+
+        /// <summary>
         /// Parses an item contained in the <c>action=query&amp;list=</c> JSON response.
         /// </summary>
-        /// <param name="json">One of the item node under the JSON path <c>query/{listname}</c>.</param>
+        /// <param name="json">One of the item node under the .</param>
         /// <returns>The item that will be returned in the sequence from <see cref="EnumItemsAsync"/>.</returns>
         protected abstract T ItemFromJson(JToken json);
 
@@ -147,7 +161,7 @@ namespace WikiClientLibrary.Generators.Primitive
                 try
                 {
                     jresult = await Site.InvokeMediaWikiApiAsync(new MediaWikiFormRequestMessage(queryParams), cancellationToken);
-                    listNode = RequestHelper.FindQueryResponseItemsRoot(jresult, ListName);
+                    listNode = ItemsFromResponse(jresult);
                 }
                 catch (Exception ex)
                 {
@@ -208,7 +222,7 @@ namespace WikiClientLibrary.Generators.Primitive
                                         {
                                             case RequestHelper.CONTINUATION_AVAILABLE:
                                             case RequestHelper.CONTINUATION_DONE:
-                                                var listNode2 = RequestHelper.FindQueryResponseItemsRoot(jresult2, ListName);
+                                                var listNode2 = ItemsFromResponse(jresult2);
                                                 Site.Logger.LogInformation("Successfully got out of the continuation loop.");
                                                 if (listNode2 != null)
                                                 {
