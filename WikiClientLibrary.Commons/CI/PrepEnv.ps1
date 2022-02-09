@@ -18,52 +18,13 @@ function CheckLastExitCode($ExitCode = $LASTEXITCODE) {
     }
 }
 
-function checkDotNetSdkVersions {
-    [CmdletBinding()] param([string] $Channel)
-
-    [string[]]$sdks = dotnet --list-sdks
-
-    $matchingSdks = $sdks | ? { $_ -match "^$Channel\." }
-
-    Write-Host "Installed .NET Core SDK $Channel.x:"
-    Write-Host $matchingSdks
-
-    if ($matchingSdks) {
-        return $true
-    }
-    else {
-        Write-Error "No matching SDK installed for channel: $Channel."
-        return $false
-    }
-}
-
 # Assumes $PWD is the repo root
 if ($IsLinux) {
     if ($SHFB) {
         Write-Error "SHFB is not supported on Linux."
     }
-    if (-not (checkDotNetSdkVersions -Channel 3 -ErrorAction Continue)) {
-        sudo apt install dotnet-sdk-3.1
-        CheckLastExitCode
-        checkDotNetSdkVersions -Channel 3
-    }
-    if (-not (checkDotNetSdkVersions -Channel 5 -ErrorAction Continue)) {
-        sudo apt install dotnet-sdk-5.0
-        CheckLastExitCode
-        checkDotNetSdkVersions -Channel 5
-    }
 }
 elseif ($IsWindows) {
-    # dotnet
-    Invoke-WebRequest 'https://dot.net/v1/dotnet-install.ps1' -OutFile 'DotNet-Install.ps1'
-    if (-not (checkDotNetSdkVersions -Channel 3 -ErrorAction Continue)) {
-        ./DotNet-Install.ps1 -Version 3.1.10
-        checkDotNetSdkVersions -Channel 3
-    }
-    if (-not (checkDotNetSdkVersions -Channel 5 -ErrorAction Continue)) {
-        ./DotNet-Install.ps1 -Version 5.0
-        checkDotNetSdkVersions -Channel 5
-    }
     # SHFB
     if ($SHFB) {
         Write-Host "Downloading SHFB."

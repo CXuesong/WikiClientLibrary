@@ -2,9 +2,10 @@
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFrameworks>net5.0</TargetFrameworks>
+    <TargetFrameworks>net6.0</TargetFrameworks>
     <RootNamespace>WikiClientLibrary.Samples.ConsoleTestApplication1</RootNamespace>
     <Nullable>Enable</Nullable>
+    <ImplicitUsings>Enable</ImplicitUsings>
   </PropertyGroup>
 
   <ItemGroup>

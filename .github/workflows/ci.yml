@@ -28,10 +28,12 @@ jobs:
       WCL_IS_CI_BUILD: 1
       BUILD_SECRET_KEY: "${{ secrets.BUILD_SECRET }}"
     steps:
-      # Need to wait for https://github.com/actions/setup-dotnet/issues/25 to be resolved.
-      # - uses: actions/setup-dotnet@v1
-      #   with:
-      #     dotnet-version: '3.0.100'
+      - uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: |
+            3.1.x
+            5.0.x
+            6.0.x
       - uses: actions/checkout@v2
         with:
           submodules: true
@@ -65,10 +67,12 @@ jobs:
       WCL_IS_CI_BUILD: 1
       BUILD_SECRET_KEY: "${{ secrets.BUILD_SECRET }}"
     steps:
-      # Need to wait for https://github.com/actions/setup-dotnet/issues/25 to be resolved.
-      # - uses: actions/setup-dotnet@v1
-      #   with:
-      #     dotnet-version: '3.0.100'
+      - uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: |
+            3.1.x
+            5.0.x
+            6.0.x
       - uses: actions/checkout@v1
         with:
           submodules: true

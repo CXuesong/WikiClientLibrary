@@ -2,10 +2,11 @@
 
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
-    <TargetFramework>net5.0-windows</TargetFramework>
+    <TargetFramework>net6.0-windows</TargetFramework>
     <RootNamespace>WikiClientLibrary.Samples.WpfTestApplication1</RootNamespace>
     <UseWPF>true</UseWPF>
     <Nullable>Enable</Nullable>
+    <ImplicitUsings>Enable</ImplicitUsings>
   </PropertyGroup>
 
   <ItemGroup>
