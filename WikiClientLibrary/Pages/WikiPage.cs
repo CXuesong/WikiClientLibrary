@@ -463,7 +463,8 @@ namespace WikiClientLibrary.Pages
                     {
                         case "protectedpage":
                             throw new UnauthorizedOperationException(ex);
-                        case "pagecannotexist":
+                        case "unsupportednamespace":    // MW 1.19
+                        case "pagecannotexist":         // newer versions
                             throw new InvalidOperationException(ex.ErrorMessage, ex);
                         default:
                             throw;

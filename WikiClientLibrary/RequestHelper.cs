@@ -100,7 +100,8 @@ namespace WikiClientLibrary
             cancellationToken.ThrowIfCancellationRequested();
             var retrievedPageIds = distinctPages ? new HashSet<int>() : null;
             using var actionScopeDisposable = beginActionScope?.Invoke();
-            var baseQueryParams = parameters.ToDictionary(p => p.Key, p => p.Value);
+            // Defensive copy.
+            var baseQueryParams = new Dictionary<string, object?>(parameters);
             Debug.Assert("query".Equals(baseQueryParams["action"]));
             var continuationParams = new Dictionary<string, object?>();
             while (true)

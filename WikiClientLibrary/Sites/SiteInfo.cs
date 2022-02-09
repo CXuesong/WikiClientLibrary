@@ -626,7 +626,7 @@ namespace WikiClientLibrary.Sites
             foreach (var entry in entries)
             {
                 var prefix = entry.Prefix.ToUpperInvariant();
-                if (prefix != entry.Prefix)
+                if (entry.Prefix.Any(char.IsUpper))
                 {
                     // c.f. https://www.mediawiki.org/wiki/Manual:Interwiki#Field_documentation
                     logger.LogWarning("Detected non-compliant Interwiki prefix {Prefix}. Interwiki prefix must be all lower-case.", entry.Prefix);
