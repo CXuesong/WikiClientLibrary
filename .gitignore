@@ -9,3 +9,5 @@ _private/
 *.php
 *.log
 Web.config
+
+/Working
