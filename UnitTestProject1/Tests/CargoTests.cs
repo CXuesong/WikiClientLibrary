@@ -38,7 +38,7 @@ namespace WikiClientLibrary.Tests.UnitTestProject1.Tests
             ShallowTrace(result.Select(r => r.ToString(Formatting.None)));
             Assert.Equal(10, result.Count);
             Assert.All(result, r => Assert.Equal(r["Page"], r["Name"]));
-            Assert.All(result, r => Assert.True((string)r["RP"] == "" || (int)r["RP"] > 0));
+            Assert.All(result, r => Assert.True((int?)r["RP"] == null || (int)r["RP"] > 0));
         }
 
         [Fact]
@@ -129,9 +129,7 @@ namespace WikiClientLibrary.Tests.UnitTestProject1.Tests
             var records = await q.Take(50).AsAsyncEnumerable().ToListAsync();
             ShallowTrace(records, 3);
             Assert.All(records, r =>
-                Assert.All(r.Artists,
-                    a => Assert.True(a == "David Villegas" || a.EndsWith(" Studio"))
-                )
+                Assert.Contains(r.Artists, a => a == "David Villegas" || a.EndsWith(" Studio"))
             );
         }
 
