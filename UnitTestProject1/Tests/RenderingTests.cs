@@ -25,7 +25,7 @@ namespace WikiClientLibrary.Tests.UnitTestProject1.Tests
             var result = await site.ParseRevisionAsync(240575, ParsingOptions.EffectiveLanguageLinks);
             ShallowTrace(result);
             Assert.Equal("一九五二年", result.Title);
-            Assert.Equal("一九五二年", result.DisplayTitle);
+            Assert.Matches(@"<span class=""[\w-]+"">一九五二年</span>", result.DisplayTitle);
             Assert.True(result.LanguageLinks.First(l => l.Language == "en").Title == "1952");
             Assert.True(result.LanguageLinks.First(l => l.Language == "zh").Title == "1952年");
             Assert.Contains("><b>一九五二年</b>，繼<b>", result.Content);
