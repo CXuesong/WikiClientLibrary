@@ -30,8 +30,15 @@ namespace WikiClientLibrary.Pages.Parsing
                 {"redirects", (options & ParsingOptions.ResolveRedirects) == ParsingOptions.ResolveRedirects},
                 {"mobileformat", (options & ParsingOptions.MobileFormat) == ParsingOptions.MobileFormat},
                 {"noimages", (options & ParsingOptions.NoImages) == ParsingOptions.NoImages},
-                {"effectivelanglinks", (options & ParsingOptions.EffectiveLanguageLinks) == ParsingOptions.EffectiveLanguageLinks},
             };
+            if ((options & ParsingOptions.EffectiveLanguageLinks) == ParsingOptions.EffectiveLanguageLinks)
+            {
+                if (site.SiteInfo.Version.Above(1, 30, 0))
+                    // https://github.com/wikimedia/mediawiki/commit/df5b122641bf047d8f5834d1f0c219769c3593c2
+                    p["useskin"] = "apioutput";
+                else
+                    p["effectivelanglinks"] = "true";
+            }
             if ((options & ParsingOptions.TranscludedPages) == ParsingOptions.TranscludedPages)
                 p["prop"] += "|templates";
             if ((options & ParsingOptions.LimitReport) == ParsingOptions.LimitReport)
