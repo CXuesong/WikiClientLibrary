@@ -30,7 +30,7 @@ namespace WikiClientLibrary.Tests.UnitTestProject1.Tests
             Assert.Equal("Sandbox", link1.Title);
             Assert.Equal("Wikipedia talk:Sandbox", link1.Target);
             Assert.Equal("Wikipedia talk:Sandbox", link1.DisplayText);
-            Assert.Equal("https://test2.wikipedia.org/wiki/Wikipedia%20talk:Sandbox", link1.TargetUrl);
+            Assert.Equal("https://test2.wikipedia.org/wiki/Wikipedia%20talk%3ASandbox", link1.TargetUrl);
             Assert.Null(link1.InterwikiPrefix);
             Assert.Null(link1.Section);
             Assert.Null(link1.Anchor);

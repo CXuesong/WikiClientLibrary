@@ -73,7 +73,7 @@ namespace WikiClientLibrary.Tests.UnitTestProject1.Tests
             Assert.Equal("Wikipedia", site.SiteInfo.SiteName);
             Assert.Equal("Main Page", site.SiteInfo.MainPage);
             Assert.Equal("https://test2.wikipedia.org/wiki/test%20page", site.SiteInfo.MakeArticleUrl("test page"));
-            Assert.Equal("https://test2.wikipedia.org/wiki/test%20page%20(DAB)", site.SiteInfo.MakeArticleUrl("test page (DAB)"));
+            Assert.Equal("https://test2.wikipedia.org/wiki/test%20page%20%28DAB%29", site.SiteInfo.MakeArticleUrl("test page (DAB)"));
             var messages = await site.GetMessagesAsync(new[] { "august" });
             Assert.Equal("August", messages["august"]);
             ValidateNamespaces(site);
