@@ -21,8 +21,8 @@ namespace WikiClientLibrary.Client
     public class WikiClient : IWikiClient, IWikiClientLoggable, IDisposable
     {
 
-#if NET5_0
-        private const string targetFramework = ".NET 5.0";
+#if NET6_0
+        private const string targetFramework = ".NET 6.0";
 #elif NETSTANDARD2_1
         private const string targetFramework = ".NET Standard 2.1";
 #endif
@@ -260,9 +260,9 @@ namespace WikiClientLibrary.Client
             {
                 // Validate response.
                 var statusCode = (int)response.StatusCode;
-                Logger.LogTrace("HTTP {StatusCode}, elapsed: {Time}", statusCode, requestSw.Elapsed);
+                Logger.LogTrace("HTTP {StatusCode}, elapsed: {Time}.", statusCode, requestSw.Elapsed);
                 if (!response.IsSuccessStatusCode)
-                    Logger.LogWarning("HTTP {StatusCode} {Reason}.", statusCode, response.ReasonPhrase, requestSw.Elapsed);
+                    Logger.LogWarning("HTTP {StatusCode} {Reason}, elapsed {Time}.", statusCode, response.ReasonPhrase, requestSw.Elapsed);
                 var localRetryDelay = RetryDelay;
                 if (response.Headers.RetryAfter != null)
                 {

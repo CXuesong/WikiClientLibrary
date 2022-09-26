@@ -117,7 +117,7 @@ namespace WikiClientLibrary.Sites
                 cache = new Tuple<string, string>(defaultProtocol, urlTemplate);
                 Volatile.Write(ref articleUrlTemplateCache, cache);
             }
-            return cache.Item2.Replace("$1", Uri.EscapeUriString(title));
+            return cache.Item2.Replace("$1", Uri.EscapeDataString(title));
         }
 
 #endregion
