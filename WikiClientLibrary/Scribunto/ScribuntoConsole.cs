@@ -180,6 +180,8 @@ namespace WikiClientLibrary.Scribunto
                 jresult = await site.InvokeMediaWikiApiAsync(new MediaWikiFormRequestMessage(new
                 {
                     action = "scribunto-console",
+                    // Since wikimedia/mediawiki-extensions-Scribunto@0f2585244cbdc22580cc431745328a8f1fb270bd (1.40.0-wmf.5)
+                    token = site.SiteInfo.Version.Above(1, 40, 0, MediaWikiDevChannel.Wmf, 5) ? WikiSiteToken.Csrf : null,
                     session = sessionId,
                     title = title,
                     clear = clear,
