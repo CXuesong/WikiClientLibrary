@@ -116,7 +116,7 @@ namespace WikiClientLibrary.Wikibase.DataTypes
             if (calendarModel == null) throw new ArgumentNullException(nameof(calendarModel));
             var timeZone = dateTime.Kind == DateTimeKind.Utc ? 0 : (int)TimeZoneInfo.Local.BaseUtcOffset.TotalMinutes;
             return new WbTime(dateTime.Year, dateTime.Month, dateTime.Day,
-                dateTime.Hour, dateTime.Minute, dateTime.Minute,
+                dateTime.Hour, dateTime.Minute, dateTime.Second,
                 before, after, timeZone,
                 precision, calendarModel);
         }
@@ -135,7 +135,7 @@ namespace WikiClientLibrary.Wikibase.DataTypes
         public static WbTime FromDateTimeOffset(DateTimeOffset dateTime, int before, int after, WikibaseTimePrecision precision, Uri calendarModel)
         {
             return new WbTime(dateTime.Year, dateTime.Month, dateTime.Day,
-                dateTime.Hour, dateTime.Minute, dateTime.Minute,
+                dateTime.Hour, dateTime.Minute, dateTime.Second,
                 before, after, (int)dateTime.Offset.TotalMinutes,
                 precision, calendarModel);
         }
