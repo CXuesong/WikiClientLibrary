@@ -6630,31 +6630,11 @@
     </member>
     <member name="M:WikiClientLibrary.Infrastructures.WikiJsonContractResolver.CreateProperty(System.Reflection.MemberInfo,Newtonsoft.Json.MemberSerialization)">
       <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>M:WikiClientLibrary.Infrastructures.WikiJsonContractResolver.CreateProperty(System.Reflection.MemberInfo,Newtonsoft.Json.MemberSerialization)</parameter>
-          </include>
-        </markup>
-      </summary>
-      <param name="member">
-        <markup>
-          <include item="SMCMissingParamTag">
-            <parameter>param</parameter>
-            <parameter>member</parameter>
-            <parameter>M:WikiClientLibrary.Infrastructures.WikiJsonContractResolver.CreateProperty(System.Reflection.MemberInfo,Newtonsoft.Json.MemberSerialization)</parameter>
-          </include>
-        </markup>
-      </param>
-      <param name="memberSerialization">
-        <markup>
-          <include item="SMCMissingParamTag">
-            <parameter>param</parameter>
-            <parameter>memberSerialization</parameter>
-            <parameter>M:WikiClientLibrary.Infrastructures.WikiJsonContractResolver.CreateProperty(System.Reflection.MemberInfo,Newtonsoft.Json.MemberSerialization)</parameter>
-          </include>
-        </markup>
-      </param>
+            Creates a <see cref="T:Newtonsoft.Json.Serialization.JsonProperty" /> for the given <see cref="T:System.Reflection.MemberInfo" />.
+            </summary>
+      <param name="memberSerialization">The member's parent <see cref="T:Newtonsoft.Json.MemberSerialization" />.</param>
+      <param name="member">The member to create a <see cref="T:Newtonsoft.Json.Serialization.JsonProperty" /> for.</param>
+      <returns>A created <see cref="T:Newtonsoft.Json.Serialization.JsonProperty" /> for the given <see cref="T:System.Reflection.MemberInfo" />.</returns>
     </member>
     <member name="M:WikiClientLibrary.Infrastructures.WikiJsonContractResolver.ResolveDictionaryKey(System.String)">
       <summary>
@@ -13396,6 +13376,9 @@
           </include>
         </markup>
       </param>
+    </member>
+    <member name="F:WikiClientLibrary.Sites.WikiSiteToken.Csrf">
+      <summary>General CSRF token. This token type is not supported prior to MW 1.24.</summary>
     </member>
     <member name="F:WikiClientLibrary.Sites.WikiSiteToken.Delete">
       <summary>
