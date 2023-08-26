@@ -26,10 +26,10 @@ namespace WikiClientLibrary.Generators
         }
 
         /// <summary>
-        /// Only list links to these titles. Useful for checking whether a certain page links to a certain title.
+        /// Only list these files. Useful for checking whether a certain page has a certain file.
         /// (MediaWiki 1.17+)
         /// </summary>
-        /// <value>a sequence of page titles, or <c>null</c> to list all the linked pages.</value>
+        /// <value>a sequence of page titles, or <c>null</c> to list all the used files.</value>
         public IEnumerable<string>? MatchingTitles { get; set; }
 
         /// <summary>
@@ -47,7 +47,7 @@ namespace WikiClientLibrary.Generators
             return new Dictionary<string, object?>
             {
                 {"imlimit", PaginationSize}, 
-                {"imtitles", MatchingTitles == null ? null : MediaWikiHelper.JoinValues(MatchingTitles)},
+                {"imimages", MatchingTitles == null ? null : MediaWikiHelper.JoinValues(MatchingTitles)},
                 {"imdir", OrderDescending ? "descending" : "ascending"}
             };
         }
