@@ -7,29 +7,23 @@ using WikiClientLibrary.Sites;
 namespace WikiClientLibrary.Generators
 {
     /// <summary>
-    /// Generates pages from all links on the provided page.
+    /// Generates pages from all used files on the provided page.
     /// (<a href="https://www.mediawiki.org/wiki/API:Links">mw:API:Links</a>, MediaWiki 1.11+)
     /// </summary>
     /// <see cref="TransclusionsGenerator"/>
     /// <see cref="BacklinksGenerator"/>
-    /// <see cref="FilesGenerator"/>
-    public class LinksGenerator : WikiPagePropertyGenerator
+    /// <see cref="LinksGenerator"/>
+    public class FilesGenerator : WikiPagePropertyGenerator
     {
         /// <inheritdoc />
-        public LinksGenerator(WikiSite site) : base(site)
+        public FilesGenerator(WikiSite site) : base(site)
         {
         }
 
         /// <inheritdoc />
-        public LinksGenerator(WikiSite site, WikiPageStub pageStub) : base(site, pageStub)
+        public FilesGenerator(WikiSite site, WikiPageStub pageStub) : base(site, pageStub)
         {
         }
-
-        /// <summary>
-        /// Only list pages in these namespaces.
-        /// </summary>
-        /// <value>selected IDs of namespace, or <c>null</c> to select all the namespaces.</value>
-        public IEnumerable<int>? NamespaceIds { get; set; }
 
         /// <summary>
         /// Only list links to these titles. Useful for checking whether a certain page links to a certain title.
@@ -45,17 +39,16 @@ namespace WikiClientLibrary.Generators
         public bool OrderDescending { get; set; }
 
         /// <inheritdoc />
-        public override string PropertyName => "links";
+        public override string PropertyName => "images";
 
         /// <inheritdoc />
         public override IEnumerable<KeyValuePair<string, object?>> EnumListParameters()
         {
             return new Dictionary<string, object?>
             {
-                {"plnamespace", NamespaceIds == null ? null : MediaWikiHelper.JoinValues(NamespaceIds)},
-                {"pllimit", PaginationSize},
-                {"pltitles", MatchingTitles == null ? null : MediaWikiHelper.JoinValues(MatchingTitles)},
-                {"pldir", OrderDescending ? "descending" : "ascending"}
+                {"imlimit", PaginationSize}, 
+                {"imtitles", MatchingTitles == null ? null : MediaWikiHelper.JoinValues(MatchingTitles)},
+                {"imdir", OrderDescending ? "descending" : "ascending"}
             };
         }
     }
