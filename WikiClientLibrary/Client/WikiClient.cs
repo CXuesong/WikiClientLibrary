@@ -23,6 +23,8 @@ namespace WikiClientLibrary.Client
 
 #if NET6_0
         private const string targetFramework = ".NET 6.0";
+#elif NET8_0
+        private const string targetFramework = ".NET 8.0";
 #elif NETSTANDARD2_1
         private const string targetFramework = ".NET Standard 2.1";
 #endif
