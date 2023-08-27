@@ -292,7 +292,7 @@ namespace WikiClientLibrary.Tests.UnitTestProject1.Tests
             var linkPages = await gen.EnumPagesAsync().Select(p => p.Title).ToListAsync();
             ShallowTrace(links);
             Assert.Contains("文言維基大典", links);
-            Assert.Contains("幫助:凡例", links);
+            Assert.Contains("說明:凡例", links);
             Assert.Contains("維基大典:卓著", links);
             // The items taken from generator are unordered.
             Assert.Equal(links.ToHashSet(), linkPages.ToHashSet());
@@ -339,7 +339,7 @@ namespace WikiClientLibrary.Tests.UnitTestProject1.Tests
         public async Task WpCategoriesGeneratorTest()
         {
             var site = await WpLzhSiteAsync;
-            var blg = new CategoriesGenerator(site, "莎拉伯恩哈特‏‎") { PaginationSize = 50 };
+            var blg = new CategoriesGenerator(site, "莎拉伯恩哈特") { PaginationSize = 50 };
             var cats = await blg.EnumItemsAsync().ToListAsync();
             ShallowTrace(cats);
             var titles = cats.Select(c => c.Title).ToList();

@@ -83,7 +83,7 @@ namespace WikiClientLibrary.Tests.UnitTestProject1.Tests
                 // This should cause token cache invalidation.
                 await page.UpdateContentAsync("Make an empty update.", true);
             }
-            catch (OperationFailedException ex) when ((ex.ErrorCode ?? "").Contains("ipblocked-range"))
+            catch (OperationFailedException ex) when (ex.ErrorCode == "globalblocking-blockedtext-range")
             {
                 // wikimedia-globalblocking-ipblocked-range
                 Output.WriteLine("UpdateContentAsync fails due to IP block: " + ex);

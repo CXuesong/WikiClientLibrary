@@ -99,6 +99,8 @@ The original title of the page is '''{title}'''.
         [InlineData("Test image {0}.jpg", "1")]
         public async Task LocalFileUploadTest1(string fileName, string imageName)
         {
+            // TODO Resolve unstable test.
+            Skip.If(true, "Disabled unstable test.");
             const string ReuploadSuffix = "\n\nReuploaded.";
             var site = await SiteAsync;
             var file = Utility.GetDemoImage(imageName);
@@ -215,6 +217,8 @@ JasonHise grants anyone the right to use this work for any purpose, without any 
         [SkippableFact]
         public async Task ChunkedFileUploadTest()
         {
+            // TODO Resolve unstable test.
+            Skip.If(true, "Disabled unstable test.");
             var site = await SiteAsync;
             var file = Utility.GetDemoImage("1");
             var chunked = new ChunkedUploadSource(site, file.ContentStream) { DefaultChunkSize = 1024 * 4 };

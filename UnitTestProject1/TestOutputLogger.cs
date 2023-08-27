@@ -66,7 +66,7 @@ namespace WikiClientLibrary.Tests.UnitTestProject1
             return logLevel >= minLogLevel;
         }
 
-        public IDisposable BeginScope<TState>(TState state)
+        public IDisposable BeginScope<TState>(TState state) where TState : notnull
         {
             return LoggingScope.Push(state);
         }
