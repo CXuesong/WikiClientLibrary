@@ -21,6 +21,17 @@ namespace WikiClientLibrary.Generators
             if (page == null) throw new ArgumentNullException(nameof(page));
             return new LinksGenerator(page.Site, page.PageStub);
         }
+        
+        /// <summary>
+        /// Creates a <see cref="FilesGenerator"/> instance from the specified page,
+        /// which generates files from all used files on the page.
+        /// </summary>
+        /// <param name="page">The page.</param>
+        public static FilesGenerator CreateFilesGenerator(this WikiPage page)
+        {
+            if (page == null) throw new ArgumentNullException(nameof(page));
+            return new FilesGenerator(page.Site, page.PageStub);
+        }
 
         /// <summary>
         /// Creates a <see cref="TransclusionsGenerator"/> instance from the specified page,

@@ -299,6 +299,20 @@ namespace WikiClientLibrary.Tests.UnitTestProject1.Tests
         }
 
         [Fact]
+        public async Task WpEnEnumPageFilesTest()
+        {
+            var site = await WpEnSiteAsync;
+            var gen = new FilesGenerator(site, site.SiteInfo.MainPage) { PaginationSize = 20 };
+            var files = await gen.EnumPagesAsync().Select(p => p.Title).ToListAsync();
+            ShallowTrace(files);
+            Utility.AssertNotNull(files);
+            Assert.Contains("File:Wikidata-logo.svg", files);
+            Assert.Contains("File:Wikibooks-logo.svg", files);
+            Assert.Contains("File:Commons-logo.svg", files);
+            Assert.Contains("File:Wikisource-logo.svg", files);
+        }
+
+        [Fact]
         public async Task WpEnGeoSearchTest1()
         {
             var site = await WpEnSiteAsync;
