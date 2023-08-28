@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using Newtonsoft.Json.Linq;
 using WikiClientLibrary.Generators.Primitive;
 using WikiClientLibrary.Infrastructures;
 using WikiClientLibrary.Sites;
@@ -8,7 +10,7 @@ namespace WikiClientLibrary.Generators
     /// <summary>
     /// Get all pages on the current user's watchlist.
     /// </summary>
-    public class MyWatchlistGenerator : WikiPageGenerator
+    public class MyWatchlistGenerator : WikiPageGenerator<MyWatchlistResultItem>
     {
         public MyWatchlistGenerator(WikiSite site) : base(site)
         {
@@ -18,11 +20,6 @@ namespace WikiClientLibrary.Generators
         /// Only list pages in the given namespaces.
         /// </summary>
         public IEnumerable<int>? NamespaceIds { get; set; }
-
-        /// <summary>
-        /// Adds timestamp of when the user was last notified about the edit.
-        /// </summary>
-        public bool ShowChangedTime { get; set; }
 
         /// <summary>
         /// Only show pages that have not been changed.
@@ -51,12 +48,23 @@ namespace WikiClientLibrary.Generators
             {
                 {"wrnamespace", NamespaceIds == null ? null : MediaWikiHelper.JoinValues(NamespaceIds)},
                 {"wrlimit", PaginationSize},
-                {"wrprop", ShowChangedTime ? "changed" : null},
+                {"wrprop", "changed"},
                 {"wrshow", NotChangedPagesFilter.ToString("!changed", "changed", null)},
                 {"wrdir", OrderDescending ? "descending" : "ascending"},
                 {"wrfromtitle", FromTitle},
                 {"wrtotitle", ToTitle},
             };
+        }
+
+        protected override MyWatchlistResultItem ItemFromJson(JToken json)
+        {
+            DateTime? changedTime = null;
+            if (json["changed"] != null)
+            {
+                changedTime = DateTime.Parse((string)json["changed"]);
+            }
+            
+            return new MyWatchlistResultItem(MediaWikiHelper.PageStubFromJson((JObject)json), json["changed"] != null, changedTime);
         }
 
         public override string ListName => "watchlistraw";

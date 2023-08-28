@@ -73,6 +73,21 @@ namespace WikiClientLibrary
 
         public static JToken? FindQueryResponseItemsRoot(JToken jresult, string actionName)
         {
+            if (actionName == "watchlistraw")
+            {
+                // "watchlistraw" list isn't nested inside an object with "query" key, it has the following structure
+                /*
+                    {
+                        "batchcomplete": true,
+                        "continue": {
+                            "wrcontinue": "0|3Р41",
+                            "continue": "-||tokens"
+                        },
+                        "watchlistraw": [{"ns": 0,"title": "page title","changed": "2021-03-01T14:59:52Z"}]
+                    }
+                 */
+                return (JArray?)jresult[actionName];
+            }
             // If there's no result, "query" node will not exist.
             var queryNode = (JObject?)jresult["query"];
             if (queryNode != null && queryNode.HasValues)
