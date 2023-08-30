@@ -1,12 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Globalization;
-using System.Text;
 using Newtonsoft.Json.Linq;
 using WikiClientLibrary.Generators.Primitive;
 using WikiClientLibrary.Infrastructures;
-using WikiClientLibrary.Pages;
 using WikiClientLibrary.Pages.Queries.Properties;
 using WikiClientLibrary.Sites;
 
