@@ -408,5 +408,16 @@ namespace WikiClientLibrary.Tests.UnitTestProject1.Tests
                 new HashSet<string>(pages.Select(p => p.Title!)));
         }
 
+        [Fact]
+        public async Task WpEnPageWithPropTest()
+        {
+            var site = await WpEnSiteAsync;
+            var generator = new PagesWithPropGenerator(site, "defaultsort");
+            var result = await generator.EnumItemsAsync().Take(10).ToListAsync();
+            var pages = await generator.EnumPagesAsync().Take(10).ToListAsync();
+            Utility.AssertTitlesDistinct(pages);
+            Assert.All(result, r => Assert.NotNull(r.Value));
+        }
+
     }
 }
