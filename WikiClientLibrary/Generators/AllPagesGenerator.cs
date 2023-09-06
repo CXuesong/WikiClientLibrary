@@ -1,13 +1,6 @@
-using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
-using Newtonsoft.Json.Linq;
 using WikiClientLibrary.Generators.Primitive;
-using WikiClientLibrary.Pages;
 using WikiClientLibrary.Sites;
 
 namespace WikiClientLibrary.Generators
@@ -68,9 +61,19 @@ namespace WikiClientLibrary.Generators
         /// </summary>
         public int? MaxPageContentLength { get; set; }
 
+        /// <summary>
+        /// Limit to protected pages only.
+        /// </summary>
+        public List<ProtectionType>? ProtectionType { get; set; }
+        
+        /// <summary>
+        /// Filter protections based on protection level (must be used with ProtectionType).
+        /// </summary>
+        public List<ProtectionLevel>? ProtectionLevel { get; set; }
+
         /// <inheritdoc/>
         public override string ListName => "allpages";
-
+        
         /// <inheritdoc/>
         public override IEnumerable<KeyValuePair<string, object?>> EnumListParameters()
         {
@@ -85,6 +88,8 @@ namespace WikiClientLibrary.Generators
                 {"apfilterlanglinks", LanguageLinkFilter.ToString("withlanglinks", "withoutlanglinks")},
                 {"apminsize", MinPageContentLength},
                 {"apmaxsize", MaxPageContentLength},
+                {"apprtype", ProtectionType != null && ProtectionType.Count != 0 ? string.Join('|', ProtectionType.Select(x => x.ToString().ToLower())) : null},
+                {"apprlevel", ProtectionLevel != null && ProtectionLevel.Count != 0 ? string.Join('|', ProtectionLevel.Select(x => x.ToString().ToLower())) : null},
                 // TODO add other filters
             };
         }
@@ -109,5 +114,20 @@ namespace WikiClientLibrary.Generators
         /// Only include the pages without this property.
         /// </summary>
         WithoutProperty,
+    }
+
+    public enum ProtectionType
+    {
+        Edit,
+        Move,
+        Upload
+    }
+
+    public enum ProtectionLevel
+    {
+        Autoconfirmed,
+        ExtendedConfirmed,
+        TemplateEditor,
+        Sysop,
     }
 }
