@@ -4,7 +4,6 @@ using System;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using WikiClientLibrary;
 using WikiClientLibrary.Client;
 using WikiClientLibrary.Files;
 using WikiClientLibrary.Pages;
@@ -61,7 +60,9 @@ namespace WikiClientLibrary.Tests.UnitTestProject1.Tests
             if (!page.Exists)
             {
                 WriteOutput("Creating page: {0}", page);
-                page.Content = $@"<big>This is a test page for '''WikiClientLibrary'''.</big>
+                await page.EditAsync(new WikiPageEditOptions
+                {
+                    Content = $@"<big>This is a test page for '''WikiClientLibrary'''.</big>
 
 This page is created by an automated program for unit test purposes.
 
@@ -73,8 +74,9 @@ The original title of the page is '''{title}'''.
 
 == See also ==
 * [[Special:PrefixIndex/{title}/|Subpages]]
-";
-                await page.UpdateContentAsync(SummaryPrefix + "Create test page for unit tests.");
+",
+                    Summary = SummaryPrefix + "Create test page for unit tests.",
+                });
             }
             return page;
         }

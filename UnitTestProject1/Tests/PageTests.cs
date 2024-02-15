@@ -6,7 +6,6 @@ using System;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using WikiClientLibrary;
 using WikiClientLibrary.Files;
 using WikiClientLibrary.Generators;
 using WikiClientLibrary.Pages;
@@ -296,9 +295,14 @@ namespace WikiClientLibrary.Tests.UnitTestProject1.Tests
             await page.RefreshAsync(PageQueryOptions.FetchContent);
             // As a precaution, we don't create new page by editing.
             Assert.True(page.Exists);
-            page.Content += "\n\nTest from WikiClientLibrary.";
             Output.WriteLine(page.Content);
-            await page.UpdateContentAsync(SummaryPrefix + "Edit sandbox page.", true, true);
+            await page.EditAsync(new WikiPageEditOptions
+            {
+                Content = page.Content + "\n\nTest from WikiClientLibrary.",
+                Summary = SummaryPrefix + "Edit sandbox page.",
+                Minor = true,
+                Bot = true,
+            });
         }
 
         [SkippableTheory]
@@ -310,9 +314,14 @@ namespace WikiClientLibrary.Tests.UnitTestProject1.Tests
             var page = new WikiPage(site, pageTitle);
             await page.RefreshAsync(PageQueryOptions.FetchContent);
             Assert.True(page.Protections.Any(), "To perform this test, the working page should be protected.");
-            page.Content += "\n\nTest from WikiClientLibrary.";
-            await Assert.ThrowsAsync<UnauthorizedOperationException>(() =>
-                page.UpdateContentAsync(SummaryPrefix + "Attempt to edit a protected page."));
+            await Assert.ThrowsAsync<UnauthorizedOperationException>(async () =>
+                await page.EditAsync(new WikiPageEditOptions
+                {
+                    Content = page.Content + "\n\nTest from WikiClientLibrary.",
+                    Summary = SummaryPrefix + "Attempt to edit a protected page.",
+                    Minor = false,
+                    Bot = true,
+                }));
         }
 
         [SkippableTheory]
@@ -325,9 +334,12 @@ namespace WikiClientLibrary.Tests.UnitTestProject1.Tests
             var page = new WikiPage(site, "Special:RecentChanges");
             await page.RefreshAsync(PageQueryOptions.FetchContent);
             Assert.True(page.IsSpecialPage);
-            page.Content += "\n\nTest from WikiClientLibrary.";
-            await Assert.ThrowsAsync<InvalidOperationException>(() =>
-                page.UpdateContentAsync(SummaryPrefix + "Attempt to edit a special page."));
+            await Assert.ThrowsAsync<InvalidOperationException>(async () =>
+                await page.EditAsync(new WikiPageEditOptions
+                {
+                    Content = page.Content + "\n\nTest from WikiClientLibrary.",
+                    Summary = SummaryPrefix + "Attempt to edit a special page.",
+                }));
         }
 
         [SkippableFact]

@@ -199,6 +199,8 @@ namespace WikiClientLibrary.Pages
         /// </remarks>
         public string? Title => PageStub.HasTitle ? PageStub.Title : null;
 
+        private string? pendingContent;
+
         /// <summary>
         /// Gets / Sets the content of the page.
         /// </summary>
@@ -209,7 +211,12 @@ namespace WikiClientLibrary.Pages
         /// specify <see cref="PageQueryOptions.FetchContent"/>
         /// when calling <see cref="RefreshAsync(PageQueryOptions)"/>.</para>
         /// </remarks>
-        public string? Content { get; set; }
+        public string? Content
+        {
+            get => pendingContent ?? LastRevision?.Comment;
+            [Obsolete("Use WikiPage.EditAsync, passing new page content to WikiPageEditOptions.Text instead.")]
+            set => pendingContent = value;
+        }
 
         /// <summary>
         /// Gets the latest revision of the page.
@@ -251,7 +258,7 @@ namespace WikiClientLibrary.Pages
             return dabp;
         }
 
-        #region Redirect
+#region Redirect
 
         /// <summary>
         /// Determines the last version of the page is a redirect page.
@@ -291,9 +298,9 @@ namespace WikiClientLibrary.Pages
             return null;
         }
 
-        #endregion
+#endregion
 
-        #region Query
+#region Query
 
         [MemberNotNull(nameof(Title))]
         protected internal string RequiresTitle()
@@ -381,29 +388,33 @@ namespace WikiClientLibrary.Pages
             return RequestHelper.RefreshPagesAsync(new[] { this }, options, cancellationToken);
         }
 
-        #endregion
+#endregion
 
-        #region Modification
+#region Modification
 
         /// <inheritdoc cref="UpdateContentAsync(string,bool,bool,AutoWatchBehavior,CancellationToken)"/>
+        [Obsolete("Use WikiPage.EditAsync instead.")]
         public Task UpdateContentAsync(string summary)
         {
             return UpdateContentAsync(summary, false, true, AutoWatchBehavior.Default, CancellationToken.None);
         }
 
         /// <inheritdoc cref="UpdateContentAsync(string,bool,bool,AutoWatchBehavior,CancellationToken)"/>
+        [Obsolete("Use WikiPage.EditAsync instead.")]
         public Task UpdateContentAsync(string summary, bool minor)
         {
             return UpdateContentAsync(summary, minor, true, AutoWatchBehavior.Default, CancellationToken.None);
         }
 
         /// <inheritdoc cref="UpdateContentAsync(string,bool,bool,AutoWatchBehavior,CancellationToken)"/>
+        [Obsolete("Use WikiPage.EditAsync instead.")]
         public Task UpdateContentAsync(string summary, bool minor, bool bot)
         {
             return UpdateContentAsync(summary, minor, bot, AutoWatchBehavior.Default, CancellationToken.None);
         }
 
         /// <inheritdoc cref="UpdateContentAsync(string,bool,bool,AutoWatchBehavior,CancellationToken)"/>
+        [Obsolete("Use WikiPage.EditAsync instead.")]
         public Task<bool> UpdateContentAsync(string summary, bool minor, bool bot, AutoWatchBehavior watch)
         {
             return UpdateContentAsync(summary, minor, bot, watch, new CancellationToken());
@@ -413,11 +424,11 @@ namespace WikiClientLibrary.Pages
         /// Submits content contained in <see cref="Content"/>, making edit to the page.
         /// (MediaWiki 1.16)
         /// </summary>
-        /// <param name="summary">The edit summary. Leave it blank to use the default edit summary.</param>
-        /// <param name="minor">Whether the edit is a minor edit. (See <a href="https://meta.wikimedia.org/wiki/Help:Minor_edit">m:Help:Minor Edit</a>)</param>
-        /// <param name="bot">Whether to mark the edit as bot; even if you are using a bot account the edits will not be marked unless you set this flag.</param>
-        /// <param name="watch">Specify how the watchlist is affected by this edit.</param>
-        /// <param name="cancellationToken">A token used to cancel the operation.</param>
+        /// <param name="summary">the edit summary. Leave it as <c>null</c> or empty string (<c>""</c>) to use the default edit summary.</param>
+        /// <param name="minor">whether the edit is a minor edit. (See <a href="https://meta.wikimedia.org/wiki/Help:Minor_edit">m:Help:Minor Edit</a>)</param>
+        /// <param name="bot">whether to mark the edit as bot; even if you are using a bot account the edits will not be marked unless you set this flag.</param>
+        /// <param name="watch">specify how the watchlist is affected by this edit.</param>
+        /// <param name="cancellationToken">a token used to cancel the operation.</param>
         /// <returns><c>true</c> if page content has been changed; <c>false</c> otherwise.</returns>
         /// <remarks>
         /// This action will refill <see cref="Id" />, <see cref="Title"/>,
@@ -428,11 +439,39 @@ namespace WikiClientLibrary.Pages
         /// <exception cref="InvalidOperationException">Cannot create actual page in the specified namespace.</exception>
         /// <exception cref="OperationConflictException">Edit conflict detected.</exception>
         /// <exception cref="UnauthorizedOperationException">You have no rights to edit the page.</exception>
+        [Obsolete("Use WikiPage.EditAsync instead.")]
         public async Task<bool> UpdateContentAsync(string summary, bool minor, bool bot, AutoWatchBehavior watch,
             CancellationToken cancellationToken)
+            => await EditAsync(new WikiPageEditOptions
+            {
+                Content = Content,
+                Summary = summary,
+                Minor = minor,
+                Bot = bot,
+                Watch = watch,
+                CancellationToken = cancellationToken,
+            });
+
+        /// <summary>
+        /// Edits the main content of the current page, using specified new page content and other options.
+        /// (MediaWiki 1.16)
+        /// </summary>
+        /// <param name="options">page edit options, including new content.</param>
+        /// <returns><c>true</c> if page content has been changed; <c>false</c> otherwise.</returns>
+        /// <remarks>
+        /// This action will refill <see cref="Id" />, <see cref="Title"/>,
+        /// <see cref="ContentModel"/>, <see cref="LastRevisionId"/>, and invalidate
+        /// <see cref="ContentLength"/>, <see cref="LastRevision"/>, and <see cref="LastTouched"/>.
+        /// You should call <see cref="RefreshAsync()"/> again if you're interested in them.
+        /// </remarks>
+        /// <exception cref="InvalidOperationException">Cannot create actual page in the specified namespace.</exception>
+        /// <exception cref="OperationConflictException">Edit conflict detected.</exception>
+        /// <exception cref="UnauthorizedOperationException">You have no rights to edit the page.</exception>
+
+        public async Task<bool> EditAsync(WikiPageEditOptions options)
         {
             using (Site.BeginActionScope(this))
-            using (await Site.ModificationThrottler.QueueWorkAsync("Edit: " + this, cancellationToken))
+            using (await Site.ModificationThrottler.QueueWorkAsync("Edit: " + this, options.CancellationToken))
             {
                 // When passing this to the Edit API, always pass the token parameter last
                 // (or at least after the text parameter). That way, if the edit gets interrupted,
@@ -447,15 +486,15 @@ namespace WikiClientLibrary.Pages
                         token = WikiSiteToken.Edit,
                         title = PageStub.HasTitle ? PageStub.Title : null,
                         pageid = PageStub.HasTitle ? null : (int?)PageStub.Id,
-                        minor = minor,
-                        bot = bot,
+                        minor = options.Minor,
+                        bot = options.Bot,
                         recreate = true,
                         maxlag = 5,
                         basetimestamp = LastRevision?.TimeStamp,
-                        watchlist = watch,
-                        summary = summary,
-                        text = Content,
-                    }), cancellationToken);
+                        watchlist = options.Watch,
+                        summary = options.Summary,
+                        text = options.Content,
+                    }), options.CancellationToken);
                 }
                 catch (OperationFailedException ex)
                 {
@@ -463,8 +502,8 @@ namespace WikiClientLibrary.Pages
                     {
                         case "protectedpage":
                             throw new UnauthorizedOperationException(ex);
-                        case "unsupportednamespace":    // MW 1.19
-                        case "pagecannotexist":         // newer versions
+                        case "unsupportednamespace": // MW 1.19
+                        case "pagecannotexist": // newer versions
                             throw new InvalidOperationException(ex.ErrorMessage, ex);
                         default:
                             throw;
@@ -491,9 +530,9 @@ namespace WikiClientLibrary.Pages
             }
         }
 
-        #endregion
+#endregion
 
-        #region Management
+#region Management
 
         /// <summary>
         /// Moves (renames) a page. (MediaWiki 1.12)
@@ -665,7 +704,7 @@ namespace WikiClientLibrary.Pages
             return failure.Count == 0;
         }
 
-        #endregion
+#endregion
 
         /// <summary>
         /// Gets an initialized <see cref="WikiPageStub"/> from the current instance.
@@ -687,6 +726,7 @@ namespace WikiClientLibrary.Pages
         {
             return string.IsNullOrEmpty(Title) ? ("#" + Id) : Title;
         }
+
     }
 
     /// <summary>
@@ -830,6 +870,7 @@ namespace WikiClientLibrary.Pages
     [JsonDictionary]
     public class PagePropertyCollection : WikiReadOnlyDictionary
     {
+
         /// <summary>
         /// An empty instance.
         /// </summary>
@@ -852,5 +893,87 @@ namespace WikiClientLibrary.Pages
         public string? PageImage => GetStringValue("page_image");
 
         public bool IsHiddenCategory => GetBooleanValue("hiddencat");
+
+    }
+
+#if BCL_FEATURE_RECORD
+    public record WikiPageEditOptions
+#else
+    public class WikiPageEditOptions
+#endif
+    {
+
+        /// <summary>
+        /// The new page content; use empty string (<c>""</c>) to clear the page content.
+        /// </summary>
+        public string Content
+        {
+#if BCL_FEATURE_RECORD
+            get; init;
+#else
+            get; set;
+#endif
+        } = "";
+
+        /// <summary>
+        /// The edit summary. Leave it as <c>null</c> or empty string (<c>""</c>) to use the default edit summary.
+        /// </summary>
+        public string? Summary
+        {
+#if BCL_FEATURE_RECORD
+            get; init;
+#else
+            get; set;
+#endif
+        }
+
+        /// <summary>
+        /// Whether the edit is a minor edit. (See <a href="https://meta.wikimedia.org/wiki/Help:Minor_edit">m:Help:Minor Edit</a>)
+        /// </summary>
+        public bool Minor
+        {
+#if BCL_FEATURE_RECORD
+            get; init;
+#else
+            get; set;
+#endif
+        }
+
+        /// <summary>
+        /// Whether to mark the edit as bot; even if you are using a bot account the edits will not be marked unless you set this flag.
+        /// </summary>
+        public bool Bot
+        {
+#if BCL_FEATURE_RECORD
+            get; init;
+#else
+            get; set;
+#endif
+        }
+
+        /// <summary>
+        /// Specify how the watchlist is affected by this edit.
+        /// </summary>
+        public AutoWatchBehavior Watch
+        {
+#if BCL_FEATURE_RECORD
+            get; init;
+#else
+            get; set;
+#endif
+        }
+
+        /// <summary>
+        /// A token used to cancel the operation.
+        /// </summary>
+        public CancellationToken CancellationToken
+        {
+#if BCL_FEATURE_RECORD
+            get; init;
+#else
+            get; set;
+#endif
+        }
+
     }
 }
