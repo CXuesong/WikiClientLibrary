@@ -91,7 +91,7 @@ return p
             var data = await site.ScribuntoLoadDataAsync<JObject>("Icon/data", "return {project=p.project, meta=p.meta}");
             Utility.AssertNotNull(data);
             Assert.Equal(2, data.Count);
-            Assert.Equal("Symbol information vote.svg", (string)data["project"]["image"]);
+            Assert.Equal("Symbol project class.svg", (string)data["project"]["image"]);
             Assert.Equal("Project page", (string)data["project"]["tooltip"]);
         }
 

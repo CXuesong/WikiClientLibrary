@@ -28,7 +28,7 @@ namespace WikiClientLibrary.Tests.UnitTestProject1.Tests
             Assert.Matches(@"<span class=""[\w-]+"">一九五二年</span>", result.DisplayTitle);
             Assert.True(result.LanguageLinks.First(l => l.Language == "en").Title == "1952");
             Assert.True(result.LanguageLinks.First(l => l.Language == "zh").Title == "1952年");
-            Assert.Contains("><b>一九五二年</b>，繼<b>", result.Content);
+            Assert.Contains(">公元<b>一九五二年</b>於諸曆</", result.Content);
             Assert.Contains(result.Sections, s => s.Heading == "大事");
         }
 

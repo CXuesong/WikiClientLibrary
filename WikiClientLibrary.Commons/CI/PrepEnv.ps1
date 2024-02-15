@@ -28,7 +28,7 @@ elseif ($IsWindows) {
     # SHFB
     if ($SHFB) {
         Write-Host "Downloading SHFB."
-        Invoke-WebRequest "https://github.com/EWSoftware/SHFB/releases/download/v2022.1.22.0/SHFBInstaller_v2022.1.22.0.zip" -OutFile SHFBInstaller.zip
+        Invoke-WebRequest "https://github.com/EWSoftware/SHFB/releases/download/2023.7.8.0/SHFBInstaller_2023.7.8.0.zip" -OutFile SHFBInstaller.zip
         New-Item -ItemType Directory SHFBInstaller | Out-Null
         Expand-Archive SHFBInstaller.zip SHFBInstaller
         Write-Host "Downloading SHFB."
