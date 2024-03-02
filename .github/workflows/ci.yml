@@ -28,14 +28,14 @@ jobs:
       WCL_IS_CI_BUILD: 1
       BUILD_SECRET_KEY: "${{ secrets.BUILD_SECRET }}"
     steps:
-      - uses: actions/setup-dotnet@v1
+      - uses: actions/setup-dotnet@v4
         with:
           dotnet-version: |
             6.0.x
             8.0.x
             9.0.x
           include-prerelease: true
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
         with:
           submodules: true
       - name: PrepEnv
@@ -68,14 +68,14 @@ jobs:
       WCL_IS_CI_BUILD: 1
       BUILD_SECRET_KEY: "${{ secrets.BUILD_SECRET }}"
     steps:
-      - uses: actions/setup-dotnet@v1
+      - uses: actions/setup-dotnet@v4
         with:
           dotnet-version: |
             3.1.x
             6.0.x
             8.0.x
           include-prerelease: true
-      - uses: actions/checkout@v1
+      - uses: actions/checkout@v4
         with:
           submodules: true
       - name: PrepEnv
