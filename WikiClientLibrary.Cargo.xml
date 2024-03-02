@@ -406,6 +406,7 @@
       <param name="queryable">the input queryable that should have implemented <see cref="T:System.Collections.Generic.IAsyncEnumerable`1" />.</param>
       <typeparam name="T">type of the item.</typeparam>
       <returns>the same object reference as <paramref name="queryable" />.</returns>
+      <remarks>This method is expected to have exactly the same behavior as <see cref="T:Microsoft.EntityFrameworkCore.EntityFrameworkQueryableExtensions.AsAsyncEnumerable" />.</remarks>
       <exception cref="T:System.InvalidOperationException">input <paramref name="queryable" /> does not implement <see cref="T:System.Collections.Generic.IAsyncEnumerable`1" />.</exception>
     </member>
     <member name="T:WikiClientLibrary.Cargo.Linq.ICargoQueryContext">
@@ -916,6 +917,10 @@
       <summary>
             Annotates the property as a cargo list, i.e. <c>List (<see cref="P:WikiClientLibrary.Cargo.Schema.DataAnnotations.CargoListAttribute.Delimiter" />) of [type]</c>.
             </summary>
+      <remarks>
+            All the collection properties without <see cref="T:WikiClientLibrary.Cargo.Schema.DataAnnotations.CargoListAttribute" />
+            will use default settings, i.e. using comma (,) as list separator.
+            </remarks>
     </member>
     <member name="M:WikiClientLibrary.Cargo.Schema.DataAnnotations.CargoListAttribute.#ctor">
       <summary>Initialize the attribute with comma (,) as list separator.</summary>

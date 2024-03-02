@@ -267,6 +267,7 @@
       <param name="response">The HTTP response message to parse.</param>
       <param name="context">The parsing context.</param>
       <returns>A strongly-typed object containing the desired response.</returns>
+      <remarks>For general guidance on how this method should be implemented, see <see cref="M:WikiClientLibrary.Client.IWikiResponseMessageParser`1.ParseResponseAsync(System.Net.Http.HttpResponseMessage,WikiClientLibrary.Client.WikiResponseParsingContext)" />.</remarks>
     </member>
     <member name="T:WikiClientLibrary.Wikia.WikiaJsonResponseParser">
       <summary>
@@ -289,6 +290,36 @@
       <param name="response">The HTTP response message to parse.</param>
       <param name="context">The parsing context.</param>
       <returns>A strongly-typed object containing the desired response.</returns>
+      <remarks>
+        <para>This method does not check the HTTP status code, because for certain JSON responses,
+            the status code might has its semantic meanings.</para>
+        <para>Then the content will be parsed as JSON, in <see cref="T:Newtonsoft.Json.Linq.JToken" />. If there is
+            <see cref="T:Newtonsoft.Json.JsonException" /> thrown while parsing the response, a retry will be requested.</para>
+        <para>The default implementation for this method throws a <see cref="T:WikiClientLibrary.Wikia.WikiaApiException" />
+            or one of its derived exceptions when detected <c>exception</c> node in the JSON response.
+            The exception mapping is as follows</para>
+        <list type="table">
+          <listheader>
+            <term>
+              <c>exception.code</c> value</term>
+            <description>Mapped exception type</description>
+          </listheader>
+          <item>
+            <term>
+              <c>NotFoundApiException</c>
+            </term>
+            <description>
+              <see cref="T:WikiClientLibrary.Wikia.NotFoundApiException" />
+            </description>
+          </item>
+          <item>
+            <term>Others</term>
+            <description>
+              <see cref="T:WikiClientLibrary.Wikia.WikiaApiException" />
+            </description>
+          </item>
+        </list>
+      </remarks>
     </member>
     <member name="T:WikiClientLibrary.Wikia.WikiaNamespaces">
       <summary>
@@ -329,12 +360,17 @@
       <summary>
             The request message used with Wikia publicized and non-public API endpoints.
             </summary>
+      <remarks>
+            The requests are issued with HTTP GET method. The fiedls are concatenated after the endpoint
+            URL as URI query part (e.g. <c>endpointUrl?query</c>).
+            </remarks>
     </member>
     <member name="M:WikiClientLibrary.Wikia.WikiaQueryRequestMessage.#ctor">
       <summary>
             Initializes a <see cref="T:WikiClientLibrary.Wikia.WikiaQueryRequestMessage" /> instance with
             the automatically-generated message ID and empty query fields.
             </summary>
+      <remarks>Note that you cannot insert fields after initialization.</remarks>
     </member>
     <member name="M:WikiClientLibrary.Wikia.WikiaQueryRequestMessage.#ctor(System.Object)">
       <summary>
@@ -442,6 +478,8 @@
       <value>The URI query part is the part of the request URI on the right-hand-side of
             the first question mark(<c>?</c>), or <c>null</c> if no question mark or query is appended
             to the endpoint URL.</value>
+      <remarks>Returning <see cref="F:System.String.Empty" /> will cause a single question mark be appended to the
+            endpoint URL when sending the request.</remarks>
     </member>
     <member name="P:WikiClientLibrary.Wikia.WikiaQueryRequestMessage.UseHttpPost">
       <summary>
@@ -455,6 +493,7 @@
     </member>
     <member name="M:WikiClientLibrary.Wikia.WikiaSiteOptions.#ctor">
       <summary>Initializes an empty <see cref="T:WikiClientLibrary.Wikia.WikiaSiteOptions" /> instance.</summary>
+      <remarks>You may use <see cref="M:WikiClientLibrary.Wikia.WikiaSiteOptions.#ctor(System.String)" /> overload, which might be handy.</remarks>
     </member>
     <member name="M:WikiClientLibrary.Wikia.WikiaSiteOptions.#ctor(System.String)">
       <summary>Initializes a new <see cref="T:WikiClientLibrary.Wikia.WikiaSiteOptions" /> instance from the root URL of a Wikia site.</summary>
@@ -472,16 +511,19 @@
       <summary>
             Wikia Nirvana endpoint URL.
             </summary>
+      <remarks>Typically, the value is <c>(Server URL)/wikia.php</c>.</remarks>
     </member>
     <member name="P:WikiClientLibrary.Wikia.WikiaSiteOptions.ScriptUrl">
       <summary>
             MediaWiki script URL, as in <see cref="P:WikiClientLibrary.Sites.SiteInfo.ScriptFilePath" />.
             </summary>
+      <remarks>Typically, the value is <c>(Server URL)/index.php</c>.</remarks>
     </member>
     <member name="P:WikiClientLibrary.Wikia.WikiaSiteOptions.WikiaApiRootUrl">
       <summary>
             Root URL of Wikia public REST-ful API v1, without the suffixing slash.
             </summary>
+      <remarks>Typically, the value is <c>(Server URL)/api/v1</c>.</remarks>
     </member>
     <member name="T:WikiClientLibrary.Wikia.Discussions.Board">
       <summary>
@@ -540,6 +582,7 @@
     </member>
     <member name="P:WikiClientLibrary.Wikia.Discussions.Board.Exists">
       <summary>Gets a value, determining whether the page exists.</summary>
+      <remarks>This value is valid only after a <see cref="M:WikiClientLibrary.Wikia.Discussions.Board.RefreshAsync" /> call.</remarks>
     </member>
     <member name="M:WikiClientLibrary.Wikia.Discussions.Board.NewPostAsync(System.String)">
       <summary>
@@ -551,6 +594,13 @@
       <param name="options">The options for creating the post.</param>
       <param name="cancellationToken">A token used to cancel the operation.</param>
       <returns>A new post containing the ID of the new post.</returns>
+      <remarks>
+        <para>Wikia natively supports post title on Message Walls and Forum Boards.
+            For the unification of method signature, you can set <paramref name="postTitle" /> when posting
+            article comment, but the content will be simply surrounded with <c>&lt;h2&gt;</c> HTML markup.</para>
+        <para>If you leave <paramref name="postTitle" /><c>null</c> or empty when posting on Message Walls,
+            a default title (e.g. Message from [UserName]) will be used by Wikia.</para>
+      </remarks>
     </member>
     <member name="M:WikiClientLibrary.Wikia.Discussions.Board.NewPostAsync(System.String,System.String)">
       <summary>
@@ -562,6 +612,13 @@
       <param name="options">The options for creating the post.</param>
       <param name="cancellationToken">A token used to cancel the operation.</param>
       <returns>A new post containing the ID of the new post.</returns>
+      <remarks>
+        <para>Wikia natively supports post title on Message Walls and Forum Boards.
+            For the unification of method signature, you can set <paramref name="postTitle" /> when posting
+            article comment, but the content will be simply surrounded with <c>&lt;h2&gt;</c> HTML markup.</para>
+        <para>If you leave <paramref name="postTitle" /><c>null</c> or empty when posting on Message Walls,
+            a default title (e.g. Message from [UserName]) will be used by Wikia.</para>
+      </remarks>
     </member>
     <member name="M:WikiClientLibrary.Wikia.Discussions.Board.NewPostAsync(System.String,System.String,System.Collections.Generic.IEnumerable{System.String})">
       <summary>
@@ -573,6 +630,13 @@
       <param name="options">The options for creating the post.</param>
       <param name="cancellationToken">A token used to cancel the operation.</param>
       <returns>A new post containing the ID of the new post.</returns>
+      <remarks>
+        <para>Wikia natively supports post title on Message Walls and Forum Boards.
+            For the unification of method signature, you can set <paramref name="postTitle" /> when posting
+            article comment, but the content will be simply surrounded with <c>&lt;h2&gt;</c> HTML markup.</para>
+        <para>If you leave <paramref name="postTitle" /><c>null</c> or empty when posting on Message Walls,
+            a default title (e.g. Message from [UserName]) will be used by Wikia.</para>
+      </remarks>
     </member>
     <member name="M:WikiClientLibrary.Wikia.Discussions.Board.NewPostAsync(System.String,System.String,System.Collections.Generic.IEnumerable{System.String},WikiClientLibrary.Wikia.Discussions.PostCreationOptions)">
       <summary>
@@ -584,6 +648,13 @@
       <param name="options">The options for creating the post.</param>
       <param name="cancellationToken">A token used to cancel the operation.</param>
       <returns>A new post containing the ID of the new post.</returns>
+      <remarks>
+        <para>Wikia natively supports post title on Message Walls and Forum Boards.
+            For the unification of method signature, you can set <paramref name="postTitle" /> when posting
+            article comment, but the content will be simply surrounded with <c>&lt;h2&gt;</c> HTML markup.</para>
+        <para>If you leave <paramref name="postTitle" /><c>null</c> or empty when posting on Message Walls,
+            a default title (e.g. Message from [UserName]) will be used by Wikia.</para>
+      </remarks>
     </member>
     <member name="M:WikiClientLibrary.Wikia.Discussions.Board.NewPostAsync(System.String,System.String,System.Collections.Generic.IEnumerable{System.String},WikiClientLibrary.Wikia.Discussions.PostCreationOptions,System.Threading.CancellationToken)">
       <summary>
@@ -595,6 +666,13 @@
       <param name="options">The options for creating the post.</param>
       <param name="cancellationToken">A token used to cancel the operation.</param>
       <returns>A new post containing the ID of the new post.</returns>
+      <remarks>
+        <para>Wikia natively supports post title on Message Walls and Forum Boards.
+            For the unification of method signature, you can set <paramref name="postTitle" /> when posting
+            article comment, but the content will be simply surrounded with <c>&lt;h2&gt;</c> HTML markup.</para>
+        <para>If you leave <paramref name="postTitle" /><c>null</c> or empty when posting on Message Walls,
+            a default title (e.g. Message from [UserName]) will be used by Wikia.</para>
+      </remarks>
     </member>
     <member name="M:WikiClientLibrary.Wikia.Discussions.Board.NewPostAsync(System.String,System.String,WikiClientLibrary.Wikia.Discussions.PostCreationOptions)">
       <summary>
@@ -606,6 +684,13 @@
       <param name="options">The options for creating the post.</param>
       <param name="cancellationToken">A token used to cancel the operation.</param>
       <returns>A new post containing the ID of the new post.</returns>
+      <remarks>
+        <para>Wikia natively supports post title on Message Walls and Forum Boards.
+            For the unification of method signature, you can set <paramref name="postTitle" /> when posting
+            article comment, but the content will be simply surrounded with <c>&lt;h2&gt;</c> HTML markup.</para>
+        <para>If you leave <paramref name="postTitle" /><c>null</c> or empty when posting on Message Walls,
+            a default title (e.g. Message from [UserName]) will be used by Wikia.</para>
+      </remarks>
     </member>
     <member name="P:WikiClientLibrary.Wikia.Discussions.Board.Page">
       <summary>Gets the corresponding page information.</summary>
@@ -625,6 +710,9 @@
             Asynchronously refreshes the basic information of current board.
             </summary>
       <param name="cancellationToken">A token used to cancel the operation.</param>
+      <remarks>
+            This method will refresh the <see cref="P:WikiClientLibrary.Wikia.Discussions.Board.Page" /> and <see cref="P:WikiClientLibrary.Wikia.Discussions.Board.Exists" /> properties.
+            </remarks>
     </member>
     <member name="P:WikiClientLibrary.Wikia.Discussions.Board.Site">
       <summary>Gets the Wikia site.</summary>
@@ -650,6 +738,9 @@
       <param name="posts">The posts to be refreshed.</param>
       <param name="options">The options used to fetch the post.</param>
       <param name="cancellationToken">The token used to cancel the operation.</param>
+      <remarks>
+            This method will not fetch replies for the <paramref name="posts" />. <see cref="P:WikiClientLibrary.Wikia.Discussions.Post.Replies" /> will remain unchanged after the invocation.
+            </remarks>
     </member>
     <member name="M:WikiClientLibrary.Wikia.Discussions.DiscussionsExtensions.RefreshAsync(System.Collections.Generic.IEnumerable{WikiClientLibrary.Wikia.Discussions.Post},WikiClientLibrary.Wikia.Discussions.PostQueryOptions)">
       <summary>
@@ -658,6 +749,9 @@
       <param name="posts">The posts to be refreshed.</param>
       <param name="options">The options used to fetch the post.</param>
       <param name="cancellationToken">The token used to cancel the operation.</param>
+      <remarks>
+            This method will not fetch replies for the <paramref name="posts" />. <see cref="P:WikiClientLibrary.Wikia.Discussions.Post.Replies" /> will remain unchanged after the invocation.
+            </remarks>
     </member>
     <member name="M:WikiClientLibrary.Wikia.Discussions.DiscussionsExtensions.RefreshAsync(System.Collections.Generic.IEnumerable{WikiClientLibrary.Wikia.Discussions.Post},WikiClientLibrary.Wikia.Discussions.PostQueryOptions,System.Threading.CancellationToken)">
       <summary>
@@ -666,6 +760,9 @@
       <param name="posts">The posts to be refreshed.</param>
       <param name="options">The options used to fetch the post.</param>
       <param name="cancellationToken">The token used to cancel the operation.</param>
+      <remarks>
+            This method will not fetch replies for the <paramref name="posts" />. <see cref="P:WikiClientLibrary.Wikia.Discussions.Post.Replies" /> will remain unchanged after the invocation.
+            </remarks>
     </member>
     <member name="T:WikiClientLibrary.Wikia.Discussions.Post">
       <summary>
@@ -680,6 +777,10 @@
       <param name="site">The Wikia site.</param>
       <param name="ownerPage">Stub of the page/board that owns the post.</param>
       <param name="id">ID of the post.</param>
+      <remarks>
+            For now, it is not possible to get the replies by using the constructor provided here.
+            To achieve this, you need to invoke <see cref="M:WikiClientLibrary.Wikia.Discussions.Board.EnumPostsAsync" /> on a <see cref="T:WikiClientLibrary.Wikia.Discussions.Board" /> instance.
+            </remarks>
       <exception cref="T:System.ArgumentNullException">
         <paramref name="site" /> is <c>null</c>.</exception>
       <exception cref="T:System.ArgumentException">
@@ -693,6 +794,8 @@
     </member>
     <member name="P:WikiClientLibrary.Wikia.Discussions.Post.Exists">
       <summary>Gets a value, determining whether the page exists.</summary>
+      <remarks>If you have created the <see cref="T:WikiClientLibrary.Wikia.Discussions.Post" /> instance via its constructor,
+            this value is valid only after a <see cref="M:WikiClientLibrary.Wikia.Discussions.Post.RefreshAsync" /> call.</remarks>
     </member>
     <member name="P:WikiClientLibrary.Wikia.Discussions.Post.Id">
       <summary>Gets the ID of the post.</summary>
@@ -716,6 +819,9 @@
             </summary>
       <param name="options">The options used to fetch the post.</param>
       <param name="cancellationToken">The token used to cancel the operation.</param>
+      <remarks>
+            This method will not fetch replies. <see cref="P:WikiClientLibrary.Wikia.Discussions.Post.Replies" /> will remain unchanged after the invocation.
+            </remarks>
     </member>
     <member name="M:WikiClientLibrary.Wikia.Discussions.Post.RefreshAsync(WikiClientLibrary.Wikia.Discussions.PostQueryOptions)">
       <summary>
@@ -723,6 +829,9 @@
             </summary>
       <param name="options">The options used to fetch the post.</param>
       <param name="cancellationToken">The token used to cancel the operation.</param>
+      <remarks>
+            This method will not fetch replies. <see cref="P:WikiClientLibrary.Wikia.Discussions.Post.Replies" /> will remain unchanged after the invocation.
+            </remarks>
     </member>
     <member name="M:WikiClientLibrary.Wikia.Discussions.Post.RefreshAsync(WikiClientLibrary.Wikia.Discussions.PostQueryOptions,System.Threading.CancellationToken)">
       <summary>
@@ -730,6 +839,9 @@
             </summary>
       <param name="options">The options used to fetch the post.</param>
       <param name="cancellationToken">The token used to cancel the operation.</param>
+      <remarks>
+            This method will not fetch replies. <see cref="P:WikiClientLibrary.Wikia.Discussions.Post.Replies" /> will remain unchanged after the invocation.
+            </remarks>
     </member>
     <member name="P:WikiClientLibrary.Wikia.Discussions.Post.Replies">
       <summary>Gets the replies of the post.</summary>
@@ -742,6 +854,9 @@
       <param name="options">The options for creating the reply.</param>
       <param name="cancellationToken">A token used to cancel the operation.</param>
       <returns>A new post containing the workflow ID of the new post.</returns>
+      <remarks>For now Wikia only supports 2-level posts.
+            If you attempt to reply to the level-2 post,
+            the comment will be placed as level-2 (top-level) post.</remarks>
     </member>
     <member name="M:WikiClientLibrary.Wikia.Discussions.Post.ReplyAsync(System.String,WikiClientLibrary.Wikia.Discussions.PostCreationOptions)">
       <summary>
@@ -751,6 +866,9 @@
       <param name="options">The options for creating the reply.</param>
       <param name="cancellationToken">A token used to cancel the operation.</param>
       <returns>A new post containing the workflow ID of the new post.</returns>
+      <remarks>For now Wikia only supports 2-level posts.
+            If you attempt to reply to the level-2 post,
+            the comment will be placed as level-2 (top-level) post.</remarks>
     </member>
     <member name="M:WikiClientLibrary.Wikia.Discussions.Post.ReplyAsync(System.String,WikiClientLibrary.Wikia.Discussions.PostCreationOptions,System.Threading.CancellationToken)">
       <summary>
@@ -760,6 +878,9 @@
       <param name="options">The options for creating the reply.</param>
       <param name="cancellationToken">A token used to cancel the operation.</param>
       <returns>A new post containing the workflow ID of the new post.</returns>
+      <remarks>For now Wikia only supports 2-level posts.
+            If you attempt to reply to the level-2 post,
+            the comment will be placed as level-2 (top-level) post.</remarks>
     </member>
     <member name="P:WikiClientLibrary.Wikia.Discussions.Post.Site">
       <summary>Gets the Wikia site.</summary>
@@ -894,6 +1015,9 @@
       <summary>
             The relative URL of the Page.
             </summary>
+      <remarks>
+            Absolute URL: obtained from combining relative URL with <see cref="P:WikiClientLibrary.Wikia.Sites.SiteVariableData.BasePath" /> from response.
+            </remarks>
     </member>
     <member name="T:WikiClientLibrary.Wikia.Sites.SiteHtmlTitleInfo">
       <summary>
@@ -1119,6 +1243,10 @@
       <summary>
             Represents a node in the WikiVariable API response.
             </summary>
+      <remarks>See
+            <a href="http://www.wikia.com/api/v1/#!/Mercury/getWikiData_get_0">http://www.wikia.com/api/v1/#!/Mercury/getWikiData_get_0</a>
+            for Wikia's official documentation for the WikiVariable API response.
+            </remarks>
     </member>
     <member name="M:WikiClientLibrary.Wikia.Sites.SiteVariableData.#ctor">
       <summary>
@@ -1494,6 +1622,14 @@
       <summary>
             Represents a Wikia site endpoint.
             </summary>
+      <remarks>
+        <para>
+            For FANDOM/Wikia specific site access, use this instead of <see cref="T:WikiClientLibrary.Sites.WikiSite" /> base class,
+            because this class contains more Wikia-specific APIs, and properly handles Wikia-specific API peculiarities
+            (such as user logout).
+            </para>
+        <para>See <see cref="N:WikiClientLibrary.Wikia" /> for a summary on FANDOM-and-Wikia.org-specific APIs.</para>
+      </remarks>
     </member>
     <member name="M:WikiClientLibrary.Wikia.Sites.WikiaSite.#ctor(WikiClientLibrary.Client.IWikiClient,System.String)">
       <summary>
@@ -1504,6 +1640,7 @@
       <param name="options">Site options.</param>
       <param name="userName">The user name used to login before fetching for site information. Pass <c>null</c> to fetch site information without login first.</param>
       <param name="password">The password used to login before fetching for site information.</param>
+      <remarks></remarks>
       <exception cref="T:WikiClientLibrary.UnauthorizedOperationException">Cannot access query API module due to target site permission settings. You may need to use <see cref="M:WikiClientLibrary.Sites.WikiSite.#ctor(WikiClientLibrary.Client.IWikiClient,WikiClientLibrary.Sites.SiteOptions,System.String,System.String)" /> to login before any other API requests.</exception>
       <exception cref="T:System.ArgumentNullException">
         <paramref name="wikiClient" /> or <paramref name="options" /> is <c>null</c>.
@@ -1592,6 +1729,7 @@
       <param name="responseParser">The parser used to parse the response.</param>
       <param name="cancellationToken">The token used to cancel the operation.</param>
       <returns>The parsed JSON root of response.</returns>
+      <remarks>This overload uses <see cref="T:WikiClientLibrary.Wikia.WikiaJsonResponseParser" /> to parse the response.</remarks>
       <exception cref="T:System.ArgumentNullException">Either <paramref name="request" /> or <paramref name="responseParser" /> is <c>null</c>.</exception>
     </member>
     <member name="M:WikiClientLibrary.Wikia.Sites.WikiaSite.InvokeNirvanaAsync``1(WikiClientLibrary.Client.WikiRequestMessage,WikiClientLibrary.Client.IWikiResponseMessageParser{``0},System.Threading.CancellationToken)">
@@ -1621,6 +1759,10 @@
       <param name="responseParser">The parser used to parse the response.</param>
       <param name="cancellationToken">The token used to cancel the operation.</param>
       <returns>The parsed JSON root of response.</returns>
+      <remarks>
+        <para>This overload uses <see cref="T:WikiClientLibrary.Wikia.WikiaJsonResponseParser" /> to parse the response.</para>
+        <para>This method will automatically add <c>action=ajax</c> field in the request.</para>
+      </remarks>
       <exception cref="T:System.ArgumentNullException">Either <paramref name="request" /> or <paramref name="responseParser" /> is <c>null</c>.</exception>
     </member>
     <member name="M:WikiClientLibrary.Wikia.Sites.WikiaSite.InvokeWikiaAjaxAsync``1(WikiClientLibrary.Client.WikiRequestMessage,WikiClientLibrary.Client.IWikiResponseMessageParser{``0},System.Threading.CancellationToken)">
@@ -1640,6 +1782,7 @@
         </markup>
       </typeparam>
       <returns>The parsed JSON root of response.</returns>
+      <remarks>This method will automatically add <c>action=ajax</c> field in the request.</remarks>
       <exception cref="T:System.ArgumentNullException">Either <paramref name="request" /> or <paramref name="responseParser" /> is <c>null</c>.</exception>
     </member>
     <member name="M:WikiClientLibrary.Wikia.Sites.WikiaSite.InvokeWikiaApiAsync(System.String,WikiClientLibrary.Client.WikiRequestMessage,System.Threading.CancellationToken)">
@@ -1651,6 +1794,7 @@
       <param name="responseParser">The parser used to parse the response.</param>
       <param name="cancellationToken">The token used to cancel the operation.</param>
       <returns>The parsed JSON root of response.</returns>
+      <remarks>This overload uses <see cref="T:WikiClientLibrary.Wikia.WikiaJsonResponseParser" /> to parse the response.</remarks>
       <exception cref="T:System.ArgumentNullException">Either <paramref name="request" /> or <paramref name="responseParser" /> is <c>null</c>.</exception>
     </member>
     <member name="M:WikiClientLibrary.Wikia.Sites.WikiaSite.InvokeWikiaApiAsync``1(System.String,WikiClientLibrary.Client.WikiRequestMessage,WikiClientLibrary.Client.IWikiResponseMessageParser{``0},System.Threading.CancellationToken)">
@@ -1697,6 +1841,9 @@
       <summary>
             Directly sends a logout request. This method will be invoked by <see cref="M:WikiClientLibrary.Sites.WikiSite.LogoutAsync(System.Boolean)" />.
             </summary>
+      <remarks>
+            To logout the user, this override sends a POST request to <c>https://www.wikia.com/logout</c>.
+            </remarks>
     </member>
     <member name="P:WikiClientLibrary.Wikia.Sites.WikiaSite.WikiVariables">
       <summary>
@@ -1712,6 +1859,10 @@
       <summary>
             A MediaWiki-<c>list</c>-like object that can enumerate the search results.
             </summary>
+      <remarks>To take a sequence of <see cref="T:WikiClientLibrary.Pages.WikiPage" /> instances from this object,
+            you can use LINQ <see cref="M:System.Linq.Enumerable.Select``2(System.Collections.Generic.IEnumerable{``0},System.Func{``0,``1})" /> method
+            with <see cref="M:WikiClientLibrary.Pages.WikiPage.#ctor(WikiClientLibrary.Sites.WikiSite,System.String)" />; then call <see cref="M:WikiClientLibrary.Pages.WikiPageExtensions.RefreshAsync(System.Collections.Generic.IEnumerable{WikiClientLibrary.Pages.WikiPage})" />
+            to fetch page information or content.</remarks>
     </member>
     <member name="M:WikiClientLibrary.Wikia.WikiaApi.LocalWikiSearchList.#ctor(WikiClientLibrary.Wikia.Sites.WikiaSite)">
       <summary>
@@ -1742,6 +1893,9 @@
           </include>
         </markup>
       </param>
+      <remarks>In most cases, the whole sequence will be very long. To take only the top <c>n</c> results
+            from the sequence, chain the returned <see cref="T:System.Collections.Generic.IAsyncEnumerable`1" /> with <see cref="M:System.Linq.AsyncEnumerable.Take``1(System.Collections.Generic.IAsyncEnumerable{``0},System.Int32)" />
+            extension method.</remarks>
     </member>
     <member name="P:WikiClientLibrary.Wikia.WikiaApi.LocalWikiSearchList.Keyword">
       <summary>
@@ -1771,6 +1925,9 @@
             Maximum count of items returned per MediaWiki API invocation.
             This limit is 25 by default, and can be set as high as 200 for regular users.
             </value>
+      <remarks>
+            This property decides how many items returned at most per API invocation.
+            </remarks>
     </member>
     <member name="P:WikiClientLibrary.Wikia.WikiaApi.LocalWikiSearchList.RankingType">
       <summary>
@@ -1961,6 +2118,7 @@
       <param name="maxCount">Maximum count of the returned items.</param>
       <param name="cancellationToken">A token used to cancel the operation.</param>
       <returns></returns>
+      <remarks>This overload fetches 10 items at most.</remarks>
       <exception cref="T:System.ArgumentNullException">
         <paramref name="site" /> is <c>null</c>.</exception>
       <exception cref="T:System.ArgumentOutOfRangeException">

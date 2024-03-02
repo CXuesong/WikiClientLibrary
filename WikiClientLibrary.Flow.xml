@@ -8,6 +8,11 @@
       <summary>
             Represents a Flow topic page.
             </summary>
+      <remarks>
+        <para>The content model of such page should be <c>flow-board</c>.</para>
+        <para>See https://www.mediawiki.org/wiki/Extension:Flow for more information about Flow extension.</para>
+        <para>Note that the development of Flow extension seems now paused. See https://en.wikipedia.org/wiki/Wikipedia:Flow for more information.</para>
+      </remarks>
     </member>
     <member name="M:WikiClientLibrary.Flow.Board.#ctor(WikiClientLibrary.Sites.WikiSite,System.String)">
       <summary>
@@ -284,6 +289,7 @@
       <summary>
             Post content.
             </summary>
+      <remarks>This property is set to <see cref="P:WikiClientLibrary.Flow.Post.LastRevision" />.<see cref="P:WikiClientLibrary.Flow.Revision.Content" /> after the refresh.</remarks>
     </member>
     <member name="P:WikiClientLibrary.Flow.Post.LastRevision">
       <summary>
@@ -297,6 +303,7 @@
       <param name="action">The action to perform. You need to have sufficient permission for it.</param>
       <param name="reason">The reason for moderation.</param>
       <param name="cancellationToken">A token used to cancel the operation.</param>
+      <remarks>This method will not update <see cref="P:WikiClientLibrary.Flow.Post.LastRevision" /> content, you need to call <see cref="M:WikiClientLibrary.Flow.Post.RefreshAsync" /> if you need the latest revision information.</remarks>
     </member>
     <member name="M:WikiClientLibrary.Flow.Post.ModerateAsync(WikiClientLibrary.Flow.ModerationAction,System.String,System.Threading.CancellationToken)">
       <summary>
@@ -305,18 +312,27 @@
       <param name="action">The action to perform. You need to have sufficient permission for it.</param>
       <param name="reason">The reason for moderation.</param>
       <param name="cancellationToken">A token used to cancel the operation.</param>
+      <remarks>This method will not update <see cref="P:WikiClientLibrary.Flow.Post.LastRevision" /> content, you need to call <see cref="M:WikiClientLibrary.Flow.Post.RefreshAsync" /> if you need the latest revision information.</remarks>
     </member>
     <member name="M:WikiClientLibrary.Flow.Post.RefreshAsync">
       <summary>
             Refreshes the topic revision and replies from the server.
             </summary>
       <param name="cancellationToken">The token used to cancel the operation.</param>
+      <remarks>
+            Due to inherent limitation of MW API, this method will not fetch replies nor their workflow IDs.
+            <see cref="P:WikiClientLibrary.Flow.Revision.ReplyIds" /> in <see cref="P:WikiClientLibrary.Flow.Post.LastRevision" />, as well as <see cref="P:WikiClientLibrary.Flow.Post.Replies" />, will be empty,
+            </remarks>
     </member>
     <member name="M:WikiClientLibrary.Flow.Post.RefreshAsync(System.Threading.CancellationToken)">
       <summary>
             Refreshes the topic revision and replies from the server.
             </summary>
       <param name="cancellationToken">The token used to cancel the operation.</param>
+      <remarks>
+            Due to inherent limitation of MW API, this method will not fetch replies nor their workflow IDs.
+            <see cref="P:WikiClientLibrary.Flow.Revision.ReplyIds" /> in <see cref="P:WikiClientLibrary.Flow.Post.LastRevision" />, as well as <see cref="P:WikiClientLibrary.Flow.Post.Replies" />, will be empty,
+            </remarks>
     </member>
     <member name="P:WikiClientLibrary.Flow.Post.Replies">
       <summary>
@@ -586,6 +602,7 @@
       <param name="action">The action to perform.</param>
       <param name="reason">The reason for operation.</param>
       <param name="cancellationToken">A token used to cancel the operation.</param>
+      <remarks>This method will not update <see cref="P:WikiClientLibrary.Flow.Topic.TopicTitleRevision" /> content, you need to call <see cref="M:WikiClientLibrary.Flow.Topic.RefreshAsync" /> if you need the latest revision information.</remarks>
     </member>
     <member name="M:WikiClientLibrary.Flow.Topic.LockAsync(WikiClientLibrary.Flow.LockAction,System.String)">
       <summary>
@@ -594,6 +611,7 @@
       <param name="action">The action to perform.</param>
       <param name="reason">The reason for operation.</param>
       <param name="cancellationToken">A token used to cancel the operation.</param>
+      <remarks>This method will not update <see cref="P:WikiClientLibrary.Flow.Topic.TopicTitleRevision" /> content, you need to call <see cref="M:WikiClientLibrary.Flow.Topic.RefreshAsync" /> if you need the latest revision information.</remarks>
     </member>
     <member name="M:WikiClientLibrary.Flow.Topic.LockAsync(WikiClientLibrary.Flow.LockAction,System.String,System.Threading.CancellationToken)">
       <summary>
@@ -602,6 +620,7 @@
       <param name="action">The action to perform.</param>
       <param name="reason">The reason for operation.</param>
       <param name="cancellationToken">A token used to cancel the operation.</param>
+      <remarks>This method will not update <see cref="P:WikiClientLibrary.Flow.Topic.TopicTitleRevision" /> content, you need to call <see cref="M:WikiClientLibrary.Flow.Topic.RefreshAsync" /> if you need the latest revision information.</remarks>
     </member>
     <member name="M:WikiClientLibrary.Flow.Topic.ModerateAsync(WikiClientLibrary.Flow.ModerationAction,System.String)">
       <summary>
@@ -610,6 +629,7 @@
       <param name="action">The action to perform. You need to have sufficient permission for it.</param>
       <param name="reason">The reason for moderation.</param>
       <param name="cancellationToken">A token used to cancel the operation.</param>
+      <remarks>This method will not update <see cref="P:WikiClientLibrary.Flow.Topic.TopicTitleRevision" /> content, you need to call <see cref="M:WikiClientLibrary.Flow.Topic.RefreshAsync" /> if you need the latest revision information.</remarks>
     </member>
     <member name="M:WikiClientLibrary.Flow.Topic.ModerateAsync(WikiClientLibrary.Flow.ModerationAction,System.String,System.Threading.CancellationToken)">
       <summary>
@@ -618,6 +638,7 @@
       <param name="action">The action to perform. You need to have sufficient permission for it.</param>
       <param name="reason">The reason for moderation.</param>
       <param name="cancellationToken">A token used to cancel the operation.</param>
+      <remarks>This method will not update <see cref="P:WikiClientLibrary.Flow.Topic.TopicTitleRevision" /> content, you need to call <see cref="M:WikiClientLibrary.Flow.Topic.RefreshAsync" /> if you need the latest revision information.</remarks>
     </member>
     <member name="P:WikiClientLibrary.Flow.Topic.Posts">
       <summary>
@@ -661,21 +682,25 @@
       <summary>
             Topic summary.
             </summary>
+      <remarks>This property is set to <see cref="P:WikiClientLibrary.Flow.Topic.TopicTitleRevision" />.<see cref="P:WikiClientLibrary.Flow.Revision.Summary" />.<see cref="P:WikiClientLibrary.Flow.Revision.Content" /> after the refresh.</remarks>
     </member>
     <member name="P:WikiClientLibrary.Flow.Topic.Title">
       <summary>
             Full title of the topic page.
             </summary>
+      <remarks>The page title is usually <see cref="P:WikiClientLibrary.Flow.Topic.WorkflowId" /> with <c>Topic:</c> namespace prefix.</remarks>
     </member>
     <member name="P:WikiClientLibrary.Flow.Topic.TopicTitle">
       <summary>
             Topic display title.
             </summary>
+      <remarks>This property is set to <see cref="P:WikiClientLibrary.Flow.Topic.TopicTitleRevision" />.<see cref="P:WikiClientLibrary.Flow.Revision.Content" /> after the refresh.</remarks>
     </member>
     <member name="P:WikiClientLibrary.Flow.Topic.TopicTitleRevision">
       <summary>
             Gets the latest revision of the topic display title.
             </summary>
+      <remarks>Usually this revision shares the same <see cref="P:WikiClientLibrary.Flow.Revision.WorkflowId" /> as the topic itself.</remarks>
     </member>
     <member name="M:WikiClientLibrary.Flow.Topic.ToString">
       <summary>
@@ -687,29 +712,34 @@
             Updates the topic summary to the value of <see cref="P:WikiClientLibrary.Flow.Topic.Summary" />.
             </summary>
       <param name="cancellationToken">A token used to cancel the operation.</param>
+      <remarks>This method will not update <see cref="P:WikiClientLibrary.Flow.Topic.TopicTitleRevision" /> content, you need to call <see cref="M:WikiClientLibrary.Flow.Topic.RefreshAsync" /> if you need the latest revision information.</remarks>
     </member>
     <member name="M:WikiClientLibrary.Flow.Topic.UpdateSummaryAsync(System.Threading.CancellationToken)">
       <summary>
             Updates the topic summary to the value of <see cref="P:WikiClientLibrary.Flow.Topic.Summary" />.
             </summary>
       <param name="cancellationToken">A token used to cancel the operation.</param>
+      <remarks>This method will not update <see cref="P:WikiClientLibrary.Flow.Topic.TopicTitleRevision" /> content, you need to call <see cref="M:WikiClientLibrary.Flow.Topic.RefreshAsync" /> if you need the latest revision information.</remarks>
     </member>
     <member name="M:WikiClientLibrary.Flow.Topic.UpdateTopicTitleAsync">
       <summary>
             Updates the topic display title to the value of <see cref="P:WikiClientLibrary.Flow.Topic.TopicTitle" />.
             </summary>
       <param name="cancellationToken">A token used to cancel the operation.</param>
+      <remarks>This method will not update <see cref="P:WikiClientLibrary.Flow.Topic.TopicTitleRevision" /> content, you need to call <see cref="M:WikiClientLibrary.Flow.Topic.RefreshAsync" /> if you need the latest revision information.</remarks>
     </member>
     <member name="M:WikiClientLibrary.Flow.Topic.UpdateTopicTitleAsync(System.Threading.CancellationToken)">
       <summary>
             Updates the topic display title to the value of <see cref="P:WikiClientLibrary.Flow.Topic.TopicTitle" />.
             </summary>
       <param name="cancellationToken">A token used to cancel the operation.</param>
+      <remarks>This method will not update <see cref="P:WikiClientLibrary.Flow.Topic.TopicTitleRevision" /> content, you need to call <see cref="M:WikiClientLibrary.Flow.Topic.RefreshAsync" /> if you need the latest revision information.</remarks>
     </member>
     <member name="P:WikiClientLibrary.Flow.Topic.WorkflowId">
       <summary>
             Workflow ID of the topic.
             </summary>
+      <remarks>Workflow ID is usually <see cref="P:WikiClientLibrary.Flow.Topic.Title" /> stripped of <c>Topic:</c> namespace prefix.</remarks>
     </member>
     <member name="T:WikiClientLibrary.Flow.TopicListingOptions">
       <summary>

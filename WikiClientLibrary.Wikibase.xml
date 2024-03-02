@@ -43,6 +43,7 @@
       <summary>
             Gets the main snak of the claim.
             </summary>
+      <remarks>This property is read-only; however you can change its content exception <see cref="P:WikiClientLibrary.Wikibase.Snak.PropertyId" /> value.</remarks>
     </member>
     <member name="P:WikiClientLibrary.Wikibase.Claim.Qualifiers">
       <summary>
@@ -51,6 +52,7 @@
     </member>
     <member name="P:WikiClientLibrary.Wikibase.Claim.Rank">
       <summary>Rank of the claim.</summary>
+      <remarks>The value often is <c>normal</c>.</remarks>
     </member>
     <member name="P:WikiClientLibrary.Wikibase.Claim.References">
       <summary>
@@ -63,6 +65,7 @@
     </member>
     <member name="P:WikiClientLibrary.Wikibase.Claim.Type">
       <summary>The type of the claim.</summary>
+      <remarks>The value often is <c>statement</c>.</remarks>
     </member>
     <member name="T:WikiClientLibrary.Wikibase.ClaimCollection">
       <summary>
@@ -175,6 +178,10 @@
       <summary>
             Provides information on a Wikibase item or property.
             </summary>
+      <remarks>
+            The object represents a read-only snapshot of the Wikibase entity.
+            To edit the entity, use <see cref="M:WikiClientLibrary.Wikibase.Entity.EditAsync(System.Collections.Generic.IEnumerable{WikiClientLibrary.Wikibase.EntityEditEntry},System.String)" /> method.
+            </remarks>
     </member>
     <member name="M:WikiClientLibrary.Wikibase.Entity.#ctor(WikiClientLibrary.Sites.WikiSite,System.String)">
       <summary>
@@ -219,6 +226,19 @@
       <param name="summary">The edit summary.</param>
       <param name="options">Edit options.</param>
       <param name="cancellationToken">A token used to cancel the operation.</param>
+      <remarks>
+        <para>After the operation, the entity may be automatically refreshed,
+            which means all the <see cref="T:WikiClientLibrary.Wikibase.Claim" /> instances that used to belong to this claim will be detached,
+            and perhaps replicates will take the place.
+            If the edit operation is bulk edit, this is effectively a refresh operation with <see cref="F:WikiClientLibrary.Wikibase.EntityQueryOptions.FetchAllProperties" /> flag,
+            except that some properties in the <see cref="F:WikiClientLibrary.Wikibase.EntityQueryOptions.FetchInfo" /> category are just invalidated
+            due to insufficient data contained in the MW API. (e.g. <see cref="P:WikiClientLibrary.Wikibase.Entity.PageId" />) As for the properties that are
+            affected by the edit operation, see the "remarks" section of the properties, respectively.</para>
+        <para>If the edit operation is progressive edit, only the <see cref="P:WikiClientLibrary.Wikibase.Entity.LastRevisionId" /> is valid, after the edit operation.</para>
+        <para>For more information about bulk edit and progressive edit, see the "remarks" section
+            of <see cref="T:WikiClientLibrary.Wikibase.EntityEditOptions" />.</para>
+        <para>If you need more information about the entity after the edit, consider invoking <see cref="M:WikiClientLibrary.Wikibase.Entity.RefreshAsync" /> again.</para>
+      </remarks>
       <exception cref="T:System.ArgumentNullException">Either <paramref name="edits" /> is <c>null</c>.</exception>
       <exception cref="T:System.ArgumentException">
         <paramref name="options" /> is invalid.</exception>
@@ -234,6 +254,19 @@
       <param name="summary">The edit summary.</param>
       <param name="options">Edit options.</param>
       <param name="cancellationToken">A token used to cancel the operation.</param>
+      <remarks>
+        <para>After the operation, the entity may be automatically refreshed,
+            which means all the <see cref="T:WikiClientLibrary.Wikibase.Claim" /> instances that used to belong to this claim will be detached,
+            and perhaps replicates will take the place.
+            If the edit operation is bulk edit, this is effectively a refresh operation with <see cref="F:WikiClientLibrary.Wikibase.EntityQueryOptions.FetchAllProperties" /> flag,
+            except that some properties in the <see cref="F:WikiClientLibrary.Wikibase.EntityQueryOptions.FetchInfo" /> category are just invalidated
+            due to insufficient data contained in the MW API. (e.g. <see cref="P:WikiClientLibrary.Wikibase.Entity.PageId" />) As for the properties that are
+            affected by the edit operation, see the "remarks" section of the properties, respectively.</para>
+        <para>If the edit operation is progressive edit, only the <see cref="P:WikiClientLibrary.Wikibase.Entity.LastRevisionId" /> is valid, after the edit operation.</para>
+        <para>For more information about bulk edit and progressive edit, see the "remarks" section
+            of <see cref="T:WikiClientLibrary.Wikibase.EntityEditOptions" />.</para>
+        <para>If you need more information about the entity after the edit, consider invoking <see cref="M:WikiClientLibrary.Wikibase.Entity.RefreshAsync" /> again.</para>
+      </remarks>
       <exception cref="T:System.ArgumentNullException">Either <paramref name="edits" /> is <c>null</c>.</exception>
       <exception cref="T:System.ArgumentException">
         <paramref name="options" /> is invalid.</exception>
@@ -249,6 +282,19 @@
       <param name="summary">The edit summary.</param>
       <param name="options">Edit options.</param>
       <param name="cancellationToken">A token used to cancel the operation.</param>
+      <remarks>
+        <para>After the operation, the entity may be automatically refreshed,
+            which means all the <see cref="T:WikiClientLibrary.Wikibase.Claim" /> instances that used to belong to this claim will be detached,
+            and perhaps replicates will take the place.
+            If the edit operation is bulk edit, this is effectively a refresh operation with <see cref="F:WikiClientLibrary.Wikibase.EntityQueryOptions.FetchAllProperties" /> flag,
+            except that some properties in the <see cref="F:WikiClientLibrary.Wikibase.EntityQueryOptions.FetchInfo" /> category are just invalidated
+            due to insufficient data contained in the MW API. (e.g. <see cref="P:WikiClientLibrary.Wikibase.Entity.PageId" />) As for the properties that are
+            affected by the edit operation, see the "remarks" section of the properties, respectively.</para>
+        <para>If the edit operation is progressive edit, only the <see cref="P:WikiClientLibrary.Wikibase.Entity.LastRevisionId" /> is valid, after the edit operation.</para>
+        <para>For more information about bulk edit and progressive edit, see the "remarks" section
+            of <see cref="T:WikiClientLibrary.Wikibase.EntityEditOptions" />.</para>
+        <para>If you need more information about the entity after the edit, consider invoking <see cref="M:WikiClientLibrary.Wikibase.Entity.RefreshAsync" /> again.</para>
+      </remarks>
       <exception cref="T:System.ArgumentNullException">Either <paramref name="edits" /> is <c>null</c>.</exception>
       <exception cref="T:System.ArgumentException">
         <paramref name="options" /> is invalid.</exception>
@@ -297,6 +343,10 @@
     </member>
     <member name="P:WikiClientLibrary.Wikibase.Entity.LastModified">
       <summary>Time of the last revision.</summary>
+      <remarks>
+            The property value is invalidated after you have performed edits on this instance.
+            To fetch the latest value, use <see cref="M:WikiClientLibrary.Wikibase.Entity.RefreshAsync(WikiClientLibrary.Wikibase.EntityQueryOptions)" />.
+            </remarks>
     </member>
     <member name="P:WikiClientLibrary.Wikibase.Entity.LastRevisionId">
       <summary>
@@ -312,6 +362,10 @@
       <summary>
             ID of the entity page.
             </summary>
+      <remarks>
+            The property value is invalidated after you have performed edits on this instance.
+            To fetch the latest value, use <see cref="M:WikiClientLibrary.Wikibase.Entity.RefreshAsync(WikiClientLibrary.Wikibase.EntityQueryOptions)" />.
+            </remarks>
     </member>
     <member name="P:WikiClientLibrary.Wikibase.Entity.QueryOptions">
       <summary>
@@ -328,6 +382,7 @@
             Set to <c>null</c> to fetch for all available languages.
             </param>
       <param name="cancellationToken">The token used to cancel the operation.</param>
+      <remarks>This overload uses <see cref="F:WikiClientLibrary.Wikibase.EntityQueryOptions.FetchInfo" /> option to fetch basic information.</remarks>
     </member>
     <member name="M:WikiClientLibrary.Wikibase.Entity.RefreshAsync(WikiClientLibrary.Wikibase.EntityQueryOptions)">
       <summary>
@@ -379,6 +434,12 @@
       <summary>
             Full title of the entity page.
             </summary>
+      <remarks>
+        <para>For items, they are usually in the form of <c>Q1234</c>;
+            for properties, they are usually in the form of <c>Property:P1234</c>.</para>
+        <para>The property value is invalidated after you have performed edits on this instance.
+            To fetch the latest value, use <see cref="M:WikiClientLibrary.Wikibase.Entity.RefreshAsync(WikiClientLibrary.Wikibase.EntityQueryOptions)" />.</para>
+      </remarks>
     </member>
     <member name="M:WikiClientLibrary.Wikibase.Entity.ToString">
       <summary>Returns a string that represents the current object.</summary>
@@ -477,6 +538,9 @@
       <summary>
             The CLR property name of the changed value.
             </summary>
+      <remarks>
+            This is usually a property name in <see cref="T:WikiClientLibrary.Wikibase.Entity" /> class.
+            </remarks>
     </member>
     <member name="P:WikiClientLibrary.Wikibase.EntityEditEntry.State">
       <summary>
@@ -508,6 +572,13 @@
       <summary>
             Provides options for editing a Wikibase entity.
             </summary>
+      <remarks>
+        <para>Progressive edit makes one change per MediaWiki API request, and will leave
+            more detailed edit summary on the Wiki. If one of the requests fails,
+            previously made changes will still be kept anyway.</para>
+        <para>By default, if you are editing an existing item, with less than 5 items of changes,
+            WikiClientLibrary will choose progressive edit rather than bulk one.</para>
+      </remarks>
     </member>
     <member name="F:WikiClientLibrary.Wikibase.EntityEditOptions.None">
       <summary>No special options.</summary>
@@ -754,6 +825,8 @@
       <summary>
             The site name.
             </summary>
+      <remarks>For a complete list of site names available for Wikidata,
+            see https://www.wikidata.org/w/api.php?action=help&amp;modules=wbgetentities .</remarks>
     </member>
     <member name="P:WikiClientLibrary.Wikibase.EntitySiteLink.Title">
       <summary>
@@ -826,6 +899,7 @@
       <summary>
             Provides basic access to Wikibase entities.
             </summary>
+      <remarks>The most notable implementations of this interface are <see cref="T:WikiClientLibrary.Wikibase.Entity" /> and <see cref="T:WikiClientLibrary.Wikibase.SerializableEntity" />.</remarks>
     </member>
     <member name="P:WikiClientLibrary.Wikibase.IEntity.Aliases">
       <summary>Gets the aliases of the entity.</summary>
@@ -861,6 +935,9 @@
       <summary>
             Represents a entity that can be loaded from or serialized into JSON.
             </summary>
+      <remarks>
+            When working with JSON dump of Wikibase items, this class may provide some facility.
+            </remarks>
     </member>
     <member name="M:WikiClientLibrary.Wikibase.SerializableEntity.#ctor">
       <summary>
@@ -940,6 +1017,13 @@
             into a sequence of <see cref="T:WikiClientLibrary.Wikibase.SerializableEntity" />s.
             If there is <c>null</c> in the JSON array, <c>null</c> will be enumerated in the sequence.
             </returns>
+      <remarks>
+        <para>This method is recommended when you are working with a large JSON dump of Wikibase entities,
+            because it only put the current enumerated entity in the memory. Still, you can use
+            <see cref="M:System.Linq.Enumerable.ToList``1(System.Collections.Generic.IEnumerable{``0})" /> to get all the entities at one time.</para>
+        <para>If you stopped enumerating the returned sequence, the <paramref name="reader" /> will stop
+            in the middle of array, at the end of current enumerated entity.</para>
+      </remarks>
       <exception cref="T:Newtonsoft.Json.JsonException">The JSON is invalid.</exception>
     </member>
     <member name="M:WikiClientLibrary.Wikibase.SerializableEntity.LoadAll(System.IO.TextReader)">
@@ -952,6 +1036,13 @@
             into a sequence of <see cref="T:WikiClientLibrary.Wikibase.SerializableEntity" />s.
             If there is <c>null</c> in the JSON array, <c>null</c> will be enumerated in the sequence.
             </returns>
+      <remarks>
+        <para>This method is recommended when you are working with a large JSON dump of Wikibase entities,
+            because it only put the current enumerated entity in the memory. Still, you can use
+            <see cref="M:System.Linq.Enumerable.ToList``1(System.Collections.Generic.IEnumerable{``0})" /> to get all the entities at one time.</para>
+        <para>If you stopped enumerating the returned sequence, the <paramref name="reader" /> will stop
+            in the middle of array, at the end of current enumerated entity.</para>
+      </remarks>
       <exception cref="T:Newtonsoft.Json.JsonException">The JSON is invalid.</exception>
     </member>
     <member name="M:WikiClientLibrary.Wikibase.SerializableEntity.LoadAll(System.String)">
@@ -965,6 +1056,7 @@
             into a sequence of <see cref="T:WikiClientLibrary.Wikibase.SerializableEntity" />s.
             If there is <c>null</c> in the JSON array, <c>null</c> will be enumerated in the sequence.
             </returns>
+      <remarks></remarks>
       <exception cref="T:Newtonsoft.Json.JsonException">The JSON is invalid.</exception>
     </member>
     <member name="M:WikiClientLibrary.Wikibase.SerializableEntity.Parse(System.String)">
@@ -985,6 +1077,7 @@
             into a sequence of <see cref="T:WikiClientLibrary.Wikibase.SerializableEntity" />s.
             If there is <c>null</c> in the JSON array, <c>null</c> will be enumerated in the sequence.
             </returns>
+      <remarks></remarks>
       <exception cref="T:Newtonsoft.Json.JsonException">The JSON is invalid.</exception>
     </member>
     <member name="P:WikiClientLibrary.Wikibase.SerializableEntity.SiteLinks">
@@ -1035,6 +1128,10 @@
       <summary>
             Represents a "snak", i.e. a pair of property and value.
             </summary>
+      <remarks>
+            To compare the equality of two snaks' values, consider using
+            <see cref="M:Newtonsoft.Json.Linq.JToken.DeepEquals(Newtonsoft.Json.Linq.JToken,Newtonsoft.Json.Linq.JToken)" /> on <see cref="P:WikiClientLibrary.Wikibase.Snak.RawDataValue" />.
+            </remarks>
     </member>
     <member name="M:WikiClientLibrary.Wikibase.Snak.#ctor(System.String)">
       <summary>
@@ -1070,6 +1167,10 @@
             </summary>
       <param name="propertyId">The property id.</param>
       <param name="snakType">Snak type.</param>
+      <remarks>
+            If you set <paramref name="snakType" /> to <see cref="F:WikiClientLibrary.Wikibase.SnakType.Value" />, remember to set
+            <see cref="P:WikiClientLibrary.Wikibase.Snak.DataType" /> and <see cref="P:WikiClientLibrary.Wikibase.Snak.DataValue" /> to valid values afterwards.
+            </remarks>
     </member>
     <member name="M:WikiClientLibrary.Wikibase.Snak.#ctor(WikiClientLibrary.Wikibase.Entity,System.Object)">
       <summary>
@@ -1087,6 +1188,7 @@
     </member>
     <member name="P:WikiClientLibrary.Wikibase.Snak.DataValue">
       <summary>Parsed value of <c>datavalue</c> node.</summary>
+      <remarks>For the cases when <see cref="P:WikiClientLibrary.Wikibase.Snak.SnakType" /> is not <see cref="F:WikiClientLibrary.Wikibase.SnakType.Value" />, this property should be <c>null</c>.</remarks>
     </member>
     <member name="P:WikiClientLibrary.Wikibase.Snak.Hash">
       <summary>Snak hash.</summary>
@@ -1096,6 +1198,7 @@
     </member>
     <member name="P:WikiClientLibrary.Wikibase.Snak.RawDataValue">
       <summary>Raw JSON value of <c>datavalue</c> node.</summary>
+      <remarks>For the cases when <see cref="P:WikiClientLibrary.Wikibase.Snak.SnakType" /> is not <see cref="F:WikiClientLibrary.Wikibase.SnakType.Value" />, this property should be <c>null</c>.</remarks>
     </member>
     <member name="P:WikiClientLibrary.Wikibase.Snak.SnakType">
       <summary>Snak type.</summary>
@@ -1127,6 +1230,7 @@
       <summary>
             URI prefix of Wikibase items.
             </summary>
+      <remarks>The value is <c>http://www.wikidata.org/entity/</c> for Wikidata.</remarks>
     </member>
     <member name="M:WikiClientLibrary.Wikibase.WikibaseSiteInfo.FromSiteInfo(WikiClientLibrary.Sites.SiteInfo)">
       <summary>
@@ -1146,6 +1250,7 @@
       <summary>
             URI prefix of <see cref="P:WikiClientLibrary.Wikibase.DataTypes.BuiltInDataTypes.GeoShape" /> URLs.
             </summary>
+      <remarks>The value is <c>https://commons.wikimedia.org/wiki/</c> for Wikidata.</remarks>
     </member>
     <member name="M:WikiClientLibrary.Wikibase.WikibaseSiteInfo.MakeEntityUri(System.String)">
       <summary>
@@ -1153,6 +1258,7 @@
             </summary>
       <param name="entityId">Wikibase entity ID, such as <c>P13</c>, <c>Q175</c>.</param>
       <returns>The corresponding Wikibase entity URI. This URI can be used in RDF representations.</returns>
+      <remarks>This method simply concatenates <see cref="P:WikiClientLibrary.Wikibase.WikibaseSiteInfo.ConceptBaseUri" /> and <paramref name="entityId" />, and does not validate the given entity ID.</remarks>
       <exception cref="T:System.ArgumentNullException">
         <paramref name="entityId" /> is <c>null</c>.</exception>
     </member>
@@ -1171,6 +1277,7 @@
       <summary>
             URI prefix of <see cref="P:WikiClientLibrary.Wikibase.DataTypes.BuiltInDataTypes.TabularData" /> URLs.
             </summary>
+      <remarks>The value is <c>https://commons.wikimedia.org/wiki/</c> for Wikidata.</remarks>
     </member>
     <member name="T:WikiClientLibrary.Wikibase.WikibaseUriFactory">
       <summary>
@@ -1195,11 +1302,21 @@
       <summary>
             Provides a list of predefined <see cref="T:WikiClientLibrary.Wikibase.DataTypes.WikibaseDataType" /> instances.
             </summary>
+      <remarks>
+        <para>
+            For a list of Wikibase built-in data types, see the data type list:
+            <a href="https://www.wikidata.org/wiki/Special:ListDatatypes">d:Special:ListDatatypes</a>.
+            The description of the static properties in this class are mostly copied from the Wikidata data type list.
+            </para>
+      </remarks>
     </member>
     <member name="P:WikiClientLibrary.Wikibase.DataTypes.BuiltInDataTypes.CommonsMedia">
       <summary>
             Link to files stored at Wikimedia Commons. When a value is entered, the "File" namespace on Commons will be searched for matching files.
             </summary>
+      <remarks>
+            The value type for this data type is `string`.
+            </remarks>
     </member>
     <member name="P:WikiClientLibrary.Wikibase.DataTypes.BuiltInDataTypes.ExternalId">
       <summary>
@@ -1236,6 +1353,9 @@
       <summary>
             Literal data field for mathematical expressions, formula, equations and such, expressed in a variant of LaTeX.
             </summary>
+      <remarks>
+            The value type for this data type is `string`.
+            </remarks>
     </member>
     <member name="P:WikiClientLibrary.Wikibase.DataTypes.BuiltInDataTypes.MonolingualText">
       <summary>
@@ -1244,17 +1364,24 @@
             Typical use is a geographical names written in the local language, an identifier of some kind,
             a chemical formula or a Latin scientific name.
             </summary>
+      <remarks>
+            The value type for this data type is `monolingualtext`.
+            </remarks>
     </member>
     <member name="P:WikiClientLibrary.Wikibase.DataTypes.BuiltInDataTypes.MusicalNotation">
       <summary>
             Literal data field for a musical score written in LilyPond notation.
             </summary>
+      <remarks>
+            The value type for this data type is `string`.
+            </remarks>
     </member>
     <member name="P:WikiClientLibrary.Wikibase.DataTypes.BuiltInDataTypes.Quantity">
       <summary>
             Literal data field for a quantity that relates to some kind of well-defined unit.
             The actual unit goes in the data values that is entered.
             </summary>
+      <remarks>The value type for this data type is `quantity`.</remarks>
     </member>
     <member name="P:WikiClientLibrary.Wikibase.DataTypes.BuiltInDataTypes.String">
       <summary>
@@ -1277,21 +1404,33 @@
             Literal data field for a point in time. Given as a date and time with some precision and boundaries.
             The time is saved internally in the specified calendar model.
             </summary>
+      <remarks>
+            The value type for this data type is `time`.
+            </remarks>
     </member>
     <member name="P:WikiClientLibrary.Wikibase.DataTypes.BuiltInDataTypes.Url">
       <summary>
             Literal data field for a URL. URLs are restricted to the protocols also supported for external links in wikitext.
             </summary>
+      <remarks>
+            The value type for this data type is `string`.
+            </remarks>
     </member>
     <member name="P:WikiClientLibrary.Wikibase.DataTypes.BuiltInDataTypes.WikibaseItem">
       <summary>
             Link to other Items on the project. When a value is entered, the project's "Item" namespace will be searched for matching Items.
             </summary>
+      <remarks>
+            The value type for this data type is `wikibase-entityid`.
+            </remarks>
     </member>
     <member name="P:WikiClientLibrary.Wikibase.DataTypes.BuiltInDataTypes.WikibaseProperty">
       <summary>
             Link to Properties on the project. When a value is entered, the project's "Property" namespace will be searched for matching Properties.
             </summary>
+      <remarks>
+            The value type for this data type is `wikibase-entityid`.
+            </remarks>
     </member>
     <member name="T:WikiClientLibrary.Wikibase.DataTypes.WbGlobeCoordinate">
       <summary>In Wikibase, represents a point on the globe.</summary>
@@ -1397,6 +1536,7 @@
       <summary>
             Represents a text in certain language.
             </summary>
+      <remarks>The language code is normalized into lower-case in this structure.</remarks>
     </member>
     <member name="M:WikiClientLibrary.Wikibase.DataTypes.WbMonolingualText.#ctor(System.String,System.String)">
       <summary>
@@ -1502,6 +1642,7 @@
       <summary>
             Provides convenient access to 1:1 language-text pairs of multilingual text.
             </summary>
+      <remarks>All the language codes are normalized to lower-case and are case-insensitive.</remarks>
     </member>
     <member name="M:WikiClientLibrary.Wikibase.DataTypes.WbMonolingualTextCollection.#ctor">
       <summary>
@@ -1679,6 +1820,7 @@
       <summary>
             Provides convenient access to 1:n language-text pairs of multilingual text.
             </summary>
+      <remarks>All the language codes are normalized to lower-case and are case-insensitive.</remarks>
     </member>
     <member name="M:WikiClientLibrary.Wikibase.DataTypes.WbMonolingualTextsCollection.#ctor">
       <summary>
@@ -2047,6 +2189,10 @@
           </include>
         </markup>
       </param>
+      <remarks>
+        <para>This overload uses 0 as <see cref="P:WikiClientLibrary.Wikibase.DataTypes.WbTime.TimeZone" /> if <see cref="P:System.DateTime.Kind" />
+            is <see cref="F:System.DateTimeKind.Utc" />, and uses local time zone otherwise.</para>
+      </remarks>
       <exception cref="T:System.ArgumentNullException">
         <paramref name="calendarModel" /> is <c>null</c>.</exception>
       <exception cref="T:System.ArgumentOutOfRangeException">One or more numeric parameters are out of range.</exception>
@@ -2073,6 +2219,8 @@
           </include>
         </markup>
       </param>
+      <remarks>This overload uses 0 as <see cref="P:WikiClientLibrary.Wikibase.DataTypes.WbTime.TimeZone" /> if <see cref="P:System.DateTime.Kind" />
+            is <see cref="F:System.DateTimeKind.Utc" />, and uses local time zone otherwise.</remarks>
       <exception cref="T:System.ArgumentNullException">
         <paramref name="calendarModel" /> is <c>null</c>.</exception>
       <exception cref="T:System.ArgumentOutOfRangeException">One or more numeric parameters are out of range.</exception>
@@ -2099,6 +2247,8 @@
           </include>
         </markup>
       </param>
+      <remarks>This overload uses 0 as <see cref="P:WikiClientLibrary.Wikibase.DataTypes.WbTime.TimeZone" /> if <see cref="P:System.DateTime.Kind" />
+            is <see cref="F:System.DateTimeKind.Utc" />, and uses local time zone otherwise.</remarks>
       <exception cref="T:System.ArgumentNullException">
         <paramref name="calendarModel" /> is <c>null</c>.</exception>
       <exception cref="T:System.ArgumentOutOfRangeException">One or more numeric parameters are out of range.</exception>
@@ -2147,6 +2297,7 @@
       <summary>
             The URI for Gregorian calendar.
             </summary>
+      <remarks>The URI value is <a herf="http://www.wikidata.org/entity/Q1985727">http://www.wikidata.org/entity/Q1985727</a>.</remarks>
     </member>
     <member name="P:WikiClientLibrary.Wikibase.DataTypes.WbTime.Hour">
       <summary>
@@ -2162,6 +2313,7 @@
       <summary>
             The URI for Julian calendar.
             </summary>
+      <remarks>The URI value is <a herf="http://www.wikidata.org/entity/Q1985786">http://www.wikidata.org/entity/Q1985786</a>.</remarks>
     </member>
     <member name="P:WikiClientLibrary.Wikibase.DataTypes.WbTime.Minute">
       <summary>
@@ -2276,6 +2428,22 @@
       <summary>
             Time zone offset in minutes.
             </summary>
+      <remarks>
+        <para>Timezone information is given in three different ways depending on the time:</para>
+        <list type="bullet">
+          <item>
+            <description>Times after the implementation of UTC (1972): as an offset from UTC in minutes;</description>
+          </item>
+          <item>
+            <description>Times before the implementation of UTC: the offset of the time zone from universal time;</description>
+          </item>
+          <item>
+            <description>Before the implementation of time zones: The longitude of the place of
+            the event, in the range −180° to 180°, multiplied by 4 to convert to minutes.
+            </description>
+          </item>
+        </list>
+      </remarks>
     </member>
     <member name="M:WikiClientLibrary.Wikibase.DataTypes.WbTime.ToDateTimeOffset">
       <summary>
@@ -2305,6 +2473,18 @@
       <summary>
             Atomic instances indicating a Wikibase Property type.
             </summary>
+      <remarks>
+        <para>In Wikibase, there are two different notion of types: one is "property type",
+            the other is "value type". They follow n:1 relation, i.e. one property type corresponds to
+            one value type, but the same value type can represent different property types.</para>
+        <para>For example, <c>wikibase-item</c> property type corresponds to <c>wikibase-entityid</c> value type,
+            while <c>wikibase-property</c> property type also corresponds to <c>wikibase-entityid</c> value type.
+            For a list of Wikibase built-in data types, see
+            <a href="https://www.wikidata.org/wiki/Special:ListDatatypes">d:Special:ListDatatypes</a>.</para>
+        <para>
+            For a list of predefined <see cref="T:WikiClientLibrary.Wikibase.DataTypes.WikibaseDataType" /> instances, see <see cref="T:WikiClientLibrary.Wikibase.DataTypes.BuiltInDataTypes" />.
+            </para>
+      </remarks>
     </member>
     <member name="M:WikiClientLibrary.Wikibase.DataTypes.WikibaseDataType.#ctor">
       <summary>
@@ -2418,6 +2598,7 @@
             </summary>
       <typeparam name="TKey">Type of the key.</typeparam>
       <typeparam name="TItem">Type of the item.</typeparam>
+      <remarks>The key cannot be <c>null</c> in the collection.</remarks>
     </member>
     <member name="M:WikiClientLibrary.Wikibase.Infrastructures.UnorderedKeyedCollection`2.#ctor">
       <summary>
@@ -2611,6 +2792,7 @@ The type of the source <see cref="T:System.Collections.ICollection" /> cannot be
             </summary>
       <typeparam name="TKey">Type of the key.</typeparam>
       <typeparam name="TItem">Type of the item.</typeparam>
+      <remarks>The key cannot be <c>null</c> in the collection.</remarks>
     </member>
     <member name="M:WikiClientLibrary.Wikibase.Infrastructures.UnorderedKeyedMultiCollection`2.#ctor">
       <summary>
