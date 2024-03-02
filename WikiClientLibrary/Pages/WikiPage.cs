@@ -461,14 +461,37 @@ namespace WikiClientLibrary.Pages
         /// <remarks>
         /// This action will refill <see cref="Id" />, <see cref="Title"/>,
         /// <see cref="ContentModel"/>, <see cref="LastRevisionId"/>, and invalidate
-        /// <see cref="ContentLength"/>, <see cref="LastRevision"/>, and <see cref="LastTouched"/>.
+        /// <see cref="ContentLength"/>, <see cref="LastRevision"/>, <see cref="Content"/>,
+        /// and <see cref="LastTouched"/>.
         /// You should call <see cref="RefreshAsync()"/> again if you're interested in them.
         /// </remarks>
         /// <exception cref="InvalidOperationException">Cannot create actual page in the specified namespace.</exception>
         /// <exception cref="OperationConflictException">Edit conflict detected.</exception>
         /// <exception cref="UnauthorizedOperationException">You have no rights to edit the page.</exception>
-
         public async Task<bool> EditAsync(WikiPageEditOptions options)
+            => await EditAsync(options, null, null);
+
+        /// <inheritdoc cref="EditAsync(WikiPageEditOptions)"/>
+        /// <summary>
+        /// Edits the specified section of the current page, using specified new section content and other options.
+        /// (MediaWiki 1.16)
+        /// </summary>
+        /// <param name="sectionId">section identifier. <c>"0"</c> for the top section. Often a positive integer, but can also be non-numeric when the section is inside templates (<c>"T-1"</c>).</param>
+        public async Task<bool> EditSectionAsync(string sectionId, WikiPageEditOptions options)
+        {
+            if (sectionId == null) throw new ArgumentNullException(nameof(sectionId));
+            return await EditAsync(options, sectionId, null);
+        }
+
+        /// <inheritdoc cref="EditAsync(WikiPageEditOptions)"/>
+        /// <param name="sectionTitle">title for the new section. (MediaWiki 1.19+)</param>
+        public async Task<bool> AddSectionAsync(string sectionTitle, WikiPageEditOptions options)
+        {
+            if (sectionTitle == null) throw new ArgumentNullException(nameof(sectionTitle));
+            return await EditAsync(options, "new", sectionTitle);
+        }
+
+        public async Task<bool> EditAsync(WikiPageEditOptions options, string? sectionId, string? sectionTitle)
         {
             using (Site.BeginActionScope(this))
             using (await Site.ModificationThrottler.QueueWorkAsync("Edit: " + this, options.CancellationToken))
@@ -494,6 +517,8 @@ namespace WikiClientLibrary.Pages
                         watchlist = options.Watch,
                         summary = options.Summary,
                         text = options.Content,
+                        section = sectionId,
+                        sectiontitle = sectionTitle,
                     }), options.CancellationToken);
                 }
                 catch (OperationFailedException ex)
@@ -520,6 +545,8 @@ namespace WikiClientLibrary.Pages
                     }
                     ContentModel = (string)jedit["contentmodel"];
                     LastRevisionId = (int)jedit["newrevid"];
+                    LastRevision = null;
+                    pageInfo = null;
                     // jedit["ns"] == null
                     PageStub = new WikiPageStub((int)jedit["pageid"], (string)jedit["title"], PageStub.NamespaceId);
                     Site.Logger.LogInformation("Edited page. New revid={RevisionId}.", LastRevisionId);
@@ -906,6 +933,13 @@ namespace WikiClientLibrary.Pages
         /// <summary>
         /// The new page content; use empty string (<c>""</c>) to clear the page content.
         /// </summary>
+        /// <remarks>
+        /// <para>When using with <see cref="WikiPage.EditSectionAsync"/>, the content should also include
+        /// the section heading part (<c>== Title ==</c>). Otherwise, the section heading will be removed,
+        /// and the section will be merged with the previous one.</para>
+        /// <para>When using with <see cref="WikiPage.AddSectionAsync"/>, the content does not include
+        /// the section heading part.</para>
+        /// </remarks>
         public string Content
         {
 #if BCL_FEATURE_RECORD

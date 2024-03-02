@@ -3,6 +3,7 @@
 //          DRY_RUN
 
 using System;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -340,6 +341,67 @@ namespace WikiClientLibrary.Tests.UnitTestProject1.Tests
                     Content = page.Content + "\n\nTest from WikiClientLibrary.",
                     Summary = SummaryPrefix + "Attempt to edit a special page.",
                 }));
+        }
+
+        [SkippableTheory]
+        [InlineData(nameof(WpTest2SiteAsync), "project:sandbox")]
+        [InlineData(nameof(WikiaTestSiteAsync), "project:sandbox")]
+        [InlineData(nameof(TFWikiSiteAsync), "User:FuncGammaBot/Sandbox")]
+        public async Task WikiPageWriteSectionTest1(string siteName, string pageTitle)
+        {
+            AssertModify();
+            var site = await WikiSiteFromNameAsync(siteName);
+            var page = new WikiPage(site, pageTitle);
+            await page.RefreshAsync(PageQueryOptions.FetchContent);
+            // As a precaution, we don't create new page by editing.
+            Assert.True(page.Exists);
+            WriteOutput("Existing content");
+            WriteOutput(page.Content);
+            WriteOutput("Existing sections");
+            var sections = Utility.WikitextParseSections(page.Content!);
+            ShallowTrace(sections);
+
+            WriteOutput("Adding a section");
+            var newSectionTitle = "New section " + DateTime.UtcNow.ToString("O");
+            const string PLACEHOLDER = "<Placeholder>";
+            var newSectionContent = "Test from WikiClientLibrary.\n\nSection content: " + PLACEHOLDER;
+            await page.AddSectionAsync(newSectionTitle, new WikiPageEditOptions
+            {
+                Content = newSectionContent,
+                Summary = SummaryPrefix + $"Append section ([[#{newSectionTitle}]]).",
+                Minor = true,
+                Bot = true,
+            });
+
+            WriteOutput("Updated content");
+            await page.RefreshAsync(PageQueryOptions.FetchContent);
+            WriteOutput(page.Content);
+            Assert.Contains($"== {newSectionTitle} ==\n\n{newSectionContent}", page.Content);
+            WriteOutput("Existing sections");
+            sections = Utility.WikitextParseSections(page.Content!);
+            ShallowTrace(sections);
+
+            // figure out the section number for editing
+            var sectionIndex = sections.FindIndex(s => s.Title == newSectionTitle);
+            WriteOutput("New section index: {0}", sectionIndex);
+            Assert.True(sectionIndex >= 0);
+
+            WriteOutput("Editing a section");
+            newSectionContent = sections[sectionIndex].Content.Replace(PLACEHOLDER, Guid.NewGuid().ToString());
+
+            // section #0: content before first heading
+            await page.EditSectionAsync(sectionIndex.ToString(), new WikiPageEditOptions
+            {
+                Content = newSectionContent,
+                Summary = SummaryPrefix + $"Edit section ([[#{newSectionTitle}]]).",
+                Minor = true,
+                Bot = true,
+            });
+
+            WriteOutput("Updated content");
+            await page.RefreshAsync(PageQueryOptions.FetchContent);
+            WriteOutput(page.Content);
+            Assert.Contains(newSectionContent, page.Content);
         }
 
         [SkippableFact]
