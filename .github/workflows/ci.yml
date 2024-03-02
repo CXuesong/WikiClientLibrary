@@ -34,7 +34,6 @@ jobs:
             6.0.x
             8.0.x
             9.0.x
-          include-prerelease: true
       - uses: actions/checkout@v4
         with:
           submodules: true
