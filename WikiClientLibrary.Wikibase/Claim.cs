@@ -314,7 +314,8 @@ namespace WikiClientLibrary.Wikibase
         public string PropertyId { get; }
 
         /// <summary>Snak hash.</summary>
-        public string Hash { get; set; } = "";
+        /// <remarks>Main snak does not have hash; thus this property can be null.</remarks>
+        public string? Hash { get; set; }
 
         /// <summary>Raw JSON value of <c>datavalue</c> node.</summary>
         /// <remarks>For the cases when <see cref="SnakType"/> is not <see cref="SnakType.Value"/>, this property should be <c>null</c>.</remarks>
