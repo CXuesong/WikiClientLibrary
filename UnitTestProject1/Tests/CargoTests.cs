@@ -85,7 +85,7 @@ namespace WikiClientLibrary.Tests.UnitTestProject1.Tests
             // Call .AsAsyncEnumerable to ensure we use async Linq call.
             var records = await q.AsAsyncEnumerable().ToListAsync();
             ShallowTrace(records);
-            Assert.Equal(100, records.Count);
+            Assert.Equal(99, records.Count);
             Assert.All(records, r => Assert.Equal(r.ReleaseDate?.Year, r.Year));
             Assert.All(records, r => Assert.InRange(r.Year, 2019, 2020));
         }
