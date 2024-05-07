@@ -194,6 +194,7 @@ namespace WikiClientLibrary.Pages.Parsing
         /// Note that sometimes this property is not available,
         /// especially when the heading is included in a template.
         /// </remarks>
+        [JsonProperty]
         public int? ByteOffset { get; private set; }
 
         /// <summary>
