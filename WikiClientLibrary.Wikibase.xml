@@ -1192,6 +1192,7 @@
     </member>
     <member name="P:WikiClientLibrary.Wikibase.Snak.Hash">
       <summary>Snak hash.</summary>
+      <remarks>Main snak does not have hash; thus this property can be null.</remarks>
     </member>
     <member name="P:WikiClientLibrary.Wikibase.Snak.PropertyId">
       <summary>Property ID, with "P" prefix.</summary>
