@@ -23,13 +23,35 @@ namespace WikiClientLibrary.Tests.UnitTestProject1.Tests
             var site = await WpLzhSiteAsync;
             // 一九五二年
             var result = await site.ParseRevisionAsync(240575, ParsingOptions.EffectiveLanguageLinks);
+
+            WriteOutput("Parsed revision");
             ShallowTrace(result);
+
             Assert.Equal("一九五二年", result.Title);
             Assert.Matches(@"<span class=""[\w-]+"">一九五二年</span>", result.DisplayTitle);
             Assert.True(result.LanguageLinks.First(l => l.Language == "en").Title == "1952");
             Assert.True(result.LanguageLinks.First(l => l.Language == "zh").Title == "1952年");
             Assert.Contains(">公元<b>一九五二年</b>於諸曆</", result.Content);
-            Assert.Contains(result.Sections, s => s.Heading == "大事");
+
+            WriteOutput("Sections");
+            ShallowTrace(result.Sections);
+
+            Assert.Equal(3, result.Sections.Count);
+
+            Assert.Equal("1", result.Sections[0].Index);
+            Assert.Equal("一", result.Sections[0].Number);
+            Assert.Equal(11, result.Sections[0].ByteOffset);
+            Assert.Equal(2, result.Sections[0].Level);
+            Assert.Equal(1, result.Sections[0].TocLevel);
+            Assert.Equal("大事", result.Sections[0].Heading);
+            Assert.Equal("大事", result.Sections[0].Anchor);
+            Assert.Equal("一九五二年", result.Sections[0].PageTitle);
+
+            Assert.Equal("2", result.Sections[1].Index);
+            Assert.Equal("生", result.Sections[1].Heading);
+
+            Assert.Equal("3", result.Sections[2].Index);
+            Assert.Equal("卒", result.Sections[2].Heading);
         }
 
         [Fact]

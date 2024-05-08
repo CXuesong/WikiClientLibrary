@@ -70,7 +70,7 @@ namespace WikiClientLibrary.Pages.Parsing
         public IReadOnlyCollection<ContentCategoryInfo> Categories { get; private set; }
 
         [JsonProperty]
-        public IReadOnlyCollection<ContentSectionInfo> Sections { get; private set; }
+        public IReadOnlyList<ContentSectionInfo> Sections { get; private set; }
 
         [JsonProperty]
         public IReadOnlyCollection<ContentPropertyInfo> Properties { get; private set; }
