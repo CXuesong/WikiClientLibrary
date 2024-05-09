@@ -89,8 +89,11 @@ class Program
         page = new WikiPage(site, "Project:Sandbox");
         await page.RefreshAsync(PageQueryOptions.FetchContent);
         if (!page.Exists) Console.WriteLine("Warning: The page {0} doesn't exist.", page);
-        page.Content += "\n\n'''Hello''' ''world''!";
-        await page.UpdateContentAsync("Test edit from WikiClientLibrary.");
+        await page.EditAsync(new WikiPageEditOptions
+        {
+            Content = page.Content + "\n\n'''Hello''' ''world''!",
+            Summary = "Test edit from WikiClientLibrary.",
+        });
         Console.WriteLine("{0} has been saved. RevisionId = {1}.", page, page.LastRevisionId);
         // Find out more operations in Page class, such as
         //  page.MoveAsync()

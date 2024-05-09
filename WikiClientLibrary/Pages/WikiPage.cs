@@ -15,6 +15,7 @@ using WikiClientLibrary.Files;
 using WikiClientLibrary.Generators.Primitive;
 using WikiClientLibrary.Infrastructures;
 using WikiClientLibrary.Infrastructures.Logging;
+using WikiClientLibrary.Pages.Parsing;
 using WikiClientLibrary.Pages.Queries;
 using WikiClientLibrary.Pages.Queries.Properties;
 using WikiClientLibrary.Sites;
@@ -134,7 +135,7 @@ namespace WikiClientLibrary.Pages
         /// <summary>
         /// Gets the id of last revision. In some cases, this property
         /// has non-zero value while <see cref="LastRevision"/> is <c>null</c>.
-        /// See <see cref="UpdateContentAsync(string)"/> for more information.
+        /// See <see cref="EditAsync"/> for more information.
         /// </summary>
         /// <seealso cref="Revision.Id"/>
         public int LastRevisionId { get; private set; }
@@ -199,24 +200,19 @@ namespace WikiClientLibrary.Pages
         /// </remarks>
         public string? Title => PageStub.HasTitle ? PageStub.Title : null;
 
-        private string? pendingContent;
-
         /// <summary>
-        /// Gets / Sets the content of the page.
+        /// Gets the content of the page.
         /// </summary>
         /// <remarks>
-        /// <para>To make the edit to a page, after setting this property,
-        /// call <see cref="UpdateContentAsync(string)"/> to submit the change.</para>
-        /// <para>To fetch for the value of this property,
-        /// specify <see cref="PageQueryOptions.FetchContent"/>
-        /// when calling <see cref="RefreshAsync(PageQueryOptions)"/>.</para>
+        /// <para>This is equivalent to <see cref="LastRevision"/>?.<seealso cref="Content"/>.
+        /// To fetch page content, invoke <seealso cref="RefreshAsync()"/> either with <see cref="PageQueryOptions.FetchContent"/> flag
+        /// or with <seealso cref="RevisionsPropertyProvider.FetchContent"/> set to <c>true</c>.</para>
+        /// <para>To make edit to a page, use <see cref="EditAsync(WikiPageEditOptions)"/>
+        /// or <see cref="EditSectionAsync"/>. As a side effect, these functions will
+        /// reset <seealso cref="Content"/> into <c>null</c>. You will need to refresh <seealso cref="WikiPage"/>
+        /// once more if you want to explicitly re-retrieve the content from MediaWiki server.</para>
         /// </remarks>
-        public string? Content
-        {
-            get => pendingContent ?? LastRevision?.Comment;
-            [Obsolete("Use WikiPage.EditAsync, passing new page content to WikiPageEditOptions.Text instead.")]
-            set => pendingContent = value;
-        }
+        public string? Content => LastRevision?.Content;
 
         /// <summary>
         /// Gets the latest revision of the page.
@@ -336,7 +332,6 @@ namespace WikiClientLibrary.Pages
             }
             // Check if the client has requested for revision content…
             LastRevision = GetPropertyGroup<RevisionsPropertyGroup>()?.LatestRevision;
-            if (LastRevision?.Content != null) Content = LastRevision.Content;
             LastFileRevision = GetPropertyGroup<FileInfoPropertyGroup>()?.LatestRevision;
             pageInfo = GetPropertyGroup<PageInfoPropertyGroup>();
             LastRevisionId = pageInfo?.LastRevisionId ?? 0;
@@ -392,66 +387,6 @@ namespace WikiClientLibrary.Pages
 
 #region Modification
 
-        /// <inheritdoc cref="UpdateContentAsync(string,bool,bool,AutoWatchBehavior,CancellationToken)"/>
-        [Obsolete("Use WikiPage.EditAsync instead.")]
-        public Task UpdateContentAsync(string summary)
-        {
-            return UpdateContentAsync(summary, false, true, AutoWatchBehavior.Default, CancellationToken.None);
-        }
-
-        /// <inheritdoc cref="UpdateContentAsync(string,bool,bool,AutoWatchBehavior,CancellationToken)"/>
-        [Obsolete("Use WikiPage.EditAsync instead.")]
-        public Task UpdateContentAsync(string summary, bool minor)
-        {
-            return UpdateContentAsync(summary, minor, true, AutoWatchBehavior.Default, CancellationToken.None);
-        }
-
-        /// <inheritdoc cref="UpdateContentAsync(string,bool,bool,AutoWatchBehavior,CancellationToken)"/>
-        [Obsolete("Use WikiPage.EditAsync instead.")]
-        public Task UpdateContentAsync(string summary, bool minor, bool bot)
-        {
-            return UpdateContentAsync(summary, minor, bot, AutoWatchBehavior.Default, CancellationToken.None);
-        }
-
-        /// <inheritdoc cref="UpdateContentAsync(string,bool,bool,AutoWatchBehavior,CancellationToken)"/>
-        [Obsolete("Use WikiPage.EditAsync instead.")]
-        public Task<bool> UpdateContentAsync(string summary, bool minor, bool bot, AutoWatchBehavior watch)
-        {
-            return UpdateContentAsync(summary, minor, bot, watch, new CancellationToken());
-        }
-
-        /// <summary>
-        /// Submits content contained in <see cref="Content"/>, making edit to the page.
-        /// (MediaWiki 1.16)
-        /// </summary>
-        /// <param name="summary">the edit summary. Leave it as <c>null</c> or empty string (<c>""</c>) to use the default edit summary.</param>
-        /// <param name="minor">whether the edit is a minor edit. (See <a href="https://meta.wikimedia.org/wiki/Help:Minor_edit">m:Help:Minor Edit</a>)</param>
-        /// <param name="bot">whether to mark the edit as bot; even if you are using a bot account the edits will not be marked unless you set this flag.</param>
-        /// <param name="watch">specify how the watchlist is affected by this edit.</param>
-        /// <param name="cancellationToken">a token used to cancel the operation.</param>
-        /// <returns><c>true</c> if page content has been changed; <c>false</c> otherwise.</returns>
-        /// <remarks>
-        /// This action will refill <see cref="Id" />, <see cref="Title"/>,
-        /// <see cref="ContentModel"/>, <see cref="LastRevisionId"/>, and invalidate
-        /// <see cref="ContentLength"/>, <see cref="LastRevision"/>, and <see cref="LastTouched"/>.
-        /// You should call <see cref="RefreshAsync()"/> again if you're interested in them.
-        /// </remarks>
-        /// <exception cref="InvalidOperationException">Cannot create actual page in the specified namespace.</exception>
-        /// <exception cref="OperationConflictException">Edit conflict detected.</exception>
-        /// <exception cref="UnauthorizedOperationException">You have no rights to edit the page.</exception>
-        [Obsolete("Use WikiPage.EditAsync instead.")]
-        public async Task<bool> UpdateContentAsync(string summary, bool minor, bool bot, AutoWatchBehavior watch,
-            CancellationToken cancellationToken)
-            => await EditAsync(new WikiPageEditOptions
-            {
-                Content = Content,
-                Summary = summary,
-                Minor = minor,
-                Bot = bot,
-                Watch = watch,
-                CancellationToken = cancellationToken,
-            });
-
         /// <summary>
         /// Edits the main content of the current page, using specified new page content and other options.
         /// (MediaWiki 1.16)
@@ -477,6 +412,7 @@ namespace WikiClientLibrary.Pages
         /// (MediaWiki 1.16)
         /// </summary>
         /// <param name="sectionId">section identifier. <c>"0"</c> for the top section. Often a positive integer, but can also be non-numeric when the section is inside templates (<c>"T-1"</c>).</param>
+        /// <seealso cref="ContentSectionInfo.Index"/>
         public async Task<bool> EditSectionAsync(string sectionId, WikiPageEditOptions options)
         {
             if (sectionId == null) throw new ArgumentNullException(nameof(sectionId));
@@ -491,7 +427,7 @@ namespace WikiClientLibrary.Pages
             return await EditAsync(options, "new", sectionTitle);
         }
 
-        public async Task<bool> EditAsync(WikiPageEditOptions options, string? sectionId, string? sectionTitle)
+        private async Task<bool> EditAsync(WikiPageEditOptions options, string? sectionId, string? sectionTitle)
         {
             using (Site.BeginActionScope(this))
             using (await Site.ModificationThrottler.QueueWorkAsync("Edit: " + this, options.CancellationToken))

@@ -148,6 +148,7 @@ namespace WikiClientLibrary.Pages.Parsing
         /// This value is usually a number.
         /// For titles in transcluded templates, this property may have a value like "T-1", "T-2", etc.
         /// </remarks>
+        /// <seealso cref="WikiPage.EditSectionAsync"/>
         [JsonProperty]
         public string Index { get; private set; }
 

@@ -1,5 +1,4 @@
-﻿// Enables the following conditional switch in the project options
-// to prevent test cases from making any edits.
+﻿// Enables  to prevent test cases from making any edits.
 //          DRY_RUN
 
 using System;
@@ -83,15 +82,16 @@ namespace WikiClientLibrary.Tests.UnitTestProject1.Tests
 
             Output.WriteLine("Fetch by ID: {0}", expectedId);
             page = new WikiPage(site, expectedId);
-            page.Content = "Aaabbbccc";
+            Assert.Null(page.Content);
             await page.RefreshAsync();
             ShallowTrace(page);
+
             Assert.True(page.Exists);
             Assert.Equal(expectedTitle, page.Title);
             Assert.Equal(expectedNs, page.NamespaceId);
             Assert.Equal(expectedId, page.Id);
-            // Since we are not fetching content, content should be remain untouched.
-            Assert.Equal("Aaabbbccc", page.Content);
+            // Since we are not fetching content, content should be null.
+            Assert.Null(page.Content);
             // but reivision info should exist.
             Assert.NotNull(page.LastRevision);
         }
