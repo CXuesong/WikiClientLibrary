@@ -8918,14 +8918,16 @@
     </member>
     <member name="P:WikiClientLibrary.Pages.WikiPage.Content">
       <summary>
-            Gets / Sets the content of the page.
+            Gets the content of the page.
             </summary>
       <remarks>
-        <para>To make the edit to a page, after setting this property,
-            call <see cref="M:WikiClientLibrary.Pages.WikiPage.UpdateContentAsync(System.String)" /> to submit the change.</para>
-        <para>To fetch for the value of this property,
-            specify <see cref="F:WikiClientLibrary.Pages.PageQueryOptions.FetchContent" />
-            when calling <see cref="M:WikiClientLibrary.Pages.WikiPage.RefreshAsync(WikiClientLibrary.Pages.PageQueryOptions)" />.</para>
+        <para>This is equivalent to <see cref="P:WikiClientLibrary.Pages.WikiPage.LastRevision" />?.<seealso cref="P:WikiClientLibrary.Pages.WikiPage.Content" />.
+            To fetch page content, invoke <seealso cref="M:WikiClientLibrary.Pages.WikiPage.RefreshAsync" /> either with <see cref="F:WikiClientLibrary.Pages.PageQueryOptions.FetchContent" /> flag
+            or with <seealso cref="P:WikiClientLibrary.Pages.Queries.Properties.RevisionsPropertyProvider.FetchContent" /> set to <c>true</c>.</para>
+        <para>To make edit to a page, use <see cref="M:WikiClientLibrary.Pages.WikiPage.EditAsync(WikiClientLibrary.Pages.WikiPageEditOptions)" />
+            or <see cref="M:WikiClientLibrary.Pages.WikiPage.EditSectionAsync(System.String,WikiClientLibrary.Pages.WikiPageEditOptions)" />. As a side effect, these functions will
+            reset <seealso cref="P:WikiClientLibrary.Pages.WikiPage.Content" /> into <c>null</c>. You will need to refresh <seealso cref="T:WikiClientLibrary.Pages.WikiPage" />
+            once more if you want to explicitly re-retrieve the content from MediaWiki server.</para>
       </remarks>
     </member>
     <member name="P:WikiClientLibrary.Pages.WikiPage.ContentLength">
@@ -9031,43 +9033,6 @@
       <exception cref="T:WikiClientLibrary.OperationConflictException">Edit conflict detected.</exception>
       <exception cref="T:WikiClientLibrary.UnauthorizedOperationException">You have no rights to edit the page.</exception>
     </member>
-    <member name="M:WikiClientLibrary.Pages.WikiPage.EditAsync(WikiClientLibrary.Pages.WikiPageEditOptions,System.String,System.String)">
-      <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>M:WikiClientLibrary.Pages.WikiPage.EditAsync(WikiClientLibrary.Pages.WikiPageEditOptions,System.String,System.String)</parameter>
-          </include>
-        </markup>
-      </summary>
-      <param name="options">
-        <markup>
-          <include item="SMCMissingParamTag">
-            <parameter>param</parameter>
-            <parameter>options</parameter>
-            <parameter>M:WikiClientLibrary.Pages.WikiPage.EditAsync(WikiClientLibrary.Pages.WikiPageEditOptions,System.String,System.String)</parameter>
-          </include>
-        </markup>
-      </param>
-      <param name="sectionId">
-        <markup>
-          <include item="SMCMissingParamTag">
-            <parameter>param</parameter>
-            <parameter>sectionId</parameter>
-            <parameter>M:WikiClientLibrary.Pages.WikiPage.EditAsync(WikiClientLibrary.Pages.WikiPageEditOptions,System.String,System.String)</parameter>
-          </include>
-        </markup>
-      </param>
-      <param name="sectionTitle">
-        <markup>
-          <include item="SMCMissingParamTag">
-            <parameter>param</parameter>
-            <parameter>sectionTitle</parameter>
-            <parameter>M:WikiClientLibrary.Pages.WikiPage.EditAsync(WikiClientLibrary.Pages.WikiPageEditOptions,System.String,System.String)</parameter>
-          </include>
-        </markup>
-      </param>
-    </member>
     <member name="M:WikiClientLibrary.Pages.WikiPage.EditSectionAsync(System.String,WikiClientLibrary.Pages.WikiPageEditOptions)">
       <summary>
             Edits the specified section of the current page, using specified new section content and other options.
@@ -9170,7 +9135,7 @@
       <summary>
             Gets the id of last revision. In some cases, this property
             has non-zero value while <see cref="P:WikiClientLibrary.Pages.WikiPage.LastRevision" /> is <c>null</c>.
-            See <see cref="M:WikiClientLibrary.Pages.WikiPage.UpdateContentAsync(System.String)" /> for more information.
+            See <see cref="M:WikiClientLibrary.Pages.WikiPage.EditAsync(WikiClientLibrary.Pages.WikiPageEditOptions)" /> for more information.
             </summary>
     </member>
     <member name="P:WikiClientLibrary.Pages.WikiPage.LastTouched">
@@ -9511,116 +9476,6 @@
     <member name="M:WikiClientLibrary.Pages.WikiPage.ToString">
       <summary>Returns a string that represents the current object.</summary>
       <returns>A string that represents the current object.</returns>
-    </member>
-    <member name="M:WikiClientLibrary.Pages.WikiPage.UpdateContentAsync(System.String)">
-      <summary>
-            Submits content contained in <see cref="P:WikiClientLibrary.Pages.WikiPage.Content" />, making edit to the page.
-            (MediaWiki 1.16)
-            </summary>
-      <param name="summary">the edit summary. Leave it as <c>null</c> or empty string (<c>""</c>) to use the default edit summary.</param>
-      <param name="minor">whether the edit is a minor edit. (See <a href="https://meta.wikimedia.org/wiki/Help:Minor_edit">m:Help:Minor Edit</a>)</param>
-      <param name="bot">whether to mark the edit as bot; even if you are using a bot account the edits will not be marked unless you set this flag.</param>
-      <param name="watch">specify how the watchlist is affected by this edit.</param>
-      <param name="cancellationToken">a token used to cancel the operation.</param>
-      <returns>
-        <c>true</c> if page content has been changed; <c>false</c> otherwise.</returns>
-      <remarks>
-            This action will refill <see cref="P:WikiClientLibrary.Pages.WikiPage.Id" />, <see cref="P:WikiClientLibrary.Pages.WikiPage.Title" />,
-            <see cref="P:WikiClientLibrary.Pages.WikiPage.ContentModel" />, <see cref="P:WikiClientLibrary.Pages.WikiPage.LastRevisionId" />, and invalidate
-            <see cref="P:WikiClientLibrary.Pages.WikiPage.ContentLength" />, <see cref="P:WikiClientLibrary.Pages.WikiPage.LastRevision" />, and <see cref="P:WikiClientLibrary.Pages.WikiPage.LastTouched" />.
-            You should call <see cref="M:WikiClientLibrary.Pages.WikiPage.RefreshAsync" /> again if you're interested in them.
-            </remarks>
-      <exception cref="T:System.InvalidOperationException">Cannot create actual page in the specified namespace.</exception>
-      <exception cref="T:WikiClientLibrary.OperationConflictException">Edit conflict detected.</exception>
-      <exception cref="T:WikiClientLibrary.UnauthorizedOperationException">You have no rights to edit the page.</exception>
-    </member>
-    <member name="M:WikiClientLibrary.Pages.WikiPage.UpdateContentAsync(System.String,System.Boolean)">
-      <summary>
-            Submits content contained in <see cref="P:WikiClientLibrary.Pages.WikiPage.Content" />, making edit to the page.
-            (MediaWiki 1.16)
-            </summary>
-      <param name="summary">the edit summary. Leave it as <c>null</c> or empty string (<c>""</c>) to use the default edit summary.</param>
-      <param name="minor">whether the edit is a minor edit. (See <a href="https://meta.wikimedia.org/wiki/Help:Minor_edit">m:Help:Minor Edit</a>)</param>
-      <param name="bot">whether to mark the edit as bot; even if you are using a bot account the edits will not be marked unless you set this flag.</param>
-      <param name="watch">specify how the watchlist is affected by this edit.</param>
-      <param name="cancellationToken">a token used to cancel the operation.</param>
-      <returns>
-        <c>true</c> if page content has been changed; <c>false</c> otherwise.</returns>
-      <remarks>
-            This action will refill <see cref="P:WikiClientLibrary.Pages.WikiPage.Id" />, <see cref="P:WikiClientLibrary.Pages.WikiPage.Title" />,
-            <see cref="P:WikiClientLibrary.Pages.WikiPage.ContentModel" />, <see cref="P:WikiClientLibrary.Pages.WikiPage.LastRevisionId" />, and invalidate
-            <see cref="P:WikiClientLibrary.Pages.WikiPage.ContentLength" />, <see cref="P:WikiClientLibrary.Pages.WikiPage.LastRevision" />, and <see cref="P:WikiClientLibrary.Pages.WikiPage.LastTouched" />.
-            You should call <see cref="M:WikiClientLibrary.Pages.WikiPage.RefreshAsync" /> again if you're interested in them.
-            </remarks>
-      <exception cref="T:System.InvalidOperationException">Cannot create actual page in the specified namespace.</exception>
-      <exception cref="T:WikiClientLibrary.OperationConflictException">Edit conflict detected.</exception>
-      <exception cref="T:WikiClientLibrary.UnauthorizedOperationException">You have no rights to edit the page.</exception>
-    </member>
-    <member name="M:WikiClientLibrary.Pages.WikiPage.UpdateContentAsync(System.String,System.Boolean,System.Boolean)">
-      <summary>
-            Submits content contained in <see cref="P:WikiClientLibrary.Pages.WikiPage.Content" />, making edit to the page.
-            (MediaWiki 1.16)
-            </summary>
-      <param name="summary">the edit summary. Leave it as <c>null</c> or empty string (<c>""</c>) to use the default edit summary.</param>
-      <param name="minor">whether the edit is a minor edit. (See <a href="https://meta.wikimedia.org/wiki/Help:Minor_edit">m:Help:Minor Edit</a>)</param>
-      <param name="bot">whether to mark the edit as bot; even if you are using a bot account the edits will not be marked unless you set this flag.</param>
-      <param name="watch">specify how the watchlist is affected by this edit.</param>
-      <param name="cancellationToken">a token used to cancel the operation.</param>
-      <returns>
-        <c>true</c> if page content has been changed; <c>false</c> otherwise.</returns>
-      <remarks>
-            This action will refill <see cref="P:WikiClientLibrary.Pages.WikiPage.Id" />, <see cref="P:WikiClientLibrary.Pages.WikiPage.Title" />,
-            <see cref="P:WikiClientLibrary.Pages.WikiPage.ContentModel" />, <see cref="P:WikiClientLibrary.Pages.WikiPage.LastRevisionId" />, and invalidate
-            <see cref="P:WikiClientLibrary.Pages.WikiPage.ContentLength" />, <see cref="P:WikiClientLibrary.Pages.WikiPage.LastRevision" />, and <see cref="P:WikiClientLibrary.Pages.WikiPage.LastTouched" />.
-            You should call <see cref="M:WikiClientLibrary.Pages.WikiPage.RefreshAsync" /> again if you're interested in them.
-            </remarks>
-      <exception cref="T:System.InvalidOperationException">Cannot create actual page in the specified namespace.</exception>
-      <exception cref="T:WikiClientLibrary.OperationConflictException">Edit conflict detected.</exception>
-      <exception cref="T:WikiClientLibrary.UnauthorizedOperationException">You have no rights to edit the page.</exception>
-    </member>
-    <member name="M:WikiClientLibrary.Pages.WikiPage.UpdateContentAsync(System.String,System.Boolean,System.Boolean,WikiClientLibrary.Pages.AutoWatchBehavior)">
-      <summary>
-            Submits content contained in <see cref="P:WikiClientLibrary.Pages.WikiPage.Content" />, making edit to the page.
-            (MediaWiki 1.16)
-            </summary>
-      <param name="summary">the edit summary. Leave it as <c>null</c> or empty string (<c>""</c>) to use the default edit summary.</param>
-      <param name="minor">whether the edit is a minor edit. (See <a href="https://meta.wikimedia.org/wiki/Help:Minor_edit">m:Help:Minor Edit</a>)</param>
-      <param name="bot">whether to mark the edit as bot; even if you are using a bot account the edits will not be marked unless you set this flag.</param>
-      <param name="watch">specify how the watchlist is affected by this edit.</param>
-      <param name="cancellationToken">a token used to cancel the operation.</param>
-      <returns>
-        <c>true</c> if page content has been changed; <c>false</c> otherwise.</returns>
-      <remarks>
-            This action will refill <see cref="P:WikiClientLibrary.Pages.WikiPage.Id" />, <see cref="P:WikiClientLibrary.Pages.WikiPage.Title" />,
-            <see cref="P:WikiClientLibrary.Pages.WikiPage.ContentModel" />, <see cref="P:WikiClientLibrary.Pages.WikiPage.LastRevisionId" />, and invalidate
-            <see cref="P:WikiClientLibrary.Pages.WikiPage.ContentLength" />, <see cref="P:WikiClientLibrary.Pages.WikiPage.LastRevision" />, and <see cref="P:WikiClientLibrary.Pages.WikiPage.LastTouched" />.
-            You should call <see cref="M:WikiClientLibrary.Pages.WikiPage.RefreshAsync" /> again if you're interested in them.
-            </remarks>
-      <exception cref="T:System.InvalidOperationException">Cannot create actual page in the specified namespace.</exception>
-      <exception cref="T:WikiClientLibrary.OperationConflictException">Edit conflict detected.</exception>
-      <exception cref="T:WikiClientLibrary.UnauthorizedOperationException">You have no rights to edit the page.</exception>
-    </member>
-    <member name="M:WikiClientLibrary.Pages.WikiPage.UpdateContentAsync(System.String,System.Boolean,System.Boolean,WikiClientLibrary.Pages.AutoWatchBehavior,System.Threading.CancellationToken)">
-      <summary>
-            Submits content contained in <see cref="P:WikiClientLibrary.Pages.WikiPage.Content" />, making edit to the page.
-            (MediaWiki 1.16)
-            </summary>
-      <param name="summary">the edit summary. Leave it as <c>null</c> or empty string (<c>""</c>) to use the default edit summary.</param>
-      <param name="minor">whether the edit is a minor edit. (See <a href="https://meta.wikimedia.org/wiki/Help:Minor_edit">m:Help:Minor Edit</a>)</param>
-      <param name="bot">whether to mark the edit as bot; even if you are using a bot account the edits will not be marked unless you set this flag.</param>
-      <param name="watch">specify how the watchlist is affected by this edit.</param>
-      <param name="cancellationToken">a token used to cancel the operation.</param>
-      <returns>
-        <c>true</c> if page content has been changed; <c>false</c> otherwise.</returns>
-      <remarks>
-            This action will refill <see cref="P:WikiClientLibrary.Pages.WikiPage.Id" />, <see cref="P:WikiClientLibrary.Pages.WikiPage.Title" />,
-            <see cref="P:WikiClientLibrary.Pages.WikiPage.ContentModel" />, <see cref="P:WikiClientLibrary.Pages.WikiPage.LastRevisionId" />, and invalidate
-            <see cref="P:WikiClientLibrary.Pages.WikiPage.ContentLength" />, <see cref="P:WikiClientLibrary.Pages.WikiPage.LastRevision" />, and <see cref="P:WikiClientLibrary.Pages.WikiPage.LastTouched" />.
-            You should call <see cref="M:WikiClientLibrary.Pages.WikiPage.RefreshAsync" /> again if you're interested in them.
-            </remarks>
-      <exception cref="T:System.InvalidOperationException">Cannot create actual page in the specified namespace.</exception>
-      <exception cref="T:WikiClientLibrary.OperationConflictException">Edit conflict detected.</exception>
-      <exception cref="T:WikiClientLibrary.UnauthorizedOperationException">You have no rights to edit the page.</exception>
     </member>
     <member name="T:WikiClientLibrary.Pages.WikiPageEditOptions">
       <summary>
