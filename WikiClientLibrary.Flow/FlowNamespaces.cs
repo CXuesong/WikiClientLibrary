@@ -1,13 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿namespace WikiClientLibrary.Flow;
 
-namespace WikiClientLibrary.Flow
+public static class FlowNamespaces
 {
-    public static class FlowNamespaces
-    {
-        public const int Topic = 2600;
-    }
+    public const int Topic = 2600;
 }
