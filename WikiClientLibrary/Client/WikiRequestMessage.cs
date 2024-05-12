@@ -23,14 +23,14 @@ public abstract class WikiRequestMessage
     /// <param name="id">Id of the request, for tracing. If left <c>null</c>, an automatically-generated id will be used.</param>
     protected WikiRequestMessage(string? id)
     {
-            Id = id ?? NextId();
-        }
+        Id = id ?? NextId();
+    }
 
     private static string NextId()
     {
-            var localCounter = Interlocked.Increment(ref idCounter);
-            return (baseCounter | (uint)localCounter).ToString("X16");
-        }
+        var localCounter = Interlocked.Increment(ref idCounter);
+        return (baseCounter | (uint)localCounter).ToString("X16");
+    }
 
     /// <summary>
     /// Id of the request, for tracing.
@@ -60,7 +60,7 @@ public abstract class WikiRequestMessage
     /// <inheritdoc />
     public override string ToString()
     {
-            return Id;
-        }
+        return Id;
+    }
 
 }

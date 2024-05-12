@@ -48,7 +48,7 @@ public class CargoRecordConverter : ICargoRecordConverter
             .ToList()!;
     }
 
-    [return:NotNullIfNotNull("value")]
+    [return: NotNullIfNotNull("value")]
     private static IList<string>? DeserializeStringCollection(JToken? value, string separator)
     {
         var values = (string?)value;
@@ -148,7 +148,8 @@ public class CargoRecordConverter : ICargoRecordConverter
                 gen.Emit(OpCodes.Ldloc_S, modelLocal);
             }
             gen.Emit(OpCodes.Ret);
-            des = (Func<IReadOnlyDictionary<string, JToken>, object>)builder.CreateDelegate(typeof(Func<IReadOnlyDictionary<string, JToken>, object>));
+            des = (Func<IReadOnlyDictionary<string, JToken>, object>)builder.CreateDelegate(
+                typeof(Func<IReadOnlyDictionary<string, JToken>, object>));
             cachedDeserializers.TryAdd(modelType, des);
         }
         return des(record.ToDictionary(r => r.Key.Name, r => r.Value));
@@ -159,7 +160,8 @@ public class CargoRecordConverter : ICargoRecordConverter
 
         private static readonly MethodInfo deserializeValueMethod = typeof(ValueConverters).GetMethod(nameof(DeserializeValue))!;
 
-        private static readonly MethodInfo deserializeNullableValueMethod = typeof(ValueConverters).GetMethod(nameof(DeserializeNullableValue))!;
+        private static readonly MethodInfo deserializeNullableValueMethod =
+            typeof(ValueConverters).GetMethod(nameof(DeserializeNullableValue))!;
 
         private static readonly Dictionary<Type, MethodInfo> wellKnownValueDeserializers
             = typeof(ValueConverters)

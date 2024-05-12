@@ -9,15 +9,11 @@ partial class WikiSite
 
     private async Task<JArray> FetchMessagesAsync(string messagesExpr, CancellationToken cancellationToken)
     {
-            var jresult = await InvokeMediaWikiApiAsync(new MediaWikiFormRequestMessage(new
-            {
-                action = "query",
-                meta = "allmessages",
-                ammessages = messagesExpr,
-            }), cancellationToken);
-            return (JArray) jresult["query"]["allmessages"];
-            //return jresult.ToDictionary(m => , m => (string) m["*"]);
-        }
+        var jresult = await InvokeMediaWikiApiAsync(
+            new MediaWikiFormRequestMessage(new { action = "query", meta = "allmessages", ammessages = messagesExpr, }), cancellationToken);
+        return (JArray)jresult["query"]["allmessages"];
+        //return jresult.ToDictionary(m => , m => (string) m["*"]);
+    }
 
     /// <summary>
     /// Get the content of some or all MediaWiki interface messages.
@@ -36,8 +32,8 @@ partial class WikiSite
     /// </exception>
     public Task<IDictionary<string, string>> GetMessagesAsync(IEnumerable<string> messages)
     {
-            return GetMessagesAsync(messages, CancellationToken.None);
-        }
+        return GetMessagesAsync(messages, CancellationToken.None);
+    }
 
     /// <summary>
     /// Get the content of some or all MediaWiki interface messages.
@@ -58,32 +54,32 @@ partial class WikiSite
     public async Task<IDictionary<string, string>> GetMessagesAsync(IEnumerable<string> messages,
         CancellationToken cancellationToken)
     {
-            if (messages == null) throw new ArgumentNullException(nameof(messages));
-            cancellationToken.ThrowIfCancellationRequested();
-            var exprBuilder = new StringBuilder();
-            var result = new Dictionary<string, string>();
-            foreach (var m in messages)
+        if (messages == null) throw new ArgumentNullException(nameof(messages));
+        cancellationToken.ThrowIfCancellationRequested();
+        var exprBuilder = new StringBuilder();
+        var result = new Dictionary<string, string>();
+        foreach (var m in messages)
+        {
+            if (m == null) throw new ArgumentException("The sequence contains null item.", nameof(messages));
+            if (m.Contains("|"))
+                throw new ArgumentException($"The message name \"{m}\" contains pipe character.",
+                    nameof(messages));
+            if (m == "*") throw new InvalidOperationException("Getting all the messages is deprecated.");
+            if (exprBuilder.Length > 0) exprBuilder.Append('|');
+            exprBuilder.Append(m);
+            var jr = await FetchMessagesAsync(exprBuilder.ToString(), cancellationToken);
+            foreach (var entry in jr)
             {
-                if (m == null) throw new ArgumentException("The sequence contains null item.", nameof(messages));
-                if (m.Contains("|"))
-                    throw new ArgumentException($"The message name \"{m}\" contains pipe character.",
-                        nameof(messages));
-                if (m == "*") throw new InvalidOperationException("Getting all the messages is deprecated.");
-                if (exprBuilder.Length > 0) exprBuilder.Append('|');
-                exprBuilder.Append(m);
-                var jr = await FetchMessagesAsync(exprBuilder.ToString(), cancellationToken);
-                foreach (var entry in jr)
-                {
-                    var name = (string) entry["name"];
-                    //var nname = (string)entry["normalizedname"];
-                    // for Wikia, there's no normalizedname
-                    var message = (string) entry["*"];
-                    //var missing = entry["missing"] != null;       message will be null
-                    if (message != null) result[name] = message;
-                }
+                var name = (string)entry["name"];
+                //var nname = (string)entry["normalizedname"];
+                // for Wikia, there's no normalizedname
+                var message = (string)entry["*"];
+                //var missing = entry["missing"] != null;       message will be null
+                if (message != null) result[name] = message;
             }
-            return result;
         }
+        return result;
+    }
 
     /// <summary>
     /// Get the content of MediaWiki interface message.
@@ -100,8 +96,8 @@ partial class WikiSite
     /// </exception>
     public Task<string?> GetMessageAsync(string message)
     {
-            return GetMessageAsync(message, CancellationToken.None);
-        }
+        return GetMessageAsync(message, CancellationToken.None);
+    }
 
     /// <summary>
     /// Get the content of MediaWiki interface message.
@@ -119,35 +115,31 @@ partial class WikiSite
     /// </exception>
     public async Task<string?> GetMessageAsync(string message, CancellationToken cancellationToken)
     {
-            if (message == null) throw new ArgumentNullException(nameof(message));
-            var result = await GetMessagesAsync(new[] {message}, cancellationToken);
-            return result.Values.FirstOrDefault();
-        }
+        if (message == null) throw new ArgumentNullException(nameof(message));
+        var result = await GetMessagesAsync(new[] { message }, cancellationToken);
+        return result.Values.FirstOrDefault();
+    }
 
     /// <summary>
     /// Gets the statistical information of the MediaWiki site.
     /// </summary>
     public Task<SiteStatistics> GetStatisticsAsync()
     {
-            return GetStatisticsAsync(CancellationToken.None);
-        }
+        return GetStatisticsAsync(CancellationToken.None);
+    }
 
     /// <summary>
     /// Gets the statistical information of the MediaWiki site.
     /// </summary>
     public async Task<SiteStatistics> GetStatisticsAsync(CancellationToken cancellationToken)
     {
-            var jobj = await InvokeMediaWikiApiAsync(new MediaWikiFormRequestMessage(new
-            {
-                action = "query",
-                meta = "siteinfo",
-                siprop = "statistics",
-            }), cancellationToken);
-            var jstat = (JObject?) jobj["query"]?["statistics"];
-            if (jstat == null) throw new UnexpectedDataException();
-            var parsed = jstat.ToObject<SiteStatistics>();
-            return parsed;
-        }
+        var jobj = await InvokeMediaWikiApiAsync(
+            new MediaWikiFormRequestMessage(new { action = "query", meta = "siteinfo", siprop = "statistics", }), cancellationToken);
+        var jstat = (JObject?)jobj["query"]?["statistics"];
+        if (jstat == null) throw new UnexpectedDataException();
+        var parsed = jstat.ToObject<SiteStatistics>();
+        return parsed;
+    }
 
     /// <summary>
     /// Performs an opensearch and get results, often used for search box suggestions.
@@ -158,8 +150,8 @@ partial class WikiSite
     /// <remarks>This overload will allow up to 20 results to be returned, and will not resolve redirects.</remarks>
     public Task<IList<OpenSearchResultEntry>> OpenSearchAsync(string searchExpression)
     {
-            return OpenSearchAsync(searchExpression, 20, 0, OpenSearchOptions.None, CancellationToken.None);
-        }
+        return OpenSearchAsync(searchExpression, 20, 0, OpenSearchOptions.None, CancellationToken.None);
+    }
 
 
     /// <summary>
@@ -172,8 +164,8 @@ partial class WikiSite
     /// <remarks>This overload will allow up to 20 results to be returned.</remarks>
     public Task<IList<OpenSearchResultEntry>> OpenSearchAsync(string searchExpression, OpenSearchOptions options)
     {
-            return OpenSearchAsync(searchExpression, 20, 0, options, CancellationToken.None);
-        }
+        return OpenSearchAsync(searchExpression, 20, 0, options, CancellationToken.None);
+    }
 
     /// <summary>
     /// Performs an opensearch and get results, often used for search box suggestions.
@@ -186,8 +178,8 @@ partial class WikiSite
     /// <remarks>This overload will not resolve redirects.</remarks>
     public Task<IList<OpenSearchResultEntry>> OpenSearchAsync(string searchExpression, int maxCount)
     {
-            return OpenSearchAsync(searchExpression, maxCount, 0, OpenSearchOptions.None, CancellationToken.None);
-        }
+        return OpenSearchAsync(searchExpression, maxCount, 0, OpenSearchOptions.None, CancellationToken.None);
+    }
 
     /// <summary>
     /// Performs an opensearch and get results, often used for search box suggestions.
@@ -200,8 +192,8 @@ partial class WikiSite
     public Task<IList<OpenSearchResultEntry>> OpenSearchAsync(string searchExpression, int maxCount,
         OpenSearchOptions options)
     {
-            return OpenSearchAsync(searchExpression, maxCount, 0, options, CancellationToken.None);
-        }
+        return OpenSearchAsync(searchExpression, maxCount, 0, options, CancellationToken.None);
+    }
 
     /// <summary>
     /// Performs an opensearch and get results, often used for search box suggestions.
@@ -215,8 +207,8 @@ partial class WikiSite
     public Task<IList<OpenSearchResultEntry>> OpenSearchAsync(string searchExpression, int maxCount,
         OpenSearchOptions options, CancellationToken cancellationToken)
     {
-            return OpenSearchAsync(searchExpression, maxCount, 0, options, cancellationToken);
-        }
+        return OpenSearchAsync(searchExpression, maxCount, 0, options, cancellationToken);
+    }
 
     /// <summary>
     /// Performs an opensearch and get results, often used for search box suggestions.
@@ -230,8 +222,8 @@ partial class WikiSite
     public Task<IList<OpenSearchResultEntry>> OpenSearchAsync(string searchExpression, int maxCount,
         int defaultNamespaceId, OpenSearchOptions options)
     {
-            return OpenSearchAsync(searchExpression, maxCount, defaultNamespaceId, options, CancellationToken.None);
-        }
+        return OpenSearchAsync(searchExpression, maxCount, defaultNamespaceId, options, CancellationToken.None);
+    }
 
     /// <summary>
     /// Performs an opensearch and get results, often used for search box suggestions.
@@ -246,50 +238,50 @@ partial class WikiSite
     public async Task<IList<OpenSearchResultEntry>> OpenSearchAsync(string searchExpression, int maxCount,
         int defaultNamespaceId, OpenSearchOptions options, CancellationToken cancellationToken)
     {
-           /*
+        /*
 [
-    "Te",
-    [
-        "Te",
-        "Television",
-    ],
-    [
-        "From other capitalisation: ...",
-        "Television or TV is ...",
-    ],
-    [
-        "https://en.wikipedia.org/wiki/Te",
-        "https://en.wikipedia.org/wiki/Television",
-    ]
+ "Te",
+ [
+     "Te",
+     "Television",
+ ],
+ [
+     "From other capitalisation: ...",
+     "Television or TV is ...",
+ ],
+ [
+     "https://en.wikipedia.org/wiki/Te",
+     "https://en.wikipedia.org/wiki/Television",
+ ]
 ]
-             */
-            if (string.IsNullOrEmpty(searchExpression)) throw new ArgumentNullException(nameof(searchExpression));
-            if (maxCount <= 0) throw new ArgumentOutOfRangeException(nameof(maxCount));
-            var jresult = await InvokeMediaWikiApiAsync(new MediaWikiFormRequestMessage(new
+          */
+        if (string.IsNullOrEmpty(searchExpression)) throw new ArgumentNullException(nameof(searchExpression));
+        if (maxCount <= 0) throw new ArgumentOutOfRangeException(nameof(maxCount));
+        var jresult = await InvokeMediaWikiApiAsync(new MediaWikiFormRequestMessage(new
+        {
+            action = "opensearch",
+            @namespace = defaultNamespaceId,
+            search = searchExpression,
+            limit = maxCount,
+            redirects = (options & OpenSearchOptions.ResolveRedirects) == OpenSearchOptions.ResolveRedirects,
+        }), cancellationToken);
+        var result = new List<OpenSearchResultEntry>();
+        var jarray = (JArray)jresult;
+        var titles = jarray.Count > 1 ? (JArray)jarray[1] : null;
+        var descs = jarray.Count > 2 ? (JArray)jarray[2] : null;
+        var urls = jarray.Count > 3 ? (JArray)jarray[3] : null;
+        if (titles != null)
+        {
+            for (int i = 0; i < titles.Count; i++)
             {
-                action = "opensearch",
-                @namespace = defaultNamespaceId,
-                search = searchExpression,
-                limit = maxCount,
-                redirects = (options & OpenSearchOptions.ResolveRedirects) == OpenSearchOptions.ResolveRedirects,
-            }), cancellationToken);
-            var result = new List<OpenSearchResultEntry>();
-            var jarray = (JArray) jresult;
-            var titles = jarray.Count > 1 ? (JArray) jarray[1] : null;
-            var descs = jarray.Count > 2 ? (JArray) jarray[2] : null;
-            var urls = jarray.Count > 3 ? (JArray) jarray[3] : null;
-            if (titles != null)
-            {
-                for (int i = 0; i < titles.Count; i++)
-                {
-                    var entry = new OpenSearchResultEntry {Title = (string) titles[i]};
-                    if (descs != null) entry.Description = (string) descs[i];
-                    if (urls != null) entry.Url = (string) urls[i];
-                    result.Add(entry);
-                }
+                var entry = new OpenSearchResultEntry { Title = (string)titles[i] };
+                if (descs != null) entry.Description = (string)descs[i];
+                if (urls != null) entry.Url = (string)urls[i];
+                result.Add(entry);
             }
-            return result;
         }
+        return result;
+    }
 
 }
 
@@ -299,6 +291,7 @@ partial class WikiSite
 [Flags]
 public enum OpenSearchOptions
 {
+
     /// <summary>No options.</summary>
     None = 0,
 
@@ -307,6 +300,7 @@ public enum OpenSearchOptions
     /// This may cause OpenSearch return fewer results than limitation.
     /// </summary>
     ResolveRedirects = 1,
+
 }
 
 /// <summary>
@@ -314,6 +308,7 @@ public enum OpenSearchOptions
 /// </summary>
 public struct OpenSearchResultEntry
 {
+
     /// <summary>
     /// Title of the page.
     /// </summary>
@@ -337,6 +332,7 @@ public struct OpenSearchResultEntry
     /// </returns>
     public override string ToString()
     {
-            return Title + (Description != null ? ":" + Description : null);
-        }
+        return Title + (Description != null ? ":" + Description : null);
+    }
+
 }

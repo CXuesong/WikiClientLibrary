@@ -11,7 +11,9 @@ namespace WikiClientLibrary.Cargo.Linq;
 /// <typeparam name="T">type of the model.</typeparam>
 public interface ICargoRecordSet<T> : IQueryable<T>
 {
+
     string Name { get; }
+
 }
 
 internal class CargoRecordSet<T> : ICargoRecordSet<T>

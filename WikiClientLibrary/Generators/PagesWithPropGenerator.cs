@@ -10,6 +10,7 @@ namespace WikiClientLibrary.Generators;
 /// </summary>
 public class PagesWithPropGenerator : WikiPageGenerator<PagesWithPropResultItem>
 {
+
     public PagesWithPropGenerator(WikiSite site, string propertyName) : base(site)
     {
         PropertyName = propertyName;
@@ -25,17 +26,17 @@ public class PagesWithPropGenerator : WikiPageGenerator<PagesWithPropResultItem>
     /// the descending order. (MediaWiki 1.19+)
     /// </summary>
     public bool OrderDescending { get; set; }
-    
+
     public override string ListName => "pageswithprop";
 
     public override IEnumerable<KeyValuePair<string, object?>> EnumListParameters()
     {
         return new Dictionary<string, object?>
         {
-            {"pwpprop", "ids|title|value"},
-            {"pwppropname", PropertyName},
-            {"pwplimit", PaginationSize},
-            {"pwpdir", OrderDescending ? "descending" : "ascending"},
+            { "pwpprop", "ids|title|value" },
+            { "pwppropname", PropertyName },
+            { "pwplimit", PaginationSize },
+            { "pwpdir", OrderDescending ? "descending" : "ascending" },
         };
     }
 
@@ -43,4 +44,5 @@ public class PagesWithPropGenerator : WikiPageGenerator<PagesWithPropResultItem>
     {
         return new PagesWithPropResultItem(MediaWikiHelper.PageStubFromJson((JObject)json), (string)json["value"]);
     }
+
 }

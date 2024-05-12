@@ -85,11 +85,11 @@ public class GeoSearchGenerator : WikiPageGenerator<GeoSearchResultItem>
     {
         var prop = new Dictionary<string, object?>
         {
-            {"gsradius", Radius},
-            {"gsnamespace", NamespaceIds == null ? null : MediaWikiHelper.JoinValues(NamespaceIds)},
-            {"gsprimary", IncludesSecondaryCoordinates ? "all" : "primary"},
-            {"gsglobe", TargetCoordinate.Globe},
-            {"gslimit", PaginationSize},
+            { "gsradius", Radius },
+            { "gsnamespace", NamespaceIds == null ? null : MediaWikiHelper.JoinValues(NamespaceIds) },
+            { "gsprimary", IncludesSecondaryCoordinates ? "all" : "primary" },
+            { "gsglobe", TargetCoordinate.Globe },
+            { "gslimit", PaginationSize },
         };
         if (TargetTitle != null)
         {
@@ -126,4 +126,5 @@ public class GeoSearchGenerator : WikiPageGenerator<GeoSearchResultItem>
             MediaWikiHelper.GeoCoordinateFromJson((JObject)json),
             json["primary"] != null, (double)json["dist"]);
     }
+
 }

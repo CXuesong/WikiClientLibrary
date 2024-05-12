@@ -28,12 +28,12 @@ public class WikiaQueryRequestMessage : WikiRequestMessage
     public WikiaQueryRequestMessage() : this(null, null)
     {
     }
-        
+
     /// <inheritdoc cref="WikiaQueryRequestMessage(string,object,bool)"/>
     public WikiaQueryRequestMessage(object dict) : this(null, dict, false)
     {
     }
-        
+
     /// <inheritdoc cref="WikiaQueryRequestMessage(string,object,bool)"/>
     public WikiaQueryRequestMessage(object dict, bool httpPost) : this(null, dict, httpPost)
     {
@@ -76,7 +76,7 @@ public class WikiaQueryRequestMessage : WikiRequestMessage
 
     /// <inheritdoc />
     public override HttpMethod GetHttpMethod() => UseHttpPost ? HttpMethod.Post : HttpMethod.Get;
-        
+
     /// <inheritdoc />
     public override string GetHttpQuery()
     {
@@ -118,4 +118,5 @@ public class WikiaQueryRequestMessage : WikiRequestMessage
         return new FormUrlEncodedContent(fields.Where(p => p.Value != null)
             .Select(p => new KeyValuePair<string, string>(p.Key, p.Value?.ToString())));
     }
+
 }

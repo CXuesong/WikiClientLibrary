@@ -205,13 +205,14 @@ public class WikiaSite : WikiSite
         /// <inheritdoc />
         public override Task<object> ParseResponseAsync(HttpResponseMessage response, WikiResponseParsingContext context)
         {
-            var responseCode = (int) response.StatusCode;
+            var responseCode = (int)response.StatusCode;
             if (responseCode >= 300 && responseCode <= 399 || response.IsSuccessStatusCode) return dummyResult;
 
             context.NeedRetry = true;
-            response.EnsureSuccessStatusCode();     // An exception will be thrown here.
+            response.EnsureSuccessStatusCode(); // An exception will be thrown here.
             return dummyResult;
         }
+
     }
 
 }

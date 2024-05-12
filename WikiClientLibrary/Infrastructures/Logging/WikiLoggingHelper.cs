@@ -24,19 +24,22 @@ public static class WikiLoggingHelper
     /// <param name="param1">The first parameter for the action.</param>
     /// <param name="param2">The second parameter for the action.</param>
     /// <param name="param3">The third parameter for the action.</param>
-    public static IDisposable BeginActionScope(this ILogger logger, object? target, object param1, object param2, object param3, [CallerMemberName] string? actionName = null)
+    public static IDisposable BeginActionScope(this ILogger logger, object? target, object param1, object param2, object param3,
+        [CallerMemberName] string? actionName = null)
     {
         return BeginActionScope(logger, target, new[] { param1, param2, param3 }, actionName);
     }
 
     /// <inheritdoc cref="BeginActionScope(ILogger,object,object,object,string)"/>
-    public static IDisposable BeginActionScope(this ILogger logger, object? target, object param1, object param2, [CallerMemberName] string? actionName = null)
+    public static IDisposable BeginActionScope(this ILogger logger, object? target, object param1, object param2,
+        [CallerMemberName] string? actionName = null)
     {
         return BeginActionScope(logger, target, new[] { param1, param2 }, actionName);
     }
 
     /// <inheritdoc cref="BeginActionScope(ILogger,object,object,object,string)"/>
-    public static IDisposable BeginActionScope(this ILogger logger, object? target, object param1, [CallerMemberName] string? actionName = null)
+    public static IDisposable BeginActionScope(this ILogger logger, object? target, object param1,
+        [CallerMemberName] string? actionName = null)
     {
         return BeginActionScope(logger, target, new[] { param1 }, actionName);
     }
@@ -50,7 +53,8 @@ public static class WikiLoggingHelper
     /// <param name="parameters">The action parameters. Can be <c>null</c>.</param>
     /// <param name="actionName">The action name. Leave it missing to use the caller's member name.</param>
     /// <returns>An <see cref="IDisposable"/> that when disposed, indicates the action is over.</returns>
-    public static IDisposable BeginActionScope(this ILogger logger, object? target, IEnumerable? parameters, [CallerMemberName] string? actionName = null)
+    public static IDisposable BeginActionScope(this ILogger logger, object? target, IEnumerable? parameters,
+        [CallerMemberName] string? actionName = null)
     {
         if (logger == null) throw new ArgumentNullException(nameof(logger));
         if (logger is NullLogger) return EmptyDisposable.Instance;
@@ -59,7 +63,8 @@ public static class WikiLoggingHelper
 
     /// <inheritdoc cref="BeginActionScope(ILogger,object,IEnumerable,string)"/>
     /// <param name="loggable">The loggable object whose logger will enter a new scope.</param>
-    public static IDisposable BeginActionScope(this IWikiClientLoggable loggable, object? target, [CallerMemberName] string? actionName = null)
+    public static IDisposable BeginActionScope(this IWikiClientLoggable loggable, object? target,
+        [CallerMemberName] string? actionName = null)
     {
         if (loggable == null) throw new ArgumentNullException(nameof(loggable));
         return BeginActionScope(loggable, target, null, actionName);
@@ -69,7 +74,7 @@ public static class WikiLoggingHelper
     /// <param name="param1">The first parameter for the action.</param>
     /// <param name="param2">The second parameter for the action.</param>
     /// <param name="param3">The third parameter for the action.</param>
-    public static IDisposable BeginActionScope(this IWikiClientLoggable loggable, object? target, 
+    public static IDisposable BeginActionScope(this IWikiClientLoggable loggable, object? target,
         object param1, object param2, object param3, [CallerMemberName] string? actionName = null)
     {
         return BeginActionScope(loggable, target, new[] { param1, param2, param3 }, actionName);
@@ -83,7 +88,7 @@ public static class WikiLoggingHelper
     }
 
     /// <inheritdoc cref="BeginActionScope(IWikiClientLoggable,object,object,object,string)"/>
-    public static IDisposable BeginActionScope(this IWikiClientLoggable loggable, object? target, 
+    public static IDisposable BeginActionScope(this IWikiClientLoggable loggable, object? target,
         object param1, [CallerMemberName] string? actionName = null)
     {
         return BeginActionScope(loggable, target, new[] { param1 }, actionName);
@@ -127,6 +132,7 @@ public static class WikiLoggingHelper
             disposable2?.Dispose();
             disposable2 = null;
         }
+
     }
 
     private class EmptyDisposable : IDisposable
@@ -137,10 +143,12 @@ public static class WikiLoggingHelper
         public void Dispose()
         {
         }
+
     }
 
     private sealed class ActionLogScopeState : IReadOnlyList<KeyValuePair<string, object?>>
     {
+
         private readonly object? target;
         private readonly string? action;
         private readonly IList parameters;
@@ -252,6 +260,7 @@ public static class WikiLoggingHelper
             Volatile.Write(ref str, localStr);
             return localStr;
         }
+
     }
 
 }

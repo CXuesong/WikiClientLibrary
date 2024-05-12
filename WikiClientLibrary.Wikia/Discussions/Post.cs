@@ -246,8 +246,10 @@ public class Post
 [Flags]
 public enum PostQueryOptions
 {
+
     /// <summary>No options.</summary>
     None = 0,
+
     /// <summary>
     /// Asks for exact author information, even if we are fetching for multiple
     /// comments at one time.
@@ -268,6 +270,7 @@ public enum PostQueryOptions
     /// will be fetching regardless of this flag.</para>
     /// </remarks>
     ExactAuthoringInformation
+
 }
 
 /// <summary>
@@ -276,18 +279,22 @@ public enum PostQueryOptions
 [Flags]
 public enum PostCreationOptions
 {
+
     /// <summary>
     /// No options.
     /// </summary>
     None = 0,
+
     /// <summary>
     /// Creates the new post using article comment API,
     /// regardless of the current namespace.
     /// </summary>
     AsArticleComment = 1,
+
     /// <summary>
     /// Creates the new post using message wall API,
     /// regardless of the current namespace.
     /// </summary>
     AsWallMessage = 2,
+
 }

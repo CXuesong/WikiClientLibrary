@@ -16,7 +16,7 @@ public class RecentChangesGenerator : WikiPageGenerator<RecentChangeItem>
     /// <inheritdoc />
     public RecentChangesGenerator(WikiSite site) : base(site)
     {
-        }
+    }
 
     /// <summary>
     /// Whether to list pages in an ascending order of time.  (Default: <c>false</c>)
@@ -100,63 +100,63 @@ public class RecentChangesGenerator : WikiPageGenerator<RecentChangeItem>
 
     private string ParseRecentChangesTypes(RecentChangesFilterTypes value)
     {
-            var types = "";
-            if ((value & RecentChangesFilterTypes.Edit) == RecentChangesFilterTypes.Edit) types += "|edit";
-            if ((value & RecentChangesFilterTypes.External) == RecentChangesFilterTypes.External) types += "|external";
-            if ((value & RecentChangesFilterTypes.Create) == RecentChangesFilterTypes.Create) types += "|new";
-            if ((value & RecentChangesFilterTypes.Log) == RecentChangesFilterTypes.Log) types += "|log";
-            if ((value & RecentChangesFilterTypes.Categorize) == RecentChangesFilterTypes.Categorize) types += "|categorize";
-            if (types.Length == 0) throw new ArgumentOutOfRangeException(nameof(value));
-            return types[1..];
-        }
+        var types = "";
+        if ((value & RecentChangesFilterTypes.Edit) == RecentChangesFilterTypes.Edit) types += "|edit";
+        if ((value & RecentChangesFilterTypes.External) == RecentChangesFilterTypes.External) types += "|external";
+        if ((value & RecentChangesFilterTypes.Create) == RecentChangesFilterTypes.Create) types += "|new";
+        if ((value & RecentChangesFilterTypes.Log) == RecentChangesFilterTypes.Log) types += "|log";
+        if ((value & RecentChangesFilterTypes.Categorize) == RecentChangesFilterTypes.Categorize) types += "|categorize";
+        if (types.Length == 0) throw new ArgumentOutOfRangeException(nameof(value));
+        return types[1..];
+    }
 
     private string? ParseFilters()
     {
-            var types = MinorFilter.ToString("|minor", "|!minor", "")
-                        + BotFilter.ToString("|bot", "|!bot", "")
-                        + AnonymousFilter.ToString("|anon", "|!anon", "")
-                        + RedirectsFilter.ToString("|redirect", "|!redirect", "")
-                        + PatrolledFilter.ToString("|patrolled", "|!patrolled", "");
-            return types.Length > 1 ? types[1..] : null;
-        }
+        var types = MinorFilter.ToString("|minor", "|!minor", "")
+                    + BotFilter.ToString("|bot", "|!bot", "")
+                    + AnonymousFilter.ToString("|anon", "|!anon", "")
+                    + RedirectsFilter.ToString("|redirect", "|!redirect", "")
+                    + PatrolledFilter.ToString("|patrolled", "|!patrolled", "");
+        return types.Length > 1 ? types[1..] : null;
+    }
 
     private IEnumerable<KeyValuePair<string, object?>> EnumParams(bool isList)
     {
-            var prefix = isList ? null : "g";
-            var dict = new Dictionary<string, object?>
-            {
-                {prefix + "rcdir", TimeAscending ? "newer" : "older"},
-                {prefix + "rcstart", StartTime},
-                {prefix + "rcend", EndTime},
-                {prefix + "rcnamespace", NamespaceIds == null ? null : MediaWikiHelper.JoinValues(NamespaceIds)},
-                {prefix + "rcuser", UserName},
-                {prefix + "rcexcludeuser", ExcludedUserName},
-                {prefix + "rctag", Tag},
-                {prefix + "rctype", ParseRecentChangesTypes(TypeFilters)},
-                {prefix + "rcshow", ParseFilters()},
-                {prefix + "rctoponly", LastRevisionsOnly},
-                {prefix + "rclimit", PaginationSize}
-            };
-            if (isList)
-            {
-                var fields = "user|userid|comment|parsedcomment|flags|timestamp|title|ids|sizes|redirect|loginfo|tags|sha1";
-                if (Site.AccountInfo.HasRight(UserRights.Patrol)) fields += "|patrolled";
-                dict.Add("rcprop", fields);
-            }
-            return dict;
+        var prefix = isList ? null : "g";
+        var dict = new Dictionary<string, object?>
+        {
+            { prefix + "rcdir", TimeAscending ? "newer" : "older" },
+            { prefix + "rcstart", StartTime },
+            { prefix + "rcend", EndTime },
+            { prefix + "rcnamespace", NamespaceIds == null ? null : MediaWikiHelper.JoinValues(NamespaceIds) },
+            { prefix + "rcuser", UserName },
+            { prefix + "rcexcludeuser", ExcludedUserName },
+            { prefix + "rctag", Tag },
+            { prefix + "rctype", ParseRecentChangesTypes(TypeFilters) },
+            { prefix + "rcshow", ParseFilters() },
+            { prefix + "rctoponly", LastRevisionsOnly },
+            { prefix + "rclimit", PaginationSize }
+        };
+        if (isList)
+        {
+            var fields = "user|userid|comment|parsedcomment|flags|timestamp|title|ids|sizes|redirect|loginfo|tags|sha1";
+            if (Site.AccountInfo.HasRight(UserRights.Patrol)) fields += "|patrolled";
+            dict.Add("rcprop", fields);
         }
+        return dict;
+    }
 
     /// <inheritdoc />
     public override IEnumerable<KeyValuePair<string, object?>> EnumListParameters()
     {
-            return EnumParams(true);
-        }
+        return EnumParams(true);
+    }
 
     /// <inheritdoc />
     public override IEnumerable<KeyValuePair<string, object?>> EnumGeneratorParameters()
     {
-            return EnumParams(false);
-        }
+        return EnumParams(false);
+    }
 
     // Duplicate results can be shown among continued query results in recent changes,
     // if a wiki page is modified more than once. And when a page title is shown for the
@@ -176,31 +176,34 @@ public class RecentChangesGenerator : WikiPageGenerator<RecentChangeItem>
     /// <inheritdoc />
     protected override RecentChangeItem ItemFromJson(JToken json)
     {
-            var serializer = rcitemSerializer;
-            if (serializer == null)
-            {
-                serializer = Utility.CreateWikiJsonSerializer();
-                serializer.Converters.Insert(0, new RcEntryCreator(Site));
-                Volatile.Write(ref rcitemSerializer, serializer);
-            }
-            return json.ToObject<RecentChangeItem>(serializer);
+        var serializer = rcitemSerializer;
+        if (serializer == null)
+        {
+            serializer = Utility.CreateWikiJsonSerializer();
+            serializer.Converters.Insert(0, new RcEntryCreator(Site));
+            Volatile.Write(ref rcitemSerializer, serializer);
         }
+        return json.ToObject<RecentChangeItem>(serializer);
+    }
 
     private class RcEntryCreator : CustomCreationConverter<RecentChangeItem>
     {
+
         public RcEntryCreator(WikiSite site)
         {
-                if (site == null) throw new ArgumentNullException(nameof(site));
-                Site = site;
-            }
+            if (site == null) throw new ArgumentNullException(nameof(site));
+            Site = site;
+        }
 
         public WikiSite Site { get; }
 
         public override RecentChangeItem Create(Type objectType)
         {
-                return new RecentChangeItem(Site);
-            }
+            return new RecentChangeItem(Site);
+        }
+
     }
+
 }
 
 /// <summary>
@@ -209,6 +212,7 @@ public class RecentChangesGenerator : WikiPageGenerator<RecentChangeItem>
 [Flags]
 public enum RecentChangesFilterTypes
 {
+
     /// <summary>
     /// Invalid enum value. Using this value may cause exceptions.
     /// </summary>
@@ -244,4 +248,5 @@ public enum RecentChangesFilterTypes
     /// All types of changes.
     /// </summary>
     All = Edit | External | Create | Log | Categorize
+
 }

@@ -54,6 +54,7 @@ public abstract class WikiResponseMessageParser<T> : IWikiResponseMessageParser<
     /// <inheritdoc />
     async Task<object> IWikiResponseMessageParser<T>.ParseResponseAsync(HttpResponseMessage response, WikiResponseParsingContext context)
     {
-            return await ParseResponseAsync(response, context);
-        }
+        return await ParseResponseAsync(response, context);
+    }
+
 }

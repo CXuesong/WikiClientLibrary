@@ -192,6 +192,7 @@ public abstract class UnorderedKeyedMultiCollection<TKey, TItem> : ICollection<T
 
     private struct Slot
     {
+
         public Slot(List<TItem> items)
         {
             Debug.Assert(items != null);
@@ -207,6 +208,7 @@ public abstract class UnorderedKeyedMultiCollection<TKey, TItem> : ICollection<T
 
     private sealed class DebugView
     {
+
         private readonly UnorderedKeyedMultiCollection<TKey, TItem> source;
 
         public DebugView(UnorderedKeyedMultiCollection<TKey, TItem> source)
@@ -233,6 +235,7 @@ public abstract class UnorderedKeyedMultiCollection<TKey, TItem> : ICollection<T
                 return buffer;
             }
         }
+
     }
 
 }

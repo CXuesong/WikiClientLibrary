@@ -258,6 +258,7 @@ public class RecentChangeItem
         sb.Append(Comment);
         return sb.ToString();
     }
+
 }
 
 /// <summary>
@@ -265,6 +266,7 @@ public class RecentChangeItem
 /// </summary>
 public enum RecentChangesType
 {
+
     Edit = 0,
     Create,
     Move,
@@ -280,8 +282,8 @@ public enum RecentChangesType
     /// <summary>
     /// Move over redirect. (Obsolete.)
     /// </summary>
-    [Obsolete]
-    MoveOverRedirect,
+    [Obsolete] MoveOverRedirect,
+
 }
 
 /// <summary>
@@ -289,16 +291,20 @@ public enum RecentChangesType
 /// </summary>
 public enum PatrolStatus
 {
+
     /// <summary>
     /// Not available or not applicable.
     /// </summary>
     Unknown = 0,
+
     /// <summary>
     /// Not patrolled.
     /// </summary>
     Unpatrolled,
+
     /// <summary>
     /// Patrolled.
     /// </summary>
     Patrolled,
+
 }

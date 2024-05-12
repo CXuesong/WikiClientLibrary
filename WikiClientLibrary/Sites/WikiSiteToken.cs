@@ -26,8 +26,8 @@ public sealed class WikiSiteToken
 
     public WikiSiteToken(string type)
     {
-            Type = type ?? throw new ArgumentNullException(nameof(type));
-        }
+        Type = type ?? throw new ArgumentNullException(nameof(type));
+    }
 
     public string Type { get; }
 

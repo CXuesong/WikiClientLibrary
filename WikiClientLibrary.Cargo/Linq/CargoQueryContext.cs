@@ -7,6 +7,7 @@ namespace WikiClientLibrary.Cargo.Linq;
 /// </summary>
 public interface ICargoQueryContext
 {
+
     /// <summary>
     /// Starts a Linq query expression on the specified Cargo model and Cargo table.
     /// </summary>
@@ -52,7 +53,8 @@ public class CargoQueryContext : ICargoQueryContext
     /// <inheritdoc />
     public ICargoRecordSet<T> Table<T>(string? name)
     {
-        return new CargoRecordSet<T>(CargoModel.FromClrType(typeof(T), name), new CargoQueryProvider(WikiSite) { PaginationSize = _PaginationSize });
+        return new CargoRecordSet<T>(CargoModel.FromClrType(typeof(T), name),
+            new CargoQueryProvider(WikiSite) { PaginationSize = _PaginationSize });
     }
 
     /// <inheritdoc />

@@ -17,13 +17,14 @@ namespace WikiClientLibrary.Infrastructures;
 /// </summary>
 public static class MediaWikiHelper
 {
+
     /// <summary>
     /// Create an new instance of <see cref="JsonSerializer"/> for parsing MediaWiki API response.
     /// </summary>
     public static JsonSerializer CreateWikiJsonSerializer()
     {
-            return Utility.CreateWikiJsonSerializer();
-        }
+        return Utility.CreateWikiJsonSerializer();
+    }
 
     /// <summary>
     /// Converts the specified relative protocol URL (starting with <c>//</c>) to absolute protocol URL.
@@ -36,12 +37,12 @@ public static class MediaWikiHelper
     /// it will be returned directly.</returns>
     public static string MakeAbsoluteProtocol(string relativeProtocolUrl, string defaultProtocol)
     {
-            if (relativeProtocolUrl == null) throw new ArgumentNullException(nameof(relativeProtocolUrl));
-            if (defaultProtocol == null) throw new ArgumentNullException(nameof(defaultProtocol));
-            var url = relativeProtocolUrl;
-            if (url.StartsWith("//")) url = defaultProtocol + ":" + url;
-            return url;
-        }
+        if (relativeProtocolUrl == null) throw new ArgumentNullException(nameof(relativeProtocolUrl));
+        if (defaultProtocol == null) throw new ArgumentNullException(nameof(defaultProtocol));
+        var url = relativeProtocolUrl;
+        if (url.StartsWith("//")) url = defaultProtocol + ":" + url;
+        return url;
+    }
 
     /// <summary>
     /// Combines a base URL and a relative URL, using <c>https</c> for relative protocol URL.
@@ -52,8 +53,8 @@ public static class MediaWikiHelper
     /// <returns>The combined URL with absolute protocol.</returns>
     public static string MakeAbsoluteUrl(string baseUrl, string relativeUrl)
     {
-            return MakeAbsoluteUrl(baseUrl, relativeUrl, "https");
-        }
+        return MakeAbsoluteUrl(baseUrl, relativeUrl, "https");
+    }
 
     /// <summary>
     /// Combines a base URL and a relative URL, using the specified protocol for relative protocol URL.
@@ -67,12 +68,12 @@ public static class MediaWikiHelper
     /// <returns>The combined URL with absolute protocol.</returns>
     public static string MakeAbsoluteUrl(string baseUrl, string relativeUrl, string defaultProtocol)
     {
-            if (baseUrl == null) throw new ArgumentNullException(nameof(baseUrl));
-            if (relativeUrl == null) throw new ArgumentNullException(nameof(relativeUrl));
-            if (defaultProtocol == null) throw new ArgumentNullException(nameof(defaultProtocol));
-            baseUrl = MakeAbsoluteProtocol(baseUrl, defaultProtocol);
-            return new Uri(new Uri(baseUrl, UriKind.Absolute), relativeUrl).ToString();
-        }
+        if (baseUrl == null) throw new ArgumentNullException(nameof(baseUrl));
+        if (relativeUrl == null) throw new ArgumentNullException(nameof(relativeUrl));
+        if (defaultProtocol == null) throw new ArgumentNullException(nameof(defaultProtocol));
+        baseUrl = MakeAbsoluteProtocol(baseUrl, defaultProtocol);
+        return new Uri(new Uri(baseUrl, UriKind.Absolute), relativeUrl).ToString();
+    }
 
     /// <summary>
     /// Enumerates from either a sequence of key-value pairs, or the property-value pairs of an anonymous object.
@@ -83,30 +84,30 @@ public static class MediaWikiHelper
     /// <returns>A sequence containing the enumerated key-value pairs.</returns>
     public static IEnumerable<KeyValuePair<string, object?>> EnumValues(object dict)
     {
-            if (dict == null) throw new ArgumentNullException(nameof(dict));
-            if (dict is IEnumerable<KeyValuePair<string, object?>> objEnu)
-                return objEnu;
-            if (dict is IEnumerable<KeyValuePair<string, string?>> stringEnu)
-                return stringEnu.Select(p => new KeyValuePair<string, object?>(p.Key, p.Value));
-            if (dict is IDictionary idict0)
+        if (dict == null) throw new ArgumentNullException(nameof(dict));
+        if (dict is IEnumerable<KeyValuePair<string, object?>> objEnu)
+            return objEnu;
+        if (dict is IEnumerable<KeyValuePair<string, string?>> stringEnu)
+            return stringEnu.Select(p => new KeyValuePair<string, object?>(p.Key, p.Value));
+        if (dict is IDictionary idict0)
+        {
+            static IEnumerable<KeyValuePair<string, object?>> Enumerator(IDictionary idict)
             {
-                static IEnumerable<KeyValuePair<string, object?>> Enumerator(IDictionary idict)
-                {
-                    var de = idict.GetEnumerator();
-                    while (de.MoveNext()) yield return new KeyValuePair<string, object?>((string)de.Key, de.Value);
-                }
-
-                return Enumerator(idict0);
+                var de = idict.GetEnumerator();
+                while (de.MoveNext()) yield return new KeyValuePair<string, object?>((string)de.Key, de.Value);
             }
-            // Sanity check: We only want to marshal anonymous types.
-            // If you are in RELEASE mode… I wish you good luck.
-            Debug.Assert(dict.GetType().CustomAttributes
-                    .Any(a => a.AttributeType != typeof(CompilerGeneratedAttribute)),
-                "We only want to marshal anonymous types. Did you accidentally pass in a wrong object?");
-            return from p in dict.GetType().GetProperties()
-                   let value = p.GetValue(dict)
-                   select new KeyValuePair<string, object?>(p.Name, value);
+
+            return Enumerator(idict0);
         }
+        // Sanity check: We only want to marshal anonymous types.
+        // If you are in RELEASE mode… I wish you good luck.
+        Debug.Assert(dict.GetType().CustomAttributes
+                .Any(a => a.AttributeType != typeof(CompilerGeneratedAttribute)),
+            "We only want to marshal anonymous types. Did you accidentally pass in a wrong object?");
+        return from p in dict.GetType().GetProperties()
+            let value = p.GetValue(dict)
+            select new KeyValuePair<string, object?>(p.Name, value);
+    }
 
     internal const string ExceptionTroubleshootingHelpLink = "https://github.com/CXuesong/WikiClientLibrary/wiki/Troubleshooting";
 
@@ -114,10 +115,7 @@ public static class MediaWikiHelper
     // We are converting string to JObject, then from JObject to data model.
     // If date time is already converted into JValue of type Date,
     // we won't be easily recover the underlying string when converting to data model.
-    private static readonly JsonSerializer jTokenSerializer = new JsonSerializer
-    {
-        DateParseHandling = DateParseHandling.None
-    };
+    private static readonly JsonSerializer jTokenSerializer = new JsonSerializer { DateParseHandling = DateParseHandling.None };
 
     /// <summary>
     /// Asynchronously parses JSON content from the specified stream.
@@ -128,31 +126,28 @@ public static class MediaWikiHelper
     /// <exception cref="UnexpectedDataException"><paramref name="stream"/> is empty stream, or there is an error parsing the JSON response.</exception>
     public static async Task<JToken> ParseJsonAsync(Stream stream, CancellationToken cancellationToken)
     {
-            if (stream == null) throw new ArgumentNullException(nameof(stream));
-            // TODO buffer stream, instead of reading all
-            var content = await stream.ReadAllStringAsync(cancellationToken);
-            if (string.IsNullOrEmpty(content))
-                throw new UnexpectedDataException(Prompts.ExceptionJsonEmptyInput);
-            if (content[0] == '<')
-                throw new UnexpectedDataException(Prompts.ExceptionHtmlResponseHint)
-                {
-                    HelpLink = ExceptionTroubleshootingHelpLink
-                };
-            try
-            {
-                using var reader = new StringReader(content);
-                using var jreader = new JsonTextReader(reader);
-                return jTokenSerializer.Deserialize<JToken>(jreader);
-            }
-            catch (Exception ex)
-            {
-                var message = Prompts.ExceptionJsonParsingFailed;
-                message += ex.Message;
-                if (ex is JsonException && !string.IsNullOrEmpty(ex.Message) && ex.Message.Contains("'<'"))
-                    message += Prompts.ExceptionJsonEmptyInput;
-                throw new UnexpectedDataException(message, ex);
-            }
+        if (stream == null) throw new ArgumentNullException(nameof(stream));
+        // TODO buffer stream, instead of reading all
+        var content = await stream.ReadAllStringAsync(cancellationToken);
+        if (string.IsNullOrEmpty(content))
+            throw new UnexpectedDataException(Prompts.ExceptionJsonEmptyInput);
+        if (content[0] == '<')
+            throw new UnexpectedDataException(Prompts.ExceptionHtmlResponseHint) { HelpLink = ExceptionTroubleshootingHelpLink };
+        try
+        {
+            using var reader = new StringReader(content);
+            using var jreader = new JsonTextReader(reader);
+            return jTokenSerializer.Deserialize<JToken>(jreader);
         }
+        catch (Exception ex)
+        {
+            var message = Prompts.ExceptionJsonParsingFailed;
+            message += ex.Message;
+            if (ex is JsonException && !string.IsNullOrEmpty(ex.Message) && ex.Message.Contains("'<'"))
+                message += Prompts.ExceptionJsonEmptyInput;
+            throw new UnexpectedDataException(message, ex);
+        }
+    }
 
     /// <summary>
     /// Creates a <see cref="WikiPageStub"/> instance from the given raw page information.
@@ -181,58 +176,58 @@ public static class MediaWikiHelper
     /// </remarks>
     public static WikiPageStub PageStubFromJson(JObject jPage)
     {
-            if (jPage == null) throw new ArgumentNullException(nameof(jPage));
-            if (jPage["invalid"] != null)
-                return WikiPageStub.NewInvalidPage((string)jPage["title"]);
-            if (jPage["special"] != null)
-                return WikiPageStub.NewSpecialPage((string)jPage["title"], (int)jPage["ns"], jPage["missing"] != null);
-            if (jPage["missing"] != null)
-            {
-                if (jPage["title"] != null)
-                    return WikiPageStub.NewMissingPage((string)jPage["title"], (int)jPage["ns"]);
-                if (jPage["pageid"] != null)
-                    return WikiPageStub.NewMissingPage((int)jPage["pageid"]);
-                return WikiPageStub.NewMissingPage(WikiPageStub.MissingPageIdMask);
-            }
-            if (jPage["pageid"] != null)
-            {
-                if (jPage["title"] != null)
-                    return new WikiPageStub((int)jPage["pageid"], (string)jPage["title"], (int)jPage["ns"]);
-                return new WikiPageStub((int)jPage["pageid"]);
-            }
+        if (jPage == null) throw new ArgumentNullException(nameof(jPage));
+        if (jPage["invalid"] != null)
+            return WikiPageStub.NewInvalidPage((string)jPage["title"]);
+        if (jPage["special"] != null)
+            return WikiPageStub.NewSpecialPage((string)jPage["title"], (int)jPage["ns"], jPage["missing"] != null);
+        if (jPage["missing"] != null)
+        {
             if (jPage["title"] != null)
-                return new WikiPageStub((string)jPage["title"], (int)jPage["ns"]);
-            throw new ArgumentException(Prompts.ExceptionInvalidPageJson, nameof(jPage));
+                return WikiPageStub.NewMissingPage((string)jPage["title"], (int)jPage["ns"]);
+            if (jPage["pageid"] != null)
+                return WikiPageStub.NewMissingPage((int)jPage["pageid"]);
+            return WikiPageStub.NewMissingPage(WikiPageStub.MissingPageIdMask);
         }
+        if (jPage["pageid"] != null)
+        {
+            if (jPage["title"] != null)
+                return new WikiPageStub((int)jPage["pageid"], (string)jPage["title"], (int)jPage["ns"]);
+            return new WikiPageStub((int)jPage["pageid"]);
+        }
+        if (jPage["title"] != null)
+            return new WikiPageStub((string)jPage["title"], (int)jPage["ns"]);
+        throw new ArgumentException(Prompts.ExceptionInvalidPageJson, nameof(jPage));
+    }
 
     public static Revision RevisionFromJson(JObject jRevision, WikiPageStub pageStub)
     {
-            var rev = jRevision.ToObject<Revision>(Utility.WikiJsonSerializer);
-            rev.Page = pageStub;
-            return rev;
-        }
+        var rev = jRevision.ToObject<Revision>(Utility.WikiJsonSerializer);
+        rev.Page = pageStub;
+        return rev;
+    }
 
     public static FileRevision FileRevisionFromJson(JObject jRevision, WikiPageStub pageStub)
     {
-            var rev = jRevision.ToObject<FileRevision>(Utility.WikiJsonSerializer);
-            rev.Page = pageStub;
-            return rev;
-        }
+        var rev = jRevision.ToObject<FileRevision>(Utility.WikiJsonSerializer);
+        rev.Page = pageStub;
+        return rev;
+    }
 
     public static GeoCoordinate GeoCoordinateFromJson(JObject jcoordinate)
     {
-            return new GeoCoordinate
-            {
-                Longitude = (double)jcoordinate["lon"],
-                Latitude = (double)jcoordinate["lat"],
-                Dimension = (double?)jcoordinate["dim"] ?? 0,
-                Globe = (string)jcoordinate["globe"],
-            };
-        }
+        return new GeoCoordinate
+        {
+            Longitude = (double)jcoordinate["lon"],
+            Latitude = (double)jcoordinate["lat"],
+            Dimension = (double?)jcoordinate["dim"] ?? 0,
+            Globe = (string)jcoordinate["globe"],
+        };
+    }
 
     // See includes/GlobalFunctions.php in mediawiki/core
     private static readonly string[] infinityValues = { "infinite", "indefinite", "infinity", "never" };
-    private const int infinityExpressionMaxLength = 10;     // "indefinite"
+    private const int infinityExpressionMaxLength = 10; // "indefinite"
 
     /// <summary>
     /// Parses a <see cref="DateTimeOffset"/> from MediaWiki API timestamp from the API response.
@@ -259,19 +254,19 @@ public static class MediaWikiHelper
     /// <seealso cref="WikiDateTimeJsonConverter"/>
     public static DateTimeOffset ParseDateTimeOffset(string expression)
     {
-            if (expression == null)
-                throw new ArgumentNullException(nameof(expression));
-            if (expression.Length == 0)
-                throw new ArgumentException(Prompts.ExceptionArgumentIsEmpty, nameof(expression));
-            if (expression.Length <= infinityExpressionMaxLength && infinityValues.Contains(expression.ToLowerInvariant()))
-                return DateTimeOffset.MaxValue;
-            // quote Timestamps are always output in ISO 8601 format. endquote
-            if (DateTimeOffset.TryParseExact(expression, "yyyy-MM-ddTHH:mm:ssK", CultureInfo.InvariantCulture,
+        if (expression == null)
+            throw new ArgumentNullException(nameof(expression));
+        if (expression.Length == 0)
+            throw new ArgumentException(Prompts.ExceptionArgumentIsEmpty, nameof(expression));
+        if (expression.Length <= infinityExpressionMaxLength && infinityValues.Contains(expression.ToLowerInvariant()))
+            return DateTimeOffset.MaxValue;
+        // quote Timestamps are always output in ISO 8601 format. endquote
+        if (DateTimeOffset.TryParseExact(expression, "yyyy-MM-ddTHH:mm:ssK", CultureInfo.InvariantCulture,
                 DateTimeStyles.RoundtripKind, out var result))
-                return result;
-            // backup plan
-            return DateTimeOffset.Parse(expression, CultureInfo.InvariantCulture, DateTimeStyles.RoundtripKind);
-        }
+            return result;
+        // backup plan
+        return DateTimeOffset.Parse(expression, CultureInfo.InvariantCulture, DateTimeStyles.RoundtripKind);
+    }
 
     /// <summary>
     /// Parses a <see cref="DateTime"/> from MediaWiki API timestamp from the API response.
@@ -280,17 +275,17 @@ public static class MediaWikiHelper
     /// <seealso cref="ParseDateTimeOffset"/>
     public static DateTime ParseDateTime(string expression)
     {
-            if (expression == null)
-                throw new ArgumentNullException(nameof(expression));
-            if (expression.Length == 0)
-                throw new ArgumentException(Prompts.ExceptionArgumentIsEmpty, nameof(expression));
-            if (expression.Length <= infinityExpressionMaxLength && infinityValues.Contains(expression.ToLowerInvariant()))
-                return DateTime.MaxValue;
-            if (DateTime.TryParseExact(expression, "yyyy-MM-ddTHH:mm:ssK", CultureInfo.InvariantCulture,
+        if (expression == null)
+            throw new ArgumentNullException(nameof(expression));
+        if (expression.Length == 0)
+            throw new ArgumentException(Prompts.ExceptionArgumentIsEmpty, nameof(expression));
+        if (expression.Length <= infinityExpressionMaxLength && infinityValues.Contains(expression.ToLowerInvariant()))
+            return DateTime.MaxValue;
+        if (DateTime.TryParseExact(expression, "yyyy-MM-ddTHH:mm:ssK", CultureInfo.InvariantCulture,
                 DateTimeStyles.RoundtripKind, out var result))
-                return result;
-            return DateTime.Parse(expression, CultureInfo.InvariantCulture, DateTimeStyles.RoundtripKind);
-        }
+            return result;
+        return DateTime.Parse(expression, CultureInfo.InvariantCulture, DateTimeStyles.RoundtripKind);
+    }
 
     /// <summary>
     /// Tries to parse a <see cref="DateTime"/> from MediaWiki API timestamp from the API response.
@@ -301,22 +296,22 @@ public static class MediaWikiHelper
     /// <seealso cref="ParseDateTime"/>
     public static bool TryParseDateTime(string expression, out DateTime result)
     {
-            if (expression == null)
-                throw new ArgumentNullException(nameof(expression));
-            if (expression.Length == 0)
-                throw new ArgumentException(Prompts.ExceptionArgumentIsEmpty, nameof(expression));
-            if (expression.Length <= infinityExpressionMaxLength && infinityValues.Contains(expression.ToLowerInvariant()))
-            {
-                result = DateTime.MaxValue;
-                return true;
-            }
-            if (DateTime.TryParseExact(expression, "yyyy-MM-ddTHH:mm:ssK", CultureInfo.InvariantCulture,
-                DateTimeStyles.RoundtripKind, out result))
-                return true;
-            if (DateTime.TryParse(expression, CultureInfo.InvariantCulture, DateTimeStyles.RoundtripKind, out result))
-                return true;
-            return false;
+        if (expression == null)
+            throw new ArgumentNullException(nameof(expression));
+        if (expression.Length == 0)
+            throw new ArgumentException(Prompts.ExceptionArgumentIsEmpty, nameof(expression));
+        if (expression.Length <= infinityExpressionMaxLength && infinityValues.Contains(expression.ToLowerInvariant()))
+        {
+            result = DateTime.MaxValue;
+            return true;
         }
+        if (DateTime.TryParseExact(expression, "yyyy-MM-ddTHH:mm:ssK", CultureInfo.InvariantCulture,
+                DateTimeStyles.RoundtripKind, out result))
+            return true;
+        if (DateTime.TryParse(expression, CultureInfo.InvariantCulture, DateTimeStyles.RoundtripKind, out result))
+            return true;
+        return false;
+    }
 
     private static readonly ConcurrentDictionary<PageQueryOptions, IWikiPageQueryProvider> queryProviderPresets
         = new ConcurrentDictionary<PageQueryOptions, IWikiPageQueryProvider>();
@@ -330,9 +325,9 @@ public static class MediaWikiHelper
     /// </remarks>
     public static IWikiPageQueryProvider QueryProviderFromOptions(PageQueryOptions options)
     {
-            return queryProviderPresets.GetOrAdd(options,
-                k => new SealedWikiPageQueryProvider(WikiPageQueryProvider.FromOptions(options)));
-        }
+        return queryProviderPresets.GetOrAdd(options,
+            k => new SealedWikiPageQueryProvider(WikiPageQueryProvider.FromOptions(options)));
+    }
 
     /// <summary>
     /// Loads page information from JSON.
@@ -342,11 +337,11 @@ public static class MediaWikiHelper
     /// <param name="options"></param>
     public static void PopulatePageFromJson(WikiPage page, JObject json, IWikiPageQueryProvider options)
     {
-            if (page == null) throw new ArgumentNullException(nameof(page));
-            if (json == null) throw new ArgumentNullException(nameof(json));
-            if (options == null) throw new ArgumentNullException(nameof(options));
-            page.OnLoadPageInfo(json, options);
-        }
+        if (page == null) throw new ArgumentNullException(nameof(page));
+        if (json == null) throw new ArgumentNullException(nameof(json));
+        if (options == null) throw new ArgumentNullException(nameof(options));
+        page.OnLoadPageInfo(json, options);
+    }
 
     /// <summary>
     /// Joins multiple values that will be used as parameter value in MediaWiki API request.
@@ -357,31 +352,31 @@ public static class MediaWikiHelper
     /// or <see cref="string.Empty"/> if <paramref name="values"/> is empty sequence.</returns>
     public static string JoinValues<T>(IEnumerable<T> values)
     {
-            if (values == null) throw new ArgumentNullException(nameof(values));
-            var sb = new StringBuilder();
-            var delimiter = '|';
-            foreach (var v in values)
+        if (values == null) throw new ArgumentNullException(nameof(values));
+        var sb = new StringBuilder();
+        var delimiter = '|';
+        foreach (var v in values)
+        {
+            if (sb.Length > 0) sb.Append(delimiter);
+            var str = v?.ToString();
+            if (str != null)
             {
-                if (sb.Length > 0) sb.Append(delimiter);
-                var str = v?.ToString();
-                if (str != null)
+                if (delimiter == '|')
                 {
-                    if (delimiter == '|')
+                    if (str.Contains('|'))
                     {
-                        if (str.Contains('|'))
-                        {
-                            sb.Replace('|', '\u001F');
-                            sb.Insert(0, '\u001F');
-                        }
+                        sb.Replace('|', '\u001F');
+                        sb.Insert(0, '\u001F');
                     }
-                    else if (/* delimiter == '\u001F' && */ str.Contains('\u001F'))
-                    {
-                        throw new ArgumentException(Prompts.ExceptionJoinValuesCannotContainPipeAndSeparator);
-                    }
-                    sb.Append(str);
                 }
+                else if ( /* delimiter == '\u001F' && */ str.Contains('\u001F'))
+                {
+                    throw new ArgumentException(Prompts.ExceptionJoinValuesCannotContainPipeAndSeparator);
+                }
+                sb.Append(str);
             }
-            return sb.ToString();
         }
+        return sb.ToString();
+    }
 
 }

@@ -13,9 +13,9 @@ public class WikiResponseParsingContext
     /// <exception cref="ArgumentNullException"><paramref name="logger"/> is <c>null</c>.</exception>
     public WikiResponseParsingContext(ILogger logger, CancellationToken cancellationToken)
     {
-            Logger = logger ?? throw new ArgumentNullException(nameof(logger));
-            CancellationToken = cancellationToken;
-        }
+        Logger = logger ?? throw new ArgumentNullException(nameof(logger));
+        CancellationToken = cancellationToken;
+    }
 
     /// <summary>
     /// The logger.

@@ -13,6 +13,7 @@ namespace WikiClientLibrary.Generators;
 /// </summary>
 public class CategoriesGenerator : WikiPagePropertyGenerator<WikiPageCategoryInfo>
 {
+
     /// <inheritdoc />
     public CategoriesGenerator(WikiSite site) : base(site)
     {
@@ -41,9 +42,9 @@ public class CategoriesGenerator : WikiPagePropertyGenerator<WikiPageCategoryInf
     {
         var p = new OrderedKeyValuePairs<string, object?>
         {
-            {"clprop", "sortkey|timestamp|hidden"},
-            {"clshow", HiddenCategoryFilter.ToString("hidden", "!hidden", null)},
-            {"cllimit", PaginationSize},
+            { "clprop", "sortkey|timestamp|hidden" },
+            { "clshow", HiddenCategoryFilter.ToString("hidden", "!hidden", null) },
+            { "cllimit", PaginationSize },
         };
         if (CategorySelection != null) p.Add("clcategories", MediaWikiHelper.JoinValues(CategorySelection));
         return p;
@@ -54,4 +55,5 @@ public class CategoriesGenerator : WikiPagePropertyGenerator<WikiPageCategoryInf
     {
         return CategoriesPropertyGroup.CategoryInfoFromJson(json);
     }
+
 }

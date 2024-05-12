@@ -133,6 +133,7 @@ public abstract class UnorderedKeyedCollection<TKey, TItem> : ICollection<TItem>
 
     private sealed class DebugView
     {
+
         private readonly UnorderedKeyedCollection<TKey, TItem> source;
 
         public DebugView(UnorderedKeyedCollection<TKey, TItem> source)
@@ -143,6 +144,7 @@ public abstract class UnorderedKeyedCollection<TKey, TItem> : ICollection<TItem>
 
         [DebuggerBrowsable(DebuggerBrowsableState.RootHidden)]
         public KeyValuePair<TKey, TItem>[] Items => source.dict.ToArray();
+
     }
 
 }

@@ -10,6 +10,7 @@ namespace WikiClientLibrary.Generators;
 /// </summary>
 public class MyWatchlistGenerator : WikiPageGenerator<MyWatchlistResultItem>
 {
+
     public MyWatchlistGenerator(WikiSite site) : base(site)
     {
     }
@@ -44,13 +45,13 @@ public class MyWatchlistGenerator : WikiPageGenerator<MyWatchlistResultItem>
     {
         return new Dictionary<string, object?>
         {
-            {"wrnamespace", NamespaceIds == null ? null : MediaWikiHelper.JoinValues(NamespaceIds)},
-            {"wrlimit", PaginationSize},
-            {"wrprop", "changed"},
-            {"wrshow", NotChangedPagesFilter.ToString("!changed", "changed", null)},
-            {"wrdir", OrderDescending ? "descending" : "ascending"},
-            {"wrfromtitle", FromTitle},
-            {"wrtotitle", ToTitle},
+            { "wrnamespace", NamespaceIds == null ? null : MediaWikiHelper.JoinValues(NamespaceIds) },
+            { "wrlimit", PaginationSize },
+            { "wrprop", "changed" },
+            { "wrshow", NotChangedPagesFilter.ToString("!changed", "changed", null) },
+            { "wrdir", OrderDescending ? "descending" : "ascending" },
+            { "wrfromtitle", FromTitle },
+            { "wrtotitle", ToTitle },
         };
     }
 
@@ -61,9 +62,10 @@ public class MyWatchlistGenerator : WikiPageGenerator<MyWatchlistResultItem>
         {
             changedTime = DateTime.Parse((string)json["changed"]);
         }
-            
+
         return new MyWatchlistResultItem(MediaWikiHelper.PageStubFromJson((JObject)json), json["changed"] != null, changedTime);
     }
 
     public override string ListName => "watchlistraw";
+
 }

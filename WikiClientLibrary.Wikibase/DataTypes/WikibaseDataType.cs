@@ -56,6 +56,7 @@ public abstract class WikibaseDataType
         if (name == vtName) return name;
         return name + "(" + vtName + ")";
     }
+
 }
 
 internal sealed class DelegatePropertyType<T> : WikibaseDataType where T : notnull
@@ -97,13 +98,15 @@ internal sealed class DelegatePropertyType<T> : WikibaseDataType where T : notnu
             throw new ArgumentNullException(nameof(value));
         if (value is T t)
             return toJsonHandler(t);
-        throw new ArgumentException($"Value type is incompatible for {Name}: expected {typeof(T)}, received {value.GetType()}.", nameof(value));
+        throw new ArgumentException($"Value type is incompatible for {Name}: expected {typeof(T)}, received {value.GetType()}.",
+            nameof(value));
     }
 
 }
 
 internal sealed class MissingPropertyType : WikibaseDataType
 {
+
     private MissingPropertyType(string name, string valueTypeName)
     {
         Name = name;
@@ -137,6 +140,7 @@ internal sealed class MissingPropertyType : WikibaseDataType
     {
         return JToken.FromObject(value);
     }
+
 }
 
 /// <summary>
@@ -263,12 +267,12 @@ public static class BuiltInDataTypes
         {
             var obj = new JObject
             {
-                {"time", v.ToIso8601UtcString()},
-                {"timezone", v.TimeZone},
-                {"before", v.Before},
-                {"after", v.After},
-                {"precision", (int) v.Precision},
-                {"calendarmodel", v.CalendarModel.ToString()}
+                { "time", v.ToIso8601UtcString() },
+                { "timezone", v.TimeZone },
+                { "before", v.Before },
+                { "after", v.After },
+                { "precision", (int)v.Precision },
+                { "calendarmodel", v.CalendarModel.ToString() }
             };
             return obj;
         });
@@ -294,11 +298,7 @@ public static class BuiltInDataTypes
                 unit == "1" ? WbQuantity.Unity : WikibaseUriFactory.Get(unit));
         }, v =>
         {
-            var obj = new JObject
-            {
-                {"amount", v.Amount.ToString(SignedFloatFormat)},
-                {"unit", v.Unit.ToString()},
-            };
+            var obj = new JObject { { "amount", v.Amount.ToString(SignedFloatFormat) }, { "unit", v.Unit.ToString() }, };
             if (v.HasError)
             {
                 obj.Add("lowerBound", v.LowerBound.ToString(SignedFloatFormat));
@@ -355,8 +355,7 @@ public static class BuiltInDataTypes
                 (double)e["precision"], WikibaseUriFactory.Get((string)e["globe"])),
             v => new JObject
             {
-                {"latitude", v.Latitude}, {"longitude", v.Longitude},
-                {"precision", v.Precision}, {"globe", v.Globe.ToString()},
+                { "latitude", v.Latitude }, { "longitude", v.Longitude }, { "precision", v.Precision }, { "globe", v.Globe.ToString() },
             });
 
     /// <summary>

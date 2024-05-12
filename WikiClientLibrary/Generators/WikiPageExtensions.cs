@@ -15,10 +15,10 @@ public static class WikiPageExtensions
     /// <param name="page">The page.</param>
     public static LinksGenerator CreateLinksGenerator(this WikiPage page)
     {
-            if (page == null) throw new ArgumentNullException(nameof(page));
-            return new LinksGenerator(page.Site, page.PageStub);
-        }
-        
+        if (page == null) throw new ArgumentNullException(nameof(page));
+        return new LinksGenerator(page.Site, page.PageStub);
+    }
+
     /// <summary>
     /// Creates a <see cref="FilesGenerator"/> instance from the specified page,
     /// which generates files from all used files on the page.
@@ -26,9 +26,9 @@ public static class WikiPageExtensions
     /// <param name="page">The page.</param>
     public static FilesGenerator CreateFilesGenerator(this WikiPage page)
     {
-            if (page == null) throw new ArgumentNullException(nameof(page));
-            return new FilesGenerator(page.Site, page.PageStub);
-        }
+        if (page == null) throw new ArgumentNullException(nameof(page));
+        return new FilesGenerator(page.Site, page.PageStub);
+    }
 
     /// <summary>
     /// Creates a <see cref="TransclusionsGenerator"/> instance from the specified page,
@@ -37,9 +37,9 @@ public static class WikiPageExtensions
     /// <param name="page">The page.</param>
     public static TransclusionsGenerator CreateTransclusionsGenerator(this WikiPage page)
     {
-            if (page == null) throw new ArgumentNullException(nameof(page));
-            return new TransclusionsGenerator(page.Site, page.PageStub);
-        }
+        if (page == null) throw new ArgumentNullException(nameof(page));
+        return new TransclusionsGenerator(page.Site, page.PageStub);
+    }
 
     /// <summary>
     /// Creates a <see cref="RevisionsGenerator"/> instance from the specified page,
@@ -48,9 +48,9 @@ public static class WikiPageExtensions
     /// <param name="page">The page.</param>
     public static RevisionsGenerator CreateRevisionsGenerator(this WikiPage page)
     {
-            if (page == null) throw new ArgumentNullException(nameof(page));
-            return new RevisionsGenerator(page.Site, page.PageStub);
-        }
+        if (page == null) throw new ArgumentNullException(nameof(page));
+        return new RevisionsGenerator(page.Site, page.PageStub);
+    }
 
     /// <summary>
     /// Creates a <see cref="CategoriesGenerator"/> instance from the specified page,
@@ -59,8 +59,8 @@ public static class WikiPageExtensions
     /// <param name="page">The page.</param>
     public static CategoriesGenerator CreateCategoriesGenerator(this WikiPage page)
     {
-            if (page == null) throw new ArgumentNullException(nameof(page));
-            return new CategoriesGenerator(page.Site, page.PageStub);
-        }
+        if (page == null) throw new ArgumentNullException(nameof(page));
+        return new CategoriesGenerator(page.Site, page.PageStub);
+    }
 
 }

@@ -692,6 +692,7 @@ public partial class WikiPage
 /// </summary>
 public enum AutoWatchBehavior
 {
+
     /// <summary>
     /// Use the preference settings. (watchlist=preferences)
     /// </summary>
@@ -703,6 +704,7 @@ public enum AutoWatchBehavior
     None = 1,
     Watch = 2,
     Unwatch = 3,
+
 }
 
 /// <summary>
@@ -711,6 +713,7 @@ public enum AutoWatchBehavior
 [Flags]
 public enum PageMovingOptions
 {
+
     None = 0,
 
     /// <summary>
@@ -734,6 +737,7 @@ public enum PageMovingOptions
     /// Ignore any warnings.
     /// </summary>
     IgnoreWarnings = 8,
+
 }
 
 /// <summary>
@@ -748,6 +752,7 @@ public enum PageMovingOptions
 [Flags]
 public enum PageQueryOptions
 {
+
     /// <summary>
     /// Fetch basic page information using the following property providers:
     /// <list type="bullet">
@@ -772,6 +777,7 @@ public enum PageQueryOptions
     /// This will set <see cref="WikiPageQueryProvider.ResolveRedirects"/> to <c>true</c>.
     /// </summary>
     ResolveRedirects = 2,
+
 }
 
 /// <summary>
@@ -780,6 +786,7 @@ public enum PageQueryOptions
 [Flags]
 public enum PagePurgeOptions
 {
+
     None = 0,
 
     /// <summary>
@@ -794,6 +801,7 @@ public enum PagePurgeOptions
     /// be a slight delay when doing this for pages used a large number of times.
     /// </summary>
     ForceRecursiveLinkUpdate = 2,
+
 }
 
 /// <summary>
@@ -820,6 +828,7 @@ public class ProtectionInfo
     {
         return $"{Type}, {Level}, {Expiry}, {(Cascade ? "Cascade" : "")}";
     }
+
 }
 
 /// <summary>

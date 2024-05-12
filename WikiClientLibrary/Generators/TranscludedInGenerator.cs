@@ -16,14 +16,14 @@ public class TranscludedInGenerator : WikiPageGenerator
     /// <inheritdoc />
     public TranscludedInGenerator(WikiSite site) : base(site)
     {
-        }
+    }
 
     /// <inheritdoc />
     /// <param name="targetTitle">List pages transclude this title. The title does not need to exist.</param>
     public TranscludedInGenerator(WikiSite site, string targetTitle) : base(site)
     {
-            TargetTitle = targetTitle;
-        }
+        TargetTitle = targetTitle;
+    }
 
     /// <summary>
     /// List pages transcluding this title. The title does not need to exist.
@@ -47,12 +47,13 @@ public class TranscludedInGenerator : WikiPageGenerator
     /// <inheritdoc />
     public override IEnumerable<KeyValuePair<string, object?>> EnumListParameters()
     {
-            return new Dictionary<string, object?>
-            {
-                {"eititle", TargetTitle},
-                {"einamespace", NamespaceIds == null ? null : MediaWikiHelper.JoinValues(NamespaceIds)},
-                {"eifilterredir", RedirectsFilter.ToString("redirects", "nonredirects")},
-                {"eilimit", PaginationSize}
-            };
-        }
+        return new Dictionary<string, object?>
+        {
+            { "eititle", TargetTitle },
+            { "einamespace", NamespaceIds == null ? null : MediaWikiHelper.JoinValues(NamespaceIds) },
+            { "eifilterredir", RedirectsFilter.ToString("redirects", "nonredirects") },
+            { "eilimit", PaginationSize }
+        };
+    }
+
 }

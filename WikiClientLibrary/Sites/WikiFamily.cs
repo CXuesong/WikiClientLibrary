@@ -12,6 +12,7 @@ namespace WikiClientLibrary.Sites;
 /// <remarks>The wiki names here should be case-insensitive. For interwiki prefixes, the names are often lower-case.</remarks>
 public interface IWikiFamily
 {
+
     /// <summary>
     /// Gets the name of this wiki family.
     /// </summary>
@@ -33,6 +34,7 @@ public interface IWikiFamily
     /// <remarks>The implementation should be thread-safe, if multiple threads are to use this instance with other classes.</remarks>
     /// <exception cref="ArgumentNullException"><paramref name="prefix"/> is <c>null</c>.</exception>
     Task<WikiSite?> GetSiteAsync(string prefix);
+
 }
 
 /// <summary>
@@ -40,6 +42,7 @@ public interface IWikiFamily
 /// </summary>
 public class WikiFamilySiteCreatedEventArgs : EventArgs
 {
+
     public WikiFamilySiteCreatedEventArgs(string prefix, WikiSite site)
     {
         Prefix = prefix;
@@ -139,7 +142,7 @@ public class WikiFamily : IWikiFamily, IWikiClientLoggable, IReadOnlyCollection<
                 return task!;
             }
         }
-        return Task.FromResult((WikiSite?) null);
+        return Task.FromResult((WikiSite?)null);
     }
 
     /// <summary>
@@ -176,7 +179,7 @@ public class WikiFamily : IWikiFamily, IWikiClientLoggable, IReadOnlyCollection<
         get => _Logger;
         set => _Logger = value ?? NullLogger.Instance;
     }
-        
+
     /// <summary>
     /// Raises <see cref="SiteCreated"/> event.
     /// </summary>
@@ -188,6 +191,7 @@ public class WikiFamily : IWikiFamily, IWikiClientLoggable, IReadOnlyCollection<
 
     private class SiteEntry
     {
+
         private volatile Task<WikiSite>? _Task;
 
         public SiteEntry(string prefix, string apiEndpoint)
@@ -207,5 +211,7 @@ public class WikiFamily : IWikiFamily, IWikiClientLoggable, IReadOnlyCollection<
             get => _Task;
             set => _Task = value;
         }
+
     }
+
 }

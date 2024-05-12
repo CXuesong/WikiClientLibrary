@@ -16,7 +16,7 @@ public class WikiClient : IWikiClient, IWikiClientLoggable, IDisposable
 #if NET6_0
     private const string targetFramework = ".NET 6.0";
 #elif NET8_0
-        private const string targetFramework = ".NET 8.0";
+    private const string targetFramework = ".NET 8.0";
 #endif
 
     /// <summary>
@@ -312,4 +312,5 @@ public class WikiClient : IWikiClient, IWikiClientLoggable, IDisposable
         Dispose(true);
         GC.SuppressFinalize(this);
     }
+
 }

@@ -67,4 +67,5 @@ public class RenderingTests : WikiSiteTestsBase, IClassFixture<WikiSiteProvider>
         Assert.Contains(result.TranscludedPages, p => p.Title == "Template:Ambox");
         Assert.True(result.ParserLimitReports.First(r => r.Name == "limitreport-expansiondepth").Value > 1);
     }
+
 }

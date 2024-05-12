@@ -14,6 +14,7 @@ namespace WikiClientLibrary.Generators;
 /// <see cref="FilesGenerator"/>
 public class LinksGenerator : WikiPagePropertyGenerator
 {
+
     /// <inheritdoc />
     public LinksGenerator(WikiSite site) : base(site)
     {
@@ -51,10 +52,11 @@ public class LinksGenerator : WikiPagePropertyGenerator
     {
         return new Dictionary<string, object?>
         {
-            {"plnamespace", NamespaceIds == null ? null : MediaWikiHelper.JoinValues(NamespaceIds)},
-            {"pllimit", PaginationSize},
-            {"pltitles", MatchingTitles == null ? null : MediaWikiHelper.JoinValues(MatchingTitles)},
-            {"pldir", OrderDescending ? "descending" : "ascending"}
+            { "plnamespace", NamespaceIds == null ? null : MediaWikiHelper.JoinValues(NamespaceIds) },
+            { "pllimit", PaginationSize },
+            { "pltitles", MatchingTitles == null ? null : MediaWikiHelper.JoinValues(MatchingTitles) },
+            { "pldir", OrderDescending ? "descending" : "ascending" }
         };
     }
+
 }

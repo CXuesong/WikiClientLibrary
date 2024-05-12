@@ -13,6 +13,7 @@ namespace WikiClientLibrary.Generators.Primitive;
 /// </summary>
 public interface IWikiPageGenerator
 {
+
     /// <summary>
     /// Asynchronously generates the sequence of pages.
     /// </summary>
@@ -113,6 +114,7 @@ public abstract class WikiPageGenerator<TItem> : WikiList<TItem>, IWikiPageGener
                 DistinctGeneratedPages)
             .SelectMany(jquery => WikiPage.FromJsonQueryResult(Site, jquery, options).ToAsyncEnumerable());
     }
+
 }
 
 /// <summary>
@@ -126,6 +128,7 @@ public abstract class WikiPageGenerator<TItem> : WikiList<TItem>, IWikiPageGener
 /// </remarks>
 public abstract class WikiPageGenerator : WikiPageGenerator<WikiPageStub>
 {
+
     /// <inheritdoc />
     protected WikiPageGenerator(WikiSite site) : base(site)
     {

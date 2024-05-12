@@ -18,7 +18,8 @@ public class CargoModel
             .Where(p => p.CanRead && p.CanWrite && p.GetMethod!.IsPublic && p.SetMethod!.IsPublic)
             .Select(p => new CargoModelProperty(p))
             .ToImmutableList();
-        var tableDefinition = new CargoTableDefinition(nameOverride ?? tableAttr?.Name ?? clrType.Name, fields.Select(f => f.FieldDefinition));
+        var tableDefinition =
+            new CargoTableDefinition(nameOverride ?? tableAttr?.Name ?? clrType.Name, fields.Select(f => f.FieldDefinition));
         return new CargoModel(clrType, tableDefinition, fields);
     }
 

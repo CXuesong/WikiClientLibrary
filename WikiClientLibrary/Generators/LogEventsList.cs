@@ -15,6 +15,7 @@ namespace WikiClientLibrary.Generators;
 /// <remarks>This module cannot be used as a generator.</remarks>
 public class LogEventsList : WikiList<LogEventItem>
 {
+
     private string? _LogType;
     private string? _LogAction;
     private string? fullLogAction;
@@ -22,7 +23,7 @@ public class LogEventsList : WikiList<LogEventItem>
     /// <inheritdoc />
     public LogEventsList(WikiSite site) : base(site)
     {
-        }
+    }
 
     /// <inheritdoc />
     public override string ListName => "logevents";
@@ -67,9 +68,9 @@ public class LogEventsList : WikiList<LogEventItem>
         get { return _LogType; }
         set
         {
-                _LogType = value;
-                fullLogAction = null;
-            }
+            _LogType = value;
+            fullLogAction = null;
+        }
     }
 
     /// <summary>
@@ -93,9 +94,9 @@ public class LogEventsList : WikiList<LogEventItem>
         get { return _LogAction; }
         set
         {
-                _LogAction = value;
-                fullLogAction = null;
-            }
+            _LogAction = value;
+            fullLogAction = null;
+        }
     }
 
     /// <summary>
@@ -106,66 +107,66 @@ public class LogEventsList : WikiList<LogEventItem>
     /// <inheritdoc />
     public override IEnumerable<KeyValuePair<string, object?>> EnumListParameters()
     {
-            if (fullLogAction == null && LogAction != null)
-            {
-                if (LogType != null) fullLogAction = LogType + "/" + LogAction;
-                else fullLogAction = LogAction;
-            }
-
-            return new Dictionary<string, object?>
-            {
-                {"leprop", "user|userid|comment|parsedcomment|timestamp|title|ids|details|type|tags"},
-                {"ledir", TimeAscending ? "newer" : "older"},
-                {"lestart", StartTime},
-                {"leend", EndTime},
-                {"lenamespace", NamespaceId},
-                {"leuser", UserName},
-                {"letag", Tag},
-                {"letype", LogType},
-                {"leaction", fullLogAction},
-                {"lelimit", PaginationSize}
-            };
+        if (fullLogAction == null && LogAction != null)
+        {
+            if (LogType != null) fullLogAction = LogType + "/" + LogAction;
+            else fullLogAction = LogAction;
         }
+
+        return new Dictionary<string, object?>
+        {
+            { "leprop", "user|userid|comment|parsedcomment|timestamp|title|ids|details|type|tags" },
+            { "ledir", TimeAscending ? "newer" : "older" },
+            { "lestart", StartTime },
+            { "leend", EndTime },
+            { "lenamespace", NamespaceId },
+            { "leuser", UserName },
+            { "letag", Tag },
+            { "letype", LogType },
+            { "leaction", fullLogAction },
+            { "lelimit", PaginationSize }
+        };
+    }
 
     // Maps the legacy MW log event parameter names into names as presented in `params` node.
     private static readonly Dictionary<string, string> legacyLogEventParamNameMapping = new Dictionary<string, string>
     {
-        {"new_ns", "target_ns"},
-        {"new_title", "target_title"},
+        { "new_ns", "target_ns" }, { "new_title", "target_title" },
     };
 
     /// <inheritdoc />
     protected override LogEventItem ItemFromJson(JToken json)
     {
-            if (json["params"] == null)
+        if (json["params"] == null)
+        {
+            // Can be legacy log event format (as in MW 1.19),
+            // Need to fix it.
+            // Fist, check if there are suspectable legacy "params" node
+            var type = (string)json["type"];
+            if (type != null && json[type] != null)
             {
-                // Can be legacy log event format (as in MW 1.19),
-                // Need to fix it.
-                // Fist, check if there are suspectable legacy "params" node
-                var type = (string)json["type"];
-                if (type != null && json[type] != null)
+                // Do not change the original JSON.
+                json = json.DeepClone();
+                var joldParams = (JObject)json[type];
+                var jparams = new JObject();
+                foreach (var prop in joldParams.Properties())
                 {
-                    // Do not change the original JSON.
-                    json = json.DeepClone();
-                    var joldParams = (JObject)json[type];
-                    var jparams = new JObject();
-                    foreach (var prop in joldParams.Properties())
-                    {
-                        // Detach
-                        var value = prop.Value;
-                        prop.Value = null;
-                        if (legacyLogEventParamNameMapping.TryGetValue(prop.Name, out var mappedName))
-                            jparams[mappedName] = value;
-                        else
-                            jparams[prop.Name] = value;
-                    }
-                    
-                    json["params"] = jparams;
+                    // Detach
+                    var value = prop.Value;
+                    prop.Value = null;
+                    if (legacyLogEventParamNameMapping.TryGetValue(prop.Name, out var mappedName))
+                        jparams[mappedName] = value;
+                    else
+                        jparams[prop.Name] = value;
                 }
-            }
 
-            return json.ToObject<LogEventItem>(Utility.WikiJsonSerializer);
+                json["params"] = jparams;
+            }
         }
+
+        return json.ToObject<LogEventItem>(Utility.WikiJsonSerializer);
+    }
+
 }
 
 /// <summary>
@@ -180,28 +181,28 @@ public sealed class LogEventItem
     private LogEventItem()
 #pragma warning restore CS8618 // 在退出构造函数时，不可为 null 的字段必须包含非 null 值。请考虑声明为可以为 null。
     {
-        }
+    }
 
     internal static LogEventItem FromRecentChangeItem(RecentChangeItem rc)
     {
-            Debug.Assert(rc?.LogType != null);
-            return new LogEventItem
-            {
-                Type = rc.LogType,
-                Action = rc.LogAction,
-                Params = rc.LogParams,
-                TimeStamp = rc.TimeStamp,
-                LogId = (int)rc.LogId!,
-                UserId = rc.UserId,
-                UserName = rc.UserName,
-                Comment = rc.Comment,
-                NamespaceId = rc.NamespaceId,
-                PageId = rc.PageId,
-                ParsedComment = rc.ParsedComment,
-                Tags = rc.Tags,
-                Title = rc.Title
-            };
-        }
+        Debug.Assert(rc?.LogType != null);
+        return new LogEventItem
+        {
+            Type = rc.LogType,
+            Action = rc.LogAction,
+            Params = rc.LogParams,
+            TimeStamp = rc.TimeStamp,
+            LogId = (int)rc.LogId!,
+            UserId = rc.UserId,
+            UserName = rc.UserName,
+            Comment = rc.Comment,
+            NamespaceId = rc.NamespaceId,
+            PageId = rc.PageId,
+            ParsedComment = rc.ParsedComment,
+            Tags = rc.Tags,
+            Title = rc.Title
+        };
+    }
 
     /// <summary>Namespace ID of the page affected by this item.</summary>
     [JsonProperty("ns")]
@@ -211,7 +212,7 @@ public sealed class LogEventItem
     /// <remarks>For user operation, this is the title user page of target user.</remarks>
     [JsonProperty]
     public string Title { get; private set; }
-        
+
     /// <summary>the page id at the time the log was stored.</summary>
     [JsonProperty("logpage")]
     public long PageId { get; private set; }
@@ -298,44 +299,46 @@ public sealed class LogEventItem
     [OnDeserialized]
     private void OnDeserialized(StreamingContext context)
     {
-            HiddenFields = LogEventHiddenFields.None;
-            if (ActionHidden) HiddenFields |= LogEventHiddenFields.Action;
-            if (UserHidden) HiddenFields |= LogEventHiddenFields.User;
-            if (CommentHidden) HiddenFields |= LogEventHiddenFields.Comment;
-        }
+        HiddenFields = LogEventHiddenFields.None;
+        if (ActionHidden) HiddenFields |= LogEventHiddenFields.Action;
+        if (UserHidden) HiddenFields |= LogEventHiddenFields.User;
+        if (CommentHidden) HiddenFields |= LogEventHiddenFields.Comment;
+    }
 
     /// <inheritdoc/>
     public override string ToString()
     {
-            var sb = new StringBuilder();
-            sb.Append(LogId);
-            sb.Append(',');
-            sb.Append(TimeStamp);
-            sb.Append(',');
-            sb.Append(Type);
-            if (Type != Action)
-            {
-                sb.Append('/');
-                sb.Append(Action);
-            }
-            sb.Append(',');
-            sb.Append(string.IsNullOrEmpty(Title) && (HiddenFields & LogEventHiddenFields.Action) == LogEventHiddenFields.Action
-                ? "<Hidden>"
-                : Title);
-            sb.Append(",{");
-            if (Params.Count > 0)
-            {
-                sb.Append(string.Join(",", Params.Select(p => p.Key + "=" + p.Value.ToString(Formatting.None))));
-            } else if ((HiddenFields & LogEventHiddenFields.Action) == LogEventHiddenFields.Action)
-            {
-                sb.Append("<Hidden>");
-            }
-            sb.Append("},");
-            sb.Append(string.IsNullOrEmpty(UserName) && (HiddenFields & LogEventHiddenFields.User) == LogEventHiddenFields.User
-                ? "<Hidden>"
-                : UserName);
-            return sb.ToString();
+        var sb = new StringBuilder();
+        sb.Append(LogId);
+        sb.Append(',');
+        sb.Append(TimeStamp);
+        sb.Append(',');
+        sb.Append(Type);
+        if (Type != Action)
+        {
+            sb.Append('/');
+            sb.Append(Action);
         }
+        sb.Append(',');
+        sb.Append(string.IsNullOrEmpty(Title) && (HiddenFields & LogEventHiddenFields.Action) == LogEventHiddenFields.Action
+            ? "<Hidden>"
+            : Title);
+        sb.Append(",{");
+        if (Params.Count > 0)
+        {
+            sb.Append(string.Join(",", Params.Select(p => p.Key + "=" + p.Value.ToString(Formatting.None))));
+        }
+        else if ((HiddenFields & LogEventHiddenFields.Action) == LogEventHiddenFields.Action)
+        {
+            sb.Append("<Hidden>");
+        }
+        sb.Append("},");
+        sb.Append(string.IsNullOrEmpty(UserName) && (HiddenFields & LogEventHiddenFields.User) == LogEventHiddenFields.User
+            ? "<Hidden>"
+            : UserName);
+        return sb.ToString();
+    }
+
 }
 
 /// <summary>
@@ -347,19 +350,24 @@ public sealed class LogEventItem
 [Flags]
 public enum LogEventHiddenFields
 {
+
     None = 0,
+
     /// <summary>
     /// <see cref="LogEventItem.UserName"/> and <see cref="LogEventItem.UserId"/> are hidden.
     /// </summary>
     User = 1,
+
     /// <summary>
     /// <see cref="LogEventItem.Comment"/> and <see cref="LogEventItem.ParsedComment"/> are hidden.
     /// </summary>
     Comment = 2,
+
     /// <summary>
     /// The log event itself is hidden. This usually means the operation target is hidden.
     /// </summary>
     Action = 4,
+
 }
 
 /// <summary>
@@ -374,8 +382,8 @@ public class LogParameterCollection : WikiReadOnlyDictionary
 
     static LogParameterCollection()
     {
-            Empty.MakeReadonly();
-        }
+        Empty.MakeReadonly();
+    }
 
     /// <summary>
     /// (<see cref="LogActions.Move"/>) Namespace ID of the move target.
@@ -396,7 +404,7 @@ public class LogParameterCollection : WikiReadOnlyDictionary
     /// is specified as true in the parameter collection.
     /// </remarks>
     public bool SuppressRedirect => GetBooleanValue("suppressredirect")
-                                    || GetBooleanValue("suppressedredirect");   // Yes, this one is dedicated to Wikia.
+                                    || GetBooleanValue("suppressedredirect"); // Yes, this one is dedicated to Wikia.
 
     /// <summary>
     /// (<see cref="LogActions.Patrol"/>)
@@ -430,6 +438,7 @@ public class LogParameterCollection : WikiReadOnlyDictionary
 /// </remarks>
 public static class LogTypes
 {
+
     public const string Block = "block";
     public const string Delete = "delete";
     public const string Import = "import";
@@ -439,9 +448,12 @@ public static class LogTypes
     public const string PageLanguage = "pagelang";
     public const string Patrol = "patrol";
     public const string Protect = "protect";
+
     /// <summary>Change a user's groups.</summary>
     public const string Rights = "rights";
+
     public const string Upload = "upload";
+
 }
 
 /// <summary>
@@ -450,55 +462,80 @@ public static class LogTypes
 /// <remarks>See <a href="https://www.mediawiki.org/wiki/Manual:Log_actions">mw:Manual:Log actions</a> for a table of typical log actions.</remarks>
 public static class LogActions
 {
+
     /// <summary>(<see cref="LogTypes.Block"/>) Block user.</summary>
     public const string Block = "block";
+
     /// <summary>(<see cref="LogTypes.Block"/>) Change block.</summary>
     public const string Reblock = "reblock";
+
     /// <summary>(<see cref="LogTypes.Block"/>) Unblock user.</summary>
     public const string Unblock = "unblock";
+
     /// <summary>(<see cref="LogTypes.Delete"/>) Delete a page.</summary>
     public const string Delete = "delete";
+
     /// <summary>(<see cref="LogTypes.Delete"/>) Delete a log event.</summary>
     public const string Event = "event";
+
     /// <summary>(<see cref="LogTypes.Delete"/>) Restore a page.</summary>
     public const string Restore = "restore";
+
     /// <summary>(<see cref="LogTypes.Delete"/>) Change revision visibility.</summary>
     public const string Revision = "revision";
+
     /// <summary>(<see cref="LogTypes.Import"/>) Import interwiki.</summary>
     public const string Interwiki = "interwiki";
+
     /// <summary>(<see cref="LogTypes.Merge"/>) Merge history.</summary>
     public const string Merge = "merge";
+
     /// <summary>(<see cref="LogTypes.Move"/>) Move a page.</summary>
     public const string Move = "move";
+
     /// <summary>(<see cref="LogTypes.Move"/>) Move a page over a redirect. (N/A to MediaWiki 1.19)</summary>
     public const string MoveOverRedirect = "move_redir";
+
     /// <summary>(<see cref="LogTypes.NewUsers"/>) When the user is automatically created (such as by CentralAuth).</summary>
     public const string AutoCreate = "autocreate";
+
     /// <summary>(<see cref="LogTypes.NewUsers"/>) When the created user will receive its password by email.</summary>
     public const string ByEmail = "byemail";
+
     /// <summary>(<see cref="LogTypes.NewUsers"/>) For an anonymous user creating an account for himself.</summary>
     public const string Create = "create";
+
     /// <summary>(<see cref="LogTypes.NewUsers"/>) For a logged in user creating an account for someone else.</summary>
     public const string Create2 = "create2";
+
     /// <summary>(<see cref="LogTypes.PageLanguage"/>) For pages whose language has been changed.</summary>
     public const string PageLanguage = "pagelang";
+
     /// <summary>(<see cref="LogTypes.Patrol"/>) Mark a revision as patrolled.</summary>
     public const string Patrol = "patrol";
+
     /// <summary>(<see cref="LogTypes.Patrol"/>) Automatic patrol of a revision.</summary>
     public const string AutoPatrol = "autopatrol";
+
     /// <summary>(<see cref="LogTypes.Protect"/>) Modify the protection of a protected page.</summary>
     public const string Modify = "modify";
+
     /// <summary>(<see cref="LogTypes.Protect"/>) Protect an unprotected page.</summary>
     public const string Protect = "protect";
+
     /// <summary>(<see cref="LogTypes.Protect"/>) Unprotect a page.</summary>
     public const string Unprotect = "unprotect";
+
     /// <summary>(<see cref="LogTypes.Rights"/>) Change a user's groups.</summary>
     public const string Rights = "rights";
+
     /// <summary>(<see cref="LogTypes.Upload"/>) Re-upload a file.</summary>
     public const string Overwrite = "overwrite";
+
     /// <summary>
     /// (<see cref="LogTypes.Import"/>) Import from an uploaded XML file.
     /// (<see cref="LogTypes.Upload"/>) Upload a new file.
     /// </summary>
     public const string Upload = "upload";
+
 }

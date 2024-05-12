@@ -4,6 +4,7 @@ namespace WikiClientLibrary.Generators;
 
 public sealed class MyWatchlistResultItem
 {
+
     public WikiPageStub Page { get; }
     public bool IsChanged { get; }
     public DateTime? ChangedTime { get; }
@@ -14,4 +15,5 @@ public sealed class MyWatchlistResultItem
         IsChanged = isChanged;
         ChangedTime = changedTime;
     }
+
 }

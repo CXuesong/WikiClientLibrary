@@ -72,4 +72,5 @@ public struct WbGlobeCoordinate : IEquatable<WbGlobeCoordinate>
     {
         return !left.Equals(right);
     }
+
 }

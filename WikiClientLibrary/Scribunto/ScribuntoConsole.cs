@@ -33,8 +33,8 @@ public class ScribuntoConsole
     /// </remarks>
     public ScribuntoConsole(WikiSite site)
     {
-            Site = site ?? throw new ArgumentNullException(nameof(site));
-        }
+        Site = site ?? throw new ArgumentNullException(nameof(site));
+    }
 
     public WikiSite Site { get; }
 
@@ -77,31 +77,31 @@ public class ScribuntoConsole
     /// </remarks>
     public async Task ResetAsync(string? moduleContent, string? moduleTitle, CancellationToken cancellationToken)
     {
-            if (moduleTitle == null)
-                moduleTitle = AdhocModuleTitlePrefix;
-            ModuleTitle = moduleTitle;
-            ScribuntoEvaluationResult? result = null;
-            try
+        if (moduleTitle == null)
+            moduleTitle = AdhocModuleTitlePrefix;
+        ModuleTitle = moduleTitle;
+        ScribuntoEvaluationResult? result = null;
+        try
+        {
+            result = await InvokeApiAsync(Site, _SessionId, moduleTitle, moduleContent, "=_VERSION", true, cancellationToken);
+            if (string.IsNullOrEmpty(result.ReturnValue))
+                throw new UnexpectedDataException(Prompts.ExceptionScribuntoResetCannotValidate);
+        }
+        catch (ScribuntoConsoleException ex)
+        {
+            result = ex.EvaluationResult;
+            throw;
+        }
+        finally
+        {
+            if (result != null)
             {
-                result = await InvokeApiAsync(Site, _SessionId, moduleTitle, moduleContent, "=_VERSION", true, cancellationToken);
-                if (string.IsNullOrEmpty(result.ReturnValue))
-                    throw new UnexpectedDataException(Prompts.ExceptionScribuntoResetCannotValidate);
-            }
-            catch (ScribuntoConsoleException ex)
-            {
-                result = ex.EvaluationResult;
-                throw;
-            }
-            finally
-            {
-                if (result != null)
-                {
-                    _SessionId = result.SessionId;
-                    SessionSize = result.SessionSize;
-                    SessionMaxSize = result.SessionMaxSize;
-                }
+                _SessionId = result.SessionId;
+                SessionSize = result.SessionSize;
+                SessionMaxSize = result.SessionMaxSize;
             }
         }
+    }
 
     /// <summary>
     /// Resets the current Lua evaluation session with the specified module content and dummy module title.
@@ -109,8 +109,8 @@ public class ScribuntoConsole
     /// <inheritdoc cref="ResetAsync(string,string,CancellationToken)"/>
     public Task ResetAsync(string moduleContent, CancellationToken cancellationToken)
     {
-            return ResetAsync(moduleContent, null, cancellationToken);
-        }
+        return ResetAsync(moduleContent, null, cancellationToken);
+    }
 
     /// <summary>
     /// Resets the current Lua evaluation session with the specified module content and dummy module title.
@@ -118,8 +118,8 @@ public class ScribuntoConsole
     /// <inheritdoc cref="ResetAsync(string,string,CancellationToken)"/>
     public Task ResetAsync(string moduleContent)
     {
-            return ResetAsync(moduleContent, null, CancellationToken.None);
-        }
+        return ResetAsync(moduleContent, null, CancellationToken.None);
+    }
 
     /// <summary>
     /// Resets the current Lua evaluation session with empty module content and dummy module title.
@@ -127,14 +127,14 @@ public class ScribuntoConsole
     /// <inheritdoc cref="ResetAsync(string,string,CancellationToken)"/>
     public Task ResetAsync()
     {
-            return ResetAsync(null, null, CancellationToken.None);
-        }
+        return ResetAsync(null, null, CancellationToken.None);
+    }
 
     /// <inheritdoc cref="EvaluateAsync(string,CancellationToken)"/>
     public Task<ScribuntoEvaluationResult> EvaluateAsync(string expression)
     {
-            return EvaluateAsync(expression, CancellationToken.None);
-        }
+        return EvaluateAsync(expression, CancellationToken.None);
+    }
 
     /// <summary>
     /// Evaluates the specified Lua expression in the console.
@@ -145,58 +145,60 @@ public class ScribuntoConsole
     /// <returns>The console evaluation result.</returns>
     public async Task<ScribuntoEvaluationResult> EvaluateAsync(string expression, CancellationToken cancellationToken)
     {
-            ScribuntoEvaluationResult? result = null;
-            try
+        ScribuntoEvaluationResult? result = null;
+        try
+        {
+            result = await InvokeApiAsync(Site, _SessionId, ModuleTitle, null, expression, false, cancellationToken);
+            return result;
+        }
+        catch (ScribuntoConsoleException ex)
+        {
+            result = ex.EvaluationResult;
+            throw;
+        }
+        finally
+        {
+            if (result != null)
             {
-                result = await InvokeApiAsync(Site, _SessionId, ModuleTitle, null, expression, false, cancellationToken);
-                return result;
-            }
-            catch (ScribuntoConsoleException ex)
-            {
-                result = ex.EvaluationResult;
-                throw;
-            }
-            finally
-            {
-                if (result != null)
-                {
-                    _SessionId = result.SessionId;
-                    SessionSize = result.SessionSize;
-                    SessionMaxSize = result.SessionMaxSize;
-                }
+                _SessionId = result.SessionId;
+                SessionSize = result.SessionSize;
+                SessionMaxSize = result.SessionMaxSize;
             }
         }
+    }
 
-    internal static async Task<ScribuntoEvaluationResult> InvokeApiAsync(WikiSite site, long? sessionId, string? title, string? content, string question, bool clear, CancellationToken ct)
+    internal static async Task<ScribuntoEvaluationResult> InvokeApiAsync(WikiSite site, long? sessionId, string? title, string? content,
+        string question, bool clear, CancellationToken ct)
     {
-            JToken jresult;
-            try
+        JToken jresult;
+        try
+        {
+            jresult = await site.InvokeMediaWikiApiAsync(new MediaWikiFormRequestMessage(new
             {
-                jresult = await site.InvokeMediaWikiApiAsync(new MediaWikiFormRequestMessage(new
-                {
-                    action = "scribunto-console",
-                    // Since wikimedia/mediawiki-extensions-Scribunto@0f2585244cbdc22580cc431745328a8f1fb270bd (1.40.0-wmf.5)
-                    token = site.SiteInfo.Version.Above(1, 40, 0, MediaWikiDevChannel.Wmf, 5) ? WikiSiteToken.Csrf : null,
-                    session = sessionId,
-                    title = title,
-                    clear = clear,
-                    question = question,
-                    content = content
-                }), ct);
-            }
-            catch (InvalidActionException ex)
-            {
-                throw new NotSupportedException(
-                    "The MediaWiki site does not support Scribunto console. Check whether the required extension has been installed.", ex);
-            }
-            var result = jresult.ToObject<ScribuntoEvaluationResult>(Utility.WikiJsonSerializer);
-            return result.Type switch
-            {
-                ScribuntoEvaluationResultType.Normal => result,
-                ScribuntoEvaluationResultType.Error => throw new ScribuntoConsoleException((string)jresult["messagename"], (string)jresult["message"], result),
-                _ => throw new UnexpectedDataException($"Unexpected evaluation result type: {(string)jresult["type"]}.")
-            };
+                action = "scribunto-console",
+                // Since wikimedia/mediawiki-extensions-Scribunto@0f2585244cbdc22580cc431745328a8f1fb270bd (1.40.0-wmf.5)
+                token = site.SiteInfo.Version.Above(1, 40, 0, MediaWikiDevChannel.Wmf, 5) ? WikiSiteToken.Csrf : null,
+                session = sessionId,
+                title = title,
+                clear = clear,
+                question = question,
+                content = content
+            }), ct);
         }
+        catch (InvalidActionException ex)
+        {
+            throw new NotSupportedException(
+                "The MediaWiki site does not support Scribunto console. Check whether the required extension has been installed.", ex);
+        }
+        var result = jresult.ToObject<ScribuntoEvaluationResult>(Utility.WikiJsonSerializer);
+        return result.Type switch
+        {
+            ScribuntoEvaluationResultType.Normal => result,
+            ScribuntoEvaluationResultType.Error => throw new ScribuntoConsoleException((string)jresult["messagename"],
+                (string)jresult["message"], result),
+            _ => throw new UnexpectedDataException($"Unexpected evaluation result type: {(string)jresult["type"]}.")
+        };
+    }
 
 }
 
@@ -205,12 +207,16 @@ public class ScribuntoConsole
 /// </summary>
 public enum ScribuntoEvaluationResultType
 {
+
     /// <summary>Unknown / invalid evaluation result type.</summary>
     Unknown = 0,
+
     /// <summary>Normal evaluation result. Evaluation completed successfully.</summary>
     Normal,
+
     /// <summary>Evaluation error received from server. It will cause <seealso cref="ScribuntoConsoleException"/>.</summary>
     Error,
+
 }
 
 [JsonObject(MemberSerialization.OptIn)]
@@ -221,7 +227,7 @@ public class ScribuntoEvaluationResult
     public ScribuntoEvaluationResult()
 #pragma warning restore CS8618 // 在退出构造函数时，不可为 null 的字段必须包含非 null 值。请考虑声明为可以为 null。
     {
-        }
+    }
 
     /// <summary>The evaluation result type.</summary>
     [JsonProperty("type")]

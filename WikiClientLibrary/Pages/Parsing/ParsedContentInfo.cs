@@ -14,6 +14,7 @@ namespace WikiClientLibrary.Pages.Parsing;
 [JsonObject(MemberSerialization.OptIn)]
 public class ParsedContentInfo
 {
+
 #pragma warning disable CS8618 // 在退出构造函数时，不可为 null 的字段必须包含非 null 值。请考虑声明为可以为 null。
     public ParsedContentInfo()
 #pragma warning restore CS8618 // 在退出构造函数时，不可为 null 的字段必须包含非 null 值。请考虑声明为可以为 null。
@@ -92,11 +93,13 @@ public class ParsedContentInfo
     /// </summary>
     [JsonProperty]
     public IReadOnlyCollection<ContentRedirectInfo> Redirects { get; private set; }
+
 }
 
 [JsonObject(MemberSerialization.OptIn)]
 public class ContentRedirectInfo
 {
+
 #pragma warning disable CS8618 // 在退出构造函数时，不可为 null 的字段必须包含非 null 值。请考虑声明为可以为 null。
     public ContentRedirectInfo()
 #pragma warning restore CS8618 // 在退出构造函数时，不可为 null 的字段必须包含非 null 值。请考虑声明为可以为 null。
@@ -108,11 +111,13 @@ public class ContentRedirectInfo
 
     [JsonProperty]
     public string To { get; private set; }
+
 }
 
 [JsonObject(MemberSerialization.OptIn)]
 public class ContentPropertyInfo
 {
+
 #pragma warning disable CS8618 // 在退出构造函数时，不可为 null 的字段必须包含非 null 值。请考虑声明为可以为 null。
     public ContentPropertyInfo()
 #pragma warning restore CS8618 // 在退出构造函数时，不可为 null 的字段必须包含非 null 值。请考虑声明为可以为 null。
@@ -128,11 +133,13 @@ public class ContentPropertyInfo
     /// <inheritdoc />
     public override string ToString()
         => Name + "=" + Value;
+
 }
 
 [JsonObject(MemberSerialization.OptIn)]
 public class ContentSectionInfo
 {
+
 #pragma warning disable CS8618 // 在退出构造函数时，不可为 null 的字段必须包含非 null 值。请考虑声明为可以为 null。
     public ContentSectionInfo()
 #pragma warning restore CS8618 // 在退出构造函数时，不可为 null 的字段必须包含非 null 值。请考虑声明为可以为 null。
@@ -206,11 +213,13 @@ public class ContentSectionInfo
     {
         return PageTitle + "#" + Heading;
     }
+
 }
 
 [JsonObject(MemberSerialization.OptIn)]
 public class ContentCategoryInfo
 {
+
 #pragma warning disable CS8618 // 在退出构造函数时，不可为 null 的字段必须包含非 null 值。请考虑声明为可以为 null。
     public ContentCategoryInfo()
 #pragma warning restore CS8618 // 在退出构造函数时，不可为 null 的字段必须包含非 null 值。请考虑声明为可以为 null。
@@ -232,6 +241,7 @@ public class ContentCategoryInfo
     /// <inheritdoc />
     public override string ToString()
         => string.IsNullOrEmpty(SortKey) ? CategoryName : (CategoryName + "|" + SortKey);
+
 }
 
 /// <summary>
@@ -240,6 +250,7 @@ public class ContentCategoryInfo
 [JsonObject(MemberSerialization.OptIn)]
 public class ContentTransclusionInfo
 {
+
 #pragma warning disable CS8618 // 在退出构造函数时，不可为 null 的字段必须包含非 null 值。请考虑声明为可以为 null。
     public ContentTransclusionInfo()
 #pragma warning restore CS8618 // 在退出构造函数时，不可为 null 的字段必须包含非 null 值。请考虑声明为可以为 null。
@@ -266,6 +277,7 @@ public class ContentTransclusionInfo
 
     /// <inheritdoc />
     public override string ToString() => Title;
+
 }
 
 /// <summary>
@@ -274,6 +286,7 @@ public class ContentTransclusionInfo
 [JsonObject(MemberSerialization.OptIn)]
 public class ParserLimitReport
 {
+
 #pragma warning disable CS8618 // 在退出构造函数时，不可为 null 的字段必须包含非 null 值。请考虑声明为可以为 null。
     public ParserLimitReport()
 #pragma warning restore CS8618 // 在退出构造函数时，不可为 null 的字段必须包含非 null 值。请考虑声明为可以为 null。
@@ -341,4 +354,5 @@ public class ParserLimitReport
         if (Limit != null) s += "/" + Limit;
         return s;
     }
+
 }

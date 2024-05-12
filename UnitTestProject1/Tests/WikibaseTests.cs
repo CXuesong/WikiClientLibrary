@@ -73,7 +73,8 @@ public class WikibaseTests : WikiSiteTestsBase, IClassFixture<WikiSiteProvider>
         Assert.Equal(27.9881, location.Latitude, 3);
         Assert.Equal(86.9253, location.Longitude, 3);
 
-        claim = entity.Claims[WikidataProperties.ElevationAboveSeaLevel].First(c => Math.Abs(((WbQuantity)c.MainSnak.DataValue!).Amount - 8848) < 0.0001);
+        claim = entity.Claims[WikidataProperties.ElevationAboveSeaLevel]
+            .First(c => Math.Abs(((WbQuantity)c.MainSnak.DataValue!).Amount - 8848) < 0.0001);
         Utility.AssertNotNull(claim.MainSnak.DataValue);
         var height = (WbQuantity)claim.MainSnak.DataValue;
         Assert.Equal(8848, height.Amount, 4);
@@ -134,7 +135,8 @@ public class WikibaseTests : WikiSiteTestsBase, IClassFixture<WikiSiteProvider>
         {
             Output.WriteLine("Detected existing entity ID: {0}. Will perform cleanup.", existingEntityId);
             var existingEntity = new Entity(site, existingEntityId);
-            await existingEntity.EditAsync(new[] { new EntityEditEntry(nameof(Entity.SiteLinks), testSiteLink, EntityEditEntryState.Removed) },
+            await existingEntity.EditAsync(
+                new[] { new EntityEditEntry(nameof(Entity.SiteLinks), testSiteLink, EntityEditEntryState.Removed) },
                 "Cleanup for unit test.");
             Output.WriteLine("Cleanup finished.");
         }
@@ -146,7 +148,8 @@ public class WikibaseTests : WikiSiteTestsBase, IClassFixture<WikiSiteProvider>
         {
             new EntityEditEntry(nameof(Entity.Labels), new WbMonolingualText("en", "test entity " + rand)),
             new EntityEditEntry(nameof(Entity.Aliases), new WbMonolingualText("en", "entity for test")),
-            new EntityEditEntry(nameof(Entity.Aliases), new WbMonolingualText("en", "test")), new EntityEditEntry(nameof(Entity.Descriptions),
+            new EntityEditEntry(nameof(Entity.Aliases), new WbMonolingualText("en", "test")), new EntityEditEntry(
+                nameof(Entity.Descriptions),
                 new WbMonolingualText("en",
                     "This is a test entity for unit test. If you see this entity outside the test site, please check the revision history and notify the editor.")),
             new EntityEditEntry(nameof(Entity.Descriptions), new WbMonolingualText("zh", "此实体仅用于测试之用。如果你在非测试维基见到此实体，请检查修订历史并告知编辑者。")),

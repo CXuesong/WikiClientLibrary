@@ -67,19 +67,19 @@ public class AllPagesGenerator : WikiPageGenerator
     {
         return new Dictionary<string, object?>
         {
-            {"apfrom", StartTitle},
-            {"apto", EndTitle},
-            {"aplimit", PaginationSize},
-            {"apnamespace", NamespaceId},
-            {"apprefix", Prefix},
-            {"apfilterredir", RedirectsFilter.ToString("redirects", "nonredirects")},
-            {"apfilterlanglinks", LanguageLinkFilter.ToString("withlanglinks", "withoutlanglinks")},
-            {"apminsize", MinPageContentLength},
-            {"apmaxsize", MaxPageContentLength},
+            { "apfrom", StartTitle },
+            { "apto", EndTitle },
+            { "aplimit", PaginationSize },
+            { "apnamespace", NamespaceId },
+            { "apprefix", Prefix },
+            { "apfilterredir", RedirectsFilter.ToString("redirects", "nonredirects") },
+            { "apfilterlanglinks", LanguageLinkFilter.ToString("withlanglinks", "withoutlanglinks") },
+            { "apminsize", MinPageContentLength },
+            { "apmaxsize", MaxPageContentLength },
             // TODO add other filters
         };
     }
-        
+
 }
 
 /// <summary>
@@ -88,16 +88,20 @@ public class AllPagesGenerator : WikiPageGenerator
 /// </summary>
 public enum PropertyFilterOption
 {
+
     /// <summary>
     /// Do not filter by this property.
     /// </summary>
     Disable = 0,
+
     /// <summary>
     /// Only include the pages with this property.
     /// </summary>
     WithProperty,
+
     /// <summary>
     /// Only include the pages without this property.
     /// </summary>
     WithoutProperty,
+
 }

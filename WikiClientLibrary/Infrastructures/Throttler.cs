@@ -29,54 +29,54 @@ public class Throttler : IWikiClientLoggable
     /// </returns>
     public Task<IDisposable> QueueWorkAsync(string name, CancellationToken cancellationToken)
     {
-            // Returns an IDisposable after the delay.
-            async Task<IDisposable> RunWorkAsync(WorkItem? previousWork, WorkItem thisWork, CancellationToken ct)
+        // Returns an IDisposable after the delay.
+        async Task<IDisposable> RunWorkAsync(WorkItem? previousWork, WorkItem thisWork, CancellationToken ct)
+        {
+            Debug.Assert(thisWork != null);
+            try
             {
-                Debug.Assert(thisWork != null);
-                try
+                if (previousWork != null)
                 {
-                    if (previousWork != null)
+                    // Wait for previous work.
+                    if (Logger.IsEnabled(LogLevel.Debug))
                     {
-                        // Wait for previous work.
-                        if (Logger.IsEnabled(LogLevel.Debug))
+                        Logger.LogDebug("{Work}: Waiting for {WorkItems} WorkItem(s).", thisWork, QueuedWorkCount);
+                    }
+                    if (ct.CanBeCanceled)
+                    {
+                        // With cancellation support.
+                        var tcs = new TaskCompletionSource<bool>();
+                        using (ct.Register(o => ((TaskCompletionSource<bool>)o!).SetCanceled(), tcs))
                         {
-                            Logger.LogDebug("{Work}: Waiting for {WorkItems} WorkItem(s).", thisWork, QueuedWorkCount);
-                        }
-                        if (ct.CanBeCanceled)
-                        {
-                            // With cancellation support.
-                            var tcs = new TaskCompletionSource<bool>();
-                            using (ct.Register(o => ((TaskCompletionSource<bool>) o!).SetCanceled(), tcs))
-                            {
-                                await Task.WhenAny(previousWork.Completion, tcs.Task);
-                            }
-                        }
-                        else
-                        {
-                            await previousWork.Completion;
+                            await Task.WhenAny(previousWork.Completion, tcs.Task);
                         }
                     }
-                    ct.ThrowIfCancellationRequested();
-                    Logger.LogDebug("{Work}: Waiting for delay {Delay}.", thisWork, _ThrottleTime);
-                    await Task.Delay(_ThrottleTime, ct);
+                    else
+                    {
+                        await previousWork.Completion;
+                    }
                 }
-                catch (OperationCanceledException)
-                {
-                    thisWork.Dispose();
-                    throw;
-                }
-                return thisWork;
+                ct.ThrowIfCancellationRequested();
+                Logger.LogDebug("{Work}: Waiting for delay {Delay}.", thisWork, _ThrottleTime);
+                await Task.Delay(_ThrottleTime, ct);
             }
-
-            var work = new WorkItem(name);
-            lock (workQueueLock)
+            catch (OperationCanceledException)
             {
-                var localLastWork = lastWork;
-                lastWork = work;
-                _QueuedWorkCount++;
-                return RunWorkAsync(localLastWork, work, cancellationToken);
+                thisWork.Dispose();
+                throw;
             }
+            return thisWork;
         }
+
+        var work = new WorkItem(name);
+        lock (workQueueLock)
+        {
+            var localLastWork = lastWork;
+            lastWork = work;
+            _QueuedWorkCount++;
+            return RunWorkAsync(localLastWork, work, cancellationToken);
+        }
+    }
 
     /// <summary>
     /// Gets the count of current queued work, including the processing ones.
@@ -85,8 +85,8 @@ public class Throttler : IWikiClientLoggable
     {
         get
         {
-                lock (workQueueLock) return _QueuedWorkCount;
-            }
+            lock (workQueueLock) return _QueuedWorkCount;
+        }
     }
 
     /// <summary>
@@ -97,9 +97,9 @@ public class Throttler : IWikiClientLoggable
         get => _ThrottleTime;
         set
         {
-                if (value < TimeSpan.Zero) throw new ArgumentOutOfRangeException(nameof(value));
-                _ThrottleTime = value;
-            }
+            if (value < TimeSpan.Zero) throw new ArgumentOutOfRangeException(nameof(value));
+            _ThrottleTime = value;
+        }
     }
 
     private static readonly Task completedTask = Task.FromResult(0);
@@ -114,19 +114,20 @@ public class Throttler : IWikiClientLoggable
     {
         get
         {
-                lock (workQueueLock) return lastWork?.Completion ?? completedTask;
-            }
+            lock (workQueueLock) return lastWork?.Completion ?? completedTask;
+        }
     }
-        
+
     [DebuggerDisplay("{Name}#{GetHashCode()}")]
     private class WorkItem : IDisposable
     {
+
         private readonly TaskCompletionSource<bool> completionTcs = new TaskCompletionSource<bool>();
 
         public WorkItem(string name)
         {
-                Name = name;
-            }
+            Name = name;
+        }
 
         public string Name { get; }
 
@@ -137,13 +138,14 @@ public class Throttler : IWikiClientLoggable
         /// </summary>
         public void Dispose()
         {
-                completionTcs.TrySetResult(true);
-            }
+            completionTcs.TrySetResult(true);
+        }
 
         public override string ToString()
         {
-                return Name + "#" + GetHashCode();
-            }
+            return Name + "#" + GetHashCode();
+        }
+
     }
 
     /// <inheritdoc />
@@ -152,4 +154,5 @@ public class Throttler : IWikiClientLoggable
         get => _Logger;
         set => _Logger = value ?? NullLogger.Instance;
     }
+
 }

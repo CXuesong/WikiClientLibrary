@@ -15,4 +15,5 @@ namespace WikiClientLibrary.Wikibase;
 [CompilerGenerated]
 internal class NamespaceDoc
 {
+
 }

@@ -10,11 +10,11 @@ internal class FieldRefExpression : CargoSqlExpression
 
     public FieldRefExpression(string tableAlias, CargoModelProperty property)
     {
-            Debug.Assert(!string.IsNullOrEmpty(tableAlias));
-            Debug.Assert(property != null);
-            TableAlias = tableAlias;
-            Property = property;
-        }
+        Debug.Assert(!string.IsNullOrEmpty(tableAlias));
+        Debug.Assert(property != null);
+        TableAlias = tableAlias;
+        Property = property;
+    }
 
     /// <inheritdoc />
     public override Type Type => Property.ClrType;

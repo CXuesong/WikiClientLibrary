@@ -17,4 +17,5 @@ namespace WikiClientLibrary.Flow;
 [CompilerGenerated]
 internal class NamespaceDoc
 {
+
 }

@@ -5,6 +5,7 @@
 /// </summary>
 public sealed class EntityEditEntry
 {
+
     private EntityEditEntryState _State;
 
     public EntityEditEntry(string propertyName) : this(propertyName, null, EntityEditEntryState.Updated)
@@ -57,6 +58,7 @@ public sealed class EntityEditEntry
 /// </summary>
 public enum EntityEditEntryState
 {
+
     /// <summary>
     /// Either the entry is a new item, or the value inside the item has been changed.
     /// </summary>
@@ -66,4 +68,5 @@ public enum EntityEditEntryState
     /// The entry represents an item to be removed.
     /// </summary>
     Removed = 1,
+
 }

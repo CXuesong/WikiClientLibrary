@@ -23,6 +23,7 @@ public class CategoryInfoPropertyProvider : WikiPagePropertyProvider<CategoryInf
 
     /// <inheritdoc />
     public override string? PropertyName => "categoryinfo";
+
 }
 
 /// <summary>
@@ -67,4 +68,5 @@ public class CategoryInfoPropertyGroup : WikiPagePropertyGroup
     {
         return $"M:{MembersCount}, P:{PagesCount}, S:{SubcategoriesCount}, F:{FilesCount}";
     }
+
 }

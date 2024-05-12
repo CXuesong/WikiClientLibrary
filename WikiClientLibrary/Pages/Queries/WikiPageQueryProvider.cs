@@ -12,6 +12,7 @@ namespace WikiClientLibrary.Pages.Queries;
 /// <remarks>The default implementation of this interface is <see cref="WikiPageQueryProvider"/>.</remarks>
 public interface IWikiPageQueryProvider
 {
+
     /// <summary>
     /// Enumerates the MediaWiki API request parameters for <c>action=query</c> request.
     /// </summary>
@@ -37,6 +38,7 @@ public interface IWikiPageQueryProvider
     /// <exception cref="ArgumentNullException"><paramref name="json"/> is <c>null</c>.</exception>
     /// <returns>A sequence of property group instance, or <see cref="Enumerable.Empty{IWikiPagePropertyGroup}"/> if no property groups available.</returns>
     IEnumerable<IWikiPagePropertyGroup> ParsePropertyGroups(JObject json);
+
 }
 
 /// <summary>
@@ -59,22 +61,22 @@ public class WikiPageQueryProvider : IWikiPageQueryProvider
     /// consider using <see cref="MediaWikiHelper.QueryProviderFromOptions"/>.</remarks>
     public static WikiPageQueryProvider FromOptions(PageQueryOptions options)
     {
-            if ((options & (PageQueryOptions.FetchContent | PageQueryOptions.ResolveRedirects)) != options)
-                throw new ArgumentException(Prompts.ExceptionInvalidEnumValue, nameof(options));
-            var provider = new WikiPageQueryProvider
+        if ((options & (PageQueryOptions.FetchContent | PageQueryOptions.ResolveRedirects)) != options)
+            throw new ArgumentException(Prompts.ExceptionInvalidEnumValue, nameof(options));
+        var provider = new WikiPageQueryProvider
+        {
+            Properties = new List<IWikiPagePropertyProvider<IWikiPagePropertyGroup>>
             {
-                Properties = new List<IWikiPagePropertyProvider<IWikiPagePropertyGroup>>
-                {
-                    new PageInfoPropertyProvider { },
-                    new RevisionsPropertyProvider {FetchContent = (options & PageQueryOptions.FetchContent) == PageQueryOptions.FetchContent},
-                    new CategoryInfoPropertyProvider { },
-                    new PagePropertiesPropertyProvider { },
-                    new FileInfoPropertyProvider { },
-                },
-                ResolveRedirects = (options & PageQueryOptions.ResolveRedirects) == PageQueryOptions.ResolveRedirects
-            };
-            return provider;
-        }
+                new PageInfoPropertyProvider { },
+                new RevisionsPropertyProvider { FetchContent = (options & PageQueryOptions.FetchContent) == PageQueryOptions.FetchContent },
+                new CategoryInfoPropertyProvider { },
+                new PagePropertiesPropertyProvider { },
+                new FileInfoPropertyProvider { },
+            },
+            ResolveRedirects = (options & PageQueryOptions.ResolveRedirects) == PageQueryOptions.ResolveRedirects
+        };
+        return provider;
+    }
 
     /// <summary>
     /// Resolves directs automatically. This may later change <see cref="WikiPage.Title"/>.
@@ -90,9 +92,9 @@ public class WikiPageQueryProvider : IWikiPageQueryProvider
     {
         get
         {
-                if (_Properties == null) _Properties = new List<IWikiPagePropertyProvider<IWikiPagePropertyGroup>>();
-                return _Properties;
-            }
+            if (_Properties == null) _Properties = new List<IWikiPagePropertyProvider<IWikiPagePropertyGroup>>();
+            return _Properties;
+        }
         set { _Properties = value; }
     }
 
@@ -100,80 +102,78 @@ public class WikiPageQueryProvider : IWikiPageQueryProvider
     /// <inheritdoc />
     public virtual IEnumerable<KeyValuePair<string, object?>> EnumParameters(MediaWikiVersion version)
     {
-            var propBuilder = new StringBuilder();
-            var p = new OrderedKeyValuePairs<string, object?>
+        var propBuilder = new StringBuilder();
+        var p = new OrderedKeyValuePairs<string, object?> { { "action", "query" }, { "redirects", ResolveRedirects }, { "maxlag", 5 }, };
+        if (_Properties != null)
+        {
+            foreach (var prop in _Properties)
             {
-                {"action", "query"},
-                {"redirects", ResolveRedirects},
-                {"maxlag", 5},
-            };
-            if (_Properties != null)
-            {
-                foreach (var prop in _Properties)
+                if (prop.PropertyName != null)
                 {
-                    if (prop.PropertyName != null)
-                    {
-                        if (propBuilder.Length > 0) propBuilder.Append('|');
-                        propBuilder.Append(prop.PropertyName);
-                    }
-                    p.AddRange(prop.EnumParameters(version));
+                    if (propBuilder.Length > 0) propBuilder.Append('|');
+                    propBuilder.Append(prop.PropertyName);
                 }
+                p.AddRange(prop.EnumParameters(version));
             }
-            p.Add("prop", propBuilder.ToString());
-            return p;
         }
+        p.Add("prop", propBuilder.ToString());
+        return p;
+    }
 
     /// <inheritdoc />
     public virtual int GetMaxPaginationSize(MediaWikiVersion version, bool apiHighLimits)
     {
-            var limit = apiHighLimits ? 500 : 5000;
-            if (_Properties != null)
+        var limit = apiHighLimits ? 500 : 5000;
+        if (_Properties != null)
+        {
+            foreach (var prop in _Properties)
             {
-                foreach (var prop in _Properties)
-                {
-                    limit = Math.Min(limit, prop.GetMaxPaginationSize(version, apiHighLimits));
-                }
+                limit = Math.Min(limit, prop.GetMaxPaginationSize(version, apiHighLimits));
             }
-            return limit;
         }
+        return limit;
+    }
 
     /// <inheritdoc />
     public virtual IEnumerable<IWikiPagePropertyGroup> ParsePropertyGroups(JObject json)
     {
-            if (_Properties == null) yield break;
-            foreach (var provider in _Properties)
-            {
-                var group = provider.ParsePropertyGroup(json);
-                if (group != null) yield return group;
-            }
+        if (_Properties == null) yield break;
+        foreach (var provider in _Properties)
+        {
+            var group = provider.ParsePropertyGroup(json);
+            if (group != null) yield return group;
         }
+    }
+
 }
 
 internal class SealedWikiPageQueryProvider : IWikiPageQueryProvider
 {
+
     private readonly IWikiPageQueryProvider underlyingProvider;
 
     public SealedWikiPageQueryProvider(IWikiPageQueryProvider underlyingProvider)
     {
-            this.underlyingProvider = underlyingProvider ?? throw new ArgumentNullException(nameof(underlyingProvider));
-        }
+        this.underlyingProvider = underlyingProvider ?? throw new ArgumentNullException(nameof(underlyingProvider));
+    }
 
     /// <param name="version"></param>
     /// <inheritdoc />
     public IEnumerable<KeyValuePair<string, object?>> EnumParameters(MediaWikiVersion version)
     {
-            return underlyingProvider.EnumParameters(version);
-        }
+        return underlyingProvider.EnumParameters(version);
+    }
 
     /// <inheritdoc />
     public int GetMaxPaginationSize(MediaWikiVersion version, bool apiHighLimits)
     {
-            return underlyingProvider.GetMaxPaginationSize(version, apiHighLimits);
-        }
+        return underlyingProvider.GetMaxPaginationSize(version, apiHighLimits);
+    }
 
     /// <inheritdoc />
     public IEnumerable<IWikiPagePropertyGroup> ParsePropertyGroups(JObject json)
     {
-            return underlyingProvider.ParsePropertyGroups(json);
-        }
+        return underlyingProvider.ParsePropertyGroups(json);
+    }
+
 }

@@ -4,6 +4,7 @@ namespace WikiClientLibrary.Generators;
 
 public class PagesWithPropResultItem
 {
+
     public WikiPageStub Page { get; }
     public string Value { get; set; }
 
@@ -12,4 +13,5 @@ public class PagesWithPropResultItem
         Page = wikiPageStub;
         Value = value;
     }
+
 }

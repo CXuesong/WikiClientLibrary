@@ -44,23 +44,20 @@ public class ExtractsPropertyProvider : WikiPagePropertyProvider<ExtractsPropert
     /// <inheritdoc />
     public override IEnumerable<KeyValuePair<string, object?>> EnumParameters(MediaWikiVersion version)
     {
-            var p = new OrderedKeyValuePairs<string, object?>
-            {
-                {"exlimit", "max"},
-                {"exintro", IntroductionOnly},
-                {"exsectionformat", "plain"},
-                {"explaintext", AsPlainText},
-            };
-            if (MaxCharacters > 0) p.Add("exchars", MaxCharacters);
-            if (MaxSentences > 0) p.Add("exsentences", MaxSentences);
-            return p;
-        }
+        var p = new OrderedKeyValuePairs<string, object?>
+        {
+            { "exlimit", "max" }, { "exintro", IntroductionOnly }, { "exsectionformat", "plain" }, { "explaintext", AsPlainText },
+        };
+        if (MaxCharacters > 0) p.Add("exchars", MaxCharacters);
+        if (MaxSentences > 0) p.Add("exsentences", MaxSentences);
+        return p;
+    }
 
     /// <inheritdoc />
     public override int GetMaxPaginationSize(MediaWikiVersion version, bool apiHighLimits)
     {
-            return apiHighLimits ? 20 : 10;
-        }
+        return apiHighLimits ? 20 : 10;
+    }
 
     /// <inheritdoc />
     public override string? PropertyName => "extracts";
@@ -68,11 +65,11 @@ public class ExtractsPropertyProvider : WikiPagePropertyProvider<ExtractsPropert
     /// <inheritdoc />
     public override ExtractsPropertyGroup? ParsePropertyGroup(JObject json)
     {
-            if (json == null) throw new ArgumentNullException(nameof(json));
-            var jextract = json["extract"];
-            if (jextract == null) return null;
-            return ExtractsPropertyGroup.Create((string)jextract);
-        }
+        if (json == null) throw new ArgumentNullException(nameof(json));
+        var jextract = json["extract"];
+        if (jextract == null) return null;
+        return ExtractsPropertyGroup.Create((string)jextract);
+    }
 
 }
 
@@ -83,14 +80,14 @@ public class ExtractsPropertyGroup : WikiPagePropertyGroup
 
     internal static ExtractsPropertyGroup Create(string? extract)
     {
-            if (string.IsNullOrEmpty(extract)) return Empty;
-            return new ExtractsPropertyGroup(extract);
-        }
+        if (string.IsNullOrEmpty(extract)) return Empty;
+        return new ExtractsPropertyGroup(extract);
+    }
 
     private ExtractsPropertyGroup(string extract)
     {
-            Extract = extract;
-        }
+        Extract = extract;
+    }
 
     /// <summary>Extract of the page.</summary>
     public string Extract { get; }

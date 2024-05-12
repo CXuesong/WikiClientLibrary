@@ -7,20 +7,19 @@ namespace WikiClientLibrary;
 /// </summary>
 public class WikiClientException : Exception
 {
+
     public WikiClientException() : base(Prompts.ExceptionWikiClientGeneral)
     {
-
     }
 
     public WikiClientException(string? message) : base(message)
     {
-
     }
 
     public WikiClientException(string? message, Exception? innerException) : base(message, innerException)
     {
-
     }
+
 }
 
 /// <summary>
@@ -29,6 +28,7 @@ public class WikiClientException : Exception
 /// <remarks>This often represents MediaWiki API error, i.e. API responses with "error" node.</remarks>
 public class OperationFailedException : WikiClientException
 {
+
     /// <summary>
     /// Error code provided by MediaWiki API.
     /// </summary>
@@ -41,7 +41,8 @@ public class OperationFailedException : WikiClientException
 
     public OperationFailedException()
         : this(Prompts.ExceptionRequestFailed)
-    { }
+    {
+    }
 
     public OperationFailedException(string? errorCode, string? errorMessage)
         : base(
@@ -66,6 +67,7 @@ public class OperationFailedException : WikiClientException
     {
         ErrorMessage = message;
     }
+
 }
 
 /// <summary>
@@ -76,10 +78,12 @@ public class OperationFailedException : WikiClientException
 /// </remarks>
 public class BadValueException : OperationFailedException
 {
+
     public BadValueException(string errorCode, string message)
         : base(errorCode, message)
     {
     }
+
 }
 
 /// <summary>
@@ -88,10 +92,12 @@ public class BadValueException : OperationFailedException
 /// <remarks>This represents <c>unknown_action</c> MW API error before MW 1.35.0-wmf.19.</remarks>
 public class InvalidActionException : BadValueException
 {
+
     public InvalidActionException(string errorCode, string message)
         : base(errorCode, message)
     {
     }
+
 }
 
 /// <summary>
@@ -104,9 +110,12 @@ public class InvalidActionException : BadValueException
 /// </remarks>
 public class AccountAssertionFailureException : OperationFailedException
 {
+
     public AccountAssertionFailureException(string errorCode, string message)
         : base(errorCode, message)
-    { }
+    {
+    }
+
 }
 
 /// <summary>
@@ -135,6 +144,7 @@ public class AccountAssertionFailureException : OperationFailedException
 /// </remarks>
 public class UnauthorizedOperationException : OperationFailedException
 {
+
     public UnauthorizedOperationException(string? errorCode, string? message)
         : this(errorCode, message, null)
     {
@@ -173,6 +183,7 @@ public class UnauthorizedOperationException : OperationFailedException
         }
         return message;
     }
+
 }
 
 /// <summary>
@@ -248,6 +259,7 @@ public class MediaWikiRemoteException : OperationFailedException
         sb.Append(StackTrace);
         return sb.ToString();
     }
+
 }
 
 /// <summary>
@@ -292,15 +304,20 @@ public class ServerLagException : OperationFailedException
 /// </summary>
 public class UnexpectedDataException : WikiClientException
 {
+
     public UnexpectedDataException()
         : this(Prompts.ExceptionUnexpectedData)
-    { }
+    {
+    }
 
     public UnexpectedDataException(string message)
         : base(message)
-    { }
+    {
+    }
 
     public UnexpectedDataException(string message, Exception inner)
         : base(message, inner)
-    { }
+    {
+    }
+
 }

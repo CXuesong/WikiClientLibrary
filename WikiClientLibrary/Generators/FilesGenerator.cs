@@ -14,6 +14,7 @@ namespace WikiClientLibrary.Generators;
 /// <see cref="LinksGenerator"/>
 public class FilesGenerator : WikiPagePropertyGenerator
 {
+
     /// <inheritdoc />
     public FilesGenerator(WikiSite site) : base(site)
     {
@@ -45,9 +46,10 @@ public class FilesGenerator : WikiPagePropertyGenerator
     {
         return new Dictionary<string, object?>
         {
-            {"imlimit", PaginationSize}, 
-            {"imimages", MatchingTitles == null ? null : MediaWikiHelper.JoinValues(MatchingTitles)},
-            {"imdir", OrderDescending ? "descending" : "ascending"}
+            { "imlimit", PaginationSize },
+            { "imimages", MatchingTitles == null ? null : MediaWikiHelper.JoinValues(MatchingTitles) },
+            { "imdir", OrderDescending ? "descending" : "ascending" }
         };
     }
+
 }

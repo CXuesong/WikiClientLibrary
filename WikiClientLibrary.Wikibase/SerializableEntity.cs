@@ -228,7 +228,7 @@ public class SerializableEntity : IEntity
     /// <inheritdoc cref="LoadAll(JsonReader)"/>
     public static IEnumerable<SerializableEntity?> LoadAll(TextReader reader)
     {
-        using var jr = new JsonTextReader(reader) {CloseInput = false};
+        using var jr = new JsonTextReader(reader) { CloseInput = false };
         foreach (var i in LoadAll(jr)) yield return i;
     }
 
@@ -339,14 +339,14 @@ public class SerializableEntity : IEntity
 
     private static IDictionary<string, Contracts.MonolingualText> ToContract(WbMonolingualTextCollection value)
     {
-        return value.ToDictionary(p => p.Language, p => new Contracts.MonolingualText {Language = p.Language, Value = p.Text});
+        return value.ToDictionary(p => p.Language, p => new Contracts.MonolingualText { Language = p.Language, Value = p.Text });
     }
 
     private static IDictionary<string, ICollection<Contracts.MonolingualText>> ToContract(WbMonolingualTextsCollection value)
     {
         return value.Languages.ToDictionary(lang => lang,
             lang => (ICollection<Contracts.MonolingualText>)value[lang]
-                .Select(t => new Contracts.MonolingualText {Language = lang, Value = t}).ToList());
+                .Select(t => new Contracts.MonolingualText { Language = lang, Value = t }).ToList());
     }
 
     private Contracts.Entity ToContract()
@@ -359,7 +359,7 @@ public class SerializableEntity : IEntity
             Aliases = ToContract(_Aliases),
             Descriptions = ToContract(_Descriptions),
             Sitelinks = SiteLinks.ToDictionary(link => link.Site,
-                link => new Contracts.SiteLink {Site = link.Site, Title = link.Title, Badges = link.Badges.ToList()}),
+                link => new Contracts.SiteLink { Site = link.Site, Title = link.Title, Badges = link.Badges.ToList() }),
             Claims = Claims.GroupBy(c => c.MainSnak.PropertyId).ToDictionary(g => g.Key,
                 g => (ICollection<Contracts.Claim>)g.Select(c => c.ToContract(false)).ToList())
         };

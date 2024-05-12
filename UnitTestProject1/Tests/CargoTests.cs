@@ -41,12 +41,11 @@ public class CargoTests : WikiSiteTestsBase, IClassFixture<WikiSiteProvider>
         var site = await GetWikiSiteAsync(Endpoints.LolEsportsWiki);
         var ex = await Assert.ThrowsAsync<MediaWikiRemoteException>(() => site.ExecuteCargoQueryAsync(new CargoQueryParameters
         {
-            Tables = new[] { "Skins" },
-            Fields = new[] { "NonExistentField" },
+            Tables = new[] { "Skins" }, Fields = new[] { "NonExistentField" },
         }));
         Assert.Equal("MWException", ex.ErrorClass);
     }
-        
+
     [Fact]
     public async Task LinqToCargoTest1()
     {

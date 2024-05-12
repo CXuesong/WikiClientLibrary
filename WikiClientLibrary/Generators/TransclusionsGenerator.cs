@@ -13,15 +13,16 @@ namespace WikiClientLibrary.Generators;
 /// <seealso cref="TranscludedInGenerator"/>
 public class TransclusionsGenerator : WikiPagePropertyGenerator
 {
+
     /// <inheritdoc />
     public TransclusionsGenerator(WikiSite site) : base(site)
     {
-        }
+    }
 
     /// <inheritdoc />
     public TransclusionsGenerator(WikiSite site, WikiPageStub pageStub) : base(site, pageStub)
     {
-        }
+    }
 
     /// <summary>
     /// Only list pages in these namespaces.
@@ -48,12 +49,13 @@ public class TransclusionsGenerator : WikiPagePropertyGenerator
     /// <inheritdoc />
     public override IEnumerable<KeyValuePair<string, object?>> EnumListParameters()
     {
-            return new Dictionary<string, object?>
-            {
-                { "tlnamespace", NamespaceIds == null ? null : MediaWikiHelper.JoinValues(NamespaceIds) },
-                { "tllimit", PaginationSize },
-                { "tltemplates", MatchingTitles == null ? null : MediaWikiHelper.JoinValues(MatchingTitles) },
-                { "tldir", OrderDescending ? "descending" : "ascending" }
-            };
-        }
+        return new Dictionary<string, object?>
+        {
+            { "tlnamespace", NamespaceIds == null ? null : MediaWikiHelper.JoinValues(NamespaceIds) },
+            { "tllimit", PaginationSize },
+            { "tltemplates", MatchingTitles == null ? null : MediaWikiHelper.JoinValues(MatchingTitles) },
+            { "tldir", OrderDescending ? "descending" : "ascending" }
+        };
+    }
+
 }

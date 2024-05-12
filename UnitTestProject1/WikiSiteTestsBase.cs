@@ -20,30 +20,30 @@ public class UnitTestsBase : IAsyncDisposable
 
     public UnitTestsBase(ITestOutputHelper output)
     {
-            if (output == null) throw new ArgumentNullException(nameof(output));
-            Output = output;
-            OutputLoggerFactory = new LoggerFactory();
-            OutputLoggerFactory.AddProvider(new TestOutputLoggerProvider(Output));
-        }
+        if (output == null) throw new ArgumentNullException(nameof(output));
+        Output = output;
+        OutputLoggerFactory = new LoggerFactory();
+        OutputLoggerFactory.AddProvider(new TestOutputLoggerProvider(Output));
+    }
 
     public LoggerFactory OutputLoggerFactory { get; }
 
     public ITestOutputHelper Output { get; }
-        
+
     protected void WriteOutput(object? value)
     {
-            WriteOutput(value == null ? "<null>" : value.ToString());
-        }
+        WriteOutput(value == null ? "<null>" : value.ToString());
+    }
 
     protected void WriteOutput(string? message)
     {
-            Output.WriteLine(message);
-        }
+        Output.WriteLine(message);
+    }
 
     protected void WriteOutput(string format, params object?[] args)
     {
-            WriteOutput(string.Format(format, args));
-        }
+        WriteOutput(string.Format(format, args));
+    }
 
     protected void ShallowTrace(object? obj, int depth = 2)
     {
@@ -64,9 +64,10 @@ public class UnitTestsBase : IAsyncDisposable
     /// <inheritdoc />
     public async ValueTask DisposeAsync()
     {
-            await DisposeAsync(true);
-            GC.SuppressFinalize(this);
-        }
+        await DisposeAsync(true);
+        GC.SuppressFinalize(this);
+    }
+
 }
 
 public class WikiSiteTestsBase : UnitTestsBase
@@ -74,8 +75,8 @@ public class WikiSiteTestsBase : UnitTestsBase
 
     public WikiSiteTestsBase(ITestOutputHelper output, WikiSiteProvider wikiSiteProvider) : base(output)
     {
-            WikiSiteProvider = wikiSiteProvider;
-        }
+        WikiSiteProvider = wikiSiteProvider;
+    }
 
     protected WikiSiteProvider WikiSiteProvider { get; }
 
@@ -87,10 +88,10 @@ public class WikiSiteTestsBase : UnitTestsBase
     /// <remarks>This method can be handy for you to maul a certain WikiClient without affecting other WikiSite instances.</remarks>
     protected Task<WikiSite> CreateIsolatedWikiSiteAsync(string apiEndpoint, bool noLogin = false)
     {
-            var isolatedClient = WikiSiteProvider.CreateWikiClient();
-            isolatedClient.Logger = OutputLoggerFactory.CreateLogger<WikiClient>();
-            return WikiSiteProvider.CreateWikiSiteAsync(isolatedClient, apiEndpoint, OutputLoggerFactory, noLogin);
-        }
+        var isolatedClient = WikiSiteProvider.CreateWikiClient();
+        isolatedClient.Logger = OutputLoggerFactory.CreateLogger<WikiClient>();
+        return WikiSiteProvider.CreateWikiSiteAsync(isolatedClient, apiEndpoint, OutputLoggerFactory, noLogin);
+    }
 
     /// <summary>
     /// Create or get a wiki site from local cache.
@@ -141,13 +142,13 @@ public class WikiSiteTestsBase : UnitTestsBase
     {
         get
         {
-                async Task<WikiaSite> Cast()
-                {
-                    return (WikiaSite)await GetWikiSiteAsync(Endpoints.WikiaTest);
-                }
-
-                return Cast();
+            async Task<WikiaSite> Cast()
+            {
+                return (WikiaSite)await GetWikiSiteAsync(Endpoints.WikiaTest);
             }
+
+            return Cast();
+        }
     }
 
     protected Task<WikiSite> TFWikiSiteAsync => GetWikiSiteAsync(Endpoints.TFWiki);
@@ -164,26 +165,26 @@ public class WikiSiteTestsBase : UnitTestsBase
 
     protected Task<WikiSite> WikiSiteFromNameAsync(string sitePropertyName)
     {
-            static async Task<TDest> CastAsync<TSource, TDest>(Task<TSource> sourceTask)
-                where TSource : class
-                where TDest : class
-            {
-                return (TDest)(object)await sourceTask;
-            }
-
-            var task = GetType()
-                .GetProperty(sitePropertyName, BindingFlags.NonPublic | BindingFlags.Instance)
-                !.GetValue(this);
-            if (task is Task<WikiSite> ws) return ws;
-            if (task is Task<WikiaSite> was) return CastAsync<WikiaSite, WikiSite>(was);
-            throw new NotSupportedException();
+        static async Task<TDest> CastAsync<TSource, TDest>(Task<TSource> sourceTask)
+            where TSource : class
+            where TDest : class
+        {
+            return (TDest)(object)await sourceTask;
         }
+
+        var task = GetType()
+            .GetProperty(sitePropertyName, BindingFlags.NonPublic | BindingFlags.Instance)
+            !.GetValue(this);
+        if (task is Task<WikiSite> ws) return ws;
+        if (task is Task<WikiaSite> was) return CastAsync<WikiaSite, WikiSite>(was);
+        throw new NotSupportedException();
+    }
 
     protected WikiClient CreateWikiClient()
     {
-            var client = WikiSiteProvider.CreateWikiClient();
-            client.Logger = OutputLoggerFactory.CreateLogger<WikiClient>();
-            return client;
-        }
+        var client = WikiSiteProvider.CreateWikiClient();
+        client.Logger = OutputLoggerFactory.CreateLogger<WikiClient>();
+        return client;
+    }
 
 }

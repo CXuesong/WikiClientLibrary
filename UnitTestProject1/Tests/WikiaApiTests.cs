@@ -74,10 +74,7 @@ public class WikiaApiTests : WikiSiteTestsBase, IClassFixture<WikiSiteProvider>
     public async Task SearchListTest()
     {
         var site = await WikiaTestSiteAsync;
-        var list = new LocalWikiSearchList(site, "test keyword")
-        {
-            PaginationSize = 10,
-        };
+        var list = new LocalWikiSearchList(site, "test keyword") { PaginationSize = 10, };
         var results = await list.EnumItemsAsync().Take(30).ToListAsync();
         ShallowTrace(results);
         Assert.NotEmpty(results);
@@ -155,7 +152,8 @@ public class WikiaApiTests : WikiSiteTestsBase, IClassFixture<WikiSiteProvider>
         Skip.IfNot(commentArea.Exists, $"Page [[{commentArea}]] is gone. There is nothing we can do for it.");
         var post = await commentArea.NewPostAsync("Test title", "Test [[comment]].", new[] { "Sandbox", "Project:Sandbox" });
         await post.RefreshAsync();
-        Assert.Equal("Test [[comment]].<ac_metadata title=\"Test title\" related_topics=\"Sandbox|Project:Sandbox\"> </ac_metadata>", post.Content);
+        Assert.Equal("Test [[comment]].<ac_metadata title=\"Test title\" related_topics=\"Sandbox|Project:Sandbox\"> </ac_metadata>",
+            post.Content);
         var rep = await post.ReplyAsync("Test reply.");
         await rep.ReplyAsync("Test reply, 3rd level.");
     }

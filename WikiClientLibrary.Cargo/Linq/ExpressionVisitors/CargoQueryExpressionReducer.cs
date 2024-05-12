@@ -14,7 +14,7 @@ public class CargoQueryExpressionReducer : ExpressionVisitor
 {
 
     /// <inheritdoc />
-    [return:NotNullIfNotNull("node")]
+    [return: NotNullIfNotNull("node")]
     public override Expression? Visit(Expression? node)
     {
         Debug.WriteLine(node == null ? "<null>" : (node.GetType().Name + ":" + node));
@@ -35,8 +35,10 @@ public class CargoQueryExpressionReducer : ExpressionVisitor
                     UnwindLambdaExpression(Visit(node.Arguments[1]))),
                 nameof(Queryable.Where) => ProcessWhereCall((CargoQueryExpression)Visit(node.Arguments[0]),
                     UnwindLambdaExpression(Visit(node.Arguments[1]))),
-                nameof(Queryable.Take) => ProcessTakeCall((CargoQueryExpression)Visit(node.Arguments[0]), (ConstantExpression)Visit(node.Arguments[1])),
-                nameof(Queryable.Skip) => ProcessSkipCall((CargoQueryExpression)Visit(node.Arguments[0]), (ConstantExpression)Visit(node.Arguments[1])),
+                nameof(Queryable.Take) => ProcessTakeCall((CargoQueryExpression)Visit(node.Arguments[0]),
+                    (ConstantExpression)Visit(node.Arguments[1])),
+                nameof(Queryable.Skip) => ProcessSkipCall((CargoQueryExpression)Visit(node.Arguments[0]),
+                    (ConstantExpression)Visit(node.Arguments[1])),
                 nameof(Queryable.OrderBy) => ProcessOrderByCall((CargoQueryExpression)Visit(node.Arguments[0]),
                     UnwindLambdaExpression(Visit(node.Arguments[1])), false),
                 nameof(Queryable.ThenBy) => ProcessThenOrderByCall((CargoQueryExpression)Visit(node.Arguments[0]),
@@ -51,9 +53,10 @@ public class CargoQueryExpressionReducer : ExpressionVisitor
         return node;
     }
 
-    private MemberAccessExpressionReplacer CreateModelMemberAccessReplacer(ParameterExpression target, IEnumerable<ProjectionExpression> knownProjections)
+    private MemberAccessExpressionReplacer CreateModelMemberAccessReplacer(ParameterExpression target,
+        IEnumerable<ProjectionExpression> knownProjections)
     {
-        return new MemberAccessExpressionReplacer(target, 
+        return new MemberAccessExpressionReplacer(target,
             knownProjections.ToDictionary(f => f.TargetMember, f => f.Expression));
     }
 
@@ -92,7 +95,7 @@ public class CargoQueryExpressionReducer : ExpressionVisitor
         {
             throw new NotSupportedException(".Where after .Take or .Skip is not translatable.");
         }
-            
+
         var fieldRefReplacer = CreateModelMemberAccessReplacer(predicate.Parameters[0], source.Fields);
         return source.Filter(fieldRefReplacer.VisitAndConvert(predicate.Body, "Where"));
     }

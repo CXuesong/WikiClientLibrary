@@ -51,10 +51,7 @@ public class RevisionGeneratorTests : WikiSiteTestsBase, IClassFixture<WikiSiteP
         var t2 = new DateTime(2014, 10, 22, 10, 0, 0, DateTimeKind.Utc);
         var gen = new RevisionsGenerator(page.Site, page.Title)
         {
-            TimeAscending = true,
-            StartTime = t1,
-            EndTime = t2,
-            PaginationSize = 30,
+            TimeAscending = true, StartTime = t1, EndTime = t2, PaginationSize = 30,
         };
         var revisions = await gen.EnumItemsAsync().Take(50).ToListAsync();
         Assert.True(revisions.SequenceEqual(revisions.OrderBy(r => r.TimeStamp)));

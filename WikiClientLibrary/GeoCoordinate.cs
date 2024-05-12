@@ -1,5 +1,4 @@
-﻿
-namespace WikiClientLibrary;
+﻿namespace WikiClientLibrary;
 
 /// <summary>
 /// Represents a coordinate and an optional size in radius on the globe.
@@ -132,7 +131,8 @@ public struct GeoCoordinate : IEquatable<GeoCoordinate>
     /// <inheritdoc />
     public bool Equals(GeoCoordinate other)
     {
-        return Longitude.Equals(other.Longitude) && Latitude.Equals(other.Latitude) && Dimension.Equals(other.Dimension) && string.Equals(Globe, other.Globe);
+        return Longitude.Equals(other.Longitude) && Latitude.Equals(other.Latitude) && Dimension.Equals(other.Dimension) &&
+               string.Equals(Globe, other.Globe);
     }
 
     /// <inheritdoc />
@@ -154,6 +154,7 @@ public struct GeoCoordinate : IEquatable<GeoCoordinate>
     {
         return !left.Equals(right);
     }
+
 }
 
 /// <summary>
@@ -345,7 +346,7 @@ public struct GeoCoordinateRectangle : IEquatable<GeoCoordinateRectangle>
             var normalizedTop = Math.IEEERemainder(this.Top, 360);
             return normalizedTop >= -90 && normalizedTop - this._Height <= 90;
         }
-    } 
+    }
 
     /// <summary>
     /// Determines whether the rectangle contains the given coordinate,

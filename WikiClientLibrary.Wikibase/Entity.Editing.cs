@@ -35,8 +35,8 @@ partial class Entity
                         Debug.Assert(entry.Value != null);
                         var value = (WbMonolingualText)entry.Value;
                         var item = entry.State == EntityEditEntryState.Removed
-                            ? new Contracts.MonolingualText {Language = value.Language, Remove = true}
-                            : new Contracts.MonolingualText {Language = value.Language, Value = value.Text};
+                            ? new Contracts.MonolingualText { Language = value.Language, Remove = true }
+                            : new Contracts.MonolingualText { Language = value.Language, Value = value.Text };
                         contract.Labels.Add(value.Language, item);
                     }
                     break;
@@ -76,8 +76,8 @@ partial class Entity
                         Debug.Assert(entry.Value != null);
                         var value = (EntitySiteLink)entry.Value;
                         var item = entry.State == EntityEditEntryState.Removed
-                            ? new Contracts.SiteLink {Site = value.Site, Remove = true}
-                            : new Contracts.SiteLink {Site = value.Site, Title = value.Title, Badges = value.Badges.ToList()};
+                            ? new Contracts.SiteLink { Site = value.Site, Remove = true }
+                            : new Contracts.SiteLink { Site = value.Site, Title = value.Title, Badges = value.Badges.ToList() };
                         contract.Sitelinks.Add(value.Site, item);
                     }
                     break;
@@ -169,7 +169,8 @@ partial class Entity
     /// of <see cref="EntityEditOptions"/>.</para>
     /// <para>If you need more information about the entity after the edit, consider invoking <see cref="RefreshAsync()"/> again.</para>
     /// </remarks>
-    public async Task EditAsync(IEnumerable<EntityEditEntry> edits, string summary, EntityEditOptions options, CancellationToken cancellationToken)
+    public async Task EditAsync(IEnumerable<EntityEditEntry> edits, string summary, EntityEditOptions options,
+        CancellationToken cancellationToken)
     {
         const int bulkEditThreshold = 5;
         if (edits == null) throw new ArgumentNullException(nameof(edits));
@@ -200,18 +201,19 @@ partial class Entity
                 var contract = SerializeEditEntries(edits);
                 using (await Site.ModificationThrottler.QueueWorkAsync("Edit: " + this, cancellationToken))
                 {
-                    var jresult = await Site.InvokeMediaWikiApiAsync(new MediaWikiFormRequestMessage(new
-                    {
-                        action = "wbeditentity",
-                        token = WikiSiteToken.Edit,
-                        id = Id,
-                        @new = Id == null ? FormatEntityType(Type) : null,
-                        baserevid = LastRevisionId > 0 ? (int?)LastRevisionId : null,
-                        bot = (options & EntityEditOptions.Bot) == EntityEditOptions.Bot,
-                        summary = summary,
-                        clear = (options & EntityEditOptions.ClearData) == EntityEditOptions.ClearData,
-                        data = Utility.WikiJsonSerializer.Serialize(contract)
-                    }), cancellationToken);
+                    var jresult = await Site.InvokeMediaWikiApiAsync(
+                        new MediaWikiFormRequestMessage(new
+                        {
+                            action = "wbeditentity",
+                            token = WikiSiteToken.Edit,
+                            id = Id,
+                            @new = Id == null ? FormatEntityType(Type) : null,
+                            baserevid = LastRevisionId > 0 ? (int?)LastRevisionId : null,
+                            bot = (options & EntityEditOptions.Bot) == EntityEditOptions.Bot,
+                            summary = summary,
+                            clear = (options & EntityEditOptions.ClearData) == EntityEditOptions.ClearData,
+                            data = Utility.WikiJsonSerializer.Serialize(contract)
+                        }), cancellationToken);
                     var jentity = jresult["entity"];
                     if (jentity == null)
                         throw new UnexpectedDataException("Missing \"entity\" node in the JSON response.");
@@ -366,15 +368,16 @@ partial class Entity
                             if (Id == null)
                             {
                                 // This is a new entity, so we need to create it first.
-                                var jresult1 = await Site.InvokeMediaWikiApiAsync(new MediaWikiFormRequestMessage(new
-                                {
-                                    action = "wbeditentity",
-                                    token = WikiSiteToken.Edit,
-                                    @new = FormatEntityType(Type),
-                                    bot = isBot,
-                                    summary = (string?)null,
-                                    data = "{}"
-                                }), cancellationToken);
+                                var jresult1 = await Site.InvokeMediaWikiApiAsync(
+                                    new MediaWikiFormRequestMessage(new
+                                    {
+                                        action = "wbeditentity",
+                                        token = WikiSiteToken.Edit,
+                                        @new = FormatEntityType(Type),
+                                        bot = isBot,
+                                        summary = (string?)null,
+                                        data = "{}"
+                                    }), cancellationToken);
                                 if (!strict) checkbaseRev = false;
                                 LoadEntityMinimal(jresult1["entity"]);
                             }
@@ -426,6 +429,7 @@ partial class Entity
             LastRevisionId = (int)jentity["lastrevid"];
         }
     }
+
 }
 
 /// <summary>
@@ -441,23 +445,30 @@ partial class Entity
 [Flags]
 public enum EntityEditOptions
 {
+
     /// <summary>No special options.</summary>
     None = 0,
+
     /// <summary>Mark the edit as bot edit.</summary>
     Bot = 1,
+
     /// <summary>Forces progressive edit, even if WCL is creating a new item.
     /// This option cannot be used with <see cref="Bulk"/> and <see cref="ClearData"/>.</summary>
     /// <remarks>Note that setting <see cref="Entity.DataType"/> is not possible in progressive mode,
     /// nor can you change the data type of an existing property due to the limitation of Wikibase.</remarks>
     Progressive = 2,
+
     /// <summary>Forces bulk edit, even if WCL is editing an existing item with less than 5 items of changes.</summary>
     Bulk = 4,
+
     /// <summary>Clears all the existing data of the entity before making the changes.
     /// This option implies <see cref="Bulk"/> flag.</summary>
     ClearData = 8 | Bulk,
+
     /// <summary>When performing progressive edit, check for edit conflicts on every MediaWiki API request,
     /// instead of only checking for conflict before sending the first API request.</summary>
     /// <remarks>When this flag is set, if other user edited the same entity as the one performing progressive edit,
     /// an <see cref="OperationConflictException"/> will be thrown.</remarks>
     StrictEditConflictDetection
+
 }

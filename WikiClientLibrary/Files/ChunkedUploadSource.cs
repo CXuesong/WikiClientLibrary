@@ -43,7 +43,7 @@ public class ChunkedUploadSource : WikiUploadSource
     /// <inheritdoc cref="ChunkedUploadSource(WikiSite,Stream,string)"/>
     public ChunkedUploadSource(WikiSite site, Stream sourceStream) : this(site, sourceStream, null)
     {
-        }
+    }
 
     /// <summary>
     /// Initialize an instance from a <see cref="Stream"/>.
@@ -67,21 +67,21 @@ public class ChunkedUploadSource : WikiUploadSource
     /// </exception>
     public ChunkedUploadSource(WikiSite site, Stream sourceStream, string? fileName)
     {
-            Site = site ?? throw new ArgumentNullException(nameof(site));
-            SourceStream = sourceStream ?? throw new ArgumentNullException(nameof(sourceStream));
-            if (!sourceStream.CanSeek)
-                throw new ArgumentException(Prompts.ExceptionStreamCannotSeek, nameof(sourceStream));
-            originalSourceStreamPosition = SourceStream.Position;
-            TotalSize = (int)(SourceStream.Length - originalSourceStreamPosition);
-            if (TotalSize == 0) throw new ArgumentException(Prompts.ExceptionCannotUploadEmptyStream);
-            // Upload 1MB chunks by default.
-            DefaultChunkSize = 1024 * 1024;
-            if (site.SiteInfo.MinUploadChunkSize > 0 && site.SiteInfo.MinUploadChunkSize > DefaultChunkSize)
-                DefaultChunkSize = site.SiteInfo.MinUploadChunkSize;
-            else if (site.SiteInfo.MaxUploadSize > 0 && site.SiteInfo.MaxUploadSize < DefaultChunkSize)
-                DefaultChunkSize = (int)site.SiteInfo.MaxUploadSize;
-            FileName = fileName ?? "Dummy";
-        }
+        Site = site ?? throw new ArgumentNullException(nameof(site));
+        SourceStream = sourceStream ?? throw new ArgumentNullException(nameof(sourceStream));
+        if (!sourceStream.CanSeek)
+            throw new ArgumentException(Prompts.ExceptionStreamCannotSeek, nameof(sourceStream));
+        originalSourceStreamPosition = SourceStream.Position;
+        TotalSize = (int)(SourceStream.Length - originalSourceStreamPosition);
+        if (TotalSize == 0) throw new ArgumentException(Prompts.ExceptionCannotUploadEmptyStream);
+        // Upload 1MB chunks by default.
+        DefaultChunkSize = 1024 * 1024;
+        if (site.SiteInfo.MinUploadChunkSize > 0 && site.SiteInfo.MinUploadChunkSize > DefaultChunkSize)
+            DefaultChunkSize = site.SiteInfo.MinUploadChunkSize;
+        else if (site.SiteInfo.MaxUploadSize > 0 && site.SiteInfo.MaxUploadSize < DefaultChunkSize)
+            DefaultChunkSize = (int)site.SiteInfo.MaxUploadSize;
+        FileName = fileName ?? "Dummy";
+    }
 
     public WikiSite Site { get; }
 
@@ -137,31 +137,31 @@ public class ChunkedUploadSource : WikiUploadSource
     /// <inheritdoc />
     public override IEnumerable<KeyValuePair<string, object>> GetUploadParameters(SiteInfo siteInfo)
     {
-            if (siteInfo == null) throw new ArgumentNullException(nameof(siteInfo));
-            if (state != STATE_ALL_STASHED)
-                throw new InvalidOperationException(Prompts.ExceptionCannotUploadBeforeStash);
-            Debug.Assert(FileKey != null);
-            return new[]
-            {
-                new KeyValuePair<string, object>(
-                    siteInfo.Version >= v118 ? "filekey" : "sessionkey", FileKey)
-            };
-        }
+        if (siteInfo == null) throw new ArgumentNullException(nameof(siteInfo));
+        if (state != STATE_ALL_STASHED)
+            throw new InvalidOperationException(Prompts.ExceptionCannotUploadBeforeStash);
+        Debug.Assert(FileKey != null);
+        return new[]
+        {
+            new KeyValuePair<string, object>(
+                siteInfo.Version >= v118 ? "filekey" : "sessionkey", FileKey)
+        };
+    }
 
     public Task<UploadResult> StashNextChunkAsync()
     {
-            return StashNextChunkAsync(DefaultChunkSize, new CancellationToken());
-        }
+        return StashNextChunkAsync(DefaultChunkSize, new CancellationToken());
+    }
 
     public Task<UploadResult> StashNextChunkAsync(int chunkSize)
     {
-            return StashNextChunkAsync(chunkSize, new CancellationToken());
-        }
+        return StashNextChunkAsync(chunkSize, new CancellationToken());
+    }
 
     public Task<UploadResult> StashNextChunkAsync(CancellationToken cancellationToken)
     {
-            return StashNextChunkAsync(DefaultChunkSize, cancellationToken);
-        }
+        return StashNextChunkAsync(DefaultChunkSize, cancellationToken);
+    }
 
     /// <summary>
     /// Stash the next chunk in the stream.
@@ -195,110 +195,110 @@ public class ChunkedUploadSource : WikiUploadSource
     /// </remarks>
     public async Task<UploadResult> StashNextChunkAsync(int chunkSize, CancellationToken cancellationToken)
     {
-            var minChunkSize = Site.SiteInfo.MinUploadChunkSize;
-            var maxChunkSize = Site.SiteInfo.MaxUploadSize;
-            if (chunkSize <= 0) throw new ArgumentOutOfRangeException(nameof(chunkSize));
-            // For Wikia (MW 1.19), it supports chunked uploading,
-            // while SiteInfo.MinUploadChunkSize and SiteInfo.MaxUploadSize are missing.
-            if (minChunkSize > 0 && chunkSize < minChunkSize || maxChunkSize > 0 && chunkSize > maxChunkSize)
-                throw new ArgumentOutOfRangeException(nameof(chunkSize),
-                    $"Chunk size should be between {minChunkSize} and {maxChunkSize} on this wiki site.");
-            var lastState = Interlocked.CompareExchange(ref state, STATE_CHUNK_STASHING, STATE_CHUNK_IMPENDING);
-            switch (lastState)
+        var minChunkSize = Site.SiteInfo.MinUploadChunkSize;
+        var maxChunkSize = Site.SiteInfo.MaxUploadSize;
+        if (chunkSize <= 0) throw new ArgumentOutOfRangeException(nameof(chunkSize));
+        // For Wikia (MW 1.19), it supports chunked uploading,
+        // while SiteInfo.MinUploadChunkSize and SiteInfo.MaxUploadSize are missing.
+        if (minChunkSize > 0 && chunkSize < minChunkSize || maxChunkSize > 0 && chunkSize > maxChunkSize)
+            throw new ArgumentOutOfRangeException(nameof(chunkSize),
+                $"Chunk size should be between {minChunkSize} and {maxChunkSize} on this wiki site.");
+        var lastState = Interlocked.CompareExchange(ref state, STATE_CHUNK_STASHING, STATE_CHUNK_IMPENDING);
+        switch (lastState)
+        {
+            case STATE_CHUNK_STASHING:
+                throw new InvalidOperationException(Prompts.ExceptionConcurrentStashing);
+            case STATE_ALL_STASHED:
+                throw new InvalidOperationException(Prompts.ExceptionStashingComplete);
+        }
+        var startingPos = SourceStream.Position;
+        using (Site.BeginActionScope(this, chunkSize))
+        {
+            RETRY:
+            try
             {
-                case STATE_CHUNK_STASHING:
-                    throw new InvalidOperationException(Prompts.ExceptionConcurrentStashing);
-                case STATE_ALL_STASHED:
-                    throw new InvalidOperationException(Prompts.ExceptionStashingComplete);
+                UploadResult result;
+                Site.Logger.LogDebug("Start uploading chunk of {Stream} from offset {Offset}/{TotalSize}.",
+                    SourceStream, UploadedSize, TotalSize);
+                using (var chunkStream = new MemoryStream((int)Math.Min(chunkSize, SourceStream.Length - startingPos)))
+                {
+                    var copiedSize = await SourceStream.CopyRangeToAsync(chunkStream, chunkSize, cancellationToken);
+                    // If someone has messed with the SourceStream, this can happen.
+                    if (copiedSize == 0)
+                        throw new InvalidOperationException(Prompts.ExceptionUnexpectedStreamEof);
+                    chunkStream.Position = 0;
+                    var jparams = new Dictionary<string, object?>
+                    {
+                        { "action", "upload" },
+                        { "token", WikiSiteToken.Edit },
+                        { "filename", FileName },
+                        { "filekey", lastStashingFileKey },
+                        { "offset", UploadedSize },
+                        { "filesize", TotalSize },
+                        { "comment", "Chunked" },
+                        { "stash", true },
+                        { "ignorewarnings", true },
+                        { "chunk", chunkStream },
+                    };
+                    var jresult = await Site.InvokeMediaWikiApiAsync(new MediaWikiFormRequestMessage(jparams, true),
+                        ChunkedUploadResponseParser.Default, false, cancellationToken);
+                    // Possible error: code=stashfailed, info=Invalid chunk offset
+                    // We will retry from the server-expected offset.
+                    var err = jresult["error"];
+                    if (err != null && (string)err["code"] == "stashfailed" && err["offset"] != null)
+                    {
+                        Site.Logger.LogWarning("Server reported: {Message}. Will retry from offset {Offset}.",
+                            (string)err["info"], (int)err["offset"]);
+                        UploadedSize = (int)err["offset"];
+                        goto RETRY;
+                    }
+                    result = jresult["upload"].ToObject<UploadResult>(Utility.WikiJsonSerializer);
+                    // Ignore warnings, as long as we have filekey to continue the upload.
+                    if (result.FileKey == null)
+                    {
+                        Debug.Assert(result.ResultCode != UploadResultCode.Warning);
+                        throw new UnexpectedDataException(Prompts.ExceptionStashingNoFileKey);
+                    }
+                    // Note the fileKey changes after each upload.
+                    lastStashingFileKey = result.FileKey;
+                    UploadedSize += copiedSize;
+                    if (result.Offset != null && result.Offset != UploadedSize)
+                    {
+                        Site.Logger.LogWarning(
+                            "Unexpected next chunk offset reported from server: {ServerUploadedSize}. Expect: {UploadedSize}. Will use the server-reported offset.",
+                            result.Offset, UploadedSize);
+                        UploadedSize = (int)result.Offset.Value;
+                        SourceStream.Position = originalSourceStreamPosition + UploadedSize;
+                    }
+                }
+                Site.Logger.LogDebug("Uploaded chunk of {Stream}. Offset: {UploadedSize}/{TotalSize}, Result: {Result}.",
+                    SourceStream, UploadedSize, TotalSize, result.ResultCode);
+                if (result.ResultCode == UploadResultCode.Success)
+                {
+                    state = STATE_ALL_STASHED;
+                    FileKey = result.FileKey;
+                    lastStashingFileKey = null;
+                }
+                return result;
             }
-            var startingPos = SourceStream.Position;
-            using (Site.BeginActionScope(this, chunkSize))
+            catch (Exception)
             {
-                RETRY:
-                try
-                {
-                    UploadResult result;
-                    Site.Logger.LogDebug("Start uploading chunk of {Stream} from offset {Offset}/{TotalSize}.",
-                        SourceStream, UploadedSize, TotalSize);
-                    using (var chunkStream = new MemoryStream((int)Math.Min(chunkSize, SourceStream.Length - startingPos)))
-                    {
-                        var copiedSize = await SourceStream.CopyRangeToAsync(chunkStream, chunkSize, cancellationToken);
-                        // If someone has messed with the SourceStream, this can happen.
-                        if (copiedSize == 0)
-                            throw new InvalidOperationException(Prompts.ExceptionUnexpectedStreamEof);
-                        chunkStream.Position = 0;
-                        var jparams = new Dictionary<string, object?>
-                        {
-                            {"action", "upload"},
-                            {"token", WikiSiteToken.Edit},
-                            {"filename", FileName},
-                            {"filekey", lastStashingFileKey},
-                            {"offset", UploadedSize},
-                            {"filesize", TotalSize},
-                            {"comment", "Chunked"},
-                            {"stash", true},
-                            {"ignorewarnings", true},
-                            {"chunk", chunkStream},
-                        };
-                        var jresult = await Site.InvokeMediaWikiApiAsync(new MediaWikiFormRequestMessage(jparams, true),
-                            ChunkedUploadResponseParser.Default, false, cancellationToken);
-                        // Possible error: code=stashfailed, info=Invalid chunk offset
-                        // We will retry from the server-expected offset.
-                        var err = jresult["error"];
-                        if (err != null && (string)err["code"] == "stashfailed" && err["offset"] != null)
-                        {
-                            Site.Logger.LogWarning("Server reported: {Message}. Will retry from offset {Offset}.",
-                                (string)err["info"], (int)err["offset"]);
-                            UploadedSize = (int)err["offset"];
-                            goto RETRY;
-                        }
-                        result = jresult["upload"].ToObject<UploadResult>(Utility.WikiJsonSerializer);
-                        // Ignore warnings, as long as we have filekey to continue the upload.
-                        if (result.FileKey == null)
-                        {
-                            Debug.Assert(result.ResultCode != UploadResultCode.Warning);
-                            throw new UnexpectedDataException(Prompts.ExceptionStashingNoFileKey);
-                        }
-                        // Note the fileKey changes after each upload.
-                        lastStashingFileKey = result.FileKey;
-                        UploadedSize += copiedSize;
-                        if (result.Offset != null && result.Offset != UploadedSize)
-                        {
-                            Site.Logger.LogWarning(
-                                "Unexpected next chunk offset reported from server: {ServerUploadedSize}. Expect: {UploadedSize}. Will use the server-reported offset.",
-                                result.Offset, UploadedSize);
-                            UploadedSize = (int)result.Offset.Value;
-                            SourceStream.Position = originalSourceStreamPosition + UploadedSize;
-                        }
-                    }
-                    Site.Logger.LogDebug("Uploaded chunk of {Stream}. Offset: {UploadedSize}/{TotalSize}, Result: {Result}.",
-                        SourceStream, UploadedSize, TotalSize, result.ResultCode);
-                    if (result.ResultCode == UploadResultCode.Success)
-                    {
-                        state = STATE_ALL_STASHED;
-                        FileKey = result.FileKey;
-                        lastStashingFileKey = null;
-                    }
-                    return result;
-                }
-                catch (Exception)
-                {
-                    // Restore stream position upon error.
-                    SourceStream.Position = startingPos;
-                    throw;
-                }
-                finally
-                {
-                    Interlocked.CompareExchange(ref state, STATE_CHUNK_IMPENDING, STATE_CHUNK_STASHING);
-                }
+                // Restore stream position upon error.
+                SourceStream.Position = startingPos;
+                throw;
+            }
+            finally
+            {
+                Interlocked.CompareExchange(ref state, STATE_CHUNK_IMPENDING, STATE_CHUNK_STASHING);
             }
         }
+    }
 
     /// <inheritdoc />
     public override string ToString()
     {
-            return "ChunkedUploadSource(" + SourceStream + ")";
-        }
+        return "ChunkedUploadSource(" + SourceStream + ")";
+    }
 
     private class ChunkedUploadResponseParser : MediaWikiJsonResponseParser
     {
@@ -306,16 +306,18 @@ public class ChunkedUploadSource : WikiUploadSource
         public new static readonly ChunkedUploadResponseParser Default = new ChunkedUploadResponseParser();
 
         /// <inheritdoc />
-        protected override void OnApiError(string errorCode, string errorMessage, JToken errorNode, JToken responseNode, WikiResponseParsingContext context)
+        protected override void OnApiError(string errorCode, string errorMessage, JToken errorNode, JToken responseNode,
+            WikiResponseParsingContext context)
         {
-                // Possible error: code=stashfailed, info=Invalid chunk offset, offset=xxxx
-                // We will try to recover.
-                if (errorCode == "stashfailed" && errorNode["offset"] != null)
-                {
-                    return;
-                }
-                base.OnApiError(errorCode, errorMessage, errorNode, responseNode, context);
+            // Possible error: code=stashfailed, info=Invalid chunk offset, offset=xxxx
+            // We will try to recover.
+            if (errorCode == "stashfailed" && errorNode["offset"] != null)
+            {
+                return;
             }
+            base.OnApiError(errorCode, errorMessage, errorNode, responseNode, context);
+        }
+
     }
 
 }

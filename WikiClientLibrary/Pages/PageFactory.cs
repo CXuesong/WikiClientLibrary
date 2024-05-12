@@ -18,19 +18,19 @@ partial class WikiPage
     /// <returns>Retrieved pages.</returns>
     internal static IList<WikiPage> FromJsonQueryResult(WikiSite site, JObject jpages, IWikiPageQueryProvider options)
     {
-            if (site == null) throw new ArgumentNullException(nameof(site));
-            if (jpages == null) throw new ArgumentNullException(nameof(jpages));
-            // If query.pages.xxx.index exists, sort the pages by the given index.
-            // This is specifically used with SearchGenerator, to keep the search result in order.
-            // For other generators, this property simply does not exist.
-            // See https://www.mediawiki.org/wiki/API_talk:Query#On_the_order_of_titles_taken_out_of_generator .
-            return jpages.Properties().OrderBy(page => (int?)page.Value["index"])
-                .Select(page =>
-                {
-                    var newInst = new WikiPage(site, 0);
-                    MediaWikiHelper.PopulatePageFromJson(newInst, (JObject)page.Value, options);
-                    return newInst;
-                }).ToList();
-        }
+        if (site == null) throw new ArgumentNullException(nameof(site));
+        if (jpages == null) throw new ArgumentNullException(nameof(jpages));
+        // If query.pages.xxx.index exists, sort the pages by the given index.
+        // This is specifically used with SearchGenerator, to keep the search result in order.
+        // For other generators, this property simply does not exist.
+        // See https://www.mediawiki.org/wiki/API_talk:Query#On_the_order_of_titles_taken_out_of_generator .
+        return jpages.Properties().OrderBy(page => (int?)page.Value["index"])
+            .Select(page =>
+            {
+                var newInst = new WikiPage(site, 0);
+                MediaWikiHelper.PopulatePageFromJson(newInst, (JObject)page.Value, options);
+                return newInst;
+            }).ToList();
+    }
 
 }

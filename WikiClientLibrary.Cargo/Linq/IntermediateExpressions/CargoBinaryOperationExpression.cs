@@ -41,4 +41,5 @@ internal sealed class CargoBinaryOperationExpression : CargoSqlExpression
             return this;
         return new CargoBinaryOperationExpression(Operator, left, right, Type);
     }
+
 }

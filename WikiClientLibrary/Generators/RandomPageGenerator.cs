@@ -17,17 +17,18 @@ namespace WikiClientLibrary.Generators;
 /// <seealso cref="AllPagesGenerator"/>
 public class RandomPageGenerator : WikiPageGenerator
 {
+
     /// <inheritdoc />
     public RandomPageGenerator(WikiSite site) : base(site)
     {
-        }
+    }
 
     /// <inheritdoc />
     protected override WikiPageStub ItemFromJson(JToken json)
     {
-            // Note: page ID is contained in ["id"] rather than ["pageid"].
-            return new WikiPageStub((int)json["id"], (string)json["title"], (int)json["ns"]);
-        }
+        // Note: page ID is contained in ["id"] rather than ["pageid"].
+        return new WikiPageStub((int)json["id"], (string)json["title"], (int)json["ns"]);
+    }
 
     /// <summary>
     /// Only list pages in these namespaces.
@@ -46,20 +47,20 @@ public class RandomPageGenerator : WikiPageGenerator
     /// <inheritdoc/>
     public override IEnumerable<KeyValuePair<string, object?>> EnumListParameters()
     {
-            var dict = new Dictionary<string, object?>
-            {
-                {"rnnamespace", NamespaceIds == null ? null : MediaWikiHelper.JoinValues(NamespaceIds)},
-                {"rnlimit", PaginationSize},
-            };
-            if (Site.SiteInfo.Version >= new MediaWikiVersion(1, 26))
-            {
-                dict.Add("rnfilterredir", RedirectsFilter.ToString("redirects", "nonredirects"));
-            }
-            else if (RedirectsFilter == PropertyFilterOption.WithProperty)
-            {
-                dict.Add("rnredirect", true);
-                // for MW 1.26-, we cannot really implement RedirectsFilter == PropertyFilterOption.WithoutProperty
-            }
-            return dict;
+        var dict = new Dictionary<string, object?>
+        {
+            { "rnnamespace", NamespaceIds == null ? null : MediaWikiHelper.JoinValues(NamespaceIds) }, { "rnlimit", PaginationSize },
+        };
+        if (Site.SiteInfo.Version >= new MediaWikiVersion(1, 26))
+        {
+            dict.Add("rnfilterredir", RedirectsFilter.ToString("redirects", "nonredirects"));
         }
+        else if (RedirectsFilter == PropertyFilterOption.WithProperty)
+        {
+            dict.Add("rnredirect", true);
+            // for MW 1.26-, we cannot really implement RedirectsFilter == PropertyFilterOption.WithoutProperty
+        }
+        return dict;
+    }
+
 }

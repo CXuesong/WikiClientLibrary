@@ -14,7 +14,6 @@ public sealed class WikiaSiteOptions : SiteOptions
     /// <remarks>You may use <see cref="WikiaSiteOptions(string)"/> overload, which might be handy.</remarks>
     public WikiaSiteOptions()
     {
-            
     }
 
     /// <summary>Initializes a new <see cref="WikiaSiteOptions"/> instance from the information in <see cref="WikiSite"/>.</summary>
@@ -59,5 +58,5 @@ public sealed class WikiaSiteOptions : SiteOptions
     /// </summary>
     /// <remarks>Typically, the value is <c>(Server URL)/api/v1</c>.</remarks>
     public string WikiaApiRootUrl { get; set; }
-        
+
 }

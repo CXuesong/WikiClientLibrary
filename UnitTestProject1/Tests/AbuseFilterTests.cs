@@ -17,7 +17,7 @@ public class AbuseFilterTests : WikiSiteTestsBase, IClassFixture<WikiSiteProvide
     public async Task AbuseFilterListTest()
     {
         var site = await WpTest2SiteAsync;
-        var aflist = new AbuseFilterList(site) {PaginationSize = 30};
+        var aflist = new AbuseFilterList(site) { PaginationSize = 30 };
         var items = await aflist.EnumItemsAsync().ToListAsync();
         ShallowTrace(items);
         Assert.Contains(items, f => f.LastEditor == "Luke081515");

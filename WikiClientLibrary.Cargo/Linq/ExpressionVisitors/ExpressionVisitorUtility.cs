@@ -12,7 +12,8 @@ internal static class ExpressionVisitorUtility
             null => throw new ArgumentNullException(nameof(lambdaOrQuote)),
             LambdaExpression lambda => lambda,
             UnaryExpression unary when unary.Operand is LambdaExpression lambda1 && unary.NodeType == ExpressionType.Quote => lambda1,
-            _ => throw new ArgumentException($"Provided expression cannot be unwound to LambdaExpression: {lambdaOrQuote}.", nameof(lambdaOrQuote))
+            _ => throw new ArgumentException($"Provided expression cannot be unwound to LambdaExpression: {lambdaOrQuote}.",
+                nameof(lambdaOrQuote))
         };
     }
 

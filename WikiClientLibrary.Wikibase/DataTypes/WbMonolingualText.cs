@@ -77,4 +77,5 @@ public struct WbMonolingualText : IEquatable<WbMonolingualText>
     {
         return !left.Equals(right);
     }
+
 }

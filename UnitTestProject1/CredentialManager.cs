@@ -5,6 +5,7 @@ namespace WikiClientLibrary.Tests.UnitTestProject1;
 
 internal static partial class CredentialManager
 {
+
     /// <summary>
     /// The API EntryPoint used for performing page moving/deletion and file uploads.
     /// </summary>
@@ -69,9 +70,11 @@ internal static partial class CredentialManager
         if (options == null) throw new ArgumentNullException(nameof(options));
         var site = await EarlyLoginCoreAsyncHandler(wikiClient, options);
         if (!site.Initialization.IsCompleted)
-            throw new InvalidOperationException("You forgot to await WikiSite.Initialization in your EarlyLoginCoreAsyncHandler implementation.");
+            throw new InvalidOperationException(
+                "You forgot to await WikiSite.Initialization in your EarlyLoginCoreAsyncHandler implementation.");
         if (site == null)
-            throw new NotSupportedException("Your EarlyLoginCoreAsyncHandler implementation returned null for site: " + options.ApiEndpoint + ".");
+            throw new NotSupportedException("Your EarlyLoginCoreAsyncHandler implementation returned null for site: " +
+                                            options.ApiEndpoint + ".");
         if (!site.AccountInfo.IsUser)
             throw new NotSupportedException("Failed to login into: " + site + " . Check your EarlyLoginCoreAsyncHandler implementation.");
         return site;
@@ -81,4 +84,5 @@ internal static partial class CredentialManager
     {
         Initialize();
     }
+
 }

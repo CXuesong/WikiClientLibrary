@@ -9,6 +9,7 @@ namespace WikiClientLibrary.Wikia.Sites;
 [JsonObject(MemberSerialization.OptIn)]
 public class AppleTouchIconInfo
 {
+
     private string _Size;
 
     [JsonProperty("url")]
@@ -51,6 +52,7 @@ public class SiteLanguageInfo
 
     /// <inheritdoc />
     public override string ToString() => ContentLanguage + "," + ContentFlowDirection;
+
 }
 
 /// <summary>
@@ -84,6 +86,7 @@ public class SiteThemeInfo : WikiReadOnlyDictionary
     public string PageOpacity => GetStringValue("page-opacity");
 
     public string WordmarkFont => GetStringValue("wordmark-font");
+
 }
 
 /// <summary>
@@ -102,6 +105,7 @@ public class TrackingInfo : WikiReadOnlyDictionary
 
     //[JsonProperty("netzathleten")]
     //public Netzathleten Netzathleten { get; private set; }
+
 }
 
 /// <summary>
@@ -153,6 +157,7 @@ public class SiteHtmlTitleInfo
         if (Parts == null || Parts.Count == 0) return string.Empty;
         return string.Join(Separator, Parts);
     }
+
 }
 
 /// <summary>
@@ -281,4 +286,5 @@ public class SiteVariableData
 
     /// <inheritdoc />
     public override string ToString() => $"[{Id}]{SiteName}";
+
 }

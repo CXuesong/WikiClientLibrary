@@ -21,6 +21,7 @@ namespace WikiClientLibrary.Generators;
 /// </remarks>
 public class QueryPageGenerator : WikiPageGenerator<QueryPageResultItem>
 {
+
     /// <inheritdoc />
     public QueryPageGenerator(WikiSite site) : base(site)
     {
@@ -68,7 +69,8 @@ public class QueryPageGenerator : WikiPageGenerator<QueryPageResultItem>
     public async Task<QueryPageResultInfo> GetQueryPageResultInfoAsync(CancellationToken cancellationToken = default)
     {
         var jresult = await Site.InvokeMediaWikiApiAsync(new MediaWikiFormRequestMessage(
-            new {
+            new
+            {
                 action = "query",
                 maxlag = 5,
                 list = "querypage",
@@ -93,11 +95,7 @@ public class QueryPageGenerator : WikiPageGenerator<QueryPageResultItem>
     {
         if (string.IsNullOrWhiteSpace(QueryPageName))
             throw new InvalidOperationException(string.Format(Prompts.ExceptionArgumentNullOrWhitespace1, nameof(QueryPageName)));
-        return new Dictionary<string, object?>
-        {
-            {"qppage", QueryPageName},
-            {"qplimit", PaginationSize}
-        };
+        return new Dictionary<string, object?> { { "qppage", QueryPageName }, { "qplimit", PaginationSize } };
     }
 
     /// <inheritdoc />
@@ -118,6 +116,7 @@ public class QueryPageGenerator : WikiPageGenerator<QueryPageResultItem>
     {
         return "QueryPage:" + QueryPageName;
     }
+
 }
 
 // See https://github.com/wikimedia/mediawiki/blob/0833fba86ee47b51799f779ee8611d5cf2ba9c6b/includes/api/ApiQueryQueryPage.php#L101
@@ -127,6 +126,7 @@ public class QueryPageGenerator : WikiPageGenerator<QueryPageResultItem>
 [JsonObject(MemberSerialization.OptIn)]
 public sealed class QueryPageResultInfo
 {
+
     internal QueryPageResultInfo()
     {
     }
@@ -146,15 +146,16 @@ public sealed class QueryPageResultInfo
     /// <summary>Maximum result count, if available.</summary>
     [JsonProperty("maxresults")]
     public int MaxResultCount { get; private set; }
+
 }
 
 [JsonObject(MemberSerialization.OptIn)]
 public sealed class QueryPageResultItem
 {
+
     // MaxValue: not resolved yet.
     // MW 1.19 does not have this field.
-    [JsonProperty("timestamp")]
-    private DateTime _Timestamp = DateTime.MaxValue;
+    [JsonProperty("timestamp")] private DateTime _Timestamp = DateTime.MaxValue;
 
     /// <summary>Title of the page, or title of the entry, depending on the nature of query page.</summary>
     [JsonProperty]
@@ -227,4 +228,5 @@ public sealed class QueryPageResultItem
     /// <inheritdoc />
     public override string ToString()
         => $"[{NamespaceId}]{Title}: {(Timestamp != DateTime.MinValue ? Timestamp.ToString("u") : Value)}";
+
 }

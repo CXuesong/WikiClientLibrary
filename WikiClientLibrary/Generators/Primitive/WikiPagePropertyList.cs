@@ -19,13 +19,14 @@ namespace WikiClientLibrary.Generators.Primitive;
 /// <seealso cref="WikiList{T}"/>
 public abstract class WikiPagePropertyList<T> : IWikiList<T>
 {
+
     private int _PaginationSize = 10;
 
     /// <param name="site">The MediaWiki site this instance applies to.</param>
     protected WikiPagePropertyList(WikiSite site)
     {
-            Site = site ?? throw new ArgumentNullException(nameof(site));
-        }
+        Site = site ?? throw new ArgumentNullException(nameof(site));
+    }
 
     /// <param name="site">The MediaWiki site this instance applies to.</param>
     /// <param name="pageStub">
@@ -36,12 +37,12 @@ public abstract class WikiPagePropertyList<T> : IWikiList<T>
     /// </param>
     protected WikiPagePropertyList(WikiSite site, WikiPageStub pageStub)
     {
-            Site = site ?? throw new ArgumentNullException(nameof(site));
-            if (pageStub.HasTitle)
-                PageTitle = pageStub.Title;
-            else if (pageStub.HasId)
-                PageId = pageStub.Id;
-        }
+        Site = site ?? throw new ArgumentNullException(nameof(site));
+        if (pageStub.HasTitle)
+            PageTitle = pageStub.Title;
+        else if (pageStub.HasId)
+            PageId = pageStub.Id;
+    }
 
     /// <summary>Gets the MediaWiki site this instance applies to.</summary>
     public WikiSite Site { get; }
@@ -76,9 +77,9 @@ public abstract class WikiPagePropertyList<T> : IWikiList<T>
         get { return _PaginationSize; }
         set
         {
-                if (value < 1) throw new ArgumentOutOfRangeException(nameof(value));
-                _PaginationSize = value;
-            }
+            if (value < 1) throw new ArgumentOutOfRangeException(nameof(value));
+            _PaginationSize = value;
+        }
     }
 
     /// <summary>
@@ -103,40 +104,39 @@ public abstract class WikiPagePropertyList<T> : IWikiList<T>
     /// <inheritdoc />
     public IAsyncEnumerable<T> EnumItemsAsync(CancellationToken cancellationToken = default)
     {
-            var queryParams = new Dictionary<string, object?>
+        var queryParams = new Dictionary<string, object?>
+        {
+            { "action", "query" }, { "maxlag", 5 }, { "titles", PageTitle }, { "prop", PropertyName }
+        };
+        if (PageTitle == null) queryParams.Add("pageids", PageId);
+        foreach (var p in EnumListParameters()) queryParams.Add(p.Key, p.Value);
+        return RequestHelper
+            .QueryWithContinuation(Site, queryParams, () => Site.BeginActionScope(this), cancellationToken: cancellationToken)
+            .SelectMany(jpages =>
             {
-                {"action", "query"},
-                {"maxlag", 5},
-                {"titles", PageTitle},
-                {"prop", PropertyName}
-            };
-            if (PageTitle == null) queryParams.Add("pageids", PageId);
-            foreach (var p in EnumListParameters()) queryParams.Add(p.Key, p.Value);
-            return RequestHelper.QueryWithContinuation(Site, queryParams, () => Site.BeginActionScope(this), cancellationToken: cancellationToken)
-                .SelectMany(jpages =>
+                // If there's no result, "query" node will not exist.
+                if (jpages == null || jpages.Count == 0)
+                    return AsyncEnumerable.Empty<T>();
+                return jpages.Values().SelectMany(jpage =>
                 {
-                    // If there's no result, "query" node will not exist.
-                    if (jpages == null || jpages.Count == 0)
-                        return AsyncEnumerable.Empty<T>();
-                    return jpages.Values().SelectMany(jpage =>
-                    {
-                        var jprop = jpage[PropertyName];
-                        // This can happen when there are multiple titles specified (such as stuffing multiple titles in PageTitle),
-                        // and pagination is triggered.
-                        // See https://github.com/CXuesong/WikiClientLibrary/issues/67.
-                        if (jprop == null) return Enumerable.Empty<T>();
-                        return jprop.Select(v => ItemFromJson(v, (JObject)jpage));
-                    }).ToList().ToAsyncEnumerable();
-                    // ToList is necessary. See
-                    // https://github.com/CXuesong/WikiClientLibrary/issues/27
-                });
-        }
+                    var jprop = jpage[PropertyName];
+                    // This can happen when there are multiple titles specified (such as stuffing multiple titles in PageTitle),
+                    // and pagination is triggered.
+                    // See https://github.com/CXuesong/WikiClientLibrary/issues/67.
+                    if (jprop == null) return Enumerable.Empty<T>();
+                    return jprop.Select(v => ItemFromJson(v, (JObject)jpage));
+                }).ToList().ToAsyncEnumerable();
+                // ToList is necessary. See
+                // https://github.com/CXuesong/WikiClientLibrary/issues/27
+            });
+    }
 
     /// <inheritdoc />
     public override string ToString()
     {
-            if (PageTitle != null)
-                return $"{GetType().Name}({PageTitle})";
-            return $"{GetType().Name}(#{PageId})";
-        }
+        if (PageTitle != null)
+            return $"{GetType().Name}({PageTitle})";
+        return $"{GetType().Name}(#{PageId})";
+    }
+
 }

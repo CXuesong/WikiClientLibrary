@@ -112,6 +112,7 @@ public struct PageImageInfo : IEquatable<PageImageInfo>
     {
         return Url;
     }
+
 }
 
 /// <summary>

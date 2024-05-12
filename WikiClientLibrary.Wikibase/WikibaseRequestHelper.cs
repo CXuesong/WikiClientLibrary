@@ -31,9 +31,11 @@ internal static class WikibaseRequestHelper
                     if ((propValue & EntityQueryOptions.FetchInfo) == EntityQueryOptions.FetchInfo) props += "|info";
                     if ((propValue & EntityQueryOptions.FetchLabels) == EntityQueryOptions.FetchLabels) props += "|labels";
                     if ((propValue & EntityQueryOptions.FetchAliases) == EntityQueryOptions.FetchAliases) props += "|aliases";
-                    if ((propValue & EntityQueryOptions.FetchDescriptions) == EntityQueryOptions.FetchDescriptions) props += "|descriptions";
+                    if ((propValue & EntityQueryOptions.FetchDescriptions) == EntityQueryOptions.FetchDescriptions)
+                        props += "|descriptions";
                     if ((propValue & EntityQueryOptions.FetchSiteLinks) == EntityQueryOptions.FetchSiteLinks) props += "|sitelinks";
-                    if ((propValue & EntityQueryOptions.FetchSiteLinksUrl) == EntityQueryOptions.FetchSiteLinksUrl) props += "|sitelinks/urls";
+                    if ((propValue & EntityQueryOptions.FetchSiteLinksUrl) == EntityQueryOptions.FetchSiteLinksUrl)
+                        props += "|sitelinks/urls";
                     if ((propValue & EntityQueryOptions.FetchClaims) == EntityQueryOptions.FetchClaims) props += "|claims";
                     Debug.Assert(props != null);
                     props = props[1..];
@@ -45,13 +47,12 @@ internal static class WikibaseRequestHelper
         return new Dictionary<string, object?>
         {
             {
-                "redirects",
-                (options & EntityQueryOptions.SuppressRedirects) == EntityQueryOptions.SuppressRedirects
+                "redirects", (options & EntityQueryOptions.SuppressRedirects) == EntityQueryOptions.SuppressRedirects
                     ? "no"
                     : "yes"
             },
-            {"languages", languages},
-            {"props", props},
+            { "languages", languages },
+            { "props", props },
         };
     }
 
@@ -93,10 +94,10 @@ internal static class WikibaseRequestHelper
         }
     }
 
-    private static readonly char[] whitespaceAndUnderscore = {' ', '\t', '\v', '　', '_'};
+    private static readonly char[] whitespaceAndUnderscore = { ' ', '\t', '\v', '　', '_' };
 
     public static async IAsyncEnumerable<string?> EntityIdsFromSiteLinksAsync(WikiSite site,
-        string siteName, IEnumerable<string> siteLinks, 
+        string siteName, IEnumerable<string> siteLinks,
         [EnumeratorCancellation] CancellationToken cancellationToken = default)
     {
         Debug.Assert(siteName != null);

@@ -227,7 +227,8 @@ public readonly struct WikiPageStub : IEquatable<WikiPageStub>
         foreach (var partition in ids.Partition(titleLimit))
         {
             var jresult = await site.InvokeMediaWikiApiAsync(
-                new MediaWikiFormRequestMessage(new { action = "query", pageids = MediaWikiHelper.JoinValues(partition), }), cancellationToken);
+                new MediaWikiFormRequestMessage(new { action = "query", pageids = MediaWikiHelper.JoinValues(partition), }),
+                cancellationToken);
             Debug.Assert(jresult["query"] != null);
             var jpages = jresult["query"]["pages"];
             using (ExecutionContextStash.Capture())
@@ -261,7 +262,8 @@ public readonly struct WikiPageStub : IEquatable<WikiPageStub>
         foreach (var partition in titles.Partition(titleLimit))
         {
             var jresult = await site.InvokeMediaWikiApiAsync(
-                new MediaWikiFormRequestMessage(new { action = "query", titles = MediaWikiHelper.JoinValues(partition), }), cancellationToken);
+                new MediaWikiFormRequestMessage(new { action = "query", titles = MediaWikiHelper.JoinValues(partition), }),
+                cancellationToken);
             Debug.Assert(jresult["query"] != null);
             // Process title normalization.
             var normalizedDict = jresult["query"]["normalized"]?.ToDictionary(n => (string)n["from"],

@@ -28,7 +28,8 @@ internal static class RequestHelper
         return (JObject?)(jresult["continue"] ?? ((JProperty?)jresult["query-continue"]?.First)?.Value);
     }
 
-    public static int ParseContinuationParameters(JToken jresult, IDictionary<string, object?> queryParams, IDictionary<string, object?>? continuationParams)
+    public static int ParseContinuationParameters(JToken jresult, IDictionary<string, object?> queryParams,
+        IDictionary<string, object?>? continuationParams)
     {
         var continuation = FindQueryContinuationParameterRoot(jresult);
         // No more results.
@@ -166,7 +167,8 @@ internal static class RequestHelper
     /// <summary>
     /// Refresh a sequence of pages.
     /// </summary>
-    public static async Task RefreshPagesAsync(IEnumerable<WikiPage> pages, IWikiPageQueryProvider options, CancellationToken cancellationToken)
+    public static async Task RefreshPagesAsync(IEnumerable<WikiPage> pages, IWikiPageQueryProvider options,
+        CancellationToken cancellationToken)
     {
         if (pages == null) throw new ArgumentNullException(nameof(pages));
         // You can even fetch pages from different sites.
@@ -243,7 +245,8 @@ internal static class RequestHelper
                                 redirectTrace.Add(title); // Adds the last title
                                 var next = redirects[title];
                                 if (redirectTrace.Contains(next))
-                                    throw new InvalidOperationException(string.Format(Prompts.ExceptionWikiPageResolveCircularRedirect1, string.Join("->", redirectTrace)));
+                                    throw new InvalidOperationException(string.Format(Prompts.ExceptionWikiPageResolveCircularRedirect1,
+                                        string.Join("->", redirectTrace)));
                                 title = next;
                             }
                             // Finally, get the page.
@@ -323,7 +326,8 @@ internal static class RequestHelper
     /// Asynchronously purges the pages.
     /// </summary>
     /// <returns>A collection of pages that haven't been successfully purged, because of either missing or invalid titles.</returns>
-    public static async Task<IReadOnlyCollection<PurgeFailureInfo>> PurgePagesAsync(IEnumerable<WikiPage> pages, PagePurgeOptions options, CancellationToken cancellationToken)
+    public static async Task<IReadOnlyCollection<PurgeFailureInfo>> PurgePagesAsync(IEnumerable<WikiPage> pages, PagePurgeOptions options,
+        CancellationToken cancellationToken)
     {
         if (pages == null) throw new ArgumentNullException(nameof(pages));
         List<PurgeFailureInfo>? failedPages = null;
@@ -363,7 +367,8 @@ internal static class RequestHelper
                             titles = titles,
                             pageids = ids,
                             forcelinkupdate = (options & PagePurgeOptions.ForceLinkUpdate) == PagePurgeOptions.ForceLinkUpdate,
-                            forcerecursivelinkupdate = (options & PagePurgeOptions.ForceRecursiveLinkUpdate) == PagePurgeOptions.ForceRecursiveLinkUpdate,
+                            forcerecursivelinkupdate = (options & PagePurgeOptions.ForceRecursiveLinkUpdate) ==
+                                                       PagePurgeOptions.ForceRecursiveLinkUpdate,
                         }), cancellationToken);
                         // Now check whether the pages have been purged successfully.
                         foreach (var jitem in jresult["purge"])
@@ -371,7 +376,8 @@ internal static class RequestHelper
                             if (jitem["missing"] != null || jitem["invalid"] != null)
                             {
                                 if (failedPages == null) failedPages = new List<PurgeFailureInfo>();
-                                failedPages.Add(new PurgeFailureInfo(MediaWikiHelper.PageStubFromJson((JObject)jitem), (string?)jitem["invalidreason"]));
+                                failedPages.Add(new PurgeFailureInfo(MediaWikiHelper.PageStubFromJson((JObject)jitem),
+                                    (string?)jitem["invalidreason"]));
                             }
                         }
                     }
@@ -383,7 +389,7 @@ internal static class RequestHelper
                 }
             }
         }
-        return failedPages ?? (IReadOnlyCollection<PurgeFailureInfo>) Array.Empty<PurgeFailureInfo>();
+        return failedPages ?? (IReadOnlyCollection<PurgeFailureInfo>)Array.Empty<PurgeFailureInfo>();
     }
 
     public static async Task PatrolAsync(WikiSite site, long? recentChangeId, long? revisionId, CancellationToken cancellationToken)
@@ -399,10 +405,7 @@ internal static class RequestHelper
         {
             var jresult = await site.InvokeMediaWikiApiAsync(new MediaWikiFormRequestMessage(new
             {
-                action = "patrol",
-                rcid = recentChangeId,
-                revid = revisionId,
-                token = WikiSiteToken.Patrol,
+                action = "patrol", rcid = recentChangeId, revid = revisionId, token = WikiSiteToken.Patrol,
             }), cancellationToken);
             if (recentChangeId != null) Debug.Assert((int)jresult["patrol"]["rcid"] == recentChangeId.Value);
         }
@@ -496,7 +499,8 @@ internal static class RequestHelper
     /// <summary>
     /// Enumerate transcluded pages trans from the page.
     /// </summary>
-    public static IAsyncEnumerable<string> EnumTransclusionsAsync(WikiSite site, string titlesExpr, IEnumerable<int>? namespaces = null, IEnumerable<string>? transcludedTitlesExpr = null, int limit = -1)
+    public static IAsyncEnumerable<string> EnumTransclusionsAsync(WikiSite site, string titlesExpr, IEnumerable<int>? namespaces = null,
+        IEnumerable<string>? transcludedTitlesExpr = null, int limit = -1)
     {
         // transcludedTitlesExpr should be full titles with ns prefix.
         var pa = new Dictionary<string, object?>
@@ -524,4 +528,5 @@ internal static class RequestHelper
                 return AsyncEnumerable.Empty<string>();
             });
     }
+
 }

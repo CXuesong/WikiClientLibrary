@@ -41,10 +41,7 @@ public class GeoCoordinatesPropertyProvider : WikiPagePropertyProvider<GeoCoordi
     /// <inheritdoc />
     public override IEnumerable<KeyValuePair<string, object?>> EnumParameters(MediaWikiVersion version)
     {
-        var p = new OrderedKeyValuePairs<string, object?>
-        {
-            {"coprop", "globe|dim"},
-        };
+        var p = new OrderedKeyValuePairs<string, object?> { { "coprop", "globe|dim" }, };
         if (QueryPrimaryCoordinate && QuerySecondaryCoordinate)
             p.Add("coprimary", "all");
         else if (QueryPrimaryCoordinate)
@@ -52,10 +49,12 @@ public class GeoCoordinatesPropertyProvider : WikiPagePropertyProvider<GeoCoordi
         else if (QuerySecondaryCoordinate)
             p.Add("coprimary", "secondary");
         else
-            throw new ArgumentException(string.Format(Prompts.ExceptionArgumentExpectEitherBothTrue2, nameof(QueryPrimaryCoordinate), nameof(QuerySecondaryCoordinate)));
+            throw new ArgumentException(string.Format(Prompts.ExceptionArgumentExpectEitherBothTrue2, nameof(QueryPrimaryCoordinate),
+                nameof(QuerySecondaryCoordinate)));
 
         if (!QueryDistanceFromPoint.IsEmpty && QueryDistanceFromPage == null)
-            throw new ArgumentException(string.Format(Prompts.ExceptionArgumentExpectEitherDefault2, nameof(QueryDistanceFromPoint), nameof(QueryDistanceFromPage)));
+            throw new ArgumentException(string.Format(Prompts.ExceptionArgumentExpectEitherDefault2, nameof(QueryDistanceFromPoint),
+                nameof(QueryDistanceFromPage)));
         if (!QueryDistanceFromPoint.IsEmpty)
             p.Add("codistancefrompoint", QueryDistanceFromPoint.Latitude + "|" + QueryDistanceFromPoint.Longitude);
         if (QueryDistanceFromPage != null)
@@ -123,4 +122,5 @@ public class GeoCoordinatesPropertyGroup : WikiPagePropertyGroup
             return _Coordinates;
         }
     }
+
 }

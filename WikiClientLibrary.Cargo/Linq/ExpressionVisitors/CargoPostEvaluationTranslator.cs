@@ -6,6 +6,7 @@ namespace WikiClientLibrary.Cargo.Linq.ExpressionVisitors;
 
 public class CargoPostEvaluationTranslator : ExpressionVisitor
 {
+
     /// <inheritdoc />
     protected override Expression VisitBinary(BinaryExpression node)
     {
@@ -72,7 +73,8 @@ public class CargoPostEvaluationTranslator : ExpressionVisitor
                         if (node.Arguments.Count > 1) throw GetOverloadNotSupportedException();
                         return Expression.OrElse(
                             Expression.Equal(node.Arguments[0], Expression.Constant("")),
-                            Expression.GreaterThanOrEqual(new CargoFunctionExpression("INSTR", typeof(int), Visit(node.Object), Visit(node.Arguments[0])),
+                            Expression.GreaterThanOrEqual(
+                                new CargoFunctionExpression("INSTR", typeof(int), Visit(node.Object), Visit(node.Arguments[0])),
                                 Expression.Constant(0))
                         );
                     case nameof(string.Substring):
@@ -97,19 +99,22 @@ public class CargoPostEvaluationTranslator : ExpressionVisitor
                     if (node.Arguments.Count == 1)
                         return new CargoFunctionExpression("ROUND", node.Method.ReturnType, Visit(node.Arguments[0]));
                     if (node.Arguments.Count == 2 && node.Method.GetParameters()[1].ParameterType == typeof(int))
-                        return new CargoFunctionExpression("ROUND", node.Method.ReturnType, Visit(node.Arguments[0]), Visit(node.Arguments[1]));
+                        return new CargoFunctionExpression("ROUND", node.Method.ReturnType, Visit(node.Arguments[0]),
+                            Visit(node.Arguments[1]));
                     throw GetOverloadNotSupportedException();
                 case nameof(Math.Pow):
                     // POW is not supported by Cargo
                     return new CargoFunctionExpression("POWER", node.Method.ReturnType, Visit(node.Arguments[0]), Visit(node.Arguments[1]));
                 case nameof(Math.Exp):
                     // EXP is not supported by Cargo
-                    return new CargoFunctionExpression("POWER", node.Method.ReturnType, Expression.Constant(Math.E), Visit(node.Arguments[0]));
+                    return new CargoFunctionExpression("POWER", node.Method.ReturnType, Expression.Constant(Math.E),
+                        Visit(node.Arguments[0]));
                 case nameof(Math.Log):
                     if (node.Arguments.Count == 1)
                         return new CargoFunctionExpression("LOG", node.Method.ReturnType, Visit(node.Arguments[0]));
                     if (node.Arguments.Count == 2)
-                        return new CargoFunctionExpression("LOG", node.Method.ReturnType, Visit(node.Arguments[0]), Visit(node.Arguments[1]));
+                        return new CargoFunctionExpression("LOG", node.Method.ReturnType, Visit(node.Arguments[0]),
+                            Visit(node.Arguments[1]));
                     throw GetOverloadNotSupportedException();
             }
         }

@@ -12,7 +12,7 @@ public class AllCategoriesGenerator : WikiPageGenerator
     /// <inheritdoc />
     public AllCategoriesGenerator(WikiSite site) : base(site)
     {
-        }
+    }
 
     /// <summary>
     /// Start listing at this title. The title does not have to exist.
@@ -45,14 +45,15 @@ public class AllCategoriesGenerator : WikiPageGenerator
     /// <inheritdoc/>
     public override IEnumerable<KeyValuePair<string, object?>> EnumListParameters()
     {
-            return new Dictionary<string, object?>
-            {
-                {"acfrom", StartTitle},
-                {"acto", EndTitle},
-                {"aclimit", PaginationSize},
-                {"acprefix", Prefix},
-                {"cmin", MinChildrenCount},
-                {"cmax", MaxChildrenCount},
-            };
-        }
+        return new Dictionary<string, object?>
+        {
+            { "acfrom", StartTitle },
+            { "acto", EndTitle },
+            { "aclimit", PaginationSize },
+            { "acprefix", Prefix },
+            { "cmin", MinChildrenCount },
+            { "cmax", MaxChildrenCount },
+        };
+    }
+
 }

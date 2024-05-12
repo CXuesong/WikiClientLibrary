@@ -146,5 +146,3 @@ public static class WikiaSiteWikiaApiExtensions
     }
 
 }
-
-}

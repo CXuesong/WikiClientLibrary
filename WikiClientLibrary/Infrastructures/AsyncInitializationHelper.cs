@@ -32,7 +32,8 @@ public static class AsyncInitializationHelper
         throw initializationTask.Status switch
         {
             TaskStatus.Canceled => new InvalidOperationException(string.Format(Prompts.ExceptionAsyncInitCancelled1, name)),
-            TaskStatus.Faulted => new InvalidOperationException(string.Format(Prompts.ExceptionAsyncInitFaulted2, name, initializationTask.Exception),
+            TaskStatus.Faulted => new InvalidOperationException(
+                string.Format(Prompts.ExceptionAsyncInitFaulted2, name, initializationTask.Exception),
                 initializationTask.Exception),
             _ => new InvalidOperationException(string.Format(Prompts.ExceptionAsyncInitNotComplete1, name))
         };

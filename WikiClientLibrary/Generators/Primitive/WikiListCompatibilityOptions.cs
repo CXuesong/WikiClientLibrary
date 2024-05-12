@@ -30,10 +30,12 @@ public class WikiListCompatibilityOptions
 [Flags]
 public enum WikiListContinuationLoopBehaviors
 {
+
     /// <summary>
     /// Do nothing. This will cause an <see cref="UnexpectedDataException"/> to be thrown.
     /// </summary>
     None = 0,
+
     /// <summary>
     /// Tries to fetch more items, so the last item might have a different timestamp, causing the continuation continues.
     /// <see cref="WikiList{T}"/> will fetch for 1000 items at most, depending on whether the user has `apihighlimits` right.
@@ -51,4 +53,5 @@ public enum WikiListContinuationLoopBehaviors
     ///// Tries <see cref="FetchMore"/> first, then <see cref="SkipItems"/>.
     ///// </summary>
     //FetchMoreThenSkip = FetchMore | SkipItems,
+
 }

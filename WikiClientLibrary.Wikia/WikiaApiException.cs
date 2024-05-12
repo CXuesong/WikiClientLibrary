@@ -6,6 +6,7 @@
 /// </summary>
 public class WikiaApiException : WikiClientException
 {
+
     /// <summary>Wikia Exception type.</summary>
     public string ErrorType { get; }
 
@@ -53,6 +54,7 @@ public class WikiaApiException : WikiClientException
 
     /// <inheritdoc />
     public override string Message { get; }
+
 }
 
 /// <summary>
@@ -60,6 +62,7 @@ public class WikiaApiException : WikiClientException
 /// </summary>
 public class NotFoundApiException : WikiaApiException
 {
+
     public NotFoundApiException() : base()
     {
     }
@@ -69,4 +72,5 @@ public class NotFoundApiException : WikiaApiException
         : base(errorType, errorMessage, errorCode, errorDetails, traceId)
     {
     }
+
 }

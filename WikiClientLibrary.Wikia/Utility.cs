@@ -8,10 +8,7 @@ internal static class Utility
 
     public static readonly JsonSerializer WikiaApiJsonSerializer = new JsonSerializer
     {
-        ContractResolver = new DefaultContractResolver
-        {
-            NamingStrategy = new SnakeCaseNamingStrategy()
-        }
+        ContractResolver = new DefaultContractResolver { NamingStrategy = new SnakeCaseNamingStrategy() }
     };
 
     /// <summary>

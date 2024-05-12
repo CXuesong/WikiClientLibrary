@@ -28,15 +28,16 @@ namespace WikiClientLibrary.Generators.Primitive;
 /// <seealso cref="WikiPageGenerator{TItem}"/>
 public abstract class WikiPagePropertyGenerator<TItem> : WikiPagePropertyList<TItem>, IWikiPageGenerator
 {
+
     /// <inheritdoc/>
     protected WikiPagePropertyGenerator(WikiSite site) : base(site)
     {
-        }
+    }
 
     /// <inheritdoc/>
     protected WikiPagePropertyGenerator(WikiSite site, WikiPageStub pageStub) : base(site, pageStub)
     {
-        }
+    }
 
     public virtual string GeneratorName => PropertyName;
 
@@ -46,8 +47,8 @@ public abstract class WikiPagePropertyGenerator<TItem> : WikiPagePropertyList<TI
     /// <returns>A sequence of fields, which will override the basic query parameters.</returns>
     public virtual IEnumerable<KeyValuePair<string, object?>> EnumGeneratorParameters()
     {
-            return EnumListParameters().Select(p => new KeyValuePair<string, object?>("g" + p.Key, p.Value));
-        }
+        return EnumListParameters().Select(p => new KeyValuePair<string, object?>("g" + p.Key, p.Value));
+    }
 
     /// <summary>
     /// When using the default implementation of <see cref="EnumPagesAsync(IWikiPageQueryProvider)"/>,
@@ -62,16 +63,16 @@ public abstract class WikiPagePropertyGenerator<TItem> : WikiPagePropertyList<TI
     /// </summary>
     public virtual IAsyncEnumerable<WikiPage> EnumPagesAsync()
     {
-            return EnumPagesAsync(MediaWikiHelper.QueryProviderFromOptions(PageQueryOptions.None));
-        }
+        return EnumPagesAsync(MediaWikiHelper.QueryProviderFromOptions(PageQueryOptions.None));
+    }
 
     /// <summary>
     /// Asynchronously generates the sequence of pages.
     /// </summary>
     public virtual IAsyncEnumerable<WikiPage> EnumPagesAsync(PageQueryOptions options)
     {
-            return EnumPagesAsync(MediaWikiHelper.QueryProviderFromOptions(options));
-        }
+        return EnumPagesAsync(MediaWikiHelper.QueryProviderFromOptions(options));
+    }
 
     /// <summary>
     /// Asynchronously generates the sequence of pages.
@@ -79,18 +80,18 @@ public abstract class WikiPagePropertyGenerator<TItem> : WikiPagePropertyList<TI
     /// <param name="options">Options when querying for the pages.</param>
     public virtual IAsyncEnumerable<WikiPage> EnumPagesAsync(IWikiPageQueryProvider options)
     {
-            var queryParams = options.EnumParameters(Site.SiteInfo.Version).ToDictionary();
-            queryParams.Add("generator", GeneratorName);
-            queryParams.Add("titles", PageTitle);
-            foreach (var v in EnumGeneratorParameters())
-                queryParams[v.Key] = v.Value;
-            return RequestHelper.QueryWithContinuation(Site, queryParams,
-                    () => Site.BeginActionScope(this, options),
-                    DistinctGeneratedPages)
-                .SelectMany(jquery => WikiPage.FromJsonQueryResult(Site, jquery, options).ToAsyncEnumerable());
-        }
-}
+        var queryParams = options.EnumParameters(Site.SiteInfo.Version).ToDictionary();
+        queryParams.Add("generator", GeneratorName);
+        queryParams.Add("titles", PageTitle);
+        foreach (var v in EnumGeneratorParameters())
+            queryParams[v.Key] = v.Value;
+        return RequestHelper.QueryWithContinuation(Site, queryParams,
+                () => Site.BeginActionScope(this, options),
+                DistinctGeneratedPages)
+            .SelectMany(jquery => WikiPage.FromJsonQueryResult(Site, jquery, options).ToAsyncEnumerable());
+    }
 
+}
 
 /// <summary>
 /// The base classes for commonly-used <see cref="WikiPage"/> generator that implements
@@ -103,21 +104,22 @@ public abstract class WikiPagePropertyGenerator<TItem> : WikiPagePropertyList<TI
 /// </remarks>
 public abstract class WikiPagePropertyGenerator : WikiPagePropertyGenerator<WikiPageStub>
 {
+
     /// <inheritdoc />
     protected WikiPagePropertyGenerator(WikiSite site) : base(site)
     {
-        }
+    }
 
     /// <inheritdoc/>
     protected WikiPagePropertyGenerator(WikiSite site, WikiPageStub pageStub) : base(site, pageStub)
     {
-        }
+    }
 
     /// <inheritdoc />
     protected override WikiPageStub ItemFromJson(JToken json, JObject jpage)
     {
-            // pageid can be missing in this case.
-            return new WikiPageStub((int?)json["pageid"] ?? 0, (string)json["title"], (int)json["ns"]);
-        }
+        // pageid can be missing in this case.
+        return new WikiPageStub((int?)json["pageid"] ?? 0, (string)json["title"], (int)json["ns"]);
+    }
 
 }

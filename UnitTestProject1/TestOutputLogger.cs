@@ -21,7 +21,8 @@ public class TestOutputLogger : ILogger
 
     public ITestOutputHelper Output { get; }
 
-    public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception? exception, Func<TState, Exception?, string> formatter)
+    public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception? exception,
+        Func<TState, Exception?, string> formatter)
     {
         if (formatter == null) throw new ArgumentNullException(nameof(formatter));
         if (logLevel < minLogLevel)
@@ -110,7 +111,9 @@ public class TestOutputLogger : ILogger
             if (currentScope.Value != this) throw new InvalidOperationException();
             currentScope.Value = Parent;
         }
+
     }
+
 }
 
 public sealed class TestOutputLoggerProvider : ILoggerProvider
@@ -125,11 +128,11 @@ public sealed class TestOutputLoggerProvider : ILoggerProvider
 
     public void Dispose()
     {
-
     }
 
     public ILogger CreateLogger(string categoryName)
     {
         return new TestOutputLogger(Output, categoryName, LogLevel.Trace);
     }
+
 }

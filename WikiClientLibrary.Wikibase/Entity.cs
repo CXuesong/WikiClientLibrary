@@ -17,6 +17,7 @@ namespace WikiClientLibrary.Wikibase;
 /// </remarks>
 public sealed partial class Entity : IEntity
 {
+
     internal static readonly WbMonolingualTextCollection emptyStringDict
         = new WbMonolingualTextCollection { IsReadOnly = true };
 
@@ -43,7 +44,8 @@ public sealed partial class Entity : IEntity
     /// A asynchronous sequence of entity IDs (e.g. <c>Q1234</c>) in the identical order with <paramref name="titles"/>.
     /// If one or more entities are missing, the corresponding entity ID will be <c>null</c>.
     /// </returns>
-    public static IAsyncEnumerable<string?> IdsFromSiteLinksAsync(WikiSite site, string siteName, IEnumerable<string> titles, CancellationToken cancellationToken = default)
+    public static IAsyncEnumerable<string?> IdsFromSiteLinksAsync(WikiSite site, string siteName, IEnumerable<string> titles,
+        CancellationToken cancellationToken = default)
     {
         if (site == null) throw new ArgumentNullException(nameof(site));
         if (siteName == null) throw new ArgumentNullException(nameof(siteName));
@@ -60,12 +62,14 @@ public sealed partial class Entity : IEntity
     /// <param name="cancellationToken">a token used to cancel the operation.</param>
     /// <exception cref="ArgumentNullException">Either <paramref name="site"/>, <paramref name="siteName"/>, or <paramref name="title"/> is <c>null</c>.</exception>
     /// <returns>corresponding entity ID (e.g. <c>Q1234</c>), or <c>null</c> if no such entity can be found.</returns>
-    public static async Task<string?> IdFromSiteLinkAsync(WikiSite site, string siteName, string title, CancellationToken cancellationToken = default)
+    public static async Task<string?> IdFromSiteLinkAsync(WikiSite site, string siteName, string title,
+        CancellationToken cancellationToken = default)
     {
         if (site == null) throw new ArgumentNullException(nameof(site));
         if (siteName == null) throw new ArgumentNullException(nameof(siteName));
         if (title == null) throw new ArgumentNullException(nameof(title));
-        var result = await WikibaseRequestHelper.EntityIdsFromSiteLinksAsync(site, siteName, new[] { title }, cancellationToken).FirstAsync(cancellationToken);
+        var result = await WikibaseRequestHelper.EntityIdsFromSiteLinksAsync(site, siteName, new[] { title }, cancellationToken)
+            .FirstAsync(cancellationToken);
         return result;
     }
 
@@ -279,7 +283,8 @@ public sealed partial class Entity : IEntity
             : emptyStringsDict;
         Aliases.IsReadOnly = true;
 
-        Descriptions = (options & EntityQueryOptions.FetchDescriptions) == EntityQueryOptions.FetchDescriptions && serializable.Descriptions.Count > 0
+        Descriptions = (options & EntityQueryOptions.FetchDescriptions) == EntityQueryOptions.FetchDescriptions &&
+                       serializable.Descriptions.Count > 0
             ? serializable.Descriptions
             : emptyStringDict;
         Descriptions.IsReadOnly = true;
@@ -311,6 +316,7 @@ public sealed partial class Entity : IEntity
 /// </summary>
 public enum EntityType
 {
+
     /// <summary>
     /// Unknown entity type.
     /// </summary>
@@ -325,6 +331,7 @@ public enum EntityType
     /// A Wikibase property, usually having the prefix P and in <c>Property</c> namespace.
     /// </summary>
     Property = 1,
+
 }
 
 /// <summary>
@@ -372,6 +379,7 @@ public enum EntityQueryOptions
     /// Do not resolve redirect. Treat them like deleted entities.
     /// </summary>
     SuppressRedirects = 0x100,
+
 }
 
 /// <summary>
@@ -428,9 +436,9 @@ public sealed class EntitySiteLink
 
 public sealed class EntitySiteLinkCollection : UnorderedKeyedCollection<string, EntitySiteLink>
 {
+
     public EntitySiteLinkCollection()
     {
-
     }
 
     public EntitySiteLinkCollection(IEnumerable<EntitySiteLink> items)
@@ -444,6 +452,7 @@ public sealed class EntitySiteLinkCollection : UnorderedKeyedCollection<string, 
     {
         return item.Site;
     }
+
 }
 
 public sealed class ClaimCollection : UnorderedKeyedMultiCollection<string, Claim>
@@ -451,7 +460,6 @@ public sealed class ClaimCollection : UnorderedKeyedMultiCollection<string, Clai
 
     public ClaimCollection()
     {
-
     }
 
     public ClaimCollection(IEnumerable<Claim> items)
@@ -465,4 +473,5 @@ public sealed class ClaimCollection : UnorderedKeyedMultiCollection<string, Clai
     {
         return item.MainSnak.PropertyId;
     }
+
 }

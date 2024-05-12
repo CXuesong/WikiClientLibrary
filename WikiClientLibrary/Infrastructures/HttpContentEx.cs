@@ -17,25 +17,25 @@ internal class FormLongUrlEncodedContent : ByteArrayContent
     public FormLongUrlEncodedContent(IEnumerable<KeyValuePair<string, string?>> nameValueCollection)
         : base(GetContentByteArray(nameValueCollection))
     {
-            Headers.ContentType = new MediaTypeHeaderValue("application/x-www-form-urlencoded");
-        }
+        Headers.ContentType = new MediaTypeHeaderValue("application/x-www-form-urlencoded");
+    }
 
     private static byte[] GetContentByteArray(IEnumerable<KeyValuePair<string, string?>> pairs)
     {
-            if (pairs == null)
-                throw new ArgumentNullException(nameof(pairs));
-            var sb = new StringBuilder();
-            foreach (var nameValue in pairs)
-            {
-                if (sb.Length > 0)
-                    sb.Append('&');
+        if (pairs == null)
+            throw new ArgumentNullException(nameof(pairs));
+        var sb = new StringBuilder();
+        foreach (var nameValue in pairs)
+        {
+            if (sb.Length > 0)
+                sb.Append('&');
 
-                sb.Append(HttpUtility.UrlEncode(nameValue.Key));
-                sb.Append('=');
-                sb.Append(HttpUtility.UrlEncode(nameValue.Value));
-            }
-
-            return DefaultHttpEncoding.GetBytes(sb.ToString());
+            sb.Append(HttpUtility.UrlEncode(nameValue.Key));
+            sb.Append('=');
+            sb.Append(HttpUtility.UrlEncode(nameValue.Value));
         }
+
+        return DefaultHttpEncoding.GetBytes(sb.ToString());
+    }
 
 }

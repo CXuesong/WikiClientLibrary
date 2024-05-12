@@ -8,7 +8,7 @@ namespace WikiClientLibrary;
 /// </summary>
 public interface IWikiClientLoggable
 {
-        
+
     /// <summary>
     /// Replaces the logger factory of the specified instance.
     /// </summary>

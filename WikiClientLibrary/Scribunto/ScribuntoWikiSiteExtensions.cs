@@ -50,7 +50,8 @@ public static class ScribuntoWikiSiteExtensions
     }
 
     /// <inheritdoc cref="ScribuntoLoadDataAsync{T}(WikiSite,string,JsonSerializer,CancellationToken)"/>
-    public static Task<T> ScribuntoLoadDataAsync<T>(this WikiSite site, string moduleName, string? epilog, CancellationToken cancellationToken)
+    public static Task<T> ScribuntoLoadDataAsync<T>(this WikiSite site, string moduleName, string? epilog,
+        CancellationToken cancellationToken)
     {
         return ScribuntoLoadDataAsync<T>(site, moduleName, epilog, null, cancellationToken);
     }

@@ -10,6 +10,7 @@ namespace WikiClientLibrary.Wikibase;
 [DebuggerDisplay("{MainSnak}; {Qualifiers.Count} qualifier(s),  {References.Count} reference(s)")]
 public sealed class Claim
 {
+
     private readonly List<Snak> _Qualifiers = new List<Snak>();
     private readonly List<ClaimReference> _References = new List<ClaimReference>();
 
@@ -20,9 +21,9 @@ public sealed class Claim
     /// <exception cref="ArgumentNullException"><paramref name="mainSnak"/> is <c>null</c>.</exception>
     public Claim(Snak mainSnak)
     {
-            MainSnak = mainSnak ?? throw new ArgumentNullException(nameof(mainSnak));
-        }
-        
+        MainSnak = mainSnak ?? throw new ArgumentNullException(nameof(mainSnak));
+    }
+
     /// <summary>
     /// Initializes a new <see cref="Claim"/> instance with the main snak set to property id.
     /// </summary>
@@ -30,9 +31,9 @@ public sealed class Claim
     /// <exception cref="ArgumentNullException"><paramref name="mainSnakPropertyId"/> is <c>null</c>.</exception>
     public Claim(string mainSnakPropertyId)
     {
-            if (mainSnakPropertyId == null) throw new ArgumentNullException(nameof(mainSnakPropertyId));
-            MainSnak = new Snak(mainSnakPropertyId);
-        }
+        if (mainSnakPropertyId == null) throw new ArgumentNullException(nameof(mainSnakPropertyId));
+        MainSnak = new Snak(mainSnakPropertyId);
+    }
 
     /// <summary>
     /// Initializes a new <see cref="Claim"/> instance with the main snak set to property id and value.
@@ -43,8 +44,8 @@ public sealed class Claim
     /// <exception cref="ArgumentNullException"><paramref name="propertyId"/> or <paramref name="dataType"/> is <c>null</c>.</exception>
     public Claim(string propertyId, object dataValue, WikibaseDataType dataType)
     {
-            MainSnak = new Snak(propertyId, dataValue, dataType);
-        }
+        MainSnak = new Snak(propertyId, dataValue, dataType);
+    }
 
     /// <summary>
     /// Gets the main snak of the claim.
@@ -77,81 +78,82 @@ public sealed class Claim
     /// <inheritdoc />
     public override string ToString()
     {
-            return MainSnak.ToString();
-        }
+        return MainSnak.ToString();
+    }
 
     internal static IEnumerable<TValue> EnumWithOrder<TValue>(IDictionary<string, ICollection<TValue>> dict, IList<string>? order)
     {
-            // Before #84516 Wikibase did not implement snaks-order.
-            // https://gerrit.wikimedia.org/r/#/c/84516/
-            // Note: after a while wmf decided to obsolete statement order,
-            // while to keep the qualifier order functionality as-is.
-            // https://phabricator.wikimedia.org/T99243
-            // https://lists.wikimedia.org/pipermail/wikidata-tech/2017-November/001207.html
-            Debug.Assert(dict != null);
-            if (order == null)
-                return dict.Values.SelectMany(c => c).ToList();
-            try
-            {
-                if (order.Count == dict.Count)
-                    return order.Select(key => dict[key]).SelectMany(c => c);
-            }
-            catch (KeyNotFoundException)
-            {
-            }
-            // Ill-formed dict-order arguments
-            throw new ArgumentException("The ordered list and keys in the dictionary does not correspond.");
+        // Before #84516 Wikibase did not implement snaks-order.
+        // https://gerrit.wikimedia.org/r/#/c/84516/
+        // Note: after a while wmf decided to obsolete statement order,
+        // while to keep the qualifier order functionality as-is.
+        // https://phabricator.wikimedia.org/T99243
+        // https://lists.wikimedia.org/pipermail/wikidata-tech/2017-November/001207.html
+        Debug.Assert(dict != null);
+        if (order == null)
+            return dict.Values.SelectMany(c => c).ToList();
+        try
+        {
+            if (order.Count == dict.Count)
+                return order.Select(key => dict[key]).SelectMany(c => c);
         }
+        catch (KeyNotFoundException)
+        {
+        }
+        // Ill-formed dict-order arguments
+        throw new ArgumentException("The ordered list and keys in the dictionary does not correspond.");
+    }
 
-    internal static Dictionary<string, ICollection<TValue>> GroupIntoDictionary<TValue>(IEnumerable<TValue> items, Func<TValue, string> keySelector)
+    internal static Dictionary<string, ICollection<TValue>> GroupIntoDictionary<TValue>(IEnumerable<TValue> items,
+        Func<TValue, string> keySelector)
     {
-            var dict = new Dictionary<string, ICollection<TValue>>();
-            foreach (var i in items)
+        var dict = new Dictionary<string, ICollection<TValue>>();
+        foreach (var i in items)
+        {
+            var key = keySelector(i);
+            if (!dict.TryGetValue(key, out var g))
             {
-                var key = keySelector(i);
-                if (!dict.TryGetValue(key, out var g))
-                {
-                    g = new List<TValue>();
-                    dict.Add(key, g);
-                }
-                g.Add(i);
+                g = new List<TValue>();
+                dict.Add(key, g);
             }
-            return dict;
+            g.Add(i);
         }
+        return dict;
+    }
 
     internal static Claim FromContract(Contracts.Claim claim)
     {
-            Debug.Assert(claim != null);
-            if (claim.MainSnak == null) throw new ArgumentException("Invalid claim. MainSnak is null.", nameof(claim));
-            var inst = new Claim(Snak.FromContract(claim.MainSnak));
-            inst.LoadFromContract(claim);
-            return inst;
-        }
+        Debug.Assert(claim != null);
+        if (claim.MainSnak == null) throw new ArgumentException("Invalid claim. MainSnak is null.", nameof(claim));
+        var inst = new Claim(Snak.FromContract(claim.MainSnak));
+        inst.LoadFromContract(claim);
+        return inst;
+    }
 
     private void LoadFromContract(Contracts.Claim claim)
     {
-            Debug.Assert(claim != null);
-            Id = claim.Id;
-            Type = claim.Type ?? "";
-            Rank = claim.Rank ?? "";
-            _Qualifiers.Clear();
-            if (claim.Qualifiers != null)
-                _Qualifiers.AddRange(EnumWithOrder(claim.Qualifiers, claim.QualifiersOrder).Select(Snak.FromContract));
-            _References.Clear();
-            if (claim.References != null)
-                _References.AddRange(claim.References.Select(ClaimReference.FromContract));
-        }
+        Debug.Assert(claim != null);
+        Id = claim.Id;
+        Type = claim.Type ?? "";
+        Rank = claim.Rank ?? "";
+        _Qualifiers.Clear();
+        if (claim.Qualifiers != null)
+            _Qualifiers.AddRange(EnumWithOrder(claim.Qualifiers, claim.QualifiersOrder).Select(Snak.FromContract));
+        _References.Clear();
+        if (claim.References != null)
+            _References.AddRange(claim.References.Select(ClaimReference.FromContract));
+    }
 
     internal Contracts.Claim ToContract(bool identifierOnly)
     {
-            var obj = new Contracts.Claim {Id = Id, Type = Type, Rank = Rank};
-            if (identifierOnly) return obj;
-            obj.MainSnak = MainSnak.ToContract();
-            obj.Qualifiers = Qualifiers.Select(q => q.ToContract())
-                .GroupBy(q => q.Property).ToDictionary(g => g.Key, g => (ICollection<Contracts.Snak>)g.ToList());
-            obj.References = References.Select(r => r.ToContract()).ToList();
-            return obj;
-        }
+        var obj = new Contracts.Claim { Id = Id, Type = Type, Rank = Rank };
+        if (identifierOnly) return obj;
+        obj.MainSnak = MainSnak.ToContract();
+        obj.Qualifiers = Qualifiers.Select(q => q.ToContract())
+            .GroupBy(q => q.Property).ToDictionary(g => g.Key, g => (ICollection<Contracts.Snak>)g.ToList());
+        obj.References = References.Select(r => r.ToContract()).ToList();
+        return obj;
+    }
 
 }
 
@@ -160,22 +162,23 @@ public sealed class Claim
 /// </summary>
 public sealed class ClaimReference
 {
+
     private readonly List<Snak> _Snaks = new List<Snak>();
 
     public ClaimReference()
     {
-        }
+    }
 
     public ClaimReference(IEnumerable<Snak> snaks)
     {
-            if (snaks == null) throw new ArgumentNullException(nameof(snaks));
-            _Snaks.AddRange(snaks);
-        }
+        if (snaks == null) throw new ArgumentNullException(nameof(snaks));
+        _Snaks.AddRange(snaks);
+    }
 
     public ClaimReference(params Snak[] snaks)
     {
-            _Snaks.AddRange(snaks);
-        }
+        _Snaks.AddRange(snaks);
+    }
 
     public IList<Snak> Snaks => _Snaks;
 
@@ -183,32 +186,32 @@ public sealed class ClaimReference
 
     internal static ClaimReference FromContract(Contracts.Reference reference)
     {
-            Debug.Assert(reference != null);
-            var inst = new ClaimReference();
-            inst.LoadFromContract(reference);
-            return inst;
-        }
+        Debug.Assert(reference != null);
+        var inst = new ClaimReference();
+        inst.LoadFromContract(reference);
+        return inst;
+    }
 
     internal void LoadFromContract(Contracts.Reference reference)
     {
-            Debug.Assert(reference != null);
-            _Snaks.Clear();
-            if (reference.Snaks != null)
-            {
-                _Snaks.AddRange(Claim.EnumWithOrder(reference.Snaks, reference.SnaksOrder).Select(Snak.FromContract));
-            }
-            Hash = reference.Hash ?? "";
+        Debug.Assert(reference != null);
+        _Snaks.Clear();
+        if (reference.Snaks != null)
+        {
+            _Snaks.AddRange(Claim.EnumWithOrder(reference.Snaks, reference.SnaksOrder).Select(Snak.FromContract));
         }
+        Hash = reference.Hash ?? "";
+    }
 
     internal Contracts.Reference ToContract()
     {
-            return new Contracts.Reference
-            {
-                Hash = Hash,
-                Snaks = Claim.GroupIntoDictionary(Snaks.Select(s => s.ToContract()), s => s.Property),
-                SnaksOrder = Snaks.Select(s => s.PropertyId).Distinct().ToList()
-            };
-        }
+        return new Contracts.Reference
+        {
+            Hash = Hash,
+            Snaks = Claim.GroupIntoDictionary(Snaks.Select(s => s.ToContract()), s => s.Property),
+            SnaksOrder = Snaks.Select(s => s.PropertyId).Distinct().ToList()
+        };
+    }
 
 }
 
@@ -234,8 +237,8 @@ public sealed class Snak
     /// <exception cref="ArgumentNullException"><paramref name="propertyId"/> is <c>null</c>.</exception>
     public Snak(string propertyId)
     {
-            PropertyId = propertyId ?? throw new ArgumentNullException(nameof(propertyId));
-        }
+        PropertyId = propertyId ?? throw new ArgumentNullException(nameof(propertyId));
+    }
 
     /// <summary>
     /// Initializes a snak with specified property ID and data value.
@@ -246,10 +249,10 @@ public sealed class Snak
     /// <exception cref="ArgumentNullException"><paramref name="propertyId"/> or <paramref name="dataType"/> is <c>null</c>.</exception>
     public Snak(string propertyId, object dataValue, WikibaseDataType dataType)
     {
-            PropertyId = propertyId ?? throw new ArgumentNullException(nameof(propertyId));
-            DataType = dataType ?? throw new ArgumentNullException(nameof(dataType));
-            DataValue = dataValue;
-        }
+        PropertyId = propertyId ?? throw new ArgumentNullException(nameof(propertyId));
+        DataType = dataType ?? throw new ArgumentNullException(nameof(dataType));
+        DataValue = dataValue;
+    }
 
     /// <summary>
     /// Initializes a snak with specified property ID and raw data value.
@@ -260,10 +263,10 @@ public sealed class Snak
     /// <exception cref="ArgumentNullException"><paramref name="propertyId"/> or <paramref name="dataType"/> is <c>null</c>.</exception>
     public Snak(string propertyId, JObject rawDataValue, WikibaseDataType dataType)
     {
-            PropertyId = propertyId ?? throw new ArgumentNullException(nameof(propertyId));
-            DataType = dataType ?? throw new ArgumentNullException(nameof(dataType));
-            RawDataValue = rawDataValue;
-        }
+        PropertyId = propertyId ?? throw new ArgumentNullException(nameof(propertyId));
+        DataType = dataType ?? throw new ArgumentNullException(nameof(dataType));
+        RawDataValue = rawDataValue;
+    }
 
     /// <summary>
     /// Initializes a snak with specified property ID and snak type.
@@ -276,9 +279,9 @@ public sealed class Snak
     /// </remarks>
     public Snak(string propertyId, SnakType snakType)
     {
-            PropertyId = propertyId ?? throw new ArgumentNullException(nameof(propertyId));
-            SnakType = snakType;
-        }
+        PropertyId = propertyId ?? throw new ArgumentNullException(nameof(propertyId));
+        SnakType = snakType;
+    }
 
     /// <summary>
     /// Initializes a snak with specified property and data value.
@@ -289,17 +292,17 @@ public sealed class Snak
     /// <exception cref="ArgumentException"><paramref name="property"/> is not Wikibase property, or does not contain required information.</exception>
     public Snak(Entity property, object dataValue)
     {
-            if (property == null) throw new ArgumentNullException(nameof(property));
-            if (property.Type != EntityType.Property)
-                throw new ArgumentException("The entity is not Wikibase property.", nameof(property));
-            if (property.Id == null)
-                throw new ArgumentException("The entity does not contain ID information.", nameof(property));
-            if (property.DataType == null)
-                throw new ArgumentException("The entity does not contain data type information.", nameof(property));
-            PropertyId = property.Id;
-            DataType = property.DataType;
-            DataValue = dataValue;
-        }
+        if (property == null) throw new ArgumentNullException(nameof(property));
+        if (property.Type != EntityType.Property)
+            throw new ArgumentException("The entity is not Wikibase property.", nameof(property));
+        if (property.Id == null)
+            throw new ArgumentException("The entity does not contain ID information.", nameof(property));
+        if (property.DataType == null)
+            throw new ArgumentException("The entity does not contain data type information.", nameof(property));
+        PropertyId = property.Id;
+        DataType = property.DataType;
+        DataValue = dataValue;
+    }
 
     /// <summary>Snak type.</summary>
     public SnakType SnakType { get; set; }
@@ -317,28 +320,24 @@ public sealed class Snak
     {
         get
         {
-                if (_RawDataValue != DirtyDataValuePlaceholder)
-                    return _RawDataValue;
-                if (_DataValue == null)
-                {
-                    _RawDataValue = null;
-                    return null;
-                }
-                Debug.Assert(_DataValue != DirtyDataValuePlaceholder);
-                if (DataType == null) throw new InvalidOperationException("DataType is null.");
-                var data = new JObject
-                {
-                    {"value", DataType.ToJson(_DataValue)},
-                    {"type", DataType.ValueTypeName}
-                };
-                _RawDataValue = data;
-                return data;
+            if (_RawDataValue != DirtyDataValuePlaceholder)
+                return _RawDataValue;
+            if (_DataValue == null)
+            {
+                _RawDataValue = null;
+                return null;
             }
+            Debug.Assert(_DataValue != DirtyDataValuePlaceholder);
+            if (DataType == null) throw new InvalidOperationException("DataType is null.");
+            var data = new JObject { { "value", DataType.ToJson(_DataValue) }, { "type", DataType.ValueTypeName } };
+            _RawDataValue = data;
+            return data;
+        }
         set
         {
-                _RawDataValue = value;
-                _DataValue = DirtyDataValuePlaceholder;
-            }
+            _RawDataValue = value;
+            _DataValue = DirtyDataValuePlaceholder;
+        }
     }
 
     /// <summary>Parsed value of <c>datavalue</c> node.</summary>
@@ -347,27 +346,27 @@ public sealed class Snak
     {
         get
         {
-                if (_DataValue != DirtyDataValuePlaceholder) return _DataValue;
-                var raw = _RawDataValue;
-                if (raw == null)
-                {
-                    _DataValue = null;
-                    return null;
-                }
-                Debug.Assert(raw != DirtyDataValuePlaceholder);
-                if (DataType == null) throw new InvalidOperationException("DataType is null.");
-                var valueType = (string?)raw["type"];
-                if (valueType != null && valueType != DataType.ValueTypeName)
-                    throw new NotSupportedException($"Parsing value type \"{valueType}\" is not supported by {DataType}.");
-                var value = DataType.Parse(raw["value"]);
-                _DataValue = value;
-                return value;
+            if (_DataValue != DirtyDataValuePlaceholder) return _DataValue;
+            var raw = _RawDataValue;
+            if (raw == null)
+            {
+                _DataValue = null;
+                return null;
             }
+            Debug.Assert(raw != DirtyDataValuePlaceholder);
+            if (DataType == null) throw new InvalidOperationException("DataType is null.");
+            var valueType = (string?)raw["type"];
+            if (valueType != null && valueType != DataType.ValueTypeName)
+                throw new NotSupportedException($"Parsing value type \"{valueType}\" is not supported by {DataType}.");
+            var value = DataType.Parse(raw["value"]);
+            _DataValue = value;
+            return value;
+        }
         set
         {
-                _DataValue = value;
-                _RawDataValue = DirtyDataValuePlaceholder;
-            }
+            _DataValue = value;
+            _RawDataValue = DirtyDataValuePlaceholder;
+        }
     }
 
     /// <summary>Data value type.</summary>
@@ -376,72 +375,72 @@ public sealed class Snak
     /// <inheritdoc />
     public override string ToString()
     {
-            // TODO need something link TryGetDataValue to handle unknown data types
-            var valueExpr = SnakType switch
-            {
-                SnakType.Value => DataValue?.ToString(),
-                SnakType.SomeValue => "[SomeValue]",
-                SnakType.NoValue => "[NoValue]",
-                _ => "[Invalid SnakType]"
-            };
-            return $"{PropertyId} = {valueExpr}";
-        }
+        // TODO need something link TryGetDataValue to handle unknown data types
+        var valueExpr = SnakType switch
+        {
+            SnakType.Value => DataValue?.ToString(),
+            SnakType.SomeValue => "[SomeValue]",
+            SnakType.NoValue => "[NoValue]",
+            _ => "[Invalid SnakType]"
+        };
+        return $"{PropertyId} = {valueExpr}";
+    }
 
     internal static SnakType ParseSnakType(string expr)
     {
-            if (expr == null) throw new ArgumentNullException(nameof(expr));
-            return expr switch
-            {
-                "value" => SnakType.Value,
-                "somevalue" => SnakType.SomeValue,
-                "novalue" => SnakType.NoValue,
-                _ => throw new ArgumentException("Invalid SnackType expression.", nameof(expr))
-            };
-        }
+        if (expr == null) throw new ArgumentNullException(nameof(expr));
+        return expr switch
+        {
+            "value" => SnakType.Value,
+            "somevalue" => SnakType.SomeValue,
+            "novalue" => SnakType.NoValue,
+            _ => throw new ArgumentException("Invalid SnackType expression.", nameof(expr))
+        };
+    }
 
     internal static string ParseSnakType(SnakType value)
     {
-            return value switch
-            {
-                SnakType.Value => "value",
-                SnakType.SomeValue => "somevalue",
-                SnakType.NoValue => "novalue",
-                _ => throw new ArgumentException("Invalid SnackType value.", nameof(value))
-            };
-        }
+        return value switch
+        {
+            SnakType.Value => "value",
+            SnakType.SomeValue => "somevalue",
+            SnakType.NoValue => "novalue",
+            _ => throw new ArgumentException("Invalid SnackType value.", nameof(value))
+        };
+    }
 
     internal static Snak FromContract(Contracts.Snak snak)
     {
-            Debug.Assert(snak != null);
-            var inst = new Snak(snak.Property);
-            inst.LoadFromContract(snak);
-            return inst;
-        }
+        Debug.Assert(snak != null);
+        var inst = new Snak(snak.Property);
+        inst.LoadFromContract(snak);
+        return inst;
+    }
 
     private void LoadFromContract(Contracts.Snak snak)
     {
-            Debug.Assert(snak != null);
-            SnakType = ParseSnakType(snak.SnakType!);
-            Hash = snak.Hash ?? "";
-            RawDataValue = snak.DataValue;
-            DataType = string.IsNullOrEmpty(snak.DataType)
-                ? null
-                : BuiltInDataTypes.Get(snak.DataType) ?? MissingPropertyType.Get(snak.DataType, (string)snak.DataValue?["type"]);
-        }
+        Debug.Assert(snak != null);
+        SnakType = ParseSnakType(snak.SnakType!);
+        Hash = snak.Hash ?? "";
+        RawDataValue = snak.DataValue;
+        DataType = string.IsNullOrEmpty(snak.DataType)
+            ? null
+            : BuiltInDataTypes.Get(snak.DataType) ?? MissingPropertyType.Get(snak.DataType, (string)snak.DataValue?["type"]);
+    }
 
     internal Contracts.Snak ToContract()
     {
-            if (DataType == null)
-                throw new InvalidOperationException("DataType is required on serialization.");
-            return new Contracts.Snak
-            {
-                SnakType = ParseSnakType(SnakType),
-                Property = PropertyId,
-                Hash = Hash,
-                DataType = DataType.Name,
-                DataValue = RawDataValue,
-            };
-        }
+        if (DataType == null)
+            throw new InvalidOperationException("DataType is required on serialization.");
+        return new Contracts.Snak
+        {
+            SnakType = ParseSnakType(SnakType),
+            Property = PropertyId,
+            Hash = Hash,
+            DataType = DataType.Name,
+            DataValue = RawDataValue,
+        };
+    }
 
 }
 
@@ -450,6 +449,7 @@ public sealed class Snak
 /// </summary>
 public enum SnakType
 {
+
     /// <summary>Custom value.</summary>
     Value = 0,
 
@@ -458,4 +458,5 @@ public enum SnakType
 
     /// <summary>No value.</summary>
     NoValue,
+
 }

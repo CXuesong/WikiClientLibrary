@@ -20,11 +20,13 @@ internal class ExpressionEqualityComparer : EqualityComparer<Expression>
                 return false;
             case BinaryExpression bex:
                 if (y is BinaryExpression bey)
-                    return bex.NodeType == bey.NodeType && Equals(bex.Method, bey.Method) && Equals(bex.Left, bey.Left) && Equals(bex.Right, bey.Right);
+                    return bex.NodeType == bey.NodeType && Equals(bex.Method, bey.Method) && Equals(bex.Left, bey.Left) &&
+                           Equals(bex.Right, bey.Right);
                 return false;
             case MemberExpression mex:
                 if (y is MemberExpression mey)
-                    return mex.NodeType == mey.NodeType && Equals(mex.Member, mey.Member) && mex.Type == mey.Type && Equals(mex.Expression, mey.Expression);
+                    return mex.NodeType == mey.NodeType && Equals(mex.Member, mey.Member) && mex.Type == mey.Type &&
+                           Equals(mex.Expression, mey.Expression);
                 return false;
         }
         return x.Equals(y);

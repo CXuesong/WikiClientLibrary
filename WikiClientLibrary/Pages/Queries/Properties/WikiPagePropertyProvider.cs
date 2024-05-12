@@ -11,6 +11,7 @@ namespace WikiClientLibrary.Pages.Queries.Properties;
 /// <seealso cref="WikiPage.RefreshAsync(IWikiPageQueryProvider)"/>
 public interface IWikiPagePropertyProvider<out T> where T : class, IWikiPagePropertyGroup
 {
+
     /// <summary>
     /// Enumerates the MediaWiki API request parameters for <c>action=query</c> request.
     /// </summary>
@@ -66,14 +67,13 @@ public abstract class WikiPagePropertyProvider<T> : IWikiPagePropertyProvider<T>
     /// <inheritdoc />
     public virtual int GetMaxPaginationSize(MediaWikiVersion version, bool apiHighLimits)
     {
-            return apiHighLimits ? 500 : 50;
-        }
+        return apiHighLimits ? 500 : 50;
+    }
 
     /// <inheritdoc />
     public abstract T? ParsePropertyGroup(JObject json);
 
     /// <inheritdoc />
     public abstract string? PropertyName { get; }
-
 
 }

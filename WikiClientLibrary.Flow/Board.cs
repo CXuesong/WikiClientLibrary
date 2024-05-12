@@ -56,13 +56,9 @@ public class Board
     public async Task RefreshAsync(CancellationToken cancellationToken)
     {
         // Known Issue: view-header doesn't support multiple page names.
-        var jresult = await Site.InvokeMediaWikiApiAsync(new MediaWikiFormRequestMessage(new
-        {
-            action = "flow",
-            submodule = "view-header",
-            page = Title,
-            vhformat = "wikitext"
-        }), cancellationToken);
+        var jresult = await Site.InvokeMediaWikiApiAsync(
+            new MediaWikiFormRequestMessage(new { action = "flow", submodule = "view-header", page = Title, vhformat = "wikitext" }),
+            cancellationToken);
         var jheader = jresult["flow"]["view-header"]["result"]["header"];
         editToken = (string)jheader["editToken"];
         var rev = jheader["revision"]?.ToObject<Revision>(FlowUtility.FlowJsonSerializer);
@@ -161,6 +157,7 @@ public class Board
 
     /// <inheritdoc />
     public override string ToString() => Title;
+
 }
 
 /// <summary>
@@ -169,12 +166,17 @@ public class Board
 [Flags]
 public enum TopicListingOptions
 {
+
     /// <summary>Use user's default sorting preference.</summary>
     Default = 0,
+
     /// <summary>Flow topic list should be sorted descending by the time a topic is posed.</summary>
     OrderByPosted = 1,
+
     /// <summary>Flow topic list should be sorted descending by the time a topic's last activity.</summary>
     OrderByUpdated = 2,
+
     /// <summary>Save the current sorting option as user's preference.</summary>
     SaveSortingPreference = 4,
+
 }

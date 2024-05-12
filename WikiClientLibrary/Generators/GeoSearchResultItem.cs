@@ -8,13 +8,14 @@ namespace WikiClientLibrary.Generators;
 /// <seealso cref="GeoSearchGenerator"/>
 public sealed class GeoSearchResultItem
 {
+
     internal GeoSearchResultItem(WikiPageStub page, GeoCoordinate coordinate, bool isPrimaryCoordinate, double distance)
     {
-            Page = page;
-            Coordinate = coordinate;
-            IsPrimaryCoordinate = isPrimaryCoordinate;
-            Distance = distance;
-        }
+        Page = page;
+        Coordinate = coordinate;
+        IsPrimaryCoordinate = isPrimaryCoordinate;
+        Distance = distance;
+    }
 
     /// <summary>
     /// Gets the object's associated page stub.

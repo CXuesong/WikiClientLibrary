@@ -5,6 +5,7 @@
 /// </summary>
 public class SiteOptions
 {
+
     /// <summary>
     /// The name of default disambiguation template.
     /// </summary>
@@ -59,10 +60,11 @@ public class SiteOptions
     /// </summary>
     public virtual SiteOptions Clone()
     {
-        var newInst = (SiteOptions) this.MemberwiseClone();
+        var newInst = (SiteOptions)this.MemberwiseClone();
         newInst.DisambiguationTemplates = DisambiguationTemplates?.ToArray();
         return newInst;
     }
+
 }
 
 /// <summary>
@@ -71,26 +73,31 @@ public class SiteOptions
 [Flags]
 public enum AccountAssertionBehavior
 {
+
     /// <summary>
     /// Do not assert for user's login status when performing API requests. Not recommended.
     /// </summary>
     None = 0,
+
     /// <summary>
     /// Asserts that your account is logged in per request, if <see cref="WikiSite.AccountInfo"/>
     /// indicates that you should have logged in. If the assertion failed,
     /// an <see cref="AccountAssertionFailureException"/> will be thrown.
     /// </summary>
     AssertUser = 1,
+
     /// <summary>
     /// Checks that your account has the "bot" user right per request, if <see cref="WikiSite.AccountInfo"/>
     /// indicates that you should have logged in as bot. If the assertion failed,
     /// an <see cref="AccountAssertionFailureException"/> will be thrown.
     /// </summary>
     AssertBot = 2,
+
     /// <summary>
     /// Checks for "bot" user right, or "user" if the former is not applicable per request.
     /// </summary>
     AssertAll = AssertUser | AssertBot
+
 }
 
 /// <summary>
@@ -101,6 +108,7 @@ public enum AccountAssertionBehavior
 /// <remarks>See <see cref="SiteOptions.AccountAssertion"/> for more information.</remarks>
 public interface IAccountAssertionFailureHandler
 {
+
     /// <summary>
     /// Called when an account assertion has failed.
     /// </summary>
@@ -111,4 +119,5 @@ public interface IAccountAssertionFailureHandler
     /// </returns>
     /// <summary>The implementation should call <see cref="WikiSite.LoginAsync(string,string)"/> or one of its overloads.</summary>
     Task<bool> Login(WikiSite site);
+
 }

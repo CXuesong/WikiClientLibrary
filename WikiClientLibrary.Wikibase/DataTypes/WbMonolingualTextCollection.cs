@@ -21,9 +21,8 @@ public class WbMonolingualTextCollection : ICollection<WbMonolingualText>
 
     public WbMonolingualTextCollection()
     {
-            
     }
-        
+
     public WbMonolingualTextCollection(IEnumerable<WbMonolingualText> items)
     {
         if (items == null) throw new ArgumentNullException(nameof(items));
@@ -185,6 +184,7 @@ public class WbMonolingualTextCollection : ICollection<WbMonolingualText>
 
     private sealed class DebugView
     {
+
         private readonly WbMonolingualTextCollection source;
 
         public DebugView(WbMonolingualTextCollection source)
@@ -195,6 +195,7 @@ public class WbMonolingualTextCollection : ICollection<WbMonolingualText>
 
         [DebuggerBrowsable(DebuggerBrowsableState.RootHidden)]
         public WbMonolingualText[] Items => source.ToArray();
+
     }
 
 }
@@ -216,7 +217,6 @@ public class WbMonolingualTextsCollection : ICollection<WbMonolingualText>
 
     public WbMonolingualTextsCollection()
     {
-
     }
 
     public WbMonolingualTextsCollection(IEnumerable<WbMonolingualText> items)
@@ -445,6 +445,7 @@ public class WbMonolingualTextsCollection : ICollection<WbMonolingualText>
 
     private sealed class DebugView
     {
+
         private readonly WbMonolingualTextsCollection source;
 
         public DebugView(WbMonolingualTextsCollection source)
@@ -455,6 +456,7 @@ public class WbMonolingualTextsCollection : ICollection<WbMonolingualText>
 
         [DebuggerBrowsable(DebuggerBrowsableState.RootHidden)]
         public WbMonolingualText[] Items => source.ToArray();
+
     }
 
 }

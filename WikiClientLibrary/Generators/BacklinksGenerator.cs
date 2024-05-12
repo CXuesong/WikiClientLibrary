@@ -10,6 +10,7 @@ namespace WikiClientLibrary.Generators;
 /// <seealso cref="TranscludedInGenerator"/>
 public class BacklinksGenerator : WikiPageGenerator
 {
+
     /// <inheritdoc />
     public BacklinksGenerator(WikiSite site) : base(site)
     {
@@ -55,7 +56,8 @@ public class BacklinksGenerator : WikiPageGenerator
     public override IEnumerable<KeyValuePair<string, object?>> EnumListParameters()
     {
         if ((TargetTitle != null) == (TargetPageId != null))
-            throw new ArgumentException(string.Format(Prompts.ExceptionArgumentExpectEitherNull2, nameof(TargetTitle), nameof(TargetPageId)));
+            throw new ArgumentException(
+                string.Format(Prompts.ExceptionArgumentExpectEitherNull2, nameof(TargetTitle), nameof(TargetPageId)));
         var actualPaginationSize = PaginationSize;
         if (AllowRedirectedLinks)
         {
@@ -68,12 +70,13 @@ public class BacklinksGenerator : WikiPageGenerator
         }
         return new Dictionary<string, object?>
         {
-            {"bltitle", TargetTitle},
-            {"blpageid", TargetPageId},
-            {"blnamespace", NamespaceIds == null ? null : MediaWikiHelper.JoinValues(NamespaceIds)},
-            {"blfilterredir", RedirectsFilter.ToString("redirects", "nonredirects")},
-            {"bllimit", actualPaginationSize},
-            {"blredirect", AllowRedirectedLinks}
+            { "bltitle", TargetTitle },
+            { "blpageid", TargetPageId },
+            { "blnamespace", NamespaceIds == null ? null : MediaWikiHelper.JoinValues(NamespaceIds) },
+            { "blfilterredir", RedirectsFilter.ToString("redirects", "nonredirects") },
+            { "bllimit", actualPaginationSize },
+            { "blredirect", AllowRedirectedLinks }
         };
     }
+
 }

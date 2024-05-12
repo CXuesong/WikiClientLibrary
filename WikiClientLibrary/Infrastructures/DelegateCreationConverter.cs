@@ -7,13 +7,14 @@ namespace WikiClientLibrary.Infrastructures;
 /// </summary>
 internal class DelegateCreationConverter<T> : CustomCreationConverter<T>
 {
+
     private readonly Func<Type, T> factory;
 
     public DelegateCreationConverter(Func<Type, T> factory)
     {
-            if (factory == null) throw new ArgumentNullException(nameof(factory));
-            this.factory = factory;
-        }
+        if (factory == null) throw new ArgumentNullException(nameof(factory));
+        this.factory = factory;
+    }
 
     /// <summary>
     /// Creates an object which will then be populated by the serializer.
@@ -24,6 +25,7 @@ internal class DelegateCreationConverter<T> : CustomCreationConverter<T>
     /// </returns>
     public override T Create(Type objectType)
     {
-            return factory(objectType);
-        }
+        return factory(objectType);
+    }
+
 }

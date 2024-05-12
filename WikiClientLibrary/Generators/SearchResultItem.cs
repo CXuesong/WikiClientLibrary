@@ -13,7 +13,7 @@ public class SearchResultItem
     public SearchResultItem()
 #pragma warning restore CS8618 // 在退出构造函数时，不可为 null 的字段必须包含非 null 值。请考虑声明为可以为 null。
     {
-        }
+    }
 
     /// <summary>
     /// Id of the page.
@@ -60,6 +60,7 @@ public class SearchResultItem
     /// <inheritdoc />
     public override string ToString()
     {
-            return $"[{Id}]{Title}";
-        }
+        return $"[{Id}]{Title}";
+    }
+
 }

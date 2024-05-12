@@ -153,9 +153,10 @@ public class MediaWikiJsonResponseParser : WikiResponseMessageParser<JToken>
         }
         switch (errorCode)
         {
-            case "maxlag":  // maxlag reached.
+            case "maxlag": // maxlag reached.
                 context.NeedRetry = true;
-                throw new ServerLagException(errorCode, fullMessage, (double?)errorNode["lag"] ?? 0, (string)errorNode["type"], (string)errorNode["host"]);
+                throw new ServerLagException(errorCode, fullMessage, (double?)errorNode["lag"] ?? 0, (string)errorNode["type"],
+                    (string)errorNode["host"]);
             case "permissiondenied":
             case "readapidenied": // You need read permission to use this module.
             case "mustbeloggedin": // You must be logged in to upload this file.
@@ -187,7 +188,7 @@ public class MediaWikiJsonResponseParser : WikiResponseMessageParser<JToken>
                 throw new AccountAssertionFailureException(errorCode, fullMessage);
             case "prev_revision":
                 throw new OperationConflictException(errorCode, fullMessage);
-            case "badvalue":    // since 1.35.0-wmf.19
+            case "badvalue": // since 1.35.0-wmf.19
                 // throw more specific Exception, if possible.
                 if (fullMessage.Contains("\"action\""))
                     throw new InvalidActionException(errorCode, fullMessage);

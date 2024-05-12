@@ -12,7 +12,7 @@ namespace WikiClientLibrary.Wikibase;
 /// See "https://www.mediawiki.org/wiki/Help:Tabular_Data" for more documentation about tabular data.
 /// </remarks>
 [JsonObject(MemberSerialization.OptIn, NamingStrategyType = typeof(CamelCaseNamingStrategy))]
-internal class WikibaseTabularData      // Reserved for future use.
+internal class WikibaseTabularData // Reserved for future use.
 {
 
     [JsonProperty]

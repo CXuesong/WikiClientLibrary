@@ -9,17 +9,17 @@ public class PagePropertiesPropertyProvider : WikiPagePropertyProvider<PagePrope
     /// <inheritdoc />
     public override IEnumerable<KeyValuePair<string, object?>> EnumParameters(MediaWikiVersion version)
     {
-            return new OrderedKeyValuePairs<string, object?>
-            {
-                {"ppprop", SelectedProperties == null ? null : MediaWikiHelper.JoinValues(SelectedProperties)}
-            };
-        }
+        return new OrderedKeyValuePairs<string, object?>
+        {
+            { "ppprop", SelectedProperties == null ? null : MediaWikiHelper.JoinValues(SelectedProperties) }
+        };
+    }
 
     /// <inheritdoc />
     public override PagePropertiesPropertyGroup? ParsePropertyGroup(JObject json)
     {
-            return PagePropertiesPropertyGroup.Create(json);
-        }
+        return PagePropertiesPropertyGroup.Create(json);
+    }
 
     /// <summary>
     /// Only list these page properties (<c>action=query&amp;list=pagepropnames</c> returns page property names in use).
@@ -30,6 +30,7 @@ public class PagePropertiesPropertyProvider : WikiPagePropertyProvider<PagePrope
 
     /// <inheritdoc />
     public override string? PropertyName => "pageprops";
+
 }
 
 public class PagePropertiesPropertyGroup : WikiPagePropertyGroup
@@ -39,23 +40,23 @@ public class PagePropertiesPropertyGroup : WikiPagePropertyGroup
 
     internal static PagePropertiesPropertyGroup Create(JObject jpage)
     {
-            var props = jpage["pageprops"];
-            // jpage["pageprops"] == null for pages with no pageprop item,
-            // even if client specified prop=pageprops
-            if (props == null) return Empty;
-            if (!props.HasValues) return Empty;
-            return new PagePropertiesPropertyGroup(jpage);
-        }
+        var props = jpage["pageprops"];
+        // jpage["pageprops"] == null for pages with no pageprop item,
+        // even if client specified prop=pageprops
+        if (props == null) return Empty;
+        if (!props.HasValues) return Empty;
+        return new PagePropertiesPropertyGroup(jpage);
+    }
 
     private PagePropertiesPropertyGroup()
     {
-            PageProperties = PagePropertyCollection.Empty;
-        }
+        PageProperties = PagePropertyCollection.Empty;
+    }
 
     private PagePropertiesPropertyGroup(JObject jPage)
     {
-            PageProperties = jPage["pageprops"]?.ToObject<PagePropertyCollection>(Utility.WikiJsonSerializer) ?? PagePropertyCollection.Empty;
-        }
+        PageProperties = jPage["pageprops"]?.ToObject<PagePropertyCollection>(Utility.WikiJsonSerializer) ?? PagePropertyCollection.Empty;
+    }
 
     /// <summary>
     /// Gets the properties of the page.
@@ -65,6 +66,7 @@ public class PagePropertiesPropertyGroup : WikiPagePropertyGroup
     /// <inheritdoc />
     public override string? ToString()
     {
-            return PageProperties.ToString();
-        }
+        return PageProperties.ToString();
+    }
+
 }

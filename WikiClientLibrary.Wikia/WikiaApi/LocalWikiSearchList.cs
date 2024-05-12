@@ -25,8 +25,7 @@ public class LocalWikiSearchList : IWikiList<LocalWikiSearchResultItem>
 
     private static readonly IList<int> defaultNamespace = new ReadOnlyCollection<int>(new[]
     {
-        BuiltInNamespaces.Main,
-        BuiltInNamespaces.Category,
+        BuiltInNamespaces.Main, BuiltInNamespaces.Category,
     });
 
     /// <summary>
@@ -126,15 +125,20 @@ public class LocalWikiSearchList : IWikiList<LocalWikiSearchResultItem>
     }
 
     /// <inheritdoc />
-    public async IAsyncEnumerable<LocalWikiSearchResultItem> EnumItemsAsync([EnumeratorCancellation] CancellationToken cancellationToken = default)
+    public async IAsyncEnumerable<LocalWikiSearchResultItem> EnumItemsAsync(
+        [EnumeratorCancellation] CancellationToken cancellationToken = default)
     {
         int totalBatches = 1;
         for (int currentBatch = 1; currentBatch <= totalBatches; currentBatch++)
         {
             var jresult = await Site.InvokeWikiaApiAsync("/Search/List", new WikiaQueryRequestMessage(new
             {
-                query = Keyword, type = "articles", rank = SerializeRank(RankingType), limit = PaginationSize,
-                minArticleQuality = MinimumArticleQuality, namespaces = NamespaceIds == null ? null : string.Join(",", NamespaceIds),
+                query = Keyword,
+                type = "articles",
+                rank = SerializeRank(RankingType),
+                limit = PaginationSize,
+                minArticleQuality = MinimumArticleQuality,
+                namespaces = NamespaceIds == null ? null : string.Join(",", NamespaceIds),
                 batch = currentBatch,
             }), cancellationToken);
             totalBatches = (int)jresult["batches"];
@@ -144,10 +148,12 @@ public class LocalWikiSearchList : IWikiList<LocalWikiSearchResultItem>
                     yield return i;
         }
     }
+
 }
 
 public enum SearchRankingType
 {
+
     Default,
     Newest,
     Oldest,
@@ -156,4 +162,5 @@ public enum SearchRankingType
     MostViewed,
     Freshest,
     Stalest
+
 }

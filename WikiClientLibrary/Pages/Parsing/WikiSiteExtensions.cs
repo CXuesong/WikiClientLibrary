@@ -14,16 +14,16 @@ public static class WikiSiteExtensions
     {
         var p = new Dictionary<string, object?>
         {
-            {"action", "parse"},
-            {"prop", "text|langlinks|categories|sections|revid|displaytitle|properties"},
-            {"disabletoc", (options & ParsingOptions.DisableToc) == ParsingOptions.DisableToc},
-            {"disableeditsection", (options & ParsingOptions.DisableEditSection) == ParsingOptions.DisableEditSection},
-            {"disabletidy", (options & ParsingOptions.DisableTidy) == ParsingOptions.DisableTidy},
-            {"preview", (options & ParsingOptions.Preview) == ParsingOptions.Preview},
-            {"sectionpreview", (options & ParsingOptions.SectionPreview) == ParsingOptions.SectionPreview},
-            {"redirects", (options & ParsingOptions.ResolveRedirects) == ParsingOptions.ResolveRedirects},
-            {"mobileformat", (options & ParsingOptions.MobileFormat) == ParsingOptions.MobileFormat},
-            {"noimages", (options & ParsingOptions.NoImages) == ParsingOptions.NoImages},
+            { "action", "parse" },
+            { "prop", "text|langlinks|categories|sections|revid|displaytitle|properties" },
+            { "disabletoc", (options & ParsingOptions.DisableToc) == ParsingOptions.DisableToc },
+            { "disableeditsection", (options & ParsingOptions.DisableEditSection) == ParsingOptions.DisableEditSection },
+            { "disabletidy", (options & ParsingOptions.DisableTidy) == ParsingOptions.DisableTidy },
+            { "preview", (options & ParsingOptions.Preview) == ParsingOptions.Preview },
+            { "sectionpreview", (options & ParsingOptions.SectionPreview) == ParsingOptions.SectionPreview },
+            { "redirects", (options & ParsingOptions.ResolveRedirects) == ParsingOptions.ResolveRedirects },
+            { "mobileformat", (options & ParsingOptions.MobileFormat) == ParsingOptions.MobileFormat },
+            { "noimages", (options & ParsingOptions.NoImages) == ParsingOptions.NoImages },
         };
         if ((options & ParsingOptions.EffectiveLanguageLinks) == ParsingOptions.EffectiveLanguageLinks)
         {
@@ -61,7 +61,8 @@ public static class WikiSiteExtensions
     }
 
     /// <inheritdoc cref="ParsePageAsync(WikiSite,string,string,ParsingOptions,CancellationToken)"/>
-    public static Task<ParsedContentInfo> ParsePageAsync(this WikiSite site, string title, ParsingOptions options, CancellationToken cancellationToken)
+    public static Task<ParsedContentInfo> ParsePageAsync(this WikiSite site, string title, ParsingOptions options,
+        CancellationToken cancellationToken)
     {
         return ParsePageAsync(site, title, null, options, cancellationToken);
     }
@@ -75,7 +76,8 @@ public static class WikiSiteExtensions
     /// <param name="options">Options for parsing.</param>
     /// <param name="cancellationToken">The cancellation token that will be checked prior to completing the returned task.</param>
     /// <exception cref="ArgumentNullException"><paramref name="title"/> is <c>null</c>.</exception>
-    public static async Task<ParsedContentInfo> ParsePageAsync(this WikiSite site, string title, string? lang, ParsingOptions options, CancellationToken cancellationToken)
+    public static async Task<ParsedContentInfo> ParsePageAsync(this WikiSite site, string title, string? lang, ParsingOptions options,
+        CancellationToken cancellationToken)
     {
         if (site == null) throw new ArgumentNullException(nameof(site));
         if (string.IsNullOrEmpty(title)) throw new ArgumentNullException(nameof(title));
@@ -101,7 +103,8 @@ public static class WikiSiteExtensions
     }
 
     /// <inheritdoc cref="ParsePageAsync(WikiSite,string,string,ParsingOptions,CancellationToken)"/>
-    public static Task<ParsedContentInfo> ParsePageAsync(this WikiSite site, int id, ParsingOptions options, CancellationToken cancellationToken)
+    public static Task<ParsedContentInfo> ParsePageAsync(this WikiSite site, int id, ParsingOptions options,
+        CancellationToken cancellationToken)
     {
         return ParsePageAsync(site, id, null, options, cancellationToken);
     }
@@ -115,7 +118,8 @@ public static class WikiSiteExtensions
     /// <param name="options">Options for parsing.</param>
     /// <param name="cancellationToken">The cancellation token that will be checked prior to completing the returned task.</param>
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="id"/> is zero or negative.</exception>
-    public static async Task<ParsedContentInfo> ParsePageAsync(this WikiSite site, int id, string? lang, ParsingOptions options, CancellationToken cancellationToken)
+    public static async Task<ParsedContentInfo> ParsePageAsync(this WikiSite site, int id, string? lang, ParsingOptions options,
+        CancellationToken cancellationToken)
     {
         if (site == null) throw new ArgumentNullException(nameof(site));
         if (id <= 0) throw new ArgumentOutOfRangeException(nameof(id));
@@ -140,7 +144,8 @@ public static class WikiSiteExtensions
     }
 
     /// <inheritdoc cref="ParseRevisionAsync(WikiSite,int,string,ParsingOptions,CancellationToken)"/>
-    public static Task<ParsedContentInfo> ParseRevisionAsync(this WikiSite site, int revId, ParsingOptions options, CancellationToken cancellationToken)
+    public static Task<ParsedContentInfo> ParseRevisionAsync(this WikiSite site, int revId, ParsingOptions options,
+        CancellationToken cancellationToken)
     {
         return ParseRevisionAsync(site, revId, null, options, CancellationToken.None);
     }
@@ -154,7 +159,8 @@ public static class WikiSiteExtensions
     /// <param name="options">Options for parsing.</param>
     /// <param name="cancellationToken">The cancellation token that will be checked prior to completing the returned task.</param>
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="revId"/> is zero or negative.</exception>
-    public static async Task<ParsedContentInfo> ParseRevisionAsync(this WikiSite site, int revId, string? lang, ParsingOptions options, CancellationToken cancellationToken)
+    public static async Task<ParsedContentInfo> ParseRevisionAsync(this WikiSite site, int revId, string? lang, ParsingOptions options,
+        CancellationToken cancellationToken)
     {
         if (site == null) throw new ArgumentNullException(nameof(site));
         if (revId <= 0) throw new ArgumentOutOfRangeException(nameof(revId));
@@ -167,7 +173,8 @@ public static class WikiSiteExtensions
     }
 
     /// <inheritdoc cref="ParseContentAsync(WikiSite,string,string,string,string,string,ParsingOptions,CancellationToken)"/>
-    public static Task<ParsedContentInfo> ParseContentAsync(this WikiSite site, string? content, string? summary, string? title, ParsingOptions options)
+    public static Task<ParsedContentInfo> ParseContentAsync(this WikiSite site, string? content, string? summary, string? title,
+        ParsingOptions options)
     {
         return ParseContentAsync(site, content, summary, title, null, null, options, CancellationToken.None);
     }

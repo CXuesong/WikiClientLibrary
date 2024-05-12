@@ -6,10 +6,11 @@ namespace WikiClientLibrary.AbuseFilters;
 
 public class AbuseFilterList : WikiList<AbuseFilter>
 {
+
     /// <inheritdoc />
     public AbuseFilterList(WikiSite site) : base(site)
     {
-        }
+    }
 
     /// <summary>The filter ID to start enumerating from.</summary>
     public int StartId { get; set; }
@@ -23,17 +24,18 @@ public class AbuseFilterList : WikiList<AbuseFilter>
     /// <inheritdoc />
     public override IEnumerable<KeyValuePair<string, object?>> EnumListParameters()
     {
-            // TODO abfshow
-            return new Dictionary<string, object?>
-            {
-                {"abfprop", "id|pattern|description|actions|comments|lasteditor|lastedittime|private|status|hits"},
-                {"abflimit", PaginationSize},
-            };
-        }
+        // TODO abfshow
+        return new Dictionary<string, object?>
+        {
+            { "abfprop", "id|pattern|description|actions|comments|lasteditor|lastedittime|private|status|hits" },
+            { "abflimit", PaginationSize },
+        };
+    }
 
     /// <inheritdoc />
     protected override AbuseFilter ItemFromJson(JToken json)
     {
-            return json.ToObject<AbuseFilter>(Utility.WikiJsonSerializer);
-        }
+        return json.ToObject<AbuseFilter>(Utility.WikiJsonSerializer);
+    }
+
 }

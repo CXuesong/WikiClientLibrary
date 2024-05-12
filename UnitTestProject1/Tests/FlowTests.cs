@@ -64,7 +64,7 @@ public class FlowTests : WikiSiteTestsBase, IClassFixture<WikiSiteProvider>
         DumpTopics(topics);
         Assert.DoesNotContain(null, topics);
         // Remember to include title revision in the LastUpdated candidates.
-        Assert.All(topics, t => Assert.Equal(t.TopicTitleRevision.LastUpdated, 
+        Assert.All(topics, t => Assert.Equal(t.TopicTitleRevision.LastUpdated,
             ExpandPosts(t.Posts).Select(p => p.LastRevision).Prepend(t.TopicTitleRevision)
                 .Max(r => r.TimeStamp)));
         // TODO Use GetPostedTime to retrieve the real posted time of a topic.

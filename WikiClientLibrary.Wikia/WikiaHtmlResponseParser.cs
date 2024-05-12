@@ -7,7 +7,7 @@ public class WikiaHtmlResponseParser : WikiResponseMessageParser<HtmlDocument>
 {
 
     internal static readonly WikiaHtmlResponseParser Default = new WikiaHtmlResponseParser();
-     
+
     /// <inheritdoc />
     public override async Task<HtmlDocument> ParseResponseAsync(HttpResponseMessage response, WikiResponseParsingContext context)
     {
@@ -22,4 +22,5 @@ public class WikiaHtmlResponseParser : WikiResponseMessageParser<HtmlDocument>
         doc.LoadHtml(content);
         return doc;
     }
+
 }

@@ -181,6 +181,7 @@ public record ParsedSectionInfo(string? Title, string Content);
 
 internal struct DemoFileInfo
 {
+
     public DemoFileInfo(Stream contentStream, string? description)
     {
         ContentStream = contentStream;

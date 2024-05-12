@@ -30,32 +30,33 @@ public class Revision
     /// <exception cref="ArgumentException"><paramref name="revisionId"/> is not an existing revision id.</exception>
     public static ValueTask<Revision> FetchRevisionAsync(WikiSite site, long revisionId)
     {
-            return FetchRevisionsAsync(site, new[] { revisionId }, PageQueryOptions.FetchContent).FirstAsync()!;
-        }
+        return FetchRevisionsAsync(site, new[] { revisionId }, PageQueryOptions.FetchContent).FirstAsync()!;
+    }
 
     /// <inheritdoc cref="FetchRevisionsAsync(WikiSite,IEnumerable{long},IWikiPageQueryProvider,CancellationToken)"/>
     public static IAsyncEnumerable<Revision?> FetchRevisionsAsync(WikiSite site, params long[] revisionIds)
     {
-            return FetchRevisionsAsync(site, revisionIds, PageQueryOptions.FetchContent, CancellationToken.None);
-        }
+        return FetchRevisionsAsync(site, revisionIds, PageQueryOptions.FetchContent, CancellationToken.None);
+    }
 
     /// <inheritdoc cref="FetchRevisionsAsync(WikiSite,IEnumerable{long},IWikiPageQueryProvider,CancellationToken)"/>
     public static IAsyncEnumerable<Revision?> FetchRevisionsAsync(WikiSite site, IEnumerable<long> revisionIds)
     {
-            return FetchRevisionsAsync(site, revisionIds, PageQueryOptions.FetchContent, CancellationToken.None);
-        }
+        return FetchRevisionsAsync(site, revisionIds, PageQueryOptions.FetchContent, CancellationToken.None);
+    }
 
     /// <inheritdoc cref="FetchRevisionsAsync(WikiSite,IEnumerable{long},IWikiPageQueryProvider,CancellationToken)"/>
     public static IAsyncEnumerable<Revision?> FetchRevisionsAsync(WikiSite site, IEnumerable<long> revisionIds, PageQueryOptions options)
     {
-            return FetchRevisionsAsync(site, revisionIds, options, CancellationToken.None);
-        }
+        return FetchRevisionsAsync(site, revisionIds, options, CancellationToken.None);
+    }
 
     /// <inheritdoc cref="FetchRevisionsAsync(WikiSite,IEnumerable{long},IWikiPageQueryProvider,CancellationToken)"/>
-    public static IAsyncEnumerable<Revision?> FetchRevisionsAsync(WikiSite site, IEnumerable<long> revisionIds, PageQueryOptions options, CancellationToken cancellationToken)
+    public static IAsyncEnumerable<Revision?> FetchRevisionsAsync(WikiSite site, IEnumerable<long> revisionIds, PageQueryOptions options,
+        CancellationToken cancellationToken)
     {
-            return FetchRevisionsAsync(site, revisionIds, MediaWikiHelper.QueryProviderFromOptions(options), cancellationToken);
-        }
+        return FetchRevisionsAsync(site, revisionIds, MediaWikiHelper.QueryProviderFromOptions(options), cancellationToken);
+    }
 
     /// <summary>
     /// Fetch revisions by revid sequence.
@@ -75,12 +76,13 @@ public class Revision
     /// <para>If there's invalid revision id in <paramref name="revisionIds"/>, an <see cref="ArgumentException"/>
     /// will be thrown while enumerating.</para>
     /// </remarks>
-    public static IAsyncEnumerable<Revision?> FetchRevisionsAsync(WikiSite site, IEnumerable<long> revisionIds, IWikiPageQueryProvider options, CancellationToken cancellationToken)
+    public static IAsyncEnumerable<Revision?> FetchRevisionsAsync(WikiSite site, IEnumerable<long> revisionIds,
+        IWikiPageQueryProvider options, CancellationToken cancellationToken)
     {
-            if (site == null) throw new ArgumentNullException(nameof(site));
-            if (revisionIds == null) throw new ArgumentNullException(nameof(revisionIds));
-            return RequestHelper.FetchRevisionsAsync(site, revisionIds, options, cancellationToken);
-        }
+        if (site == null) throw new ArgumentNullException(nameof(site));
+        if (revisionIds == null) throw new ArgumentNullException(nameof(revisionIds));
+        return RequestHelper.FetchRevisionsAsync(site, revisionIds, options, cancellationToken);
+    }
 
     /// <summary>
     /// Gets the stub of page this revision applies to.
@@ -196,29 +198,30 @@ public class Revision
     [OnDeserialized]
     private void OnDeserialized(StreamingContext context)
     {
-            Flags = RevisionFlags.None;
-            if (Minor) Flags |= RevisionFlags.Minor;
-            if (Bot) Flags |= RevisionFlags.Bot;
-            if (New) Flags |= RevisionFlags.Create;
-            if (Anon) Flags |= RevisionFlags.Anonymous;
-            HiddenFields = RevisionHiddenFields.None;
-            if (UserHidden) HiddenFields |= RevisionHiddenFields.User;
-            // Make compatible with the slot-based revision JSON
-            if (Slots.TryGetValue(RevisionSlot.MainSlotName, out var mainSlot))
-            {
-                if (string.IsNullOrEmpty(Content)) Content = mainSlot.Content;
-                if (ContentLength == 0) ContentLength = mainSlot.ContentLength;
-                if (string.IsNullOrEmpty(ContentModel)) ContentModel = mainSlot.ContentModel;
-                if (string.IsNullOrEmpty(Sha1)) Sha1 = mainSlot.Sha1;
-            }
+        Flags = RevisionFlags.None;
+        if (Minor) Flags |= RevisionFlags.Minor;
+        if (Bot) Flags |= RevisionFlags.Bot;
+        if (New) Flags |= RevisionFlags.Create;
+        if (Anon) Flags |= RevisionFlags.Anonymous;
+        HiddenFields = RevisionHiddenFields.None;
+        if (UserHidden) HiddenFields |= RevisionHiddenFields.User;
+        // Make compatible with the slot-based revision JSON
+        if (Slots.TryGetValue(RevisionSlot.MainSlotName, out var mainSlot))
+        {
+            if (string.IsNullOrEmpty(Content)) Content = mainSlot.Content;
+            if (ContentLength == 0) ContentLength = mainSlot.ContentLength;
+            if (string.IsNullOrEmpty(ContentModel)) ContentModel = mainSlot.ContentModel;
+            if (string.IsNullOrEmpty(Sha1)) Sha1 = mainSlot.Sha1;
         }
+    }
 
     /// <inheritdoc/>
     public override string ToString()
     {
-            var tags = MediaWikiHelper.JoinValues(Tags);
-            return $"Revision#{Id}, {Flags}, {tags}, SHA1={Sha1}";
-        }
+        var tags = MediaWikiHelper.JoinValues(Tags);
+        return $"Revision#{Id}, {Flags}, {tags}, SHA1={Sha1}";
+    }
+
 }
 
 /// <summary>
@@ -239,7 +242,7 @@ public class RevisionSlot
     public RevisionSlot()
 #pragma warning restore CS8618 // 在退出构造函数时，不可为 null 的字段必须包含非 null 值。请考虑声明为可以为 null。
     {
-        }
+    }
 
     /// <summary>
     /// Revision slot name for main revisions.
@@ -297,6 +300,7 @@ public class RevisionSlot
 [Flags]
 public enum RevisionFlags
 {
+
     None = 0,
 
     /// <summary>
@@ -319,6 +323,7 @@ public enum RevisionFlags
     /// The revision's editor is an anonymous user.
     /// </summary>
     Anonymous = 8,
+
 }
 
 /// <summary>
@@ -329,6 +334,7 @@ public enum RevisionFlags
 [Flags]
 public enum RevisionHiddenFields
 {
+
     /// <summary>
     /// No field has been hidden.
     /// </summary>
@@ -339,4 +345,5 @@ public enum RevisionHiddenFields
     /// </summary>
     User = 1,
     //TODO Content & Comment
+
 }

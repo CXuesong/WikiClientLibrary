@@ -48,7 +48,7 @@ public sealed class Post
     /// <summary>
     /// Gets a read-only view of the replies.
     /// </summary>
-    public IList<Post> Replies { get; private set; } = (IList<Post>) Array.Empty<Post>();
+    public IList<Post> Replies { get; private set; } = (IList<Post>)Array.Empty<Post>();
 
     /// <summary>
     /// Post content.
@@ -175,4 +175,5 @@ public sealed class Post
         if (Replies.Count > 0) result += "[Re:" + Replies.Count + "]";
         return result;
     }
+
 }

@@ -302,7 +302,10 @@ public class NamespaceInfo
     [JsonProperty("*")]
     private string StarName
     {
-        set { if (CustomName == null) CustomName = value; }
+        set
+        {
+            if (CustomName == null) CustomName = value;
+        }
     }
 
     [JsonProperty("content")]
@@ -345,6 +348,7 @@ public class NamespaceInfo
     {
         return $"[{Id}]{CustomName}" + (Aliases.Count > 0 ? "/" + string.Join("/", Aliases) : null);
     }
+
 }
 
 /// <summary>
@@ -353,8 +357,9 @@ public class NamespaceInfo
 /// <remarks>Note the namespace name is case-insensitive.</remarks>
 public class NamespaceCollection : ICollection<NamespaceInfo>
 {
-    private readonly Dictionary<int, NamespaceInfo> idNsDict;           // id -- ns
-    private readonly Dictionary<string, NamespaceInfo> nameNsDict;      // name/custom/alias -- ns
+
+    private readonly Dictionary<int, NamespaceInfo> idNsDict; // id -- ns
+    private readonly Dictionary<string, NamespaceInfo> nameNsDict; // name/custom/alias -- ns
 
     internal NamespaceCollection(WikiSite site, JObject namespaces, JArray jaliases)
     {
@@ -516,6 +521,7 @@ public class NamespaceCollection : ICollection<NamespaceInfo>
     bool ICollection<NamespaceInfo>.IsReadOnly => true;
 
 #endregion
+
 }
 
 /// <summary>
@@ -602,6 +608,7 @@ public class InterwikiEntry
     {
         return Prefix + ":" + LanguageAutonym;
     }
+
 }
 
 /// <summary>
@@ -609,6 +616,7 @@ public class InterwikiEntry
 /// </summary>
 public class InterwikiMap : ICollection<InterwikiEntry>
 {
+
     private readonly IDictionary<string, InterwikiEntry> nameIwDict;
 
     internal InterwikiMap(WikiSite site, JArray interwikiMap, ILogger logger)
@@ -625,7 +633,8 @@ public class InterwikiMap : ICollection<InterwikiEntry>
             if (entry.Prefix.Any(char.IsUpper))
             {
                 // c.f. https://www.mediawiki.org/wiki/Manual:Interwiki#Field_documentation
-                logger.LogWarning("Detected non-compliant Interwiki prefix {Prefix}. Interwiki prefix must be all lower-case.", entry.Prefix);
+                logger.LogWarning("Detected non-compliant Interwiki prefix {Prefix}. Interwiki prefix must be all lower-case.",
+                    entry.Prefix);
             }
             if (!entryDict.TryAdd(prefix, entry))
             {
@@ -708,6 +717,7 @@ public class InterwikiMap : ICollection<InterwikiEntry>
     bool ICollection<InterwikiEntry>.IsReadOnly => true;
 
 #endregion
+
 }
 
 /// <summary>
@@ -715,6 +725,7 @@ public class InterwikiMap : ICollection<InterwikiEntry>
 /// </summary>
 public class ExtensionCollection : ReadOnlyCollection<ExtensionInfo>
 {
+
     private readonly ILookup<string, ExtensionInfo> nameLookup;
 
     internal ExtensionCollection(WikiSite site, JArray jextensions)
@@ -833,6 +844,7 @@ public class ExtensionInfo
 [JsonObject(MemberSerialization.OptIn)]
 public class SiteStatistics
 {
+
     [JsonProperty("pages")]
     public int PagesCount { get; private set; }
 
@@ -866,6 +878,7 @@ public class SiteStatistics
 
     [JsonProperty("queued-massmessages")]
     public int MassMessageQueueLength { get; private set; }
+
 }
 
 /// <summary>
@@ -877,6 +890,7 @@ public class SiteStatistics
 [JsonObject(MemberSerialization.OptIn)]
 public class MagicWordInfo
 {
+
     /// <summary>Name of the magic word. This is a case-sensitive magic word ID.</summary>
     [JsonProperty]
     public string Name { get; private set; } = "";
@@ -895,6 +909,7 @@ public class MagicWordInfo
     {
         return Aliases.Count == 0 ? Name : $"{Name} ({string.Join(',', Aliases)})";
     }
+
 }
 
 /// <summary>
@@ -981,4 +996,5 @@ public class MagicWordCollection : ReadOnlyCollection<MagicWordInfo>
             string.Equals(a, alias, i.CaseSensitive ? StringComparison.InvariantCulture : StringComparison.InvariantCultureIgnoreCase)
         ));
     }
+
 }

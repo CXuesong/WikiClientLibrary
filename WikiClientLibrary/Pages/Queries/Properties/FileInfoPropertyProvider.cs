@@ -21,14 +21,19 @@ public class FileInfoPropertyProvider : WikiPagePropertyProvider<FileInfoPropert
     /// <inheritdoc />
     public override IEnumerable<KeyValuePair<string, object?>> EnumParameters(MediaWikiVersion version)
     {
-        var properties = new List<string> { "timestamp", "user", "comment", "url", "size", "sha1" };
+        var properties = new List<string>
+        {
+            "timestamp",
+            "user",
+            "comment",
+            "url",
+            "size",
+            "sha1"
+        };
         if (QueryExtMetadata)
             properties.Add("extmetadata");
 
-        return new OrderedKeyValuePairs<string, object?>
-        {
-            {"iiprop", string.Join("|", properties)},
-        };
+        return new OrderedKeyValuePairs<string, object?> { { "iiprop", string.Join("|", properties) }, };
     }
 
     /// <inheritdoc />
@@ -39,6 +44,7 @@ public class FileInfoPropertyProvider : WikiPagePropertyProvider<FileInfoPropert
 
     /// <inheritdoc />
     public override string? PropertyName => "imageinfo";
+
 }
 
 /// <summary>
@@ -49,6 +55,7 @@ public class FileInfoPropertyProvider : WikiPagePropertyProvider<FileInfoPropert
 /// </summary>
 public class FileInfoPropertyGroup : WikiPagePropertyGroup
 {
+
     private static readonly FileInfoPropertyGroup Empty = new FileInfoPropertyGroup();
 
     private object _Revisions;

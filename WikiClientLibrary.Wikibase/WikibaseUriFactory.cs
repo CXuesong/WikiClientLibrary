@@ -9,6 +9,7 @@ namespace WikiClientLibrary.Wikibase;
 /// </summary>
 public static class WikibaseUriFactory
 {
+
     private static readonly ConcurrentDictionary<string, WeakReference<Uri>> cacheDict =
         new ConcurrentDictionary<string, WeakReference<Uri>>();
 
@@ -68,6 +69,7 @@ public static class WikibaseUriFactory
 
 internal class WikibaseUriJsonConverter : JsonConverter
 {
+
     /// <inheritdoc />
     public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
     {
@@ -78,7 +80,7 @@ internal class WikibaseUriJsonConverter : JsonConverter
     public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
     {
         if (reader.TokenType != JsonToken.String) throw new JsonException("Expect string value.");
-        var uri = (string) reader.Value;
+        var uri = (string)reader.Value;
         return WikibaseUriFactory.Get(uri);
     }
 
@@ -87,4 +89,5 @@ internal class WikibaseUriJsonConverter : JsonConverter
     {
         return objectType == typeof(Uri);
     }
+
 }

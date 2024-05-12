@@ -10,6 +10,7 @@ namespace WikiClientLibrary.Generators;
 /// </summary>
 public class CategoryMembersGenerator : WikiPageGenerator
 {
+
     // We cannot decide whether generated item is a page or category,
     // so we just use the base class Page for PageGenerator<T>.
 
@@ -72,12 +73,13 @@ public class CategoryMembersGenerator : WikiPageGenerator
             throw new InvalidOperationException(string.Format(Prompts.ExceptionArgumentIsEmpty1, nameof(CategoryTitle)));
         return new Dictionary<string, object?>
         {
-            {"cmtitle", CategoryTitle},
-            {"cmlimit", PaginationSize},
-            {"cmnamespace", NamespaceIds == null ? null : MediaWikiHelper.JoinValues(NamespaceIds)},
-            {"cmtype", ParseMemberTypes(MemberTypes)}
+            { "cmtitle", CategoryTitle },
+            { "cmlimit", PaginationSize },
+            { "cmnamespace", NamespaceIds == null ? null : MediaWikiHelper.JoinValues(NamespaceIds) },
+            { "cmtype", ParseMemberTypes(MemberTypes) }
         };
     }
+
 }
 
 /// <summary>
@@ -86,6 +88,7 @@ public class CategoryMembersGenerator : WikiPageGenerator
 [Flags]
 public enum CategoryMemberTypes
 {
+
     /// <summary>
     /// Invalid member type. Attempt to use this value will cause exceptions.
     /// </summary>
@@ -94,4 +97,5 @@ public enum CategoryMemberTypes
     Subcategory = 2,
     File = 4,
     All = Page | Subcategory | File,
+
 }

@@ -18,11 +18,7 @@ internal sealed class TokensManager
     private readonly WikiSite site;
 
     // Tokens that have been merged into CSRF token since MediaWiki 1.24 .
-    private static readonly string[] CsrfTokens =
-    {
-        "edit", "delete", "protect", "move", "block", "unblock", "email",
-        "import"
-    };
+    private static readonly string[] CsrfTokens = { "edit", "delete", "protect", "move", "block", "unblock", "email", "import" };
 
     private static readonly MediaWikiVersion v117 = new MediaWikiVersion(1, 17),
         v120 = new MediaWikiVersion(1, 20),
@@ -41,12 +37,8 @@ internal sealed class TokensManager
     /// <param name="cancellationToken">The cancellation token that will be checked prior to completing the returned task.</param>
     private async Task<JObject> FetchTokensAsync2(string tokenTypeExpr, CancellationToken cancellationToken)
     {
-        var jobj = await site.InvokeMediaWikiApiAsync(new MediaWikiFormRequestMessage(new
-        {
-            action = "query",
-            meta = "tokens",
-            type = tokenTypeExpr,
-        }), true, cancellationToken);
+        var jobj = await site.InvokeMediaWikiApiAsync(
+            new MediaWikiFormRequestMessage(new { action = "query", meta = "tokens", type = tokenTypeExpr, }), true, cancellationToken);
         var warnings = jobj["warnings"]?["tokens"];
         if (warnings != null)
         {
@@ -69,10 +61,7 @@ internal sealed class TokensManager
         Debug.Assert(!tokenTypeExpr.Contains("patrol"));
         var jobj = await site.InvokeMediaWikiApiAsync(new MediaWikiFormRequestMessage(new
         {
-            action = "query",
-            prop = "info",
-            titles = "Dummy Title",
-            intoken = tokenTypeExpr,
+            action = "query", prop = "info", titles = "Dummy Title", intoken = tokenTypeExpr,
         }), true, cancellationToken);
         var page = (JObject)((JProperty)jobj["query"]["pages"].First).Value;
         return new JObject(page.Properties().Where(p => p.Name.EndsWith("token")));
@@ -185,13 +174,11 @@ internal sealed class TokensManager
                     {
                         // Until v1.16, the patrol token is same as the edit token.
                         Debug.Assert(site.SiteInfo.Version >= v117);
-                        var jobj = await site.InvokeMediaWikiApiAsync(new MediaWikiFormRequestMessage(new
-                        {
-                            action = "query",
-                            list = "recentchanges",
-                            rctoken = "patrol",
-                            rclimit = 1
-                        }), cts.Token);
+                        var jobj = await site.InvokeMediaWikiApiAsync(
+                            new MediaWikiFormRequestMessage(new
+                            {
+                                action = "query", list = "recentchanges", rctoken = "patrol", rclimit = 1
+                            }), cts.Token);
                         try
                         {
                             return ExtractToken((JObject)jobj["query"]["recentchanges"].First, "patroltoken");

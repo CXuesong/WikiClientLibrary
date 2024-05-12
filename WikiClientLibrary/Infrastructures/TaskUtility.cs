@@ -9,6 +9,7 @@ namespace WikiClientLibrary.Infrastructures;
 // http://blog.stephencleary.com/2012/08/asynchronous-lazy-initialization.html
 internal sealed class AsyncLazy<T>
 {
+
     /// <summary>
     /// The underlying lazy task.
     /// </summary>
@@ -47,4 +48,5 @@ internal sealed class AsyncLazy<T>
     {
         var unused = instance.Value;
     }
+
 }

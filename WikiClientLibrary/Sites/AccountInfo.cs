@@ -138,10 +138,12 @@ public class AccountInfo
 /// </summary>
 public static class UserGroups
 {
+
     public const string User = "user";
     public const string Bot = "bot";
     public const string SysOp = "sysop";
     public const string Autoconfirmed = "autoconfirmed";
+
 }
 
 /// <summary>
@@ -149,7 +151,9 @@ public static class UserGroups
 /// </summary>
 public static class UserRights
 {
+
     public const string ApiHighLimits = "apihighlimits";
     public const string Patrol = "patrol";
     public const string AutoPatrol = "autopatrol";
+
 }

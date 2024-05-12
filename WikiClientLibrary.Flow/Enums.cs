@@ -21,16 +21,22 @@ public enum ModerationAction
 /// </summary>
 public enum ModerationState
 {
+
     /// <summary>Not moderated.</summary>
     None = 0,
+
     /// <summary>An unknown moderation state.</summary>
     Unknown,
+
     /// <summary>Deleted.</summary>
     Deleted,
+
     /// <summary>Hidden.</summary>
     Hidden,
+
     /// <summary>Suppressed.</summary>
     Suppressed,
+
 }
 
 /// <summary>
@@ -38,8 +44,10 @@ public enum ModerationState
 /// </summary>
 public enum LockAction
 {
+
     Lock = 0,
     Unlock = 1,
+
 }
 
 internal static partial class EnumParser

@@ -49,10 +49,11 @@ public class FileUsageGenerator : WikiPageGenerator
     {
         return new Dictionary<string, object?>
         {
-            {"iutitle", TargetTitle},
-            {"iunamespace", NamespaceIds == null ? null : MediaWikiHelper.JoinValues(NamespaceIds)},
-            {"iufilterredir", RedirectsFilter.ToString("redirects", "nonredirects")},
-            {"iulimit", PaginationSize}
+            { "iutitle", TargetTitle },
+            { "iunamespace", NamespaceIds == null ? null : MediaWikiHelper.JoinValues(NamespaceIds) },
+            { "iufilterredir", RedirectsFilter.ToString("redirects", "nonredirects") },
+            { "iulimit", PaginationSize }
         };
     }
+
 }

@@ -96,6 +96,7 @@ public class FileRevision
     /// </summary>
     [JsonProperty]
     public string Sha1 { get; private set; } = "";
+
 }
 
 /// <summary>
@@ -128,6 +129,7 @@ public class FileRevisionExtMetadataValue
 
     /// <inheritdoc />
     public override string ToString() => $"{Value} ({Source})";
+
 }
 
 /// <summary>

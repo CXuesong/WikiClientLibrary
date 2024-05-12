@@ -56,15 +56,20 @@ public class MediaWikiFormRequestMessage : WikiRequestMessage
 {
 
     private readonly IList<KeyValuePair<string, object?>> fields;
+
     private IList<KeyValuePair<string, object?>>? readonlyFields;
+
     // Memorizes the stream position upon first request.
     private IDictionary<Stream, long>? streamPositions;
 
     private volatile int status;
+
     // Created
     private const int STATUS_CREATED = 0;
+
     // GetHttpContent invoked, recoverable
     private const int STATUS_RECOVERABLE = 1;
+
     // GetHttpContent invoked, un-recoverable
     private const int STATUS_UNRECOVERABLE = 2;
 
@@ -74,7 +79,8 @@ public class MediaWikiFormRequestMessage : WikiRequestMessage
     }
 
     /// <inheritdoc cref="MediaWikiFormRequestMessage(string,object,bool)"/>
-    public MediaWikiFormRequestMessage(object fieldCollection, bool forceMultipartFormData) : this(null, fieldCollection, forceMultipartFormData)
+    public MediaWikiFormRequestMessage(object fieldCollection, bool forceMultipartFormData) : this(null, fieldCollection,
+        forceMultipartFormData)
     {
     }
 
@@ -186,4 +192,5 @@ public class MediaWikiFormRequestMessage : WikiRequestMessage
                 .Where(p => p.Value != null));
         }
     }
+
 }

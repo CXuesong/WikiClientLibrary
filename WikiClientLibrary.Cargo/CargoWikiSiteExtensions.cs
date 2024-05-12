@@ -36,7 +36,8 @@ public static class CargoWikiSiteExtensions
     /// You should observe <c>"MWException"</c> as the value of <see cref="MediaWikiRemoteException.ErrorClass"/>.
     /// </exception>
     /// <returns>a list of rows, each item is a JSON object with field name as key.</returns>
-    public static async Task<IList<JObject>> ExecuteCargoQueryAsync(this WikiSite site, CargoQueryParameters queryParameters, CancellationToken cancellationToken)
+    public static async Task<IList<JObject>> ExecuteCargoQueryAsync(this WikiSite site, CargoQueryParameters queryParameters,
+        CancellationToken cancellationToken)
     {
         if (site == null) throw new ArgumentNullException(nameof(site));
         if (queryParameters == null) throw new ArgumentNullException(nameof(queryParameters));
@@ -46,10 +47,12 @@ public static class CargoWikiSiteExtensions
             throw new ArgumentOutOfRangeException(nameof(queryParameters) + "." + nameof(queryParameters.Offset));
         var tables = queryParameters.Tables != null ? string.Join(",", queryParameters.Tables) : null;
         if (string.IsNullOrEmpty(tables))
-            throw new ArgumentException("queryParameters.Tables should not be null or empty.", nameof(queryParameters) + "." + nameof(queryParameters.Tables));
+            throw new ArgumentException("queryParameters.Tables should not be null or empty.",
+                nameof(queryParameters) + "." + nameof(queryParameters.Tables));
         var fields = queryParameters.Fields != null ? string.Join(",", queryParameters.Fields) : null;
         if (string.IsNullOrEmpty(fields))
-            throw new ArgumentException("queryParameters.Fields should not be null or empty.", nameof(queryParameters) + "." + nameof(queryParameters.Fields));
+            throw new ArgumentException("queryParameters.Fields should not be null or empty.",
+                nameof(queryParameters) + "." + nameof(queryParameters.Fields));
         var join_on = queryParameters.JoinOn != null ? string.Join(",", queryParameters.JoinOn) : null;
         var order_by = queryParameters.OrderBy != null ? string.Join(",", queryParameters.OrderBy) : null;
         using (site.BeginActionScope(site, nameof(ExecuteCargoQueryAsync)))

@@ -77,4 +77,5 @@ public static class WikiPageExtensions
     {
         return RequestHelper.PurgePagesAsync(pages, options, cancellationToken);
     }
+
 }

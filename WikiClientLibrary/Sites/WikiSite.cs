@@ -69,7 +69,8 @@ public partial class WikiSite : IWikiClientLoggable, IWikiClientAsyncInitializat
     /// <exception cref="TimeoutException">A time-out has been reached during test requests.</exception>
     /// <exception cref="OperationCanceledException">Operation has been cancelled.</exception>
     /// <returns>The URL of Api Endpoint. OR <c>null</c> if such search has failed.</returns>
-    public static Task<string?> SearchApiEndpointAsync(WikiClient client, string urlExpression, CancellationToken cancellationToken = default)
+    public static Task<string?> SearchApiEndpointAsync(WikiClient client, string urlExpression,
+        CancellationToken cancellationToken = default)
     {
         return MediaWikiUtility.SearchApiEndpointAsync(client, urlExpression, cancellationToken);
     }
@@ -83,7 +84,6 @@ public partial class WikiSite : IWikiClientLoggable, IWikiClientAsyncInitializat
     public WikiSite(IWikiClient wikiClient, string apiEndpoint)
         : this(wikiClient, new SiteOptions(apiEndpoint), null, null)
     {
-
     }
 
     /// <inheritdoc cref="WikiSite(IWikiClient,SiteOptions,string,string)"/>
@@ -95,7 +95,6 @@ public partial class WikiSite : IWikiClientLoggable, IWikiClientAsyncInitializat
     public WikiSite(IWikiClient wikiClient, SiteOptions options)
         : this(wikiClient, options, null, null)
     {
-
     }
 
     /// <summary>
@@ -178,12 +177,13 @@ public partial class WikiSite : IWikiClientLoggable, IWikiClientAsyncInitializat
     {
         using (this.BeginActionScope(null))
         {
-            var jobj = await InvokeMediaWikiApiAsync(new MediaWikiFormRequestMessage(new
-            {
-                action = "query",
-                meta = "siteinfo",
-                siprop = "general|namespaces|namespacealiases|interwikimap|extensions|magicwords"
-            }), true, CancellationToken.None);
+            var jobj = await InvokeMediaWikiApiAsync(
+                new MediaWikiFormRequestMessage(new
+                {
+                    action = "query",
+                    meta = "siteinfo",
+                    siprop = "general|namespaces|namespacealiases|interwikimap|extensions|magicwords"
+                }), true, CancellationToken.None);
             var qg = (JObject)jobj["query"]["general"];
             var ns = (JObject)jobj["query"]["namespaces"];
             var aliases = (JArray)jobj["query"]["namespacealiases"];
@@ -210,12 +210,9 @@ public partial class WikiSite : IWikiClientLoggable, IWikiClientAsyncInitializat
         // Note: _SiteInfo can be null here.
         using (this.BeginActionScope(null))
         {
-            var jobj = await InvokeMediaWikiApiAsync(new MediaWikiFormRequestMessage(new
-            {
-                action = "query",
-                meta = "userinfo",
-                uiprop = "blockinfo|groups|hasmsg|rights"
-            }), true, CancellationToken.None);
+            var jobj = await InvokeMediaWikiApiAsync(
+                new MediaWikiFormRequestMessage(new { action = "query", meta = "userinfo", uiprop = "blockinfo|groups|hasmsg|rights" }),
+                true, CancellationToken.None);
             _AccountInfo = ((JObject)jobj["query"]["userinfo"]).ToObject<AccountInfo>(Utility.WikiJsonSerializer);
             ListingPagingSize = _AccountInfo.HasRight(UserRights.ApiHighLimits) ? 5000 : 500;
         }
@@ -667,11 +664,8 @@ public partial class WikiSite : IWikiClientLoggable, IWikiClientAsyncInitializat
             // git #d965b0b4 - [SECURITY] [API BREAKING CHANGE] Require logout token. (task T25227) by sbassett
             token = await tokensManager.GetTokenAsync("csrf", false, CancellationToken.None);
         }
-        var jobj = await InvokeMediaWikiApiAsync(new MediaWikiFormRequestMessage(new
-        {
-            action = "logout",
-            token = token,
-        }), true, CancellationToken.None);
+        var jobj = await InvokeMediaWikiApiAsync(new MediaWikiFormRequestMessage(new { action = "logout", token = token, }), true,
+            CancellationToken.None);
     }
 
     private Task<bool>? reLoginTask;
@@ -710,4 +704,5 @@ public partial class WikiSite : IWikiClientLoggable, IWikiClientAsyncInitializat
     /// b. in your class constructor, replace the value of this property with your combined initialization task.
     /// </remarks>
     public Task Initialization { get; protected set; }
+
 }

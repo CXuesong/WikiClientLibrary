@@ -5,6 +5,7 @@ namespace WikiClientLibrary.Cargo.Linq;
 
 internal class CargoQueryProvider : IQueryProvider
 {
+
     private int _PaginationSize = 10;
     private ICargoRecordConverter _RecordConverter = new CargoRecordConverter();
 

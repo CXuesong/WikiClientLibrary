@@ -99,17 +99,19 @@ public class UploadResult
     {
         return $"{ResultCode}; {string.Join(",", Warnings.Select(p => p.Key))}";
     }
-}
 
+}
 
 /// <summary>
 /// General results of an upload operation.
 /// </summary>
 public enum UploadResultCode
 {
+
     Success = 0,
     Warning,
     Continue
+
 }
 
 /// <summary>
@@ -125,15 +127,15 @@ public class UploadWarningCollection : WikiReadOnlyDictionary
         // Referenced from pywikibot, site.py
         // map API warning codes to user error messages
         // {0} will be replaced by message string from API response
-        {"duplicate-archive", "The file is a duplicate of a deleted file {0}."},
-        {"was-deleted", "The file {0} was previously deleted."},
-        {"emptyfile", "File {0} is empty."},
-        {"exists", "File {0} already exists."},
-        {"duplicate", "Uploaded file is a duplicate of {0}."},
-        {"duplicateversions", "Uploaded file is a duplicate of previous version(s): {0}."},
-        {"badfilename", "Target filename is invalid. Suggested filename is {0}."},
-        {"filetype-unwanted-type", "File {0} type is unwanted type."},
-        {"exists-normalized", "File exists with different extension as \"{0}\"."},
+        { "duplicate-archive", "The file is a duplicate of a deleted file {0}." },
+        { "was-deleted", "The file {0} was previously deleted." },
+        { "emptyfile", "File {0} is empty." },
+        { "exists", "File {0} already exists." },
+        { "duplicate", "Uploaded file is a duplicate of {0}." },
+        { "duplicateversions", "Uploaded file is a duplicate of previous version(s): {0}." },
+        { "badfilename", "Target filename is invalid. Suggested filename is {0}." },
+        { "filetype-unwanted-type", "File {0} type is unwanted type." },
+        { "exists-normalized", "File exists with different extension as \"{0}\"." },
     };
 
     static UploadWarningCollection()
@@ -257,6 +259,7 @@ public class UploadWarningCollection : WikiReadOnlyDictionary
     {
         return string.Join("\n", this.Select(p => FormatWarning(p.Key, p.Value)));
     }
+
 }
 
 /// <summary>
@@ -284,4 +287,5 @@ public class StashError
 
     /// <inheritdoc />
     public override string ToString() => $"{Code}: {Message}";
+
 }

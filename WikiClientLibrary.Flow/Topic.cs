@@ -55,7 +55,7 @@ public class Topic
     /// Gets the list of posts, starting from the OP's first post.
     /// </summary>
     public IList<Post> Posts { get; private set; } = Array.Empty<Post>();
-        
+
     /// <summary>
     /// Topic display title.
     /// </summary>
@@ -73,7 +73,7 @@ public class Topic
     /// </summary>
     /// <remarks>Workflow ID is usually <see cref="Title"/> stripped of <c>Topic:</c> namespace prefix.</remarks>
     public string WorkflowId { get; private set; }
-        
+
     /// <inheritdoc cref="RefreshAsync(CancellationToken)"/>
     public Task RefreshAsync()
     {
@@ -88,10 +88,7 @@ public class Topic
     {
         var jresult = await Site.InvokeMediaWikiApiAsync(new MediaWikiFormRequestMessage(new
         {
-            action = "flow",
-            submodule = "view-topic",
-            page = Title,
-            vtformat = "wikitext",
+            action = "flow", submodule = "view-topic", page = Title, vtformat = "wikitext",
         }), cancellationToken);
         var jtopiclist = (JObject)jresult["flow"]["view-topic"]["result"]["topic"];
         var workflowId = (string)jtopiclist["roots"].First;
@@ -284,7 +281,7 @@ public class Topic
     {
         return FlowRequestHelper.ReplyAsync(Site, Title, WorkflowId, content, cancellationToken);
     }
-        
+
     /// <summary>
     /// Returns the user-friendly title of the topic.
     /// </summary>
@@ -294,4 +291,5 @@ public class Topic
         if (TopicTitleRevision != null) result += TopicTitleRevision.Content;
         return result;
     }
+
 }

@@ -32,12 +32,7 @@ internal static class Utility
                 // https://github.com/JamesNK/Newtonsoft.Json/issues/862
                 // https://github.com/CXuesong/WikiClientLibrary/issues/49
                 DateParseHandling = DateParseHandling.None,
-                Converters =
-                {
-                    new WikiBooleanJsonConverter(),
-                    new WikiStringEnumJsonConverter(),
-                    new WikiDateTimeJsonConverter(),
-                },
+                Converters = { new WikiBooleanJsonConverter(), new WikiStringEnumJsonConverter(), new WikiDateTimeJsonConverter(), },
             };
         return JsonSerializer.CreateDefault(settings);
     }

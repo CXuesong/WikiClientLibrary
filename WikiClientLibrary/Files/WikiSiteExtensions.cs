@@ -10,19 +10,21 @@ namespace WikiClientLibrary.Files;
 
 public static class WikiSiteExtensions
 {
-        
-    /// <inheritdoc cref="UploadAsync(WikiSite,string,WikiUploadSource,string,bool,AutoWatchBehavior,CancellationToken)"/>
-    public static Task<UploadResult> UploadAsync(this WikiSite site, string title, WikiUploadSource source, string? comment, bool ignoreWarnings)
-    {
-            return UploadAsync(site, title, source, comment, ignoreWarnings, AutoWatchBehavior.Default, CancellationToken.None);
-        }
 
     /// <inheritdoc cref="UploadAsync(WikiSite,string,WikiUploadSource,string,bool,AutoWatchBehavior,CancellationToken)"/>
-    public static Task<UploadResult> UploadAsync(this WikiSite site, string title, WikiUploadSource source, string? comment, bool ignoreWarnings,
+    public static Task<UploadResult> UploadAsync(this WikiSite site, string title, WikiUploadSource source, string? comment,
+        bool ignoreWarnings)
+    {
+        return UploadAsync(site, title, source, comment, ignoreWarnings, AutoWatchBehavior.Default, CancellationToken.None);
+    }
+
+    /// <inheritdoc cref="UploadAsync(WikiSite,string,WikiUploadSource,string,bool,AutoWatchBehavior,CancellationToken)"/>
+    public static Task<UploadResult> UploadAsync(this WikiSite site, string title, WikiUploadSource source, string? comment,
+        bool ignoreWarnings,
         AutoWatchBehavior watch)
     {
-            return UploadAsync(site, title, source, comment, ignoreWarnings, watch, CancellationToken.None);
-        }
+        return UploadAsync(site, title, source, comment, ignoreWarnings, watch, CancellationToken.None);
+    }
 
     /// <summary>
     /// Asynchronously uploads a file in this title.
@@ -45,32 +47,33 @@ public static class WikiSiteExtensions
     /// </exception>
     /// <exception cref="TimeoutException">Timeout specified in <see cref="WikiClient.Timeout"/> has been reached.</exception>
     /// <returns>An <see cref="UploadResult"/>. You need to check <see cref="UploadResult.ResultCode"/> for further action.</returns>
-    public static async Task<UploadResult> UploadAsync(this WikiSite site, string title, WikiUploadSource source, string? comment, bool ignoreWarnings,
+    public static async Task<UploadResult> UploadAsync(this WikiSite site, string title, WikiUploadSource source, string? comment,
+        bool ignoreWarnings,
         AutoWatchBehavior watch, CancellationToken cancellationToken)
     {
-            if (source == null) throw new ArgumentNullException(nameof(source));
-            Debug.Assert(source != null);
-            var link = WikiLink.Parse(site, title, BuiltInNamespaces.File);
-            using (site.BeginActionScope(null, title, source))
+        if (source == null) throw new ArgumentNullException(nameof(source));
+        Debug.Assert(source != null);
+        var link = WikiLink.Parse(site, title, BuiltInNamespaces.File);
+        using (site.BeginActionScope(null, title, source))
+        {
+            var requestFields = new OrderedKeyValuePairs<string, object?>
             {
-                var requestFields = new OrderedKeyValuePairs<string, object?>
-                {
-                    {"action", "upload"},
-                    {"watchlist", watch},
-                    {"token", WikiSiteToken.Edit},
-                    {"filename", link.Title},
-                    {"comment", comment},
-                    {"ignorewarnings", ignoreWarnings},
-                };
-                foreach (var p in source.GetUploadParameters(site.SiteInfo))
-                    requestFields[p.Key] = p.Value;
-                var request = new MediaWikiFormRequestMessage(requestFields, true);
-                site.Logger.LogDebug("Start uploading.");
-                var jresult = await site.InvokeMediaWikiApiAsync(request, cancellationToken);
-                var result = jresult["upload"].ToObject<UploadResult>(Utility.WikiJsonSerializer);
-                site.Logger.LogInformation("Uploaded. Result={Result}.", result.ResultCode);
-                return result;
-            }
+                { "action", "upload" },
+                { "watchlist", watch },
+                { "token", WikiSiteToken.Edit },
+                { "filename", link.Title },
+                { "comment", comment },
+                { "ignorewarnings", ignoreWarnings },
+            };
+            foreach (var p in source.GetUploadParameters(site.SiteInfo))
+                requestFields[p.Key] = p.Value;
+            var request = new MediaWikiFormRequestMessage(requestFields, true);
+            site.Logger.LogDebug("Start uploading.");
+            var jresult = await site.InvokeMediaWikiApiAsync(request, cancellationToken);
+            var result = jresult["upload"].ToObject<UploadResult>(Utility.WikiJsonSerializer);
+            site.Logger.LogInformation("Uploaded. Result={Result}.", result.ResultCode);
+            return result;
         }
+    }
 
 }

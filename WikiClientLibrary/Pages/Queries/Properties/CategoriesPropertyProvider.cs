@@ -21,23 +21,23 @@ public class CategoriesPropertyProvider : WikiPagePropertyProvider<CategoriesPro
     /// <inheritdoc />
     public override IEnumerable<KeyValuePair<string, object?>> EnumParameters(MediaWikiVersion version)
     {
-            var p = new OrderedKeyValuePairs<string, object?>
-            {
-                {"clprop", "sortkey|timestamp|hidden"},
-                {"clshow", HiddenCategoryFilter.ToString("hidden", "!hidden", null)}
-            };
-            if (CategorySelection != null) p.Add("clcategories", MediaWikiHelper.JoinValues(CategorySelection));
-            return p;
-        }
+        var p = new OrderedKeyValuePairs<string, object?>
+        {
+            { "clprop", "sortkey|timestamp|hidden" }, { "clshow", HiddenCategoryFilter.ToString("hidden", "!hidden", null) }
+        };
+        if (CategorySelection != null) p.Add("clcategories", MediaWikiHelper.JoinValues(CategorySelection));
+        return p;
+    }
 
     /// <inheritdoc />
     public override CategoriesPropertyGroup? ParsePropertyGroup(JObject json)
     {
-            throw new NotImplementedException();
-        }
+        throw new NotImplementedException();
+    }
 
     /// <inheritdoc />
     public override string? PropertyName => "categories";
+
 }
 
 /// <summary>
@@ -45,14 +45,15 @@ public class CategoriesPropertyProvider : WikiPagePropertyProvider<CategoriesPro
 /// </summary>
 public readonly struct WikiPageCategoryInfo
 {
+
     public WikiPageCategoryInfo(WikiPageStub page, bool isHidden, string sortKey, string fullSortKey, DateTime timeStamp)
     {
-            Page = page;
-            IsHidden = isHidden;
-            SortKey = sortKey;
-            TimeStamp = timeStamp;
-            FullSortKey = fullSortKey;
-        }
+        Page = page;
+        IsHidden = isHidden;
+        SortKey = sortKey;
+        TimeStamp = timeStamp;
+        FullSortKey = fullSortKey;
+    }
 
     /// <summary>
     /// Page information for the category.
@@ -81,8 +82,9 @@ public readonly struct WikiPageCategoryInfo
     /// <inheritdoc />
     public override string ToString()
     {
-            return Page.ToString();
-        }
+        return Page.ToString();
+    }
+
 }
 
 public class CategoriesPropertyGroup : WikiPagePropertyGroup
@@ -92,27 +94,27 @@ public class CategoriesPropertyGroup : WikiPagePropertyGroup
 
     internal CategoriesPropertyGroup? Create(JArray? jcats)
     {
-            if (jcats == null) return null;
-            if (!jcats.HasValues) return empty;
-            return new CategoriesPropertyGroup(jcats);
-        }
+        if (jcats == null) return null;
+        if (!jcats.HasValues) return empty;
+        return new CategoriesPropertyGroup(jcats);
+    }
 
     private CategoriesPropertyGroup()
     {
-            Categories = Array.Empty<WikiPageCategoryInfo>();
-        }
+        Categories = Array.Empty<WikiPageCategoryInfo>();
+    }
 
     private CategoriesPropertyGroup(JArray jcats)
     {
-            Categories = new ReadOnlyCollection<WikiPageCategoryInfo>(jcats.Select(CategoryInfoFromJson).ToList());
-        }
+        Categories = new ReadOnlyCollection<WikiPageCategoryInfo>(jcats.Select(CategoryInfoFromJson).ToList());
+    }
 
     internal static WikiPageCategoryInfo CategoryInfoFromJson(JToken json)
     {
-            return new WikiPageCategoryInfo(MediaWikiHelper.PageStubFromJson((JObject)json),
-                json["hidden"] != null, (string)json["sortkeyprefix"], (string)json["sortkey"],
-                (DateTime?)json["timestamp"] ?? DateTime.MinValue);
-        }
+        return new WikiPageCategoryInfo(MediaWikiHelper.PageStubFromJson((JObject)json),
+            json["hidden"] != null, (string)json["sortkeyprefix"], (string)json["sortkey"],
+            (DateTime?)json["timestamp"] ?? DateTime.MinValue);
+    }
 
     public IReadOnlyCollection<WikiPageCategoryInfo> Categories { get; }
 

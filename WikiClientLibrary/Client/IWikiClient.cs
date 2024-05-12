@@ -5,6 +5,7 @@
 /// </summary>
 public interface IWikiClient
 {
+
     /// <summary>
     /// Performs API invocation on the specified endpoint and gets parsed result.
     /// </summary>

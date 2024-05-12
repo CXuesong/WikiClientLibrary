@@ -88,14 +88,11 @@ internal static class RequestHelper
 
     private static readonly WikiPageQueryProvider postLastRevisionQueryProvider = new WikiPageQueryProvider
     {
-        Properties =
-        {
-            new RevisionsPropertyProvider {FetchContent = true}
-        },
-        ResolveRedirects = false
+        Properties = { new RevisionsPropertyProvider { FetchContent = true } }, ResolveRedirects = false
     };
 
-    private static readonly RevisionsPropertyProvider postRevisionWithContentProvider = new RevisionsPropertyProvider {FetchContent = true};
+    private static readonly RevisionsPropertyProvider postRevisionWithContentProvider =
+        new RevisionsPropertyProvider { FetchContent = true };
 
     public static async Task RefreshPostsAsync(IEnumerable<Post> posts,
         PostQueryOptions options, CancellationToken cancellationToken)
@@ -117,7 +114,6 @@ internal static class RequestHelper
                     if (postsNeedFetchingId.Count > 0)
                     {
                         site.Logger.LogDebug("Fetching page ID for {Count} comments.", postsNeedFetchingId.Count);
-
                     }
                     // Fetch last revisions to determine content and last editor
                     var pages = partition.Select(p => new WikiPage(site, p.Id)).ToList();
@@ -133,9 +129,7 @@ internal static class RequestHelper
                         {
                             var generator = new RevisionsGenerator(site, post.Id)
                             {
-                                TimeAscending = true,
-                                PaginationSize = 1,
-                                PropertyProvider = postRevisionWithContentProvider,
+                                TimeAscending = true, PaginationSize = 1, PropertyProvider = postRevisionWithContentProvider,
                             };
                             var rev = await generator.EnumItemsAsync().FirstAsync(cancellationToken);
                             firstRevisionDict[post.Id] = rev;
@@ -155,7 +149,8 @@ internal static class RequestHelper
         }
     }
 
-    public static async Task<Post> PostCommentAsync(WikiaSite site, object scopeInst, WikiPageStub owner, long? parentId, string content, CancellationToken cancellationToken)
+    public static async Task<Post> PostCommentAsync(WikiaSite site, object scopeInst, WikiPageStub owner, long? parentId, string content,
+        CancellationToken cancellationToken)
     {
         Debug.Assert(site != null);
         Debug.Assert(owner.HasTitle);
@@ -211,16 +206,16 @@ internal static class RequestHelper
             }
             var queryParams = new OrderedKeyValuePairs<string, object>
             {
-                {"token", null},
-                {"controller", "WallExternal"},
-                {"method", "postNewMessage"},
-                {"format", "json"},
-                {"pagenamespace", pageNamespaceId},
-                {"pagetitle", pageTitle},
-                {"messagetitle", messageTitle},
-                {"body", messageBody},
-                {"notifyeveryone", 0},
-                {"convertToFormat", ""},
+                { "token", null },
+                { "controller", "WallExternal" },
+                { "method", "postNewMessage" },
+                { "format", "json" },
+                { "pagenamespace", pageNamespaceId },
+                { "pagetitle", pageTitle },
+                { "messagetitle", messageTitle },
+                { "body", messageBody },
+                { "notifyeveryone", 0 },
+                { "convertToFormat", "" },
             };
             if (relatedPages != null)
             {
@@ -229,7 +224,8 @@ internal static class RequestHelper
             }
             BEGIN:
             queryParams["token"] = await site.GetTokenAsync("edit", cancellationToken);
-            var jresult = await site.InvokeNirvanaAsync(new WikiaQueryRequestMessage(queryParams, true), WikiaJsonResponseParser.Default, cancellationToken);
+            var jresult = await site.InvokeNirvanaAsync(new WikiaQueryRequestMessage(queryParams, true), WikiaJsonResponseParser.Default,
+                cancellationToken);
             if (!string.Equals((string)jresult["status"], "True", StringComparison.OrdinalIgnoreCase))
             {
                 var errorMessage = (string)jresult["errormsg"];
@@ -237,7 +233,8 @@ internal static class RequestHelper
                 {
                     if (!tokenPurged)
                     {
-                        if (errorMessage.Contains("There seems to be a problem with your login session", StringComparison.OrdinalIgnoreCase))
+                        if (errorMessage.Contains("There seems to be a problem with your login session",
+                                StringComparison.OrdinalIgnoreCase))
                         {
                             await site.GetTokenAsync("edit", true, cancellationToken);
                             tokenPurged = true;
@@ -285,7 +282,8 @@ internal static class RequestHelper
                 {
                     if (!tokenPurged)
                     {
-                        if (errorMessage.Contains("There seems to be a problem with your login session", StringComparison.OrdinalIgnoreCase))
+                        if (errorMessage.Contains("There seems to be a problem with your login session",
+                                StringComparison.OrdinalIgnoreCase))
                         {
                             await site.GetTokenAsync("edit", true, cancellationToken);
                             tokenPurged = true;

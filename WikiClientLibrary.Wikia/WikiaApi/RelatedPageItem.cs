@@ -36,4 +36,5 @@ public class RelatedPageItem
 
     /// <inheritdoc />
     public override string ToString() => $"[{Id}]{Title}";
+
 }

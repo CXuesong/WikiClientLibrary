@@ -21,9 +21,10 @@ namespace WikiClientLibrary.Generators;
 /// </remarks>
 public class SearchGenerator : WikiPageGenerator<SearchResultItem>
 {
+
     private SearchableField _MatchingField = SearchableField.Text;
 
-    private static readonly IList<int> defaultNamespace = new ReadOnlyCollection<int>(new[] {0});
+    private static readonly IList<int> defaultNamespace = new ReadOnlyCollection<int>(new[] { 0 });
 
     /// <inheritdoc />
     public SearchGenerator(WikiSite site) : base(site)
@@ -82,12 +83,12 @@ public class SearchGenerator : WikiPageGenerator<SearchResultItem>
     {
         var dict = new Dictionary<string, object?>
         {
-            {"srsearch", Keyword},
-            {"srnamespace", NamespaceIds == null ? "*" : MediaWikiHelper.JoinValues(NamespaceIds)},
-            {"srwhat", MatchingField},
-            {"srlimit", PaginationSize},
-            {"srinterwiki", IncludesInterwiki},
-            {"srbackend", BackendName}
+            { "srsearch", Keyword },
+            { "srnamespace", NamespaceIds == null ? "*" : MediaWikiHelper.JoinValues(NamespaceIds) },
+            { "srwhat", MatchingField },
+            { "srlimit", PaginationSize },
+            { "srinterwiki", IncludesInterwiki },
+            { "srbackend", BackendName }
         };
         // Include redirect pages in the search. From 1.23 onwards, redirects are always included. (Removed in 1.23)
         if (Site.SiteInfo.Version < new MediaWikiVersion(1, 23))
@@ -113,6 +114,7 @@ public class SearchGenerator : WikiPageGenerator<SearchResultItem>
     {
         return json.ToObject<SearchResultItem>(Utility.WikiJsonSerializer);
     }
+
 }
 
 /// <summary>
@@ -120,20 +122,25 @@ public class SearchGenerator : WikiPageGenerator<SearchResultItem>
 /// </summary>
 public enum SearchableField
 {
+
     /// <summary>
     /// Use the site MediaWiki site default behavior.
     /// </summary>
     Default,
+
     /// <summary>
     /// Search in page titles. Note that Wikipedia does not support this flag.
     /// </summary>
     Title,
+
     /// <summary>
     /// Search in page text.
     /// </summary>
     Text,
+
     /// <summary>
     /// Search for a near match in the title. (MediaWiki 1.17+)
     /// </summary>
     NearMatch
+
 }

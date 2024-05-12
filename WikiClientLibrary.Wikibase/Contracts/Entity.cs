@@ -75,14 +75,16 @@ internal class Claim
 
     [JsonProperty]
     public IList<Reference>? References { get; set; }
-        
+
     [JsonProperty]
     public bool Remove { get; set; }
+
 }
 
 [JsonObject(MemberSerialization.OptIn)]
 internal class Snak
 {
+
     [JsonProperty]
     public string? SnakType { get; set; }
 
@@ -97,11 +99,13 @@ internal class Snak
 
     [JsonProperty]
     public string? DataType { get; set; }
+
 }
 
 [JsonObject(MemberSerialization.OptIn)]
 internal class Reference
 {
+
     [JsonProperty]
     public string? Hash { get; set; }
 
@@ -110,11 +114,13 @@ internal class Reference
 
     [JsonProperty("snaks-order")]
     public IList<string>? SnaksOrder { get; set; }
+
 }
 
 [JsonObject(MemberSerialization.OptIn)]
 internal class SiteLink
 {
+
     [JsonProperty]
     public string Site { get; set; } = "";
 
@@ -126,4 +132,5 @@ internal class SiteLink
 
     [JsonProperty]
     public bool Remove { get; set; }
+
 }

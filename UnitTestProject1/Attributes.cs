@@ -5,10 +5,12 @@ namespace WikiClientLibrary.Tests.UnitTestProject1;
 
 public enum CISkippedReason
 {
+
     Unknown = 0,
     Unstable,
     Deprecated,
     AgentBlocked
+
 }
 
 /// <summary>
@@ -26,11 +28,13 @@ public class CISkippedAttribute : Attribute, ITraitAttribute
 
 public class CISkippedTraitDiscoverer : ITraitDiscoverer
 {
+
     private static readonly KeyValuePair<string, string>[] traits = new[] { new KeyValuePair<string, string>("CI", "Skipped") };
 
     /// <inheritdoc />
     public IEnumerable<KeyValuePair<string, string>> GetTraits(IAttributeInfo traitAttribute)
     {
-            return traits;
-        }
+        return traits;
+    }
+
 }

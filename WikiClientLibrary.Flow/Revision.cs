@@ -116,7 +116,7 @@ public class Revision
     /// Workflow ID of the replies.
     /// </summary>
     [JsonProperty("replies")]
-    public IList<string> ReplyIds { get; private set; } = (IList<string>) Array.Empty<string>();
+    public IList<string> ReplyIds { get; private set; } = (IList<string>)Array.Empty<string>();
 
     /// <summary>
     /// HTML links to show different views.
@@ -242,23 +242,23 @@ public class Revision
 
     private static readonly Dictionary<string, FlowRevisionAction> flowActionsDict = new Dictionary<string, FlowRevisionAction>
     {
-        {"create-header", FlowRevisionAction.CreateHeader},
-        {"edit-header", FlowRevisionAction.EditHeader},
-        {"hide-post", FlowRevisionAction.HidePost},
-        {"hide-topic", FlowRevisionAction.HideTopic},
-        {"delete-post", FlowRevisionAction.DeletePost},
-        {"delete-topic", FlowRevisionAction.DeleteTopic},
-        {"suppress-post", FlowRevisionAction.SuppressPost},
-        {"suppress-topic", FlowRevisionAction.SuppressTopic},
-        {"restore-post", FlowRevisionAction.RestorePost},
-        {"restore-topic", FlowRevisionAction.RestoreTopic},
-        {"lock-topic", FlowRevisionAction.LockTopic},
-        {"new-topic", FlowRevisionAction.NewTopic},
-        {"reply", FlowRevisionAction.Reply},
-        {"edit-post", FlowRevisionAction.EditPost},
-        {"edit-title", FlowRevisionAction.EditTitle},
-        {"create-topic-summary", FlowRevisionAction.CreateTopicSummary},
-        {"edit-topic-summary", FlowRevisionAction.EditTopicSummary},
+        { "create-header", FlowRevisionAction.CreateHeader },
+        { "edit-header", FlowRevisionAction.EditHeader },
+        { "hide-post", FlowRevisionAction.HidePost },
+        { "hide-topic", FlowRevisionAction.HideTopic },
+        { "delete-post", FlowRevisionAction.DeletePost },
+        { "delete-topic", FlowRevisionAction.DeleteTopic },
+        { "suppress-post", FlowRevisionAction.SuppressPost },
+        { "suppress-topic", FlowRevisionAction.SuppressTopic },
+        { "restore-post", FlowRevisionAction.RestorePost },
+        { "restore-topic", FlowRevisionAction.RestoreTopic },
+        { "lock-topic", FlowRevisionAction.LockTopic },
+        { "new-topic", FlowRevisionAction.NewTopic },
+        { "reply", FlowRevisionAction.Reply },
+        { "edit-post", FlowRevisionAction.EditPost },
+        { "edit-title", FlowRevisionAction.EditTitle },
+        { "create-topic-summary", FlowRevisionAction.CreateTopicSummary },
+        { "edit-topic-summary", FlowRevisionAction.EditTopicSummary },
     };
 
     private static FlowRevisionAction ParseRevisionAction(string action)
@@ -267,6 +267,7 @@ public class Revision
         if (flowActionsDict.TryGetValue(action, out var v)) return v;
         return FlowRevisionAction.Unknown;
     }
+
 }
 
 /// <summary>
@@ -275,6 +276,7 @@ public class Revision
 [JsonObject(MemberSerialization.OptIn)]
 public class FlowLink
 {
+
     public FlowLink(string url, string text) : this(url, text, text)
     {
     }
@@ -303,6 +305,7 @@ public class FlowLink
 /// </summary>
 public enum FlowRevisionAction
 {
+
     Unknown = 0,
     CreateHeader,
     EditHeader,
@@ -321,4 +324,5 @@ public enum FlowRevisionAction
     EditTitle,
     CreateTopicSummary,
     EditTopicSummary,
+
 }

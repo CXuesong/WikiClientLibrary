@@ -11,7 +11,7 @@
 /// </remarks>
 public interface IWikiPagePropertyGroup
 {
-        
+
 }
 
 /// <inheritdoc />

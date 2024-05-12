@@ -146,6 +146,7 @@ public class ExpressionTreePartialEvaluator : ExpressionVisitor
     [DebuggerDisplay("{OriginalExpression}")]
     private sealed class TraversalStateFrame
     {
+
         // For debugging purpose.
         public readonly Expression? OriginalExpression;
 
@@ -158,6 +159,7 @@ public class ExpressionTreePartialEvaluator : ExpressionVisitor
             OriginalExpression = originalExpression;
             IsEvaluable = isEvaluable;
         }
+
     }
 
 }

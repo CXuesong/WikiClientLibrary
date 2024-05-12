@@ -12,26 +12,32 @@ namespace WikiClientLibrary;
 /// <seealso cref="SiteInfo.Version"/>
 public enum MediaWikiDevChannel
 {
+
     /// <summary>
     /// Official release. No version suffix.
     /// </summary>
     None = 0,
+
     /// <summary>
     /// WMF weekly release. Version suffix is <c>-wmf</c>.
     /// </summary>
     Wmf = 1,
+
     /// <summary>
     /// Alpha release. Version suffix is <c>-alpha</c>.
     /// </summary>
     Alpha = 2,
+
     /// <summary>
     /// Beta release. Version suffix is <c>-beta</c>.
     /// </summary>
     Beta = 3,
+
     /// <summary>
     /// Release candidate. Version suffix is <c>-rc</c>.
     /// </summary>
     RC = 4
+
 }
 
 /// <summary>
@@ -139,7 +145,7 @@ public readonly struct MediaWikiVersion : IEquatable<MediaWikiVersion>, ICompara
             throw new FormatException(Prompts.ExceptionVersionMalformed);
         }
 
-        short major,minor, revision;
+        short major, minor, revision;
         try
         {
             major = match.Groups["Major"].Success ? short.Parse(match.Groups["Major"].Value) : (short)0;
@@ -382,7 +388,9 @@ public readonly struct MediaWikiVersion : IEquatable<MediaWikiVersion>, ICompara
     public int CompareTo(object? obj)
     {
         if (obj is null) return 1;
-        return obj is MediaWikiVersion other ? CompareTo(other) : throw new ArgumentException($"Object must be of type {nameof(MediaWikiVersion)}");
+        return obj is MediaWikiVersion other
+            ? CompareTo(other)
+            : throw new ArgumentException($"Object must be of type {nameof(MediaWikiVersion)}");
     }
 
     public static bool operator <(MediaWikiVersion left, MediaWikiVersion right)

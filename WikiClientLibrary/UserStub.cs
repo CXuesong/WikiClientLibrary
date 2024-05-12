@@ -79,6 +79,7 @@ public readonly struct UserStub : IEquatable<UserStub>
     {
         return !left.Equals(right);
     }
+
 }
 
 /// <summary>
@@ -86,10 +87,14 @@ public readonly struct UserStub : IEquatable<UserStub>
 /// </summary>
 public enum Gender
 {
+
     /// <summary>No gender preference.</summary>
     Unknown = 0,
+
     /// <summary>Male.</summary>
     Male,
+
     /// <summary>Female.</summary>
     Female
+
 }

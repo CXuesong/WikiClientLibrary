@@ -8,42 +8,42 @@ public class ScribuntoConsoleException : WikiClientException
 
     private static string MakeMessage(string? errorCode, string? errorMessage)
     {
-            var message = "Error while evaluating expression";
-            if (!string.IsNullOrEmpty(errorCode))
-                message += ": " + errorCode;
-            message += ".";
-            if (!string.IsNullOrEmpty(errorMessage))
-                message += " " + errorMessage;
-            return message;
-        }
+        var message = "Error while evaluating expression";
+        if (!string.IsNullOrEmpty(errorCode))
+            message += ": " + errorCode;
+        message += ".";
+        if (!string.IsNullOrEmpty(errorMessage))
+            message += " " + errorMessage;
+        return message;
+    }
 
     public ScribuntoConsoleException(string? errorCode, string? errorMessage)
         : this(errorCode, errorMessage, null, null)
     {
-        }
+    }
 
     public ScribuntoConsoleException(string? errorCode, string? errorMessage, ScribuntoEvaluationResult? evaluationResult)
         : this(errorCode, errorMessage, evaluationResult, null)
     {
-        }
+    }
 
     public ScribuntoConsoleException(string? errorCode, string? errorMessage, ScribuntoEvaluationResult? evaluationResult, string? message)
         : base(message ?? MakeMessage(errorCode, errorMessage))
     {
-            ErrorCode = errorCode;
-            ErrorMessage = errorMessage;
-            EvaluationResult = evaluationResult;
-        }
+        ErrorCode = errorCode;
+        ErrorMessage = errorMessage;
+        EvaluationResult = evaluationResult;
+    }
 
     public ScribuntoConsoleException(string? message)
         : this(null, null, null, message)
     {
-        }
+    }
 
     public ScribuntoConsoleException()
         : this(null, null, null, null)
     {
-        }
+    }
 
     /// <summary>
     /// The evaluation result that causes the exception.

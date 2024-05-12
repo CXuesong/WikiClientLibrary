@@ -43,7 +43,8 @@ internal abstract class CargoRecordQueryable
             expr = new CargoQueryExpressionReducer().VisitAndConvert(expr, nameof(BuildQueryParameters));
             queryExpr = expr as CargoQueryExpression;
             if (queryExpr == null)
-                throw new InvalidOperationException($"Cannot reduce the expression to CargoQueryExpression. Actual type: {expr?.GetType()}.");
+                throw new InvalidOperationException(
+                    $"Cannot reduce the expression to CargoQueryExpression. Actual type: {expr?.GetType()}.");
             return Interlocked.CompareExchange(ref _reducedQueryExpression, queryExpr, null) ?? queryExpr;
         }
     }

@@ -8,13 +8,13 @@ internal class OrderByExpression : CargoSqlExpression
     public OrderByExpression(Expression expression)
         : this(expression, false)
     {
-        }
+    }
 
     public OrderByExpression(Expression expression, bool descending)
     {
-            Expression = expression;
-            Descending = @descending;
-        }
+        Expression = expression;
+        Descending = @descending;
+    }
 
     /// <inheritdoc />
     public override Type Type => typeof(void);

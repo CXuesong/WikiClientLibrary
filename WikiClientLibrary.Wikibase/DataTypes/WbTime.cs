@@ -130,7 +130,8 @@ public struct WbTime : IEquatable<WbTime>
     /// <inheritdoc cref="WbTime(int,int,int,int,int,int,int,int,int,WikibaseTimePrecision,Uri)"/>
     /// <summary>Constructs a <see cref="WbTime"/> instance from <see cref="DateTimeOffset"/>.</summary>
     /// <param name="dateTime">The date, time, and time zone.</param>
-    public static WbTime FromDateTimeOffset(DateTimeOffset dateTime, int before, int after, WikibaseTimePrecision precision, Uri calendarModel)
+    public static WbTime FromDateTimeOffset(DateTimeOffset dateTime, int before, int after, WikibaseTimePrecision precision,
+        Uri calendarModel)
     {
         return new WbTime(dateTime.Year, dateTime.Month, dateTime.Day,
             dateTime.Hour, dateTime.Minute, dateTime.Second,
@@ -262,7 +263,8 @@ public struct WbTime : IEquatable<WbTime>
     /// <inheritdoc />
     public bool Equals(WbTime other)
     {
-        return Year == other.Year && Month == other.Month && Day == other.Day && Hour == other.Hour && Minute == other.Minute && Second == other.Second &&
+        return Year == other.Year && Month == other.Month && Day == other.Day && Hour == other.Hour && Minute == other.Minute &&
+               Second == other.Second &&
                Before == other.Before && After == other.After && TimeZone == other.TimeZone && Precision == other.Precision &&
                string.Equals(CalendarModel, other.CalendarModel);
     }
@@ -300,6 +302,7 @@ public struct WbTime : IEquatable<WbTime>
     {
         return !left.Equals(right);
     }
+
 }
 
 /// <summary>
@@ -307,34 +310,50 @@ public struct WbTime : IEquatable<WbTime>
 /// </summary>
 public enum WikibaseTimePrecision
 {
+
     /// <summary>1,000,000,000 years.</summary>
     YearE9 = 0,
+
     /// <summary>100,000,000 years.</summary>
     YearE8 = 1,
+
     /// <summary>10,000,000 years.</summary>
     YearE7 = 2,
+
     /// <summary>1,000,000 years.</summary>
     YearE6 = 3,
+
     /// <summary>100,000 years.</summary>
     YearE5 = 4,
+
     /// <summary>10,000 years.</summary>
     YearE4 = 5,
+
     /// <summary>1,000 years.</summary>
     Millenia = 6,
+
     /// <summary>100 years.</summary>
     Century = 7,
+
     /// <summary>10 years.</summary>
     Decade = 8,
+
     /// <summary>Years.</summary>
     Year = 9,
+
     /// <summary>Months.</summary>
     Month = 10,
+
     /// <summary>Days.</summary>
     Day = 11,
+
     /// <summary>Hours.</summary>
     Hour = 12,
+
     /// <summary>Minutes.</summary>
     Minute = 13,
+
     /// <summary>Seconds.</summary>
     Second = 14
+
 }
