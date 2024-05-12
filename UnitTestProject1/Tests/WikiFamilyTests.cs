@@ -1,24 +1,20 @@
-﻿using System;
-using System.Threading.Tasks;
-using WikiClientLibrary;
-using WikiClientLibrary.Sites;
+﻿using WikiClientLibrary.Sites;
 using WikiClientLibrary.Tests.UnitTestProject1.Fixtures;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace WikiClientLibrary.Tests.UnitTestProject1.Tests
+namespace WikiClientLibrary.Tests.UnitTestProject1.Tests;
+
+public class WikiFamilyTests : WikiSiteTestsBase, IClassFixture<WikiSiteProvider>
 {
 
-    public class WikiFamilyTests : WikiSiteTestsBase, IClassFixture<WikiSiteProvider>
+    private readonly Lazy<WikiFamily> _Family;
+
+    private WikiFamily Family => _Family.Value;
+
+    /// <inheritdoc />
+    public WikiFamilyTests(ITestOutputHelper output, WikiSiteProvider wikiSiteProvider) : base(output, wikiSiteProvider)
     {
-
-        private readonly Lazy<WikiFamily> _Family;
-
-        private WikiFamily Family => _Family.Value;
-
-        /// <inheritdoc />
-        public WikiFamilyTests(ITestOutputHelper output, WikiSiteProvider wikiSiteProvider) : base(output, wikiSiteProvider)
-        {
             _Family = new Lazy<WikiFamily>(() =>
             {
                 var f = new WikiFamily(CreateWikiClient(), "Wikipedia");
@@ -30,21 +26,21 @@ namespace WikiClientLibrary.Tests.UnitTestProject1.Tests
             });
         }
 
-        private string GetWPEntrypoint(string prefix)
-        {
+    private string GetWPEntrypoint(string prefix)
+    {
             return "https://" + prefix + ".wikipedia.org/w/api.php";
         }
 
-        private void AssertWikiLink(WikiLink link, string? interwiki, string? ns, string localTitle)
-        {
+    private void AssertWikiLink(WikiLink link, string? interwiki, string? ns, string localTitle)
+    {
             Assert.Equal(interwiki, link.InterwikiPrefix);
             Assert.Equal(ns, link.NamespaceName);
             Assert.Equal(localTitle, link.Title);
         }
 
-        [Fact]
-        public async Task InterwikiLinkTests()
-        {
+    [Fact]
+    public async Task InterwikiLinkTests()
+    {
             // We will not login onto any site…
             var originSite = await Family.GetSiteAsync("test2");
             Utility.AssertNotNull(originSite);
@@ -68,5 +64,4 @@ namespace WikiClientLibrary.Tests.UnitTestProject1.Tests
             await Assert.ThrowsAsync<ArgumentException>(() => WikiLink.ParseAsync(Family, "unk:WikiPedia:SANDBOX"));
         }
 
-    }
 }

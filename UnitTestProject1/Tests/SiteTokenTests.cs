@@ -1,33 +1,29 @@
-using System;
-using System.Collections.Generic;
 using System.Reflection;
-using System.Threading.Tasks;
 using WikiClientLibrary.Pages;
 using WikiClientLibrary.Sites;
 using WikiClientLibrary.Tests.UnitTestProject1.Fixtures;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace WikiClientLibrary.Tests.UnitTestProject1.Tests
+namespace WikiClientLibrary.Tests.UnitTestProject1.Tests;
+
+public class SiteTokenTests : WikiSiteTestsBase, IClassFixture<WikiSiteProvider>
 {
 
-    public class SiteTokenTests : WikiSiteTestsBase, IClassFixture<WikiSiteProvider>
+    /// <inheritdoc />
+    public SiteTokenTests(ITestOutputHelper output, WikiSiteProvider wikiSiteProvider) : base(output, wikiSiteProvider)
     {
-
-        /// <inheritdoc />
-        public SiteTokenTests(ITestOutputHelper output, WikiSiteProvider wikiSiteProvider) : base(output, wikiSiteProvider)
-        {
             SiteNeedsLogin(Endpoints.WikipediaTest2);
             SiteNeedsLogin(Endpoints.WikiaTest);
             SiteNeedsLogin(Endpoints.TFWiki);
         }
 
-        [SkippableTheory]
-        [InlineData(nameof(WpTest2SiteAsync))]
-        [InlineData(nameof(WikiaTestSiteAsync))]
-        [InlineData(nameof(TFWikiSiteAsync))]
-        public async Task TokenTest(string testSiteName)
-        {
+    [SkippableTheory]
+    [InlineData(nameof(WpTest2SiteAsync))]
+    [InlineData(nameof(WikiaTestSiteAsync))]
+    [InlineData(nameof(TFWikiSiteAsync))]
+    public async Task TokenTest(string testSiteName)
+    {
             var site = await WikiSiteFromNameAsync(testSiteName);
             foreach (var tokenType in new[] { "edit", "move", "patrol" })
             {
@@ -59,12 +55,12 @@ namespace WikiClientLibrary.Tests.UnitTestProject1.Tests
             await Assert.ThrowsAsync<ArgumentException>(() => site.GetTokenAsync("invalid_token_type"));
         }
 
-        [Theory]
-        [InlineData(Endpoints.WikipediaTest2, "Project:Sandbox")]
-        [InlineData(Endpoints.WikiaTest, "Project:Sandbox")]
-        [InlineData(Endpoints.TFWiki, "User:FuncGammaBot/Sandbox")]
-        public async Task BadTokenTest(string endpointUrl, string sandboxPageTitle)
-        {
+    [Theory]
+    [InlineData(Endpoints.WikipediaTest2, "Project:Sandbox")]
+    [InlineData(Endpoints.WikiaTest, "Project:Sandbox")]
+    [InlineData(Endpoints.TFWiki, "User:FuncGammaBot/Sandbox")]
+    public async Task BadTokenTest(string endpointUrl, string sandboxPageTitle)
+    {
             const string invalidToken = @"INVALID_TOKEN+\";
             var site = await CreateIsolatedWikiSiteAsync(endpointUrl);
             var page = new WikiPage(site, sandboxPageTitle);
@@ -99,7 +95,5 @@ namespace WikiClientLibrary.Tests.UnitTestProject1.Tests
             var editToken = await site.GetTokenAsync("edit");
             Assert.Matches(@"^[0-9a-f]{32,}\+\\$", editToken);
         }
-
-    }
 
 }

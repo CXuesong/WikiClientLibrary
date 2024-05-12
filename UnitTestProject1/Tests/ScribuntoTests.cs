@@ -1,28 +1,24 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Threading.Tasks;
-using Newtonsoft.Json.Linq;
+﻿using Newtonsoft.Json.Linq;
 using WikiClientLibrary.Scribunto;
 using WikiClientLibrary.Tests.UnitTestProject1.Fixtures;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace WikiClientLibrary.Tests.UnitTestProject1.Tests
-{
-    public class ScribuntoTests : WikiSiteTestsBase, IClassFixture<WikiSiteProvider>
-    {
+namespace WikiClientLibrary.Tests.UnitTestProject1.Tests;
 
-        /// <inheritdoc />
-        public ScribuntoTests(ITestOutputHelper output, WikiSiteProvider wikiSiteProvider) : base(output, wikiSiteProvider)
-        {
+public class ScribuntoTests : WikiSiteTestsBase, IClassFixture<WikiSiteProvider>
+{
+
+    /// <inheritdoc />
+    public ScribuntoTests(ITestOutputHelper output, WikiSiteProvider wikiSiteProvider) : base(output, wikiSiteProvider)
+    {
         }
 
-        [Theory]
-        [InlineData(nameof(WpTest2SiteAsync))]
-        [InlineData(nameof(WikiaTestSiteAsync))]
-        public async Task TestConsoleAsync(string siteName)
-        {
+    [Theory]
+    [InlineData(nameof(WpTest2SiteAsync))]
+    [InlineData(nameof(WikiaTestSiteAsync))]
+    public async Task TestConsoleAsync(string siteName)
+    {
             const string ModuleContent = @"
 -- Test module for unit test
 
@@ -77,9 +73,9 @@ return p
             await TestEvaluation("=x", "nil");
         }
 
-        [Fact]
-        public async Task TestLoadDataAsync()
-        {
+    [Fact]
+    public async Task TestLoadDataAsync()
+    {
             var site = await WpTest2SiteAsync;
             var atomWeights = await site.ScribuntoLoadDataAsync<Dictionary<string, double>>("Module:Standard atomic weight");
             Utility.AssertNotNull(atomWeights);
@@ -95,5 +91,4 @@ return p
             Assert.Equal("Project page", (string)data["project"]["tooltip"]);
         }
 
-    }
 }

@@ -1,9 +1,5 @@
 ﻿// To prevent test cases from making any edits, See WikiSiteTestsBase.cs.
 
-using System;
-using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
 using WikiClientLibrary.Client;
 using WikiClientLibrary.Files;
 using WikiClientLibrary.Pages;
@@ -12,39 +8,39 @@ using WikiClientLibrary.Tests.UnitTestProject1.Fixtures;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace WikiClientLibrary.Tests.UnitTestProject1.Tests
+namespace WikiClientLibrary.Tests.UnitTestProject1.Tests;
+
+/// <summary>
+/// The tests in this class requires a site administrator (i.e. sysop) account.
+/// </summary>
+public class PageTestsDirty : WikiSiteTestsBase, IClassFixture<WikiSiteProvider>
 {
-    /// <summary>
-    /// The tests in this class requires a site administrator (i.e. sysop) account.
-    /// </summary>
-    public class PageTestsDirty : WikiSiteTestsBase, IClassFixture<WikiSiteProvider>
+
+    private const string SummaryPrefix = "WikiClientLibrary test. ";
+
+    // The following pages will be created.
+    private const string TestPage1Title = "WCL test page 1";
+
+    private const string TestPage11Title = "WCL test page 1/1";
+
+    private const string TestPage2Title = "WCL test page 2";
+
+    // The following pages will NOT be created at first.
+    private const string TestPage12Title = "WCL test page 1/2";
+
+    public Task<WikiSite> SiteAsync
     {
-
-        private const string SummaryPrefix = "WikiClientLibrary test. ";
-
-        // The following pages will be created.
-        private const string TestPage1Title = "WCL test page 1";
-
-        private const string TestPage11Title = "WCL test page 1/1";
-
-        private const string TestPage2Title = "WCL test page 2";
-
-        // The following pages will NOT be created at first.
-        private const string TestPage12Title = "WCL test page 1/2";
-
-        public Task<WikiSite> SiteAsync
+        get
         {
-            get
-            {
                 if (string.IsNullOrEmpty(CredentialManager.DirtyTestsEntryPointUrl))
                     throw new NotSupportedException();
                 return GetWikiSiteAsync(CredentialManager.DirtyTestsEntryPointUrl);
             }
-        }
+    }
 
-        /// <inheritdoc />
-        public PageTestsDirty(ITestOutputHelper output, WikiSiteProvider wikiSiteProvider) : base(output, wikiSiteProvider)
-        {
+    /// <inheritdoc />
+    public PageTestsDirty(ITestOutputHelper output, WikiSiteProvider wikiSiteProvider) : base(output, wikiSiteProvider)
+    {
             if (CredentialManager.DirtyTestsEntryPointUrl == null)
                 throw new SkipException(
                     "You need to specify CredentialManager.DirtyTestsEntryPointUrl before running this group of tests.");
@@ -52,8 +48,8 @@ namespace WikiClientLibrary.Tests.UnitTestProject1.Tests
             SiteNeedsLogin(Endpoints.WikiaTest);
         }
 
-        private async Task<WikiPage> GetOrCreatePage(WikiSite site, string title)
-        {
+    private async Task<WikiPage> GetOrCreatePage(WikiSite site, string title)
+    {
             if (site == null) throw new ArgumentNullException(nameof(site));
             var page = new WikiPage(site, title);
             await page.RefreshAsync();
@@ -81,9 +77,9 @@ The original title of the page is '''{title}'''.
             return page;
         }
 
-        [SkippableFact]
-        public async Task PageMoveAndDeleteTest1()
-        {
+    [SkippableFact]
+    public async Task PageMoveAndDeleteTest1()
+    {
             var site = await SiteAsync;
             Skip.IfNot(site.AccountInfo.IsInGroup(UserGroups.SysOp),
                 "The user is not in sysop group and cannot delete the pages.");
@@ -95,12 +91,12 @@ The original title of the page is '''{title}'''.
             await page2.DeleteAsync(SummaryPrefix + "Delete the moved page.");
         }
 
-        [SkippableTheory]
-        [InlineData("File:Test image {0}.jpg", "1")]
-        [InlineData("File:Test image {0}.jpg", "2")]
-        [InlineData("Test image {0}.jpg", "1")]
-        public async Task LocalFileUploadTest1(string fileName, string imageName)
-        {
+    [SkippableTheory]
+    [InlineData("File:Test image {0}.jpg", "1")]
+    [InlineData("File:Test image {0}.jpg", "2")]
+    [InlineData("Test image {0}.jpg", "1")]
+    public async Task LocalFileUploadTest1(string fileName, string imageName)
+    {
             // TODO Resolve unstable test.
             Skip.If(true, "Disabled unstable test.");
             const string ReuploadSuffix = "\n\nReuploaded.";
@@ -145,9 +141,9 @@ The original title of the page is '''{title}'''.
             Assert.Equal(file.Sha1, page.LastFileRevision!.Sha1.ToUpperInvariant());
         }
 
-        [Fact]
-        public async Task LocalFileUploadRetryTest1()
-        {
+    [Fact]
+    public async Task LocalFileUploadRetryTest1()
+    {
             // This is to attempt to prevent the following error:
             // backend-fail-alreadyexists: The file "mwstore://local-swift-eqiad/local-public/archive/9/95/20191116051316!Test_image.jpg" already exists.
             var fileName = $"File:Test image {Utility.RandomTitleString()}.jpg";
@@ -174,18 +170,18 @@ The original title of the page is '''{title}'''.
             ms.Seek(0, SeekOrigin.Begin);
         }
 
-        [Fact]
-        public async Task LocalFileUploadTest2()
-        {
+    [Fact]
+    public async Task LocalFileUploadTest2()
+    {
             var site = await SiteAsync;
             await Assert.ThrowsAsync<OperationFailedException>(() =>
                 site.UploadAsync("File:Null.png", new StreamUploadSource(Stream.Null),
                     "This upload should have failed.", false));
         }
 
-        [SkippableFact]
-        public async Task ExternalFileUploadTest1()
-        {
+    [SkippableFact]
+    public async Task ExternalFileUploadTest1()
+    {
             const string SourceUrl = "https://upload.wikimedia.org/wikipedia/commons/5/55/8-cell-simple.gif";
             const string Description =
                 @"A 3D projection of an 8-cell performing a simple rotation about a plane which bisects the figure from front-left to back-right and top to bottom.
@@ -216,9 +212,9 @@ JasonHise grants anyone the right to use this work for any purpose, without any 
             }
         }
 
-        [SkippableFact]
-        public async Task ChunkedFileUploadTest()
-        {
+    [SkippableFact]
+    public async Task ChunkedFileUploadTest()
+    {
             // TODO Resolve unstable test.
             Skip.If(true, "Disabled unstable test.");
             var site = await SiteAsync;
@@ -257,5 +253,4 @@ JasonHise grants anyone the right to use this work for any purpose, without any 
             }
         }
 
-    }
 }

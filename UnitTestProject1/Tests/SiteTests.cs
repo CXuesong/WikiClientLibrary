@@ -1,27 +1,21 @@
-﻿using System;
-using System.Diagnostics;
-using System.Reflection;
-using System.Threading.Tasks;
-using WikiClientLibrary;
-using WikiClientLibrary.Sites;
+﻿using WikiClientLibrary.Sites;
 using WikiClientLibrary.Tests.UnitTestProject1.Fixtures;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace WikiClientLibrary.Tests.UnitTestProject1.Tests
+namespace WikiClientLibrary.Tests.UnitTestProject1.Tests;
+
+[Trait("Category", "SiteTests")]
+public class SiteTests : WikiSiteTestsBase, IClassFixture<WikiSiteProvider>
 {
 
-    [Trait("Category", "SiteTests")]
-    public class SiteTests : WikiSiteTestsBase, IClassFixture<WikiSiteProvider>
+    /// <inheritdoc />
+    public SiteTests(ITestOutputHelper output, WikiSiteProvider wikiSiteProvider) : base(output, wikiSiteProvider)
     {
-
-        /// <inheritdoc />
-        public SiteTests(ITestOutputHelper output, WikiSiteProvider wikiSiteProvider) : base(output, wikiSiteProvider)
-        {
         }
 
-        private void ValidateNamespace(WikiSite site, int id, string name, bool isContent, string? normalizedName = null)
-        {
+    private void ValidateNamespace(WikiSite site, int id, string name, bool isContent, string? normalizedName = null)
+    {
             // normalizedName: null means using `name` as normalized name
             Assert.True(site.Namespaces.Contains(id), $"Cannot find namespace id={id}.");
             var ns = site.Namespaces[id];
@@ -33,8 +27,8 @@ namespace WikiClientLibrary.Tests.UnitTestProject1.Tests
             Assert.Equal(ns, site.Namespaces[name]);
         }
 
-        private void ValidateNamespaces(WikiSite site)
-        {
+    private void ValidateNamespaces(WikiSite site)
+    {
             Assert.True(site.Namespaces.Contains(0));
             Assert.True(site.Namespaces[0].IsContent);
             ValidateNamespace(site, -2, "Media", false);
@@ -47,8 +41,8 @@ namespace WikiClientLibrary.Tests.UnitTestProject1.Tests
             ValidateNamespace(site, 14, "Category", false);
         }
 
-        private void ValidateWpInterwikiMap(WikiSite site)
-        {
+    private void ValidateWpInterwikiMap(WikiSite site)
+    {
             // Standard names
             Assert.True(site.InterwikiMap.Contains("en"));
             Assert.True(site.InterwikiMap.Contains("zh"));
@@ -65,9 +59,9 @@ namespace WikiClientLibrary.Tests.UnitTestProject1.Tests
             Assert.Equal("français", site.InterwikiMap[" FR "].LanguageAutonym);
         }
 
-        [Fact]
-        public async Task TestWpTest2()
-        {
+    [Fact]
+    public async Task TestWpTest2()
+    {
             var site = await WpTest2SiteAsync;
             ShallowTrace(site);
             Assert.Equal("Wikipedia", site.SiteInfo.SiteName);
@@ -88,9 +82,9 @@ namespace WikiClientLibrary.Tests.UnitTestProject1.Tests
             Assert.True(stat.UsersCount > 5000); // 6321 @ 2016-08-29
         }
 
-        [Fact]
-        public async Task TestWpLzh()
-        {
+    [Fact]
+    public async Task TestWpLzh()
+    {
             var site = await WpLzhSiteAsync;
             ShallowTrace(site);
             Assert.Equal("維基大典", site.SiteInfo.SiteName);
@@ -101,34 +95,34 @@ namespace WikiClientLibrary.Tests.UnitTestProject1.Tests
             ValidateNamespace(site, 100, "門", false);
         }
 
-        [Fact]
-        public async Task TestWikia()
-        {
+    [Fact]
+    public async Task TestWikia()
+    {
             var site = await WikiaTestSiteAsync;
             ShallowTrace(site);
             Assert.Equal("Dman Wikia", site.SiteInfo.SiteName);
             ValidateNamespaces(site);
         }
 
-        [Theory]
-        [InlineData(Endpoints.WikipediaEn)]
-        [InlineData(Endpoints.WikiaTest)]
-        [InlineData(Endpoints.WikipediaTest2)]
-        [InlineData(Endpoints.TFWiki)]
-        public async Task LoginWikiSiteFailureTest(string endpointUrl)
-        {
+    [Theory]
+    [InlineData(Endpoints.WikipediaEn)]
+    [InlineData(Endpoints.WikiaTest)]
+    [InlineData(Endpoints.WikipediaTest2)]
+    [InlineData(Endpoints.TFWiki)]
+    public async Task LoginWikiSiteFailureTest(string endpointUrl)
+    {
             var site = await CreateIsolatedWikiSiteAsync(endpointUrl, true);
             var ex = await Assert.ThrowsAsync<OperationFailedException>(() => site.LoginAsync("wcl_login_failure_test", "password"));
             Output.WriteLine(ex.ToString());
         }
 
-        [Theory]
-        [InlineData(Endpoints.WikipediaEn)]
-        [InlineData(Endpoints.WikiaTest)]
-        [InlineData(Endpoints.WikipediaTest2)]
-        [InlineData(Endpoints.TFWiki)]
-        public async Task LoginWikiSiteTest(string endpointUrl)
-        {
+    [Theory]
+    [InlineData(Endpoints.WikipediaEn)]
+    [InlineData(Endpoints.WikiaTest)]
+    [InlineData(Endpoints.WikipediaTest2)]
+    [InlineData(Endpoints.TFWiki)]
+    public async Task LoginWikiSiteTest(string endpointUrl)
+    {
             var site = await CreateIsolatedWikiSiteAsync(endpointUrl, true);
             Assert.False(site.AccountInfo.IsUser);
             Assert.True(site.AccountInfo.IsAnonymous);
@@ -144,9 +138,9 @@ namespace WikiClientLibrary.Tests.UnitTestProject1.Tests
             Output.WriteLine($"{site.AccountInfo.Name} has logged out.");
         }
 
-        [Fact]
-        public async Task LoginWpTest2_2()
-        {
+    [Fact]
+    public async Task LoginWpTest2_2()
+    {
             var site = await CreateIsolatedWikiSiteAsync(Endpoints.WikipediaTest2, true);
             await CredentialManager.LoginAsync(site);
             Assert.True(site.AccountInfo.IsUser);
@@ -158,9 +152,9 @@ namespace WikiClientLibrary.Tests.UnitTestProject1.Tests
             Output.WriteLine($"{site.AccountInfo.Name} has logged out.");
         }
 
-        [Fact]
-        public async Task LoginWpTest2_3()
-        {
+    [Fact]
+    public async Task LoginWpTest2_3()
+    {
             var site = new WikiSite(CreateWikiClient(),
                 new SiteOptions(Endpoints.WikipediaTest2), "!!RandomUserName!!", "!!RandomPassword!!");
             await Assert.ThrowsAsync<OperationFailedException>(() => site.Initialization);
@@ -168,25 +162,25 @@ namespace WikiClientLibrary.Tests.UnitTestProject1.Tests
             Assert.Throws<InvalidOperationException>(() => site.SiteInfo);
         }
 
-        /// <summary>
-        /// Tests legacy way for logging in. That is, to call "login" API action
-        /// twice, with the second call using the token returned from the first call.
-        /// </summary>
-        [Fact]
-        public async Task LoginWpTest2_4()
-        {
+    /// <summary>
+    /// Tests legacy way for logging in. That is, to call "login" API action
+    /// twice, with the second call using the token returned from the first call.
+    /// </summary>
+    [Fact]
+    public async Task LoginWpTest2_4()
+    {
             var site = await CredentialManager.EarlyLoginAsync(CreateWikiClient(),
                 new SiteOptions(Endpoints.WikipediaTest2));
             ShallowTrace(site);
             await site.LogoutAsync();
         }
 
-        /// <summary>
-        /// Tests <see cref="SiteOptions.ExplicitInfoRefresh"/>.
-        /// </summary>
-        [SkippableFact]
-        public async Task LoginPrivateWikiTest()
-        {
+    /// <summary>
+    /// Tests <see cref="SiteOptions.ExplicitInfoRefresh"/>.
+    /// </summary>
+    [SkippableFact]
+    public async Task LoginPrivateWikiTest()
+    {
             if (string.IsNullOrEmpty(CredentialManager.PrivateWikiTestsEntryPointUrl))
                 throw new SkipException("The test needs CredentialManager.PrivateWikiTestsEntryPointUrl to be set.");
             var client = CreateWikiClient();
@@ -201,9 +195,9 @@ namespace WikiClientLibrary.Tests.UnitTestProject1.Tests
             await site.LogoutAsync();
         }
 
-        [Fact]
-        public async Task WpTest2OpenSearchTest()
-        {
+    [Fact]
+    public async Task WpTest2OpenSearchTest()
+    {
             var site = await WpTest2SiteAsync;
             var result = await site.OpenSearchAsync("San");
             ShallowTrace(result);
@@ -211,9 +205,9 @@ namespace WikiClientLibrary.Tests.UnitTestProject1.Tests
             Assert.Contains(result, e => e.Title == "Sandbox");
         }
 
-        [Fact]
-        public async Task WikiaOpenSearchTest()
-        {
+    [Fact]
+    public async Task WikiaOpenSearchTest()
+    {
             var site = await WikiaTestSiteAsync;
             var result = await Task.WhenAll(site.OpenSearchAsync("Dman Wi"),
                 site.OpenSearchAsync("THISTITLEDOESNOTEXIST"));
@@ -224,9 +218,9 @@ namespace WikiClientLibrary.Tests.UnitTestProject1.Tests
             Assert.True(result[1].Count == 0);
         }
 
-        [Fact]
-        public async Task SearchApiEndpointTest()
-        {
+    [Fact]
+    public async Task SearchApiEndpointTest()
+    {
             var client = CreateWikiClient();
             var result = await WikiSite.SearchApiEndpointAsync(client, "en.wikipedia.org");
             Assert.Equal("https://en.wikipedia.org/w/api.php", result);
@@ -238,13 +232,13 @@ namespace WikiClientLibrary.Tests.UnitTestProject1.Tests
             Assert.Null(result);
         }
 
-        [Theory]
-        [InlineData(Endpoints.WikipediaEn)]
-        [InlineData(Endpoints.WikiaTest)]
-        [InlineData(Endpoints.WikipediaTest2)]
-        [InlineData(Endpoints.TFWiki)]
-        public async Task InterlacingLoginLogoutTest(string endpointUrl)
-        {
+    [Theory]
+    [InlineData(Endpoints.WikipediaEn)]
+    [InlineData(Endpoints.WikiaTest)]
+    [InlineData(Endpoints.WikipediaTest2)]
+    [InlineData(Endpoints.TFWiki)]
+    public async Task InterlacingLoginLogoutTest(string endpointUrl)
+    {
             // The two sites belong to different WikiClient instances.
             var site1 = await CreateIsolatedWikiSiteAsync(endpointUrl, true);
             var site2 = await CreateIsolatedWikiSiteAsync(endpointUrl, true);
@@ -262,13 +256,13 @@ namespace WikiClientLibrary.Tests.UnitTestProject1.Tests
                 "https://github.com/CXuesong/WikiClientLibrary/issues/11 .");
         }
 
-        [Theory]
-        [InlineData(Endpoints.WikipediaEn)]
-        [InlineData(Endpoints.WikiaTest)]
-        [InlineData(Endpoints.WikipediaTest2)]
-        // [InlineData(Endpoints.TFWiki)] account assertion does not work on MW 1.19.
-        public async Task AccountAssertionTest1(string endpointUrl)
-        {
+    [Theory]
+    [InlineData(Endpoints.WikipediaEn)]
+    [InlineData(Endpoints.WikiaTest)]
+    [InlineData(Endpoints.WikipediaTest2)]
+    // [InlineData(Endpoints.TFWiki)] account assertion does not work on MW 1.19.
+    public async Task AccountAssertionTest1(string endpointUrl)
+    {
             // This method will fiddle with the Site instance…
             var site = await CreateIsolatedWikiSiteAsync(endpointUrl, true);
             Assert.False(site.AccountInfo.IsUser, "You should have not logged in.");
@@ -279,13 +273,13 @@ namespace WikiClientLibrary.Tests.UnitTestProject1.Tests
             await Assert.ThrowsAsync<AccountAssertionFailureException>(() => site.GetMessageAsync("edit"));
         }
 
-        [Theory]
-        [InlineData(Endpoints.WikipediaEn)]
-        [InlineData(Endpoints.WikiaTest)]
-        [InlineData(Endpoints.WikipediaTest2)]
-        [InlineData(Endpoints.TFWiki)]
-        public async Task AccountAssertionTest2(string endpointUrl)
-        {
+    [Theory]
+    [InlineData(Endpoints.WikipediaEn)]
+    [InlineData(Endpoints.WikiaTest)]
+    [InlineData(Endpoints.WikipediaTest2)]
+    [InlineData(Endpoints.TFWiki)]
+    public async Task AccountAssertionTest2(string endpointUrl)
+    {
             // This method will fiddle with the Site instance…
             var site = await CreateIsolatedWikiSiteAsync(endpointUrl, true);
             site.AccountAssertionFailureHandler = new MyAccountAssertionFailureHandler(async s =>
@@ -302,23 +296,22 @@ namespace WikiClientLibrary.Tests.UnitTestProject1.Tests
             Output.WriteLine("Message(edit) = " + message);
         }
 
-        private class MyAccountAssertionFailureHandler : IAccountAssertionFailureHandler
-        {
-            private readonly Func<WikiSite, Task<bool>> _Handler;
+    private class MyAccountAssertionFailureHandler : IAccountAssertionFailureHandler
+    {
+        private readonly Func<WikiSite, Task<bool>> _Handler;
 
-            public MyAccountAssertionFailureHandler(Func<WikiSite, Task<bool>> handler)
-            {
+        public MyAccountAssertionFailureHandler(Func<WikiSite, Task<bool>> handler)
+        {
                 if (handler == null) throw new ArgumentNullException(nameof(handler));
                 _Handler = handler;
             }
 
-            /// <inheritdoc />
-            public Task<bool> Login(WikiSite site)
-            {
+        /// <inheritdoc />
+        public Task<bool> Login(WikiSite site)
+        {
                 if (site == null) throw new ArgumentNullException(nameof(site));
                 return _Handler(site);
             }
-        }
-
     }
+
 }

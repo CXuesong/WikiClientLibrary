@@ -1,11 +1,7 @@
 ﻿// Enables  to prevent test cases from making any edits.
 //          DRY_RUN
 
-using System;
-using System.Diagnostics;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using WikiClientLibrary.Files;
 using WikiClientLibrary.Generators;
 using WikiClientLibrary.Pages;
@@ -15,26 +11,25 @@ using WikiClientLibrary.Tests.UnitTestProject1.Fixtures;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace WikiClientLibrary.Tests.UnitTestProject1.Tests
+namespace WikiClientLibrary.Tests.UnitTestProject1.Tests;
+
+public class PageTests : WikiSiteTestsBase, IClassFixture<WikiSiteProvider>
 {
 
-    public class PageTests : WikiSiteTestsBase, IClassFixture<WikiSiteProvider>
+    private const string SummaryPrefix = "WikiClientLibrary test.";
+
+    /// <inheritdoc />
+    public PageTests(ITestOutputHelper output, WikiSiteProvider wikiSiteProvider) : base(output, wikiSiteProvider)
     {
-
-        private const string SummaryPrefix = "WikiClientLibrary test.";
-
-        /// <inheritdoc />
-        public PageTests(ITestOutputHelper output, WikiSiteProvider wikiSiteProvider) : base(output, wikiSiteProvider)
-        {
             SiteNeedsLogin(Endpoints.WikipediaTest2);
             SiteNeedsLogin(Endpoints.WikiaTest);
             SiteNeedsLogin(Endpoints.WikipediaLzh);
             SiteNeedsLogin(Endpoints.TFWiki);
         }
 
-        [Fact]
-        public async Task WpEnPageReadTest1()
-        {
+    [Fact]
+    public async Task WpEnPageReadTest1()
+    {
             var site = await WpEnSiteAsync;
             var page = new WikiPage(site, "test");
             await page.RefreshAsync(PageQueryOptions.FetchContent);
@@ -62,12 +57,12 @@ namespace WikiClientLibrary.Tests.UnitTestProject1.Tests
             Assert.Equal("en", page3.PageLanguage);
         }
 
-        [Theory]
-        [InlineData(nameof(WpTest2SiteAsync), "Project:sandbox", "Wikipedia:Sandbox", BuiltInNamespaces.Project, 2076)]
-        [InlineData(nameof(WikiaTestSiteAsync), "Project:sandbox", "Dman Wikia:Sandbox", BuiltInNamespaces.Project, 637)]
-        [InlineData(nameof(TFWikiSiteAsync), "Help:coming soon", "Help:Coming soon", BuiltInNamespaces.Help, 10122)]
-        public async Task WikiPageReadTest2(string siteName, string fetchTitle, string expectedTitle, int expectedNs, int expectedId)
-        {
+    [Theory]
+    [InlineData(nameof(WpTest2SiteAsync), "Project:sandbox", "Wikipedia:Sandbox", BuiltInNamespaces.Project, 2076)]
+    [InlineData(nameof(WikiaTestSiteAsync), "Project:sandbox", "Dman Wikia:Sandbox", BuiltInNamespaces.Project, 637)]
+    [InlineData(nameof(TFWikiSiteAsync), "Help:coming soon", "Help:Coming soon", BuiltInNamespaces.Help, 10122)]
+    public async Task WikiPageReadTest2(string siteName, string fetchTitle, string expectedTitle, int expectedNs, int expectedId)
+    {
             var site = await WikiSiteFromNameAsync(siteName);
             var page = new WikiPage(site, fetchTitle);
             await page.RefreshAsync(PageQueryOptions.FetchContent);
@@ -96,13 +91,13 @@ namespace WikiClientLibrary.Tests.UnitTestProject1.Tests
             Assert.NotNull(page.LastRevision);
         }
 
-        [Theory]
-        [InlineData(nameof(WikiaTestSiteAsync), "Test (Disambiguation)", true)]
-        [InlineData(nameof(WpLzhSiteAsync), "莎拉伯恩哈特", false)]
-        [InlineData(nameof(WpLzhSiteAsync), "中國_(釋義)", true)]
-        [InlineData(nameof(TFWikiSiteAsync), "Cybertron (disambiguation)", true)]
-        public async Task WikiPageReadDisambigTest(string siteName, string pageTitle, bool isDab)
-        {
+    [Theory]
+    [InlineData(nameof(WikiaTestSiteAsync), "Test (Disambiguation)", true)]
+    [InlineData(nameof(WpLzhSiteAsync), "莎拉伯恩哈特", false)]
+    [InlineData(nameof(WpLzhSiteAsync), "中國_(釋義)", true)]
+    [InlineData(nameof(TFWikiSiteAsync), "Cybertron (disambiguation)", true)]
+    public async Task WikiPageReadDisambigTest(string siteName, string pageTitle, bool isDab)
+    {
             var site = await WikiSiteFromNameAsync(siteName);
             Output.WriteLine("Is there Disambiguator on this site? {0}", site.Extensions.Contains("Disambiguator"));
             var page = new WikiPage(site, pageTitle);
@@ -111,9 +106,9 @@ namespace WikiClientLibrary.Tests.UnitTestProject1.Tests
             Assert.Equal(isDab, await page.IsDisambiguationAsync());
         }
 
-        [Fact]
-        public async Task WpTest2PageReadRedirectTest()
-        {
+    [Fact]
+    public async Task WpTest2PageReadRedirectTest()
+    {
             var site = await WpTest2SiteAsync;
             var page = new WikiPage(site, "Foo");
             await page.RefreshAsync();
@@ -125,9 +120,9 @@ namespace WikiClientLibrary.Tests.UnitTestProject1.Tests
             Assert.Equal(new[] { "Foo", "Foo2", "Foo23" }, target.RedirectPath);
         }
 
-        [Fact]
-        public async Task WpEnPageGeoCoordinateTest()
-        {
+    [Fact]
+    public async Task WpEnPageGeoCoordinateTest()
+    {
             var site = await WpEnSiteAsync;
             var page = new WikiPage(site, "Paris");
             await page.RefreshAsync(new WikiPageQueryProvider
@@ -147,9 +142,9 @@ namespace WikiClientLibrary.Tests.UnitTestProject1.Tests
             Assert.Equal(GeoCoordinate.Earth, coordinate.PrimaryCoordinate.Globe);
         }
 
-        [Fact]
-        public async Task WpLzhPageExtractTest()
-        {
+    [Fact]
+    public async Task WpLzhPageExtractTest()
+    {
             var site = await WpLzhSiteAsync;
             var page = new WikiPage(site, "莎拉伯恩哈特");
             await page.RefreshAsync(new WikiPageQueryProvider
@@ -168,9 +163,9 @@ namespace WikiClientLibrary.Tests.UnitTestProject1.Tests
             Assert.Equal("莎拉·伯恩哈特，一八四四年生，法國巴黎人也。", page.GetPropertyGroup<ExtractsPropertyGroup>()!.Extract);
         }
 
-        [Fact]
-        public async Task WpLzhPageImagesTest()
-        {
+    [Fact]
+    public async Task WpLzhPageImagesTest()
+    {
             var site = await WpLzhSiteAsync;
             var page = new WikiPage(site, "挪威");
             await page.RefreshAsync(new WikiPageQueryProvider
@@ -193,9 +188,9 @@ namespace WikiClientLibrary.Tests.UnitTestProject1.Tests
             Assert.Equal(100, Math.Max(group.ThumbnailImage.Width, group.ThumbnailImage.Height));
         }
 
-        [Fact]
-        public async Task WpLzhPageLanguageLinksTest()
-        {
+    [Fact]
+    public async Task WpLzhPageLanguageLinksTest()
+    {
             var site = await WpLzhSiteAsync;
             var page = new WikiPage(site, "莎拉伯恩哈特");
             await page.RefreshAsync(new WikiPageQueryProvider { Properties = { new LanguageLinksPropertyProvider(LanguageLinkProperties.Autonym) } });
@@ -220,9 +215,9 @@ namespace WikiClientLibrary.Tests.UnitTestProject1.Tests
                 page.GetPropertyGroup<LanguageLinksPropertyGroup>()!.LanguageLinks.ToDictionary(l => l.Language, l => l.Title));
         }
 
-        [Fact]
-        public async Task WpLzhFetchRevisionsTest()
-        {
+    [Fact]
+    public async Task WpLzhFetchRevisionsTest()
+    {
             var site = await WpLzhSiteAsync;
             var revIds = new[] { 248199L, 248197, 255289 };
             var pageTitles = new[] { "清", "清", "香草" };
@@ -235,9 +230,9 @@ namespace WikiClientLibrary.Tests.UnitTestProject1.Tests
             var pageDict = rev.Select(r => r!.Page).Distinct().ToDictionary(p => p.Title!);
         }
 
-        [Fact]
-        public async Task WpLzhFetchFileTest()
-        {
+    [Fact]
+    public async Task WpLzhFetchFileTest()
+    {
             var site = await WpLzhSiteAsync;
             var file = new WikiPage(site, "File:Empress Suiko.jpg");
             await file.RefreshAsync();
@@ -249,9 +244,9 @@ namespace WikiClientLibrary.Tests.UnitTestProject1.Tests
             Assert.Empty(file.LastFileRevision.ExtMetadata);
         }
 
-        [Fact]
-        public async Task WpLzhFetchFileWithExtMetadataTest()
-        {
+    [Fact]
+    public async Task WpLzhFetchFileWithExtMetadataTest()
+    {
             var site = await WpLzhSiteAsync;
             var file = new WikiPage(site, "File:Empress Suiko.jpg");
             await file.RefreshAsync(new WikiPageQueryProvider
@@ -273,9 +268,9 @@ namespace WikiClientLibrary.Tests.UnitTestProject1.Tests
             Assert.Equal(FileRevisionExtMetadataValueSources.MediaWikiMetadata, file.LastFileRevision.ExtMetadata["DateTime"]?.Source);
         }
 
-        [Fact]
-        public async Task WpLzhRedirectedPageReadTest()
-        {
+    [Fact]
+    public async Task WpLzhRedirectedPageReadTest()
+    {
             var site = await WpLzhSiteAsync;
             var page = new WikiPage(site, "project:sandbox");
             await page.RefreshAsync(PageQueryOptions.ResolveRedirects);
@@ -284,12 +279,12 @@ namespace WikiClientLibrary.Tests.UnitTestProject1.Tests
             ShallowTrace(page);
         }
 
-        [SkippableTheory]
-        [InlineData(nameof(WpTest2SiteAsync), "project:sandbox")]
-        [InlineData(nameof(WikiaTestSiteAsync), "project:sandbox")]
-        [InlineData(nameof(TFWikiSiteAsync), "User:FuncGammaBot/Sandbox")]
-        public async Task WikiPageWriteTest1(string siteName, string pageTitle)
-        {
+    [SkippableTheory]
+    [InlineData(nameof(WpTest2SiteAsync), "project:sandbox")]
+    [InlineData(nameof(WikiaTestSiteAsync), "project:sandbox")]
+    [InlineData(nameof(TFWikiSiteAsync), "User:FuncGammaBot/Sandbox")]
+    public async Task WikiPageWriteTest1(string siteName, string pageTitle)
+    {
             AssertModify();
             var site = await WikiSiteFromNameAsync(siteName);
             var page = new WikiPage(site, pageTitle);
@@ -306,10 +301,10 @@ namespace WikiClientLibrary.Tests.UnitTestProject1.Tests
             });
         }
 
-        [SkippableTheory]
-        [InlineData(nameof(WpTest2SiteAsync), "Test page")]
-        public async Task WikiPageWriteTest2(string siteName, string pageTitle)
-        {
+    [SkippableTheory]
+    [InlineData(nameof(WpTest2SiteAsync), "Test page")]
+    public async Task WikiPageWriteTest2(string siteName, string pageTitle)
+    {
             AssertModify();
             var site = await WikiSiteFromNameAsync(siteName);
             var page = new WikiPage(site, pageTitle);
@@ -325,11 +320,11 @@ namespace WikiClientLibrary.Tests.UnitTestProject1.Tests
                 }));
         }
 
-        [SkippableTheory]
-        [InlineData(nameof(WpTest2SiteAsync))]
-        [InlineData(nameof(TFWikiSiteAsync))]
-        public async Task WikiPageWriteTest3(string siteName)
-        {
+    [SkippableTheory]
+    [InlineData(nameof(WpTest2SiteAsync))]
+    [InlineData(nameof(TFWikiSiteAsync))]
+    public async Task WikiPageWriteTest3(string siteName)
+    {
             AssertModify();
             var site = await WikiSiteFromNameAsync(siteName);
             var page = new WikiPage(site, "Special:RecentChanges");
@@ -343,12 +338,12 @@ namespace WikiClientLibrary.Tests.UnitTestProject1.Tests
                 }));
         }
 
-        [SkippableTheory]
-        [InlineData(nameof(WpTest2SiteAsync), "project:sandbox")]
-        [InlineData(nameof(WikiaTestSiteAsync), "project:sandbox")]
-        [InlineData(nameof(TFWikiSiteAsync), "User:FuncGammaBot/Sandbox")]
-        public async Task WikiPageWriteSectionTest1(string siteName, string pageTitle)
-        {
+    [SkippableTheory]
+    [InlineData(nameof(WpTest2SiteAsync), "project:sandbox")]
+    [InlineData(nameof(WikiaTestSiteAsync), "project:sandbox")]
+    [InlineData(nameof(TFWikiSiteAsync), "User:FuncGammaBot/Sandbox")]
+    public async Task WikiPageWriteSectionTest1(string siteName, string pageTitle)
+    {
             AssertModify();
             var site = await WikiSiteFromNameAsync(siteName);
             var page = new WikiPage(site, pageTitle);
@@ -404,9 +399,9 @@ namespace WikiClientLibrary.Tests.UnitTestProject1.Tests
             Assert.Contains(newSectionContent, page.Content);
         }
 
-        [SkippableFact]
-        public async Task WpTest2BulkPurgeTest()
-        {
+    [SkippableFact]
+    public async Task WpTest2BulkPurgeTest()
+    {
             AssertModify();
             var site = await WpTest2SiteAsync;
             // Usually 500 is the limit for normal users.
@@ -423,9 +418,9 @@ namespace WikiClientLibrary.Tests.UnitTestProject1.Tests
             Assert.Equal(badPage.Title, failedPages.Single().Page.Title);
         }
 
-        [SkippableFact]
-        public async Task WpTest2PagePurgeTest()
-        {
+    [SkippableFact]
+    public async Task WpTest2PagePurgeTest()
+    {
             AssertModify();
             var site = await WpTest2SiteAsync;
             // We do not need to login.
@@ -441,5 +436,4 @@ namespace WikiClientLibrary.Tests.UnitTestProject1.Tests
             Assert.False(result);
         }
 
-    }
 }
