@@ -4,12 +4,4 @@
     <!-- Normalize value -->
     <WCL_IS_CI_BUILD>True</WCL_IS_CI_BUILD>
   </PropertyGroup>
-
-  <PropertyGroup Condition=" $([System.Text.RegularExpressions.Regex]::IsMatch($(TargetFramework), `^(netstandard2\.[2-9]|net(coreapp)?[3-9]\.\d+)$`)) ">
-    <DefineConstants>$(DefineConstants);BCL_FEATURE_EXECUTION_CONTEXT_RESTORE;BCL_FEATURE_MEMBER_NOT_NULL_ATTR</DefineConstants>
-  </PropertyGroup>
-
-  <PropertyGroup Condition=" $([System.Text.RegularExpressions.Regex]::IsMatch($(TargetFramework), `^net(coreapp)?[5-9]\.\d+$`)) ">
-    <DefineConstants>$(DefineConstants);BCL_FEATURE_RECORD</DefineConstants>
-  </PropertyGroup>
 </Project>

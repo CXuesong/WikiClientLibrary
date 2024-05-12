@@ -859,11 +859,7 @@ namespace WikiClientLibrary.Pages
 
     }
 
-#if BCL_FEATURE_RECORD
     public record WikiPageEditOptions
-#else
-    public class WikiPageEditOptions
-#endif
     {
 
         /// <summary>
@@ -876,74 +872,32 @@ namespace WikiClientLibrary.Pages
         /// <para>When using with <see cref="WikiPage.AddSectionAsync"/>, the content does not include
         /// the section heading part.</para>
         /// </remarks>
-        public string Content
-        {
-#if BCL_FEATURE_RECORD
-            get; init;
-#else
-            get; set;
-#endif
-        } = "";
+        public string Content { get; init; } = "";
 
         /// <summary>
         /// The edit summary. Leave it as <c>null</c> or empty string (<c>""</c>) to use the default edit summary.
         /// </summary>
-        public string? Summary
-        {
-#if BCL_FEATURE_RECORD
-            get; init;
-#else
-            get; set;
-#endif
-        }
+        public string? Summary { get; init; }
 
         /// <summary>
         /// Whether the edit is a minor edit. (See <a href="https://meta.wikimedia.org/wiki/Help:Minor_edit">m:Help:Minor Edit</a>)
         /// </summary>
-        public bool Minor
-        {
-#if BCL_FEATURE_RECORD
-            get; init;
-#else
-            get; set;
-#endif
-        }
+        public bool Minor { get; init; }
 
         /// <summary>
         /// Whether to mark the edit as bot; even if you are using a bot account the edits will not be marked unless you set this flag.
         /// </summary>
-        public bool Bot
-        {
-#if BCL_FEATURE_RECORD
-            get; init;
-#else
-            get; set;
-#endif
-        }
+        public bool Bot { get; init; }
 
         /// <summary>
         /// Specify how the watchlist is affected by this edit.
         /// </summary>
-        public AutoWatchBehavior Watch
-        {
-#if BCL_FEATURE_RECORD
-            get; init;
-#else
-            get; set;
-#endif
-        }
+        public AutoWatchBehavior Watch { get; init; }
 
         /// <summary>
         /// A token used to cancel the operation.
         /// </summary>
-        public CancellationToken CancellationToken
-        {
-#if BCL_FEATURE_RECORD
-            get; init;
-#else
-            get; set;
-#endif
-        }
+        public CancellationToken CancellationToken { get; init; }
 
     }
 }

@@ -269,16 +269,4 @@ namespace WikiClientLibrary
 
     }
 
-#if !BCL_FEATURE_MEMBER_NOT_NULL_ATTR
-    [AttributeUsage(AttributeTargets.Method | AttributeTargets.Property, AllowMultiple = true, Inherited = false)]
-    internal sealed class MemberNotNullAttribute : Attribute
-    {
-        public MemberNotNullAttribute(string member) => this.Members = new[] { member };
-
-        public MemberNotNullAttribute(params string[] members) => this.Members = members;
-
-        public string[] Members { get; }
-    }
-#endif
-
 }
