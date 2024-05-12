@@ -25,14 +25,12 @@ namespace WikiClientLibrary.Client
         private const string targetFramework = ".NET 6.0";
 #elif NET8_0
         private const string targetFramework = ".NET 8.0";
-#elif NETSTANDARD2_1
-        private const string targetFramework = ".NET Standard 2.1";
 #endif
 
         /// <summary>
         /// The User Agent of Wiki Client Library.
         /// </summary>
-        public const string WikiClientUserAgent = "WikiClientLibrary/0.7 (" + targetFramework + "; http://github.com/cxuesong/WikiClientLibrary)";
+        public const string WikiClientUserAgent = "WikiClientLibrary/0.9 (" + targetFramework + "; http://github.com/cxuesong/WikiClientLibrary)";
 
         public WikiClient() : this(new HttpClientHandler(), true)
         {
