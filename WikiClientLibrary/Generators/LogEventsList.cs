@@ -217,7 +217,7 @@ namespace WikiClientLibrary.Generators
         
         /// <summary>the page id at the time the log was stored.</summary>
         [JsonProperty("logpage")]
-        public int PageId { get; private set; }
+        public long PageId { get; private set; }
 
         /// <summary>Name of the user making this recent change.</summary>
         [JsonProperty("user")]
@@ -229,13 +229,13 @@ namespace WikiClientLibrary.Generators
         /// for account creation events, this is user ID of the creating user is returned.
         /// When absent, this is the user ID returned is that of the created account
         /// (see <a href="https://phabricator.wikimedia.org/T73020">phab:T73020</a>).
-        /// In most cases (such as in <see cref="LogEventsList"/> or <see cref="RecentChangesGenerator"/>,
+        /// In most cases (such as in <see cref="LogEventsList"/> or <see cref="RecentChangesGenerator"/>),
         /// <c>userid</c> property is specified implicitly.</para>
         /// <para>To get the user ID for the created user, especially in <see cref="LogActions.Create2"/> log action,
         /// use <see cref="Params"/>.<see cref="LogParameterCollection.UserId"/> .</para>
         /// </remarks>
         [JsonProperty]
-        public int UserId { get; private set; }
+        public long UserId { get; private set; }
 
         /// <summary>The time and date of the change.</summary>
         [JsonProperty]
@@ -404,12 +404,12 @@ namespace WikiClientLibrary.Generators
         /// <summary>
         /// (<see cref="LogActions.Patrol"/>)
         /// </summary>
-        public int CurrentRevisionId => GetInt32Value("curid", 0);
+        public long CurrentRevisionId => GetInt64Value("curid", 0);
 
         /// <summary>
         /// (<see cref="LogActions.Patrol"/>)
         /// </summary>
-        public int PreviousRevisionId => GetInt32Value("previd", 0);
+        public long PreviousRevisionId => GetInt64Value("previd", 0);
 
         /// <summary>
         /// (<see cref="LogActions.Patrol"/>)
@@ -420,7 +420,7 @@ namespace WikiClientLibrary.Generators
         /// (<see cref="LogTypes.NewUsers"/>) The user ID of the created user.
         /// </summary>
         /// <see cref="LogEventItem.UserId"/>
-        public int UserId => GetInt32Value("userid", 0);
+        public long UserId => GetInt64Value("userid", 0);
 
     }
 

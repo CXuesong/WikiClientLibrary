@@ -131,19 +131,19 @@ namespace WikiClientLibrary.Wikia
                         var pages = partition.Select(p => new WikiPage(site, p.Id)).ToList();
                         var lastRevisionTask = pages.RefreshAsync(postLastRevisionQueryProvider, cancellationToken);
                         // Fetch the first revisions, when needed, to determine author.
-                        Dictionary<int, Revision> firstRevisionDict = null;
+                        Dictionary<long, Revision> firstRevisionDict = null;
                         if (partition.Count == 1
                             || (options & PostQueryOptions.ExactAuthoringInformation) == PostQueryOptions.ExactAuthoringInformation)
                         {
                             // We can only fetch for 1 page at a time, with rvdir = "newer"
-                            firstRevisionDict = new Dictionary<int, Revision>();
+                            firstRevisionDict = new Dictionary<long, Revision>();
                             foreach (var post in partition)
                             {
                                 var generator = new RevisionsGenerator(site, post.Id)
                                 {
                                     TimeAscending = true,
                                     PaginationSize = 1,
-                                    PropertyProvider = postRevisionWithContentProvider
+                                    PropertyProvider = postRevisionWithContentProvider,
                                 };
                                 var rev = await generator.EnumItemsAsync().FirstAsync(cancellationToken);
                                 firstRevisionDict[post.Id] = rev;
@@ -163,7 +163,7 @@ namespace WikiClientLibrary.Wikia
             }
         }
 
-        public static async Task<Post> PostCommentAsync(WikiaSite site, object scopeInst, WikiPageStub owner, int? parentId, string content, CancellationToken cancellationToken)
+        public static async Task<Post> PostCommentAsync(WikiaSite site, object scopeInst, WikiPageStub owner, long? parentId, string content, CancellationToken cancellationToken)
         {
             Debug.Assert(site != null);
             Debug.Assert(owner.HasTitle);
@@ -267,7 +267,7 @@ namespace WikiClientLibrary.Wikia
         }
 
         public static async Task<Post> ReplyWallMessageAsync(WikiaSite site, object scopeInst, WikiPageStub owner,
-            int parentId, string messageBody, CancellationToken cancellationToken)
+            long parentId, string messageBody, CancellationToken cancellationToken)
         {
             Debug.Assert(site != null);
             using (site.BeginActionScope(scopeInst, owner, parentId))

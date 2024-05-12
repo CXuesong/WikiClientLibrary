@@ -58,29 +58,51 @@ namespace WikiClientLibrary.Infrastructures
             return null;
         }
 
+        /// <inheritdoc cref="GetInt64Value(string)"/>
         /// <summary>
         /// Gets the <see cref="int"/> value by property name.
+        /// This overload raises exception for missing key.
+        /// </summary>
+        /// <see cref="GetInt64Value(string,long)"/>
+        public int GetInt32Value(string key)
+        {
+            return (int)myDict[key];
+        }
+
+        /// <inheritdoc cref="GetInt64Value(string,long)"/>
+        /// <summary>
+        /// Gets the <see cref="int"/> value by property name.
+        /// A default value can be provided in case the specified key does not exist.
+        /// </summary>
+        public int GetInt32Value(string key, int defaultValue)
+        {
+            if (myDict.TryGetValue(key, out var value)) return (int)value;
+            return defaultValue;
+        }
+
+        /// <summary>
+        /// Gets the <see cref="long"/> value by property name.
         /// This overload raises exception for missing key.
         /// </summary>
         /// <param name="key">The property name.</param>
         /// <returns>The converted value.</returns>
         /// <exception cref="KeyNotFoundException">The property is not found.</exception>
         /// <see cref="GetInt32Value(string,int)"/>
-        public int GetInt32Value(string key)
+        public long GetInt64Value(string key)
         {
-            return (int)myDict[key];
+            return (long)myDict[key];
         }
 
         /// <summary>
-        /// Gets the <see cref="int"/> value by property name.
+        /// Gets the <see cref="long"/> value by property name.
         /// A default value can be provided in case the specified key does not exist.
         /// </summary>
         /// <param name="key">The property name.</param>
         /// <param name="defaultValue">The default value.</param>
         /// <returns>The converted value - or - <paramref name="defaultValue"/>.</returns>
-        public int GetInt32Value(string key, int defaultValue)
+        public long GetInt64Value(string key, long defaultValue)
         {
-            if (myDict.TryGetValue(key, out var value)) return (int)value;
+            if (myDict.TryGetValue(key, out var value)) return (long)value;
             return defaultValue;
         }
 

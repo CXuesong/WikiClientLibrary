@@ -61,8 +61,8 @@ namespace WikiClientLibrary.Generators.Primitive
         /// Gets/sets the page ID from which to get the <c>list</c>-like property value.
         /// </summary>
         /// <remarks>If <see cref="PageTitle"/> is <c>null</c>, the value of this property will be used.
-        /// Otherwise the other one will be effective.</remarks>
-        public int PageId { get; set; }
+        /// Otherwise, the other one will be effective.</remarks>
+        public long PageId { get; set; }
 
         /// <summary>
         /// Gets/sets maximum items returned per MediaWiki API invocation.

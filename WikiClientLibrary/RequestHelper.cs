@@ -281,7 +281,7 @@ namespace WikiClientLibrary
         /// <remarks>
         /// <para>If there's invalid revision id in <paramref name="revIds"/>, an <see cref="ArgumentException"/> will be thrown while enumerating.</para>
         /// </remarks>
-        public static async IAsyncEnumerable<Revision?> FetchRevisionsAsync(WikiSite site, IEnumerable<int> revIds,
+        public static async IAsyncEnumerable<Revision?> FetchRevisionsAsync(WikiSite site, IEnumerable<long> revIds,
             IWikiPageQueryProvider options, [EnumeratorCancellation] CancellationToken cancellationToken = default)
         {
             if (revIds == null) throw new ArgumentNullException(nameof(revIds));
@@ -291,8 +291,8 @@ namespace WikiClientLibrary
             queryParams.Remove("rvlimit");
             var titleLimit = options.GetMaxPaginationSize(site.SiteInfo.Version, site.AccountInfo.HasRight(UserRights.ApiHighLimits));
             // Page ID --> Page Stub
-            var stubDict = new Dictionary<int, WikiPageStub>();
-            var revDict = new Dictionary<int, Revision>();
+            var stubDict = new Dictionary<long, WikiPageStub>();
+            var revDict = new Dictionary<long, Revision>();
             using (site.BeginActionScope(null, (object)revIds))
             {
                 foreach (var partition in revIds.Partition(titleLimit))
@@ -395,7 +395,7 @@ namespace WikiClientLibrary
             return failedPages ?? (IReadOnlyCollection<PurgeFailureInfo>) Array.Empty<PurgeFailureInfo>();
         }
 
-        public static async Task PatrolAsync(WikiSite site, int? recentChangeId, int? revisionId, CancellationToken cancellationToken)
+        public static async Task PatrolAsync(WikiSite site, long? recentChangeId, long? revisionId, CancellationToken cancellationToken)
         {
             if (site == null) throw new ArgumentNullException(nameof(site));
             if (recentChangeId == null && revisionId == null)

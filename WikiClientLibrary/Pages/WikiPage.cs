@@ -57,7 +57,7 @@ namespace WikiClientLibrary.Pages
         /// <param name="id">Page ID.</param>
         /// <remarks>The initialized instance does not contain any live information from MediaWiki site.
         /// Use <see cref="RefreshAsync()"/> to fetch for information from server.</remarks>
-        public WikiPage(WikiSite site, int id)
+        public WikiPage(WikiSite site, long id)
         {
             if (site == null) throw new ArgumentNullException(nameof(site));
             Site = site;
@@ -72,7 +72,7 @@ namespace WikiClientLibrary.Pages
         /// <summary>
         /// Id of the page.
         /// </summary>
-        public int Id => PageStub.Id;
+        public long Id => PageStub.Id;
 
         /// <summary>
         /// Namespace id of the page.
@@ -138,7 +138,7 @@ namespace WikiClientLibrary.Pages
         /// See <see cref="EditAsync"/> for more information.
         /// </summary>
         /// <seealso cref="Revision.Id"/>
-        public int LastRevisionId { get; private set; }
+        public long LastRevisionId { get; private set; }
 
         /// <summary>
         /// Content length, in bytes.

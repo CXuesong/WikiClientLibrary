@@ -124,7 +124,7 @@ namespace WikiClientLibrary.Wikibase
         /// The property value is invalidated after you have performed edits on this instance.
         /// To fetch the latest value, use <see cref="RefreshAsync(EntityQueryOptions)"/>.
         /// </remarks>
-        public int PageId { get; private set; }
+        public long PageId { get; private set; }
 
         /// <summary>
         /// Namespace ID of the entity page.
@@ -164,7 +164,7 @@ namespace WikiClientLibrary.Wikibase
         /// <summary>
         /// The revid of the last revision.
         /// </summary>
-        public int LastRevisionId { get; private set; }
+        public long LastRevisionId { get; private set; }
 
         /// <inheritdoc />
         public WbMonolingualTextCollection Labels { get; private set; } = emptyStringDict;
@@ -268,12 +268,12 @@ namespace WikiClientLibrary.Wikibase
                 if (!isPostEditing)
                 {
                     // wbeditentity response does not have these properties.
-                    PageId = (int)extensionData["pageid"];
+                    PageId = (long)extensionData["pageid"];
                     NamespaceId = (int)extensionData["ns"];
                     Title = (string)extensionData["title"];
                     LastModified = (DateTime)extensionData["modified"];
                 }
-                LastRevisionId = (int)extensionData["lastrevid"];
+                LastRevisionId = (long)extensionData["lastrevid"];
             }
 
             Labels = (options & EntityQueryOptions.FetchLabels) == EntityQueryOptions.FetchLabels && serializable.Labels.Count > 0

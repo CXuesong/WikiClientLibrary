@@ -92,12 +92,12 @@ namespace WikiClientLibrary.Generators
         /// <summary>
         /// Revision ID to start listing from.
         /// </summary>
-        public int? StartRevisionId { get; set; }
+        public long? StartRevisionId { get; set; }
 
         /// <summary>
         /// Revision ID to stop listing at. 
         /// </summary>
-        public int? EndRevisionId { get; set; }
+        public long? EndRevisionId { get; set; }
 
         /// <summary>
         /// Only list revisions made by this user.

@@ -36,10 +36,10 @@ namespace WikiClientLibrary.Pages.Parsing
         public string DisplayTitle { get; private set; }
 
         [JsonProperty]
-        public int PageId { get; private set; }
+        public long PageId { get; private set; }
 
         [JsonProperty("revid")]
-        public int RevisionId { get; private set; }
+        public long RevisionId { get; private set; }
 
         /// <summary>
         /// Parsed content, in HTML form.

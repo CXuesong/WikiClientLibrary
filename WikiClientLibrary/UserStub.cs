@@ -13,15 +13,15 @@ namespace WikiClientLibrary
 
         public static readonly UserStub Empty = new UserStub();
 
-        public UserStub(string name, int id) : this(name, id, Gender.Unknown, null)
+        public UserStub(string name, long id) : this(name, id, Gender.Unknown, null)
         {
         }
 
-        public UserStub(string name, int id, Gender gender) : this(name, id, gender, null)
+        public UserStub(string name, long id, Gender gender) : this(name, id, gender, null)
         {
         }
 
-        public UserStub(string name, int id, Gender gender, string? siteName)
+        public UserStub(string name, long id, Gender gender, string? siteName)
         {
             Name = name ?? throw new ArgumentNullException(nameof(name));
             Id = id;
@@ -34,7 +34,7 @@ namespace WikiClientLibrary
 
         /// <summary>Gets user ID on the MediaWiki site.</summary>
         /// <value>User ID on the MediaWiki site, or <c>0</c> for anonymous users.</value>
-        public int Id { get; }
+        public long Id { get; }
 
         /// <summary>Gets user's gender.</summary>
         public Gender Gender { get; }

@@ -224,7 +224,7 @@ namespace WikiClientLibrary.Tests.UnitTestProject1.Tests
         public async Task WpLzhFetchRevisionsTest()
         {
             var site = await WpLzhSiteAsync;
-            var revIds = new[] { 248199, 248197, 255289 };
+            var revIds = new[] { 248199L, 248197, 255289 };
             var pageTitles = new[] { "清", "清", "香草" };
             var rev = await Revision.FetchRevisionsAsync(site, revIds).ToListAsync();
             ShallowTrace(rev);

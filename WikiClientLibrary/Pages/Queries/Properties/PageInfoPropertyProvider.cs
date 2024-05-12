@@ -69,7 +69,7 @@ namespace WikiClientLibrary.Pages.Queries.Properties
 
         public DateTime LastTouched { get; }
 
-        public int LastRevisionId { get; }
+        public long LastRevisionId { get; }
 
         public int ContentLength { get; }
 

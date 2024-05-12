@@ -78,19 +78,19 @@ namespace WikiClientLibrary.Generators
 
         /// <summary>ID of the page affected by this item.</summary>
         [JsonProperty]
-        public int PageId { get; private set; }
+        public long PageId { get; private set; }
 
         /// <summary>ID of the new revision affected by this item.</summary>
         [JsonProperty("revid")]
-        public int RevisionId { get; private set; }
+        public long RevisionId { get; private set; }
 
         /// <summary>ID of the old revision affected by this item.</summary>
         [JsonProperty("old_revid")]
-        public int OldRevisionId { get; private set; }
+        public long OldRevisionId { get; private set; }
 
         /// <summary>ID of recent change entry.</summary>
         [JsonProperty("rcid")]
-        public int Id { get; private set; }
+        public long Id { get; private set; }
 
         /// <summary>Name of the user making this recent change.</summary>
         [JsonProperty("user")]
@@ -100,7 +100,7 @@ namespace WikiClientLibrary.Generators
         /// <remarks>When using this property with log events, there are some caveats.
         /// See <see cref="LogEventItem.UserId"/> for more information.</remarks>
         [JsonProperty]
-        public int UserId { get; private set; }
+        public long UserId { get; private set; }
 
         /// <summary>Content length of the old revision affected by this item.</summary>
         [JsonProperty("oldlen")]

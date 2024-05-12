@@ -31,14 +31,14 @@ namespace WikiClientLibrary.Pages
 
         /// <summary>The <see cref="Id"/> value used for missing page.</summary>
         /// <remarks>For how the missing pages are handled, see the "remarks" section of <see cref="WikiPageStub"/>.</remarks>
-        public const int MissingPageIdMask = unchecked((int)0x8F000001);
+        public const long MissingPageIdMask = unchecked((long)0x8F00_0000_0000_0001);
 
         /// <summary>The <see cref="Id"/> value used for invalid page.</summary>
         /// <remarks>For how the missing pages are handled, see the "remarks" section of <see cref="WikiPageStub"/>.</remarks>
-        public const int InvalidPageIdMask = unchecked((int)0x8F000002);
+        public const long InvalidPageIdMask = unchecked((long)0x8F00_0000_0000_0002);
 
         /// <summary>The <see cref="Id"/> value used for Special page.</summary>
-        public const int SpecialPageIdMask = unchecked((int)0x8F000011);
+        public const long SpecialPageIdMask = unchecked((long)0x8F00_0000_0000_0011);
 
         /// <summary>The <see cref="Title"/> value used for missing page.</summary>
         /// <remarks>For how the missing pages are handled, see the "remarks" section of <see cref="WikiPageStub"/>.</remarks>
@@ -53,17 +53,17 @@ namespace WikiClientLibrary.Pages
         /// </summary>
         public static readonly WikiPageStub Empty = new WikiPageStub();
 
-        /// <inheritdoc cref="WikiPageStub(int,string,int)"/>
+        /// <inheritdoc cref="WikiPageStub(long,string,int)"/>
         public WikiPageStub(string title, int namespaceId) : this(0, title, namespaceId)
         {
         }
 
-        /// <inheritdoc cref="WikiPageStub(int,string,int)"/>
-        public WikiPageStub(int id) : this(id, null, UnknownNamespaceId)
+        /// <inheritdoc cref="WikiPageStub(long,string,int)"/>
+        public WikiPageStub(long id) : this(id, null, UnknownNamespaceId)
         {
         }
 
-        /// <inheritdoc cref="WikiPageStub(int,string,int)"/>
+        /// <inheritdoc cref="WikiPageStub(long,string,int)"/>
         public WikiPageStub(string title) : this(0, title, UnknownNamespaceId)
         {
         }
@@ -74,9 +74,9 @@ namespace WikiClientLibrary.Pages
         /// <param name="id">Page ID. <c>0</c> for unknown.</param>
         /// <param name="title">Page full title. <c>null</c> for unknown. <see cref="string.Empty"/> will be normalized into <c>null</c>.</param>
         /// <param name="namespaceId">Page namespace ID. <see cref="UnknownNamespaceId"/> for unknown.</param>
-        public WikiPageStub(int id, string? title, int namespaceId) : this()
+        public WikiPageStub(long id, string? title, int namespaceId) : this()
         {
-            const int idMasks = SpecialPageIdMask | MissingPageIdMask | InvalidPageIdMask;
+            const long idMasks = SpecialPageIdMask | MissingPageIdMask | InvalidPageIdMask;
             if (id < 0 && (id & idMasks) != id)
                 throw new ArgumentOutOfRangeException(nameof(id),
                     "Invalid page ID. ID should be positive; 0 for unknown; bitwise-or of one or more WikiPageStub.****Mask fields.");
@@ -90,7 +90,7 @@ namespace WikiClientLibrary.Pages
             return new WikiPageStub(MissingPageIdMask, title, namespaceId);
         }
 
-        public static WikiPageStub NewMissingPage(int id)
+        public static WikiPageStub NewMissingPage(long id)
         {
             return new WikiPageStub(id, MissingPageTitle, UnknownNamespaceId);
         }
@@ -115,7 +115,7 @@ namespace WikiClientLibrary.Pages
         /// <summary>Gets the page ID.</summary>
         /// <value>Page ID; or <c>0</c> if the information is not available;
         /// or <see cref="MissingPageIdMask"/> for the confirmed missing page.</value>
-        public int Id { get; }
+        public long Id { get; }
 
         /// <summary>Gets the full title of the page.</summary>
         /// <value>Normalized or un-normalized page title; or <c>null</c> if the information is not available;
@@ -205,12 +205,12 @@ namespace WikiClientLibrary.Pages
             return string.IsNullOrEmpty(pageTitle) ? Empty : new WikiPageStub(pageTitle);
         }
 
-        public static implicit operator WikiPageStub(int pageId)
+        public static implicit operator WikiPageStub(long pageId)
         {
             return new WikiPageStub(pageId);
         }
 
-        public static implicit operator WikiPageStub(int? pageId)
+        public static implicit operator WikiPageStub(long? pageId)
         {
             return new WikiPageStub(pageId ?? 0);
         }

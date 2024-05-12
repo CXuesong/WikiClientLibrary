@@ -34,31 +34,31 @@ namespace WikiClientLibrary.Pages
         /// share the same reference.</para>
         /// </remarks>
         /// <exception cref="ArgumentException"><paramref name="revisionId"/> is not an existing revision id.</exception>
-        public static ValueTask<Revision> FetchRevisionAsync(WikiSite site, int revisionId)
+        public static ValueTask<Revision> FetchRevisionAsync(WikiSite site, long revisionId)
         {
             return FetchRevisionsAsync(site, new[] { revisionId }, PageQueryOptions.FetchContent).FirstAsync()!;
         }
 
-        /// <inheritdoc cref="FetchRevisionsAsync(WikiSite,IEnumerable{int},IWikiPageQueryProvider,CancellationToken)"/>
-        public static IAsyncEnumerable<Revision?> FetchRevisionsAsync(WikiSite site, params int[] revisionIds)
+        /// <inheritdoc cref="FetchRevisionsAsync(WikiSite,IEnumerable{long},IWikiPageQueryProvider,CancellationToken)"/>
+        public static IAsyncEnumerable<Revision?> FetchRevisionsAsync(WikiSite site, params long[] revisionIds)
         {
             return FetchRevisionsAsync(site, revisionIds, PageQueryOptions.FetchContent, CancellationToken.None);
         }
 
-        /// <inheritdoc cref="FetchRevisionsAsync(WikiSite,IEnumerable{int},IWikiPageQueryProvider,CancellationToken)"/>
-        public static IAsyncEnumerable<Revision?> FetchRevisionsAsync(WikiSite site, IEnumerable<int> revisionIds)
+        /// <inheritdoc cref="FetchRevisionsAsync(WikiSite,IEnumerable{long},IWikiPageQueryProvider,CancellationToken)"/>
+        public static IAsyncEnumerable<Revision?> FetchRevisionsAsync(WikiSite site, IEnumerable<long> revisionIds)
         {
             return FetchRevisionsAsync(site, revisionIds, PageQueryOptions.FetchContent, CancellationToken.None);
         }
 
-        /// <inheritdoc cref="FetchRevisionsAsync(WikiSite,IEnumerable{int},IWikiPageQueryProvider,CancellationToken)"/>
-        public static IAsyncEnumerable<Revision?> FetchRevisionsAsync(WikiSite site, IEnumerable<int> revisionIds, PageQueryOptions options)
+        /// <inheritdoc cref="FetchRevisionsAsync(WikiSite,IEnumerable{long},IWikiPageQueryProvider,CancellationToken)"/>
+        public static IAsyncEnumerable<Revision?> FetchRevisionsAsync(WikiSite site, IEnumerable<long> revisionIds, PageQueryOptions options)
         {
             return FetchRevisionsAsync(site, revisionIds, options, CancellationToken.None);
         }
 
-        /// <inheritdoc cref="FetchRevisionsAsync(WikiSite,IEnumerable{int},IWikiPageQueryProvider,CancellationToken)"/>
-        public static IAsyncEnumerable<Revision?> FetchRevisionsAsync(WikiSite site, IEnumerable<int> revisionIds, PageQueryOptions options, CancellationToken cancellationToken)
+        /// <inheritdoc cref="FetchRevisionsAsync(WikiSite,IEnumerable{long},IWikiPageQueryProvider,CancellationToken)"/>
+        public static IAsyncEnumerable<Revision?> FetchRevisionsAsync(WikiSite site, IEnumerable<long> revisionIds, PageQueryOptions options, CancellationToken cancellationToken)
         {
             return FetchRevisionsAsync(site, revisionIds, MediaWikiHelper.QueryProviderFromOptions(options), cancellationToken);
         }
@@ -81,7 +81,7 @@ namespace WikiClientLibrary.Pages
         /// <para>If there's invalid revision id in <paramref name="revisionIds"/>, an <see cref="ArgumentException"/>
         /// will be thrown while enumerating.</para>
         /// </remarks>
-        public static IAsyncEnumerable<Revision?> FetchRevisionsAsync(WikiSite site, IEnumerable<int> revisionIds, IWikiPageQueryProvider options, CancellationToken cancellationToken)
+        public static IAsyncEnumerable<Revision?> FetchRevisionsAsync(WikiSite site, IEnumerable<long> revisionIds, IWikiPageQueryProvider options, CancellationToken cancellationToken)
         {
             if (site == null) throw new ArgumentNullException(nameof(site));
             if (revisionIds == null) throw new ArgumentNullException(nameof(revisionIds));
@@ -94,10 +94,10 @@ namespace WikiClientLibrary.Pages
         public WikiPageStub Page { get; internal set; }
 
         [JsonProperty("revid")]
-        public int Id { get; private set; }
+        public long Id { get; private set; }
 
         [JsonProperty]
-        public int ParentId { get; private set; }
+        public long ParentId { get; private set; }
 
         /// <summary>
         /// Gets the content of the revision.
@@ -145,7 +145,7 @@ namespace WikiClientLibrary.Pages
         /// <seealso cref="RevisionFlags.Anonymous"/>
         /// <seealso cref="RevisionHiddenFields.User"/>
         [JsonProperty]
-        public int UserId { get; private set; }
+        public long UserId { get; private set; }
 
         /// <summary>
         /// Gets a <see cref="UserStub"/> containing the name and ID of the user made this revision.

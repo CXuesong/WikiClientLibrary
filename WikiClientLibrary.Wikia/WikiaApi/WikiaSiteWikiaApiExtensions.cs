@@ -106,15 +106,15 @@ namespace WikiClientLibrary.Wikia.WikiaApi
             }
         }
 
-        /// <inheritdoc cref="FetchRelatedPagesAsync(WikiaSite,int,int,CancellationToken)"/>
+        /// <inheritdoc cref="FetchRelatedPagesAsync(WikiaSite,long,int,CancellationToken)"/>
         /// <remarks>This overload fetches 10 items at most.</remarks>
-        public static Task<IList<RelatedPageItem>> FetchRelatedPagesAsync(this WikiaSite site, int pageId)
+        public static Task<IList<RelatedPageItem>> FetchRelatedPagesAsync(this WikiaSite site, long pageId)
         {
             return FetchRelatedPagesAsync(site, pageId, 10, CancellationToken.None);
         }
 
-        /// <inheritdoc cref="FetchRelatedPagesAsync(WikiaSite,int,int,CancellationToken)"/>
-        public static Task<IList<RelatedPageItem>> FetchRelatedPagesAsync(this WikiaSite site, int pageId, int maxCount)
+        /// <inheritdoc cref="FetchRelatedPagesAsync(WikiaSite,long,int,CancellationToken)"/>
+        public static Task<IList<RelatedPageItem>> FetchRelatedPagesAsync(this WikiaSite site, long pageId, int maxCount)
         {
             return FetchRelatedPagesAsync(site, pageId, maxCount, CancellationToken.None);
         }
@@ -131,7 +131,7 @@ namespace WikiClientLibrary.Wikia.WikiaApi
         /// <exception cref="NotFoundApiException"><c>Related Pages</c> extension is not available.</exception>
         /// <returns></returns>
         public static async Task<IList<RelatedPageItem>> FetchRelatedPagesAsync(this WikiaSite site,
-            int pageId, int maxCount, CancellationToken cancellationToken)
+            long pageId, int maxCount, CancellationToken cancellationToken)
         {
             if (site == null) throw new ArgumentNullException(nameof(site));
             if (maxCount <= 0) throw new ArgumentOutOfRangeException(nameof(maxCount));

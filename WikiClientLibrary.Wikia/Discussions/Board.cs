@@ -43,7 +43,7 @@ namespace WikiClientLibrary.Wikia.Discussions
         /// <param name="site">The Wikia site.</param>
         /// <param name="pageId">Page ID of the board.</param>
         /// <exception cref="ArgumentNullException"><paramref name="site"/> is <c>null</c>.</exception>
-        public Board(WikiaSite site, int pageId)
+        public Board(WikiaSite site, long pageId)
         {
             Site = site ?? throw new ArgumentNullException(nameof(site));
             Page = new WikiPageStub(pageId);

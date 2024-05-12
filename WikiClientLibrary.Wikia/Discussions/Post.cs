@@ -35,7 +35,7 @@ namespace WikiClientLibrary.Wikia.Discussions
         /// For now, it is not possible to get the replies by using the constructor provided here.
         /// To achieve this, you need to invoke <see cref="Board.EnumPostsAsync()"/> on a <see cref="Board"/> instance.
         /// </remarks>
-        public Post(WikiaSite site, WikiPageStub ownerPage, int id)
+        public Post(WikiaSite site, WikiPageStub ownerPage, long id)
         {
             if (ownerPage.IsEmpty) throw new ArgumentException("ownerPage is empty.", nameof(ownerPage));
             Site = site ?? throw new ArgumentNullException(nameof(site));
@@ -47,7 +47,7 @@ namespace WikiClientLibrary.Wikia.Discussions
         public WikiaSite Site { get; }
 
         /// <summary>Gets the ID of the post.</summary>
-        public int Id { get; private set; }
+        public long Id { get; private set; }
 
         /// <summary>Gets the stub of the page that owns the comment.</summary>
         public WikiPageStub OwnerPage { get; private set; }
