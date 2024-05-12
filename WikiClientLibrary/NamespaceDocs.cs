@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Runtime.CompilerServices;
-using System.Threading;
+﻿using System.Runtime.CompilerServices;
 using WikiClientLibrary.Client;
 using WikiClientLibrary.Generators;
 using WikiClientLibrary.Generators.Primitive;
@@ -14,8 +12,8 @@ namespace WikiClientLibrary
     [CompilerGenerated]
     internal class NamespaceDoc
     {
-    }
 
+    }
 }
 
 namespace WikiClientLibrary.Client
@@ -27,6 +25,7 @@ namespace WikiClientLibrary.Client
     [CompilerGenerated]
     internal class NamespaceDoc
     {
+
     }
 }
 
@@ -39,6 +38,7 @@ namespace WikiClientLibrary.Sites
     [CompilerGenerated]
     internal class NamespaceDoc
     {
+
     }
 }
 
@@ -50,6 +50,7 @@ namespace WikiClientLibrary.Pages
     [CompilerGenerated]
     internal class NamespaceDoc
     {
+
     }
 }
 
@@ -63,6 +64,7 @@ namespace WikiClientLibrary.Pages.Queries
     [CompilerGenerated]
     internal class NamespaceDoc
     {
+
     }
 }
 
@@ -94,6 +96,7 @@ namespace WikiClientLibrary.Pages.Queries.Properties
     [CompilerGenerated]
     internal class NamespaceDoc
     {
+
     }
 }
 
@@ -105,6 +108,7 @@ namespace WikiClientLibrary.Pages.Parsing
     [CompilerGenerated]
     internal class NamespaceDoc
     {
+
     }
 }
 
@@ -116,6 +120,7 @@ namespace WikiClientLibrary.Files
     [CompilerGenerated]
     internal class NamespaceDoc
     {
+
     }
 }
 
@@ -138,12 +143,12 @@ namespace WikiClientLibrary.Generators
     [CompilerGenerated]
     internal class NamespaceDoc
     {
+
     }
 }
 
 namespace WikiClientLibrary.Generators.Primitive
 {
-
     /// <summary>
     /// This namespace contains the primitive classes that allows you to implement your own customized
     /// MediaWiki <c>list</c>s and <c>generator</c>s.
@@ -159,6 +164,7 @@ namespace WikiClientLibrary.Generators.Primitive
     [CompilerGenerated]
     internal class NamespaceDoc
     {
+
     }
 }
 
@@ -170,6 +176,7 @@ namespace WikiClientLibrary.Infrastructures
     [CompilerGenerated]
     internal class NamespaceDoc
     {
+
     }
 }
 
@@ -183,6 +190,7 @@ namespace WikiClientLibrary.Infrastructures.Logging
     [CompilerGenerated]
     internal class NamespaceDoc
     {
+
     }
 }
 
@@ -205,6 +213,6 @@ namespace WikiClientLibrary.Scribunto
     [CompilerGenerated]
     internal class NamespaceDoc
     {
+
     }
 }
-

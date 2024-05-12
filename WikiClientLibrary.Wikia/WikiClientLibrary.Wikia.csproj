@@ -9,6 +9,7 @@
       which are using a customized MediaWiki branch based on MediaWiki 1.19.
     </Description>
     <PackageTags>$(PackageTags) Wikia FANDOM</PackageTags>
+    <ImplicitUsings>Enable</ImplicitUsings>
   </PropertyGroup>
 
   <ItemGroup>

@@ -1,11 +1,7 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Collections;
 using System.Text;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
-using System.IO;
 using System.Text.RegularExpressions;
 using WikiClientLibrary.Pages;
 using WikiClientLibrary.Sites;
@@ -185,6 +181,7 @@ public record ParsedSectionInfo(string? Title, string Content);
 
 internal struct DemoFileInfo
 {
+
     public DemoFileInfo(Stream contentStream, string? description)
     {
         ContentStream = contentStream;

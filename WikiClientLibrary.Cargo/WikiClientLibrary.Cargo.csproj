@@ -9,6 +9,7 @@
     </Description>
     <PackageTags>$(PackageTags) Cargo</PackageTags>
     <Nullable>Enable</Nullable>
+    <ImplicitUsings>Enable</ImplicitUsings>
   </PropertyGroup>
 
   <ItemGroup>

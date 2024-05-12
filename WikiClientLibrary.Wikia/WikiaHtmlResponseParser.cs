@@ -1,31 +1,26 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Net.Http;
-using System.Text;
-using System.Threading.Tasks;
-using HtmlAgilityPack;
+﻿using HtmlAgilityPack;
 using WikiClientLibrary.Client;
 
-namespace WikiClientLibrary.Wikia
-{
-    public class WikiaHtmlResponseParser : WikiResponseMessageParser<HtmlDocument>
-    {
+namespace WikiClientLibrary.Wikia;
 
-        internal static readonly WikiaHtmlResponseParser Default = new WikiaHtmlResponseParser();
-     
-        /// <inheritdoc />
-        public override async Task<HtmlDocument> ParseResponseAsync(HttpResponseMessage response, WikiResponseParsingContext context)
+public class WikiaHtmlResponseParser : WikiResponseMessageParser<HtmlDocument>
+{
+
+    internal static readonly WikiaHtmlResponseParser Default = new WikiaHtmlResponseParser();
+
+    /// <inheritdoc />
+    public override async Task<HtmlDocument> ParseResponseAsync(HttpResponseMessage response, WikiResponseParsingContext context)
+    {
+        if (!response.IsSuccessStatusCode)
         {
-            if (!response.IsSuccessStatusCode)
-            {
-                context.NeedRetry = true;
-                response.EnsureSuccessStatusCode();
-            }
-            var doc = new HtmlDocument();
-            // TODO buffer stream, instead of reading all
-            var content = await response.Content.ReadAsStringAsync();
-            doc.LoadHtml(content);
-            return doc;
+            context.NeedRetry = true;
+            response.EnsureSuccessStatusCode();
         }
+        var doc = new HtmlDocument();
+        // TODO buffer stream, instead of reading all
+        var content = await response.Content.ReadAsStringAsync();
+        doc.LoadHtml(content);
+        return doc;
     }
+
 }

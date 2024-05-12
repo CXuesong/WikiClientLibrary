@@ -35,6 +35,7 @@ namespace WikiClientLibrary.Wikia
     [CompilerGenerated]
     internal class NamespaceDoc
     {
+
     }
 }
 
@@ -46,5 +47,6 @@ namespace WikiClientLibrary.Wikia.Discussions
     [CompilerGenerated]
     internal class NamespaceDoc
     {
+
     }
 }

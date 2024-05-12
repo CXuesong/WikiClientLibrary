@@ -1,68 +1,63 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using WikiClientLibrary.Sites;
+﻿using WikiClientLibrary.Sites;
 
-namespace WikiClientLibrary.Cargo.Linq
+namespace WikiClientLibrary.Cargo.Linq;
+
+/// <summary>
+/// Provides LINQ to Cargo query ability.
+/// </summary>
+public interface ICargoQueryContext
 {
 
     /// <summary>
-    /// Provides LINQ to Cargo query ability.
+    /// Starts a Linq query expression on the specified Cargo model and Cargo table.
     /// </summary>
-    public interface ICargoQueryContext
+    /// <typeparam name="T">type of the model.</typeparam>
+    /// <param name="name">name of the Cargo table. Specify <c>null</c> to use default table name corresponding to the model.</param>
+    /// <returns>LINQ root.</returns>
+    ICargoRecordSet<T> Table<T>(string? name);
+
+    /// <summary>
+    /// Starts a Linq query expression on the specified table.
+    /// </summary>
+    ICargoRecordSet<T> Table<T>();
+
+}
+
+public class CargoQueryContext : ICargoQueryContext
+{
+
+    private int _PaginationSize = 10;
+
+    public CargoQueryContext(WikiSite wikiSite)
     {
-        /// <summary>
-        /// Starts a Linq query expression on the specified Cargo model and Cargo table.
-        /// </summary>
-        /// <typeparam name="T">type of the model.</typeparam>
-        /// <param name="name">name of the Cargo table. Specify <c>null</c> to use default table name corresponding to the model.</param>
-        /// <returns>LINQ root.</returns>
-        ICargoRecordSet<T> Table<T>(string? name);
-
-        /// <summary>
-        /// Starts a Linq query expression on the specified table.
-        /// </summary>
-        ICargoRecordSet<T> Table<T>();
-
+        WikiSite = wikiSite ?? throw new ArgumentNullException(nameof(wikiSite));
     }
 
-    public class CargoQueryContext : ICargoQueryContext
+    public WikiSite WikiSite { get; }
+
+    /// <summary>
+    /// Gets/sets the default pagination size used when requesting
+    /// for the records from MediaWiki server. (Default value: <c>10</c>.)
+    /// </summary>
+    public int PaginationSize
     {
-
-        private int _PaginationSize = 10;
-
-        public CargoQueryContext(WikiSite wikiSite)
+        get => _PaginationSize;
+        set
         {
-            WikiSite = wikiSite ?? throw new ArgumentNullException(nameof(wikiSite));
+            if (value <= 0)
+                throw new ArgumentOutOfRangeException(nameof(value));
+            _PaginationSize = value;
         }
-
-        public WikiSite WikiSite { get; }
-
-        /// <summary>
-        /// Gets/sets the default pagination size used when requesting
-        /// for the records from MediaWiki server. (Default value: <c>10</c>.)
-        /// </summary>
-        public int PaginationSize
-        {
-            get => _PaginationSize;
-            set
-            {
-                if (value <= 0)
-                    throw new ArgumentOutOfRangeException(nameof(value));
-                _PaginationSize = value;
-            }
-        }
-
-        /// <inheritdoc />
-        public ICargoRecordSet<T> Table<T>(string? name)
-        {
-            return new CargoRecordSet<T>(CargoModel.FromClrType(typeof(T), name), new CargoQueryProvider(WikiSite) { PaginationSize = _PaginationSize });
-        }
-
-        /// <inheritdoc />
-        public ICargoRecordSet<T> Table<T>() => Table<T>(null);
-
     }
+
+    /// <inheritdoc />
+    public ICargoRecordSet<T> Table<T>(string? name)
+    {
+        return new CargoRecordSet<T>(CargoModel.FromClrType(typeof(T), name),
+            new CargoQueryProvider(WikiSite) { PaginationSize = _PaginationSize });
+    }
+
+    /// <inheritdoc />
+    public ICargoRecordSet<T> Table<T>() => Table<T>(null);
 
 }

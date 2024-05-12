@@ -1,46 +1,42 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using WikiClientLibrary.Wikibase.DataTypes;
+﻿using WikiClientLibrary.Wikibase.DataTypes;
 
-namespace WikiClientLibrary.Wikibase
+namespace WikiClientLibrary.Wikibase;
+
+/// <summary>
+/// Provides basic access to Wikibase entities.
+/// </summary>
+/// <remarks>The most notable implementations of this interface are <see cref="Entity"/> and <see cref="SerializableEntity"/>.</remarks>
+public interface IEntity
 {
+
     /// <summary>
-    /// Provides basic access to Wikibase entities.
+    /// Id of the entity.
     /// </summary>
-    /// <remarks>The most notable implementations of this interface are <see cref="Entity"/> and <see cref="SerializableEntity"/>.</remarks>
-    public interface IEntity
-    {
+    /// <value>Item or Property ID, OR <c>null</c> if this is a new entity that has not made any changes.</value>
+    string? Id { get; }
 
-        /// <summary>
-        /// Id of the entity.
-        /// </summary>
-        /// <value>Item or Property ID, OR <c>null</c> if this is a new entity that has not made any changes.</value>
-        string? Id { get; }
+    /// <summary>
+    /// For property entity, gets the data type of the property.
+    /// </summary>
+    /// <value>the data type of the value when this property is used in a <see cref="Snak"/>, or <c>null</c> if not applicable.</value>
+    WikibaseDataType? DataType { get; }
 
-        /// <summary>
-        /// For property entity, gets the data type of the property.
-        /// </summary>
-        /// <value>the data type of the value when this property is used in a <see cref="Snak"/>, or <c>null</c> if not applicable.</value>
-        WikibaseDataType? DataType { get; }
+    /// <summary>Gets the labels (aka. names) of the entity.</summary>
+    WbMonolingualTextCollection Labels { get; }
 
-        /// <summary>Gets the labels (aka. names) of the entity.</summary>
-        WbMonolingualTextCollection Labels { get; }
+    /// <summary>Gets the descriptions of the entity.</summary>
+    WbMonolingualTextCollection Descriptions { get; }
 
-        /// <summary>Gets the descriptions of the entity.</summary>
-        WbMonolingualTextCollection Descriptions { get; }
+    /// <summary>Gets the aliases of the entity.</summary>
+    WbMonolingualTextsCollection Aliases { get; }
 
-        /// <summary>Gets the aliases of the entity.</summary>
-        WbMonolingualTextsCollection Aliases { get; }
+    /// <summary>Gets the sitelinks of the entity.</summary>
+    EntitySiteLinkCollection SiteLinks { get; }
 
-        /// <summary>Gets the sitelinks of the entity.</summary>
-        EntitySiteLinkCollection SiteLinks { get; }
+    /// <summary>Gets the claims of the entity.</summary>
+    ClaimCollection Claims { get; }
 
-        /// <summary>Gets the claims of the entity.</summary>
-        ClaimCollection Claims { get; }
+    /// <summary>Wikibase entity type.</summary>
+    EntityType Type { get; }
 
-        /// <summary>Wikibase entity type.</summary>
-        EntityType Type { get; }
-
-    }
 }
