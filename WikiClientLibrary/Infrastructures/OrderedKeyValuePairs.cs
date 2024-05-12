@@ -1,49 +1,46 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
+﻿using System.Collections.ObjectModel;
 
-namespace WikiClientLibrary.Infrastructures
+namespace WikiClientLibrary.Infrastructures;
+
+/// <summary>
+/// A sequence of ordered key-value pairs. The keys can duplicate with each other.
+/// </summary>
+public class OrderedKeyValuePairs<TKey, TValue> : Collection<KeyValuePair<TKey, TValue>>
 {
-
-    /// <summary>
-    /// A sequence of ordered key-value pairs. The keys can duplicate with each other.
-    /// </summary>
-    public class OrderedKeyValuePairs<TKey, TValue> : Collection<KeyValuePair<TKey, TValue>>
+    public OrderedKeyValuePairs() : this(null)
     {
-        public OrderedKeyValuePairs() : this(null)
-        {
         }
 
-        public OrderedKeyValuePairs(IEqualityComparer<TKey>? keyComparer)
-        {
+    public OrderedKeyValuePairs(IEqualityComparer<TKey>? keyComparer)
+    {
             KeyComparer = keyComparer ?? EqualityComparer<TKey>.Default;
         }
 
-        public IEqualityComparer<TKey> KeyComparer { get; }
+    public IEqualityComparer<TKey> KeyComparer { get; }
 
-        public void Add(TKey key, TValue value)
-        {
+    public void Add(TKey key, TValue value)
+    {
             Add(new KeyValuePair<TKey, TValue>(key, value));
         }
 
-        public void AddRange(IEnumerable<KeyValuePair<TKey, TValue>> items)
-        {
+    public void AddRange(IEnumerable<KeyValuePair<TKey, TValue>> items)
+    {
             if (items == null) throw new ArgumentNullException(nameof(items));
             foreach (var item in items) Add(item);
         }
 
-        public TValue this[TKey key]
+    public TValue this[TKey key]
+    {
+        get
         {
-            get
-            {
                 foreach (var p in Items)
                 {
                     if (KeyComparer.Equals(p.Key, key)) return p.Value;
                 }
                 throw new KeyNotFoundException();
             }
-            set
-            {
+        set
+        {
                 for (var i = 0; i < Items.Count; i++)
                 {
                     var p = Items[i];
@@ -55,7 +52,6 @@ namespace WikiClientLibrary.Infrastructures
                 }
                 Items.Add(new KeyValuePair<TKey, TValue>(key, value));
             }
-        }
-
     }
+
 }

@@ -1,175 +1,170 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
+﻿using System.Diagnostics;
 using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 using WikiClientLibrary.Sites;
 
-namespace WikiClientLibrary
-{
+namespace WikiClientLibrary;
 
+/// <summary>
+/// An immutable representation of a MediaWiki link (local or interwiki).
+/// </summary>
+/// <remarks>
+/// A WikiLink expression is in the form of <c>interwiki:Namespace:Title#section|anchor</c>.
+/// </remarks>
+public class WikiLink
+{
     /// <summary>
-    /// An immutable representation of a MediaWiki link (local or interwiki).
+    /// A regular expression used to match illegal titles.
     /// </summary>
-    /// <remarks>
-    /// A WikiLink expression is in the form of <c>interwiki:Namespace:Title#section|anchor</c>.
-    /// </remarks>
-    public class WikiLink
-    {
-        /// <summary>
-        /// A regular expression used to match illegal titles.
-        /// </summary>
-        // From Pywikibot. page.py, Link class.
-        public static readonly Regex IllegalTitlesPattern = new Regex(
+    // From Pywikibot. page.py, Link class.
+    public static readonly Regex IllegalTitlesPattern = new Regex(
         // Matching titles will be held as illegal.
-            @"[\x00-\x1f\x23\x3c\x3e\x5b\x5d\x7b\x7c\x7d\x7f]"
+        @"[\x00-\x1f\x23\x3c\x3e\x5b\x5d\x7b\x7c\x7d\x7f]"
         // URL percent encoding sequences interfere with the ability
         // to round-trip titles -- you can't link to them consistently.
-            + "|%[0-9A-Fa-f]{2}"
+        + "|%[0-9A-Fa-f]{2}"
         // XML/HTML character references produce similar issues.
-            + @"|&[A-Za-z0-9\x80-\xff]+;"
-            + "|&#[0-9]+"
-            + "|&#x[0-9A-Fa-f]+;"
-            );
+        + @"|&[A-Za-z0-9\x80-\xff]+;"
+        + "|&#[0-9]+"
+        + "|&#x[0-9A-Fa-f]+;"
+    );
 
-        /// <inheritdoc cref="ParseAsync(WikiSite,IWikiFamily,string,int)"/>
-        public static Task<WikiLink> ParseAsync(WikiSite site, IWikiFamily family, string text)
-        {
+    /// <inheritdoc cref="ParseAsync(WikiSite,IWikiFamily,string,int)"/>
+    public static Task<WikiLink> ParseAsync(WikiSite site, IWikiFamily family, string text)
+    {
             return ParseAsync(site, family, text, 0);
         }
 
-        /// <inheritdoc cref="ParseAsync(IWikiFamily,string,int)"/>
-        public static Task<WikiLink> ParseAsync(IWikiFamily family, string text)
-        {
+    /// <inheritdoc cref="ParseAsync(IWikiFamily,string,int)"/>
+    public static Task<WikiLink> ParseAsync(IWikiFamily family, string text)
+    {
             return ParseAsync(family, text, 0);
         }
 
-        /// <inheritdoc cref="ParseAsync(WikiSite,IWikiFamily,string,int)"/>
-        /// <summary>
-        /// Parses a new instance from the a Wikilink expression on the specified Wiki family.
-        /// This overload resolves the target interwiki site with the interwiki prefixes provided
-        /// <seealso cref="IWikiFamily"/> instance, and requires <paramref name="text"/> to have interwiki prefix.
-        /// </summary>
-        public static Task<WikiLink> ParseAsync(IWikiFamily family, string text, int defaultNamespaceId)
-        {
+    /// <inheritdoc cref="ParseAsync(WikiSite,IWikiFamily,string,int)"/>
+    /// <summary>
+    /// Parses a new instance from the a Wikilink expression on the specified Wiki family.
+    /// This overload resolves the target interwiki site with the interwiki prefixes provided
+    /// <seealso cref="IWikiFamily"/> instance, and requires <paramref name="text"/> to have interwiki prefix.
+    /// </summary>
+    public static Task<WikiLink> ParseAsync(IWikiFamily family, string text, int defaultNamespaceId)
+    {
             if (family == null) throw new ArgumentNullException(nameof(family));
             return ParseAsync(null, family, text, defaultNamespaceId);
         }
 
-        /// <summary>
-        /// Parses a new instance from the a Wikilink expression on the specified Wiki site and Wiki family.
-        /// This overload also resolves the target interwiki site with the interwiki prefixes provided
-        /// <seealso cref="IWikiFamily"/> instance.
-        /// </summary>
-        /// <param name="site">Site instance.</param>
-        /// <param name="family">Wiki family. You need to provide this argument if you want to parse into interwiki links.</param>
-        /// <param name="text">Wikilink expression, without square brackets.</param>
-        /// <param name="defaultNamespaceId">Id of default namespace. See <see cref="BuiltInNamespaces"/> for a list of possible values.</param>
-        /// <returns>The parsed <see cref="WikiLink"/> instance.</returns>
-        /// <exception cref="ArgumentNullException">
-        /// Both <paramref name="site"/> and <paramref name="family"/> is <c>null</c>.
-        /// -- or --
-        /// <paramref name="text"/> is <c>null</c>.
-        /// </exception>
-        /// <exception cref="ArgumentException">
-        /// <paramref name="text"/> does not contain a valid page title.
-        /// -- or --
-        /// <paramref name="site"/> is <c>null</c>, but <paramref name="text"/> does not contain any interwiki prefix.
-        /// </exception>
-        public static Task<WikiLink> ParseAsync(WikiSite? site, IWikiFamily? family, string text, int defaultNamespaceId)
-        {
+    /// <summary>
+    /// Parses a new instance from the a Wikilink expression on the specified Wiki site and Wiki family.
+    /// This overload also resolves the target interwiki site with the interwiki prefixes provided
+    /// <seealso cref="IWikiFamily"/> instance.
+    /// </summary>
+    /// <param name="site">Site instance.</param>
+    /// <param name="family">Wiki family. You need to provide this argument if you want to parse into interwiki links.</param>
+    /// <param name="text">Wikilink expression, without square brackets.</param>
+    /// <param name="defaultNamespaceId">Id of default namespace. See <see cref="BuiltInNamespaces"/> for a list of possible values.</param>
+    /// <returns>The parsed <see cref="WikiLink"/> instance.</returns>
+    /// <exception cref="ArgumentNullException">
+    /// Both <paramref name="site"/> and <paramref name="family"/> is <c>null</c>.
+    /// -- or --
+    /// <paramref name="text"/> is <c>null</c>.
+    /// </exception>
+    /// <exception cref="ArgumentException">
+    /// <paramref name="text"/> does not contain a valid page title.
+    /// -- or --
+    /// <paramref name="site"/> is <c>null</c>, but <paramref name="text"/> does not contain any interwiki prefix.
+    /// </exception>
+    public static Task<WikiLink> ParseAsync(WikiSite? site, IWikiFamily? family, string text, int defaultNamespaceId)
+    {
             return ParseInternalAsync(site, family, text, defaultNamespaceId, true)!;
         }
 
-        /// <inheritdoc cref="Parse(WikiSite,string,int)"/>
-        public static WikiLink Parse(WikiSite site, string text)
-        {
+    /// <inheritdoc cref="Parse(WikiSite,string,int)"/>
+    public static WikiLink Parse(WikiSite site, string text)
+    {
             return Parse(site, text, 0);
         }
 
-        /// <summary>
-        /// Parses a new instance using specified Wikilink expression.
-        /// </summary>
-        /// <param name="site">Site instance.</param>
-        /// <param name="text">Wikilink expression, without square brackets.</param>
-        /// <param name="defaultNamespaceId">Id of default namespace. See <see cref="BuiltInNamespaces"/> for a list of possible values.</param>
-        /// <exception cref="ArgumentNullException">Either <paramref name="site"/> or <paramref name="text"/> is <c>null</c>.</exception>
-        /// <exception cref="ArgumentException"><paramref name="text"/> does not contain a valid page title.</exception>
-        public static WikiLink Parse(WikiSite site, string text, int defaultNamespaceId)
-        {
+    /// <summary>
+    /// Parses a new instance using specified Wikilink expression.
+    /// </summary>
+    /// <param name="site">Site instance.</param>
+    /// <param name="text">Wikilink expression, without square brackets.</param>
+    /// <param name="defaultNamespaceId">Id of default namespace. See <see cref="BuiltInNamespaces"/> for a list of possible values.</param>
+    /// <exception cref="ArgumentNullException">Either <paramref name="site"/> or <paramref name="text"/> is <c>null</c>.</exception>
+    /// <exception cref="ArgumentException"><paramref name="text"/> does not contain a valid page title.</exception>
+    public static WikiLink Parse(WikiSite site, string text, int defaultNamespaceId)
+    {
             if (site == null) throw new ArgumentNullException(nameof(site));
             return ParseInternalAsync(site, null, text, defaultNamespaceId, true).GetAwaiter().GetResult()!;
         }
 
-        /// <inheritdoc cref="TryParse(WikiSite,string,int)"/>
-        public static WikiLink? TryParse(WikiSite site, string text)
-        {
+    /// <inheritdoc cref="TryParse(WikiSite,string,int)"/>
+    public static WikiLink? TryParse(WikiSite site, string text)
+    {
             return TryParse(site, text, 0);
         }
 
-        /// <inheritdoc cref="TryParseAsync(WikiSite,IWikiFamily,string,int)"/>
-        public static Task<WikiLink?> TryParseAsync(WikiSite? site, IWikiFamily? family, string text)
-        {
+    /// <inheritdoc cref="TryParseAsync(WikiSite,IWikiFamily,string,int)"/>
+    public static Task<WikiLink?> TryParseAsync(WikiSite? site, IWikiFamily? family, string text)
+    {
             return TryParseAsync(site, family, text, 0);
         }
 
-        /// <inheritdoc cref="TryParseAsync(IWikiFamily,string,int)"/>
-        public static Task<WikiLink?> TryParseAsync(IWikiFamily family, string text)
-        {
+    /// <inheritdoc cref="TryParseAsync(IWikiFamily,string,int)"/>
+    public static Task<WikiLink?> TryParseAsync(IWikiFamily family, string text)
+    {
             return TryParseAsync(family, text, 0);
         }
 
-        /// <inheritdoc cref="TryParseAsync(WikiSite,IWikiFamily,string,int)"/>
-        /// <summary>
-        /// Tries to parse a new instance from the a Wikilink expression on the specified Wiki family.
-        /// This overload resolves the target interwiki site with the interwiki prefixes provided
-        /// <seealso cref="IWikiFamily"/> instance, and requires <paramref name="text"/> to have interwiki prefix.
-        /// </summary>
-        public static Task<WikiLink?> TryParseAsync(IWikiFamily family, string text, int defaultNamespaceId)
-        {
+    /// <inheritdoc cref="TryParseAsync(WikiSite,IWikiFamily,string,int)"/>
+    /// <summary>
+    /// Tries to parse a new instance from the a Wikilink expression on the specified Wiki family.
+    /// This overload resolves the target interwiki site with the interwiki prefixes provided
+    /// <seealso cref="IWikiFamily"/> instance, and requires <paramref name="text"/> to have interwiki prefix.
+    /// </summary>
+    public static Task<WikiLink?> TryParseAsync(IWikiFamily family, string text, int defaultNamespaceId)
+    {
             if (family == null) throw new ArgumentNullException(nameof(family));
             return TryParseAsync(null, family, text, defaultNamespaceId);
         }
 
-        /// <summary>
-        /// Parses a new instance from the a Wikilink expression on the specified Wiki site and Wiki family.
-        /// This overload also resolves the target interwiki site with the interwiki prefixes provided
-        /// <seealso cref="IWikiFamily"/> instance.
-        /// </summary>
-        /// <param name="site">Site instance.</param>
-        /// <param name="family">Wiki family. You need to provide this argument if you want to parse into interwiki links.</param>
-        /// <param name="text">Wikilink expression, without square brackets.</param>
-        /// <param name="defaultNamespaceId">Id of default namespace. See <see cref="BuiltInNamespaces"/> for a list of possible values.</param>
-        /// <returns>A <see cref="WikiLink"/> instance, or <c>null</c> if the parsing failed.</returns>
-        /// <exception cref="ArgumentNullException">
-        /// Both <paramref name="site"/> and <paramref name="family"/> is <c>null</c>.
-        /// -- or --
-        /// <paramref name="text"/> is <c>null</c>.
-        /// </exception>
-        public static Task<WikiLink?> TryParseAsync(WikiSite? site, IWikiFamily? family, string text, int defaultNamespaceId)
-        {
+    /// <summary>
+    /// Parses a new instance from the a Wikilink expression on the specified Wiki site and Wiki family.
+    /// This overload also resolves the target interwiki site with the interwiki prefixes provided
+    /// <seealso cref="IWikiFamily"/> instance.
+    /// </summary>
+    /// <param name="site">Site instance.</param>
+    /// <param name="family">Wiki family. You need to provide this argument if you want to parse into interwiki links.</param>
+    /// <param name="text">Wikilink expression, without square brackets.</param>
+    /// <param name="defaultNamespaceId">Id of default namespace. See <see cref="BuiltInNamespaces"/> for a list of possible values.</param>
+    /// <returns>A <see cref="WikiLink"/> instance, or <c>null</c> if the parsing failed.</returns>
+    /// <exception cref="ArgumentNullException">
+    /// Both <paramref name="site"/> and <paramref name="family"/> is <c>null</c>.
+    /// -- or --
+    /// <paramref name="text"/> is <c>null</c>.
+    /// </exception>
+    public static Task<WikiLink?> TryParseAsync(WikiSite? site, IWikiFamily? family, string text, int defaultNamespaceId)
+    {
             return ParseInternalAsync(site, family, text, defaultNamespaceId, false);
         }
 
-        /// <summary>
-        /// Tries to parse a new instance using specified Wikilink expression.
-        /// </summary>
-        /// <param name="site">Site instance.</param>
-        /// <param name="text">Wikilink expression, without square brackets.</param>
-        /// <param name="defaultNamespaceId">Id of default namespace. See <see cref="BuiltInNamespaces"/> for a list of possible values.</param>
-        /// <returns>A <see cref="WikiLink"/> instance, or <c>null</c> if the parsing failed.</returns>
-        /// <exception cref="ArgumentNullException">Either <paramref name="site"/> or <paramref name="text"/> is <c>null</c>.</exception>
-        /// <exception cref="ArgumentException"><paramref name="text"/> does not contain a valid page title.</exception>
+    /// <summary>
+    /// Tries to parse a new instance using specified Wikilink expression.
+    /// </summary>
+    /// <param name="site">Site instance.</param>
+    /// <param name="text">Wikilink expression, without square brackets.</param>
+    /// <param name="defaultNamespaceId">Id of default namespace. See <see cref="BuiltInNamespaces"/> for a list of possible values.</param>
+    /// <returns>A <see cref="WikiLink"/> instance, or <c>null</c> if the parsing failed.</returns>
+    /// <exception cref="ArgumentNullException">Either <paramref name="site"/> or <paramref name="text"/> is <c>null</c>.</exception>
+    /// <exception cref="ArgumentException"><paramref name="text"/> does not contain a valid page title.</exception>
 
-        public static WikiLink? TryParse(WikiSite site, string text, int defaultNamespaceId)
-        {
+    public static WikiLink? TryParse(WikiSite site, string text, int defaultNamespaceId)
+    {
             return ParseInternalAsync(site, null, text, defaultNamespaceId, false).GetAwaiter().GetResult();
         }
 
-        private static async Task<WikiLink?> ParseInternalAsync(WikiSite? site, IWikiFamily? family, string text, int defaultNamespaceId, bool exceptionOnFailure)
-        {
+    private static async Task<WikiLink?> ParseInternalAsync(WikiSite? site, IWikiFamily? family, string text, int defaultNamespaceId, bool exceptionOnFailure)
+    {
             if (site == null && family == null)
                 throw new ArgumentNullException(nameof(site) + "/" + nameof(family));
             if (text == null) throw new ArgumentNullException(nameof(text));
@@ -264,47 +259,47 @@ namespace WikiClientLibrary
             return link;
         }
 
-        /// <summary>
-        /// The original wiki site provided to resolve this wikilink.
-        /// </summary>
-        /// <remarks>
-        /// The value can be <c>null</c> if this <seealso cref="WikiLink"/> is parsed without
-        /// originating <seealso cref="WikiSite"/> information,
-        /// e.g. parsed with only <seealso cref="IWikiFamily"/> provided.
-        /// </remarks>
-        /// <seealso cref="TargetSite"/>
-        public WikiSite? Site { get; }
+    /// <summary>
+    /// The original wiki site provided to resolve this wikilink.
+    /// </summary>
+    /// <remarks>
+    /// The value can be <c>null</c> if this <seealso cref="WikiLink"/> is parsed without
+    /// originating <seealso cref="WikiSite"/> information,
+    /// e.g. parsed with only <seealso cref="IWikiFamily"/> provided.
+    /// </remarks>
+    /// <seealso cref="TargetSite"/>
+    public WikiSite? Site { get; }
 
-        /// <summary>
-        /// Gets the wiki site containing the specified page title, if such information is available.
-        /// </summary>
-        /// <value>
-        /// If the parsed wikilink expression does not contain interwiki prefix,
-        /// this property is the same as <see cref="Site"/>.
-        /// If this wikilink is parsed with no <see cref="IWikiFamily"/> provided,
-        /// while it contains interwiki prefix, this property will be <c>null</c>.
-        /// </value>
-        /// <seealso cref="Site"/>
-        public WikiSite? TargetSite { get; private set; }
+    /// <summary>
+    /// Gets the wiki site containing the specified page title, if such information is available.
+    /// </summary>
+    /// <value>
+    /// If the parsed wikilink expression does not contain interwiki prefix,
+    /// this property is the same as <see cref="Site"/>.
+    /// If this wikilink is parsed with no <see cref="IWikiFamily"/> provided,
+    /// while it contains interwiki prefix, this property will be <c>null</c>.
+    /// </value>
+    /// <seealso cref="Site"/>
+    public WikiSite? TargetSite { get; private set; }
 
 #pragma warning disable CS8618 // 在退出构造函数时，不可为 null 的字段必须包含非 null 值。请考虑声明为可以为 null。
-        private WikiLink(WikiSite? site, string originalText)
+    private WikiLink(WikiSite? site, string originalText)
 #pragma warning restore CS8618 // 在退出构造函数时，不可为 null 的字段必须包含非 null 值。请考虑声明为可以为 null。
-        {
+    {
             this.Site = site;
             this.OriginalText = originalText;
         }
 
-        private static async Task<(WikiSite? TargetSite, string? Interwiki, string? Namespace, string Title)?>
-            TitlePartitionAsync(WikiSite? site, IWikiFamily? family, string rawTitle, int defaultNamespace)
-        {
+    private static async Task<(WikiSite? TargetSite, string? Interwiki, string? Namespace, string Title)?>
+        TitlePartitionAsync(WikiSite? site, IWikiFamily? family, string rawTitle, int defaultNamespace)
+    {
             Debug.Assert(site != null || family != null);
             Debug.Assert(rawTitle != null);
             var title = rawTitle;
             if (title.Length == 0)
                 return null;
             var state = 0;
-            /*
+           /*
              state  accepts
              0      LeadingBlank
              1      Namespace / Interwiki
@@ -382,89 +377,89 @@ namespace WikiClientLibrary
             return (site, interwiki, nsname, pagetitle);
         }
 
-        /// <summary>
-        /// Gets interwiki prefix of the wikilink.
-        /// </summary>
-        /// <value>Interwiki prefix of the wikilink. If this link is not an interwiki link, the value is <c>null</c>.</value>
-        public string? InterwikiPrefix { get; private set; }
+    /// <summary>
+    /// Gets interwiki prefix of the wikilink.
+    /// </summary>
+    /// <value>Interwiki prefix of the wikilink. If this link is not an interwiki link, the value is <c>null</c>.</value>
+    public string? InterwikiPrefix { get; private set; }
 
-        /// <summary>
-        /// Gets the namespace name.
-        /// </summary>
-        /// <value>
-        /// If the title is in main namespace, the value is empty string.
-        /// If this is not applicable (e.g. parsed a interwiki link without family information given),
-        /// the value is <c>null</c>.
-        /// </value>
-        public string? NamespaceName { get; private set; }
+    /// <summary>
+    /// Gets the namespace name.
+    /// </summary>
+    /// <value>
+    /// If the title is in main namespace, the value is empty string.
+    /// If this is not applicable (e.g. parsed a interwiki link without family information given),
+    /// the value is <c>null</c>.
+    /// </value>
+    public string? NamespaceName { get; private set; }
 
-        /// <summary>
-        /// Gets the namespace information.
-        /// </summary>
-        public NamespaceInfo? Namespace { get; private set; }
+    /// <summary>
+    /// Gets the namespace information.
+    /// </summary>
+    public NamespaceInfo? Namespace { get; private set; }
 
-        /// <summary>
-        /// Gets the target page title, excluding all the prefix and section. (<c>Title</c>)
-        /// </summary>
-        public string Title { get; private set; }
+    /// <summary>
+    /// Gets the target page title, excluding all the prefix and section. (<c>Title</c>)
+    /// </summary>
+    public string Title { get; private set; }
 
-        /// <summary>
-        /// Gets the full title of the target page. (<c>Namespace:Title</c>)
-        /// </summary>
-        /// <value>
-        /// Title of the page with namespace prefix, if prefix exists.
-        /// </value>
-        public string FullTitle { get; private set; }
+    /// <summary>
+    /// Gets the full title of the target page. (<c>Namespace:Title</c>)
+    /// </summary>
+    /// <value>
+    /// Title of the page with namespace prefix, if prefix exists.
+    /// </value>
+    public string FullTitle { get; private set; }
 
-        /// <summary>
-        /// Gets the section title of a section on the page. (<c>Section</c>)
-        /// </summary>
-        /// <value>
-        /// The section title of a section on the page, without leading #.
-        /// <c>null</c> if the link does not have section information.
-        /// </value>
-        public string? Section { get; private set; }
+    /// <summary>
+    /// Gets the section title of a section on the page. (<c>Section</c>)
+    /// </summary>
+    /// <value>
+    /// The section title of a section on the page, without leading #.
+    /// <c>null</c> if the link does not have section information.
+    /// </value>
+    public string? Section { get; private set; }
 
-        /// <summary>
-        /// Gets the full wikilink target expression. (<c>interwiki:Namespace:Title#Section</c>)
-        /// </summary>
-        /// <value>
-        /// For wikilink expression in the form <c>[[target|anchor]]</c>,
-        /// gets the full page title (i.e. <c>target</c> part) for the link,
-        /// including interwiki prefix and section name.
-        /// </value>
-        /// <remarks>For wikilink without interwiki prefix, this property has the same value as <seealso cref="FullTitleAndSection"/>.</remarks>
-        public string Target { get; private set; }
+    /// <summary>
+    /// Gets the full wikilink target expression. (<c>interwiki:Namespace:Title#Section</c>)
+    /// </summary>
+    /// <value>
+    /// For wikilink expression in the form <c>[[target|anchor]]</c>,
+    /// gets the full page title (i.e. <c>target</c> part) for the link,
+    /// including interwiki prefix and section name.
+    /// </value>
+    /// <remarks>For wikilink without interwiki prefix, this property has the same value as <seealso cref="FullTitleAndSection"/>.</remarks>
+    public string Target { get; private set; }
 
-        /// <summary>
-        /// Gets the full page title and section part of the wikilink. (<c>Namespace:Title#Section</c>)
-        /// </summary>
-        /// <value>Full page title and section part of the wikilink, without interwiki prefix.</value>
-        /// <remarks>For wikilink without interwiki prefix, this property has the same value as <seealso cref="Target"/>.</remarks>
-        public string FullTitleAndSection { get; private set; }
+    /// <summary>
+    /// Gets the full page title and section part of the wikilink. (<c>Namespace:Title#Section</c>)
+    /// </summary>
+    /// <value>Full page title and section part of the wikilink, without interwiki prefix.</value>
+    /// <remarks>For wikilink without interwiki prefix, this property has the same value as <seealso cref="Target"/>.</remarks>
+    public string FullTitleAndSection { get; private set; }
 
-        /// <summary>
-        /// For wikilink expression in the form <c>[[target|anchor]]</c>, excluding the square brackets,
-        /// gets the actual displayed text (<c>anchor</c>) for the link.
-        /// </summary>
-        /// <remarks>For the actual text this wikilink should show, use <see cref="DisplayText"/>.</remarks>
-        public string? Anchor { get; private set; }
+    /// <summary>
+    /// For wikilink expression in the form <c>[[target|anchor]]</c>, excluding the square brackets,
+    /// gets the actual displayed text (<c>anchor</c>) for the link.
+    /// </summary>
+    /// <remarks>For the actual text this wikilink should show, use <see cref="DisplayText"/>.</remarks>
+    public string? Anchor { get; private set; }
 
-        private string? _DisplayText;
+    private string? _DisplayText;
 
-        /// <summary>
-        /// Gets the actual link text that should be shown.
-        /// </summary>
-        /// <value>
-        /// <see cref="Anchor"/>, if the value is not <c>null</c>; otherwise <see cref="Target"/>.
-        /// if <see cref="Anchor"/> is <see cref="string.Empty"/>,
-        /// this property returns the text after the first colon in <see cref="Target"/>.
-        /// See <a href="https://en.wikipedia.org/wiki/Help:Pipe_trick">w:H:Pipe trick</a> for more information.
-        /// </value>
-        public string DisplayText
+    /// <summary>
+    /// Gets the actual link text that should be shown.
+    /// </summary>
+    /// <value>
+    /// <see cref="Anchor"/>, if the value is not <c>null</c>; otherwise <see cref="Target"/>.
+    /// if <see cref="Anchor"/> is <see cref="string.Empty"/>,
+    /// this property returns the text after the first colon in <see cref="Target"/>.
+    /// See <a href="https://en.wikipedia.org/wiki/Help:Pipe_trick">w:H:Pipe trick</a> for more information.
+    /// </value>
+    public string DisplayText
+    {
+        get
         {
-            get
-            {
                 var localValue = _DisplayText;
                 if (localValue == null)
                 {
@@ -486,23 +481,23 @@ namespace WikiClientLibrary
                 }
                 return localValue;
             }
-        }
+    }
 
-        /// <summary>
-        /// Gets the original wikitext expression that was passed to the Parse or ParseAsync methods.
-        /// </summary>
-        public string OriginalText { get; }
+    /// <summary>
+    /// Gets the original wikitext expression that was passed to the Parse or ParseAsync methods.
+    /// </summary>
+    public string OriginalText { get; }
 
-        private string? _TargetUrl;
+    private string? _TargetUrl;
 
-        /// <summary>
-        /// Gets the full URL of the wikilink target.
-        /// </summary>
-        /// <remarks>This property uses <see cref="SiteInfo.MakeArticleUrl(string)"/> to build the article URL.</remarks>
-        public string TargetUrl
+    /// <summary>
+    /// Gets the full URL of the wikilink target.
+    /// </summary>
+    /// <remarks>This property uses <see cref="SiteInfo.MakeArticleUrl(string)"/> to build the article URL.</remarks>
+    public string TargetUrl
+    {
+        get
         {
-            get
-            {
                 var localValue = _TargetUrl;
                 if (localValue == null)
                 {
@@ -516,46 +511,44 @@ namespace WikiClientLibrary
                 }
                 return localValue;
             }
-        }
+    }
 
-        private string _FormattedText;
+    private string _FormattedText;
 
-        /// <summary>
-        /// Gets the formatted expression of the wikilink.
-        /// </summary>
-        /// <returns>The wikilink expression, excluding the surrounding square brackets [[ ]].</returns>
-        public override string ToString()
-        {
+    /// <summary>
+    /// Gets the formatted expression of the wikilink.
+    /// </summary>
+    /// <returns>The wikilink expression, excluding the surrounding square brackets [[ ]].</returns>
+    public override string ToString()
+    {
             return _FormattedText;
         }
 
-        /// <summary>
-        /// Uses this class to normalize a specific wikilink expression.
-        /// </summary>
-        /// <param name="site">Site instance.</param>
-        /// <param name="text">Wikilink expression, without square brackets.</param>
-        /// <exception cref="ArgumentNullException">Either <paramref name="site"/> or <paramref name="text"/> is <c>null</c>.</exception>
-        /// <exception cref="ArgumentException"><paramref name="text"/> does not contain a valid page title.</exception>
-        /// <returns>Normalized wikilink expression.</returns>
-        public static string NormalizeWikiLink(WikiSite site, string text)
-        {
+    /// <summary>
+    /// Uses this class to normalize a specific wikilink expression.
+    /// </summary>
+    /// <param name="site">Site instance.</param>
+    /// <param name="text">Wikilink expression, without square brackets.</param>
+    /// <exception cref="ArgumentNullException">Either <paramref name="site"/> or <paramref name="text"/> is <c>null</c>.</exception>
+    /// <exception cref="ArgumentException"><paramref name="text"/> does not contain a valid page title.</exception>
+    /// <returns>Normalized wikilink expression.</returns>
+    public static string NormalizeWikiLink(WikiSite site, string text)
+    {
             return NormalizeWikiLink(site, text, BuiltInNamespaces.Main);
         }
 
-        /// <summary>
-        /// Uses this class to normalize a specific wikilink expression.
-        /// </summary>
-        /// <param name="site">Site instance.</param>
-        /// <param name="text">Wikilink expression, without square brackets.</param>
-        /// <param name="defaultNamespaceId">Id of default namespace.</param>
-        /// <exception cref="ArgumentNullException">Either <paramref name="site"/> or <paramref name="text"/> is <c>null</c>.</exception>
-        /// <exception cref="ArgumentException"><paramref name="text"/> does not contain a valid page title.</exception>
-        /// <returns>Normalized wikilink expression.</returns>
-        public static string NormalizeWikiLink(WikiSite site, string text, int defaultNamespaceId)
-        {
+    /// <summary>
+    /// Uses this class to normalize a specific wikilink expression.
+    /// </summary>
+    /// <param name="site">Site instance.</param>
+    /// <param name="text">Wikilink expression, without square brackets.</param>
+    /// <param name="defaultNamespaceId">Id of default namespace.</param>
+    /// <exception cref="ArgumentNullException">Either <paramref name="site"/> or <paramref name="text"/> is <c>null</c>.</exception>
+    /// <exception cref="ArgumentException"><paramref name="text"/> does not contain a valid page title.</exception>
+    /// <returns>Normalized wikilink expression.</returns>
+    public static string NormalizeWikiLink(WikiSite site, string text, int defaultNamespaceId)
+    {
             var link = Parse(site, text, defaultNamespaceId);
             return link._FormattedText;
         }
-    }
-
 }

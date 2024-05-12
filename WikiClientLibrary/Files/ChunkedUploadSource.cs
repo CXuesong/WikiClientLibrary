@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.IO;
-using System.Threading;
-using System.Threading.Tasks;
+﻿using System.Diagnostics;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json.Linq;
 using WikiClientLibrary.Client;
@@ -11,67 +6,67 @@ using WikiClientLibrary.Infrastructures.Logging;
 using WikiClientLibrary.Pages;
 using WikiClientLibrary.Sites;
 
-namespace WikiClientLibrary.Files
+namespace WikiClientLibrary.Files;
+
+/// <summary>
+/// A <see cref="WikiUploadSource"/> that enables chunked stashing and performs final upload by <c>filekey</c>. (MW 1.19+)
+/// </summary>
+/// <remarks>
+/// <para>
+/// Since uploading a huge file in a single HTTP POST can be unreliable,
+/// MW upload API also supports a chunked upload mode,
+/// where you make multiple requests with portions of the file.
+/// This is available in MediaWiki 1.20 and above, although prior to version 1.25,
+/// SVGs could not be uploaded via chunked uploading.
+/// </para>
+/// <para>See https://www.mediawiki.org/wiki/API:Upload#Chunked_uploading .</para>
+/// <para>
+/// Before you can use this class with
+/// <see cref="WikiSiteExtensions.UploadAsync(WikiSite,string,WikiUploadSource,string,bool,AutoWatchBehavior,CancellationToken)"/>,
+/// you need to stash the whole stream in chunks to the server with <see cref="StashNextChunkAsync()"/>
+/// or its overloads.
+/// </para>
+/// </remarks>
+public class ChunkedUploadSource : WikiUploadSource
 {
-    /// <summary>
-    /// A <see cref="WikiUploadSource"/> that enables chunked stashing and performs final upload by <c>filekey</c>. (MW 1.19+)
-    /// </summary>
-    /// <remarks>
-    /// <para>
-    /// Since uploading a huge file in a single HTTP POST can be unreliable,
-    /// MW upload API also supports a chunked upload mode,
-    /// where you make multiple requests with portions of the file.
-    /// This is available in MediaWiki 1.20 and above, although prior to version 1.25,
-    /// SVGs could not be uploaded via chunked uploading.
-    /// </para>
-    /// <para>See https://www.mediawiki.org/wiki/API:Upload#Chunked_uploading .</para>
-    /// <para>
-    /// Before you can use this class with
-    /// <see cref="WikiSiteExtensions.UploadAsync(WikiSite,string,WikiUploadSource,string,bool,AutoWatchBehavior,CancellationToken)"/>,
-    /// you need to stash the whole stream in chunks to the server with <see cref="StashNextChunkAsync()"/>
-    /// or its overloads.
-    /// </para>
-    /// </remarks>
-    public class ChunkedUploadSource : WikiUploadSource
+
+    private static readonly MediaWikiVersion v118 = new MediaWikiVersion(1, 18);
+
+    private readonly long originalSourceStreamPosition;
+    private int state;
+    private string? lastStashingFileKey;
+
+    private const int STATE_CHUNK_IMPENDING = 0;
+    private const int STATE_CHUNK_STASHING = 1;
+    private const int STATE_ALL_STASHED = 2;
+
+    /// <inheritdoc cref="ChunkedUploadSource(WikiSite,Stream,string)"/>
+    public ChunkedUploadSource(WikiSite site, Stream sourceStream) : this(site, sourceStream, null)
     {
-
-        private static readonly MediaWikiVersion v118 = new MediaWikiVersion(1, 18);
-
-        private readonly long originalSourceStreamPosition;
-        private int state;
-        private string? lastStashingFileKey;
-
-        private const int STATE_CHUNK_IMPENDING = 0;
-        private const int STATE_CHUNK_STASHING = 1;
-        private const int STATE_ALL_STASHED = 2;
-
-        /// <inheritdoc cref="ChunkedUploadSource(WikiSite,Stream,string)"/>
-        public ChunkedUploadSource(WikiSite site, Stream sourceStream) : this(site, sourceStream, null)
-        {
         }
 
-        /// <summary>
-        /// Initialize an instance from a <see cref="Stream"/>.
-        /// </summary>
-        /// <param name="site">The destination site to upload the file.</param>
-        /// <param name="sourceStream">
-        /// The seekable stream containing the file to be uploaded.
-        /// The upload will be performed starting from the current position.
-        /// </param>
-        /// <param name="fileName">
-        /// Optional file name. This parameter can be <c>null</c>, where a dummy file name will be used;
-        /// otherwise, it should be a valid file name.
-        /// If the name has file extension, the content will be validated by server.
-        /// However, the name can be different from the actual uploaded file.
-        /// </param>
-        /// <exception cref="ArgumentNullException"><paramref name="site"/> or <paramref name="sourceStream"/> is <c>null</c>.</exception>
-        /// <exception cref="ArgumentException">
-        /// <paramref name="sourceStream"/> does not support seeking
-        /// - or -
-        /// <paramref name="sourceStream"/> has met EOF.
-        /// </exception>
-        public ChunkedUploadSource(WikiSite site, Stream sourceStream, string? fileName)
-        {
+    /// <summary>
+    /// Initialize an instance from a <see cref="Stream"/>.
+    /// </summary>
+    /// <param name="site">The destination site to upload the file.</param>
+    /// <param name="sourceStream">
+    /// The seekable stream containing the file to be uploaded.
+    /// The upload will be performed starting from the current position.
+    /// </param>
+    /// <param name="fileName">
+    /// Optional file name. This parameter can be <c>null</c>, where a dummy file name will be used;
+    /// otherwise, it should be a valid file name.
+    /// If the name has file extension, the content will be validated by server.
+    /// However, the name can be different from the actual uploaded file.
+    /// </param>
+    /// <exception cref="ArgumentNullException"><paramref name="site"/> or <paramref name="sourceStream"/> is <c>null</c>.</exception>
+    /// <exception cref="ArgumentException">
+    /// <paramref name="sourceStream"/> does not support seeking
+    /// - or -
+    /// <paramref name="sourceStream"/> has met EOF.
+    /// </exception>
+    public ChunkedUploadSource(WikiSite site, Stream sourceStream, string? fileName)
+    {
             Site = site ?? throw new ArgumentNullException(nameof(site));
             SourceStream = sourceStream ?? throw new ArgumentNullException(nameof(sourceStream));
             if (!sourceStream.CanSeek)
@@ -88,60 +83,60 @@ namespace WikiClientLibrary.Files
             FileName = fileName ?? "Dummy";
         }
 
-        public WikiSite Site { get; }
+    public WikiSite Site { get; }
 
-        /// <summary>
-        /// The source stream containing the content to be uploaded.
-        /// </summary>
-        public Stream SourceStream { get; }
+    /// <summary>
+    /// The source stream containing the content to be uploaded.
+    /// </summary>
+    public Stream SourceStream { get; }
 
-        /// <summary>
-        /// The file name used in the stashing requests.
-        /// </summary>
-        public string FileName { get; }
+    /// <summary>
+    /// The file name used in the stashing requests.
+    /// </summary>
+    public string FileName { get; }
 
-        /// <summary>
-        /// The chunk size to be used when calling the <see cref="StashNextChunkAsync()"/> overloads
-        /// without explicitly specifying chunk size.
-        /// </summary>
-        /// <remarks>
-        /// By default this is 1MB, and the default value is snapped
-        /// between the limits specified in <see cref="SiteInfo"/>.
-        /// </remarks>
-        public int DefaultChunkSize { get; set; }
+    /// <summary>
+    /// The chunk size to be used when calling the <see cref="StashNextChunkAsync()"/> overloads
+    /// without explicitly specifying chunk size.
+    /// </summary>
+    /// <remarks>
+    /// By default this is 1MB, and the default value is snapped
+    /// between the limits specified in <see cref="SiteInfo"/>.
+    /// </remarks>
+    public int DefaultChunkSize { get; set; }
 
-        /// <summary>
-        /// Gets the size of the uploaded part of file.
-        /// </summary>
-        public int UploadedSize { get; private set; }
+    /// <summary>
+    /// Gets the size of the uploaded part of file.
+    /// </summary>
+    public int UploadedSize { get; private set; }
 
-        /// <summary>
-        /// Gets the total size of the file to be uploaded.
-        /// </summary>
-        /// <remarks>
-        /// The total size is calculated upon the uploading of the first chunk as
-        /// <c>SourceStream.Length - SourceStream.Position</c>.
-        /// </remarks>
-        public int TotalSize { get; }
+    /// <summary>
+    /// Gets the total size of the file to be uploaded.
+    /// </summary>
+    /// <remarks>
+    /// The total size is calculated upon the uploading of the first chunk as
+    /// <c>SourceStream.Length - SourceStream.Position</c>.
+    /// </remarks>
+    public int TotalSize { get; }
 
-        /// <summary>
-        /// Determines whether a chunk is currently uploading for stashing.
-        /// </summary>
-        public bool IsStashing => state == STATE_CHUNK_STASHING;
+    /// <summary>
+    /// Determines whether a chunk is currently uploading for stashing.
+    /// </summary>
+    public bool IsStashing => state == STATE_CHUNK_STASHING;
 
-        /// <summary>
-        /// Determines whether the file has been stashed completely.
-        /// </summary>
-        public bool IsStashed => state == STATE_ALL_STASHED;
+    /// <summary>
+    /// Determines whether the file has been stashed completely.
+    /// </summary>
+    public bool IsStashed => state == STATE_ALL_STASHED;
 
-        /// <summary>
-        /// When <see cref="IsStashed"/> is <c>true</c>, gets the filekey used for file upload.
-        /// </summary>
-        public string FileKey { get; private set; } = null!;
+    /// <summary>
+    /// When <see cref="IsStashed"/> is <c>true</c>, gets the filekey used for file upload.
+    /// </summary>
+    public string FileKey { get; private set; } = null!;
 
-        /// <inheritdoc />
-        public override IEnumerable<KeyValuePair<string, object>> GetUploadParameters(SiteInfo siteInfo)
-        {
+    /// <inheritdoc />
+    public override IEnumerable<KeyValuePair<string, object>> GetUploadParameters(SiteInfo siteInfo)
+    {
             if (siteInfo == null) throw new ArgumentNullException(nameof(siteInfo));
             if (state != STATE_ALL_STASHED)
                 throw new InvalidOperationException(Prompts.ExceptionCannotUploadBeforeStash);
@@ -153,53 +148,53 @@ namespace WikiClientLibrary.Files
             };
         }
 
-        public Task<UploadResult> StashNextChunkAsync()
-        {
+    public Task<UploadResult> StashNextChunkAsync()
+    {
             return StashNextChunkAsync(DefaultChunkSize, new CancellationToken());
         }
 
-        public Task<UploadResult> StashNextChunkAsync(int chunkSize)
-        {
+    public Task<UploadResult> StashNextChunkAsync(int chunkSize)
+    {
             return StashNextChunkAsync(chunkSize, new CancellationToken());
         }
 
-        public Task<UploadResult> StashNextChunkAsync(CancellationToken cancellationToken)
-        {
+    public Task<UploadResult> StashNextChunkAsync(CancellationToken cancellationToken)
+    {
             return StashNextChunkAsync(DefaultChunkSize, cancellationToken);
         }
 
-        /// <summary>
-        /// Stash the next chunk in the stream.
-        /// </summary>
-        /// <param name="chunkSize">The maximum size of the next chunk.</param>
-        /// <param name="cancellationToken">The token used to cancel the operation.</param>
-        /// <exception cref="ArgumentOutOfRangeException"><paramref name="chunkSize"/> is not between <see cref="SiteInfo.MinUploadChunkSize"/> and <see cref="SiteInfo.MaxUploadSize"/>.</exception>
-        /// <exception cref="InvalidOperationException">A chunk is currently uploading - or - <see cref="TotalSize"/> is zero.</exception>
-        /// <exception cref="OperationFailedException">
-        /// General operation failure - or - specified as follows
-        /// <list type="table">
-        /// <listheader>
-        /// <term><see cref="OperationFailedException.ErrorCode"/></term>
-        /// <description>Description</description>
-        /// </listheader>
-        /// <item>
-        /// <term>illegal-filename</term>
-        /// <description>The filename is not allowed.</description>
-        /// </item>
-        /// <item>
-        /// <term>stashfailed</term>
-        /// <description>Stash failure. Can be caused by file verification failure. (e.g. Extension of the file name does not match the file content.)</description>
-        /// </item>
-        /// </list>
-        /// </exception>
-        /// <returns>
-        /// <c>true</c> if a chunk has been uploaded;
-        /// <c>false</c> if all the chunks has already been uploaded.
-        /// </returns>
-        /// <remarks>
-        /// </remarks>
-        public async Task<UploadResult> StashNextChunkAsync(int chunkSize, CancellationToken cancellationToken)
-        {
+    /// <summary>
+    /// Stash the next chunk in the stream.
+    /// </summary>
+    /// <param name="chunkSize">The maximum size of the next chunk.</param>
+    /// <param name="cancellationToken">The token used to cancel the operation.</param>
+    /// <exception cref="ArgumentOutOfRangeException"><paramref name="chunkSize"/> is not between <see cref="SiteInfo.MinUploadChunkSize"/> and <see cref="SiteInfo.MaxUploadSize"/>.</exception>
+    /// <exception cref="InvalidOperationException">A chunk is currently uploading - or - <see cref="TotalSize"/> is zero.</exception>
+    /// <exception cref="OperationFailedException">
+    /// General operation failure - or - specified as follows
+    /// <list type="table">
+    /// <listheader>
+    /// <term><see cref="OperationFailedException.ErrorCode"/></term>
+    /// <description>Description</description>
+    /// </listheader>
+    /// <item>
+    /// <term>illegal-filename</term>
+    /// <description>The filename is not allowed.</description>
+    /// </item>
+    /// <item>
+    /// <term>stashfailed</term>
+    /// <description>Stash failure. Can be caused by file verification failure. (e.g. Extension of the file name does not match the file content.)</description>
+    /// </item>
+    /// </list>
+    /// </exception>
+    /// <returns>
+    /// <c>true</c> if a chunk has been uploaded;
+    /// <c>false</c> if all the chunks has already been uploaded.
+    /// </returns>
+    /// <remarks>
+    /// </remarks>
+    public async Task<UploadResult> StashNextChunkAsync(int chunkSize, CancellationToken cancellationToken)
+    {
             var minChunkSize = Site.SiteInfo.MinUploadChunkSize;
             var maxChunkSize = Site.SiteInfo.MaxUploadSize;
             if (chunkSize <= 0) throw new ArgumentOutOfRangeException(nameof(chunkSize));
@@ -299,20 +294,20 @@ namespace WikiClientLibrary.Files
             }
         }
 
-        /// <inheritdoc />
-        public override string ToString()
-        {
+    /// <inheritdoc />
+    public override string ToString()
+    {
             return "ChunkedUploadSource(" + SourceStream + ")";
         }
 
-        private class ChunkedUploadResponseParser : MediaWikiJsonResponseParser
+    private class ChunkedUploadResponseParser : MediaWikiJsonResponseParser
+    {
+
+        public new static readonly ChunkedUploadResponseParser Default = new ChunkedUploadResponseParser();
+
+        /// <inheritdoc />
+        protected override void OnApiError(string errorCode, string errorMessage, JToken errorNode, JToken responseNode, WikiResponseParsingContext context)
         {
-
-            public new static readonly ChunkedUploadResponseParser Default = new ChunkedUploadResponseParser();
-
-            /// <inheritdoc />
-            protected override void OnApiError(string errorCode, string errorMessage, JToken errorNode, JToken responseNode, WikiResponseParsingContext context)
-            {
                 // Possible error: code=stashfailed, info=Invalid chunk offset, offset=xxxx
                 // We will try to recover.
                 if (errorCode == "stashfailed" && errorNode["offset"] != null)
@@ -321,7 +316,6 @@ namespace WikiClientLibrary.Files
                 }
                 base.OnApiError(errorCode, errorMessage, errorNode, responseNode, context);
             }
-        }
-
     }
+
 }

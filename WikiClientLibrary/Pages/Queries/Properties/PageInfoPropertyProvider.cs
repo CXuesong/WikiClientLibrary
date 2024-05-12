@@ -1,42 +1,38 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Linq;
-using System.Text;
+﻿using System.Collections.ObjectModel;
 using Newtonsoft.Json.Linq;
 using WikiClientLibrary.Infrastructures;
 
-namespace WikiClientLibrary.Pages.Queries.Properties
-{
-    public class PageInfoPropertyProvider : WikiPagePropertyProvider<PageInfoPropertyGroup>
-    {
-        private static readonly IEnumerable<KeyValuePair<string, object?>> fixedProp = new ReadOnlyCollection<KeyValuePair<string, object?>>(
-            new OrderedKeyValuePairs<string, object?>
-            {
-                {"inprop", "protection"}
-            });
+namespace WikiClientLibrary.Pages.Queries.Properties;
 
-        /// <inheritdoc />
-        public override IEnumerable<KeyValuePair<string, object?>> EnumParameters(MediaWikiVersion version)
+public class PageInfoPropertyProvider : WikiPagePropertyProvider<PageInfoPropertyGroup>
+{
+    private static readonly IEnumerable<KeyValuePair<string, object?>> fixedProp = new ReadOnlyCollection<KeyValuePair<string, object?>>(
+        new OrderedKeyValuePairs<string, object?>
         {
+            {"inprop", "protection"}
+        });
+
+    /// <inheritdoc />
+    public override IEnumerable<KeyValuePair<string, object?>> EnumParameters(MediaWikiVersion version)
+    {
             return fixedProp;
         }
 
-        /// <inheritdoc />
-        public override PageInfoPropertyGroup? ParsePropertyGroup(JObject json)
-        {
+    /// <inheritdoc />
+    public override PageInfoPropertyGroup? ParsePropertyGroup(JObject json)
+    {
             return new PageInfoPropertyGroup(json);
         }
 
-        /// <inheritdoc />
-        public override string? PropertyName => "info";
-    }
+    /// <inheritdoc />
+    public override string? PropertyName => "info";
+}
 
-    public class PageInfoPropertyGroup : WikiPagePropertyGroup
+public class PageInfoPropertyGroup : WikiPagePropertyGroup
+{
+
+    protected internal PageInfoPropertyGroup(JObject jPage)
     {
-
-        protected internal PageInfoPropertyGroup(JObject jPage)
-        {
             ContentModel = (string)jPage["contentmodel"];
             PageLanguage = (string)jPage["pagelanguage"];
             PageLanguageDirection = (string)jPage["pagelanguagedir"];
@@ -61,26 +57,25 @@ namespace WikiClientLibrary.Pages.Queries.Properties
             }
         }
 
-        public string ContentModel { get; }
+    public string ContentModel { get; }
 
-        public string PageLanguage { get; }
+    public string PageLanguage { get; }
 
-        public string PageLanguageDirection { get; }
+    public string PageLanguageDirection { get; }
 
-        public DateTime LastTouched { get; }
+    public DateTime LastTouched { get; }
 
-        public long LastRevisionId { get; }
+    public long LastRevisionId { get; }
 
-        public int ContentLength { get; }
+    public int ContentLength { get; }
 
-        public bool IsRedirect { get; }
+    public bool IsRedirect { get; }
 
-        public IReadOnlyCollection<ProtectionInfo> Protections { get; }
+    public IReadOnlyCollection<ProtectionInfo> Protections { get; }
 
-        /// <summary>
-        /// Applicable protection types. (MediaWiki 1.25)
-        /// </summary>
-        public IReadOnlyCollection<string> RestrictionTypes { get; }
+    /// <summary>
+    /// Applicable protection types. (MediaWiki 1.25)
+    /// </summary>
+    public IReadOnlyCollection<string> RestrictionTypes { get; }
 
-    }
 }

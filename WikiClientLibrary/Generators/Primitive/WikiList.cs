@@ -1,9 +1,4 @@
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
 using System.Runtime.CompilerServices;
-using System.Threading;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json.Linq;
 using WikiClientLibrary.Client;
@@ -11,138 +6,137 @@ using WikiClientLibrary.Infrastructures;
 using WikiClientLibrary.Infrastructures.Logging;
 using WikiClientLibrary.Sites;
 
-namespace WikiClientLibrary.Generators.Primitive
+namespace WikiClientLibrary.Generators.Primitive;
+
+/// <summary>
+/// Provides method for asynchronously generating a sequence of items.
+/// </summary>
+/// <typeparam name="T">The page instance type.</typeparam>
+public interface IWikiList<out T>
 {
 
     /// <summary>
-    /// Provides method for asynchronously generating a sequence of items.
+    /// Asynchronously enumerates all the items in the list.
     /// </summary>
-    /// <typeparam name="T">The page instance type.</typeparam>
-    public interface IWikiList<out T>
+    /// <remarks>In most cases, the whole sequence will be very long. To take only the top <c>n</c> results
+    /// from the sequence, chain the returned <see cref="IAsyncEnumerable{T}"/> with <see cref="AsyncEnumerable.Take{TSource}"/>
+    /// extension method.</remarks>
+    IAsyncEnumerable<T> EnumItemsAsync(CancellationToken cancellationToken = default);
+
+}
+
+/// <summary>
+/// Represents a configured MediaWiki <c>list</c>. (<a href="https://www.mediawiki.org/wiki/API:Lists">mw:API:Lists</a>)
+/// </summary>
+/// <typeparam name="T">The type of listed items.</typeparam>
+/// <seealso cref="WikiPageGenerator{TItem}"/>
+/// <seealso cref="WikiPagePropertyList{T}"/>
+public abstract class WikiList<T> : IWikiList<T>
+{
+
+    private int _PaginationSize = 10;
+
+    /// <param name="site">The MediaWiki site this instance applies to.</param>
+    public WikiList(WikiSite site)
     {
-
-        /// <summary>
-        /// Asynchronously enumerates all the items in the list.
-        /// </summary>
-        /// <remarks>In most cases, the whole sequence will be very long. To take only the top <c>n</c> results
-        /// from the sequence, chain the returned <see cref="IAsyncEnumerable{T}"/> with <see cref="AsyncEnumerable.Take{TSource}"/>
-        /// extension method.</remarks>
-        IAsyncEnumerable<T> EnumItemsAsync(CancellationToken cancellationToken = default);
-
-    }
-
-    /// <summary>
-    /// Represents a configured MediaWiki <c>list</c>. (<a href="https://www.mediawiki.org/wiki/API:Lists">mw:API:Lists</a>)
-    /// </summary>
-    /// <typeparam name="T">The type of listed items.</typeparam>
-    /// <seealso cref="WikiPageGenerator{TItem}"/>
-    /// <seealso cref="WikiPagePropertyList{T}"/>
-    public abstract class WikiList<T> : IWikiList<T>
-    {
-
-        private int _PaginationSize = 10;
-
-        /// <param name="site">The MediaWiki site this instance applies to.</param>
-        public WikiList(WikiSite site)
-        {
             if (site == null) throw new ArgumentNullException(nameof(site));
             Site = site;
         }
 
-        /// <summary>
-        /// Gets/sets the compatibility options used with this list.
-        /// </summary>
-        public WikiListCompatibilityOptions? CompatibilityOptions { get; set; }
+    /// <summary>
+    /// Gets/sets the compatibility options used with this list.
+    /// </summary>
+    public WikiListCompatibilityOptions? CompatibilityOptions { get; set; }
 
-        /// <summary>Gets the MediaWiki site this instance applies to.</summary>
-        public WikiSite Site { get; }
+    /// <summary>Gets the MediaWiki site this instance applies to.</summary>
+    public WikiSite Site { get; }
 
-        /// <summary>
-        /// Gets/sets maximum items returned per MediaWiki API invocation.
-        /// </summary>
-        /// <value>
-        /// Maximum count of items returned per MediaWiki API invocation.
-        /// This limit is 10 by default, and can be set as high as 500 for regular users,
-        /// or 5000 for users with the <c>apihighlimits</c> right (typically in bot or sysop group).
-        /// </value>
-        /// <remarks>
-        /// This property decides how many items returned at most per MediaWiki API invocation.
-        /// Note that the enumerator returned from <see cref="EnumItemsAsync"/>
-        /// or <seealso cref="WikiPageGenerator{TItem}.EnumPagesAsync()"/>
-        /// will automatically make further MediaWiki API invocations to ask for the next batch of results,
-        /// when needed.
-        /// </remarks>
-        public int PaginationSize
+    /// <summary>
+    /// Gets/sets maximum items returned per MediaWiki API invocation.
+    /// </summary>
+    /// <value>
+    /// Maximum count of items returned per MediaWiki API invocation.
+    /// This limit is 10 by default, and can be set as high as 500 for regular users,
+    /// or 5000 for users with the <c>apihighlimits</c> right (typically in bot or sysop group).
+    /// </value>
+    /// <remarks>
+    /// This property decides how many items returned at most per MediaWiki API invocation.
+    /// Note that the enumerator returned from <see cref="EnumItemsAsync"/>
+    /// or <seealso cref="WikiPageGenerator{TItem}.EnumPagesAsync()"/>
+    /// will automatically make further MediaWiki API invocations to ask for the next batch of results,
+    /// when needed.
+    /// </remarks>
+    public int PaginationSize
+    {
+        get { return _PaginationSize; }
+        set
         {
-            get { return _PaginationSize; }
-            set
-            {
                 if (value < 1) throw new ArgumentOutOfRangeException(nameof(value));
                 _PaginationSize = value;
             }
-        }
+    }
 
-        /// <summary>
-        /// The name of list, used as the value of <c>list</c> parameter in <c>action=query</c> request.
-        /// </summary>
-        public abstract string ListName { get; }
+    /// <summary>
+    /// The name of list, used as the value of <c>list</c> parameter in <c>action=query</c> request.
+    /// </summary>
+    public abstract string ListName { get; }
 
-        /// <summary>
-        /// When overridden, fills generator parameters for <c>action=query&amp;list={ListName}</c> request.
-        /// </summary>
-        /// <returns>A sequence of fields, which will override the basic query parameters.</returns>
-        public abstract IEnumerable<KeyValuePair<string, object?>> EnumListParameters();
+    /// <summary>
+    /// When overridden, fills generator parameters for <c>action=query&amp;list={ListName}</c> request.
+    /// </summary>
+    /// <returns>A sequence of fields, which will override the basic query parameters.</returns>
+    public abstract IEnumerable<KeyValuePair<string, object?>> EnumListParameters();
 
-        /// <summary>
-        /// From the given MediaWiki API response of the MediaWiki <c>list</c> request,
-        /// locates the array of items whose items will be processed by <see cref="ItemFromJson"/>.
-        /// </summary>
-        /// <param name="response">JSON root of MediaWiki API response. This is usually one page of the list.</param>
-        /// <returns>a JSON array, or <c>null</c> if <paramref name="response"/> contains no item to yield.</returns>
-        /// <remarks>
-        /// The default implementation expects there is an array under JSON path <c>query.{listname}</c> and returns it.
-        /// </remarks>
-        protected virtual JArray? ItemsFromResponse(JToken response)
-        {
+    /// <summary>
+    /// From the given MediaWiki API response of the MediaWiki <c>list</c> request,
+    /// locates the array of items whose items will be processed by <see cref="ItemFromJson"/>.
+    /// </summary>
+    /// <param name="response">JSON root of MediaWiki API response. This is usually one page of the list.</param>
+    /// <returns>a JSON array, or <c>null</c> if <paramref name="response"/> contains no item to yield.</returns>
+    /// <remarks>
+    /// The default implementation expects there is an array under JSON path <c>query.{listname}</c> and returns it.
+    /// </remarks>
+    protected virtual JArray? ItemsFromResponse(JToken response)
+    {
             return (JArray?)RequestHelper.FindQueryResponseItemsRoot(response, ListName);
         }
 
-        /// <summary>
-        /// Parses an item contained in the <c>action=query&amp;list=</c> JSON response.
-        /// </summary>
-        /// <param name="json">One of the item node under the .</param>
-        /// <returns>The item that will be returned in the sequence from <see cref="EnumItemsAsync"/>.</returns>
-        protected abstract T ItemFromJson(JToken json);
+    /// <summary>
+    /// Parses an item contained in the <c>action=query&amp;list=</c> JSON response.
+    /// </summary>
+    /// <param name="json">One of the item node under the .</param>
+    /// <returns>The item that will be returned in the sequence from <see cref="EnumItemsAsync"/>.</returns>
+    protected abstract T ItemFromJson(JToken json);
 
-        /// <summary>
-        /// When overriden, called when there is exception raised when
-        /// executing the asynchronous generator function inside <see cref="EnumItemsAsync"/>.
-        /// </summary>
-        /// <param name="exception">The raised exception.</param>
-        /// <remarks>
-        /// <para>
-        /// Implementation can throw other more specific errors in the implementation.
-        /// The caller will throw the original exception after calling this method
-        /// if this function does not throw any other exception in the implementation.
-        /// </para>
-        /// <para>
-        /// The default implementation does nothing.
-        /// </para>
-        /// </remarks>
-        protected virtual void OnEnumItemsFailed(Exception exception)
-        {
+    /// <summary>
+    /// When overriden, called when there is exception raised when
+    /// executing the asynchronous generator function inside <see cref="EnumItemsAsync"/>.
+    /// </summary>
+    /// <param name="exception">The raised exception.</param>
+    /// <remarks>
+    /// <para>
+    /// Implementation can throw other more specific errors in the implementation.
+    /// The caller will throw the original exception after calling this method
+    /// if this function does not throw any other exception in the implementation.
+    /// </para>
+    /// <para>
+    /// The default implementation does nothing.
+    /// </para>
+    /// </remarks>
+    protected virtual void OnEnumItemsFailed(Exception exception)
+    {
         }
 
-        /// <inheritdoc />
-        /// <exception cref="OperationFailedException">
-        /// (When enumerating) There is any MediaWiki API failure during the operation.
-        /// </exception>
-        /// <exception cref="Exception">
-        /// (When enumerating) There can be other types of errors thrown.
-        /// See the respective <see cref="OnEnumItemsFailed"/> override documentations in the implementation classes.
-        /// </exception>
-        public async IAsyncEnumerable<T> EnumItemsAsync([EnumeratorCancellation] CancellationToken cancellationToken = default)
-        {
+    /// <inheritdoc />
+    /// <exception cref="OperationFailedException">
+    /// (When enumerating) There is any MediaWiki API failure during the operation.
+    /// </exception>
+    /// <exception cref="Exception">
+    /// (When enumerating) There can be other types of errors thrown.
+    /// See the respective <see cref="OnEnumItemsFailed"/> override documentations in the implementation classes.
+    /// </exception>
+    public async IAsyncEnumerable<T> EnumItemsAsync([EnumeratorCancellation] CancellationToken cancellationToken = default)
+    {
             var baseQueryParams = new Dictionary<string, object?> { { "action", "query" }, { "maxlag", 5 }, { "list", ListName }, };
             foreach (var p in EnumListParameters())
                 baseQueryParams.Add(p.Key, p.Value);
@@ -264,7 +258,5 @@ namespace WikiClientLibrary.Generators.Primitive
                 }
             }
         }
-
-    }
 
 }
