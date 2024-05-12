@@ -11,6 +11,7 @@ using WikiClientLibrary.Pages.Queries.Properties;
 using WikiClientLibrary.Sites;
 using WikiClientLibrary.Tests.UnitTestProject1.Fixtures;
 using WikiClientLibrary.Wikia.Sites;
+using Xunit;
 using Xunit.Abstractions;
 
 namespace WikiClientLibrary.Tests.UnitTestProject1;
@@ -130,7 +131,7 @@ public class WikiSiteTestsBase : UnitTestsBase
     protected static void AssertModify()
     {
 #if DRY_RUN
-            throw new SkipException("Remove #define DRY_RUN to perform edit tests.");
+        throw new SkipException("Remove #define DRY_RUN to perform edit tests.");
 #endif
     }
 
