@@ -1,19 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using System.Linq.Expressions;
-using System.Text;
 using WikiClientLibrary.Cargo.Linq.IntermediateExpressions;
 
-namespace WikiClientLibrary.Cargo.Linq.ExpressionVisitors
+namespace WikiClientLibrary.Cargo.Linq.ExpressionVisitors;
+
+public class CargoPreEvaluationTranslator : ExpressionVisitor
 {
 
-    public class CargoPreEvaluationTranslator : ExpressionVisitor
+    /// <inheritdoc />
+    protected override Expression VisitMethodCall(MethodCallExpression node)
     {
-
-        /// <inheritdoc />
-        protected override Expression VisitMethodCall(MethodCallExpression node)
-        {
             if (node.Object == null && node.Method.DeclaringType == typeof(CargoFunctions))
             {
                 return node.Method.Name switch
@@ -30,9 +26,9 @@ namespace WikiClientLibrary.Cargo.Linq.ExpressionVisitors
             return base.VisitMethodCall(node);
         }
 
-        /// <inheritdoc />
-        protected override Expression VisitMember(MemberExpression node)
-        {
+    /// <inheritdoc />
+    protected override Expression VisitMember(MemberExpression node)
+    {
             var declaringType = node.Member.DeclaringType;
             if (declaringType == null) return base.VisitMember(node);
             if (node.Member.Name == nameof(Nullable<int>.Value))
@@ -56,7 +52,5 @@ namespace WikiClientLibrary.Cargo.Linq.ExpressionVisitors
             }
             return base.VisitMember(node);
         }
-
-    }
 
 }

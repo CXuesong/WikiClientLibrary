@@ -1,46 +1,39 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Linq;
-using System.Reflection;
+﻿using System.Collections.ObjectModel;
 using System.Text;
 
-namespace WikiClientLibrary.Cargo.Schema
+namespace WikiClientLibrary.Cargo.Schema;
+
+/// <summary>
+/// Represents the schema of a Cargo table.
+/// </summary>
+public class CargoTableDefinition
 {
 
-    /// <summary>
-    /// Represents the schema of a Cargo table.
-    /// </summary>
-    public class CargoTableDefinition
+    public CargoTableDefinition(string name, IEnumerable<CargoTableFieldDefinition> fields)
     {
+        if (name == null)
+            throw new ArgumentNullException(nameof(name));
+        if (name == "")
+            throw new ArgumentException("Value cannot be null or empty.", nameof(name));
+        Name = name;
+        Fields = new ReadOnlyCollection<CargoTableFieldDefinition>(fields.ToList());
+    }
 
-        public CargoTableDefinition(string name, IEnumerable<CargoTableFieldDefinition> fields)
+    public string Name { get; }
+
+    public IReadOnlyList<CargoTableFieldDefinition> Fields { get; }
+
+    /// <inheritdoc />
+    public override string ToString()
+    {
+        var sb = new StringBuilder(Name.Length + Fields.Count * 10);
+        sb.Append(Name);
+        foreach (var f in Fields)
         {
-            if (name == null)
-                throw new ArgumentNullException(nameof(name));
-            if (name == "")
-                throw new ArgumentException("Value cannot be null or empty.", nameof(name));
-            Name = name;
-            Fields = new ReadOnlyCollection<CargoTableFieldDefinition>(fields.ToList());
+            sb.Append(" |");
+            sb.Append(f);
         }
-
-        public string Name { get; }
-
-        public IReadOnlyList<CargoTableFieldDefinition> Fields { get; }
-
-        /// <inheritdoc />
-        public override string ToString()
-        {
-            var sb = new StringBuilder(Name.Length + Fields.Count * 10);
-            sb.Append(Name);
-            foreach (var f in Fields)
-            {
-                sb.Append(" |");
-                sb.Append(f);
-            }
-            return sb.ToString();
-        }
-
+        return sb.ToString();
     }
 
 }
