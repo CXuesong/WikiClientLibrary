@@ -103,7 +103,7 @@ public class WikiSiteTestsBase : UnitTestsBase
     {
         const string lineFormat = "{0,-20} {1,10} {2,10} {3,10} {4,10}";
 #if ENV_CI_BUILD
-            const int ITEMS_LIMIT = 10;
+        const int ITEMS_LIMIT = 10;
 #else
         const int ITEMS_LIMIT = int.MaxValue;
 #endif
