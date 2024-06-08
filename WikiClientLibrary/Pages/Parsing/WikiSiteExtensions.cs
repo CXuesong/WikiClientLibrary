@@ -131,20 +131,20 @@ public static class WikiSiteExtensions
         return parsed;
     }
 
-    /// <inheritdoc cref="ParseRevisionAsync(WikiSite,int,string,ParsingOptions,CancellationToken)"/>
-    public static Task<ParsedContentInfo> ParseRevisionAsync(this WikiSite site, int revId)
+    /// <inheritdoc cref="ParseRevisionAsync(WikiSite,long,string,ParsingOptions,CancellationToken)"/>
+    public static Task<ParsedContentInfo> ParseRevisionAsync(this WikiSite site, long revId)
     {
         return ParseRevisionAsync(site, revId, null, ParsingOptions.None, CancellationToken.None);
     }
 
-    /// <inheritdoc cref="ParseRevisionAsync(WikiSite,int,string,ParsingOptions,CancellationToken)"/>
-    public static Task<ParsedContentInfo> ParseRevisionAsync(this WikiSite site, int revId, ParsingOptions options)
+    /// <inheritdoc cref="ParseRevisionAsync(WikiSite,long,string,ParsingOptions,CancellationToken)"/>
+    public static Task<ParsedContentInfo> ParseRevisionAsync(this WikiSite site, long revId, ParsingOptions options)
     {
         return ParseRevisionAsync(site, revId, null, options, CancellationToken.None);
     }
 
-    /// <inheritdoc cref="ParseRevisionAsync(WikiSite,int,string,ParsingOptions,CancellationToken)"/>
-    public static Task<ParsedContentInfo> ParseRevisionAsync(this WikiSite site, int revId, ParsingOptions options,
+    /// <inheritdoc cref="ParseRevisionAsync(WikiSite,long,string,ParsingOptions,CancellationToken)"/>
+    public static Task<ParsedContentInfo> ParseRevisionAsync(this WikiSite site, long revId, ParsingOptions options,
         CancellationToken cancellationToken)
     {
         return ParseRevisionAsync(site, revId, null, options, CancellationToken.None);
@@ -159,7 +159,7 @@ public static class WikiSiteExtensions
     /// <param name="options">Options for parsing.</param>
     /// <param name="cancellationToken">The cancellation token that will be checked prior to completing the returned task.</param>
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="revId"/> is zero or negative.</exception>
-    public static async Task<ParsedContentInfo> ParseRevisionAsync(this WikiSite site, int revId, string? lang, ParsingOptions options,
+    public static async Task<ParsedContentInfo> ParseRevisionAsync(this WikiSite site, long revId, string? lang, ParsingOptions options,
         CancellationToken cancellationToken)
     {
         if (site == null) throw new ArgumentNullException(nameof(site));

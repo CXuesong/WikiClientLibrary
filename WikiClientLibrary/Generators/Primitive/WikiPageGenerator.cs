@@ -137,7 +137,7 @@ public abstract class WikiPageGenerator : WikiPageGenerator<WikiPageStub>
     /// <inheritdoc />
     protected override WikiPageStub ItemFromJson(JToken json)
     {
-        return new WikiPageStub((int)json["pageid"], (string)json["title"], (int)json["ns"]);
+        return new WikiPageStub((long)json["pageid"], (string)json["title"], (int)json["ns"]);
     }
 
 }

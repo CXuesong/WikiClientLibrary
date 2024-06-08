@@ -277,7 +277,7 @@ public readonly struct WikiPageStub : IEquatable<WikiPageStub>
                     normalizedName = name;
                 var jpage = pageDict[normalizedName];
                 if (jpage["missing"] == null)
-                    yield return (new WikiPageStub((int)jpage["pageid"], (string)jpage["title"], (int)jpage["ns"]));
+                    yield return (new WikiPageStub((long)jpage["pageid"], (string)jpage["title"], (int)jpage["ns"]));
                 else
                     yield return (new WikiPageStub(MissingPageIdMask, (string)jpage["title"], (int)jpage["ns"]));
             }

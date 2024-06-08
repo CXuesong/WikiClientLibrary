@@ -47,7 +47,7 @@ public class PageInfoPropertyGroup : WikiPagePropertyGroup
         else
         {
             ContentLength = (int)jPage["length"];
-            LastRevisionId = (int)jPage["lastrevid"];
+            LastRevisionId = (long)jPage["lastrevid"];
             LastTouched = (DateTime)jPage["touched"];
             if (jPage["protection"] != null && jPage["protection"].HasValues)
                 Protections = jPage["protection"].ToObject<IReadOnlyCollection<ProtectionInfo>>(Utility.WikiJsonSerializer);
