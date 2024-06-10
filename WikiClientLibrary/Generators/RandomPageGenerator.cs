@@ -27,7 +27,7 @@ public class RandomPageGenerator : WikiPageGenerator
     protected override WikiPageStub ItemFromJson(JToken json)
     {
         // Note: page ID is contained in ["id"] rather than ["pageid"].
-        return new WikiPageStub((int)json["id"], (string)json["title"], (int)json["ns"]);
+        return new WikiPageStub((long)json["id"], (string)json["title"], (int)json["ns"]);
     }
 
     /// <summary>

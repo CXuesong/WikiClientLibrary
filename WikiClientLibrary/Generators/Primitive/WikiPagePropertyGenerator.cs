@@ -119,7 +119,7 @@ public abstract class WikiPagePropertyGenerator : WikiPagePropertyGenerator<Wiki
     protected override WikiPageStub ItemFromJson(JToken json, JObject jpage)
     {
         // pageid can be missing in this case.
-        return new WikiPageStub((int?)json["pageid"] ?? 0, (string)json["title"], (int)json["ns"]);
+        return new WikiPageStub((long?)json["pageid"] ?? 0, (string)json["title"], (int)json["ns"]);
     }
 
 }

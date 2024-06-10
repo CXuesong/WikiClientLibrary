@@ -31,7 +31,7 @@ public class BacklinksGenerator : WikiPageGenerator
     /// <summary>
     /// List pages linking to this page ID.
     /// </summary>
-    public int? TargetPageId { get; set; }
+    public long? TargetPageId { get; set; }
 
     /// <summary>
     /// Only list pages in these namespaces.

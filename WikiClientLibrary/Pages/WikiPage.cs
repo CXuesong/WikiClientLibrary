@@ -475,11 +475,11 @@ public partial class WikiPage
                     return false;
                 }
                 ContentModel = (string)jedit["contentmodel"];
-                LastRevisionId = (int)jedit["newrevid"];
+                LastRevisionId = (long)jedit["newrevid"];
                 LastRevision = null;
                 pageInfo = null;
                 // jedit["ns"] == null
-                PageStub = new WikiPageStub((int)jedit["pageid"], (string)jedit["title"], PageStub.NamespaceId);
+                PageStub = new WikiPageStub((long)jedit["pageid"], (string)jedit["title"], PageStub.NamespaceId);
                 Site.Logger.LogInformation("Edited page. New revid={RevisionId}.", LastRevisionId);
                 return true;
             }

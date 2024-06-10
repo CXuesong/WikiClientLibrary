@@ -186,14 +186,14 @@ public static class MediaWikiHelper
             if (jPage["title"] != null)
                 return WikiPageStub.NewMissingPage((string)jPage["title"], (int)jPage["ns"]);
             if (jPage["pageid"] != null)
-                return WikiPageStub.NewMissingPage((int)jPage["pageid"]);
+                return WikiPageStub.NewMissingPage((long)jPage["pageid"]);
             return WikiPageStub.NewMissingPage(WikiPageStub.MissingPageIdMask);
         }
         if (jPage["pageid"] != null)
         {
             if (jPage["title"] != null)
-                return new WikiPageStub((int)jPage["pageid"], (string)jPage["title"], (int)jPage["ns"]);
-            return new WikiPageStub((int)jPage["pageid"]);
+                return new WikiPageStub((long)jPage["pageid"], (string)jPage["title"], (int)jPage["ns"]);
+            return new WikiPageStub((long)jPage["pageid"]);
         }
         if (jPage["title"] != null)
             return new WikiPageStub((string)jPage["title"], (int)jPage["ns"]);

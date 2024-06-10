@@ -208,7 +208,7 @@ partial class Entity
                             token = WikiSiteToken.Edit,
                             id = Id,
                             @new = Id == null ? FormatEntityType(Type) : null,
-                            baserevid = LastRevisionId > 0 ? (int?)LastRevisionId : null,
+                            baserevid = LastRevisionId > 0 ? (long?)LastRevisionId : null,
                             bot = (options & EntityEditOptions.Bot) == EntityEditOptions.Bot,
                             summary = summary,
                             clear = (options & EntityEditOptions.ClearData) == EntityEditOptions.ClearData,
@@ -258,7 +258,7 @@ partial class Entity
                             token = WikiSiteToken.Edit,
                             id = Id,
                             @new = Id == null ? FormatEntityType(Type) : null,
-                            baserevid = checkbaseRev && LastRevisionId > 0 ? (int?)LastRevisionId : null,
+                            baserevid = checkbaseRev && LastRevisionId > 0 ? (long?)LastRevisionId : null,
                             bot = isBot,
                             summary = summary,
                             language = value.Language,
@@ -279,7 +279,7 @@ partial class Entity
                             token = WikiSiteToken.Edit,
                             id = Id,
                             @new = Id == null ? FormatEntityType(Type) : null,
-                            baserevid = checkbaseRev && LastRevisionId > 0 ? (int?)LastRevisionId : null,
+                            baserevid = checkbaseRev && LastRevisionId > 0 ? (long?)LastRevisionId : null,
                             bot = isBot,
                             summary = summary,
                             language = value.Language,
@@ -306,7 +306,7 @@ partial class Entity
                                 token = WikiSiteToken.Edit,
                                 id = Id,
                                 @new = Id == null ? FormatEntityType(Type) : null,
-                                baserevid = checkbaseRev && LastRevisionId > 0 ? (int?)LastRevisionId : null,
+                                baserevid = checkbaseRev && LastRevisionId > 0 ? (long?)LastRevisionId : null,
                                 bot = isBot,
                                 summary = summary,
                                 language = langGroup.Key,
@@ -344,7 +344,7 @@ partial class Entity
                                 token = WikiSiteToken.Edit,
                                 id = Id,
                                 @new = Id == null ? FormatEntityType(Type) : null,
-                                baserevid = checkbaseRev && LastRevisionId > 0 ? (int?)LastRevisionId : null,
+                                baserevid = checkbaseRev && LastRevisionId > 0 ? (long?)LastRevisionId : null,
                                 bot = isBot,
                                 summary = summary,
                                 linksite = siteGroup.Key,
@@ -389,13 +389,13 @@ partial class Entity
                             action = "wbsetclaim",
                             token = WikiSiteToken.Edit,
                             @new = Id == null ? FormatEntityType(Type) : null,
-                            baserevid = checkbaseRev && LastRevisionId > 0 ? (int?)LastRevisionId : null,
+                            baserevid = checkbaseRev && LastRevisionId > 0 ? (long?)LastRevisionId : null,
                             bot = isBot,
                             summary = summary,
                             claim = Utility.WikiJsonSerializer.Serialize(claimContract),
                         }), cancellationToken);
                         // jresult["claim"] != null
-                        LastRevisionId = (int)jresult["pageinfo"]["lastrevid"];
+                        LastRevisionId = (long)jresult["pageinfo"]["lastrevid"];
                         if (!strict) checkbaseRev = false;
                     }
                     foreach (var batch in prop.Where(e => e.State == EntityEditEntryState.Removed)
@@ -407,12 +407,12 @@ partial class Entity
                             token = WikiSiteToken.Edit,
                             id = Id,
                             @new = Id == null ? FormatEntityType(Type) : null,
-                            baserevid = checkbaseRev && LastRevisionId > 0 ? (int?)LastRevisionId : null,
+                            baserevid = checkbaseRev && LastRevisionId > 0 ? (long?)LastRevisionId : null,
                             bot = isBot,
                             summary = summary,
                             claim = MediaWikiHelper.JoinValues(batch),
                         }), cancellationToken);
-                        LastRevisionId = (int)jresult["pageinfo"]["lastrevid"];
+                        LastRevisionId = (long)jresult["pageinfo"]["lastrevid"];
                         if (!strict) checkbaseRev = false;
                     }
                     break;
@@ -426,7 +426,7 @@ partial class Entity
             Debug.Assert(jentity != null);
             Id = (string)jentity["id"];
             Type = SerializableEntity.ParseEntityType((string)jentity["type"]);
-            LastRevisionId = (int)jentity["lastrevid"];
+            LastRevisionId = (long)jentity["lastrevid"];
         }
     }
 
