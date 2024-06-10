@@ -1065,21 +1065,8 @@
       <summary>Compares the current instance with another object of the same type and returns an integer that indicates whether the current instance precedes, follows, or occurs in the same position in the sort order as the other object.</summary>
       <param name="obj">An object to compare with this instance.</param>
       <returns>A value that indicates the relative order of the objects being compared. The return value has these meanings:  
-  Value  
-
-  Meaning  
-
-  Less than zero  
-
-  This instance precedes <paramref name="obj" /> in the sort order.  
-
-  Zero  
-
-  This instance occurs in the same position in the sort order as <paramref name="obj" />.  
-
-  Greater than zero  
-
-  This instance follows <paramref name="obj" /> in the sort order.</returns>
+  
+ <list type="table"><listheader><term> Value</term><description> Meaning</description></listheader><item><term> Less than zero</term><description> This instance precedes <paramref name="obj" /> in the sort order.</description></item><item><term> Zero</term><description> This instance occurs in the same position in the sort order as <paramref name="obj" />.</description></item><item><term> Greater than zero</term><description> This instance follows <paramref name="obj" /> in the sort order.</description></item></list></returns>
       <exception cref="T:System.ArgumentException">
         <paramref name="obj" /> is not the same type as this instance.</exception>
     </member>
@@ -1087,21 +1074,8 @@
       <summary>Compares the current instance with another object of the same type and returns an integer that indicates whether the current instance precedes, follows, or occurs in the same position in the sort order as the other object.</summary>
       <param name="other">An object to compare with this instance.</param>
       <returns>A value that indicates the relative order of the objects being compared. The return value has these meanings:  
-  Value  
-
-  Meaning  
-
-  Less than zero  
-
-  This instance precedes <paramref name="other" /> in the sort order.  
-
-  Zero  
-
-  This instance occurs in the same position in the sort order as <paramref name="other" />.  
-
-  Greater than zero  
-
-  This instance follows <paramref name="other" /> in the sort order.</returns>
+  
+ <list type="table"><listheader><term> Value</term><description> Meaning</description></listheader><item><term> Less than zero</term><description> This instance precedes <paramref name="other" /> in the sort order.</description></item><item><term> Zero</term><description> This instance occurs in the same position in the sort order as <paramref name="other" />.</description></item><item><term> Greater than zero</term><description> This instance follows <paramref name="other" /> in the sort order.</description></item></list></returns>
     </member>
     <member name="P:WikiClientLibrary.MediaWikiVersion.DevChannel">
       <summary>
@@ -1797,7 +1771,7 @@
             </summary>
       <remarks>Not all the fields are required to be available. But <see cref="P:WikiClientLibrary.UserStub.Name" /> is mandatory.</remarks>
     </member>
-    <member name="M:WikiClientLibrary.UserStub.#ctor(System.String,System.Int32)">
+    <member name="M:WikiClientLibrary.UserStub.#ctor(System.String,System.Int64)">
       <summary>
         <markup>
           <include item="SMCAutoDocConstructor">
@@ -1810,7 +1784,7 @@
           <include item="SMCMissingParamTag">
             <parameter>param</parameter>
             <parameter>name</parameter>
-            <parameter>M:WikiClientLibrary.UserStub.#ctor(System.String,System.Int32)</parameter>
+            <parameter>M:WikiClientLibrary.UserStub.#ctor(System.String,System.Int64)</parameter>
           </include>
         </markup>
       </param>
@@ -1819,12 +1793,12 @@
           <include item="SMCMissingParamTag">
             <parameter>param</parameter>
             <parameter>id</parameter>
-            <parameter>M:WikiClientLibrary.UserStub.#ctor(System.String,System.Int32)</parameter>
+            <parameter>M:WikiClientLibrary.UserStub.#ctor(System.String,System.Int64)</parameter>
           </include>
         </markup>
       </param>
     </member>
-    <member name="M:WikiClientLibrary.UserStub.#ctor(System.String,System.Int32,WikiClientLibrary.Gender)">
+    <member name="M:WikiClientLibrary.UserStub.#ctor(System.String,System.Int64,WikiClientLibrary.Gender)">
       <summary>
         <markup>
           <include item="SMCAutoDocConstructor">
@@ -1837,7 +1811,7 @@
           <include item="SMCMissingParamTag">
             <parameter>param</parameter>
             <parameter>name</parameter>
-            <parameter>M:WikiClientLibrary.UserStub.#ctor(System.String,System.Int32,WikiClientLibrary.Gender)</parameter>
+            <parameter>M:WikiClientLibrary.UserStub.#ctor(System.String,System.Int64,WikiClientLibrary.Gender)</parameter>
           </include>
         </markup>
       </param>
@@ -1846,7 +1820,7 @@
           <include item="SMCMissingParamTag">
             <parameter>param</parameter>
             <parameter>id</parameter>
-            <parameter>M:WikiClientLibrary.UserStub.#ctor(System.String,System.Int32,WikiClientLibrary.Gender)</parameter>
+            <parameter>M:WikiClientLibrary.UserStub.#ctor(System.String,System.Int64,WikiClientLibrary.Gender)</parameter>
           </include>
         </markup>
       </param>
@@ -1855,12 +1829,12 @@
           <include item="SMCMissingParamTag">
             <parameter>param</parameter>
             <parameter>gender</parameter>
-            <parameter>M:WikiClientLibrary.UserStub.#ctor(System.String,System.Int32,WikiClientLibrary.Gender)</parameter>
+            <parameter>M:WikiClientLibrary.UserStub.#ctor(System.String,System.Int64,WikiClientLibrary.Gender)</parameter>
           </include>
         </markup>
       </param>
     </member>
-    <member name="M:WikiClientLibrary.UserStub.#ctor(System.String,System.Int32,WikiClientLibrary.Gender,System.String)">
+    <member name="M:WikiClientLibrary.UserStub.#ctor(System.String,System.Int64,WikiClientLibrary.Gender,System.String)">
       <summary>
         <markup>
           <include item="SMCAutoDocConstructor">
@@ -1873,7 +1847,7 @@
           <include item="SMCMissingParamTag">
             <parameter>param</parameter>
             <parameter>name</parameter>
-            <parameter>M:WikiClientLibrary.UserStub.#ctor(System.String,System.Int32,WikiClientLibrary.Gender,System.String)</parameter>
+            <parameter>M:WikiClientLibrary.UserStub.#ctor(System.String,System.Int64,WikiClientLibrary.Gender,System.String)</parameter>
           </include>
         </markup>
       </param>
@@ -1882,7 +1856,7 @@
           <include item="SMCMissingParamTag">
             <parameter>param</parameter>
             <parameter>id</parameter>
-            <parameter>M:WikiClientLibrary.UserStub.#ctor(System.String,System.Int32,WikiClientLibrary.Gender,System.String)</parameter>
+            <parameter>M:WikiClientLibrary.UserStub.#ctor(System.String,System.Int64,WikiClientLibrary.Gender,System.String)</parameter>
           </include>
         </markup>
       </param>
@@ -1891,7 +1865,7 @@
           <include item="SMCMissingParamTag">
             <parameter>param</parameter>
             <parameter>gender</parameter>
-            <parameter>M:WikiClientLibrary.UserStub.#ctor(System.String,System.Int32,WikiClientLibrary.Gender,System.String)</parameter>
+            <parameter>M:WikiClientLibrary.UserStub.#ctor(System.String,System.Int64,WikiClientLibrary.Gender,System.String)</parameter>
           </include>
         </markup>
       </param>
@@ -1900,7 +1874,7 @@
           <include item="SMCMissingParamTag">
             <parameter>param</parameter>
             <parameter>siteName</parameter>
-            <parameter>M:WikiClientLibrary.UserStub.#ctor(System.String,System.Int32,WikiClientLibrary.Gender,System.String)</parameter>
+            <parameter>M:WikiClientLibrary.UserStub.#ctor(System.String,System.Int64,WikiClientLibrary.Gender,System.String)</parameter>
           </include>
         </markup>
       </param>
@@ -4779,7 +4753,7 @@
             for account creation events, this is user ID of the creating user is returned.
             When absent, this is the user ID returned is that of the created account
             (see <a href="https://phabricator.wikimedia.org/T73020">phab:T73020</a>).
-            In most cases (such as in <see cref="T:WikiClientLibrary.Generators.LogEventsList" /> or <see cref="T:WikiClientLibrary.Generators.RecentChangesGenerator" />,
+            In most cases (such as in <see cref="T:WikiClientLibrary.Generators.LogEventsList" /> or <see cref="T:WikiClientLibrary.Generators.RecentChangesGenerator" />),
             <c>userid</c> property is specified implicitly.</para>
         <para>To get the user ID for the created user, especially in <see cref="F:WikiClientLibrary.Generators.LogActions.Create2" /> log action,
             use <see cref="P:WikiClientLibrary.Generators.LogEventItem.Params" />.<see cref="P:WikiClientLibrary.Generators.LogParameterCollection.UserId" /> .</para>
@@ -6960,7 +6934,7 @@
             Gets/sets the page ID from which to get the <c>list</c>-like property value.
             </summary>
       <remarks>If <see cref="P:WikiClientLibrary.Generators.Primitive.WikiPagePropertyList`1.PageTitle" /> is <c>null</c>, the value of this property will be used.
-            Otherwise the other one will be effective.</remarks>
+            Otherwise, the other one will be effective.</remarks>
     </member>
     <member name="P:WikiClientLibrary.Generators.Primitive.WikiPagePropertyList`1.PageTitle">
       <summary>
@@ -7805,6 +7779,24 @@
       <param name="defaultValue">The default value.</param>
       <returns>The converted value - or - <paramref name="defaultValue" />.</returns>
     </member>
+    <member name="M:WikiClientLibrary.Infrastructures.WikiReadOnlyDictionary.GetInt64Value(System.String)">
+      <summary>
+            Gets the <see cref="T:System.Int64" /> value by property name.
+            This overload raises exception for missing key.
+            </summary>
+      <param name="key">The property name.</param>
+      <returns>The converted value.</returns>
+      <exception cref="T:System.Collections.Generic.KeyNotFoundException">The property is not found.</exception>
+    </member>
+    <member name="M:WikiClientLibrary.Infrastructures.WikiReadOnlyDictionary.GetInt64Value(System.String,System.Int64)">
+      <summary>
+            Gets the <see cref="T:System.Int64" /> value by property name.
+            A default value can be provided in case the specified key does not exist.
+            </summary>
+      <param name="key">The property name.</param>
+      <param name="defaultValue">The default value.</param>
+      <returns>The converted value - or - <paramref name="defaultValue" />.</returns>
+    </member>
     <member name="M:WikiClientLibrary.Infrastructures.WikiReadOnlyDictionary.GetStringValue(System.String)">
       <summary>
             Gets the <see cref="T:System.String" /> value by property name.
@@ -8529,7 +8521,7 @@
             Content model id of the revision.
             </summary>
     </member>
-    <member name="M:WikiClientLibrary.Pages.Revision.FetchRevisionAsync(WikiClientLibrary.Sites.WikiSite,System.Int32)">
+    <member name="M:WikiClientLibrary.Pages.Revision.FetchRevisionAsync(WikiClientLibrary.Sites.WikiSite,System.Int64)">
       <summary>
             Fetch a revision by revid. This overload will also fetch the content of revision.
             </summary>
@@ -8538,7 +8530,7 @@
           <include item="SMCMissingParamTag">
             <parameter>param</parameter>
             <parameter>site</parameter>
-            <parameter>M:WikiClientLibrary.Pages.Revision.FetchRevisionAsync(WikiClientLibrary.Sites.WikiSite,System.Int32)</parameter>
+            <parameter>M:WikiClientLibrary.Pages.Revision.FetchRevisionAsync(WikiClientLibrary.Sites.WikiSite,System.Int64)</parameter>
           </include>
         </markup>
       </param>
@@ -8547,7 +8539,7 @@
           <include item="SMCMissingParamTag">
             <parameter>param</parameter>
             <parameter>revisionId</parameter>
-            <parameter>M:WikiClientLibrary.Pages.Revision.FetchRevisionAsync(WikiClientLibrary.Sites.WikiSite,System.Int32)</parameter>
+            <parameter>M:WikiClientLibrary.Pages.Revision.FetchRevisionAsync(WikiClientLibrary.Sites.WikiSite,System.Int64)</parameter>
           </include>
         </markup>
       </param>
@@ -8560,7 +8552,7 @@
       <exception cref="T:System.ArgumentException">
         <paramref name="revisionId" /> is not an existing revision id.</exception>
     </member>
-    <member name="M:WikiClientLibrary.Pages.Revision.FetchRevisionsAsync(WikiClientLibrary.Sites.WikiSite,System.Collections.Generic.IEnumerable{System.Int32})">
+    <member name="M:WikiClientLibrary.Pages.Revision.FetchRevisionsAsync(WikiClientLibrary.Sites.WikiSite,System.Collections.Generic.IEnumerable{System.Int64})">
       <summary>
             Fetch revisions by revid sequence.
             </summary>
@@ -8581,7 +8573,7 @@
       <exception cref="T:System.ArgumentException">
         <paramref name="revisionIds" /> contains an existing revision id.</exception>
     </member>
-    <member name="M:WikiClientLibrary.Pages.Revision.FetchRevisionsAsync(WikiClientLibrary.Sites.WikiSite,System.Collections.Generic.IEnumerable{System.Int32},WikiClientLibrary.Pages.PageQueryOptions)">
+    <member name="M:WikiClientLibrary.Pages.Revision.FetchRevisionsAsync(WikiClientLibrary.Sites.WikiSite,System.Collections.Generic.IEnumerable{System.Int64},WikiClientLibrary.Pages.PageQueryOptions)">
       <summary>
             Fetch revisions by revid sequence.
             </summary>
@@ -8602,7 +8594,7 @@
       <exception cref="T:System.ArgumentException">
         <paramref name="revisionIds" /> contains an existing revision id.</exception>
     </member>
-    <member name="M:WikiClientLibrary.Pages.Revision.FetchRevisionsAsync(WikiClientLibrary.Sites.WikiSite,System.Collections.Generic.IEnumerable{System.Int32},WikiClientLibrary.Pages.PageQueryOptions,System.Threading.CancellationToken)">
+    <member name="M:WikiClientLibrary.Pages.Revision.FetchRevisionsAsync(WikiClientLibrary.Sites.WikiSite,System.Collections.Generic.IEnumerable{System.Int64},WikiClientLibrary.Pages.PageQueryOptions,System.Threading.CancellationToken)">
       <summary>
             Fetch revisions by revid sequence.
             </summary>
@@ -8623,7 +8615,7 @@
       <exception cref="T:System.ArgumentException">
         <paramref name="revisionIds" /> contains an existing revision id.</exception>
     </member>
-    <member name="M:WikiClientLibrary.Pages.Revision.FetchRevisionsAsync(WikiClientLibrary.Sites.WikiSite,System.Collections.Generic.IEnumerable{System.Int32},WikiClientLibrary.Pages.Queries.IWikiPageQueryProvider,System.Threading.CancellationToken)">
+    <member name="M:WikiClientLibrary.Pages.Revision.FetchRevisionsAsync(WikiClientLibrary.Sites.WikiSite,System.Collections.Generic.IEnumerable{System.Int64},WikiClientLibrary.Pages.Queries.IWikiPageQueryProvider,System.Threading.CancellationToken)">
       <summary>
             Fetch revisions by revid sequence.
             </summary>
@@ -8644,7 +8636,7 @@
       <exception cref="T:System.ArgumentException">
         <paramref name="revisionIds" /> contains an existing revision id.</exception>
     </member>
-    <member name="M:WikiClientLibrary.Pages.Revision.FetchRevisionsAsync(WikiClientLibrary.Sites.WikiSite,System.Int32[])">
+    <member name="M:WikiClientLibrary.Pages.Revision.FetchRevisionsAsync(WikiClientLibrary.Sites.WikiSite,System.Int64[])">
       <summary>
             Fetch revisions by revid sequence.
             </summary>
@@ -8857,7 +8849,7 @@
             Represents a page on MediaWiki site.
             </summary>
     </member>
-    <member name="M:WikiClientLibrary.Pages.WikiPage.#ctor(WikiClientLibrary.Sites.WikiSite,System.Int32)">
+    <member name="M:WikiClientLibrary.Pages.WikiPage.#ctor(WikiClientLibrary.Sites.WikiSite,System.Int64)">
       <summary>
             Initializes a new instance of <see cref="T:WikiClientLibrary.Pages.WikiPage" /> from page ID.
             </summary>
@@ -9690,7 +9682,7 @@
             you can use literal page title or page ID in the place where <see cref="T:WikiClientLibrary.Pages.WikiPageStub" /> is needed.</para>
       </remarks>
     </member>
-    <member name="M:WikiClientLibrary.Pages.WikiPageStub.#ctor(System.Int32)">
+    <member name="M:WikiClientLibrary.Pages.WikiPageStub.#ctor(System.Int64)">
       <summary>
             Initializes a new instance of <see cref="T:WikiClientLibrary.Pages.WikiPageStub" />.
             </summary>
@@ -9698,7 +9690,7 @@
       <param name="title">Page full title. <c>null</c> for unknown. <see cref="F:System.String.Empty" /> will be normalized into <c>null</c>.</param>
       <param name="namespaceId">Page namespace ID. <see cref="F:WikiClientLibrary.Pages.WikiPageStub.UnknownNamespaceId" /> for unknown.</param>
     </member>
-    <member name="M:WikiClientLibrary.Pages.WikiPageStub.#ctor(System.Int32,System.String,System.Int32)">
+    <member name="M:WikiClientLibrary.Pages.WikiPageStub.#ctor(System.Int64,System.String,System.Int32)">
       <summary>
             Initializes a new instance of <see cref="T:WikiClientLibrary.Pages.WikiPageStub" />.
             </summary>
@@ -9860,12 +9852,12 @@
         </markup>
       </param>
     </member>
-    <member name="M:WikiClientLibrary.Pages.WikiPageStub.NewMissingPage(System.Int32)">
+    <member name="M:WikiClientLibrary.Pages.WikiPageStub.NewMissingPage(System.Int64)">
       <summary>
         <markup>
           <include item="SMCMissingTag">
             <parameter>summary</parameter>
-            <parameter>M:WikiClientLibrary.Pages.WikiPageStub.NewMissingPage(System.Int32)</parameter>
+            <parameter>M:WikiClientLibrary.Pages.WikiPageStub.NewMissingPage(System.Int64)</parameter>
           </include>
         </markup>
       </summary>
@@ -9874,7 +9866,7 @@
           <include item="SMCMissingParamTag">
             <parameter>param</parameter>
             <parameter>id</parameter>
-            <parameter>M:WikiClientLibrary.Pages.WikiPageStub.NewMissingPage(System.Int32)</parameter>
+            <parameter>M:WikiClientLibrary.Pages.WikiPageStub.NewMissingPage(System.Int64)</parameter>
           </include>
         </markup>
       </param>
@@ -10000,12 +9992,12 @@
         </markup>
       </param>
     </member>
-    <member name="M:WikiClientLibrary.Pages.WikiPageStub.op_Implicit(System.Int32)~WikiClientLibrary.Pages.WikiPageStub">
+    <member name="M:WikiClientLibrary.Pages.WikiPageStub.op_Implicit(System.Int64)~WikiClientLibrary.Pages.WikiPageStub">
       <summary>
         <markup>
           <include item="SMCMissingTag">
             <parameter>summary</parameter>
-            <parameter>M:WikiClientLibrary.Pages.WikiPageStub.op_Implicit(System.Int32)~WikiClientLibrary.Pages.WikiPageStub</parameter>
+            <parameter>M:WikiClientLibrary.Pages.WikiPageStub.op_Implicit(System.Int64)~WikiClientLibrary.Pages.WikiPageStub</parameter>
           </include>
         </markup>
       </summary>
@@ -10014,17 +10006,17 @@
           <include item="SMCMissingParamTag">
             <parameter>param</parameter>
             <parameter>pageId</parameter>
-            <parameter>M:WikiClientLibrary.Pages.WikiPageStub.op_Implicit(System.Int32)~WikiClientLibrary.Pages.WikiPageStub</parameter>
+            <parameter>M:WikiClientLibrary.Pages.WikiPageStub.op_Implicit(System.Int64)~WikiClientLibrary.Pages.WikiPageStub</parameter>
           </include>
         </markup>
       </param>
     </member>
-    <member name="M:WikiClientLibrary.Pages.WikiPageStub.op_Implicit(System.Nullable{System.Int32})~WikiClientLibrary.Pages.WikiPageStub">
+    <member name="M:WikiClientLibrary.Pages.WikiPageStub.op_Implicit(System.Nullable{System.Int64})~WikiClientLibrary.Pages.WikiPageStub">
       <summary>
         <markup>
           <include item="SMCMissingTag">
             <parameter>summary</parameter>
-            <parameter>M:WikiClientLibrary.Pages.WikiPageStub.op_Implicit(System.Nullable{System.Int32})~WikiClientLibrary.Pages.WikiPageStub</parameter>
+            <parameter>M:WikiClientLibrary.Pages.WikiPageStub.op_Implicit(System.Nullable{System.Int64})~WikiClientLibrary.Pages.WikiPageStub</parameter>
           </include>
         </markup>
       </summary>
@@ -10033,7 +10025,7 @@
           <include item="SMCMissingParamTag">
             <parameter>param</parameter>
             <parameter>pageId</parameter>
-            <parameter>M:WikiClientLibrary.Pages.WikiPageStub.op_Implicit(System.Nullable{System.Int32})~WikiClientLibrary.Pages.WikiPageStub</parameter>
+            <parameter>M:WikiClientLibrary.Pages.WikiPageStub.op_Implicit(System.Nullable{System.Int64})~WikiClientLibrary.Pages.WikiPageStub</parameter>
           </include>
         </markup>
       </param>
@@ -10769,7 +10761,7 @@
       <exception cref="T:System.ArgumentNullException">
         <paramref name="title" /> is <c>null</c>.</exception>
     </member>
-    <member name="M:WikiClientLibrary.Pages.Parsing.WikiSiteExtensions.ParseRevisionAsync(WikiClientLibrary.Sites.WikiSite,System.Int32)">
+    <member name="M:WikiClientLibrary.Pages.Parsing.WikiSiteExtensions.ParseRevisionAsync(WikiClientLibrary.Sites.WikiSite,System.Int64)">
       <summary>
             Parsing the specific page revision, gets HTML and more information. (MediaWiki 1.12)
             </summary>
@@ -10781,7 +10773,7 @@
       <exception cref="T:System.ArgumentOutOfRangeException">
         <paramref name="revId" /> is zero or negative.</exception>
     </member>
-    <member name="M:WikiClientLibrary.Pages.Parsing.WikiSiteExtensions.ParseRevisionAsync(WikiClientLibrary.Sites.WikiSite,System.Int32,System.String,WikiClientLibrary.Pages.Parsing.ParsingOptions,System.Threading.CancellationToken)">
+    <member name="M:WikiClientLibrary.Pages.Parsing.WikiSiteExtensions.ParseRevisionAsync(WikiClientLibrary.Sites.WikiSite,System.Int64,System.String,WikiClientLibrary.Pages.Parsing.ParsingOptions,System.Threading.CancellationToken)">
       <summary>
             Parsing the specific page revision, gets HTML and more information. (MediaWiki 1.12)
             </summary>
@@ -10793,7 +10785,7 @@
       <exception cref="T:System.ArgumentOutOfRangeException">
         <paramref name="revId" /> is zero or negative.</exception>
     </member>
-    <member name="M:WikiClientLibrary.Pages.Parsing.WikiSiteExtensions.ParseRevisionAsync(WikiClientLibrary.Sites.WikiSite,System.Int32,WikiClientLibrary.Pages.Parsing.ParsingOptions)">
+    <member name="M:WikiClientLibrary.Pages.Parsing.WikiSiteExtensions.ParseRevisionAsync(WikiClientLibrary.Sites.WikiSite,System.Int64,WikiClientLibrary.Pages.Parsing.ParsingOptions)">
       <summary>
             Parsing the specific page revision, gets HTML and more information. (MediaWiki 1.12)
             </summary>
@@ -10805,7 +10797,7 @@
       <exception cref="T:System.ArgumentOutOfRangeException">
         <paramref name="revId" /> is zero or negative.</exception>
     </member>
-    <member name="M:WikiClientLibrary.Pages.Parsing.WikiSiteExtensions.ParseRevisionAsync(WikiClientLibrary.Sites.WikiSite,System.Int32,WikiClientLibrary.Pages.Parsing.ParsingOptions,System.Threading.CancellationToken)">
+    <member name="M:WikiClientLibrary.Pages.Parsing.WikiSiteExtensions.ParseRevisionAsync(WikiClientLibrary.Sites.WikiSite,System.Int64,WikiClientLibrary.Pages.Parsing.ParsingOptions,System.Threading.CancellationToken)">
       <summary>
             Parsing the specific page revision, gets HTML and more information. (MediaWiki 1.12)
             </summary>

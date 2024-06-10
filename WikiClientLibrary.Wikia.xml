@@ -539,7 +539,7 @@
       <exception cref="T:System.ArgumentNullException">
         <paramref name="page" /> is <c>null</c>.</exception>
     </member>
-    <member name="M:WikiClientLibrary.Wikia.Discussions.Board.#ctor(WikiClientLibrary.Wikia.Sites.WikiaSite,System.Int32)">
+    <member name="M:WikiClientLibrary.Wikia.Discussions.Board.#ctor(WikiClientLibrary.Wikia.Sites.WikiaSite,System.Int64)">
       <summary>
             Initializes a new instance of <see cref="T:WikiClientLibrary.Wikia.Discussions.Board" /> from site and page ID.
             </summary>
@@ -770,7 +770,7 @@
             or a thread in a board on the Wikia forum (<c>Special:Forum</c>).
             </summary>
     </member>
-    <member name="M:WikiClientLibrary.Wikia.Discussions.Post.#ctor(WikiClientLibrary.Wikia.Sites.WikiaSite,WikiClientLibrary.Pages.WikiPageStub,System.Int32)">
+    <member name="M:WikiClientLibrary.Wikia.Discussions.Post.#ctor(WikiClientLibrary.Wikia.Sites.WikiaSite,WikiClientLibrary.Pages.WikiPageStub,System.Int64)">
       <summary>
             Initializes a new instance of <see cref="T:WikiClientLibrary.Wikia.Discussions.Post" />.
             </summary>
@@ -2109,7 +2109,7 @@
     <member name="T:WikiClientLibrary.Wikia.WikiaApi.WikiaSiteWikiaApiExtensions">
       <summary>Extension methods that implements Wikia REST-ful API.</summary>
     </member>
-    <member name="M:WikiClientLibrary.Wikia.WikiaApi.WikiaSiteWikiaApiExtensions.FetchRelatedPagesAsync(WikiClientLibrary.Wikia.Sites.WikiaSite,System.Int32)">
+    <member name="M:WikiClientLibrary.Wikia.WikiaApi.WikiaSiteWikiaApiExtensions.FetchRelatedPagesAsync(WikiClientLibrary.Wikia.Sites.WikiaSite,System.Int64)">
       <summary>
             Asynchronously fetches the specified page's related pages.
             </summary>
@@ -2126,7 +2126,7 @@
       <exception cref="T:WikiClientLibrary.Wikia.NotFoundApiException">
         <c>Related Pages</c> extension is not available.</exception>
     </member>
-    <member name="M:WikiClientLibrary.Wikia.WikiaApi.WikiaSiteWikiaApiExtensions.FetchRelatedPagesAsync(WikiClientLibrary.Wikia.Sites.WikiaSite,System.Int32,System.Int32)">
+    <member name="M:WikiClientLibrary.Wikia.WikiaApi.WikiaSiteWikiaApiExtensions.FetchRelatedPagesAsync(WikiClientLibrary.Wikia.Sites.WikiaSite,System.Int64,System.Int32)">
       <summary>
             Asynchronously fetches the specified page's related pages.
             </summary>
@@ -2142,7 +2142,7 @@
       <exception cref="T:WikiClientLibrary.Wikia.NotFoundApiException">
         <c>Related Pages</c> extension is not available.</exception>
     </member>
-    <member name="M:WikiClientLibrary.Wikia.WikiaApi.WikiaSiteWikiaApiExtensions.FetchRelatedPagesAsync(WikiClientLibrary.Wikia.Sites.WikiaSite,System.Int32,System.Int32,System.Threading.CancellationToken)">
+    <member name="M:WikiClientLibrary.Wikia.WikiaApi.WikiaSiteWikiaApiExtensions.FetchRelatedPagesAsync(WikiClientLibrary.Wikia.Sites.WikiaSite,System.Int64,System.Int32,System.Threading.CancellationToken)">
       <summary>
             Asynchronously fetches the specified page's related pages.
             </summary>
