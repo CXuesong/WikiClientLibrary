@@ -171,25 +171,29 @@ public class SiteHtmlTitleInfo
 public class SiteVariableData
 {
 
+    private static readonly ICollection<int> fallbackContentNamespaceIds = Array.AsReadOnly(new[] { 0 });
+
     [JsonProperty("appleTouchIcon")]
     public AppleTouchIconInfo AppleTouchIcon { get; private set; }
 
     /// <summary>
-    /// Current wiki cachebuster value,
+    /// Current wiki cachebuster value.
     /// </summary>
     [JsonProperty("cacheBuster")]
+    [Obsolete("cacheBuster is not present in latest Wikia sites anymore. This property will be removed.")]
     public long CacheBuster { get; private set; }
 
     [JsonProperty("cdnRootUrl")]
     public string CdnRootUrl { get; private set; }
 
-    [JsonProperty("contentNamespaces")]
-    public ICollection<int> ContentNamespaceIds { get; private set; }
+    [Obsolete("contentNamespaces is not present in latest Wikia sites anymore. This property will be removed.")]
+    public ICollection<int> ContentNamespaceIds => fallbackContentNamespaceIds;
 
     [JsonProperty("dbName")]
     public string DatabaseName { get; private set; }
 
     [JsonProperty("defaultSkin")]
+    [Obsolete("defaultSkin is not present in latest Wikia sites anymore. This property will be removed.")]
     public string DefaultSkinName { get; private set; }
 
     [JsonProperty("disableAnonymousEditing")]

@@ -59,7 +59,7 @@ public class PageTests : WikiSiteTestsBase, IClassFixture<WikiSiteProvider>
 
     [Theory]
     [InlineData(nameof(WpTest2SiteAsync), "Project:sandbox", "Wikipedia:Sandbox", BuiltInNamespaces.Project, 2076)]
-    [InlineData(nameof(WikiaTestSiteAsync), "Project:sandbox", "Dman Wikia:Sandbox", BuiltInNamespaces.Project, 637)]
+    [InlineData(nameof(WikiaTestSiteAsync), "Project:sandbox", "Discussion Manual Wiki:Sandbox", BuiltInNamespaces.Project, 637)]
     [InlineData(nameof(TFWikiSiteAsync), "Help:coming soon", "Help:Coming soon", BuiltInNamespaces.Help, 10122)]
     public async Task WikiPageReadTest2(string siteName, string fetchTitle, string expectedTitle, int expectedNs, int expectedId)
     {

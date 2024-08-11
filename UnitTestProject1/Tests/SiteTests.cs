@@ -100,7 +100,7 @@ public class SiteTests : WikiSiteTestsBase, IClassFixture<WikiSiteProvider>
     {
         var site = await WikiaTestSiteAsync;
         ShallowTrace(site);
-        Assert.Equal("Dman Wikia", site.SiteInfo.SiteName);
+        Assert.Equal("Discussion Manual Wiki", site.SiteInfo.SiteName);
         ValidateNamespaces(site);
     }
 

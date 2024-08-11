@@ -50,7 +50,7 @@ public class WikiaApiTests : WikiSiteTestsBase, IClassFixture<WikiSiteProvider>
         var data = site.WikiVariables;
         ShallowTrace(data);
         Assert.Equal(1362703, data.Id);
-        Assert.Equal("Dman Wikia | Fandom", data.SiteName);
+        Assert.Equal("Discussion Manual Wiki | Fandom", data.SiteName);
         Assert.Equal("https://dman.fandom.com", data.BasePath);
         Assert.Equal("/wiki/", data.ArticlePath);
         Assert.Equal(new[] { 0 }, data.ContentNamespaceIds);
