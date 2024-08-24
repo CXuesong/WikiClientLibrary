@@ -1,4 +1,4 @@
-using Newtonsoft.Json.Linq;
+using System.Text.Json.Nodes;
 
 namespace WikiClientLibrary.Pages.Queries.Properties;
 
@@ -49,7 +49,7 @@ public interface IWikiPagePropertyProvider<out T> where T : class, IWikiPageProp
     /// <param name="json">One of the item node under the JSON path <c>query/pages</c>.</param>
     /// <exception cref="ArgumentNullException"><paramref name="json"/> is <c>null</c>.</exception>
     /// <returns>A property group instance, or <c>null</c> if no extra property group available.</returns>
-    T? ParsePropertyGroup(JObject json);
+    T? ParsePropertyGroup(JsonObject json);
 
 }
 
@@ -71,7 +71,7 @@ public abstract class WikiPagePropertyProvider<T> : IWikiPagePropertyProvider<T>
     }
 
     /// <inheritdoc />
-    public abstract T? ParsePropertyGroup(JObject json);
+    public abstract T? ParsePropertyGroup(JsonObject json);
 
     /// <inheritdoc />
     public abstract string? PropertyName { get; }

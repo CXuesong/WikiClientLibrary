@@ -1,5 +1,4 @@
-﻿using System.Collections.ObjectModel;
-using Newtonsoft.Json.Linq;
+﻿using System.Text.Json.Nodes;
 using WikiClientLibrary.Files;
 using WikiClientLibrary.Infrastructures;
 
@@ -37,7 +36,7 @@ public class FileInfoPropertyProvider : WikiPagePropertyProvider<FileInfoPropert
     }
 
     /// <inheritdoc />
-    public override FileInfoPropertyGroup? ParsePropertyGroup(JObject json)
+    public override FileInfoPropertyGroup? ParsePropertyGroup(JsonObject json)
     {
         return FileInfoPropertyGroup.Create(json);
     }
@@ -58,46 +57,33 @@ public class FileInfoPropertyGroup : WikiPagePropertyGroup
 
     private static readonly FileInfoPropertyGroup Empty = new FileInfoPropertyGroup();
 
-    private object _Revisions;
+    private readonly FileRevision[] _Revisions;
 
-    internal static FileInfoPropertyGroup? Create(JObject jpage)
+    internal static FileInfoPropertyGroup? Create(JsonObject jpage)
     {
-        var info = jpage["imageinfo"];
+        var info = jpage["imageinfo"].AsArray();
         // jpage["imageinfo"] == null indicates the page may not be a valid File.
         if (info == null) return null;
-        if (!info.HasValues) return Empty;
+        if (info.Count == 0) return Empty;
         var stub = MediaWikiHelper.PageStubFromJson(jpage);
-        return new FileInfoPropertyGroup(stub, (JArray)info);
+        return new FileInfoPropertyGroup(stub, info);
     }
 
     private FileInfoPropertyGroup()
     {
         _Revisions = Array.Empty<FileRevision>();
+        Revisions = Array.AsReadOnly(_Revisions);
     }
 
-    private FileInfoPropertyGroup(WikiPageStub page, JArray jrevisions)
+    private FileInfoPropertyGroup(WikiPageStub page, JsonArray jrevisions)
     {
-        if (jrevisions.Count == 1)
-        {
-            _Revisions = MediaWikiHelper.FileRevisionFromJson((JObject)jrevisions.First, page);
-        }
-        else
-        {
-            _Revisions = new ReadOnlyCollection<FileRevision>(jrevisions
-                .Select(jr => MediaWikiHelper.FileRevisionFromJson((JObject)jr, page))
-                .ToArray());
-        }
+        _Revisions = jrevisions
+            .Select(jr => MediaWikiHelper.FileRevisionFromJson(jr!.AsObject(), page))
+            .ToArray();
+        Revisions = Array.AsReadOnly(_Revisions);
     }
 
-    public IReadOnlyCollection<FileRevision> Revisions
-    {
-        get
-        {
-            if (_Revisions is FileRevision rev)
-                _Revisions = new ReadOnlyCollection<FileRevision>(new[] { rev });
-            return (IReadOnlyCollection<FileRevision>)_Revisions;
-        }
-    }
+    public IReadOnlyCollection<FileRevision> Revisions { get; }
 
     /// <summary>
     /// Gets the latest file revision information.
@@ -106,13 +92,10 @@ public class FileInfoPropertyGroup : WikiPagePropertyGroup
     {
         get
         {
-            var localRev = _Revisions;
-            if (localRev is FileRevision rev) return rev;
-            var revs = (IReadOnlyList<FileRevision>)localRev;
-            if (revs.Count == 0) return null;
-            if (revs[0].TimeStamp >= revs[revs.Count - 1].TimeStamp)
-                return revs[0];
-            return revs[revs.Count - 1];
+            var revs = _Revisions;
+            if (revs.Length == 0) return null;
+            // Take sort order into consideration.
+            return revs[0].TimeStamp >= revs[^1].TimeStamp ? revs[0] : revs[^1];
         }
     }
 

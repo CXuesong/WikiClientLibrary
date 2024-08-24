@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json.Linq;
+﻿using System.Text.Json;
+using System.Text.Json.Nodes;
 using WikiClientLibrary.Infrastructures;
 
 namespace WikiClientLibrary.Pages.Queries.Properties;
@@ -16,7 +17,7 @@ public class PagePropertiesPropertyProvider : WikiPagePropertyProvider<PagePrope
     }
 
     /// <inheritdoc />
-    public override PagePropertiesPropertyGroup? ParsePropertyGroup(JObject json)
+    public override PagePropertiesPropertyGroup? ParsePropertyGroup(JsonObject json)
     {
         return PagePropertiesPropertyGroup.Create(json);
     }
@@ -38,13 +39,13 @@ public class PagePropertiesPropertyGroup : WikiPagePropertyGroup
 
     private static readonly PagePropertiesPropertyGroup Empty = new PagePropertiesPropertyGroup();
 
-    internal static PagePropertiesPropertyGroup Create(JObject jpage)
+    internal static PagePropertiesPropertyGroup? Create(JsonObject jpage)
     {
-        var props = jpage["pageprops"];
+        var props = jpage["pageprops"]?.AsObject();
         // jpage["pageprops"] == null for pages with no pageprop item,
         // even if client specified prop=pageprops
-        if (props == null) return Empty;
-        if (!props.HasValues) return Empty;
+        // if (props == null) return null;
+        if (props == null || props.Count == 0) return Empty;
         return new PagePropertiesPropertyGroup(jpage);
     }
 
@@ -53,9 +54,9 @@ public class PagePropertiesPropertyGroup : WikiPagePropertyGroup
         PageProperties = PagePropertyCollection.Empty;
     }
 
-    private PagePropertiesPropertyGroup(JObject jPage)
+    private PagePropertiesPropertyGroup(JsonObject jpageprops)
     {
-        PageProperties = jPage["pageprops"]?.ToObject<PagePropertyCollection>(Utility.WikiJsonSerializer) ?? PagePropertyCollection.Empty;
+        PageProperties = jpageprops.Deserialize<PagePropertyCollection>(MediaWikiHelper.WikiJsonSerializerOptions) ?? PagePropertyCollection.Empty;
     }
 
     /// <summary>

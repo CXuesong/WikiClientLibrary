@@ -14,7 +14,7 @@ internal static class Utility
 {
 
     // http://stackoverflow.com/questions/36186276/is-the-json-net-jsonserializer-threadsafe
-    [Obsolete]
+    [Obsolete("Use MediaWikiHelper.WikiJsonSerializerOptions when using System.Text.Json API.")]
     public static readonly JsonSerializer WikiJsonSerializer = CreateWikiJsonSerializer();
 
     /// <summary>

@@ -1,4 +1,8 @@
-﻿using Newtonsoft.Json;
+﻿using System.Diagnostics;
+using System.Text.Json;
+using System.Text.Json.Nodes;
+using System.Text.Json.Serialization;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using WikiClientLibrary.Infrastructures;
 using WikiClientLibrary.Pages.Parsing;
@@ -73,7 +77,7 @@ public class LanguageLinksPropertyProvider : WikiPagePropertyProvider<LanguageLi
         return p;
     }
 
-    public override LanguageLinksPropertyGroup? ParsePropertyGroup(JObject json)
+    public override LanguageLinksPropertyGroup? ParsePropertyGroup(JsonObject json)
     {
         if (json == null) throw new ArgumentNullException(nameof(json));
         return LanguageLinksPropertyGroup.Create(json);
@@ -107,33 +111,30 @@ public enum LanguageLinkProperties
 /// <seealso cref="LanguageLinksPropertyProvider"/>
 /// <seealso cref="LanguageLinksPropertyGroup"/>
 /// <seealso cref="ParsedContentInfo"/>
-[JsonObject(MemberSerialization.OptIn)]
-public class LanguageLinkInfo
+/// <remarks>
+/// See <a href="https://github.com/wikimedia/mediawiki/blob/master/includes/api/ApiQueryLangLinks.php">ApiQueryLangLinks.php</a>.
+/// </remarks>
+[JsonContract]
+public sealed record LanguageLinkInfo
 {
 
-#pragma warning disable CS8618 // 在退出构造函数时，不可为 null 的字段必须包含非 null 值。请考虑声明为可以为 null。
-    public LanguageLinkInfo()
-#pragma warning restore CS8618 // 在退出构造函数时，不可为 null 的字段必须包含非 null 值。请考虑声明为可以为 null。
-    {
-    }
+    [JsonPropertyName("lang")]
+    public required string Language { get; init; }
 
-    [JsonProperty("lang")]
-    public string Language { get; private set; }
-
-    [JsonProperty]
-    public string Url { get; private set; }
+    /// <summary>URL of the language link target.</summary>
+    /// <remarks>In rare cases, such as when the <see cref="Title"/> is malformed, this property can be <c>null</c>.</remarks>
+    public string? Url { get; init; }
 
     /// <summary>
     /// Autonym of the language.
     /// </summary>
-    [JsonProperty]
-    public string Autonym { get; private set; }
+    public required string Autonym { get; init; }
 
     /// <summary>
     /// Title of the page in the specified language.
     /// </summary>
-    [JsonProperty("*")]
-    public string Title { get; private set; }
+    [JsonPropertyName("*")]
+    public required string Title { get; init; }
 
     /// <inheritdoc />
     public override string ToString()
@@ -148,17 +149,18 @@ public class LanguageLinksPropertyGroup : WikiPagePropertyGroup
 
     private static readonly LanguageLinksPropertyGroup Empty = new LanguageLinksPropertyGroup(Array.Empty<LanguageLinkInfo>());
 
-    internal static LanguageLinksPropertyGroup Create(JToken jpage)
+    internal static LanguageLinksPropertyGroup? Create(JsonObject jpage)
     {
         var jlangLinks = jpage["langlinks"];
-        if (jlangLinks == null || !jlangLinks.HasValues)
-            return Empty;
-        var langLinks = jlangLinks.ToObject<IReadOnlyCollection<LanguageLinkInfo>>(Utility.WikiJsonSerializer);
-        return new LanguageLinksPropertyGroup(langLinks);
+        if (jlangLinks == null) return null;
+        if (jpage.Count == 0) return Empty;
+        var langLinks = jlangLinks.Deserialize<IReadOnlyCollection<LanguageLinkInfo>>(MediaWikiHelper.WikiJsonSerializerOptions);
+        return new LanguageLinksPropertyGroup(langLinks!);
     }
 
     private LanguageLinksPropertyGroup(IReadOnlyCollection<LanguageLinkInfo> languageLinks)
     {
+        Debug.Assert(languageLinks != null);
         LanguageLinks = languageLinks;
     }
 

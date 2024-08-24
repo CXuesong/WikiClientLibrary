@@ -1,5 +1,6 @@
 ﻿using System.Collections.ObjectModel;
-using Newtonsoft.Json.Linq;
+using System.Diagnostics.CodeAnalysis;
+using System.Text.Json.Nodes;
 using WikiClientLibrary.Generators;
 using WikiClientLibrary.Infrastructures;
 
@@ -30,7 +31,7 @@ public class CategoriesPropertyProvider : WikiPagePropertyProvider<CategoriesPro
     }
 
     /// <inheritdoc />
-    public override CategoriesPropertyGroup? ParsePropertyGroup(JObject json)
+    public override CategoriesPropertyGroup? ParsePropertyGroup(JsonObject json)
     {
         throw new NotImplementedException();
     }
@@ -46,7 +47,7 @@ public class CategoriesPropertyProvider : WikiPagePropertyProvider<CategoriesPro
 public readonly struct WikiPageCategoryInfo
 {
 
-    public WikiPageCategoryInfo(WikiPageStub page, bool isHidden, string sortKey, string fullSortKey, DateTime timeStamp)
+    public WikiPageCategoryInfo(WikiPageStub page, bool isHidden, string? sortKey, string? fullSortKey, DateTime timeStamp)
     {
         Page = page;
         IsHidden = isHidden;
@@ -70,10 +71,10 @@ public readonly struct WikiPageCategoryInfo
     public bool IsHidden { get; }
 
     /// <summary>Gets the sortkey prefix (human-readable part) of the current page in the category.</summary>
-    public string SortKey { get; }
+    public string? SortKey { get; }
 
     /// <summary>Gets the sortkey (hexadecimal string) of the current page in the category.</summary>
-    public string FullSortKey { get; }
+    public string? FullSortKey { get; }
 
     /// <summary>Gets the timestamp of when the category was added.</summary>
     /// <value>A timestamp, or <see cref="DateTime.MinValue"/> if not available.</value>
@@ -92,10 +93,11 @@ public class CategoriesPropertyGroup : WikiPagePropertyGroup
 
     private static readonly CategoriesPropertyGroup empty = new CategoriesPropertyGroup();
 
-    internal CategoriesPropertyGroup? Create(JArray? jcats)
+    [return:NotNullIfNotNull(nameof(jcats))]
+    internal CategoriesPropertyGroup? Create(JsonArray? jcats)
     {
         if (jcats == null) return null;
-        if (!jcats.HasValues) return empty;
+        if (jcats.Count == 0) return empty;
         return new CategoriesPropertyGroup(jcats);
     }
 
@@ -104,15 +106,18 @@ public class CategoriesPropertyGroup : WikiPagePropertyGroup
         Categories = Array.Empty<WikiPageCategoryInfo>();
     }
 
-    private CategoriesPropertyGroup(JArray jcats)
+    private CategoriesPropertyGroup(JsonArray jcats)
     {
-        Categories = new ReadOnlyCollection<WikiPageCategoryInfo>(jcats.Select(CategoryInfoFromJson).ToList());
+        Categories = new ReadOnlyCollection<WikiPageCategoryInfo>(jcats
+            .Where(n => n != null)
+            .Select(CategoryInfoFromJson!).ToList()
+        );
     }
 
-    internal static WikiPageCategoryInfo CategoryInfoFromJson(JToken json)
+    internal static WikiPageCategoryInfo CategoryInfoFromJson(JsonNode json)
     {
-        return new WikiPageCategoryInfo(MediaWikiHelper.PageStubFromJson((JObject)json),
-            json["hidden"] != null, (string)json["sortkeyprefix"], (string)json["sortkey"],
+        return new WikiPageCategoryInfo(MediaWikiHelper.PageStubFromJson(json.AsObject()),
+            json["hidden"] != null, (string?)json["sortkeyprefix"], (string?)json["sortkey"],
             (DateTime?)json["timestamp"] ?? DateTime.MinValue);
     }
 

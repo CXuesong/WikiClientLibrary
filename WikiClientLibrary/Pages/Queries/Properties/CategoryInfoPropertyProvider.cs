@@ -1,4 +1,4 @@
-﻿using Newtonsoft.Json.Linq;
+﻿using System.Text.Json.Nodes;
 
 namespace WikiClientLibrary.Pages.Queries.Properties;
 
@@ -16,7 +16,7 @@ public class CategoryInfoPropertyProvider : WikiPagePropertyProvider<CategoryInf
     }
 
     /// <inheritdoc />
-    public override CategoryInfoPropertyGroup? ParsePropertyGroup(JObject json)
+    public override CategoryInfoPropertyGroup? ParsePropertyGroup(JsonObject json)
     {
         return CategoryInfoPropertyGroup.Create(json);
     }
@@ -35,7 +35,7 @@ public class CategoryInfoPropertyProvider : WikiPagePropertyProvider<CategoryInf
 public class CategoryInfoPropertyGroup : WikiPagePropertyGroup
 {
 
-    public static CategoryInfoPropertyGroup? Create(JObject jPage)
+    public static CategoryInfoPropertyGroup? Create(JsonObject jPage)
     {
         var cat = jPage["categoryinfo"];
         // jpage["imageinfo"] == null indicates the page may not be a valid Category.
@@ -43,7 +43,7 @@ public class CategoryInfoPropertyGroup : WikiPagePropertyGroup
         return new CategoryInfoPropertyGroup(cat);
     }
 
-    private CategoryInfoPropertyGroup(JToken jCategoryInfo)
+    private CategoryInfoPropertyGroup(JsonNode jCategoryInfo)
     {
         MembersCount = (int)jCategoryInfo["size"];
         PagesCount = (int)jCategoryInfo["pages"];

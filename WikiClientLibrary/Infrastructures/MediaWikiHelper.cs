@@ -248,7 +248,7 @@ public static string MakeAbsoluteProtocol(string relativeProtocolUrl, string def
         return rev;
     }
 
-    public static GeoCoordinate GeoCoordinateFromJson(JsonNode jcoordinate)
+    public static GeoCoordinate GeoCoordinateFromJson(JsonObject jcoordinate)
     {
         return new GeoCoordinate
         {

@@ -1,4 +1,4 @@
-﻿using Newtonsoft.Json.Linq;
+﻿using System.Text.Json.Nodes;
 using WikiClientLibrary.Infrastructures;
 
 namespace WikiClientLibrary.Pages.Queries.Properties;
@@ -49,7 +49,7 @@ public class PageImagesPropertyProvider : WikiPagePropertyProvider<PageImagesPro
     public override string? PropertyName => "pageimages";
 
     /// <inheritdoc />
-    public override PageImagesPropertyGroup? ParsePropertyGroup(JObject json)
+    public override PageImagesPropertyGroup? ParsePropertyGroup(JsonObject json)
     {
         if (json == null) throw new ArgumentNullException(nameof(json));
         return PageImagesPropertyGroup.Create(json);
@@ -60,52 +60,17 @@ public class PageImagesPropertyProvider : WikiPagePropertyProvider<PageImagesPro
 /// <summary>
 /// Contains information for page image URL along with image size.
 /// </summary>
-public struct PageImageInfo : IEquatable<PageImageInfo>
+public sealed record PageImageInfo
 {
 
-    public static readonly PageImageInfo Empty = new PageImageInfo();
-
-    public PageImageInfo(string url, int width, int height) : this()
-    {
-        Url = url;
-        Width = width;
-        Height = height;
-    }
-
     /// <summary>Image URL.</summary>
-    public string Url { get; }
+    public required string Url { get; init; }
 
     /// <summary>Image width, in pixel.</summary>
-    public int Width { get; }
+    public int Width { get; init; }
 
     /// <summary>Image height, in pixel.</summary>
-    public int Height { get; }
-
-    /// <inheritdoc />
-    public bool Equals(PageImageInfo other)
-    {
-        return string.Equals(Url, other.Url) && Width == other.Width && Height == other.Height;
-    }
-
-    /// <inheritdoc />
-    public override bool Equals(object? obj)
-    {
-        if (obj is null) return false;
-        return obj is PageImageInfo info && Equals(info);
-    }
-
-    /// <inheritdoc />
-    public override int GetHashCode() => HashCode.Combine(Url, Width, Height);
-
-    public static bool operator ==(PageImageInfo left, PageImageInfo right)
-    {
-        return left.Equals(right);
-    }
-
-    public static bool operator !=(PageImageInfo left, PageImageInfo right)
-    {
-        return !left.Equals(right);
-    }
+    public int Height { get; init; }
 
     /// <inheritdoc />
     public override string ToString()
@@ -124,7 +89,7 @@ public class PageImagesPropertyGroup : WikiPagePropertyGroup
 
     private static readonly PageImagesPropertyGroup Empty = new PageImagesPropertyGroup();
 
-    internal static PageImagesPropertyGroup Create(JToken jpage)
+    internal static PageImagesPropertyGroup Create(JsonNode jpage)
     {
         if (jpage["original"] == null && jpage["thumbnail"] == null && jpage["pageimage"] == null)
             return Empty;
@@ -133,28 +98,33 @@ public class PageImagesPropertyGroup : WikiPagePropertyGroup
 
     private PageImagesPropertyGroup()
     {
-        OriginalImage = PageImageInfo.Empty;
-        ThumbnailImage = PageImageInfo.Empty;
+        OriginalImage = null;
+        ThumbnailImage = null;
         ImageTitle = "";
     }
 
-    private PageImagesPropertyGroup(JToken jpage)
+    private PageImagesPropertyGroup(JsonNode jpage)
     {
-        OriginalImage = jpage["original"] != null ? ParseImageInfo(jpage["original"]) : PageImageInfo.Empty;
-        ThumbnailImage = jpage["thumbnail"] != null ? ParseImageInfo(jpage["thumbnail"]) : PageImageInfo.Empty;
+        OriginalImage = jpage["original"] != null ? ParseImageInfo(jpage["original"]) : null;
+        ThumbnailImage = jpage["thumbnail"] != null ? ParseImageInfo(jpage["thumbnail"]) : null;
         ImageTitle = (string?)jpage["pageimage"] ?? "";
     }
 
-    private static PageImageInfo ParseImageInfo(JToken root)
+    private static PageImageInfo ParseImageInfo(JsonNode root)
     {
-        return new PageImageInfo((string)root["source"], (int)root["width"], (int)root["height"]);
+        return new PageImageInfo
+        {
+            Url = (string)root["source"],
+            Width = (int)root["width"],
+            Height = (int)root["height"]
+        };
     }
 
     /// <summary>Gets the original image for the page image.</summary>
-    public PageImageInfo OriginalImage { get; }
+    public PageImageInfo? OriginalImage { get; }
 
     /// <summary>Gets the thumbnail for the page image.</summary>
-    public PageImageInfo ThumbnailImage { get; }
+    public PageImageInfo? ThumbnailImage { get; }
 
     /// <summary>Gets the file title for the page image.</summary>
     public string ImageTitle { get; }

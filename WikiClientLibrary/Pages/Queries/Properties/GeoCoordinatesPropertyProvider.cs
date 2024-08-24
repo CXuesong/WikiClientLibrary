@@ -1,6 +1,5 @@
-﻿using System.Collections.ObjectModel;
-using System.Diagnostics;
-using Newtonsoft.Json.Linq;
+﻿using System.Diagnostics;
+using System.Text.Json.Nodes;
 using WikiClientLibrary.Infrastructures;
 
 namespace WikiClientLibrary.Pages.Queries.Properties;
@@ -67,10 +66,10 @@ public class GeoCoordinatesPropertyProvider : WikiPagePropertyProvider<GeoCoordi
     public override string? PropertyName => "coordinates";
 
     /// <inheritdoc />
-    public override GeoCoordinatesPropertyGroup? ParsePropertyGroup(JObject json)
+    public override GeoCoordinatesPropertyGroup? ParsePropertyGroup(JsonObject json)
     {
         if (json == null) throw new ArgumentNullException(nameof(json));
-        return GeoCoordinatesPropertyGroup.Create((JArray)json["coordinates"]);
+        return GeoCoordinatesPropertyGroup.Create(json["coordinates"].AsArray());
     }
 
 }
@@ -78,27 +77,33 @@ public class GeoCoordinatesPropertyProvider : WikiPagePropertyProvider<GeoCoordi
 public class GeoCoordinatesPropertyGroup : WikiPagePropertyGroup
 {
 
-    private IReadOnlyCollection<GeoCoordinate>? _Coordinates;
+    private static readonly GeoCoordinatesPropertyGroup empty = new();
 
-    internal static GeoCoordinatesPropertyGroup? Create(JArray? jcoordinates)
+    internal static GeoCoordinatesPropertyGroup? Create(JsonArray? jcoordinates)
     {
-        if (jcoordinates == null || !jcoordinates.HasValues) return null;
+        if (jcoordinates == null) return null;
+        if (jcoordinates.Count == 0) return empty;
         return new GeoCoordinatesPropertyGroup(jcoordinates);
     }
 
-    private GeoCoordinatesPropertyGroup(JArray jcoordinates)
+    private GeoCoordinatesPropertyGroup()
     {
-        Debug.Assert(jcoordinates != null && jcoordinates.HasValues);
-        var jprimary = jcoordinates.FirstOrDefault(c => c["primary"] != null);
+        this.Coordinates = Array.AsReadOnly(Array.Empty<GeoCoordinate>());
+    }
+
+    private GeoCoordinatesPropertyGroup(JsonArray jcoordinates)
+    {
+        Debug.Assert(jcoordinates != null && jcoordinates.Count > 0);
+        var jprimary = jcoordinates.FirstOrDefault(c => c!["primary"] != null);
         if (jprimary != null)
         {
-            PrimaryCoordinate = MediaWikiHelper.GeoCoordinateFromJson((JObject)jcoordinates.First);
-            PrimaryDistance = (int?)jcoordinates.First["dist"] ?? 0;
+            PrimaryCoordinate = MediaWikiHelper.GeoCoordinateFromJson(jcoordinates.First()!.AsObject());
+            PrimaryDistance = (int?)jcoordinates.First()!["dist"] ?? 0;
         }
         if (jprimary == null || jcoordinates.Count > 1)
         {
-            var coordinates = jcoordinates.Select(c => MediaWikiHelper.GeoCoordinateFromJson((JObject)c)).ToArray();
-            _Coordinates = new ReadOnlyCollection<GeoCoordinate>(coordinates);
+            var coordinates = jcoordinates.Select(c => MediaWikiHelper.GeoCoordinateFromJson(c!.AsObject())).ToArray();
+            Coordinates = Array.AsReadOnly(coordinates);
         }
     }
 
@@ -112,15 +117,6 @@ public class GeoCoordinatesPropertyGroup : WikiPagePropertyGroup
     /// <summary>
     /// Gets all the geo-coordinates (including primary and secondary ones) associated with the page.
     /// </summary>
-    public IReadOnlyCollection<GeoCoordinate> Coordinates
-    {
-        get
-        {
-            if (_Coordinates != null) return _Coordinates;
-            if (PrimaryCoordinate.IsEmpty) _Coordinates = Array.Empty<GeoCoordinate>();
-            _Coordinates = new ReadOnlyCollection<GeoCoordinate>(new[] { PrimaryCoordinate });
-            return _Coordinates;
-        }
-    }
+    public IReadOnlyCollection<GeoCoordinate> Coordinates { get; }
 
 }

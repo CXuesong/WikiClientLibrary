@@ -1,5 +1,4 @@
-﻿using System.Collections.ObjectModel;
-using Newtonsoft.Json.Linq;
+﻿using System.Text.Json.Nodes;
 using WikiClientLibrary.Generators;
 using WikiClientLibrary.Infrastructures;
 
@@ -64,7 +63,7 @@ public class RevisionsPropertyProvider : WikiPagePropertyProvider<RevisionsPrope
     public override string? PropertyName => "revisions";
 
     /// <inheritdoc />
-    public override RevisionsPropertyGroup? ParsePropertyGroup(JObject json)
+    public override RevisionsPropertyGroup? ParsePropertyGroup(JsonObject json)
     {
         if (json == null) throw new ArgumentNullException(nameof(json));
         return RevisionsPropertyGroup.Create(json);
@@ -77,15 +76,15 @@ public class RevisionsPropertyGroup : WikiPagePropertyGroup
 
     private static readonly RevisionsPropertyGroup Empty = new RevisionsPropertyGroup();
 
-    private object _Revisions;
+    private Revision[] _Revisions;
 
-    internal static RevisionsPropertyGroup? Create(JObject jpage)
+    internal static RevisionsPropertyGroup? Create(JsonObject jpage)
     {
-        var jrevisions = jpage["revisions"];
+        var jrevisions = jpage["revisions"]?.AsArray();
         if (jrevisions == null) return null;
-        if (!jrevisions.HasValues) return Empty;
+        if (jrevisions.Count == 0) return Empty;
         var stub = MediaWikiHelper.PageStubFromJson(jpage);
-        return new RevisionsPropertyGroup(stub, (JArray)jrevisions);
+        return new RevisionsPropertyGroup(stub, jrevisions);
     }
 
     private RevisionsPropertyGroup()
@@ -93,41 +92,23 @@ public class RevisionsPropertyGroup : WikiPagePropertyGroup
         _Revisions = Array.Empty<Revision>();
     }
 
-    private RevisionsPropertyGroup(WikiPageStub page, JArray jrevisions)
+    private RevisionsPropertyGroup(WikiPageStub page, JsonArray jrevisions)
     {
-        if (jrevisions.Count == 1)
-        {
-            _Revisions = MediaWikiHelper.RevisionFromJson((JObject)jrevisions.First, page);
-        }
-        else
-        {
-            _Revisions = new ReadOnlyCollection<Revision>(jrevisions
-                .Select(jr => MediaWikiHelper.RevisionFromJson((JObject)jr, page))
-                .ToArray());
-        }
+        _Revisions = jrevisions
+            .Select(jr => MediaWikiHelper.RevisionFromJson(jr!.AsObject(), page))
+            .ToArray();
+        Revisions = Array.AsReadOnly(_Revisions);
     }
 
-    public IReadOnlyCollection<Revision> Revisions
-    {
-        get
-        {
-            if (_Revisions is Revision rev)
-                _Revisions = new ReadOnlyCollection<Revision>(new[] { rev });
-            return (IReadOnlyCollection<Revision>)_Revisions;
-        }
-    }
+    public IReadOnlyCollection<Revision> Revisions { get; }
 
     public Revision? LatestRevision
     {
         get
         {
-            var localRev = _Revisions;
-            if (localRev is Revision rev) return rev;
-            var revs = (IReadOnlyList<Revision>)localRev;
-            if (revs.Count == 0) return null;
-            if (revs[0].TimeStamp >= revs[^1].TimeStamp)
-                return revs[0];
-            return revs[revs.Count - 1];
+            var revs = _Revisions;
+            if (revs.Length == 0) return null;
+            return revs[0].TimeStamp >= revs[^1].TimeStamp ? revs[0] : revs[^1];
         }
     }
 

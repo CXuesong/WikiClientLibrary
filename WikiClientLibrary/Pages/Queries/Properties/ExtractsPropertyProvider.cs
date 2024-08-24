@@ -1,4 +1,4 @@
-﻿using Newtonsoft.Json.Linq;
+﻿using System.Text.Json.Nodes;
 using WikiClientLibrary.Infrastructures;
 
 namespace WikiClientLibrary.Pages.Queries.Properties;
@@ -63,12 +63,12 @@ public class ExtractsPropertyProvider : WikiPagePropertyProvider<ExtractsPropert
     public override string? PropertyName => "extracts";
 
     /// <inheritdoc />
-    public override ExtractsPropertyGroup? ParsePropertyGroup(JObject json)
+    public override ExtractsPropertyGroup? ParsePropertyGroup(JsonObject json)
     {
         if (json == null) throw new ArgumentNullException(nameof(json));
-        var jextract = json["extract"];
+        var jextract = (string?)json["extract"];
         if (jextract == null) return null;
-        return ExtractsPropertyGroup.Create((string)jextract);
+        return ExtractsPropertyGroup.Create(jextract);
     }
 
 }

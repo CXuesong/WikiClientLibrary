@@ -1,5 +1,6 @@
 ﻿using System.Collections.ObjectModel;
-using Newtonsoft.Json.Linq;
+using System.Text.Json;
+using System.Text.Json.Nodes;
 using WikiClientLibrary.Infrastructures;
 
 namespace WikiClientLibrary.Pages.Queries.Properties;
@@ -17,7 +18,7 @@ public class PageInfoPropertyProvider : WikiPagePropertyProvider<PageInfoPropert
     }
 
     /// <inheritdoc />
-    public override PageInfoPropertyGroup? ParsePropertyGroup(JObject json)
+    public override PageInfoPropertyGroup? ParsePropertyGroup(JsonObject json)
     {
         return new PageInfoPropertyGroup(json);
     }
@@ -30,7 +31,7 @@ public class PageInfoPropertyProvider : WikiPagePropertyProvider<PageInfoPropert
 public class PageInfoPropertyGroup : WikiPagePropertyGroup
 {
 
-    protected internal PageInfoPropertyGroup(JObject jPage)
+    protected internal PageInfoPropertyGroup(JsonObject jPage)
     {
         ContentModel = (string)jPage["contentmodel"];
         PageLanguage = (string)jPage["pagelanguage"];
@@ -49,10 +50,12 @@ public class PageInfoPropertyGroup : WikiPagePropertyGroup
             ContentLength = (int)jPage["length"];
             LastRevisionId = (long)jPage["lastrevid"];
             LastTouched = (DateTime)jPage["touched"];
-            if (jPage["protection"] != null && jPage["protection"].HasValues)
-                Protections = jPage["protection"].ToObject<IReadOnlyCollection<ProtectionInfo>>(Utility.WikiJsonSerializer);
-            if (jPage["restrictiontypes"] != null && jPage["restrictiontypes"].HasValues)
-                RestrictionTypes = jPage["restrictiontypes"].ToObject<IReadOnlyCollection<string>>(Utility.WikiJsonSerializer);
+            if (jPage["protection"]?.AsArray().Count > 0)
+                Protections = jPage["protection"]
+                    .Deserialize<IReadOnlyCollection<ProtectionInfo>>(MediaWikiHelper.WikiJsonSerializerOptions)!;
+            if (jPage["restrictiontypes"]?.AsArray().Count > 0)
+                RestrictionTypes = jPage["restrictiontypes"]
+                    .Deserialize<IReadOnlyCollection<string>>(MediaWikiHelper.WikiJsonSerializerOptions)!;
         }
     }
 
