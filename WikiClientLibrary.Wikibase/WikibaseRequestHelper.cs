@@ -1,6 +1,5 @@
 ﻿using System.Diagnostics;
 using System.Runtime.CompilerServices;
-using Newtonsoft.Json.Linq;
 using WikiClientLibrary.Client;
 using WikiClientLibrary.Infrastructures;
 using WikiClientLibrary.Infrastructures.Logging;
@@ -69,26 +68,29 @@ internal static class WikibaseRequestHelper
             var req = BuildQueryOptions(langs, options);
             req["action"] = "wbgetentities";
             var titleLimit = site.AccountInfo.HasRight(UserRights.ApiHighLimits) ? 500 : 50;
-            using (site.BeginActionScope(entities, options))
+
+            using var _ = site.BeginActionScope(entities, options);
+            foreach (var partition in siteEntities.Partition(titleLimit).Select(partition => partition.ToList()))
             {
-                foreach (var partition in siteEntities.Partition(titleLimit).Select(partition => partition.ToList()))
+                //site.Logger.LogDebug("Fetching {Count} pages from {Site}.", partition.Count, site);
+                // We use ids to query pages.
+                var ids = MediaWikiHelper.JoinValues(partition.Where(p => p.Id != null).Select(p => p.Id));
+                // No entity to fetch
+                if (ids == "") continue;
+                req["ids"] = ids;
+                var jresult = await site.InvokeMediaWikiApiAsync2(new MediaWikiFormRequestMessage(req), cancellationToken);
+                var jentities = jresult["entities"].AsObject();
+                foreach (var entity in partition)
                 {
-                    //site.Logger.LogDebug("Fetching {Count} pages from {Site}.", partition.Count, site);
-                    // We use ids to query pages.
-                    req["ids"] = MediaWikiHelper.JoinValues(partition.Select(p => p.Id));
-                    var jresult = await site.InvokeMediaWikiApiAsync(new MediaWikiFormRequestMessage(req), cancellationToken);
-                    var jentities = (JObject)jresult["entities"];
-                    foreach (var entity in partition)
-                    {
-                        var jentity = jentities[entity.Id];
-                        // We can write Q123456 as q123456 in query params, but server will return Q123456 anyway.
-                        if (jentity == null)
-                            jentity = jentities.Properties().FirstOrDefault(p =>
-                                string.Equals(p.Name, entity.Id, StringComparison.OrdinalIgnoreCase));
-                        if (jentity == null)
-                            throw new UnexpectedDataException($"Cannot find the entity with id {entity.Id} in the response.");
-                        entity.LoadFromJson(jentity, options, false);
-                    }
+                    if (entity.Id == null) continue;
+
+                    var jentity = jentities[entity.Id];
+                    // We can write Q123456 as q123456 in query params, but server will return Q123456 anyway.
+                    jentity ??= jentities.FirstOrDefault(p =>
+                        string.Equals(p.Key, entity.Id, StringComparison.OrdinalIgnoreCase)).Value;
+                    if (jentity == null)
+                        throw new UnexpectedDataException($"Cannot find the entity with id {entity.Id} in the response.");
+                    entity.LoadFromJson(jentity, options, false);
                 }
             }
         }
@@ -105,29 +107,31 @@ internal static class WikibaseRequestHelper
         var titleLimit = site.AccountInfo.HasRight(UserRights.ApiHighLimits) ? 500 : 50;
         var req = new OrderedKeyValuePairs<string, string>
         {
-            { "action", "wbgetentities" }, { "props", "sitelinks" }, { "sites", siteName }, { "sitefilter", siteName },
+            { "action", "wbgetentities" },
+            { "props", "sitelinks" },
+            { "sites", siteName },
+            { "sitefilter", siteName },
         };
-        using (site.BeginActionScope(siteLinks))
+
+        using var _ = site.BeginActionScope(siteLinks);
+        foreach (var partition in siteLinks.Partition(titleLimit).Select(partition => partition.ToList()))
         {
-            foreach (var partition in siteLinks.Partition(titleLimit).Select(partition => partition.ToList()))
+            //site.Logger.LogDebug("Fetching {Count} pages from {Site}.", partition.Count, site);
+            for (int i = 0; i < partition.Count; i++)
             {
-                //site.Logger.LogDebug("Fetching {Count} pages from {Site}.", partition.Count, site);
-                for (int i = 0; i < partition.Count; i++)
-                {
-                    if (partition[i] == null) throw new ArgumentException("Link titles contain null element.", nameof(siteLinks));
-                    // Do some basic title normalization locally.
-                    // Note Wikibase cannot even normalize the first letter case of the title.
-                    partition[i] = partition[i].Trim(whitespaceAndUnderscore).Replace('_', ' ');
-                }
-                req["titles"] = MediaWikiHelper.JoinValues(partition);
-                var jresult = await site.InvokeMediaWikiApiAsync(new MediaWikiFormRequestMessage(req), cancellationToken);
-                var jentities = (JObject)jresult["entities"];
-                var nameIdDict = jentities.PropertyValues().Where(e => e["missing"] == null)
-                    .ToDictionary(e => (string)e["sitelinks"][siteName]["title"], e => (string)e["id"]);
-                using (ExecutionContextStash.Capture())
-                    foreach (var title in partition)
-                        yield return nameIdDict.TryGetValue(title, out var id) ? id : null;
+                if (partition[i] == null) throw new ArgumentException("Link titles contain null element.", nameof(siteLinks));
+                // Do some basic title normalization locally.
+                // Note Wikibase cannot even normalize the first letter case of the title.
+                partition[i] = partition[i].Trim(whitespaceAndUnderscore).Replace('_', ' ');
             }
+            req["titles"] = MediaWikiHelper.JoinValues(partition);
+            var jresult = await site.InvokeMediaWikiApiAsync2(new MediaWikiFormRequestMessage(req), cancellationToken);
+            var jentities = jresult["entities"].AsObject();
+            var nameIdDict = jentities.Where(p => p.Value!["missing"] == null)
+                .ToDictionary(p => (string)p.Value["sitelinks"][siteName]["title"], p => (string)p.Value["id"]);
+            using (ExecutionContextStash.Capture())
+                foreach (var title in partition)
+                    yield return nameIdDict.GetValueOrDefault(title);
         }
     }
 

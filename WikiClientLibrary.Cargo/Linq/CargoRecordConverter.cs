@@ -4,7 +4,8 @@ using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Reflection;
 using System.Reflection.Emit;
-using Newtonsoft.Json.Linq;
+using System.Text.Json;
+using System.Text.Json.Nodes;
 using WikiClientLibrary.Cargo.Schema.DataAnnotations;
 
 namespace WikiClientLibrary.Cargo.Linq;
@@ -15,7 +16,7 @@ public interface ICargoRecordConverter
     /// <summary>
     /// Converts JSON record object from MediaWiki Cargo API response into CLR model type.
     /// </summary>
-    object DeserializeRecord(IReadOnlyDictionary<MemberInfo, JToken> record, Type modelType);
+    object DeserializeRecord(IReadOnlyDictionary<MemberInfo, JsonNode> record, Type modelType);
 
 }
 
@@ -23,10 +24,10 @@ public class CargoRecordConverter : ICargoRecordConverter
 {
 
     private static readonly MethodInfo dictIndexer
-        = typeof(IReadOnlyDictionary<string, JToken>).GetProperty("Item")!.GetMethod!;
+        = typeof(IReadOnlyDictionary<string, JsonNode>).GetProperty("Item")!.GetMethod!;
 
     private static readonly MethodInfo dictTryGetValue
-        = typeof(IReadOnlyDictionary<string, JToken>).GetMethod(nameof(IReadOnlyDictionary<string, JToken>.TryGetValue))!;
+        = typeof(IReadOnlyDictionary<string, JsonNode>).GetMethod(nameof(IReadOnlyDictionary<string, JsonNode>.TryGetValue))!;
 
     private static readonly MethodInfo deserializeCollectionMethod = typeof(CargoRecordConverter)
         .GetMethod(nameof(DeserializeCollection), BindingFlags.Static | BindingFlags.NonPublic)!;
@@ -34,11 +35,10 @@ public class CargoRecordConverter : ICargoRecordConverter
     private static readonly MethodInfo deserializeStringCollectionMethod = typeof(CargoRecordConverter)
         .GetMethod(nameof(DeserializeStringCollection), BindingFlags.Static | BindingFlags.NonPublic)!;
 
-    private readonly ConcurrentDictionary<Type, Func<IReadOnlyDictionary<string, JToken>, object>> cachedDeserializers =
-        new ConcurrentDictionary<Type, Func<IReadOnlyDictionary<string, JToken>, object>>();
+    private readonly ConcurrentDictionary<Type, Func<IReadOnlyDictionary<string, JsonNode>, object>> cachedDeserializers = new();
 
     [return: NotNullIfNotNull("value")]
-    private static IList<T>? DeserializeCollection<T>(JToken? value, string separator)
+    private static IList<T>? DeserializeCollection<T>(JsonNode? value, string separator)
     {
         var values = (string)value;
         if (values == null) return default;
@@ -49,7 +49,7 @@ public class CargoRecordConverter : ICargoRecordConverter
     }
 
     [return: NotNullIfNotNull("value")]
-    private static IList<string>? DeserializeStringCollection(JToken? value, string separator)
+    private static IList<string>? DeserializeStringCollection(JsonNode? value, string separator)
     {
         var values = (string?)value;
         if (values == null) return default;
@@ -87,7 +87,7 @@ public class CargoRecordConverter : ICargoRecordConverter
         gen.EmitCall(OpCodes.Call, ValueConverters.GetValueDeserializer(targetType), null);
     }
 
-    public virtual object DeserializeRecord(IReadOnlyDictionary<MemberInfo, JToken> record, Type modelType)
+    public virtual object DeserializeRecord(IReadOnlyDictionary<MemberInfo, JsonNode> record, Type modelType)
     {
         if (record == null) throw new ArgumentNullException(nameof(record));
         if (modelType == null) throw new ArgumentNullException(nameof(modelType));
@@ -96,7 +96,7 @@ public class CargoRecordConverter : ICargoRecordConverter
             var builder = new DynamicMethod(
                 typeof(CargoRecordConverter) + "$DeserializeRecordImpl[" + modelType + "]",
                 modelType,
-                new[] { typeof(IReadOnlyDictionary<string, JToken>) },
+                new[] { typeof(IReadOnlyDictionary<string, JsonNode>) },
                 typeof(CargoRecordConverter)
             );
             var gen = builder.GetILGenerator();
@@ -124,7 +124,7 @@ public class CargoRecordConverter : ICargoRecordConverter
             if (assignableProps.Count > 0)
             {
                 var modelLocal = gen.DeclareLocal(modelType).LocalIndex;
-                var jTokenLocal = gen.DeclareLocal(typeof(JToken)).LocalIndex;
+                var jTokenLocal = gen.DeclareLocal(typeof(JsonNode)).LocalIndex;
                 gen.Emit(OpCodes.Stloc, modelLocal);
                 foreach (var p in assignableProps)
                 {
@@ -148,8 +148,8 @@ public class CargoRecordConverter : ICargoRecordConverter
                 gen.Emit(OpCodes.Ldloc_S, modelLocal);
             }
             gen.Emit(OpCodes.Ret);
-            des = (Func<IReadOnlyDictionary<string, JToken>, object>)builder.CreateDelegate(
-                typeof(Func<IReadOnlyDictionary<string, JToken>, object>));
+            des = (Func<IReadOnlyDictionary<string, JsonNode>, object>)builder.CreateDelegate(
+                typeof(Func<IReadOnlyDictionary<string, JsonNode>, object>));
             cachedDeserializers.TryAdd(modelType, des);
         }
         return des(record.ToDictionary(r => r.Key.Name, r => r.Value));
@@ -179,87 +179,79 @@ public class CargoRecordConverter : ICargoRecordConverter
             return deserializeValueMethod.MakeGenericMethod(valueType);
         }
 
-#if NETSTANDARD2_1
-            public static T DeserializeValue<T>(JToken? value) => value == null ? default! : value.ToObject<T>();
-#else
-        public static T? DeserializeValue<T>(JToken? value) => value == null ? default : value.ToObject<T>();
-#endif
+        public static T? DeserializeValue<T>(JsonNode? value) => value == null ? default : value.Deserialize<T>();
 
-        public static bool IsNullableNull(JToken value)
+        public static bool IsNullableNull(JsonNode token)
         {
-            if (value == null) return true;
-            if (value.Type == JTokenType.Null) return true;
-            if (value.Type == JTokenType.Undefined) return true;
-            if (value.Type == JTokenType.String)
+            if (token == null) return true;
+            if (token is not JsonValue value) return false;
+
+            if (value.GetValueKind() == JsonValueKind.Null) return true;
+            if (value.TryGetValue(out string? str))
             {
-                var s = (string)value;
-                return s.Length == 0 || s.Equals("null", StringComparison.OrdinalIgnoreCase);
+                return str == "" || str.Equals("null", StringComparison.OrdinalIgnoreCase);
             }
             return false;
         }
 
-        public static T? DeserializeNullableValue<T>(JToken value) where T : struct
+        public static T? DeserializeNullableValue<T>(JsonNode value) where T : struct
         {
             if (IsNullableNull(value)) return null;
-            return value.ToObject<T>();
+            return value.Deserialize<T>();
         }
 
-        public static string DeserializeString(JToken value) => (string)value;
+        public static string DeserializeString(JsonNode value) => (string)value;
 
-        public static int DeserializeInt32(JToken value) => (int)value;
+        public static int DeserializeInt32(JsonNode value) => (int)value;
 
-        public static long DeserializeInt64(JToken value) => (long)value;
+        public static long DeserializeInt64(JsonNode value) => (long)value;
 
-        public static float DeserializeFloat(JToken value) => (float)value;
+        public static float DeserializeFloat(JsonNode value) => (float)value;
 
-        public static double DeserializeDouble(JToken value) => (double)value;
+        public static double DeserializeDouble(JsonNode value) => (double)value;
 
-        public static decimal DeserializeDecimal(JToken value) => (decimal)value;
+        public static decimal DeserializeDecimal(JsonNode value) => (decimal)value;
 
-        public static bool DeserializeBoolean(JToken value)
+        public static bool DeserializeBoolean(JsonNode token)
         {
-            if (value.Type == JTokenType.Integer)
+            var value = token.AsValue();
+            if (value.TryGetValue(out int i32)) return i32 != 0;
+            if (value.TryGetValue(out string? str))
             {
-                var v = (int)value;
-                return v != 0;
-            }
-            if (value.Type == JTokenType.String)
-            {
-                var s = (string)value;
-                if (s.Equals("1", StringComparison.OrdinalIgnoreCase)
-                    || s.Equals("-1", StringComparison.OrdinalIgnoreCase)
-                    || s.Equals("true", StringComparison.OrdinalIgnoreCase))
+                if (str.Equals("1", StringComparison.OrdinalIgnoreCase)
+                    || str.Equals("-1", StringComparison.OrdinalIgnoreCase)
+                    || str.Equals("true", StringComparison.OrdinalIgnoreCase))
                     return true;
 
-                if (s.Equals("0", StringComparison.OrdinalIgnoreCase)
-                    || s.Equals("false", StringComparison.OrdinalIgnoreCase))
+                if (str.Equals("0", StringComparison.OrdinalIgnoreCase)
+                    || str.Equals("false", StringComparison.OrdinalIgnoreCase))
                     return false;
 
-                if (int.TryParse(s, NumberStyles.Integer, CultureInfo.InvariantCulture, out var v))
+                if (int.TryParse(str, NumberStyles.Integer, CultureInfo.InvariantCulture, out var v))
                     return v != 0;
             }
             return (bool)value;
         }
 
-        public static DateTime DeserializeDateTime(JToken value) => (DateTime)value;
+        public static DateTime DeserializeDateTime(JsonNode value) => (DateTime)value;
 
-        public static DateTimeOffset DeserializeDateTimeOffset(JToken value) => (DateTimeOffset)value;
+        public static DateTimeOffset DeserializeDateTimeOffset(JsonNode value) => (DateTimeOffset)value;
 
-        public static int? DeserializeNullableInt32(JToken value) => IsNullableNull(value) ? (int?)null : (int)value;
+        public static int? DeserializeNullableInt32(JsonNode value) => IsNullableNull(value) ? (int?)null : (int)value;
 
-        public static long? DeserializeNullableInt64(JToken value) => IsNullableNull(value) ? (long?)null : (long)value;
+        public static long? DeserializeNullableInt64(JsonNode value) => IsNullableNull(value) ? (long?)null : (long)value;
 
-        public static float? DeserializeNullableFloat(JToken value) => IsNullableNull(value) ? (float?)null : (float)value;
+        public static float? DeserializeNullableFloat(JsonNode value) => IsNullableNull(value) ? (float?)null : (float)value;
 
-        public static double? DeserializeNullableDouble(JToken value) => IsNullableNull(value) ? (double?)null : (double)value;
+        public static double? DeserializeNullableDouble(JsonNode value) => IsNullableNull(value) ? (double?)null : (double)value;
 
-        public static decimal? DeserializeNullableDecimal(JToken value) => IsNullableNull(value) ? (decimal?)null : (decimal)value;
+        public static decimal? DeserializeNullableDecimal(JsonNode value) => IsNullableNull(value) ? (decimal?)null : (decimal)value;
 
-        public static bool? DeserializeNullableBoolean(JToken value) => IsNullableNull(value) ? (bool?)null : DeserializeBoolean(value);
+        public static bool? DeserializeNullableBoolean(JsonNode value) => IsNullableNull(value) ? (bool?)null : DeserializeBoolean(value);
 
-        public static DateTime? DeserializeNullableDateTime(JToken value) => IsNullableNull(value) ? (DateTime?)null : (DateTime)value;
+        public static DateTime? DeserializeNullableDateTime(JsonNode value) => IsNullableNull(value) ? (DateTime?)null : (DateTime)value;
 
-        public static DateTimeOffset? DeserializeNullableDateTimeOffset(JToken value)
+        public static DateTimeOffset? DeserializeNullableDateTimeOffset(JsonNode value)
             => IsNullableNull(value) ? (DateTimeOffset?)null : (DateTimeOffset)value;
 
     }

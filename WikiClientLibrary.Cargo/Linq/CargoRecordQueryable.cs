@@ -101,11 +101,11 @@ internal class CargoRecordQueryable<T> : CargoRecordQueryable, IQueryable<T>, IO
                 foreach (var r in result)
                 {
                     yield return (T)Provider.RecordConverter.DeserializeRecord(
-                        r.Properties().Select(p => (proj: queryExpr.TryGetProjectionByAlias(p.Name), value: p.Value))
+                        r.Select(p => (proj: queryExpr.TryGetProjectionByAlias(p.Key), value: p.Value))
                             .Where(t => t.proj != null)
                             .ToDictionary(
                                 t => t.proj!.TargetMember,
-                                t => t.value
+                                t => t.value!
                             ), typeof(T));
                 }
             yieldedCount += result.Count;

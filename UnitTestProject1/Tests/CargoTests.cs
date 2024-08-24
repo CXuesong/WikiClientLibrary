@@ -29,7 +29,7 @@ public class CargoTests : WikiSiteTestsBase, IClassFixture<WikiSiteProvider>
             Where = "DATEDIFF(ReleaseDate, {d'2010-1-1'}) < 0",
             Limit = 10,
         });
-        ShallowTrace(result.Select(r => r.ToString(Formatting.None)));
+        ShallowTrace(result.Select(r => r.ToJsonString()));
         Assert.Equal(10, result.Count);
         Assert.All(result, r => Assert.Equal(r["Page"], r["Name"]));
         Assert.All(result, r => Assert.True((int?)r["RP"] == null || (int)r["RP"] > 0));

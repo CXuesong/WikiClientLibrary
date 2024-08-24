@@ -1,5 +1,4 @@
 ﻿using WikiClientLibrary.Sites;
-using Newtonsoft.Json.Linq;
 using WikiClientLibrary.Wikibase.DataTypes;
 
 namespace WikiClientLibrary.Wikibase;
@@ -7,7 +6,7 @@ namespace WikiClientLibrary.Wikibase;
 /// <summary>
 /// Contains read-only data about a Wikibase-enabled site.
 /// </summary>
-public class WikibaseSiteInfo
+public sealed record WikibaseSiteInfo
 {
 
     private WikibaseSiteInfo()
@@ -19,20 +18,20 @@ public class WikibaseSiteInfo
     /// </summary>
     public static WikibaseSiteInfo FromSiteInfo(SiteInfo siteInfo)
     {
-        JToken? LoadProperty(string name)
-        {
-            if (siteInfo.ExtensionData.TryGetValue(name, out var v)) return v;
-            return null;
-        }
-
         if (siteInfo == null) throw new ArgumentNullException(nameof(siteInfo));
         var inst = new WikibaseSiteInfo
         {
-            ConceptBaseUri = (string)LoadProperty("wikibase-conceptbaseuri") ?? "",
-            GeoShapeStorageBaseUri = (string)LoadProperty("wikibase-geoshapestoragebaseurl") ?? "",
-            TabularDataStorageBaseUri = (string)LoadProperty("wikibase-tabulardatastoragebaseurl") ?? ""
+            ConceptBaseUri = LoadString("wikibase-conceptbaseuri"),
+            GeoShapeStorageBaseUri = LoadString("wikibase-geoshapestoragebaseurl"),
+            TabularDataStorageBaseUri = LoadString("wikibase-tabulardatastoragebaseurl"),
         };
         return inst;
+
+        string LoadString(string name)
+        {
+            if (siteInfo.ExtensionData.TryGetValue(name, out var v)) return v.GetString() ?? "";
+            return "";
+        }
     }
 
     /// <summary>
@@ -41,19 +40,19 @@ public class WikibaseSiteInfo
     /// <remarks>The value is <c>http://www.wikidata.org/entity/</c> for Wikidata.</remarks>
     /// <seealso cref="MakeEntityUri"/>
     /// <seealso cref="ParseEntityId"/>
-    public string ConceptBaseUri { get; private set; } = "";
+    public required string ConceptBaseUri { get; init; }
 
     /// <summary>
     /// URI prefix of <see cref="BuiltInDataTypes.GeoShape"/> URLs.
     /// </summary>
     /// <remarks>The value is <c>https://commons.wikimedia.org/wiki/</c> for Wikidata.</remarks>
-    public string GeoShapeStorageBaseUri { get; private set; } = "";
+    public required string GeoShapeStorageBaseUri { get; init; }
 
     /// <summary>
     /// URI prefix of <see cref="BuiltInDataTypes.TabularData"/> URLs.
     /// </summary>
     /// <remarks>The value is <c>https://commons.wikimedia.org/wiki/</c> for Wikidata.</remarks>
-    public string TabularDataStorageBaseUri { get; private set; } = "";
+    public required string TabularDataStorageBaseUri { get; init; }
 
     /// <summary>
     /// Makes an entity URL out of the specified entity ID.

@@ -1,6 +1,6 @@
 ﻿using System.Text;
+using System.Text.Json.Nodes;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json.Linq;
 using WikiClientLibrary.Client;
 using WikiClientLibrary.Infrastructures.Logging;
 using WikiClientLibrary.Sites;
@@ -14,7 +14,7 @@ public static class CargoWikiSiteExtensions
 {
 
     /// <inheritdoc cref="ExecuteCargoQueryAsync(WikiSite,CargoQueryParameters,CancellationToken)"/>
-    public static Task<IList<JObject>> ExecuteCargoQueryAsync(this WikiSite site, CargoQueryParameters queryParameters)
+    public static Task<IList<JsonObject>> ExecuteCargoQueryAsync(this WikiSite site, CargoQueryParameters queryParameters)
     {
         return ExecuteCargoQueryAsync(site, queryParameters, default);
     }
@@ -36,7 +36,7 @@ public static class CargoWikiSiteExtensions
     /// You should observe <c>"MWException"</c> as the value of <see cref="MediaWikiRemoteException.ErrorClass"/>.
     /// </exception>
     /// <returns>a list of rows, each item is a JSON object with field name as key.</returns>
-    public static async Task<IList<JObject>> ExecuteCargoQueryAsync(this WikiSite site, CargoQueryParameters queryParameters,
+    public static async Task<IList<JsonObject>> ExecuteCargoQueryAsync(this WikiSite site, CargoQueryParameters queryParameters,
         CancellationToken cancellationToken)
     {
         if (site == null) throw new ArgumentNullException(nameof(site));
@@ -90,7 +90,7 @@ public static class CargoWikiSiteExtensions
                 sb.Append(" ROWS ONLY");
                 site.Logger.LogDebug("Invoke Cargo query. Pseudo-query: {0}", sb.ToString());
             }
-            var resp = await site.InvokeMediaWikiApiAsync(new MediaWikiFormRequestMessage(new
+            var resp = await site.InvokeMediaWikiApiAsync2(new MediaWikiFormRequestMessage(new
             {
                 action = "cargoquery",
                 offset = queryParameters.Offset,
@@ -103,16 +103,14 @@ public static class CargoWikiSiteExtensions
                 join_on,
                 order_by,
             }), cancellationToken);
-            var jroot = resp["cargoquery"];
-            if (jroot == null || !jroot.HasValues)
+            var jroot = resp["cargoquery"]?.AsArray();
+            if (jroot == null)
+                site.Logger.LogWarning("cargoquery node is missing in the response.");
+            if (jroot == null || jroot.Count == 0)
             {
-                if (jroot == null)
-                {
-                    site.Logger.LogWarning("cargoquery node is missing in the response.");
-                }
-                return Array.Empty<JObject>();
+                return Array.Empty<JsonObject>();
             }
-            return ((JArray)jroot).Select(row => (JObject)row["title"]).ToList();
+            return jroot.Select(row => row["title"].AsObject()).ToList();
         }
     }
 

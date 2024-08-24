@@ -1,6 +1,7 @@
 ﻿using System.Diagnostics;
+using System.Text.Json;
+using System.Text.Json.Nodes;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json.Linq;
 using WikiClientLibrary.Client;
 using WikiClientLibrary.Infrastructures;
 using WikiClientLibrary.Infrastructures.Logging;
@@ -201,7 +202,7 @@ partial class Entity
                 var contract = SerializeEditEntries(edits);
                 using (await Site.ModificationThrottler.QueueWorkAsync("Edit: " + this, cancellationToken))
                 {
-                    var jresult = await Site.InvokeMediaWikiApiAsync(
+                    var jresult = await Site.InvokeMediaWikiApiAsync2(
                         new MediaWikiFormRequestMessage(new
                         {
                             action = "wbeditentity",
@@ -212,12 +213,12 @@ partial class Entity
                             bot = (options & EntityEditOptions.Bot) == EntityEditOptions.Bot,
                             summary = summary,
                             clear = (options & EntityEditOptions.ClearData) == EntityEditOptions.ClearData,
-                            data = Utility.WikiJsonSerializer.Serialize(contract)
+                            data = JsonSerializer.Serialize(contract, MediaWikiHelper.WikiJsonSerializerOptions),
                         }), cancellationToken);
                     var jentity = jresult["entity"];
                     if (jentity == null)
                         throw new UnexpectedDataException("Missing \"entity\" node in the JSON response.");
-                    LoadFromJson(jentity, EntityQueryOptions.FetchAllProperties, true);
+                    LoadFromJson(jentity.AsObject(), EntityQueryOptions.FetchAllProperties, true);
                 }
             }
             else
@@ -252,7 +253,7 @@ partial class Entity
                     {
                         Debug.Assert(p.Value != null);
                         var value = (WbMonolingualText)p.Value;
-                        var jresult = await Site.InvokeMediaWikiApiAsync(new MediaWikiFormRequestMessage(new
+                        var jresult = await Site.InvokeMediaWikiApiAsync2(new MediaWikiFormRequestMessage(new
                         {
                             action = "wbsetlabel",
                             token = WikiSiteToken.Edit,
@@ -264,7 +265,7 @@ partial class Entity
                             language = value.Language,
                             value = p.State == EntityEditEntryState.Updated ? value.Text : null,
                         }), cancellationToken);
-                        LoadEntityMinimal(jresult["entity"]);
+                        LoadEntityMinimal(jresult["entity"]?.AsObject()!);
                         if (!strict) checkbaseRev = false;
                     }
                     break;
@@ -273,7 +274,7 @@ partial class Entity
                     {
                         Debug.Assert(p.Value != null);
                         var value = (WbMonolingualText)p.Value;
-                        var jresult = await Site.InvokeMediaWikiApiAsync(new MediaWikiFormRequestMessage(new
+                        var jresult = await Site.InvokeMediaWikiApiAsync2(new MediaWikiFormRequestMessage(new
                         {
                             action = "wbsetdescription",
                             token = WikiSiteToken.Edit,
@@ -285,7 +286,7 @@ partial class Entity
                             language = value.Language,
                             value = p.State == EntityEditEntryState.Updated ? value.Text : null,
                         }), cancellationToken);
-                        LoadEntityMinimal(jresult["entity"]);
+                        LoadEntityMinimal(jresult["entity"]?.AsObject()!);
                         if (!strict) checkbaseRev = false;
                     }
                     break;
@@ -300,7 +301,7 @@ partial class Entity
                             var removeExpr = MediaWikiHelper.JoinValues(langGroup
                                 .Where(e => e.State == EntityEditEntryState.Removed)
                                 .Select(e => ((WbMonolingualText)e.Value!).Text));
-                            var jresult = await Site.InvokeMediaWikiApiAsync(new MediaWikiFormRequestMessage(new
+                            var jresult = await Site.InvokeMediaWikiApiAsync2(new MediaWikiFormRequestMessage(new
                             {
                                 action = "wbsetaliases",
                                 token = WikiSiteToken.Edit,
@@ -313,7 +314,7 @@ partial class Entity
                                 add = addExpr.Length == 0 ? null : addExpr,
                                 remove = removeExpr.Length == 0 ? null : removeExpr,
                             }), cancellationToken);
-                            LoadEntityMinimal(jresult["entity"]);
+                            LoadEntityMinimal(jresult["entity"]?.AsObject()!);
                             if (!strict) checkbaseRev = false;
                         }
                         break;
@@ -338,7 +339,7 @@ partial class Entity
                             {
                                 throw new ArgumentException("One site can own at most one site link.", nameof(edits));
                             }
-                            var jresult = await Site.InvokeMediaWikiApiAsync(new MediaWikiFormRequestMessage(new
+                            var jresult = await Site.InvokeMediaWikiApiAsync2(new MediaWikiFormRequestMessage(new
                             {
                                 action = "wbsetsitelink",
                                 token = WikiSiteToken.Edit,
@@ -351,7 +352,7 @@ partial class Entity
                                 linktitle = link,
                                 badges = badges,
                             }), cancellationToken);
-                            LoadEntityMinimal(jresult["entity"]);
+                            LoadEntityMinimal(jresult["entity"]?.AsObject()!);
                             if (!strict) checkbaseRev = false;
                         }
                         break;
@@ -368,7 +369,7 @@ partial class Entity
                             if (Id == null)
                             {
                                 // This is a new entity, so we need to create it first.
-                                var jresult1 = await Site.InvokeMediaWikiApiAsync(
+                                var jresult1 = await Site.InvokeMediaWikiApiAsync2(
                                     new MediaWikiFormRequestMessage(new
                                     {
                                         action = "wbeditentity",
@@ -376,15 +377,15 @@ partial class Entity
                                         @new = FormatEntityType(Type),
                                         bot = isBot,
                                         summary = (string?)null,
-                                        data = "{}"
+                                        data = "{}",
                                     }), cancellationToken);
                                 if (!strict) checkbaseRev = false;
-                                LoadEntityMinimal(jresult1["entity"]);
+                                LoadEntityMinimal(jresult1["entity"]?.AsObject()!);
                             }
                             Debug.Assert(Id != null, "Id is expected to be loaded after entity creation.");
                             claimContract.Id = Utility.NewClaimGuid(Id);
                         }
-                        var jresult = await Site.InvokeMediaWikiApiAsync(new MediaWikiFormRequestMessage(new
+                        var jresult = await Site.InvokeMediaWikiApiAsync2(new MediaWikiFormRequestMessage(new
                         {
                             action = "wbsetclaim",
                             token = WikiSiteToken.Edit,
@@ -392,7 +393,7 @@ partial class Entity
                             baserevid = checkbaseRev && LastRevisionId > 0 ? (long?)LastRevisionId : null,
                             bot = isBot,
                             summary = summary,
-                            claim = Utility.WikiJsonSerializer.Serialize(claimContract),
+                            claim = JsonSerializer.Serialize(claimContract, MediaWikiHelper.WikiJsonSerializerOptions),
                         }), cancellationToken);
                         // jresult["claim"] != null
                         LastRevisionId = (long)jresult["pageinfo"]["lastrevid"];
@@ -401,7 +402,7 @@ partial class Entity
                     foreach (var batch in prop.Where(e => e.State == EntityEditEntryState.Removed)
                                  .Select(e => ((Claim)e.Value!).Id).Partition(50))
                     {
-                        var jresult = await Site.InvokeMediaWikiApiAsync(new MediaWikiFormRequestMessage(new
+                        var jresult = await Site.InvokeMediaWikiApiAsync2(new MediaWikiFormRequestMessage(new
                         {
                             action = "wbremoveclaims",
                             token = WikiSiteToken.Edit,
@@ -421,7 +422,7 @@ partial class Entity
             }
         }
 
-        void LoadEntityMinimal(JToken jentity)
+        void LoadEntityMinimal(JsonObject jentity)
         {
             Debug.Assert(jentity != null);
             Id = (string)jentity["id"];

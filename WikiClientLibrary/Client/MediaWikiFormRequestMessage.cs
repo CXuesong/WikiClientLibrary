@@ -1,4 +1,5 @@
 ﻿using System.Collections.ObjectModel;
+using System.Net.Http.Json;
 using WikiClientLibrary.Infrastructures;
 using WikiClientLibrary.Pages;
 using WikiClientLibrary.Sites;
@@ -38,6 +39,9 @@ namespace WikiClientLibrary.Client;
 /// <item><description>
 /// <see cref="Stream"/> values are sent as <see cref="StreamContent"/> with a dummy file name,
 /// and this will force the whole form to be marshaled as <see cref="MultipartFormDataContent"/>.
+/// </description></item>
+/// <item><description>
+/// <see cref="JsonContent"/> values are sent as JSON string content. (Not implemented yet)
 /// </description></item>
 /// <item><description>
 /// <see cref="AutoWatchBehavior"/> values are marshaled as one of "preferences", "nochange", "watch", "unwatch".
@@ -174,6 +178,9 @@ public class MediaWikiFormRequestMessage : WikiRequestMessage
                     case Stream stream:
                         content.Add(new StreamContent(stream), p.Key, "dummy");
                         break;
+                    //case JsonContent jsonContent:
+                    //    content.Add(jsonContent, p.Key);
+                    //    break;
                     case null:
                         // Ignore null entries.
                         break;

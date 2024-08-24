@@ -1,7 +1,10 @@
 ﻿using System.Collections.Immutable;
 using System.Diagnostics;
+using System.Text.Json;
+using System.Text.Json.Nodes;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using WikiClientLibrary.Infrastructures;
 using WikiClientLibrary.Sites;
 using WikiClientLibrary.Wikibase.DataTypes;
 using WikiClientLibrary.Wikibase.Infrastructures;
@@ -225,9 +228,9 @@ public sealed partial class Entity : IEntity
 
     private static readonly IDictionary<string, JToken> emptyExtensionData = new Dictionary<string, JToken>();
 
-    internal void LoadFromJson(JToken jentity, EntityQueryOptions options, bool isPostEditing)
+    internal void LoadFromJson(JsonNode jentity, EntityQueryOptions options, bool isPostEditing)
     {
-        var contract = jentity.ToObject<Contracts.Entity>(Utility.WikiJsonSerializer);
+        var contract = jentity.Deserialize<Contracts.Entity>(MediaWikiHelper.WikiJsonSerializerOptions)!;
         LoadFromContract(contract, options, isPostEditing);
     }
 

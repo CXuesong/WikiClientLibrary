@@ -77,11 +77,11 @@ public class SiteThemeInfo : WikiReadOnlyDictionary
 
     public string BackgroundImage => GetStringValue("background-image");
 
-    public float BackgroundImageWidth => (float)GetValueDirect("background-image-width");
+    public float BackgroundImageWidth => (float)this["background-image-width"].GetDouble();
 
-    public float BackgroundImageHeight => (float)GetValueDirect("background-image-height");
+    public float BackgroundImageHeight => (float)this["background-image-height"].GetDouble();
 
-    public bool IsBackgroundDynamic => (bool)GetValueDirect("background-dynamic");
+    public bool IsBackgroundDynamic => GetBooleanValue("background-dynamic");
 
     public string PageOpacity => GetStringValue("page-opacity");
 

@@ -94,7 +94,14 @@ public class WikiReadOnlyDictionary : IDictionary<string, JsonElement>, IJsonOnD
     /// </remarks>
     public bool GetBooleanValue(string key)
     {
-        return myDict.TryGetValue(key, out var value) && value.ValueKind != JsonValueKind.Null;
+        if (!myDict.TryGetValue(key, out var value)) return false;
+        return value.ValueKind switch
+        {
+            JsonValueKind.False => false,
+            JsonValueKind.Null => false,
+            JsonValueKind.True => true,
+            _ => true,
+        };
     }
 
     /// <summary>

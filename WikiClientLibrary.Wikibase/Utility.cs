@@ -7,6 +7,7 @@ namespace WikiClientLibrary.Wikibase;
 internal static class Utility
 {
 
+    [Obsolete]
     internal static readonly JsonSerializer WikiJsonSerializer = MediaWikiHelper.CreateWikiJsonSerializer();
 
     /// <summary>
