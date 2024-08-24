@@ -1,5 +1,5 @@
 ﻿using System.Text;
-using Newtonsoft.Json.Linq;
+using System.Text.Json.Nodes;
 using WikiClientLibrary.Infrastructures;
 using WikiClientLibrary.Pages.Queries.Properties;
 
@@ -37,7 +37,7 @@ public interface IWikiPageQueryProvider
     /// <param name="json">One of the item node under the JSON path <c>query/pages</c>.</param>
     /// <exception cref="ArgumentNullException"><paramref name="json"/> is <c>null</c>.</exception>
     /// <returns>A sequence of property group instance, or <see cref="Enumerable.Empty{IWikiPagePropertyGroup}"/> if no property groups available.</returns>
-    IEnumerable<IWikiPagePropertyGroup> ParsePropertyGroups(JObject json);
+    IEnumerable<IWikiPagePropertyGroup> ParsePropertyGroups(JsonObject json);
 
 }
 
@@ -135,7 +135,7 @@ public class WikiPageQueryProvider : IWikiPageQueryProvider
     }
 
     /// <inheritdoc />
-    public virtual IEnumerable<IWikiPagePropertyGroup> ParsePropertyGroups(JObject json)
+    public virtual IEnumerable<IWikiPagePropertyGroup> ParsePropertyGroups(JsonObject json)
     {
         if (_Properties == null) yield break;
         foreach (var provider in _Properties)
@@ -171,7 +171,7 @@ internal class SealedWikiPageQueryProvider : IWikiPageQueryProvider
     }
 
     /// <inheritdoc />
-    public IEnumerable<IWikiPagePropertyGroup> ParsePropertyGroups(JObject json)
+    public IEnumerable<IWikiPagePropertyGroup> ParsePropertyGroups(JsonObject json)
     {
         return underlyingProvider.ParsePropertyGroups(json);
     }

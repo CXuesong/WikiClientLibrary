@@ -1,7 +1,7 @@
 ﻿using System.Globalization;
-using System.Text.Json;
-using System.Text.Json.Nodes;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using WikiClientLibrary.Infrastructures;
 
 namespace WikiClientLibrary.Client;
@@ -9,24 +9,25 @@ namespace WikiClientLibrary.Client;
 /// <summary>
 /// Parser that parses the JSON and dispatches error in the response from MediaWiki API response.
 /// </summary>
-public class MediaWikiJsonResponseParser : WikiResponseMessageParser<JsonNode>
+[Obsolete("Newtonsoft.Json API is being deprecated in favor of System.Text.Json API.")]
+public class MediaWikiNewtonsoftJsonResponseParser : WikiResponseMessageParser<JToken>
 {
 
-    /// <summary>Gets a default instance of <see cref="MediaWikiJsonResponseParser"/>.</summary>
-    public static MediaWikiJsonResponseParser Default { get; } = new ();
+    /// <summary>Gets a default instance of <see cref="MediaWikiNewtonsoftJsonResponseParser"/>.</summary>
+    public static MediaWikiNewtonsoftJsonResponseParser Default { get; } = new MediaWikiNewtonsoftJsonResponseParser();
 
     /// <inheritdoc />
     /// <remarks>
     /// <para>This method checks the HTTP status code first.
     /// For non-successful HTTP status codes, this method will request for a retry.</para>
-    /// <para>Then the content will be parsed as JSON, in <see cref="JsonNode"/>. If there is
+    /// <para>Then the content will be parsed as JSON, in <see cref="JToken"/>. If there is
     /// <see cref="JsonException"/> thrown while parsing the response, a retry will be requested.</para>
     /// <para>Finally, before returning the parsed JSON, this method checks for <c>warning</c> and <c>error</c>
     /// nodes. If there exists <c>warning</c> node, a warning will be issued to the logger. If there exists <c>error</c>
     /// node, a <see cref="OperationFailedException"/> or its derived exception will be thrown. You can
     /// customize the error generation behavior by overriding <see cref="OnApiError"/> method.</para>
     /// </remarks>
-    public override async Task<JsonNode> ParseResponseAsync(HttpResponseMessage response, WikiResponseParsingContext context)
+    public override async Task<JToken> ParseResponseAsync(HttpResponseMessage response, WikiResponseParsingContext context)
     {
         if (response == null) throw new ArgumentNullException(nameof(response));
         if (context == null) throw new ArgumentNullException(nameof(context));
@@ -36,11 +37,11 @@ public class MediaWikiJsonResponseParser : WikiResponseMessageParser<JsonNode>
             context.NeedRetry = true;
             response.EnsureSuccessStatusCode();
         }
-        JsonNode jroot;
+        JToken jroot;
         try
         {
             await using var s = await response.Content.ReadAsStreamAsync();
-            jroot = await MediaWikiHelper.ParseJsonAsync(s, context.CancellationToken);
+            jroot = await MediaWikiHelper.ParseJsonAsync0(s, context.CancellationToken);
         }
         catch (JsonException)
         {
@@ -60,14 +61,13 @@ public class MediaWikiJsonResponseParser : WikiResponseMessageParser<JsonNode>
 }
          */
         // Note that in MW 1.19, action=logout returns [] instead of {}
-        if (jroot is JsonObject jobj)
+        if (jroot is JObject jobj)
         {
-            var warn = jobj["warnings"];
-            if (warn != null && context.Logger.IsEnabled(LogLevel.Warning))
+            if (jobj["warnings"] != null && context.Logger.IsEnabled(LogLevel.Warning))
             {
-                foreach (var (name, value) in warn.AsObject())
+                foreach (var module in ((JObject)jobj["warnings"]).Properties())
                 {
-                    context.Logger.LogWarning("API warning [{Module}]: {Warning}", name, value);
+                    context.Logger.LogWarning("API warning [{Module}]: {Warning}", module.Name, module.Value);
                 }
             }
             var err = jobj["error"];
@@ -142,11 +142,11 @@ public class MediaWikiJsonResponseParser : WikiResponseMessageParser<JsonNode>
     /// </list> 
     /// </remarks>
     protected virtual void OnApiError(string errorCode, string errorMessage,
-        JsonNode errorNode, JsonNode responseNode, WikiResponseParsingContext context)
+        JToken errorNode, JToken responseNode, WikiResponseParsingContext context)
     {
         var fullMessage = errorMessage;
         // Append additional messages from WMF, if any.
-        var jmessages = (JsonArray?)errorNode["messages"];
+        var jmessages = (JArray?)errorNode["messages"];
         if (jmessages != null && jmessages.Count > 1 && jmessages[0]["html"] != null)
         {
             // jmessages[0] usually is the same as errorMessage
@@ -163,13 +163,21 @@ public class MediaWikiJsonResponseParser : WikiResponseMessageParser<JsonNode>
             case "mustbeloggedin": // You must be logged in to upload this file.
                 throw new UnauthorizedOperationException(errorCode, fullMessage);
             case "permissions":
-                var jPermissions = errorNode["permissions"];
-                if (jPermissions != null)
+                JToken jPermissions;
+                if ((jPermissions = errorNode["permissions"]) != null)
                 {
-                    var permissions = jPermissions is JsonArray a
-                        ? a.Where(c => c != null).Select(c => c!.ToString())
-                        : new[] { jPermissions.ToString() };
-                    throw new UnauthorizedOperationException(errorCode, fullMessage, permissions.ToList());
+                    if (jPermissions.Type != JTokenType.Null)
+                    {
+                        var permissions = jPermissions is JArray a
+                            ? a.Select(c => c is JValue v ? Convert.ToString(v.Value, CultureInfo.InvariantCulture) : c.ToString())
+                            : new[]
+                            {
+                                jPermissions is JValue v1
+                                    ? Convert.ToString(v1.Value, CultureInfo.InvariantCulture)
+                                    : jPermissions.ToString()
+                            };
+                        throw new UnauthorizedOperationException(errorCode, fullMessage, permissions.ToList()!);
+                    }
                 }
                 throw new UnauthorizedOperationException(errorCode, fullMessage);
             case "badtoken":

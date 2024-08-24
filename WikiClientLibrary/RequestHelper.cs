@@ -1,9 +1,9 @@
 ﻿using System.Diagnostics;
 using System.Globalization;
 using System.Runtime.CompilerServices;
+using System.Text.Json;
+using System.Text.Json.Nodes;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using WikiClientLibrary.Client;
 using WikiClientLibrary.Infrastructures;
 using WikiClientLibrary.Pages;
@@ -23,12 +23,13 @@ internal static class RequestHelper
     public const int CONTINUATION_AVAILABLE = 1;
     public const int CONTINUATION_LOOP = 2;
 
-    public static JObject? FindQueryContinuationParameterRoot(JToken jresult)
+    public static JsonObject? FindQueryContinuationParameterRoot(JsonNode jresult)
     {
-        return (JObject?)(jresult["continue"] ?? ((JProperty?)jresult["query-continue"]?.First)?.Value);
+        return (JsonObject?)(jresult["continue"]
+                             ?? jresult["query-continue"]?.AsObject().FirstOrDefault().Value);
     }
 
-    public static int ParseContinuationParameters(JToken jresult, IDictionary<string, object?> queryParams,
+    public static int ParseContinuationParameters(JsonNode jresult, IDictionary<string, object?> queryParams,
         IDictionary<string, object?>? continuationParams)
     {
         var continuation = FindQueryContinuationParameterRoot(jresult);
@@ -37,14 +38,18 @@ internal static class RequestHelper
             return CONTINUATION_DONE;
         var anyNewValue = false;
         continuationParams?.Clear();
-        foreach (var p in continuation.Properties())
+        foreach (var p in continuation)
         {
-            object parsed;
-            if (p.Value is JValue value) parsed = value.Value;
-            else parsed = p.Value.ToString(Formatting.None);
-            if (!queryParams.TryGetValue(p.Name, out var existingValue) || !ValueEquals(existingValue, parsed))
+            if (p.Value == null) continue;
+
+            var parsed = p.Value switch
+            {
+                JsonValue value => value.GetValue<object>(),
+                _ => p.Value.ToJsonString(),
+            };
+            if (!queryParams.TryGetValue(p.Key, out var existingValue) || !ValueEquals(existingValue, parsed))
                 anyNewValue = true;
-            continuationParams?.Add(new KeyValuePair<string, object?>(p.Name, parsed));
+            continuationParams?.Add(new(p.Key, parsed));
         }
         return anyNewValue ? CONTINUATION_AVAILABLE : CONTINUATION_LOOP;
 
@@ -63,7 +68,7 @@ internal static class RequestHelper
         }
     }
 
-    public static JToken? FindQueryResponseItemsRoot(JToken jresult, string actionName)
+    public static JsonNode? FindQueryResponseItemsRoot(JsonNode jresult, string actionName)
     {
         if (actionName == "watchlistraw")
         {
@@ -78,18 +83,18 @@ internal static class RequestHelper
                     "watchlistraw": [{"ns": 0,"title": "page title","changed": "2021-03-01T14:59:52Z"}]
                 }
              */
-            return (JArray?)jresult[actionName];
+            return (JsonArray?)jresult[actionName];
         }
         // If there's no result, "query" node will not exist.
-        var queryNode = (JObject?)jresult["query"];
-        if (queryNode != null && queryNode.HasValues)
+        var queryNode = (JsonObject?)jresult["query"];
+        if (queryNode != null && queryNode.Count > 0)
         {
             var listNode = queryNode[actionName];
             if (listNode == null)
             {
                 if (queryNode.Count > 1)
                     throw new UnexpectedDataException(Prompts.ExceptionWikiListCannotFindResultRoot);
-                listNode = ((JProperty)queryNode.First).Value;
+                listNode = queryNode.First().Value;
             }
             return listNode;
         }
@@ -98,7 +103,7 @@ internal static class RequestHelper
 
 #region Page/Revision query
 
-    public static async IAsyncEnumerable<JObject> QueryWithContinuation(WikiSite site,
+    public static async IAsyncEnumerable<JsonObject> QueryWithContinuation(WikiSite site,
         IEnumerable<KeyValuePair<string, object?>> parameters,
         Func<IDisposable>? beginActionScope,
         bool distinctPages = false,
@@ -115,8 +120,8 @@ internal static class RequestHelper
         {
             var queryParams = new Dictionary<string, object?>(baseQueryParams);
             queryParams.MergeFrom(continuationParams);
-            var jresult = await site.InvokeMediaWikiApiAsync(new MediaWikiFormRequestMessage(queryParams), cancellationToken);
-            var jpages = (JObject?)FindQueryResponseItemsRoot(jresult, "pages");
+            var jresult = await site.InvokeMediaWikiApiAsync2(new MediaWikiFormRequestMessage(queryParams), cancellationToken);
+            var jpages = (JsonObject?)FindQueryResponseItemsRoot(jresult, "pages");
             if (jpages != null)
             {
                 if (retrievedPageIds != null)
@@ -194,8 +199,9 @@ internal static class RequestHelper
                         Debug.Assert(sitePages.All(p => p.PageStub.HasId));
                         queryParams["pageids"] = MediaWikiHelper.JoinValues(partition.Select(p => p.Id));
                     }
-                    var jobj = await site.InvokeMediaWikiApiAsync(new MediaWikiFormRequestMessage(queryParams), cancellationToken);
-                    var jquery = (JObject)jobj["query"];
+                    var jobj = await site.InvokeMediaWikiApiAsync2(new MediaWikiFormRequestMessage(queryParams), cancellationToken);
+                    var jquery = jobj["query"]?.AsObject();
+                    if (jquery == null) throw new UnexpectedDataException("Missing $.query node.");
                     var continuationStatus = ParseContinuationParameters(jobj, queryParams, null);
                     // Process continuation caused by props (e.g. langlinks) that contain a list that is too long.
                     if (continuationStatus != CONTINUATION_DONE)
@@ -213,12 +219,13 @@ internal static class RequestHelper
                             queryParams1.Clear();
                             queryParams1.MergeFrom(queryParams);
                             queryParams1.MergeFrom(continuationParams);
-                            jobj1 = await site.InvokeMediaWikiApiAsync(new MediaWikiFormRequestMessage(queryParams1), cancellationToken);
-                            var jquery1 = jobj1["query"];
-                            if (jquery1.HasValues)
+                            jobj1 = await site.InvokeMediaWikiApiAsync2(new MediaWikiFormRequestMessage(queryParams1), cancellationToken);
+                            var jquery1 = jobj1["query"]?.AsObject();
+                            if (jquery1 != null)
                             {
+                                // https://github.com/dotnet/runtime/issues/31433
                                 // Merge JSON response
-                                jquery.Merge(jquery1);
+                                JsonHelper.InplaceMerge(jquery, jquery1);
                             }
                             continuationStatus = ParseContinuationParameters(jobj1, queryParams1, continuationParams);
                         }
@@ -226,10 +233,10 @@ internal static class RequestHelper
                     if (sitePages.Key.HasTitle)
                     {
                         // Process title normalization.
-                        var normalized = jquery["normalized"]?.ToDictionary(n => (string)n["from"], n => (string)n["to"]);
+                        var normalized = jquery["normalized"]?.AsArray().ToDictionary(n => (string)n["from"], n => (string)n["to"]);
                         // Process redirects.
-                        var redirects = jquery["redirects"]?.ToDictionary(n => (string)n["from"], n => (string)n["to"]);
-                        var pageInfoDict = ((JObject)jquery["pages"]).Properties()
+                        var redirects = jquery["redirects"]?.AsArray().ToDictionary(n => (string)n["from"], n => (string)n["to"]);
+                        var pageInfoDict = jquery["pages"]?.AsObject()
                             .ToDictionary(p => (string)p.Value["title"]);
                         foreach (var page in partition)
                         {
@@ -253,14 +260,14 @@ internal static class RequestHelper
                             var pageInfo = pageInfoDict[title];
                             if (redirectTrace.Count > 0)
                                 page.RedirectPath = redirectTrace;
-                            MediaWikiHelper.PopulatePageFromJson(page, (JObject)pageInfo.Value, options);
+                            MediaWikiHelper.PopulatePageFromJson(page, (JsonObject)pageInfo.Value, options);
                         }
                     }
                     else
                     {
                         foreach (var page in partition)
                         {
-                            var jPage = (JObject)jquery["pages"][page.Id.ToString(CultureInfo.InvariantCulture)];
+                            var jPage = (JsonObject)jquery["pages"][page.Id.ToString(CultureInfo.InvariantCulture)];
                             MediaWikiHelper.PopulatePageFromJson(page, jPage, options);
                         }
                     }
@@ -293,13 +300,13 @@ internal static class RequestHelper
             {
                 site.Logger.LogDebug("Fetching {Count} revisions from {Site}.", partition.Count, site);
                 queryParams["revids"] = MediaWikiHelper.JoinValues(partition);
-                var jobj = await site.InvokeMediaWikiApiAsync(new MediaWikiFormRequestMessage(queryParams), cancellationToken);
-                var jpages = (JObject)jobj["query"]["pages"];
+                var jobj = await site.InvokeMediaWikiApiAsync2(new MediaWikiFormRequestMessage(queryParams), cancellationToken);
+                var jpages = jobj["query"]["pages"].AsObject();
                 // Generate stubs first
                 foreach (var p in jpages)
                 {
-                    var jrevs = p.Value["revisions"];
-                    if (jrevs == null || !jrevs.HasValues) continue;
+                    var jrevs = p.Value["revisions"]?.AsArray();
+                    if (jrevs == null || jrevs.Count == 0) continue;
                     var id = Convert.ToInt32(p.Key);
                     if (!stubDict.TryGetValue(id, out var stub))
                     {
@@ -308,14 +315,14 @@ internal static class RequestHelper
                     }
                     foreach (var jrev in jrevs)
                     {
-                        var rev = jrev.ToObject<Revision>(Utility.WikiJsonSerializer);
+                        var rev = jrev.Deserialize<Revision>(MediaWikiHelper.WikiJsonSerializerOptions);
                         rev.Page = stub;
                         revDict.Add(rev.Id, rev);
                     }
                 }
                 using (ExecutionContextStash.Capture())
                     foreach (var id in partition)
-                        yield return revDict.TryGetValue(id, out var rev) ? rev : null;
+                        yield return revDict.GetValueOrDefault(id);
             }
         }
     }
@@ -361,7 +368,7 @@ internal static class RequestHelper
                     }
                     try
                     {
-                        var jresult = await site.InvokeMediaWikiApiAsync(new MediaWikiFormRequestMessage(new
+                        var jresult = await site.InvokeMediaWikiApiAsync2(new MediaWikiFormRequestMessage(new
                         {
                             action = "purge",
                             titles = titles,
@@ -371,12 +378,12 @@ internal static class RequestHelper
                                                        PagePurgeOptions.ForceRecursiveLinkUpdate,
                         }), cancellationToken);
                         // Now check whether the pages have been purged successfully.
-                        foreach (var jitem in jresult["purge"])
+                        foreach (JsonObject jitem in jresult["purge"].AsArray())
                         {
                             if (jitem["missing"] != null || jitem["invalid"] != null)
                             {
                                 if (failedPages == null) failedPages = new List<PurgeFailureInfo>();
-                                failedPages.Add(new PurgeFailureInfo(MediaWikiHelper.PageStubFromJson((JObject)jitem),
+                                failedPages.Add(new PurgeFailureInfo(MediaWikiHelper.PageStubFromJson(jitem),
                                     (string?)jitem["invalidreason"]));
                             }
                         }
@@ -430,7 +437,7 @@ internal static class RequestHelper
     /// <param name="site"></param>
     /// <param name="moduleName">Name of the module.</param>
     /// <returns>The paraminfo.modules[0] item.</returns>
-    public static async Task<JObject> QueryParameterInformationAsync(WikiSite site, string moduleName)
+    public static async Task<JsonObject> QueryParameterInformationAsync(WikiSite site, string moduleName)
     {
         if (site == null) throw new ArgumentNullException(nameof(site));
         var pa = new Dictionary<string, object> { { "action", "paraminfo" } };
@@ -460,11 +467,11 @@ internal static class RequestHelper
         {
             pa["modules"] = moduleName;
         }
-        var jresult = await site.InvokeMediaWikiApiAsync(new MediaWikiFormRequestMessage(pa), CancellationToken.None);
-        var jmodules = ((JObject)jresult["paraminfo"]).Properties().FirstOrDefault(p => p.Name.EndsWith("modules"))?.Value;
+        var jresult = await site.InvokeMediaWikiApiAsync2(new MediaWikiFormRequestMessage(pa), CancellationToken.None);
+        var jmodules = jresult["paraminfo"]?.AsObject().FirstOrDefault(p => p.Key.EndsWith("modules")).Value;
         // For now we use the method internally.
         Debug.Assert(jmodules != null);
-        return (JObject)jmodules.First;
+        return jmodules.AsArray().First().AsObject();
     }
 
     /// <summary>
@@ -484,8 +491,8 @@ internal static class RequestHelper
         return QueryWithContinuation(site, pa, null)
             .SelectMany(jpages =>
             {
-                var page = jpages.Values().First();
-                var links = (JArray?)page?["links"];
+                var page = jpages.First().Value;
+                var links = (JsonArray?)page?["links"];
                 if (links != null)
                 {
                     resultCounter += links.Count;
@@ -516,8 +523,8 @@ internal static class RequestHelper
         return QueryWithContinuation(site, pa, null)
             .SelectMany(jpages =>
             {
-                var page = jpages.Values().First();
-                var links = (JArray?)page?["templates"];
+                var page = jpages.First().Value;
+                var links = (JsonArray?)page?["templates"];
                 if (links != null)
                 {
                     resultCounter += links.Count;

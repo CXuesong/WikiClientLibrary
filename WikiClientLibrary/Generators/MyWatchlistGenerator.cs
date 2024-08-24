@@ -1,4 +1,4 @@
-﻿using Newtonsoft.Json.Linq;
+﻿using System.Text.Json.Nodes;
 using WikiClientLibrary.Generators.Primitive;
 using WikiClientLibrary.Infrastructures;
 using WikiClientLibrary.Sites;
@@ -55,7 +55,7 @@ public class MyWatchlistGenerator : WikiPageGenerator<MyWatchlistResultItem>
         };
     }
 
-    protected override MyWatchlistResultItem ItemFromJson(JToken json)
+    protected override MyWatchlistResultItem ItemFromJson(JsonNode json)
     {
         DateTime? changedTime = null;
         if (json["changed"] != null)
@@ -63,7 +63,8 @@ public class MyWatchlistGenerator : WikiPageGenerator<MyWatchlistResultItem>
             changedTime = DateTime.Parse((string)json["changed"]);
         }
 
-        return new MyWatchlistResultItem(MediaWikiHelper.PageStubFromJson((JObject)json), json["changed"] != null, changedTime);
+        return new MyWatchlistResultItem(MediaWikiHelper.PageStubFromJson(json.AsObject()),
+            json["changed"] != null, changedTime);
     }
 
     public override string ListName => "watchlistraw";

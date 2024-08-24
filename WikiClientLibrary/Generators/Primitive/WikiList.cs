@@ -1,6 +1,7 @@
 using System.Runtime.CompilerServices;
+using System.Text.Json;
+using System.Text.Json.Nodes;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json.Linq;
 using WikiClientLibrary.Client;
 using WikiClientLibrary.Infrastructures;
 using WikiClientLibrary.Infrastructures.Logging;
@@ -96,9 +97,9 @@ public abstract class WikiList<T> : IWikiList<T>
     /// <remarks>
     /// The default implementation expects there is an array under JSON path <c>query.{listname}</c> and returns it.
     /// </remarks>
-    protected virtual JArray? ItemsFromResponse(JToken response)
+    protected virtual JsonArray? ItemsFromResponse(JsonNode response)
     {
-        return (JArray?)RequestHelper.FindQueryResponseItemsRoot(response, ListName);
+        return RequestHelper.FindQueryResponseItemsRoot(response, ListName)?.AsArray();
     }
 
     /// <summary>
@@ -106,7 +107,7 @@ public abstract class WikiList<T> : IWikiList<T>
     /// </summary>
     /// <param name="json">One of the item node under the .</param>
     /// <returns>The item that will be returned in the sequence from <see cref="EnumItemsAsync"/>.</returns>
-    protected abstract T ItemFromJson(JToken json);
+    protected abstract T ItemFromJson(JsonNode json);
 
     /// <summary>
     /// When overriden, called when there is exception raised when
@@ -150,11 +151,11 @@ public abstract class WikiList<T> : IWikiList<T>
             queryParams.Clear();
             queryParams.MergeFrom(baseQueryParams);
             queryParams.MergeFrom(continuationParams);
-            JToken jresult;
-            JToken? listNode;
+            JsonNode jresult;
+            JsonArray? listNode;
             try
             {
-                jresult = await Site.InvokeMediaWikiApiAsync(new MediaWikiFormRequestMessage(queryParams), cancellationToken);
+                jresult = await Site.InvokeMediaWikiApiAsync2(new MediaWikiFormRequestMessage(queryParams), cancellationToken);
                 listNode = ItemsFromResponse(jresult);
             }
             catch (Exception ex)
@@ -167,7 +168,10 @@ public abstract class WikiList<T> : IWikiList<T>
                 using (ExecutionContextStash.Capture())
                 {
                     foreach (var n in listNode)
+                    {
+                        if (n == null) throw new JsonException("Unexpected null node in WikiList item array.");
                         yield return ItemFromJson(n);
+                    }
                 }
             }
             // Check for continuation.
@@ -209,7 +213,7 @@ public abstract class WikiList<T> : IWikiList<T>
                                     queryParams.MergeFrom(baseQueryParams);
                                     queryParams.MergeFrom(continuationParams);
                                     queryParams[limitParamName] = currentLimit;
-                                    var jresult2 = await Site.InvokeMediaWikiApiAsync(new MediaWikiFormRequestMessage(queryParams),
+                                    var jresult2 = await Site.InvokeMediaWikiApiAsync2(new MediaWikiFormRequestMessage(queryParams),
                                         cancellationToken);
                                     var applyResult = RequestHelper.ParseContinuationParameters(jresult2, queryParams, continuationParams);
                                     switch (applyResult)
@@ -223,16 +227,19 @@ public abstract class WikiList<T> : IWikiList<T>
                                                 if (listNode != null)
                                                 {
                                                     // Eliminate items that we have already yielded.
-                                                    var yieldedItems = new HashSet<JToken>(listNode, new JTokenEqualityComparer());
-                                                    using (ExecutionContextStash.Capture())
-                                                        foreach (var n in listNode2.Where(n => !yieldedItems.Contains(n)))
-                                                            yield return ItemFromJson(n);
+                                                    var yieldedItems = new HashSet<JsonNode>(listNode.Where(n => n != null)!,
+                                                        JsonNodeEqualityComparer.Default);
+                                                    using var _ = ExecutionContextStash.Capture();
+                                                    foreach (var n in listNode2.Where(n => n != null && !yieldedItems.Contains(n)))
+                                                        yield return ItemFromJson(n!);
                                                 }
                                                 else
                                                 {
-                                                    using (ExecutionContextStash.Capture())
-                                                        foreach (var n in listNode2)
-                                                            yield return ItemFromJson(n);
+                                                    using var _ = ExecutionContextStash.Capture();
+                                                    foreach (var n in listNode2)
+                                                    {
+                                                        if (n != null) yield return ItemFromJson(n);
+                                                    }
                                                 }
                                             }
                                             outOfLoop = true;

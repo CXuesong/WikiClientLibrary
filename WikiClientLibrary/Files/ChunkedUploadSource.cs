@@ -1,7 +1,9 @@
 ﻿using System.Diagnostics;
+using System.Text.Json;
+using System.Text.Json.Nodes;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json.Linq;
 using WikiClientLibrary.Client;
+using WikiClientLibrary.Infrastructures;
 using WikiClientLibrary.Infrastructures.Logging;
 using WikiClientLibrary.Pages;
 using WikiClientLibrary.Sites;
@@ -252,7 +254,7 @@ public class ChunkedUploadSource : WikiUploadSource
                         UploadedSize = (int)err["offset"];
                         goto RETRY;
                     }
-                    result = jresult["upload"].ToObject<UploadResult>(Utility.WikiJsonSerializer);
+                    result = jresult["upload"].Deserialize<UploadResult>(MediaWikiHelper.WikiJsonSerializerOptions);
                     // Ignore warnings, as long as we have filekey to continue the upload.
                     if (result.FileKey == null)
                     {
@@ -303,10 +305,10 @@ public class ChunkedUploadSource : WikiUploadSource
     private class ChunkedUploadResponseParser : MediaWikiJsonResponseParser
     {
 
-        public new static readonly ChunkedUploadResponseParser Default = new ChunkedUploadResponseParser();
+        public static new readonly ChunkedUploadResponseParser Default = new ChunkedUploadResponseParser();
 
         /// <inheritdoc />
-        protected override void OnApiError(string errorCode, string errorMessage, JToken errorNode, JToken responseNode,
+        protected override void OnApiError(string errorCode, string errorMessage, JsonNode errorNode, JsonNode responseNode,
             WikiResponseParsingContext context)
         {
             // Possible error: code=stashfailed, info=Invalid chunk offset, offset=xxxx

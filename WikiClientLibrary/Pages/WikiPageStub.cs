@@ -49,7 +49,7 @@ public readonly struct WikiPageStub : IEquatable<WikiPageStub>
     public static readonly WikiPageStub Empty = new WikiPageStub();
 
     /// <inheritdoc cref="WikiPageStub(long,string,int)"/>
-    public WikiPageStub(string title, int namespaceId) : this(0, title, namespaceId)
+    public WikiPageStub(string title, int namespaceId) : this(0L, title, namespaceId)
     {
     }
 
@@ -59,7 +59,12 @@ public readonly struct WikiPageStub : IEquatable<WikiPageStub>
     }
 
     /// <inheritdoc cref="WikiPageStub(long,string,int)"/>
-    public WikiPageStub(string title) : this(0, title, UnknownNamespaceId)
+    public WikiPageStub(string title) : this(0L, title, UnknownNamespaceId)
+    {
+    }
+
+    [Obsolete("Use long as id type instead of int.")]
+    public WikiPageStub(int id, string? title, int namespaceId) : this((long)id, title, namespaceId)
     {
     }
 
@@ -69,7 +74,7 @@ public readonly struct WikiPageStub : IEquatable<WikiPageStub>
     /// <param name="id">Page ID. <c>0</c> for unknown.</param>
     /// <param name="title">Page full title. <c>null</c> for unknown. <see cref="string.Empty"/> will be normalized into <c>null</c>.</param>
     /// <param name="namespaceId">Page namespace ID. <see cref="UnknownNamespaceId"/> for unknown.</param>
-    public WikiPageStub(long id, string? title, int namespaceId) : this()
+    public WikiPageStub(long id, string? title, int namespaceId)
     {
         const long idMasks = SpecialPageIdMask | MissingPageIdMask | InvalidPageIdMask;
         if (id < 0 && (id & idMasks) != id)

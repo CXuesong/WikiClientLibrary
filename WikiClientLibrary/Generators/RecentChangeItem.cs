@@ -1,7 +1,7 @@
-using System.Runtime.Serialization;
 using System.Text;
+using System.Text.Json.Serialization;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
+using WikiClientLibrary.Infrastructures;
 using WikiClientLibrary.Pages;
 using WikiClientLibrary.Sites;
 
@@ -10,21 +10,16 @@ namespace WikiClientLibrary.Generators;
 /// <summary>
 /// Represents MediaWiki recent change entry.
 /// </summary>
-[JsonObject(MemberSerialization.OptIn)]
-public class RecentChangeItem
+[JsonContract]
+public sealed record RecentChangeItem
 {
 
-    private WikiSite Site { get; }
+    internal WikiSite? Site { get; }
 
-#pragma warning disable CS8618 // 在退出构造函数时，不可为 null 的字段必须包含非 null 值。请考虑声明为可以为 null。
-    internal RecentChangeItem(WikiSite site)
-#pragma warning restore CS8618 // 在退出构造函数时，不可为 null 的字段必须包含非 null 值。请考虑声明为可以为 null。
-    {
-        if (site == null) throw new ArgumentNullException(nameof(site));
-        Site = site;
-    }
+    internal RecentChangeItem() { }
 
-    [JsonProperty("type")]
+    [JsonPropertyName("type")]
+    [JsonInclude]
     private string TypeName
     {
         set
@@ -61,83 +56,73 @@ public class RecentChangeItem
     }
 
     /// <summary>Recent change type.</summary>
+    [JsonIgnore]
     public RecentChangesType Type { get; private set; }
 
     /// <summary>Namespace ID of the page affected by this item.</summary>
-    [JsonProperty("ns")]
-    public int NamespaceId { get; private set; }
+    [JsonPropertyName("ns")]
+    public int NamespaceId { get; init; }
 
     /// <summary>Full title of the page affected by this item.</summary>
-    [JsonProperty]
-    public string Title { get; private set; }
+    public string Title { get; init; }
 
     /// <summary>ID of the page affected by this item.</summary>
-    [JsonProperty]
-    public long PageId { get; private set; }
+    public long PageId { get; init; }
 
     /// <summary>ID of the new revision affected by this item.</summary>
-    [JsonProperty("revid")]
-    public long RevisionId { get; private set; }
+    [JsonPropertyName("revid")]
+    public long RevisionId { get; init; }
 
     /// <summary>ID of the old revision affected by this item.</summary>
-    [JsonProperty("old_revid")]
-    public long OldRevisionId { get; private set; }
+    [JsonPropertyName("old_revid")]
+    public long OldRevisionId { get; init; }
 
     /// <summary>ID of recent change entry.</summary>
-    [JsonProperty("rcid")]
-    public long Id { get; private set; }
+    [JsonPropertyName("rcid")]
+    public long Id { get; init; }
 
     /// <summary>Name of the user making this recent change.</summary>
-    [JsonProperty("user")]
-    public string UserName { get; private set; }
+    [JsonPropertyName("user")]
+    public string UserName { get; init; }
 
     /// <summary>The user ID who was responsible for the recent change.</summary>
     /// <remarks>When using this property with log events, there are some caveats.
     /// See <see cref="LogEventItem.UserId"/> for more information.</remarks>
-    [JsonProperty]
-    public long UserId { get; private set; }
+    public long UserId { get; init; }
 
     /// <summary>Content length of the old revision affected by this item.</summary>
-    [JsonProperty("oldlen")]
-    public int OldContentLength { get; private set; }
+    [JsonPropertyName("oldlen")]
+    public int OldContentLength { get; init; }
 
     /// <summary>Content length of the new revision affected by this item.</summary>
-    [JsonProperty("newlen")]
-    public int NewContentLength { get; private set; }
+    [JsonPropertyName("newlen")]
+    public int NewContentLength { get; init; }
 
     /// <summary>The difference of <see cref="NewContentLength"/> from <see cref="OldContentLength"/>.</summary>
     public int DeltaContentLength => NewContentLength - OldContentLength;
 
     /// <summary>The time and date of the change.</summary>
-    [JsonProperty]
-    public DateTime TimeStamp { get; private set; }
+    public DateTime TimeStamp { get; init; }
 
     /// <summary>The edit/log comment.</summary>
-    [JsonProperty]
-    public string Comment { get; private set; }
+    public string Comment { get; init; }
 
     /// <summary>The parsed comment for the edit/log comment.</summary>
-    [JsonProperty]
-    public string ParsedComment { get; private set; }
+    public string ParsedComment { get; init; }
 
-    [JsonProperty]
-    public IList<string> Tags { get; private set; }
+    public IList<string> Tags { get; init; }
 
     /// <summary>SHA-1 hash of the updated revision.</summary>
-    [JsonProperty]
-    public string Sha1 { get; private set; }
+    public string Sha1 { get; init; }
 
-    [JsonProperty]
-    public bool Redirect { get; private set; }
+    public bool Redirect { get; init; }
 
     /// <summary>For log items, ID of the log entry.</summary>
-    [JsonProperty]
-    public int? LogId { get; private set; }
+    public int? LogId { get; init; }
 
     /// <summary>For log items, gets log type name.</summary>
     /// <remarks>See <see cref="LogTypes"/> for a list of predefined values.</remarks>
-    [JsonProperty]
-    public string LogType { get; private set; }
+    public string LogType { get; init; }
 
     /// <summary>
     /// Specific log action.
@@ -148,26 +133,28 @@ public class RecentChangeItem
     /// property, because certain the same log action value may have different meaning in
     /// different log type context.
     /// </remarks>
-    [JsonProperty]
-    public string LogAction { get; private set; }
+    public string LogAction { get; init; }
 
     /// <summary>For log items, gets additional log parameters.</summary>
-    [JsonProperty(ObjectCreationHandling = ObjectCreationHandling.Replace)]
-    public LogParameterCollection LogParams { get; private set; } = LogParameterCollection.Empty;
+    [JsonObjectCreationHandling(JsonObjectCreationHandling.Replace)]
+    public LogParameterCollection LogParams { get; init; } = LogParameterCollection.Empty;
 
+    [JsonIgnore]
     public RevisionFlags Flags { get; private set; }
 
+    [JsonIgnore]
     public PatrolStatus PatrolStatus { get; private set; }
 
-    [JsonProperty] private bool Minor;
-    [JsonProperty] private bool Bot;
-    [JsonProperty] private bool New;
-    [JsonProperty] private bool Anon;
-    [JsonProperty] private bool Patrolled;
-    [JsonProperty] private bool Unpatrolled;
+    [JsonInclude] private bool Minor;
+    [JsonInclude] private bool Bot;
+    [JsonInclude] private bool New;
+    [JsonInclude] private bool Anon;
+    [JsonInclude] private bool Patrolled;
+    [JsonInclude] private bool Unpatrolled;
 
-    [OnDeserialized]
-    private void OnDeserialized(StreamingContext context)
+    // User context data is not supported as of now -- calling this function manually.
+    // https://github.com/dotnet/runtime/issues/59892
+    internal void OnDeserialized(WikiSite site)
     {
         Flags = RevisionFlags.None;
         if (Minor) Flags |= RevisionFlags.Minor;
@@ -178,7 +165,7 @@ public class RecentChangeItem
         else if (Unpatrolled) PatrolStatus = PatrolStatus.Unpatrolled;
         else PatrolStatus = PatrolStatus.Unknown;
         if (Patrolled && Unpatrolled)
-            Site.Logger.LogWarning("Patrolled and Unpatrolled are both set for rcid={Id}, page {Page}.", Id, Title);
+            site.Logger.LogWarning("Patrolled and Unpatrolled are both set for rcid={Id}, page {Page}.", Id, Title);
     }
 
     /// <summary>
@@ -242,8 +229,14 @@ public class RecentChangeItem
             sb.Append(",{");
             if (LogParams.Count > 0)
             {
-                sb.Append(string.Join(",",
-                    LogParams.Select(p => p.Key + "=" + p.Value.ToString(Formatting.None))));
+                foreach (var p in LogParams)
+                {
+                    sb.Append(p.Key);
+                    sb.Append('=');
+                    sb.Append(p.Value);
+                    sb.Append(',');
+                }
+                sb.Length--;
             }
             sb.Append("},");
         }

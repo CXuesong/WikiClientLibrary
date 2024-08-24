@@ -1,9 +1,8 @@
 ﻿using System.Collections.Immutable;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
-using System.Runtime.Serialization;
+using System.Text.Json;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using WikiClientLibrary.Infrastructures;
 
 namespace WikiClientLibrary.Files;
@@ -120,7 +119,7 @@ public enum UploadResultCode
 public class UploadWarningCollection : WikiReadOnlyDictionary
 {
 
-    internal static readonly UploadWarningCollection Empty = new UploadWarningCollection();
+    internal static readonly UploadWarningCollection Empty = new();
 
     private static readonly Dictionary<string, string> warningMessages = new Dictionary<string, string>
     {
@@ -137,11 +136,6 @@ public class UploadWarningCollection : WikiReadOnlyDictionary
         { "filetype-unwanted-type", "File {0} type is unwanted type." },
         { "exists-normalized", "File exists with different extension as \"{0}\"." },
     };
-
-    static UploadWarningCollection()
-    {
-        Empty.MakeReadonly();
-    }
 
     /// <summary>
     /// The file content is empty. (<c>emptyfile</c>)
@@ -179,21 +173,27 @@ public class UploadWarningCollection : WikiReadOnlyDictionary
     /// </summary>
     public bool WasContentDeleted => GetBooleanValue("duplicate-archive");
 
-    [OnDeserialized]
-    private void OnDeserialized(StreamingContext context)
+    /// <inheritdoc />
+    protected override void OnDeserialized()
     {
-        if (GetValueDirect("duplicateversions") is JArray jversions && jversions.Count > 0)
+        if (TryGetValue("duplicateversions", out var jversions)
+            && jversions.ValueKind == JsonValueKind.Array
+            && jversions.GetArrayLength() > 0)
         {
-            var versions = jversions.Select(v => MediaWikiHelper.ParseDateTime((string)v["timestamp"])).ToList();
+            var versions = jversions.EnumerateArray()
+                .Select(e => MediaWikiHelper.ParseDateTime(e.GetProperty("timestamp").GetString()))
+                .ToList();
             DuplicateVersions = new ReadOnlyCollection<DateTime>(versions);
         }
         else
         {
             DuplicateVersions = null;
         }
-        if (GetValueDirect("duplicate") is JArray jdumplicates && jdumplicates.Count > 0)
+        if (TryGetValue("duplicate", out var jduplicates)
+            && jduplicates.ValueKind == JsonValueKind.Array
+            && jduplicates.GetArrayLength() > 0)
         {
-            var titles = jdumplicates.Select(t => (string)t).ToList();
+            var titles = jduplicates.EnumerateArray().Select(t => t.GetString()).ToList();
             DuplicateTitles = new ReadOnlyCollection<string>(titles);
         }
         else
@@ -225,22 +225,26 @@ public class UploadWarningCollection : WikiReadOnlyDictionary
     /// user-friendly warning message. If there's no match, a string containing
     /// warningCode and context will be returned.
     /// </returns>
-    public static string FormatWarning(string warningCode, JToken? context)
+    public static string FormatWarning(string warningCode, JsonElement context)
     {
         string? contextString = null;
-        if (context != null)
+        if (context.ValueKind != JsonValueKind.Undefined)
         {
             switch (warningCode)
             {
                 case "duplicateversions":
-                    var timeStamps = context.Select(v => (DateTime)v["timestamp"]).Take(4).ToArray();
+                    var timeStamps = context.EnumerateArray()
+                        .Select(v => MediaWikiHelper.ParseDateTime(v.GetProperty("timestamp").GetString()))
+                        .Take(4).ToList();
                     contextString = string.Join(",", timeStamps.Take(3));
-                    if (timeStamps.Length > 3) contextString += ",…";
+                    if (timeStamps.Count > 3) contextString += ",…";
                     break;
                 case "duplicate":
-                    var titles = context.Select(v => (string)v).Take(4).ToArray();
+                    var titles = context.EnumerateArray()
+                        .Select(v => v.GetString())
+                        .Take(4).ToList();
                     contextString = string.Join(",", titles.Take(3));
-                    if (titles.Length > 3) contextString += ",…";
+                    if (titles.Count > 3) contextString += ",…";
                     break;
                 default:
                     contextString = context.ToString();

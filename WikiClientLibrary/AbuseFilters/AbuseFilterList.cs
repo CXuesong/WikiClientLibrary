@@ -1,5 +1,7 @@
-﻿using Newtonsoft.Json.Linq;
+﻿using System.Text.Json;
+using System.Text.Json.Nodes;
 using WikiClientLibrary.Generators.Primitive;
+using WikiClientLibrary.Infrastructures;
 using WikiClientLibrary.Sites;
 
 namespace WikiClientLibrary.AbuseFilters;
@@ -33,9 +35,9 @@ public class AbuseFilterList : WikiList<AbuseFilter>
     }
 
     /// <inheritdoc />
-    protected override AbuseFilter ItemFromJson(JToken json)
+    protected override AbuseFilter ItemFromJson(JsonNode json)
     {
-        return json.ToObject<AbuseFilter>(Utility.WikiJsonSerializer);
+        return json.Deserialize<AbuseFilter>(MediaWikiHelper.WikiJsonSerializerOptions);
     }
 
 }

@@ -2,10 +2,13 @@
 using System.Collections.Concurrent;
 using System.Diagnostics;
 using System.Globalization;
+using System.IO.Pipelines;
 using System.Runtime.CompilerServices;
 using System.Text;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
+using System.Text.Json;
+using System.Text.Json.Nodes;
+using System.Text.Json.Serialization;
+using System.Text.Json.Serialization.Metadata;
 using WikiClientLibrary.Files;
 using WikiClientLibrary.Pages;
 using WikiClientLibrary.Pages.Queries;
@@ -15,27 +18,60 @@ namespace WikiClientLibrary.Infrastructures;
 /// <summary>
 /// Helper methods for extending MediaWiki API.
 /// </summary>
-public static class MediaWikiHelper
+public static partial class MediaWikiHelper
 {
 
     /// <summary>
-    /// Create an new instance of <see cref="JsonSerializer"/> for parsing MediaWiki API response.
+    /// Gets a read-only instance of <see cref="JsonSerializerOptions"/> for parsing MediaWiki API response.
     /// </summary>
-    public static JsonSerializer CreateWikiJsonSerializer()
+    public static JsonSerializerOptions WikiJsonSerializerOptions { get; } = BuildWikiJsonSerializerOptions();
+
+    private static JsonSerializerOptions BuildWikiJsonSerializerOptions()
     {
-        return Utility.CreateWikiJsonSerializer();
+        var options = new JsonSerializerOptions()
+        {
+            DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
+            PropertyNamingPolicy = new WikiJsonNamingPolicy(),
+            WriteIndented = false,
+            Converters =
+            {
+                new WikiBooleanJsonConverter(),
+                new WikiStringEnumJsonConverter(),
+                new WikiDateTimeConverter(),
+                new WikiDateTimeOffsetConverter(),
+            },
+            TypeInfoResolver = new DefaultJsonTypeInfoResolver
+            {
+                Modifiers =
+                {
+                    // For boolean values, omit the default value at all. (no `"boolvalue": null` in this case)
+                    static info =>
+                    {
+                        foreach (var p in info.Properties)
+                        {
+                            if (p.PropertyType == typeof(bool))
+                            {
+                                p.ShouldSerialize = static (_, value) => value != null && (bool)value == false;
+                            }
+                        }
+                    },
+                },
+            },
+        };
+        options.MakeReadOnly(true);
+        return options;
     }
 
-    /// <summary>
-    /// Converts the specified relative protocol URL (starting with <c>//</c>) to absolute protocol URL.
-    /// </summary>
-    /// <param name="relativeProtocolUrl">The URL to be converted.</param>
-    /// <param name="defaultProtocol">For protocol-relative URL,(e.g. <c>//en.wikipedia.org/</c>),
-    /// specifies the default protocol to use. (e.g. <c>https</c>)</param>
-    /// <exception cref="ArgumentNullException">Either <paramref name="relativeProtocolUrl"/> or <paramref name="defaultProtocol"/> is <c>null</c>.</exception>
-    /// <returns>The URL with absolute protocol. If the specified URL is not a relative protocol URL,
-    /// it will be returned directly.</returns>
-    public static string MakeAbsoluteProtocol(string relativeProtocolUrl, string defaultProtocol)
+/// <summary>
+/// Converts the specified relative protocol URL (starting with <c>//</c>) to absolute protocol URL.
+/// </summary>
+/// <param name="relativeProtocolUrl">The URL to be converted.</param>
+/// <param name="defaultProtocol">For protocol-relative URL,(e.g. <c>//en.wikipedia.org/</c>),
+/// specifies the default protocol to use. (e.g. <c>https</c>)</param>
+/// <exception cref="ArgumentNullException">Either <paramref name="relativeProtocolUrl"/> or <paramref name="defaultProtocol"/> is <c>null</c>.</exception>
+/// <returns>The URL with absolute protocol. If the specified URL is not a relative protocol URL,
+/// it will be returned directly.</returns>
+public static string MakeAbsoluteProtocol(string relativeProtocolUrl, string defaultProtocol)
     {
         if (relativeProtocolUrl == null) throw new ArgumentNullException(nameof(relativeProtocolUrl));
         if (defaultProtocol == null) throw new ArgumentNullException(nameof(defaultProtocol));
@@ -111,40 +147,38 @@ public static class MediaWikiHelper
 
     internal const string ExceptionTroubleshootingHelpLink = "https://github.com/CXuesong/WikiClientLibrary/wiki/Troubleshooting";
 
-    // Disable automatic datetime detection for JValue.
-    // We are converting string to JObject, then from JObject to data model.
-    // If date time is already converted into JValue of type Date,
-    // we won't be easily recover the underlying string when converting to data model.
-    private static readonly JsonSerializer jTokenSerializer = new JsonSerializer { DateParseHandling = DateParseHandling.None };
-
     /// <summary>
     /// Asynchronously parses JSON content from the specified stream.
     /// </summary>
     /// <param name="stream">The stream containing the non-empty JSON content.</param>
     /// <param name="cancellationToken">A token used to cancel the operation.</param>
     /// <exception cref="ArgumentNullException"><paramref name="stream"/> is <c>null</c>.</exception>
-    /// <exception cref="UnexpectedDataException"><paramref name="stream"/> is empty stream, or there is an error parsing the JSON response.</exception>
-    public static async Task<JToken> ParseJsonAsync(Stream stream, CancellationToken cancellationToken)
+    /// <exception cref="UnexpectedDataException">
+    /// <paramref name="stream"/> is empty stream,
+    /// - or -
+    /// parsed JSON response is <c>null</c>,
+    /// - or -
+    /// there is an error parsing the JSON response.</exception>
+    public static async Task<JsonNode> ParseJsonAsync(Stream stream, CancellationToken cancellationToken)
     {
         if (stream == null) throw new ArgumentNullException(nameof(stream));
-        // TODO buffer stream, instead of reading all
-        var content = await stream.ReadAllStringAsync(cancellationToken);
-        if (string.IsNullOrEmpty(content))
+        var reader = PipeReader.Create(stream, new StreamPipeReaderOptions(leaveOpen: true));
+        var read = await reader.ReadAtLeastAsync(1, cancellationToken);
+        if (read.Buffer.IsEmpty)
             throw new UnexpectedDataException(Prompts.ExceptionJsonEmptyInput);
-        if (content[0] == '<')
+        if (read.Buffer.FirstSpan[0] == '<')
             throw new UnexpectedDataException(Prompts.ExceptionHtmlResponseHint) { HelpLink = ExceptionTroubleshootingHelpLink };
         try
         {
-            using var reader = new StringReader(content);
-            using var jreader = new JsonTextReader(reader);
-            return jTokenSerializer.Deserialize<JToken>(jreader);
+            await using var readerStream = reader.AsStream();
+            var root = await JsonNode.ParseAsync(readerStream, cancellationToken: cancellationToken);
+            if (root == null) throw new UnexpectedDataException("Unexpected null JSON value parsed.");
+            return root;
         }
         catch (Exception ex)
         {
             var message = Prompts.ExceptionJsonParsingFailed;
             message += ex.Message;
-            if (ex is JsonException && !string.IsNullOrEmpty(ex.Message) && ex.Message.Contains("'<'"))
-                message += Prompts.ExceptionJsonEmptyInput;
             throw new UnexpectedDataException(message, ex);
         }
     }
@@ -174,7 +208,7 @@ public static class MediaWikiHelper
     /// The status flag corresponds with <a href="https://www.mediawiki.org/wiki/API:Data_formats#Boolean_values">format specification for Boolean</a>
     /// in MediaWiki API.
     /// </remarks>
-    public static WikiPageStub PageStubFromJson(JObject jPage)
+    public static WikiPageStub PageStubFromJson(JsonObject jPage)
     {
         if (jPage == null) throw new ArgumentNullException(nameof(jPage));
         if (jPage["invalid"] != null)
@@ -200,21 +234,21 @@ public static class MediaWikiHelper
         throw new ArgumentException(Prompts.ExceptionInvalidPageJson, nameof(jPage));
     }
 
-    public static Revision RevisionFromJson(JObject jRevision, WikiPageStub pageStub)
+    public static Revision RevisionFromJson(JsonObject jRevision, WikiPageStub pageStub)
     {
-        var rev = jRevision.ToObject<Revision>(Utility.WikiJsonSerializer);
+        var rev = jRevision.Deserialize<Revision>(WikiJsonSerializerOptions);
         rev.Page = pageStub;
         return rev;
     }
 
-    public static FileRevision FileRevisionFromJson(JObject jRevision, WikiPageStub pageStub)
+    public static FileRevision FileRevisionFromJson(JsonObject jRevision, WikiPageStub pageStub)
     {
-        var rev = jRevision.ToObject<FileRevision>(Utility.WikiJsonSerializer);
+        var rev = jRevision.Deserialize<FileRevision>(WikiJsonSerializerOptions);
         rev.Page = pageStub;
         return rev;
     }
 
-    public static GeoCoordinate GeoCoordinateFromJson(JObject jcoordinate)
+    public static GeoCoordinate GeoCoordinateFromJson(JsonNode jcoordinate)
     {
         return new GeoCoordinate
         {
@@ -251,7 +285,7 @@ public static class MediaWikiHelper
     /// for more information.</para>
     /// </remarks>
     /// <seealso cref="ParseDateTime"/>
-    /// <seealso cref="WikiDateTimeJsonConverter"/>
+    /// <seealso cref="WikiDateTimeJsonConverter0"/>
     public static DateTimeOffset ParseDateTimeOffset(string expression)
     {
         if (expression == null)
@@ -335,7 +369,7 @@ public static class MediaWikiHelper
     /// <param name="page"></param>
     /// <param name="json">query.pages.xxx property value.</param>
     /// <param name="options"></param>
-    public static void PopulatePageFromJson(WikiPage page, JObject json, IWikiPageQueryProvider options)
+    public static void PopulatePageFromJson(WikiPage page, JsonObject json, IWikiPageQueryProvider options)
     {
         if (page == null) throw new ArgumentNullException(nameof(page));
         if (json == null) throw new ArgumentNullException(nameof(json));

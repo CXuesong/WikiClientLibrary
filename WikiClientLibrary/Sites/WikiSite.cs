@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics;
+using System.Text.Json.Nodes;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using Newtonsoft.Json.Linq;
@@ -320,21 +321,36 @@ public partial class WikiSite : IWikiClientLoggable, IWikiClientAsyncInitializat
     /// </summary>
     internal readonly AsyncLazy<ICollection<string>> DisambiguationTemplatesAsync;
 
-#region Basic API
+    #region Basic API
 
     /// <inheritdoc cref="InvokeMediaWikiApiAsync{T}(WikiRequestMessage,IWikiResponseMessageParser{T},bool,CancellationToken)"/>
     /// <remarks>This overload uses <see cref="MediaWikiJsonResponseParser.Default"/> as response parser.</remarks>
-    public Task<JToken> InvokeMediaWikiApiAsync(WikiRequestMessage message, CancellationToken cancellationToken)
+    public Task<JsonNode> InvokeMediaWikiApiAsync2(WikiRequestMessage message, CancellationToken cancellationToken)
     {
         return InvokeMediaWikiApiAsync(message, MediaWikiJsonResponseParser.Default, false, cancellationToken);
     }
 
     /// <inheritdoc cref="InvokeMediaWikiApiAsync{T}(WikiRequestMessage,IWikiResponseMessageParser{T},bool,CancellationToken)"/>
     /// <remarks>This overload uses <see cref="MediaWikiJsonResponseParser.Default"/> as response parser.</remarks>
-    public Task<JToken> InvokeMediaWikiApiAsync(WikiRequestMessage message,
-        bool suppressAccountAssertion, CancellationToken cancellationToken)
+    public Task<JsonNode> InvokeMediaWikiApiAsync2(WikiRequestMessage message, bool suppressAccountAssertion, CancellationToken cancellationToken)
     {
         return InvokeMediaWikiApiAsync(message, MediaWikiJsonResponseParser.Default, suppressAccountAssertion, cancellationToken);
+    }
+
+    /// <inheritdoc cref="InvokeMediaWikiApiAsync{T}(WikiRequestMessage,IWikiResponseMessageParser{T},bool,CancellationToken)"/>
+    /// <remarks>This overload uses <see cref="MediaWikiNewtonsoftJsonResponseParser.Default"/> as response parser.</remarks>
+    [Obsolete("Newtonsoft.Json API is being deprecated in favor of System.Text.Json API.")]
+    public Task<JToken> InvokeMediaWikiApiAsync(WikiRequestMessage message, CancellationToken cancellationToken)
+    {
+        return InvokeMediaWikiApiAsync(message, MediaWikiNewtonsoftJsonResponseParser.Default, false, cancellationToken);
+    }
+
+    /// <inheritdoc cref="InvokeMediaWikiApiAsync{T}(WikiRequestMessage,IWikiResponseMessageParser{T},bool,CancellationToken)"/>
+    /// <remarks>This overload uses <see cref="MediaWikiNewtonsoftJsonResponseParser.Default"/> as response parser.</remarks>
+    [Obsolete("Newtonsoft.Json API is being deprecated in favor of System.Text.Json API.")]
+    public Task<JToken> InvokeMediaWikiApiAsync(WikiRequestMessage message, bool suppressAccountAssertion, CancellationToken cancellationToken)
+    {
+        return InvokeMediaWikiApiAsync(message, MediaWikiNewtonsoftJsonResponseParser.Default, suppressAccountAssertion, cancellationToken);
     }
 
     /// <summary>

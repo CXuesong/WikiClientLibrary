@@ -14,6 +14,7 @@ internal static class Utility
 {
 
     // http://stackoverflow.com/questions/36186276/is-the-json-net-jsonserializer-threadsafe
+    [Obsolete]
     public static readonly JsonSerializer WikiJsonSerializer = CreateWikiJsonSerializer();
 
     /// <summary>
@@ -32,7 +33,7 @@ internal static class Utility
                 // https://github.com/JamesNK/Newtonsoft.Json/issues/862
                 // https://github.com/CXuesong/WikiClientLibrary/issues/49
                 DateParseHandling = DateParseHandling.None,
-                Converters = { new WikiBooleanJsonConverter(), new WikiStringEnumJsonConverter(), new WikiDateTimeJsonConverter(), },
+                Converters = { new WikiBooleanJsonConverter0(), new WikiStringEnumJsonConverter0(), new WikiDateTimeJsonConverter0(), },
             };
         return JsonSerializer.CreateDefault(settings);
     }

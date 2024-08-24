@@ -46,7 +46,7 @@ public class WikiaJsonResponseParser : WikiResponseMessageParser<JToken>
         JToken jroot;
         try
         {
-            jroot = await MediaWikiHelper.ParseJsonAsync(await response.Content.ReadAsStreamAsync(), context.CancellationToken);
+            jroot = await MediaWikiHelper.ParseJsonAsync0(await response.Content.ReadAsStreamAsync(), context.CancellationToken);
         }
         catch (JsonException)
         {

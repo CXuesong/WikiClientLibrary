@@ -1,25 +1,17 @@
 ﻿using System.Collections;
-using System.Diagnostics.CodeAnalysis;
-using System.Runtime.Serialization;
-using Newtonsoft.Json.Linq;
-using Newtonsoft.Json;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace WikiClientLibrary.Infrastructures;
 
 /// <summary>
 /// A dictionary with predefined strong-typed derived properties customizable by implementers.
 /// </summary>
-[JsonDictionary]
-public class WikiReadOnlyDictionary : IDictionary<string, JToken>
+[JsonContract]
+public class WikiReadOnlyDictionary : IDictionary<string, JsonElement>, IJsonOnDeserialized
 {
 
-    private readonly IDictionary<string, JToken> myDict = new Dictionary<string, JToken>();
-    private bool _IsReadOnly = false;
-
-    protected void MakeReadonly()
-    {
-        _IsReadOnly = true;
-    }
+    [JsonExtensionData] private readonly Dictionary<string, JsonElement> myDict = new();
 
     /// <summary>
     /// Gets the count of all properties.
@@ -31,28 +23,17 @@ public class WikiReadOnlyDictionary : IDictionary<string, JToken>
     /// </summary>
     /// <param name="key">The property name.</param>
     /// <returns>A clone of property value, OR <c>null</c> if such property cannot be found.</returns>
-    public JToken this[string key]
+    public JsonElement this[string key]
     {
         get
         {
             var value = myDict[key];
-            if (_IsReadOnly) value = value.DeepClone();
             return value;
         }
         set
         {
-            if (_IsReadOnly) throw new NotSupportedException(Prompts.ExceptionCollectionReadOnly);
-            myDict[key] = value;
+            throw new NotSupportedException(Prompts.ExceptionCollectionReadOnly);
         }
-    }
-
-    /// <summary>
-    /// Tries to directly gets the value of the specified property.
-    /// </summary>
-    protected JToken? GetValueDirect(string key)
-    {
-        if (myDict.TryGetValue(key, out var value)) return value;
-        return null;
     }
 
     /// <inheritdoc cref="GetInt64Value(string)"/>
@@ -63,7 +44,7 @@ public class WikiReadOnlyDictionary : IDictionary<string, JToken>
     /// <see cref="GetInt64Value(string,long)"/>
     public int GetInt32Value(string key)
     {
-        return (int)myDict[key];
+        return myDict[key].GetInt32();
     }
 
     /// <inheritdoc cref="GetInt64Value(string,long)"/>
@@ -73,7 +54,7 @@ public class WikiReadOnlyDictionary : IDictionary<string, JToken>
     /// </summary>
     public int GetInt32Value(string key, int defaultValue)
     {
-        if (myDict.TryGetValue(key, out var value)) return (int)value;
+        if (myDict.TryGetValue(key, out var value)) return value.GetInt32();
         return defaultValue;
     }
 
@@ -87,7 +68,7 @@ public class WikiReadOnlyDictionary : IDictionary<string, JToken>
     /// <see cref="GetInt32Value(string,int)"/>
     public long GetInt64Value(string key)
     {
-        return (long)myDict[key];
+        return myDict[key].GetInt64();
     }
 
     /// <summary>
@@ -99,7 +80,7 @@ public class WikiReadOnlyDictionary : IDictionary<string, JToken>
     /// <returns>The converted value - or - <paramref name="defaultValue"/>.</returns>
     public long GetInt64Value(string key, long defaultValue)
     {
-        if (myDict.TryGetValue(key, out var value)) return (long)value;
+        if (myDict.TryGetValue(key, out var value)) return value.GetInt64();
         return defaultValue;
     }
 
@@ -113,7 +94,7 @@ public class WikiReadOnlyDictionary : IDictionary<string, JToken>
     /// </remarks>
     public bool GetBooleanValue(string key)
     {
-        return myDict.TryGetValue(key, out var value) && value.Type != JTokenType.Null;
+        return myDict.TryGetValue(key, out var value) && value.ValueKind != JsonValueKind.Null;
     }
 
     /// <summary>
@@ -123,7 +104,7 @@ public class WikiReadOnlyDictionary : IDictionary<string, JToken>
     /// <returns>The converted value - or - <c>null</c> if the specified key does not exist.</returns>
     public string? GetStringValue(string key)
     {
-        if (myDict.TryGetValue(key, out var value)) return (string)value;
+        if (myDict.TryGetValue(key, out var value)) return value.GetString();
         return null;
     }
 
@@ -131,7 +112,7 @@ public class WikiReadOnlyDictionary : IDictionary<string, JToken>
     public ICollection<string> Keys => myDict.Keys;
 
     /// <inheritdoc />
-    bool IDictionary<string, JToken>.Remove(string key)
+    bool IDictionary<string, JsonElement>.Remove(string key)
     {
         throw new NotSupportedException();
     }
@@ -143,32 +124,18 @@ public class WikiReadOnlyDictionary : IDictionary<string, JToken>
     }
 
     /// <inheritdoc />
-#pragma warning disable CS8767 // 参数类型中引用类型的为 Null 性与隐式实现的成员不匹配(可能是由于为 Null 性特性)。
-    public bool TryGetValue(string key, [MaybeNullWhen(false)] out JToken value)
-#pragma warning restore CS8767 // 参数类型中引用类型的为 Null 性与隐式实现的成员不匹配(可能是由于为 Null 性特性)。
+    public bool TryGetValue(string key, out JsonElement value)
     {
-        if (myDict.TryGetValue(key, out var v))
-        {
-            value = v.DeepClone();
-            return true;
-        }
-        value = null;
-        return false;
+        return myDict.TryGetValue(key, out value);
     }
 
     /// <inheritdoc />
-    public ICollection<JToken> Values => myDict.Values;
+    public ICollection<JsonElement> Values => myDict.Values;
 
-    [OnDeserialized]
-    private void OnDeserialized(StreamingContext context)
-    {
-        MakeReadonly();
-    }
-
-    #region Explicit Interface Implementations
+#region Explicit Interface Implementations
 
     /// <inheritdoc />
-    IEnumerator<KeyValuePair<string, JToken>> IEnumerable<KeyValuePair<string, JToken>>.GetEnumerator()
+    IEnumerator<KeyValuePair<string, JsonElement>> IEnumerable<KeyValuePair<string, JsonElement>>.GetEnumerator()
     {
         return myDict.GetEnumerator();
     }
@@ -180,44 +147,49 @@ public class WikiReadOnlyDictionary : IDictionary<string, JToken>
     }
 
     /// <inheritdoc />
-    void ICollection<KeyValuePair<string, JToken>>.Add(KeyValuePair<string, JToken> item)
+    void ICollection<KeyValuePair<string, JsonElement>>.Add(KeyValuePair<string, JsonElement> item)
     {
         throw new NotSupportedException();
     }
 
     /// <inheritdoc />
-    void ICollection<KeyValuePair<string, JToken>>.Clear()
+    void ICollection<KeyValuePair<string, JsonElement>>.Clear()
     {
         throw new NotSupportedException();
     }
 
     /// <inheritdoc />
-    bool ICollection<KeyValuePair<string, JToken>>.Contains(KeyValuePair<string, JToken> item)
+    bool ICollection<KeyValuePair<string, JsonElement>>.Contains(KeyValuePair<string, JsonElement> item)
     {
         return myDict.Contains(item);
     }
 
     /// <inheritdoc />
-    void ICollection<KeyValuePair<string, JToken>>.CopyTo(KeyValuePair<string, JToken>[] array, int arrayIndex)
+    void ICollection<KeyValuePair<string, JsonElement>>.CopyTo(KeyValuePair<string, JsonElement>[] array, int arrayIndex)
     {
-        myDict.CopyTo(array, arrayIndex);
+        ((ICollection<KeyValuePair<string, JsonElement>>)myDict).CopyTo(array, arrayIndex);
     }
 
     /// <inheritdoc />
-    bool ICollection<KeyValuePair<string, JToken>>.Remove(KeyValuePair<string, JToken> item)
+    bool ICollection<KeyValuePair<string, JsonElement>>.Remove(KeyValuePair<string, JsonElement> item)
     {
         throw new NotSupportedException();
     }
 
     /// <inheritdoc />
-    bool ICollection<KeyValuePair<string, JToken>>.IsReadOnly => _IsReadOnly;
+    bool ICollection<KeyValuePair<string, JsonElement>>.IsReadOnly => true;
 
     /// <inheritdoc />
-    void IDictionary<string, JToken>.Add(string key, JToken value)
+    void IDictionary<string, JsonElement>.Add(string key, JsonElement value)
+        => throw new NotSupportedException();
+
+#endregion
+
+    protected virtual void OnDeserialized()
     {
-        if (_IsReadOnly) throw new NotSupportedException();
-        myDict.Add(key, value);
     }
 
-    #endregion
+    /// <inheritdoc />
+    void IJsonOnDeserialized.OnDeserialized() => OnDeserialized();
+
 }

@@ -1,6 +1,5 @@
-﻿using Newtonsoft.Json;
-using Newtonsoft.Json.Converters;
-using Newtonsoft.Json.Linq;
+﻿using System.Text.Json;
+using System.Text.Json.Nodes;
 using WikiClientLibrary.Generators.Primitive;
 using WikiClientLibrary.Infrastructures;
 using WikiClientLibrary.Sites;
@@ -171,37 +170,12 @@ public class RecentChangesGenerator : WikiPageGenerator<RecentChangeItem>
     /// <inheritdoc />
     public override string ListName => "recentchanges";
 
-    private JsonSerializer? rcitemSerializer;
-
     /// <inheritdoc />
-    protected override RecentChangeItem ItemFromJson(JToken json)
+    protected override RecentChangeItem ItemFromJson(JsonNode json)
     {
-        var serializer = rcitemSerializer;
-        if (serializer == null)
-        {
-            serializer = Utility.CreateWikiJsonSerializer();
-            serializer.Converters.Insert(0, new RcEntryCreator(Site));
-            Volatile.Write(ref rcitemSerializer, serializer);
-        }
-        return json.ToObject<RecentChangeItem>(serializer);
-    }
-
-    private class RcEntryCreator : CustomCreationConverter<RecentChangeItem>
-    {
-
-        public RcEntryCreator(WikiSite site)
-        {
-            if (site == null) throw new ArgumentNullException(nameof(site));
-            Site = site;
-        }
-
-        public WikiSite Site { get; }
-
-        public override RecentChangeItem Create(Type objectType)
-        {
-            return new RecentChangeItem(Site);
-        }
-
+        var rcItem = json.Deserialize<RecentChangeItem>(MediaWikiHelper.WikiJsonSerializerOptions);
+        rcItem.OnDeserialized(this.Site);
+        return rcItem;
     }
 
 }

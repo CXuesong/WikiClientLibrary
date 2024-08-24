@@ -1,8 +1,10 @@
 ﻿using System.Globalization;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
+using System.Text.Json;
+using System.Text.Json.Nodes;
+using System.Text.Json.Serialization;
 using WikiClientLibrary.Client;
 using WikiClientLibrary.Generators.Primitive;
+using WikiClientLibrary.Infrastructures;
 using WikiClientLibrary.Pages;
 using WikiClientLibrary.Sites;
 
@@ -43,8 +45,8 @@ public class QueryPageGenerator : WikiPageGenerator<QueryPageResultItem>
     public static async Task<IList<string>> GetQueryPageNamesAsync(WikiSite site)
     {
         var module = await RequestHelper.QueryParameterInformationAsync(site, "query+querypage");
-        var pa = module["parameters"].First(p => (string)p["name"] == "page");
-        return ((JArray)pa["type"]).ToObject<IList<string>>();
+        var pa = module["parameters"].AsArray().First(p => (string)p["name"] == "page");
+        return pa["type"].Deserialize<IList<string>>();
     }
 
     /// <summary>
@@ -68,7 +70,7 @@ public class QueryPageGenerator : WikiPageGenerator<QueryPageResultItem>
     /// </remarks>
     public async Task<QueryPageResultInfo> GetQueryPageResultInfoAsync(CancellationToken cancellationToken = default)
     {
-        var jresult = await Site.InvokeMediaWikiApiAsync(new MediaWikiFormRequestMessage(
+        var jresult = await Site.InvokeMediaWikiApiAsync2(new MediaWikiFormRequestMessage(
             new
             {
                 action = "query",
@@ -79,7 +81,8 @@ public class QueryPageGenerator : WikiPageGenerator<QueryPageResultItem>
             }), cancellationToken);
         var itemsRoot = RequestHelper.FindQueryResponseItemsRoot(jresult, ListName);
         if (itemsRoot == null) throw new UnexpectedDataException();
-        return itemsRoot.ToObject<QueryPageResultInfo>(Utility.WikiJsonSerializer);
+        return itemsRoot.Deserialize<QueryPageResultInfo>(MediaWikiHelper.WikiJsonSerializerOptions)
+               ?? throw new UnexpectedDataException();
     }
 
     /// <summary>
@@ -99,16 +102,16 @@ public class QueryPageGenerator : WikiPageGenerator<QueryPageResultItem>
     }
 
     /// <inheritdoc />
-    protected override JArray? ItemsFromResponse(JToken response)
+    protected override JsonArray? ItemsFromResponse(JsonNode response)
     {
         var itemsRoot = RequestHelper.FindQueryResponseItemsRoot(response, ListName);
-        return (JArray?)itemsRoot?["results"];
+        return itemsRoot?["results"]?.AsArray();
     }
 
     /// <inheritdoc />
-    protected override QueryPageResultItem ItemFromJson(JToken json)
+    protected override QueryPageResultItem ItemFromJson(JsonNode json)
     {
-        return json.ToObject<QueryPageResultItem>(Utility.WikiJsonSerializer);
+        return json.Deserialize<QueryPageResultItem>(MediaWikiHelper.WikiJsonSerializerOptions)!;
     }
 
     /// <inheritdoc/>
@@ -123,47 +126,40 @@ public class QueryPageGenerator : WikiPageGenerator<QueryPageResultItem>
 /// <summary>
 /// Contains the basic information of a specific MediaWiki query page result set.
 /// </summary>
-[JsonObject(MemberSerialization.OptIn)]
-public sealed class QueryPageResultInfo
+[JsonContract]
+public sealed record QueryPageResultInfo
 {
 
-    internal QueryPageResultInfo()
-    {
-    }
-
     /// <summary>Name of the query page.</summary>
-    [JsonProperty]
-    public string Name { get; private set; } = "";
+    public required string Name { get; init; }
 
     /// <summary>Whether the returned query page result is a cached result set.</summary>
-    [JsonProperty("cached")]
-    public bool IsCached { get; private set; }
+    [JsonPropertyName("cached")]
+    public bool IsCached { get; init; }
 
     /// <summary>Timestamp of the cached result set, if <see cref="IsCached"/> is <c>true</c>.</summary>
-    [JsonProperty]
-    public DateTime CachedTimestamp { get; private set; }
+    public DateTime CachedTimestamp { get; init; }
 
     /// <summary>Maximum result count, if available.</summary>
-    [JsonProperty("maxresults")]
-    public int MaxResultCount { get; private set; }
+    [JsonPropertyName("maxresults")]
+    public int MaxResultCount { get; init; }
 
 }
 
-[JsonObject(MemberSerialization.OptIn)]
-public sealed class QueryPageResultItem
+[JsonContract]
+public sealed record QueryPageResultItem
 {
 
     // MaxValue: not resolved yet.
     // MW 1.19 does not have this field.
-    [JsonProperty("timestamp")] private DateTime _Timestamp = DateTime.MaxValue;
+    [JsonInclude] [JsonPropertyName("timestamp")] private DateTime _Timestamp = DateTime.MaxValue;
 
     /// <summary>Title of the page, or title of the entry, depending on the nature of query page.</summary>
-    [JsonProperty]
-    public string Title { get; private set; } = "";
+    public string Title { get; init; } = "";
 
     /// <summary>Namespace of the page.</summary>
-    [JsonProperty("ns")]
-    public int NamespaceId { get; private set; }
+    [JsonPropertyName("ns")]
+    public int NamespaceId { get; init; }
 
     /// <summary>Value associated with the page or the entry specified by <see cref="Title"/>, if applicable.</summary>
     /// <remarks>
@@ -186,8 +182,7 @@ public sealed class QueryPageResultItem
     /// </item>
     /// </list>
     /// </remarks>
-    [JsonProperty]
-    public string Value { get; private set; } = "";
+    public string Value { get; init; } = "";
 
     /// <summary>
     /// Timestamp associated with the query page result item, if applicable.

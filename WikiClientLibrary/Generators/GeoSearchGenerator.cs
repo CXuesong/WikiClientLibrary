@@ -1,5 +1,5 @@
 ﻿using System.Globalization;
-using Newtonsoft.Json.Linq;
+using System.Text.Json.Nodes;
 using WikiClientLibrary.Generators.Primitive;
 using WikiClientLibrary.Infrastructures;
 using WikiClientLibrary.Pages.Queries.Properties;
@@ -120,10 +120,10 @@ public class GeoSearchGenerator : WikiPageGenerator<GeoSearchResultItem>
     }
 
     /// <inheritdoc />
-    protected override GeoSearchResultItem ItemFromJson(JToken json)
+    protected override GeoSearchResultItem ItemFromJson(JsonNode json)
     {
-        return new GeoSearchResultItem(MediaWikiHelper.PageStubFromJson((JObject)json),
-            MediaWikiHelper.GeoCoordinateFromJson((JObject)json),
+        return new GeoSearchResultItem(MediaWikiHelper.PageStubFromJson(json.AsObject()),
+            MediaWikiHelper.GeoCoordinateFromJson(json.AsObject()),
             json["primary"] != null, (double)json["dist"]);
     }
 

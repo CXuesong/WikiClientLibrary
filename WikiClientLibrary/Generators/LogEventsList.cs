@@ -1,8 +1,9 @@
 ﻿using System.Diagnostics;
 using System.Runtime.Serialization;
 using System.Text;
+using System.Text.Json;
+using System.Text.Json.Nodes;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using WikiClientLibrary.Generators.Primitive;
 using WikiClientLibrary.Infrastructures;
 using WikiClientLibrary.Sites;
@@ -135,36 +136,35 @@ public class LogEventsList : WikiList<LogEventItem>
     };
 
     /// <inheritdoc />
-    protected override LogEventItem ItemFromJson(JToken json)
+    protected override LogEventItem ItemFromJson(JsonNode json)
     {
         if (json["params"] == null)
         {
             // Can be legacy log event format (as in MW 1.19),
             // Need to fix it.
-            // Fist, check if there are suspectable legacy "params" node
-            var type = (string)json["type"];
+            // Fist, check if there are suspected legacy "params" node
+            var type = (string?)json["type"];
             if (type != null && json[type] != null)
             {
                 // Do not change the original JSON.
                 json = json.DeepClone();
-                var joldParams = (JObject)json[type];
-                var jparams = new JObject();
-                foreach (var prop in joldParams.Properties())
+                var joldParams = json[type]!.AsObject().ToList();
+                // Detach children of json[type]
+                json[type]!.AsObject().Clear();
+                json.AsObject().Remove(type);
+
+                var jparams = new JsonObject();
+                foreach (var (key, value) in joldParams)
                 {
-                    // Detach
-                    var value = prop.Value;
-                    prop.Value = null;
-                    if (legacyLogEventParamNameMapping.TryGetValue(prop.Name, out var mappedName))
-                        jparams[mappedName] = value;
-                    else
-                        jparams[prop.Name] = value;
+                    var mappedKey = legacyLogEventParamNameMapping.GetValueOrDefault(key, key);
+                    jparams[mappedKey] = value;
                 }
 
                 json["params"] = jparams;
             }
         }
 
-        return json.ToObject<LogEventItem>(Utility.WikiJsonSerializer);
+        return json.Deserialize<LogEventItem>(MediaWikiHelper.WikiJsonSerializerOptions);
     }
 
 }
@@ -326,7 +326,17 @@ public sealed class LogEventItem
         sb.Append(",{");
         if (Params.Count > 0)
         {
-            sb.Append(string.Join(",", Params.Select(p => p.Key + "=" + p.Value.ToString(Formatting.None))));
+            foreach (var p in Params)
+            {
+                sb.Append(p.Key);
+                sb.Append('=');
+                sb.Append(p.Value.ToString());
+                sb.Append(',');
+            }
+            if (sb.Length > 0)
+            {
+                sb.Length--; // Remove the trailing comma
+            }
         }
         else if ((HiddenFields & LogEventHiddenFields.Action) == LogEventHiddenFields.Action)
         {
@@ -378,12 +388,7 @@ public enum LogEventHiddenFields
 public class LogParameterCollection : WikiReadOnlyDictionary
 {
 
-    internal static readonly LogParameterCollection Empty = new LogParameterCollection();
-
-    static LogParameterCollection()
-    {
-        Empty.MakeReadonly();
-    }
+    internal static readonly LogParameterCollection Empty = new();
 
     /// <summary>
     /// (<see cref="LogActions.Move"/>) Namespace ID of the move target.

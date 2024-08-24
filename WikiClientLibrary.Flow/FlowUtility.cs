@@ -15,7 +15,7 @@ internal static class FlowUtility
             DateFormatHandling = DateFormatHandling.IsoDateFormat,
             NullValueHandling = NullValueHandling.Include,
             ContractResolver = new CamelCasePropertyNamesContractResolver(), // Flow uses camel-case.
-            Converters = { new WikiStringEnumJsonConverter(), new FlowUserStubConverter(), },
+            Converters = { new WikiStringEnumJsonConverter0(), new FlowUserStubConverter(), },
         });
 
     public static bool IsNullOrJsonNull(JToken token)

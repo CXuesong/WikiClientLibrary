@@ -2,9 +2,8 @@
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
+using System.Text.Json.Nodes;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using WikiClientLibrary.Client;
 using WikiClientLibrary.Files;
 using WikiClientLibrary.Generators.Primitive;
@@ -306,7 +305,7 @@ public partial class WikiPage
         if (!Exists) throw new InvalidOperationException(string.Format(Prompts.ExceptionWikiPageNotExists1, this));
     }
 
-    protected internal virtual void OnLoadPageInfo(JObject jpage, IWikiPageQueryProvider options)
+    protected internal virtual void OnLoadPageInfo(JsonObject jpage, IWikiPageQueryProvider options)
     {
         // Initialize
         propertyGroups?.Clear();
@@ -431,10 +430,10 @@ public partial class WikiPage
             // (or at least after the text parameter). That way, if the edit gets interrupted,
             // the token won't be passed and the edit will fail.
             // This is done automatically by mw.Api.
-            JToken jresult;
+            JsonNode jresult;
             try
             {
-                jresult = await Site.InvokeMediaWikiApiAsync(new MediaWikiFormRequestMessage(new
+                jresult = await Site.InvokeMediaWikiApiAsync2(new MediaWikiFormRequestMessage(new
                 {
                     action = "edit",
                     token = WikiSiteToken.Edit,
@@ -532,10 +531,10 @@ public partial class WikiPage
             // (or at least after the text parameter). That way, if the edit gets interrupted,
             // the token won't be passed and the edit will fail.
             // This is done automatically by mw.Api.
-            JToken jresult;
+            JsonNode jresult;
             try
             {
-                jresult = await Site.InvokeMediaWikiApiAsync(new MediaWikiFormRequestMessage(new
+                jresult = await Site.InvokeMediaWikiApiAsync2(new MediaWikiFormRequestMessage(new
                 {
                     action = "move",
                     token = WikiSiteToken.Move,
@@ -599,10 +598,10 @@ public partial class WikiPage
         using (Site.BeginActionScope(this))
         using (await Site.ModificationThrottler.QueueWorkAsync("Delete: " + this, cancellationToken))
         {
-            JToken jresult;
+            JsonNode jresult;
             try
             {
-                jresult = await Site.InvokeMediaWikiApiAsync(new MediaWikiFormRequestMessage(new
+                jresult = await Site.InvokeMediaWikiApiAsync2(new MediaWikiFormRequestMessage(new
                 {
                     action = "delete",
                     token = WikiSiteToken.Delete,
@@ -807,20 +806,16 @@ public enum PagePurgeOptions
 /// <summary>
 /// Page protection information.
 /// </summary>
-[JsonObject(MemberSerialization.OptIn)]
+[JsonContract]
 public class ProtectionInfo
 {
 
-    [JsonProperty]
     public string Type { get; private set; } = "";
 
-    [JsonProperty]
     public string Level { get; private set; } = "";
 
-    [JsonProperty("expiry")]
     public DateTime Expiry { get; private set; }
 
-    [JsonProperty]
     public bool Cascade { get; private set; }
 
     /// <inheritdoc/>
@@ -834,19 +829,14 @@ public class ProtectionInfo
 /// <summary>
 /// A read-only collection Containing additional page properties.
 /// </summary>
-[JsonDictionary]
+[JsonContract]
 public class PagePropertyCollection : WikiReadOnlyDictionary
 {
 
     /// <summary>
     /// An empty instance.
     /// </summary>
-    internal static readonly PagePropertyCollection Empty = new PagePropertyCollection();
-
-    static PagePropertyCollection()
-    {
-        Empty.MakeReadonly();
-    }
+    internal static readonly PagePropertyCollection Empty = new ();
 
     /// <summary>
     /// Determines whether the page is a disambiguation page.

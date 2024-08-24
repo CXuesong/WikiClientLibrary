@@ -1,4 +1,4 @@
-﻿using Newtonsoft.Json.Linq;
+﻿using System.Text.Json.Nodes;
 using WikiClientLibrary.Generators.Primitive;
 using WikiClientLibrary.Infrastructures;
 using WikiClientLibrary.Sites;
@@ -6,8 +6,9 @@ using WikiClientLibrary.Sites;
 namespace WikiClientLibrary.Generators;
 
 /// <summary>
-/// List all pages using a given page property. The list of available properties can be found at action=query&amp;list=pagepropnames.
+/// List all pages using a given page property.
 /// </summary>
+/// <seealso cref="PropertyName"/>
 public class PagesWithPropGenerator : WikiPageGenerator<PagesWithPropResultItem>
 {
 
@@ -17,9 +18,22 @@ public class PagesWithPropGenerator : WikiPageGenerator<PagesWithPropResultItem>
     }
 
     /// <summary>
-    /// Page property for which to enumerate pages (action=query&list=pagepropnames returns page property names in use).
+    /// Page property for which to enumerate pages.
     /// </summary>
-    public string PropertyName { get; set; } = string.Empty;
+    /// <remarks>
+    /// <para>
+    /// The list of available properties can be found at
+    /// <a href="https://www.mediawiki.org/wiki/Special:ApiSandbox#action=query&amp;list=pagepropnames"><c>action=query&amp;list=pagepropnames</c></a>.
+    /// A non-exhaustive example includes
+    /// <list type="bullet">
+    /// <item><description><c>defaultsort</c></description></item>
+    /// <item><description><c>disambiguation</c></description></item>
+    /// <item><description><c>displaytitle</c></description></item>
+    /// <item><description><c>forcetoc</c></description></item>
+    /// </list>
+    /// </para>
+    /// </remarks>
+    public string PropertyName { get; set; }
 
     /// <summary>
     /// Gets/sets a value that indicates whether the links should be listed in
@@ -40,9 +54,9 @@ public class PagesWithPropGenerator : WikiPageGenerator<PagesWithPropResultItem>
         };
     }
 
-    protected override PagesWithPropResultItem ItemFromJson(JToken json)
+    protected override PagesWithPropResultItem ItemFromJson(JsonNode json)
     {
-        return new PagesWithPropResultItem(MediaWikiHelper.PageStubFromJson((JObject)json), (string)json["value"]);
+        return new PagesWithPropResultItem(MediaWikiHelper.PageStubFromJson(json.AsObject()), (string)json["value"]);
     }
 
 }

@@ -1,4 +1,4 @@
-﻿using Newtonsoft.Json.Linq;
+﻿using System.Text.Json.Nodes;
 using WikiClientLibrary.Generators.Primitive;
 using WikiClientLibrary.Infrastructures;
 using WikiClientLibrary.Pages;
@@ -24,10 +24,10 @@ public class RandomPageGenerator : WikiPageGenerator
     }
 
     /// <inheritdoc />
-    protected override WikiPageStub ItemFromJson(JToken json)
+    protected override WikiPageStub ItemFromJson(JsonNode json)
     {
         // Note: page ID is contained in ["id"] rather than ["pageid"].
-        return new WikiPageStub((long)json["id"], (string)json["title"], (int)json["ns"]);
+        return new WikiPageStub((long)json["id"], (string?)json["title"], (int)json["ns"]);
     }
 
     /// <summary>

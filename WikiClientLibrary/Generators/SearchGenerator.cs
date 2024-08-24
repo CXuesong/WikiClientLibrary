@@ -1,5 +1,6 @@
 ﻿using System.Collections.ObjectModel;
-using Newtonsoft.Json.Linq;
+using System.Text.Json;
+using System.Text.Json.Nodes;
 using WikiClientLibrary.Generators.Primitive;
 using WikiClientLibrary.Infrastructures;
 using WikiClientLibrary.Sites;
@@ -110,9 +111,9 @@ public class SearchGenerator : WikiPageGenerator<SearchResultItem>
     protected override bool DistinctGeneratedPages => true;
 
     /// <inheritdoc />
-    protected override SearchResultItem ItemFromJson(JToken json)
+    protected override SearchResultItem ItemFromJson(JsonNode json)
     {
-        return json.ToObject<SearchResultItem>(Utility.WikiJsonSerializer);
+        return json.Deserialize<SearchResultItem>(MediaWikiHelper.WikiJsonSerializerOptions);
     }
 
 }
