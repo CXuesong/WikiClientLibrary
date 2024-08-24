@@ -1,7 +1,6 @@
 ﻿using System.Diagnostics;
 using System.Globalization;
 using System.Runtime.CompilerServices;
-using Newtonsoft.Json.Linq;
 using WikiClientLibrary.Client;
 using WikiClientLibrary.Infrastructures;
 using WikiClientLibrary.Sites;
@@ -223,7 +222,7 @@ public readonly struct WikiPageStub : IEquatable<WikiPageStub>
     /// <exception cref="ArgumentNullException">Either <paramref name="site"/> or <paramref name="ids"/> is <c>null</c>.</exception>
     /// <returns>A sequence of <see cref="WikiPageStub"/> containing the page information.</returns>
     /// <remarks>For how the missing pages are handled, see the "remarks" section of <see cref="WikiPage"/>.</remarks>
-    public static async IAsyncEnumerable<WikiPageStub> FromPageIds(WikiSite site, IEnumerable<int> ids,
+    public static async IAsyncEnumerable<WikiPageStub> FromPageIds(WikiSite site, IEnumerable<long> ids,
         [EnumeratorCancellation] CancellationToken cancellationToken = default)
     {
         var titleLimit = site.AccountInfo.HasRight(UserRights.ApiHighLimits)
@@ -231,7 +230,7 @@ public readonly struct WikiPageStub : IEquatable<WikiPageStub>
             : 50;
         foreach (var partition in ids.Partition(titleLimit))
         {
-            var jresult = await site.InvokeMediaWikiApiAsync(
+            var jresult = await site.InvokeMediaWikiApiAsync2(
                 new MediaWikiFormRequestMessage(new { action = "query", pageids = MediaWikiHelper.JoinValues(partition), }),
                 cancellationToken);
             Debug.Assert(jresult["query"] != null);
@@ -241,7 +240,7 @@ public readonly struct WikiPageStub : IEquatable<WikiPageStub>
                 {
                     var jpage = jpages[id.ToString(CultureInfo.InvariantCulture)];
                     if (jpage["missing"] == null)
-                        yield return new WikiPageStub(id, (string)jpage["title"], (int)jpage["ns"]);
+                        yield return new WikiPageStub(id, (string?)jpage["title"], (int)jpage["ns"]);
                     else
                         yield return new WikiPageStub(id, MissingPageTitle, UnknownNamespaceId);
                 }
@@ -266,25 +265,30 @@ public readonly struct WikiPageStub : IEquatable<WikiPageStub>
             : 50;
         foreach (var partition in titles.Partition(titleLimit))
         {
-            var jresult = await site.InvokeMediaWikiApiAsync(
-                new MediaWikiFormRequestMessage(new { action = "query", titles = MediaWikiHelper.JoinValues(partition), }),
+            var jresult = await site.InvokeMediaWikiApiAsync2(
+                new MediaWikiFormRequestMessage(new
+                {
+                    action = "query", titles = MediaWikiHelper.JoinValues(partition),
+                }),
                 cancellationToken);
             Debug.Assert(jresult["query"] != null);
             // Process title normalization.
-            var normalizedDict = jresult["query"]["normalized"]?.ToDictionary(n => (string)n["from"],
-                n => (string)n["to"]);
-            var pageDict = ((JObject)jresult["query"]["pages"]).Properties()
-                .ToDictionary(p => (string)p.Value["title"], p => p.Value);
-            using var ecs = ExecutionContextStash.Capture();
+            var normalizedDict = jresult["query"]["normalized"]?.AsArray().ToDictionary(
+                n => (string)n["from"]!,
+                n => (string)n["to"]
+            );
+            var pageDict = jresult["query"]["pages"].AsObject()
+                .ToDictionary(p => (string)p.Value["title"]!, p => p.Value);
+            using var _ = ExecutionContextStash.Capture();
             foreach (var name in partition)
             {
                 if (normalizedDict == null || !normalizedDict.TryGetValue(name, out var normalizedName))
                     normalizedName = name;
                 var jpage = pageDict[normalizedName];
                 if (jpage["missing"] == null)
-                    yield return (new WikiPageStub((long)jpage["pageid"], (string)jpage["title"], (int)jpage["ns"]));
+                    yield return new WikiPageStub((long)jpage["pageid"], (string?)jpage["title"], (int)jpage["ns"]);
                 else
-                    yield return (new WikiPageStub(MissingPageIdMask, (string)jpage["title"], (int)jpage["ns"]));
+                    yield return new WikiPageStub(MissingPageIdMask, (string?)jpage["title"], (int)jpage["ns"]);
             }
         }
     }

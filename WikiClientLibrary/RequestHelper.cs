@@ -410,7 +410,7 @@ internal static class RequestHelper
             throw new InvalidOperationException(Prompts.ExceptionPatrolledByRevisionNotSupported);
         try
         {
-            var jresult = await site.InvokeMediaWikiApiAsync(new MediaWikiFormRequestMessage(new
+            var jresult = await site.InvokeMediaWikiApiAsync2(new MediaWikiFormRequestMessage(new
             {
                 action = "patrol", rcid = recentChangeId, revid = revisionId, token = WikiSiteToken.Patrol,
             }), cancellationToken);

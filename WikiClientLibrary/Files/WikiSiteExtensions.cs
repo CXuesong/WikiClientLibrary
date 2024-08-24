@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics;
+using System.Text.Json;
 using Microsoft.Extensions.Logging;
 using WikiClientLibrary.Client;
 using WikiClientLibrary.Infrastructures;
@@ -69,8 +70,8 @@ public static class WikiSiteExtensions
                 requestFields[p.Key] = p.Value;
             var request = new MediaWikiFormRequestMessage(requestFields, true);
             site.Logger.LogDebug("Start uploading.");
-            var jresult = await site.InvokeMediaWikiApiAsync(request, cancellationToken);
-            var result = jresult["upload"].ToObject<UploadResult>(Utility.WikiJsonSerializer);
+            var jresult = await site.InvokeMediaWikiApiAsync2(request, cancellationToken);
+            var result = jresult["upload"].Deserialize<UploadResult>(MediaWikiHelper.WikiJsonSerializerOptions);
             site.Logger.LogInformation("Uploaded. Result={Result}.", result.ResultCode);
             return result;
         }

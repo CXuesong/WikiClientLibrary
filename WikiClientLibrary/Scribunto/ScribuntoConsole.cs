@@ -1,6 +1,8 @@
-﻿using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
+﻿using System.Text.Json;
+using System.Text.Json.Nodes;
+using System.Text.Json.Serialization;
 using WikiClientLibrary.Client;
+using WikiClientLibrary.Infrastructures;
 using WikiClientLibrary.Sites;
 
 namespace WikiClientLibrary.Scribunto;
@@ -170,10 +172,10 @@ public class ScribuntoConsole
     internal static async Task<ScribuntoEvaluationResult> InvokeApiAsync(WikiSite site, long? sessionId, string? title, string? content,
         string question, bool clear, CancellationToken ct)
     {
-        JToken jresult;
+        JsonNode jresult;
         try
         {
-            jresult = await site.InvokeMediaWikiApiAsync(new MediaWikiFormRequestMessage(new
+            jresult = await site.InvokeMediaWikiApiAsync2(new MediaWikiFormRequestMessage(new
             {
                 action = "scribunto-console",
                 // Since wikimedia/mediawiki-extensions-Scribunto@0f2585244cbdc22580cc431745328a8f1fb270bd (1.40.0-wmf.5)
@@ -190,7 +192,7 @@ public class ScribuntoConsole
             throw new NotSupportedException(
                 "The MediaWiki site does not support Scribunto console. Check whether the required extension has been installed.", ex);
         }
-        var result = jresult.ToObject<ScribuntoEvaluationResult>(Utility.WikiJsonSerializer);
+        var result = jresult.Deserialize<ScribuntoEvaluationResult>(MediaWikiHelper.WikiJsonSerializerOptions);
         return result.Type switch
         {
             ScribuntoEvaluationResultType.Normal => result,
@@ -219,24 +221,18 @@ public enum ScribuntoEvaluationResultType
 
 }
 
-[JsonObject(MemberSerialization.OptIn)]
-public class ScribuntoEvaluationResult
+[JsonContract]
+public sealed record ScribuntoEvaluationResult
 {
 
-#pragma warning disable CS8618 // 在退出构造函数时，不可为 null 的字段必须包含非 null 值。请考虑声明为可以为 null。
-    public ScribuntoEvaluationResult()
-#pragma warning restore CS8618 // 在退出构造函数时，不可为 null 的字段必须包含非 null 值。请考虑声明为可以为 null。
-    {
-    }
-
     /// <summary>The evaluation result type.</summary>
-    [JsonProperty("type")]
-    public ScribuntoEvaluationResultType Type { get; set; }
+    [JsonPropertyName("type")]
+    public ScribuntoEvaluationResultType Type { get; init; }
 
     /// <summary>The text outputted to the console using <c>mw.log</c>.</summary>
     /// <seealso cref="ReturnValue"/>
-    [JsonProperty("print")]
-    public string Output { get; set; }
+    [JsonPropertyName("print")]
+    public string Output { get; init; } = "";
 
     /// <summary>The string representation of the evaluation return value.</summary>
     /// <remarks>
@@ -245,12 +241,12 @@ public class ScribuntoEvaluationResult
     /// both Lua number <c>123</c> and string <c>"123"</c> will be CLR string <c>"123"</c>.
     /// </remarks>
     /// <seealso cref="Output"/>
-    [JsonProperty("return")]
-    public string ReturnValue { get; set; }
+    [JsonPropertyName("return")]
+    public string ReturnValue { get; init; } = "";
 
     /// <summary>The current Scribunto console session ID.</summary>
-    [JsonProperty("session")]
-    public long SessionId { get; set; }
+    [JsonPropertyName("session")]
+    public long SessionId { get; init; }
 
     /// <summary>Whether the server indicates this session ID is new.</summary>
     /// <remarks>
@@ -260,15 +256,15 @@ public class ScribuntoEvaluationResult
     /// If you resets/clears the session, which does not change the session ID,
     /// this property will be <c>false</c>.
     /// </remarks>
-    [JsonProperty("sessionIsNew")]
-    public bool IsNewSession { get; set; }
+    [JsonPropertyName("sessionIsNew")]
+    public bool IsNewSession { get; init; }
 
     /// <summary>Server memory consumption of the current evaluation session.</summary>
-    [JsonProperty("sessionSize")]
-    public int SessionSize { get; private set; }
+    [JsonPropertyName("sessionSize")]
+    public int SessionSize { get; init; }
 
     /// <summary>Maximum allowed server memory consumption of the current evaluation session.</summary>
-    [JsonProperty("sessionMaxSize")]
-    public int SessionMaxSize { get; private set; }
+    [JsonPropertyName("sessionMaxSize")]
+    public int SessionMaxSize { get; init; }
 
 }

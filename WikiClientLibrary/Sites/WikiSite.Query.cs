@@ -1,17 +1,19 @@
 ﻿using System.Text;
-using Newtonsoft.Json.Linq;
+using System.Text.Json;
+using System.Text.Json.Nodes;
 using WikiClientLibrary.Client;
+using WikiClientLibrary.Infrastructures;
 
 namespace WikiClientLibrary.Sites;
 
 partial class WikiSite
 {
 
-    private async Task<JArray> FetchMessagesAsync(string messagesExpr, CancellationToken cancellationToken)
+    private async Task<JsonArray> FetchMessagesAsync(string messagesExpr, CancellationToken cancellationToken)
     {
-        var jresult = await InvokeMediaWikiApiAsync(
+        var jresult = await InvokeMediaWikiApiAsync2(
             new MediaWikiFormRequestMessage(new { action = "query", meta = "allmessages", ammessages = messagesExpr, }), cancellationToken);
-        return (JArray)jresult["query"]["allmessages"];
+        return jresult["query"]["allmessages"]!.AsArray();
         //return jresult.ToDictionary(m => , m => (string) m["*"]);
     }
 
@@ -133,11 +135,11 @@ partial class WikiSite
     /// </summary>
     public async Task<SiteStatistics> GetStatisticsAsync(CancellationToken cancellationToken)
     {
-        var jobj = await InvokeMediaWikiApiAsync(
+        var jobj = await InvokeMediaWikiApiAsync2(
             new MediaWikiFormRequestMessage(new { action = "query", meta = "siteinfo", siprop = "statistics", }), cancellationToken);
-        var jstat = (JObject?)jobj["query"]?["statistics"];
+        var jstat = jobj["query"]?["statistics"]?.AsObject();
         if (jstat == null) throw new UnexpectedDataException();
-        var parsed = jstat.ToObject<SiteStatistics>();
+        var parsed = jstat.Deserialize<SiteStatistics>(MediaWikiHelper.WikiJsonSerializerOptions);
         return parsed;
     }
 
@@ -257,7 +259,7 @@ partial class WikiSite
           */
         if (string.IsNullOrEmpty(searchExpression)) throw new ArgumentNullException(nameof(searchExpression));
         if (maxCount <= 0) throw new ArgumentOutOfRangeException(nameof(maxCount));
-        var jresult = await InvokeMediaWikiApiAsync(new MediaWikiFormRequestMessage(new
+        var jresult = await InvokeMediaWikiApiAsync2(new MediaWikiFormRequestMessage(new
         {
             action = "opensearch",
             @namespace = defaultNamespaceId,
@@ -266,19 +268,23 @@ partial class WikiSite
             redirects = (options & OpenSearchOptions.ResolveRedirects) == OpenSearchOptions.ResolveRedirects,
         }), cancellationToken);
         var result = new List<OpenSearchResultEntry>();
-        var jarray = (JArray)jresult;
-        var titles = jarray.Count > 1 ? (JArray)jarray[1] : null;
-        var descs = jarray.Count > 2 ? (JArray)jarray[2] : null;
-        var urls = jarray.Count > 3 ? (JArray)jarray[3] : null;
-        if (titles != null)
+        var jarray = jresult.AsArray();
+        // No result.
+        if (jarray.Count <= 1) return result;
+
+        var titles = jarray[1]!.AsArray();
+        var descs = jarray.Count > 2 ? jarray[2]!.AsArray() : null;
+        var urls = jarray.Count > 3 ? jarray[3]!.AsObject() : null;
+
+        for (int i = 0; i < titles.Count; i++)
         {
-            for (int i = 0; i < titles.Count; i++)
+            var entry = new OpenSearchResultEntry
             {
-                var entry = new OpenSearchResultEntry { Title = (string)titles[i] };
-                if (descs != null) entry.Description = (string)descs[i];
-                if (urls != null) entry.Url = (string)urls[i];
-                result.Add(entry);
-            }
+                Title = (string)titles[i]!,
+                Description = (string?)descs?[i],
+                Url = (string?)urls?[i],
+            };
+            result.Add(entry);
         }
         return result;
     }
@@ -306,30 +312,25 @@ public enum OpenSearchOptions
 /// <summary>
 /// Represents an entry in opensearch result.
 /// </summary>
-public struct OpenSearchResultEntry
+public sealed record OpenSearchResultEntry
 {
 
     /// <summary>
     /// Title of the page.
     /// </summary>
-    public string Title { get; set; }
+    public required string Title { get; init; }
 
     /// <summary>
     /// Url of the page. May be null.
     /// </summary>
-    public string Url { get; set; }
+    public string? Url { get; init; }
 
     /// <summary>
     /// Description of the page. May be null.
     /// </summary>
-    public string Description { get; set; }
+    public string? Description { get; init; }
 
-    /// <summary>
-    /// 返回该实例的完全限定类型名。
-    /// </summary>
-    /// <returns>
-    /// 包含完全限定类型名的 <see cref="T:System.String"/>。
-    /// </returns>
+    /// <inheritdoc />
     public override string ToString()
     {
         return Title + (Description != null ? ":" + Description : null);

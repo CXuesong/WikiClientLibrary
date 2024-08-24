@@ -1,12 +1,11 @@
 ﻿using System.Collections;
 using System.Collections.Immutable;
 using System.Collections.ObjectModel;
-using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
-using System.Runtime.Serialization;
+using System.Text.Json;
+using System.Text.Json.Nodes;
+using System.Text.Json.Serialization;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using WikiClientLibrary.Infrastructures;
 
 namespace WikiClientLibrary.Sites;
@@ -15,64 +14,56 @@ namespace WikiClientLibrary.Sites;
 /// Provides read-only access to general site information.
 /// </summary>
 /// <seealso cref="WikiSite"/>
-[JsonObject(MemberSerialization.OptIn)]
-public sealed class SiteInfo
+[JsonContract]
+public sealed record SiteInfo
 {
 
-    private string _Generator;
-
-#pragma warning disable CS8618 // 在退出构造函数时，不可为 null 的字段必须包含非 null 值。请考虑声明为可以为 null。
-    public SiteInfo()
-#pragma warning restore CS8618 // 在退出构造函数时，不可为 null 的字段必须包含非 null 值。请考虑声明为可以为 null。
-    {
-    }
+    private string _Generator = "";
 
     /// <summary>
     /// The title of the main page, as found in MediaWiki:Mainpage. (MediaWiki 1.8+)
     /// </summary>
-    [JsonProperty] // This should be kept or private setter will be ignored by Newtonsoft.JSON.
-    public string MainPage { get; private set; }
+    public string MainPage { get; init; } = "";
 
 #region URL & Path
 
     /// <summary>
     /// The absolute path to the main page. (MediaWiki 1.8+)
     /// </summary>
-    [JsonProperty("base")]
-    public string BaseUrl { get; private set; }
+    [JsonPropertyName("base")]
+    public string BaseUrl { get; init; }
 
     /// <summary>
     /// The absolute or protocol-relative base URL for the server.
     /// (MediaWiki 1.16+, <a href="https://www.mediawiki.org/wiki/Manual:$wgServer">mw:Manual:$wgServer</a>)
     /// </summary>
-    [JsonProperty("server")]
-    public string ServerUrl { get; private set; }
+    [JsonPropertyName("server")]
+    public string ServerUrl { get; init; }
 
     /// <summary>
     /// The relative or absolute path to any article. $1 should be replaced by the article name.
     /// (MediaWiki 1.16+, <a href="https://www.mediawiki.org/wiki/Manual:$wgArticlePath">mw:Manual:$wgArticlePath</a>)
     /// </summary>
-    [JsonProperty]
-    public string ArticlePath { get; private set; }
+    public string ArticlePath { get; init; }
 
     /// <summary>
     /// The path of <c>index.php</c> relative to the document root.
     /// (MediaWiki 1.1.0+, <a href="https://www.mediawiki.org/wiki/Manual:$wgScript">mw:Manual:$wgScript</a>)
     /// </summary>
-    [JsonProperty("script")]
-    public string ScriptFilePath { get; private set; }
+    [JsonPropertyName("script")]
+    public string ScriptFilePath { get; init; }
 
     /// <summary>
     /// The base URL path relative to the document root. 
     /// (MediaWiki 1.1.0+, <a href="https://www.mediawiki.org/wiki/Manual:$wgScriptPath">mw:Manual:$wgScriptPath</a>)
     /// </summary>
-    [JsonProperty("scriptpath")]
-    public string ScriptDirectoryPath { get; private set; }
+    [JsonPropertyName("scriptpath")]
+    public string ScriptDirectoryPath { get; init; }
 
-    [JsonProperty("favicon")]
-    public string FavIconUrl { get; private set; }
+    [JsonPropertyName("favicon")]
+    public string FavIconUrl { get; init; }
 
-    private Tuple<string, string> articleUrlTemplateCache;
+    private Tuple<string, string>? articleUrlTemplateCache;
 
     /// <summary>
     /// Makes the full URL to the page of specified title.
@@ -120,22 +111,23 @@ public sealed class SiteInfo
 
 #region General
 
-    [JsonProperty]
-    public string SiteName { get; private set; }
+    public string SiteName { get; init; }
 
-    [JsonProperty("logo")]
-    public string LogoUrl { get; private set; }
+    [JsonPropertyName("logo")]
+    public string LogoUrl { get; init; }
 
     /// <summary>
     /// API version information as found in <c>$wgVersion</c>. (MW 1.8+)
     /// </summary>
     /// <remarks>Example value: <c>MediaWiki 1.28.0-wmf.15</c>.</remarks>
-    [JsonProperty("generator")]
+    /// 
+    [JsonInclude]
     public string Generator
     {
         get { return _Generator; }
         private set
         {
+            // TODO JSON check
             _Generator = value;
             if (value == null) return;
             var pos = 0;
@@ -161,21 +153,20 @@ public sealed class SiteInfo
     /// If WCL failed to extract version part from <see cref="Generator"/>, this property will be <see cref="MediaWikiVersion.Zero"/>.</para>
     /// <para>See <see cref="MediaWikiVersion.Parse(string,bool)"/> for more information about version suffix truncation.</para>
     /// </remarks>
+    [JsonIgnore]
     public MediaWikiVersion Version { get; private set; }
 
 #endregion
 
 #region Limitations
 
-    [JsonProperty]
-    public long MaxUploadSize { get; private set; }
+    public long MaxUploadSize { get; init; }
 
-    [JsonProperty]
-    public int MinUploadChunkSize { get; private set; }
+    public int MinUploadChunkSize { get; init; }
 
 #endregion
 
-    [JsonProperty]
+    [JsonInclude]
     private string Case
     {
         set
@@ -184,7 +175,7 @@ public sealed class SiteInfo
             {
                 "case-sensitive" => true,
                 "first-letter" => false,
-                _ => throw new ArgumentException("Invalid case value.")
+                _ => throw new ArgumentException("Invalid case value."),
             };
         }
     }
@@ -197,67 +188,77 @@ public sealed class SiteInfo
     /// <summary>
     /// The current time on the server. 1.16+
     /// </summary>
-    [JsonProperty]
-    public string Time { get; private set; }
+    public string Time { get; init; }
 
     /// <summary>
     /// The name of the wiki's time zone. See $wgLocaltimezone. 1.13+
     /// </summary>
     /// <remarks>This will be used for date display and not for what's stored in the database.</remarks>
-    [JsonProperty("timezone")]
-    public string TimeZoneName { get; private set; }
+    [JsonPropertyName("timezone")]
+    public string TimeZoneName { get; init; }
 
     /// <summary>
     /// The offset of the wiki's time zone, from UTC. See $wgLocalTZoffset. 1.13+
     /// </summary>
+    [JsonIgnore]
     public TimeSpan TimeOffset { get; private set; }
 
-    [JsonProperty("timeoffset")]
+    [JsonPropertyName("timeoffset")]
+    [JsonInclude]
     private int TimeOffsetProxy
     {
         set { TimeOffset = TimeSpan.FromMinutes(value); }
     }
 
+    private ReadOnlyDictionary<string, JsonElement>? extensionDataWrapper;
+
+    [JsonExtensionData][JsonInclude] private Dictionary<string, JsonElement>? extensionDataRaw;
+
     /// <summary>
     /// Gets the other extensible site information.
     /// </summary>
-    public IReadOnlyDictionary<string, JToken> ExtensionData { get; private set; }
-
-    [JsonExtensionData]
-    private IDictionary<string, JToken> ExtensionDataProxy { get; set; }
-
-    [OnDeserialized]
-    private void OnDeserialized(StreamingContext context)
+    public IReadOnlyDictionary<string, JsonElement> ExtensionData
     {
-        ExtensionData = new ReadOnlyDictionary<string, JToken>(ExtensionDataProxy ?? new Dictionary<string, JToken>());
+        get
+        {
+            if (extensionDataWrapper != null) { return extensionDataWrapper; }
+            // There should almost always be overflowed JSON props. No need to optimize for empty dict.
+            var inst = new ReadOnlyDictionary<string, JsonElement>(extensionDataRaw ?? new Dictionary<string, JsonElement>());
+            var original = Interlocked.CompareExchange(ref extensionDataWrapper, inst, null);
+            return original ?? inst;
+        }
     }
-
 }
 
 /// <summary>
 /// Namespace information.
 /// </summary>
 /// <remarks>See https://www.mediawiki.org/wiki/API:Siteinfo#Namespaces .</remarks>
-[JsonObject(MemberSerialization.OptIn)]
-public class NamespaceInfo
+[JsonContract]
+public sealed record NamespaceInfo
 {
 
-#pragma warning disable CS8618 // 在退出构造函数时，不可为 null 的字段必须包含非 null 值。请考虑声明为可以为 null。
-    public NamespaceInfo()
-#pragma warning restore CS8618 // 在退出构造函数时，不可为 null 的字段必须包含非 null 值。请考虑声明为可以为 null。
-    {
-    }
+    private readonly int _Id;
 
     /// <summary>
     /// An integer identification number which is unique for each namespace.
     /// </summary>
-    [JsonProperty]
-    public int Id { get; private set; }
+    public int Id
+    {
+        get => _Id;
+        init
+        {
+            _Id = value;
+            // Try to get canonical name for built-in namespace.
+            // This is used especially for NS_MAIN .
+            CanonicalName ??= BuiltInNamespaces.GetCanonicalName(value);
+        }
+    }
 
-    [JsonProperty]
+    [JsonInclude]
     private string Case
     {
-        set
+        init
         {
             IsCaseSensitive = value switch
             {
@@ -273,49 +274,55 @@ public class NamespaceInfo
     /// Note that all the namespace names are case-insensitive. See "remarks" for more information.
     /// </summary>
     /// <remarks>See https://www.mediawiki.org/wiki/API:Siteinfo#Namespaces .</remarks>
-    public bool IsCaseSensitive { get; private set; }
-    // TODO I'm still not sure what thae "case" property stands for,
+    [JsonIgnore]
+    public bool IsCaseSensitive { get; init; }
+    // TODO I'm still not sure what the "case" property stands for,
     // as all the namespace names are case-insensitive.
 
-    [JsonProperty]
-    public bool SubPages { get; private set; }
+    public bool SubPages { get; init; }
 
     /// <summary>
-    /// Canonical namespace name.
+    /// Canonical namespace name. This may or may not be the same as the actual namespace name (<see cref="CustomName"/>).
     /// </summary>
-    [JsonProperty("canonical")]
-    public string CanonicalName { get; private set; }
+    /// <remarks>
+    /// For example, all wikis have a "Project:" (canonical) namespace, but the actual namespace name is normally changed to
+    /// the name of the wiki (on Wikipedia for example, the "Project:" namespace is "Wikipedia:")
+    /// </remarks>
+    [JsonPropertyName("canonical")]
+    public string? CanonicalName { get; init; }
 
     /// <summary>
     /// The displayed name for the namespace. Defined in server LocalSettings.php .
     /// </summary>
     /// <remarks>In JSON, prior to MediaWiki 1.25, the parameter name was *.</remarks>
-    [JsonProperty("name")]
-    public string CustomName { get; private set; }
+    [JsonPropertyName("name")]
+    public string? CustomName { get; init; }
 
     /// <summary>
     /// Namespace alias names.
     /// </summary>
+    [JsonIgnore]
     public IList<string> Aliases { get; private set; } = Array.Empty<string>();
 
     // In JSON, prior to MediaWiki 1.25, the parameter name was *.
-    [JsonProperty("*")]
+    // https://www.mediawiki.org/wiki/API:Siteinfo#Namespaces
+    [JsonPropertyName("*")]
+    [JsonInclude]
     private string StarName
     {
-        set
-        {
-            if (CustomName == null) CustomName = value;
-        }
+        init => CustomName ??= value;
     }
 
-    [JsonProperty("content")]
-    public bool IsContent { get; private set; }
+    [JsonPropertyName("content")]
+    public bool IsContent { get; init; }
 
-    [JsonProperty("nonincludable")]
-    public bool IsNonIncludable { get; private set; }
+    /// <summary>
+    /// Whether pages in this namespace can be transcluded.
+    /// </summary>
+    [JsonPropertyName("nonincludable")]
+    public bool IsNonIncludable { get; init; }
 
-    [JsonProperty]
-    public string DefaultContentModel { get; private set; }
+    public string DefaultContentModel { get; init; }
 
     private IList<string>? _Aliases;
 
@@ -329,21 +336,7 @@ public class NamespaceInfo
         _Aliases.Add(title);
     }
 
-    [OnDeserialized]
-    private void OnDeserialized(StreamingContext context)
-    {
-        // Try to get canonical name for built-in namespace.
-        // This is used especially for NS_MAIN .
-        if (CanonicalName == null) CanonicalName = BuiltInNamespaces.GetCanonicalName(Id)!;
-        Debug.Assert(CanonicalName != null);
-    }
-
-    /// <summary>
-    /// 返回表示当前对象的字符串。
-    /// </summary>
-    /// <returns>
-    /// 表示当前对象的字符串。
-    /// </returns>
+    /// <inheritdoc />
     public override string ToString()
     {
         return $"[{Id}]{CustomName}" + (Aliases.Count > 0 ? "/" + string.Join("/", Aliases) : null);
@@ -361,27 +354,30 @@ public class NamespaceCollection : ICollection<NamespaceInfo>
     private readonly Dictionary<int, NamespaceInfo> idNsDict; // id -- ns
     private readonly Dictionary<string, NamespaceInfo> nameNsDict; // name/custom/alias -- ns
 
-    internal NamespaceCollection(WikiSite site, JObject namespaces, JArray jaliases)
+    internal NamespaceCollection(WikiSite site, JsonObject namespaces, JsonArray? jaliases)
     {
         // jaliases : query.namespacealiases
         if (site == null) throw new ArgumentNullException(nameof(site));
         if (namespaces == null) throw new ArgumentNullException(nameof(namespaces));
-        idNsDict = namespaces.ToObject<Dictionary<int, NamespaceInfo>>(Utility.WikiJsonSerializer);
+        idNsDict = namespaces.Deserialize<Dictionary<int, NamespaceInfo>>(MediaWikiHelper.WikiJsonSerializerOptions)!;
         // Not using StringComparer.InvariantCultureIgnoreCase since we will perform normalization during entry queries.
         nameNsDict = new Dictionary<string, NamespaceInfo>();
-        foreach (var value in idNsDict.Values)
+        foreach (var ns in idNsDict.Values)
         {
-            var normalizedName = value.CanonicalName.ToUpperInvariant();
-            if (!nameNsDict.TryAdd(normalizedName, value))
+            if (ns.CanonicalName == null) continue;
+
+            var normalizedName = ns.CanonicalName.ToUpperInvariant();
+            if (!nameNsDict.TryAdd(normalizedName, ns))
             {
                 site.Logger.LogWarning(
                     "Namespace canonical name collision on {Site}: {Name} for {Value1} and {Value2}.",
-                    site, value.CanonicalName, value, nameNsDict[normalizedName]);
+                    site, ns.CanonicalName, ns, nameNsDict[normalizedName]);
             }
         }
         // Add custom name.
         foreach (var ns in idNsDict.Values)
         {
+            if (ns.CustomName == null) continue;
             if (ns.CustomName != ns.CanonicalName)
                 nameNsDict.Add(ns.CustomName.ToUpperInvariant(), ns);
         }
@@ -391,7 +387,7 @@ public class NamespaceCollection : ICollection<NamespaceInfo>
             foreach (var al in jaliases)
             {
                 var id = (int)al["id"];
-                var name = (string)al["*"];
+                var name = (string)al["*"]!;
                 if (idNsDict.TryGetValue(id, out var ns))
                 {
                     ns.AddAlias(name);
@@ -527,81 +523,75 @@ public class NamespaceCollection : ICollection<NamespaceInfo>
 /// <summary>
 /// An item of interwiki map.
 /// </summary>
-[JsonObject(MemberSerialization.OptIn)]
-public class InterwikiEntry
+[JsonContract]
+public sealed record InterwikiEntry
 {
-
-#pragma warning disable CS8618 // 在退出构造函数时，不可为 null 的字段必须包含非 null 值。请考虑声明为可以为 null。
-    public InterwikiEntry()
-#pragma warning restore CS8618 // 在退出构造函数时，不可为 null 的字段必须包含非 null 值。请考虑声明为可以为 null。
-    {
-    }
 
     /// <summary>
     /// The prefix of the interwiki link;
     /// this is used the same way as a namespace is used when editing.
     /// </summary>
     /// <remarks>
+    /// <para>
     /// Prefixes must be all lower-case.
     /// See <a href="https://www.mediawiki.org/wiki/Manual:Interwiki#Field_documentation">mw:Manual:Interwiki#Field documentation</a> for more information.
+    /// </para>
+    /// <para>
+    /// See <a href="https://github.com/wikimedia/mediawiki/blob/master/includes/api/ApiQuerySiteinfo.php">ApiQuerySiteinfo.php</a>.
+    /// </para>
     /// </remarks>
-    [JsonProperty]
-    public string Prefix { get; private set; }
+    public required string Prefix { get; init; }
 
     /// <summary>
     /// Whether the interwiki prefix points to a site belonging to the current wiki farm.
-    /// The value is read straight out of the iw_local column of the interwiki table. 
+    /// The value is read straight out of the <c>iw_local</c> column of the interwiki table. 
     /// </summary>
-    [JsonProperty]
-    public bool IsLocal { get; private set; }
+    [JsonPropertyName("local")]
+    public bool IsLocal { get; init; }
 
     /// <summary>
     /// Whether transcluding pages from this wiki is allowed.
     /// Note that this has no effect unless crosswiki transclusion is enabled on the current wiki.
     /// </summary>
-    [JsonProperty("trans")]
-    public bool AllowsTransclusion { get; private set; }
+    [JsonPropertyName("trans")]
+    public bool AllowsTransclusion { get; init; }
 
     /// <summary>
     /// Autonym of the language, if the interwiki prefix is a language code
     /// defined in Language::fetchLanguageNames() from $wgExtraLanguageNames,
     /// </summary>
-    [JsonProperty("language")]
-    public string LanguageAutonym { get; private set; }
+    [JsonPropertyName("language")]
+    public string? LanguageAutonym { get; init; }
 
     /// <summary>
     /// The URL of the wiki, with "$1" as a placeholder for an article name.
     /// </summary>
-    [JsonProperty]
-    public string Url { get; private set; }
+    public required string Url { get; init; }
 
     /// <summary>
     /// Whether the value of URL can be treated as protocol-relative. (MediaWiki 1.24+)
     /// Note, however, that the <see cref="Url"/> actually returned will always include the current protocol.
     /// </summary>
-    [JsonProperty("protorel")]
-    public bool IsProtocolRelative { get; private set; }
+    [JsonPropertyName("protorel")]
+    public bool IsProtocolRelative { get; init; }
 
     /// <summary>
-    /// Whether the interwiki link points to the current wiki, based on Manual:$wgLocalInterwikis.
+    /// Whether the interwiki link points to the current wiki, based on <c>Manual:$wgLocalInterwikis</c>.
     /// </summary>
-    [JsonProperty]
-    public bool IsLocalInterwiki { get; private set; }
+    public bool IsLocalInterwiki { get; init; }
 
     /// <summary>
     /// If the interwiki prefix is an extra language link,
     /// this will contain the friendly site name used in the tooltip text of the links. (MediaWiki 1.24+)
     /// </summary>
-    [JsonProperty]
-    public string SiteName { get; private set; }
+    public string? SiteName { get; init; }
 
     /// <summary>
     /// The internal name of the database. Not filled in by default;
     /// it may be missing for you. The value is read straight out
-    /// of the iw_wikiid column of the interwiki table.
+    /// of the <c>iw_wikiid</c> column of the interwiki table.
     /// </summary>
-    [JsonProperty]
-    public string WikiId { get; set; }
+    public string? WikiId { get; init; }
 
     /// <inheritdoc />
     public override string ToString()
@@ -619,12 +609,12 @@ public class InterwikiMap : ICollection<InterwikiEntry>
 
     private readonly IDictionary<string, InterwikiEntry> nameIwDict;
 
-    internal InterwikiMap(WikiSite site, JArray interwikiMap, ILogger logger)
+    internal InterwikiMap(WikiSite site, JsonArray interwikiMap, ILogger logger)
     {
         // interwikiMap : query.namespacealiases
         if (site == null) throw new ArgumentNullException(nameof(site));
         if (interwikiMap == null) throw new ArgumentNullException(nameof(interwikiMap));
-        var entries = interwikiMap.ToObject<IList<InterwikiEntry>>(Utility.WikiJsonSerializer);
+        var entries = interwikiMap.Deserialize<List<InterwikiEntry>>(MediaWikiHelper.WikiJsonSerializerOptions)!;
         // Not using StringComparer.InvariantCultureIgnoreCase since we will perform normalization during entry queries.
         var entryDict = new Dictionary<string, InterwikiEntry>(entries.Count);
         foreach (var entry in entries)
@@ -728,8 +718,8 @@ public class ExtensionCollection : ReadOnlyCollection<ExtensionInfo>
 
     private readonly ILookup<string, ExtensionInfo> nameLookup;
 
-    internal ExtensionCollection(WikiSite site, JArray jextensions)
-        : base(jextensions.ToObject<IList<ExtensionInfo>>(Utility.WikiJsonSerializer))
+    internal ExtensionCollection(WikiSite site, JsonArray jextensions)
+        : base(jextensions.Deserialize<List<ExtensionInfo>>(MediaWikiHelper.WikiJsonSerializerOptions)!)
     {
         // extensions : query.extensions
         if (site == null) throw new ArgumentNullException(nameof(site));
@@ -775,60 +765,78 @@ public class ExtensionCollection : ReadOnlyCollection<ExtensionInfo>
 
 }
 
-[JsonObject(MemberSerialization.OptIn)]
-public class ExtensionInfo
+/// <summary>Represents a MediaWiki extension item.</summary>
+/// <remarks>
+/// <para>The same extension can be registered in more than one type,
+/// in which case the results will be repeated for each different type.
+/// See <see cref="Type"/> for more information.</para>
+/// <para>See <a href="https://www.mediawiki.org/wiki/API:Siteinfo#Extensions">mw:API:Siteinfo#Extensions</a>.</para>
+/// </remarks>
+[JsonContract]
+public sealed record ExtensionInfo
 {
 
-#pragma warning disable CS8618 // 在退出构造函数时，不可为 null 的字段必须包含非 null 值。请考虑声明为可以为 null。
-    public ExtensionInfo()
-#pragma warning restore CS8618 // 在退出构造函数时，不可为 null 的字段必须包含非 null 值。请考虑声明为可以为 null。
-    {
-    }
+    /// <summary>The extension type.</summary>
+    /// <remarks>
+    /// <para>Default values include specialpage, parserhook, variable, media, antispam, skin, api, and other.
+    /// Extension-defined types are allowed, though only the coded value is emitted—there is currently no way
+    /// to retrieve the user-friendly type name (as seen on Special:Version) via the API.</para>
+    /// <para>The same extension can be registered in more than one type,
+    /// in which case the results will be repeated for each different type.</para>
+    /// </remarks>
+    public string Type { get; init; } = "";
 
-    [JsonProperty]
-    public string Type { get; private set; }
+    // While the extension name seemly to be a required field, there was actually
+    //     isset( $ext['name'] )
+    // in ApiQuerySiteinfo.php.
+    /// <summary>The class name of the extension.</summary>
+    public string Name { get; init; } = "";
 
-    [JsonProperty]
-    public string Name { get; private set; }
+    /// <summary>The system message name for the user-friendly name of the extension.</summary>
+    [JsonPropertyName("namemsg")]
+    public string? NameMessage { get; init; }
 
-    [JsonProperty("namemsg")]
-    public string NameMessage { get; private set; }
+    /// <summary>User-friendly description of the extension. (MediaWiki 1.24+)</summary>
+    public string? Description { get; init; }
 
-    [JsonProperty]
-    public string Description { get; private set; }
+    /// <summary>The system message name for the user-friendly description of the extension.
+    /// This can be emitted in conjunction with the description.</summary>
+    [JsonPropertyName("descriptionmsg")]
+    public string? DescriptionMessage { get; init; }
 
-    [JsonProperty("descriptionmsg")]
-    public string DescriptionMessage { get; private set; }
+    /// <summary>The author or authors as a comma-delimited string.</summary>
+    public string? Author { get; init; }
 
-    [JsonProperty]
-    public string Author { get; private set; }
+    // TODO Authors
 
-    [JsonProperty]
-    public string Url { get; private set; }
+    /// <summary>The URL for the homepage of the extension.</summary>
+    public string? Url { get; init; }
 
-    [JsonProperty("vcs-system")]
-    public string VcsSystem { get; private set; }
+    /// <summary>Which version control system is in use for the extension, if any.</summary>
+    /// <remarks>This can be either <c>"git"</c> or <c>"svn"</c>.</remarks>
+    [JsonPropertyName("vcs-system")]
+    public string? VcsSystem { get; init; }
 
-    [JsonProperty("vcs-version")]
-    public string VcsVersion { get; private set; }
+    /// <summary>The version number of the extension in the version control system.</summary>
+    [JsonPropertyName("vcs-version")]
+    public string? VcsVersion { get; init; }
 
-    [JsonProperty("vcs-url")]
-    public string VcsUrl { get; private set; }
+    /// <summary>The URL of the repository.</summary>
+    [JsonPropertyName("vcs-url")]
+    public string? VcsUrl { get; init; }
 
-    [JsonProperty("vcs-date")]
-    public string VcsDate { get; private set; }
+    /// <summary>(Git only) The date of the latest version.</summary>
+    [JsonPropertyName("vcs-date")]
+    public string? VcsDate { get; init; }
 
-    [JsonProperty("license-name")]
-    public string LicenseName { get; private set; }
+    [JsonPropertyName("license-name")]
+    public string? LicenseName { get; init; }
 
-    [JsonProperty]
-    public string License { get; private set; }
+    public string? License { get; init; }
 
-    [JsonProperty]
-    public string Version { get; private set; }
+    public string? Version { get; init; }
 
-    [JsonProperty]
-    public string Credits { get; private set; }
+    public string? Credits { get; init; }
 
     /// <inheritdoc />
     public override string ToString()
@@ -841,18 +849,18 @@ public class ExtensionInfo
 /// <summary>
 /// Contains statistical information of a MediaWiki site.
 /// </summary>
-[JsonObject(MemberSerialization.OptIn)]
-public class SiteStatistics
+[JsonContract]
+public sealed record SiteStatistics
 {
 
-    [JsonProperty("pages")]
-    public int PagesCount { get; private set; }
+    [JsonPropertyName("pages")]
+    public int PagesCount { get; init; }
 
-    [JsonProperty("articles")]
-    public int ArticlesCount { get; private set; }
+    [JsonPropertyName("articles")]
+    public int ArticlesCount { get; init; }
 
-    [JsonProperty("edits")]
-    public int EditsCount { get; private set; }
+    [JsonPropertyName("edits")]
+    public int EditsCount { get; init; }
 
     /// <summary>
     /// Count of uploaded files.
@@ -861,23 +869,23 @@ public class SiteStatistics
     /// For historical reasons, the number of files on the wiki is labelled as images not files.
     /// This number refers to uploaded files of all types, not just images.
     /// </remarks>
-    [JsonProperty("images")]
-    public int FilesCount { get; private set; }
+    [JsonPropertyName("images")]
+    public int FilesCount { get; init; }
 
-    [JsonProperty("users")]
-    public int UsersCount { get; private set; }
+    [JsonPropertyName("users")]
+    public int UsersCount { get; init; }
 
-    [JsonProperty("activeusers")]
-    public int ActiveUsersCount { get; private set; }
+    [JsonPropertyName("activeusers")]
+    public int ActiveUsersCount { get; init; }
 
-    [JsonProperty("admins")]
-    public int AdministratorsCount { get; private set; }
+    [JsonPropertyName("admins")]
+    public int AdministratorsCount { get; init; }
 
-    [JsonProperty("jobs")]
-    public int JobsCount { get; private set; }
+    [JsonPropertyName("jobs")]
+    public int JobsCount { get; init; }
 
-    [JsonProperty("queued-massmessages")]
-    public int MassMessageQueueLength { get; private set; }
+    [JsonPropertyName("queued-massmessages")]
+    public int MassMessageQueueLength { get; init; }
 
 }
 
@@ -887,21 +895,19 @@ public class SiteStatistics
 /// <remarks>
 /// See <a href="https://www.mediawiki.org/wiki/Manual:Magic_words">mw:Manual:Magic words</a>.
 /// </remarks>
-[JsonObject(MemberSerialization.OptIn)]
+[JsonContract]
 public class MagicWordInfo
 {
 
     /// <summary>Name of the magic word. This is a case-sensitive magic word ID.</summary>
-    [JsonProperty]
     public string Name { get; private set; } = "";
 
     /// <summary>Aliases of the magic word. These are the valid wikitext expression when magic word is to be invoked.</summary>
-    [JsonProperty]
     public IReadOnlyCollection<string> Aliases { get; private set; } = ImmutableList<string>.Empty;
 
     /// <summary>Whether the magic word aliases are case-sensitive.</summary>
     /// <remarks>The value of this property affects the behavior of <see cref="MagicWordCollection.TryGetByAlias(string)"/></remarks>
-    [JsonProperty("case-sensitive")]
+    [JsonPropertyName("case-sensitive")]
     public bool CaseSensitive { get; private set; }
 
     /// <inheritdoc />
@@ -925,8 +931,8 @@ public class MagicWordCollection : ReadOnlyCollection<MagicWordInfo>
     private readonly ILookup<string, MagicWordInfo> magicWordAliasLookup;
 
     /// <inheritdoc />
-    internal MagicWordCollection(JArray jMagicWords)
-        : base(jMagicWords.ToObject<IList<MagicWordInfo>>(Utility.WikiJsonSerializer))
+    internal MagicWordCollection(JsonArray jMagicWords)
+        : base(jMagicWords.Deserialize<List<MagicWordInfo>>(MediaWikiHelper.WikiJsonSerializerOptions)!)
     {
         this.magicWordLookup = this.Items.ToLookup(i => i.Name);
         this.magicWordAliasLookup = this.Items

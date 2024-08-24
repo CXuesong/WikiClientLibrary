@@ -1,5 +1,5 @@
 ﻿using System.Diagnostics;
-using Newtonsoft.Json.Linq;
+using System.Text.Json.Nodes;
 using WikiClientLibrary.Client;
 using WikiClientLibrary.Infrastructures.Logging;
 using WikiClientLibrary.Sites;
@@ -12,8 +12,8 @@ namespace WikiClientLibrary.Infrastructures;
 internal sealed class TokensManager
 {
 
-    // Value is string or Task<string>
-    private readonly Dictionary<string, object> tokensCache = new Dictionary<string, object>();
+    // Value is string or Task<string>; needs lock(...)
+    private readonly Dictionary<string, object> tokensCache = new();
 
     private readonly WikiSite site;
 
@@ -35,9 +35,9 @@ internal sealed class TokensManager
     /// </summary>
     /// <param name="tokenTypeExpr">Token types, joined by | .</param>
     /// <param name="cancellationToken">The cancellation token that will be checked prior to completing the returned task.</param>
-    private async Task<JObject> FetchTokensAsync2(string tokenTypeExpr, CancellationToken cancellationToken)
+    private async Task<IDictionary<string, JsonNode?>> FetchTokensAsync2(string tokenTypeExpr, CancellationToken cancellationToken)
     {
-        var jobj = await site.InvokeMediaWikiApiAsync(
+        var jobj = await site.InvokeMediaWikiApiAsync2(
             new MediaWikiFormRequestMessage(new { action = "query", meta = "tokens", type = tokenTypeExpr, }), true, cancellationToken);
         var warnings = jobj["warnings"]?["tokens"];
         if (warnings != null)
@@ -48,7 +48,7 @@ internal sealed class TokensManager
                 throw new ArgumentException(warn, nameof(tokenTypeExpr));
             throw new OperationFailedException(warnings.ToString());
         }
-        return (JObject)jobj["query"]["tokens"];
+        return jobj["query"]["tokens"].AsObject();
     }
 
     /// <summary>
@@ -56,15 +56,15 @@ internal sealed class TokensManager
     /// </summary>
     /// <param name="tokenTypeExpr">Token types, joined by | .</param>
     /// <param name="cancellationToken">The cancellation token that will be checked prior to completing the returned task.</param>
-    private async Task<JObject> FetchTokensAsync(string tokenTypeExpr, CancellationToken cancellationToken)
+    private async Task<IDictionary<string, JsonNode?>> FetchTokensAsync(string tokenTypeExpr, CancellationToken cancellationToken)
     {
         Debug.Assert(!tokenTypeExpr.Contains("patrol"));
-        var jobj = await site.InvokeMediaWikiApiAsync(new MediaWikiFormRequestMessage(new
+        var jobj = await site.InvokeMediaWikiApiAsync2(new MediaWikiFormRequestMessage(new
         {
             action = "query", prop = "info", titles = "Dummy Title", intoken = tokenTypeExpr,
         }), true, cancellationToken);
-        var page = (JObject)((JProperty)jobj["query"]["pages"].First).Value;
-        return new JObject(page.Properties().Where(p => p.Name.EndsWith("token")));
+        var page = jobj["query"]["pages"].AsObject().First().Value.AsObject();
+        return new Dictionary<string, JsonNode?>(page.Where(p => p.Key.EndsWith("token", StringComparison.Ordinal)));
     }
 
     /// <summary>
@@ -146,10 +146,10 @@ internal sealed class TokensManager
     {
         Debug.Assert(!string.IsNullOrEmpty(tokenType));
 
-        string ExtractToken(JObject jTokens, string tokenType1)
+        string ExtractToken(IDictionary<string, JsonNode?> jTokens, string tokenType1)
         {
             if (jTokens == null) throw new ArgumentNullException(nameof(jTokens));
-            var value = (string)(jTokens[tokenType1] ?? jTokens[tokenType1 + "token"]);
+            var value = (string?)(jTokens[tokenType1] ?? jTokens[tokenType1 + "token"]);
             if (value == null)
                 throw new ArgumentException($"Invalid token type: {tokenType1}.", nameof(tokenType));
             return value;
@@ -174,18 +174,18 @@ internal sealed class TokensManager
                     {
                         // Until v1.16, the patrol token is same as the edit token.
                         Debug.Assert(site.SiteInfo.Version >= v117);
-                        var jobj = await site.InvokeMediaWikiApiAsync(
+                        var jobj = await site.InvokeMediaWikiApiAsync2(
                             new MediaWikiFormRequestMessage(new
                             {
                                 action = "query", list = "recentchanges", rctoken = "patrol", rclimit = 1
                             }), cts.Token);
                         try
                         {
-                            return ExtractToken((JObject)jobj["query"]["recentchanges"].First, "patroltoken");
+                            return ExtractToken(jobj["query"]["recentchanges"][0].AsObject(), "patroltoken");
                         }
                         catch (ArgumentException)
                         {
-                            var warning = (string)jobj["warnings"]?["recentchanges"]?["*"];
+                            var warning = (string?)jobj["warnings"]?["recentchanges"]?["*"];
                             // Action 'patrol' is not allowed for the current user
                             if (warning != null)
                                 throw new UnauthorizedOperationException(null, warning);

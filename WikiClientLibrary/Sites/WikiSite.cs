@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics;
+using System.Text.Json;
 using System.Text.Json.Nodes;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
@@ -178,20 +179,20 @@ public partial class WikiSite : IWikiClientLoggable, IWikiClientAsyncInitializat
     {
         using (this.BeginActionScope(null))
         {
-            var jobj = await InvokeMediaWikiApiAsync(
+            var jobj = await InvokeMediaWikiApiAsync2(
                 new MediaWikiFormRequestMessage(new
                 {
                     action = "query",
                     meta = "siteinfo",
                     siprop = "general|namespaces|namespacealiases|interwikimap|extensions|magicwords"
                 }), true, CancellationToken.None);
-            var qg = (JObject)jobj["query"]["general"];
-            var ns = (JObject)jobj["query"]["namespaces"];
-            var aliases = (JArray)jobj["query"]["namespacealiases"];
-            var interwiki = (JArray)jobj["query"]["interwikimap"];
-            var extensions = (JArray)jobj["query"]["extensions"];
-            var magicwords = (JArray)jobj["query"]["magicwords"];
-            _SiteInfo = qg.ToObject<SiteInfo>(Utility.WikiJsonSerializer);
+            var qg = jobj["query"]["general"].AsObject();
+            var ns = jobj["query"]["namespaces"].AsObject();
+            var aliases = jobj["query"]["namespacealiases"].AsArray();
+            var interwiki = jobj["query"]["interwikimap"].AsArray();
+            var extensions = jobj["query"]["extensions"].AsArray();
+            var magicwords = jobj["query"]["magicwords"].AsArray();
+            _SiteInfo = qg.Deserialize<SiteInfo>(MediaWikiHelper.WikiJsonSerializerOptions);
             _Namespaces = new NamespaceCollection(this, ns, aliases);
             _InterwikiMap = new InterwikiMap(this, interwiki, _Logger);
             _Extensions = new ExtensionCollection(this, extensions);
@@ -211,10 +212,10 @@ public partial class WikiSite : IWikiClientLoggable, IWikiClientAsyncInitializat
         // Note: _SiteInfo can be null here.
         using (this.BeginActionScope(null))
         {
-            var jobj = await InvokeMediaWikiApiAsync(
+            var jobj = await InvokeMediaWikiApiAsync2(
                 new MediaWikiFormRequestMessage(new { action = "query", meta = "userinfo", uiprop = "blockinfo|groups|hasmsg|rights" }),
                 true, CancellationToken.None);
-            _AccountInfo = ((JObject)jobj["query"]["userinfo"]).ToObject<AccountInfo>(Utility.WikiJsonSerializer);
+            _AccountInfo = jobj["query"]["userinfo"].Deserialize<AccountInfo>(MediaWikiHelper.WikiJsonSerializerOptions);
             ListingPagingSize = _AccountInfo.HasRight(UserRights.ApiHighLimits) ? 5000 : 500;
         }
     }
@@ -343,14 +344,6 @@ public partial class WikiSite : IWikiClientLoggable, IWikiClientAsyncInitializat
     public Task<JToken> InvokeMediaWikiApiAsync(WikiRequestMessage message, CancellationToken cancellationToken)
     {
         return InvokeMediaWikiApiAsync(message, MediaWikiNewtonsoftJsonResponseParser.Default, false, cancellationToken);
-    }
-
-    /// <inheritdoc cref="InvokeMediaWikiApiAsync{T}(WikiRequestMessage,IWikiResponseMessageParser{T},bool,CancellationToken)"/>
-    /// <remarks>This overload uses <see cref="MediaWikiNewtonsoftJsonResponseParser.Default"/> as response parser.</remarks>
-    [Obsolete("Newtonsoft.Json API is being deprecated in favor of System.Text.Json API.")]
-    public Task<JToken> InvokeMediaWikiApiAsync(WikiRequestMessage message, bool suppressAccountAssertion, CancellationToken cancellationToken)
-    {
-        return InvokeMediaWikiApiAsync(message, MediaWikiNewtonsoftJsonResponseParser.Default, suppressAccountAssertion, cancellationToken);
     }
 
     /// <summary>
@@ -571,7 +564,7 @@ public partial class WikiSite : IWikiClientLoggable, IWikiClientAsyncInitializat
                 //  because the client might be logging to a private wiki,
                 //  where any "query" operation before logging-in might raise readapidenied error.
                 RETRY:
-                var jobj = await InvokeMediaWikiApiAsync(new MediaWikiFormRequestMessage(new
+                var jobj = await InvokeMediaWikiApiAsync2(new MediaWikiFormRequestMessage(new
                 {
                     action = "login",
                     lgname = userName,
@@ -680,7 +673,10 @@ public partial class WikiSite : IWikiClientLoggable, IWikiClientAsyncInitializat
             // git #d965b0b4 - [SECURITY] [API BREAKING CHANGE] Require logout token. (task T25227) by sbassett
             token = await tokensManager.GetTokenAsync("csrf", false, CancellationToken.None);
         }
-        var jobj = await InvokeMediaWikiApiAsync(new MediaWikiFormRequestMessage(new { action = "logout", token = token, }), true,
+        var jobj = await InvokeMediaWikiApiAsync2(new MediaWikiFormRequestMessage(new
+            {
+                action = "logout", token = token,
+            }), true,
             CancellationToken.None);
     }
 
