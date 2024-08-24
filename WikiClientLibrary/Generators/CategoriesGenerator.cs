@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json.Linq;
+﻿using System.Text.Json.Nodes;
+using Newtonsoft.Json.Linq;
 using WikiClientLibrary.Generators.Primitive;
 using WikiClientLibrary.Infrastructures;
 using WikiClientLibrary.Pages;
@@ -51,7 +52,7 @@ public class CategoriesGenerator : WikiPagePropertyGenerator<WikiPageCategoryInf
     }
 
     /// <inheritdoc />
-    protected override WikiPageCategoryInfo ItemFromJson(JToken json, JObject jpage)
+    protected override WikiPageCategoryInfo ItemFromJson(JsonNode json, JsonObject jpage)
     {
         return CategoriesPropertyGroup.CategoryInfoFromJson(json);
     }

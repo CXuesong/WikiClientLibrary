@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel;
+using System.Text.Json.Nodes;
 using Newtonsoft.Json.Linq;
 using WikiClientLibrary.Generators.Primitive;
 using WikiClientLibrary.Infrastructures;
@@ -56,9 +57,9 @@ public class RevisionsGenerator : WikiPagePropertyGenerator<Revision>
     }
 
     /// <inheritdoc />
-    protected override Revision ItemFromJson(JToken json, JObject jpage)
+    protected override Revision ItemFromJson(JsonNode json, JsonObject jpage)
     {
-        return MediaWikiHelper.RevisionFromJson((JObject)json, MediaWikiHelper.PageStubFromJson(jpage));
+        return MediaWikiHelper.RevisionFromJson(json.AsObject(), MediaWikiHelper.PageStubFromJson(jpage));
     }
 
     /// <summary>

@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json.Linq;
+﻿using System.Diagnostics;
+using System.Text.Json.Nodes;
 using WikiClientLibrary.Infrastructures.Logging;
 using WikiClientLibrary.Pages;
 using WikiClientLibrary.Sites;
@@ -99,14 +100,17 @@ public abstract class WikiPagePropertyList<T> : IWikiList<T>
     /// <param name="json">One of the item node under the JSON path <c>query.pages.{pageid}.{PropertyName}</c>.</param>
     /// <param name="jpage">The corresponding JSON node for the wiki page, under the JSON path <c>query.pages.{pageid}</c>.</param>
     /// <returns>The item that will be returned in the sequence from <see cref="EnumItemsAsync"/>.</returns>
-    protected abstract T ItemFromJson(JToken json, JObject jpage);
+    protected abstract T ItemFromJson(JsonNode json, JsonObject jpage);
 
     /// <inheritdoc />
     public IAsyncEnumerable<T> EnumItemsAsync(CancellationToken cancellationToken = default)
     {
         var queryParams = new Dictionary<string, object?>
         {
-            { "action", "query" }, { "maxlag", 5 }, { "titles", PageTitle }, { "prop", PropertyName }
+            { "action", "query" },
+            { "maxlag", 5 },
+            { "titles", PageTitle },
+            { "prop", PropertyName },
         };
         if (PageTitle == null) queryParams.Add("pageids", PageId);
         foreach (var p in EnumListParameters()) queryParams.Add(p.Key, p.Value);
@@ -117,14 +121,19 @@ public abstract class WikiPagePropertyList<T> : IWikiList<T>
                 // If there's no result, "query" node will not exist.
                 if (jpages == null || jpages.Count == 0)
                     return AsyncEnumerable.Empty<T>();
-                return jpages.Values().SelectMany(jpage =>
+                return jpages.SelectMany(p =>
                 {
-                    var jprop = jpage[PropertyName];
+                    if (p.Value == null)
+                    {
+                        Debug.Fail("Unexpected null $.query.pages.[..] object.");
+                        return Enumerable.Empty<T>();
+                    }
+                    var jprop = p.Value[PropertyName]?.AsArray();
                     // This can happen when there are multiple titles specified (such as stuffing multiple titles in PageTitle),
                     // and pagination is triggered.
                     // See https://github.com/CXuesong/WikiClientLibrary/issues/67.
                     if (jprop == null) return Enumerable.Empty<T>();
-                    return jprop.Select(v => ItemFromJson(v, (JObject)jpage));
+                    return jprop.Select(v => ItemFromJson(v, p.Value.AsObject()));
                 }).ToList().ToAsyncEnumerable();
                 // ToList is necessary. See
                 // https://github.com/CXuesong/WikiClientLibrary/issues/27

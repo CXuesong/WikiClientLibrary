@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json.Linq;
+﻿using System.Text.Json.Nodes;
+using Newtonsoft.Json.Linq;
 using WikiClientLibrary.Infrastructures;
 using WikiClientLibrary.Infrastructures.Logging;
 using WikiClientLibrary.Pages;
@@ -116,7 +117,7 @@ public abstract class WikiPagePropertyGenerator : WikiPagePropertyGenerator<Wiki
     }
 
     /// <inheritdoc />
-    protected override WikiPageStub ItemFromJson(JToken json, JObject jpage)
+    protected override WikiPageStub ItemFromJson(JsonNode json, JsonObject jpage)
     {
         // pageid can be missing in this case.
         return new WikiPageStub((long?)json["pageid"] ?? 0, (string)json["title"], (int)json["ns"]);
