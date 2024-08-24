@@ -31,8 +31,8 @@ public class CargoTests : WikiSiteTestsBase, IClassFixture<WikiSiteProvider>
         });
         ShallowTrace(result.Select(r => r.ToJsonString()));
         Assert.Equal(10, result.Count);
-        Assert.All(result, r => Assert.Equal(r["Page"], r["Name"]));
-        Assert.All(result, r => Assert.True((int?)r["RP"] == null || (int)r["RP"] > 0));
+        Assert.All(result, r => Assert.Equal((string?)r["Page"], (string?)r["Name"]));
+        Assert.All(result, r => Assert.True(r["RP"] == null || Convert.ToInt32((string?)r["RP"]) > 0));
     }
 
     [Fact]

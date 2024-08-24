@@ -1,5 +1,6 @@
 ﻿using System.Collections.ObjectModel;
 using System.Runtime.CompilerServices;
+using System.Text.Json;
 using WikiClientLibrary.Generators;
 using WikiClientLibrary.Generators.Primitive;
 using WikiClientLibrary.Infrastructures;
@@ -142,10 +143,9 @@ public class LocalWikiSearchList : IWikiList<LocalWikiSearchResultItem>
                 batch = currentBatch,
             }), cancellationToken);
             totalBatches = (int)jresult["batches"];
-            var items = jresult["items"].ToObject<IEnumerable<LocalWikiSearchResultItem>>(Utility.WikiaApiJsonSerializer);
             using (ExecutionContextStash.Capture())
-                foreach (var i in items)
-                    yield return i;
+                foreach (var i in jresult["items"].AsArray())
+                    yield return i.Deserialize<LocalWikiSearchResultItem>(Utility.WikiaApiJsonSerializerOptions);
         }
     }
 

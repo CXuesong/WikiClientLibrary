@@ -200,21 +200,54 @@ public class CargoRecordConverter : ICargoRecordConverter
             return value.Deserialize<T>();
         }
 
-        public static string DeserializeString(JsonNode value) => (string)value;
+        public static string? DeserializeString(JsonNode value) => (string?)value;
 
-        public static int DeserializeInt32(JsonNode value) => (int)value;
+        private static Exception CreateInvalidCastException(Type targetType)
+            => new InvalidOperationException($"Cannot cast the JSON node into {targetType}.");
 
-        public static long DeserializeInt64(JsonNode value) => (long)value;
-
-        public static float DeserializeFloat(JsonNode value) => (float)value;
-
-        public static double DeserializeDouble(JsonNode value) => (double)value;
-
-        public static decimal DeserializeDecimal(JsonNode value) => (decimal)value;
-
-        public static bool DeserializeBoolean(JsonNode token)
+        public static int DeserializeInt32(JsonNode node)
         {
-            var value = token.AsValue();
+            var value = node.AsValue();
+            if (value.TryGetValue(out int i32)) return i32;
+            if (value.TryGetValue(out string? str)) return Convert.ToInt32(str);
+            throw CreateInvalidCastException(typeof(int));
+        }
+
+        public static long DeserializeInt64(JsonNode node)
+        {
+            var value = node.AsValue();
+            if (value.TryGetValue(out long i64)) return i64;
+            if (value.TryGetValue(out string? str)) return Convert.ToInt64(str);
+            throw CreateInvalidCastException(typeof(long));
+        }
+
+        public static float DeserializeFloat(JsonNode node)
+        {
+            var value = node.AsValue();
+            if (value.TryGetValue(out float f)) return f;
+            if (value.TryGetValue(out string? str)) return Convert.ToSingle(str);
+            throw CreateInvalidCastException(typeof(float));
+        }
+
+        public static double DeserializeDouble(JsonNode node)
+        {
+            var value = node.AsValue();
+            if (value.TryGetValue(out double d)) return d;
+            if (value.TryGetValue(out string? str)) return Convert.ToDouble(str);
+            throw CreateInvalidCastException(typeof(double));
+        }
+
+        public static decimal DeserializeDecimal(JsonNode node)
+        {
+            var value = node.AsValue();
+            if (value.TryGetValue(out decimal dec)) return dec;
+            if (value.TryGetValue(out string? str)) return Convert.ToDecimal(str);
+            throw CreateInvalidCastException(typeof(decimal));
+        }
+
+        public static bool DeserializeBoolean(JsonNode node)
+        {
+            var value = node.AsValue();
             if (value.TryGetValue(out int i32)) return i32 != 0;
             if (value.TryGetValue(out string? str))
             {
@@ -233,9 +266,21 @@ public class CargoRecordConverter : ICargoRecordConverter
             return (bool)value;
         }
 
-        public static DateTime DeserializeDateTime(JsonNode value) => (DateTime)value;
+        public static DateTime DeserializeDateTime(JsonNode node)
+        {
+            var value = node.AsValue();
+            if (value.TryGetValue(out DateTime dt)) return dt;
+            if (value.TryGetValue(out string? str)) return Convert.ToDateTime(str);
+            throw CreateInvalidCastException(typeof(DateTime));
+        }
 
-        public static DateTimeOffset DeserializeDateTimeOffset(JsonNode value) => (DateTimeOffset)value;
+        public static DateTimeOffset DeserializeDateTimeOffset(JsonNode node)
+        {
+            var value = node.AsValue();
+            if (value.TryGetValue(out DateTimeOffset dto)) return dto;
+            if (value.TryGetValue(out string? str)) return DateTimeOffset.Parse(str);
+            throw CreateInvalidCastException(typeof(DateTimeOffset));
+        }
 
         public static int? DeserializeNullableInt32(JsonNode value) => IsNullableNull(value) ? (int?)null : (int)value;
 

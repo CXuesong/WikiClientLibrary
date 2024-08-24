@@ -14,6 +14,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Include="..\WikiClientLibrary\Infrastructures\Polyfill.cs" Link="Infrastructures\Polyfill.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\WikiClientLibrary\WikiClientLibrary.csproj" />
   </ItemGroup>
 </Project>

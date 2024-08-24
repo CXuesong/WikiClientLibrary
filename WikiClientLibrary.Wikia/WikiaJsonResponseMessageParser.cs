@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using System.Text.Json.Nodes;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using WikiClientLibrary.Client;
@@ -9,7 +10,7 @@ namespace WikiClientLibrary.Wikia;
 /// <summary>
 /// Parser that parses the JSON and dispatches error in the response from generic Wikia API response.
 /// </summary>
-public class WikiaJsonResponseParser : WikiResponseMessageParser<JToken>
+public class WikiaJsonResponseParser : WikiResponseMessageParser<JsonNode>
 {
 
     internal static readonly WikiaJsonResponseParser Default = new WikiaJsonResponseParser();
@@ -18,7 +19,7 @@ public class WikiaJsonResponseParser : WikiResponseMessageParser<JToken>
     /// <remarks>
     /// <para>This method does not check the HTTP status code, because for certain JSON responses,
     /// the status code might has its semantic meanings.</para>
-    /// <para>Then the content will be parsed as JSON, in <see cref="JToken"/>. If there is
+    /// <para>Then the content will be parsed as JSON, in <see cref="JsonNode"/>. If there is
     /// <see cref="JsonException"/> thrown while parsing the response, a retry will be requested.</para>
     /// <para>The default implementation for this method throws a <see cref="WikiaApiException"/>
     /// or one of its derived exceptions when detected <c>exception</c> node in the JSON response.
@@ -38,22 +39,22 @@ public class WikiaJsonResponseParser : WikiResponseMessageParser<JToken>
     /// </item>
     /// </list> 
     /// </remarks>
-    public override async Task<JToken> ParseResponseAsync(HttpResponseMessage response, WikiResponseParsingContext context)
+    public override async Task<JsonNode> ParseResponseAsync(HttpResponseMessage response, WikiResponseParsingContext context)
     {
         if (response == null) throw new ArgumentNullException(nameof(response));
         if (context == null) throw new ArgumentNullException(nameof(context));
         // For REST-ful API, we need to parse the content first, to see what happened.
-        JToken jroot;
+        JsonNode jroot;
         try
         {
-            jroot = await MediaWikiHelper.ParseJsonAsync0(await response.Content.ReadAsStreamAsync(), context.CancellationToken);
+            jroot = await MediaWikiHelper.ParseJsonAsync(await response.Content.ReadAsStreamAsync(), context.CancellationToken);
         }
         catch (JsonException)
         {
             context.NeedRetry = true;
             throw;
         }
-        if (jroot is JObject obj)
+        if (jroot is JsonObject obj)
         {
             // Check for exception node.
             var exception = obj["exception"];
@@ -80,7 +81,7 @@ public class WikiaJsonResponseParser : WikiResponseMessageParser<JToken>
                     obj.Remove("status");
                     obj.Remove("error");
                     obj.Remove("details");
-                    throw new WikiaApiException(error, details, status, obj.HasValues ? obj.ToString() : null, null);
+                    throw new WikiaApiException(error, details, status, obj.Count > 0 ? obj.ToString() : null, null);
                 }
                 if (error != null)
                 {

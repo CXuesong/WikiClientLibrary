@@ -1,7 +1,8 @@
 ﻿using System.Collections;
 using System.Globalization;
 using System.Runtime.CompilerServices;
-using Newtonsoft.Json.Linq;
+using System.Text.Json;
+using System.Text.Json.Nodes;
 using WikiClientLibrary.Infrastructures;
 using WikiClientLibrary.Infrastructures.Logging;
 using WikiClientLibrary.Wikia.Sites;
@@ -35,7 +36,7 @@ public static class WikiaSiteWikiaApiExtensions
             throw new ArgumentException("User name cannot contain comma (,).", nameof(userName));
         using (site.BeginActionScope(null, (object)userName))
         {
-            JToken jresult;
+            JsonNode jresult;
             try
             {
                 jresult = await site.InvokeWikiaApiAsync("/User/Details",
@@ -45,7 +46,7 @@ public static class WikiaSiteWikiaApiExtensions
             {
                 return null;
             }
-            var user = jresult["items"][0].ToObject<UserInfo>();
+            var user = jresult["items"][0].Deserialize<UserInfo>();
             if (user == null) return null;
             var basePath = (string)jresult["basepath"];
             if (basePath != null) user.ApplyBasePath(basePath);
@@ -72,7 +73,7 @@ public static class WikiaSiteWikiaApiExtensions
         {
             foreach (var names in userNames.Partition(100))
             {
-                JToken jresult;
+                JsonNode jresult;
                 try
                 {
                     jresult = await site.InvokeWikiaApiAsync("/User/Details",
@@ -85,7 +86,7 @@ public static class WikiaSiteWikiaApiExtensions
                     continue;
                 }
                 var basePath = (string)jresult["basepath"];
-                var users = jresult["items"].ToObject<ICollection<UserInfo>>();
+                var users = jresult["items"].Deserialize<List<UserInfo>>();
                 if (basePath != null)
                 {
                     foreach (var user in users)
@@ -132,10 +133,10 @@ public static class WikiaSiteWikiaApiExtensions
             var jresult = await site.InvokeWikiaApiAsync("/RelatedPages/List",
                 new WikiaQueryRequestMessage(new { ids = pageId, limit = maxCount }),
                 cancellationToken);
-            var jitems = jresult["items"][pageId.ToString(CultureInfo.InvariantCulture)];
-            if (jitems == null) jitems = ((JProperty)jresult["items"].First)?.Value;
-            if (jitems == null || !jitems.HasValues) return Array.Empty<RelatedPageItem>();
-            var items = jitems.ToObject<IList<RelatedPageItem>>();
+            var jitems = jresult["items"][pageId.ToString(CultureInfo.InvariantCulture)]?.AsArray();
+            if (jitems == null) jitems = jresult["items"]?.AsObject().FirstOrDefault().Value?.AsArray();
+            if (jitems == null || jitems.Count == 0) return Array.Empty<RelatedPageItem>();
+            var items = jitems.Deserialize<List<RelatedPageItem>>();
             var basePath = (string)jresult["basepath"];
             if (basePath != null)
             {

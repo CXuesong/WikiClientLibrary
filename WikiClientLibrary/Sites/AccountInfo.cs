@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using System.Text.Json.Serialization;
+using WikiClientLibrary.Infrastructures;
 
 namespace WikiClientLibrary.Sites;
 
@@ -6,70 +7,55 @@ namespace WikiClientLibrary.Sites;
 /// Provides read-only access to the current logged-in information.
 /// </summary>
 /// <remarks>See <a href="https://www.mediawiki.org/wiki/API:Userinfo">mw:API:UserInfo</a>.</remarks>
-[JsonObject(MemberSerialization.OptIn)]
-public class AccountInfo
+[JsonContract]
+public sealed record AccountInfo
 {
 
-#pragma warning disable CS8618 // 在退出构造函数时，不可为 null 的字段必须包含非 null 值。请考虑声明为可以为 null。
-    internal AccountInfo()
-#pragma warning restore CS8618 // 在退出构造函数时，不可为 null 的字段必须包含非 null 值。请考虑声明为可以为 null。
-    {
-    }
+    public long Id { get; init; }
 
-    [JsonProperty]
-    public long Id { get; private set; }
-
-    [JsonProperty]
-    public string Name { get; private set; }
+    public string Name { get; init; }
 
     /// <summary>
     /// Determines wheter current user is anonymous.
     /// It's recommended that you use <see cref="IsUser"/> to determine
     /// whether a user has logged in.
     /// </summary>
-    [JsonProperty("anon")]
-    public bool IsAnonymous { get; private set; }
+    [JsonPropertyName("anon")]
+    public bool IsAnonymous { get; init; }
 
     /// <summary>
-    /// Determines wheter current user is in "user" group.
+    /// Determines whether current user is in "user" group.
     /// This is usually used to determine whether a user
     /// has logged in.
     /// </summary>
     public bool IsUser => Groups.Contains(UserGroups.User);
 
     /// <summary>
-    /// Determines wheter current user is in "bot" group.
+    /// Determines whether current user is in "bot" group.
     /// </summary>
     public bool IsBot => Groups.Contains(UserGroups.Bot);
 
     /// <summary>
-    /// Determins whether the current user has been blocked.
+    /// Determines whether the current user has been blocked.
     /// </summary>
     public bool IsBlocked => BlockId != 0;
 
-    [JsonProperty]
-    public int BlockId { get; private set; }
+    public int BlockId { get; init; }
 
-    [JsonProperty]
-    public string BlockedBy { get; private set; }
+    public string BlockedBy { get; init; }
 
-    [JsonProperty]
-    public int BlockedById { get; private set; }
+    public int BlockedById { get; init; }
 
-    [JsonProperty]
-    public string BlockReason { get; private set; }
+    public string BlockReason { get; init; }
 
-    [JsonProperty("blockedtimestamp")]
-    public DateTime BlockedSince { get; private set; }
+    [JsonPropertyName("blockedtimestamp")]
+    public DateTime BlockedSince { get; init; }
 
-    [JsonProperty]
-    public DateTime BlockExpiry { get; private set; }
+    public DateTime BlockExpiry { get; init; }
 
-    [JsonProperty]
-    public IReadOnlyCollection<string> Groups { get; private set; }
+    public IReadOnlyCollection<string> Groups { get; init; }
 
-    [JsonProperty]
-    public IReadOnlyCollection<string> Rights { get; private set; }
+    public IReadOnlyCollection<string> Rights { get; init; }
 
     /// <summary>
     /// Determines whether the user is in certain group.

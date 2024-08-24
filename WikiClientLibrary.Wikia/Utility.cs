@@ -1,14 +1,13 @@
-﻿using Newtonsoft.Json;
-using Newtonsoft.Json.Serialization;
+﻿using System.Text.Json;
 
 namespace WikiClientLibrary.Wikia;
 
 internal static class Utility
 {
 
-    public static readonly JsonSerializer WikiaApiJsonSerializer = new JsonSerializer
+    public static readonly JsonSerializerOptions WikiaApiJsonSerializerOptions = new()
     {
-        ContractResolver = new DefaultContractResolver { NamingStrategy = new SnakeCaseNamingStrategy() }
+        PropertyNamingPolicy = JsonNamingPolicy.SnakeCaseLower,
     };
 
     /// <summary>

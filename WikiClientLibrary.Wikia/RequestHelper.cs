@@ -1,9 +1,9 @@
 ﻿using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
+using System.Text.Json.Nodes;
 using HtmlAgilityPack;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json.Linq;
 using WikiClientLibrary.Generators;
 using WikiClientLibrary.Infrastructures;
 using WikiClientLibrary.Infrastructures.Logging;
@@ -22,16 +22,16 @@ internal static class RequestHelper
     public static async IAsyncEnumerable<Post> EnumArticleCommentsAsync(Board board, PostQueryOptions options,
         [EnumeratorCancellation] CancellationToken cancellationToken = default)
     {
-        IList<Post> PostsFromJsonOutline(JObject commentList)
+        IList<Post> PostsFromJsonOutline(JsonObject commentList)
         {
-            return commentList.Properties().Select(p =>
+            return commentList.Select(p =>
             {
-                var post = new Post(board.Site, board.Page, Convert.ToInt32(p.Name));
-                var level2 = p.Value["level2"];
-                if (level2 != null && level2.HasValues)
+                var post = new Post(board.Site, board.Page, Convert.ToInt32(p.Key));
+                var level2 = p.Value["level2"]?.AsObject();
+                if (level2 != null && level2.Count > 0)
                 {
-                    post.Replies = new ReadOnlyCollection<Post>(((JObject)level2).Properties().Select(p2 =>
-                        new Post(board.Site, board.Page, Convert.ToInt32(p2.Name))).ToList());
+                    post.Replies = new ReadOnlyCollection<Post>(level2.Select(p2 =>
+                        new Post(board.Site, board.Page, Convert.ToInt32(p2.Key))).ToList());
                 }
                 return post;
             }).ToList();
@@ -72,10 +72,10 @@ internal static class RequestHelper
                         page = page
                     }), WikiaJsonResponseParser.Default, cancellationToken);
                 // Build comment structure.
-                var jcomments = jroot["commentListRaw"];
-                if (jcomments != null && jcomments.HasValues)
+                var jcomments = jroot["commentListRaw"]?.AsObject();
+                if (jcomments != null && jcomments.Count > 0)
                 {
-                    var comments = PostsFromJsonOutline((JObject)jcomments);
+                    var comments = PostsFromJsonOutline(jcomments);
                     pagesCount = (int)jroot["pagesCount"];
                     await RefreshPostsAsync(PostsAndDescendants(comments), options, cancellationToken);
                     using (ExecutionContextStash.Capture())

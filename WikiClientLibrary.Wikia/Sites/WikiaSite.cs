@@ -1,4 +1,6 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using System.Text.Json;
+using System.Text.Json.Nodes;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json.Linq;
 using WikiClientLibrary.Client;
 using WikiClientLibrary.Infrastructures;
@@ -52,7 +54,7 @@ public class WikiaSite : WikiSite
     /// <para>This overload uses <see cref="WikiaJsonResponseParser"/> to parse the response.</para>
     /// <para>This method will automatically add <c>action=ajax</c> field in the request.</para>
     /// </remarks>
-    public async Task<JToken> InvokeWikiaAjaxAsync(WikiRequestMessage request, CancellationToken cancellationToken)
+    public async Task<JsonNode> InvokeWikiaAjaxAsync(WikiRequestMessage request, CancellationToken cancellationToken)
     {
         return await InvokeWikiaAjaxAsync(request, WikiaJsonResponseParser.Default, cancellationToken);
     }
@@ -89,7 +91,7 @@ public class WikiaSite : WikiSite
 
     /// <inheritdoc cref="InvokeNirvanaAsync{T}(WikiRequestMessage,IWikiResponseMessageParser{T},CancellationToken)"/>
     /// <remarks>This overload uses <see cref="WikiaJsonResponseParser"/> to parse the response.</remarks>
-    public Task<JToken> InvokeNirvanaAsync(WikiRequestMessage request, CancellationToken cancellationToken)
+    public Task<JsonNode> InvokeNirvanaAsync(WikiRequestMessage request, CancellationToken cancellationToken)
     {
         return InvokeNirvanaAsync(request, WikiaJsonResponseParser.Default, cancellationToken);
     }
@@ -113,7 +115,7 @@ public class WikiaSite : WikiSite
 
     /// <inheritdoc cref="InvokeWikiaApiAsync{T}(string,WikiRequestMessage,IWikiResponseMessageParser{T},CancellationToken)"/>
     /// <remarks>This overload uses <see cref="WikiaJsonResponseParser"/> to parse the response.</remarks>
-    public Task<JToken> InvokeWikiaApiAsync(string relativeUri, WikiRequestMessage request, CancellationToken cancellationToken)
+    public Task<JsonNode> InvokeWikiaApiAsync(string relativeUri, WikiRequestMessage request, CancellationToken cancellationToken)
     {
         return InvokeWikiaApiAsync(relativeUri, request, WikiaJsonResponseParser.Default, cancellationToken);
     }
@@ -144,7 +146,7 @@ public class WikiaSite : WikiSite
             var jresult = await InvokeWikiaApiAsync("/Mercury/WikiVariables", new WikiaQueryRequestMessage(), CancellationToken.None);
             var jdata = jresult["data"];
             if (jdata == null) throw new UnexpectedDataException("Missing data node in the JSON response.");
-            WikiVariables = jdata.ToObject<SiteVariableData>();
+            WikiVariables = jdata.Deserialize<SiteVariableData>(MediaWikiHelper.WikiJsonSerializerOptions);
         }
     }
 
