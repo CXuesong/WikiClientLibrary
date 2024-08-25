@@ -1,6 +1,6 @@
+using System.Diagnostics;
 using System.Text;
 using System.Text.Json.Serialization;
-using Microsoft.Extensions.Logging;
 using WikiClientLibrary.Infrastructures;
 using WikiClientLibrary.Pages;
 using WikiClientLibrary.Sites;
@@ -14,9 +14,7 @@ namespace WikiClientLibrary.Generators;
 public sealed record RecentChangeItem
 {
 
-    internal WikiSite? Site { get; }
-
-    internal RecentChangeItem() { }
+    private WikiSite? site;
 
     [JsonPropertyName("type")]
     [JsonInclude]
@@ -122,7 +120,7 @@ public sealed record RecentChangeItem
 
     /// <summary>For log items, gets log type name.</summary>
     /// <remarks>See <see cref="LogTypes"/> for a list of predefined values.</remarks>
-    public string LogType { get; init; }
+    public string? LogType { get; init; }
 
     /// <summary>
     /// Specific log action.
@@ -133,7 +131,7 @@ public sealed record RecentChangeItem
     /// property, because certain the same log action value may have different meaning in
     /// different log type context.
     /// </remarks>
-    public string LogAction { get; init; }
+    public string? LogAction { get; init; }
 
     /// <summary>For log items, gets additional log parameters.</summary>
     [JsonObjectCreationHandling(JsonObjectCreationHandling.Replace)]
@@ -145,27 +143,54 @@ public sealed record RecentChangeItem
     [JsonIgnore]
     public PatrolStatus PatrolStatus { get; private set; }
 
-    [JsonInclude] private bool Minor;
-    [JsonInclude] private bool Bot;
-    [JsonInclude] private bool New;
-    [JsonInclude] private bool Anon;
-    [JsonInclude] private bool Patrolled;
-    [JsonInclude] private bool Unpatrolled;
+    [JsonInclude]
+    private bool Minor
+    {
+        init => Flags = value ? (Flags | RevisionFlags.Minor) : (Flags & ~RevisionFlags.Minor);
+    }
+
+    [JsonInclude]
+    private bool Bot
+    {
+        init => Flags = value ? (Flags | RevisionFlags.Bot) : (Flags & ~RevisionFlags.Bot);
+    }
+
+    [JsonInclude]
+    private bool New
+    {
+        init => Flags = value ? (Flags | RevisionFlags.Create) : (Flags & ~RevisionFlags.Create);
+    }
+
+    [JsonInclude]
+    private bool Anon
+    {
+        init => Flags = value ? (Flags | RevisionFlags.Anonymous) : (Flags & ~RevisionFlags.Anonymous);
+    }
+
+    [JsonInclude]
+    private bool Patrolled
+    {
+        init
+        {
+            if (value) PatrolStatus = PatrolStatus.Patrolled;
+        }
+    }
+
+    [JsonInclude]
+    private bool Unpatrolled
+    {
+        init
+        {
+            if (value) PatrolStatus = PatrolStatus.Unpatrolled;
+        }
+    }
 
     // User context data is not supported as of now -- calling this function manually.
     // https://github.com/dotnet/runtime/issues/59892
-    internal void OnDeserialized(WikiSite site)
+    internal void OnDeserialized(WikiSite s)
     {
-        Flags = RevisionFlags.None;
-        if (Minor) Flags |= RevisionFlags.Minor;
-        if (Bot) Flags |= RevisionFlags.Bot;
-        if (New) Flags |= RevisionFlags.Create;
-        if (Anon) Flags |= RevisionFlags.Anonymous;
-        if (Patrolled) PatrolStatus = PatrolStatus.Patrolled;
-        else if (Unpatrolled) PatrolStatus = PatrolStatus.Unpatrolled;
-        else PatrolStatus = PatrolStatus.Unknown;
-        if (Patrolled && Unpatrolled)
-            site.Logger.LogWarning("Patrolled and Unpatrolled are both set for rcid={Id}, page {Page}.", Id, Title);
+        Debug.Assert(s != null);
+        this.site = s;
     }
 
     /// <summary>
@@ -194,10 +219,11 @@ public sealed record RecentChangeItem
     /// <exception cref="NotSupportedException">Patrolling is disabled on this wiki.</exception>
     public Task PatrolAsync(CancellationToken cancellationToken)
     {
+        Debug.Assert(site != null);
         if (PatrolStatus == PatrolStatus.Patrolled)
             throw new InvalidOperationException(Prompts.ExceptionChangePatrolled);
-        Site.AccountInfo.AssertRight(UserRights.Patrol);
-        return RequestHelper.PatrolAsync(Site, Id, null, cancellationToken);
+        site.AccountInfo.AssertRight(UserRights.Patrol);
+        return RequestHelper.PatrolAsync(site, Id, null, cancellationToken);
     }
 
     /// <summary>

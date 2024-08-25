@@ -32,6 +32,7 @@ public static partial class MediaWikiHelper
         {
             DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
             PropertyNamingPolicy = new WikiJsonNamingPolicy(),
+            NumberHandling = JsonNumberHandling.AllowReadingFromString | JsonNumberHandling.AllowNamedFloatingPointLiterals,
             WriteIndented = false,
             Converters =
             {
@@ -39,6 +40,7 @@ public static partial class MediaWikiHelper
                 new WikiStringEnumJsonConverter(),
                 new WikiDateTimeConverter(),
                 new WikiDateTimeOffsetConverter(),
+                new WikiReadOnlyDictionaryConverterFactory(),
             },
             TypeInfoResolver = new DefaultJsonTypeInfoResolver
             {

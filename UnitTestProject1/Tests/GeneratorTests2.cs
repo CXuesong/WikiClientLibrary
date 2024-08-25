@@ -92,7 +92,7 @@ public class GeneratorTests2 : WikiSiteTestsBase, IClassFixture<WikiSiteProvider
         foreach (var p in pages)
         {
             var flags = p.LastRevision!.Flags;
-            Assert.True(flags != RevisionFlags.None);
+            Assert.NotEqual(RevisionFlags.None, flags);
             Assert.False(flags.HasFlag(RevisionFlags.Anonymous));
             Assert.True(flags.HasFlag(RevisionFlags.Minor));
         }

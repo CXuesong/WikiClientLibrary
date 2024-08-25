@@ -1,5 +1,6 @@
 using System.Collections.Concurrent;
 using System.Globalization;
+using System.Reflection;
 using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Text.Json.Serialization;
@@ -138,6 +139,30 @@ public class WikiDateTimeConverter : JsonConverter<DateTime>
             writer.WriteStringValue("infinity");
         else
             writer.WriteStringValue(value.ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ssK", CultureInfo.InvariantCulture));
+    }
+
+}
+
+/// <summary>
+/// Handles the serialization and deserialization of instances derived from <see cref="WikiReadOnlyDictionary"/>.
+/// </summary>
+public sealed class WikiReadOnlyDictionaryConverterFactory : JsonConverterFactory
+{
+
+    /// <inheritdoc />
+    public override bool CanConvert(Type typeToConvert)
+    {
+        return typeof(WikiReadOnlyDictionary).IsAssignableFrom(typeToConvert)
+               && typeToConvert is { IsAbstract: false, IsInterface: false, IsGenericTypeDefinition: false };
+    }
+
+    /// <inheritdoc />
+    public override JsonConverter? CreateConverter(Type typeToConvert, JsonSerializerOptions options)
+    {
+        return (JsonConverter?)typeof(WikiReadOnlyDictionary.DictionaryJsonConverter<>)
+            .MakeGenericType(typeToConvert)
+            .InvokeMember(nameof(WikiReadOnlyDictionary.DictionaryJsonConverter<WikiReadOnlyDictionary>.Default),
+                BindingFlags.Public | BindingFlags.Static | BindingFlags.GetField, null, null, null);
     }
 
 }

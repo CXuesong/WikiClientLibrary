@@ -1,6 +1,5 @@
 using System.Collections.Immutable;
-using System.Runtime.Serialization;
-using Newtonsoft.Json;
+using System.Text.Json.Serialization;
 using WikiClientLibrary.Generators;
 using WikiClientLibrary.Infrastructures;
 using WikiClientLibrary.Pages.Queries;
@@ -14,9 +13,11 @@ namespace WikiClientLibrary.Pages;
 /// </summary>
 /// <seealso cref="RevisionsPropertyGroup"/>
 /// <seealso cref="RevisionsPropertyProvider"/>
-[JsonObject(MemberSerialization.OptIn)]
-public class Revision
+[JsonContract]
+public sealed record Revision
 {
+
+    private readonly IDictionary<string, RevisionSlot> slots = ImmutableDictionary<string, RevisionSlot>.Empty;
 
     /// <summary>
     /// Fetch a revision by revid. This overload will also fetch the content of revision.
@@ -89,11 +90,10 @@ public class Revision
     /// </summary>
     public WikiPageStub Page { get; internal set; }
 
-    [JsonProperty("revid")]
-    public long Id { get; private set; }
+    [JsonPropertyName("revid")]
+    public long Id { get; init; }
 
-    [JsonProperty]
-    public long ParentId { get; private set; }
+    public long ParentId { get; init; }
 
     /// <summary>
     /// Gets the content of the revision.
@@ -106,113 +106,122 @@ public class Revision
     /// See <see cref="RevisionSlot"/> for more information on the revision slots.
     /// </remarks>
     /// <seealso cref="RevisionsPropertyProvider.FetchContent"/>
-    [JsonProperty("*")]
-    public string? Content { get; private set; }
+    [JsonPropertyName("*")]
+    public string? Content { get; init; }
 
     /// <summary>
     /// Editor's edit summary (editor's comment on revision).
     /// </summary>
-    [JsonProperty]
-    public string Comment { get; private set; } = "";
+    public string Comment { get; init; } = "";
 
     /// <summary>
     /// Content model id of the revision.
     /// </summary>
-    [JsonProperty]
-    public string ContentModel { get; private set; } = "";
+    public string ContentModel { get; init; } = "";
 
     /// <summary>
     /// SHA-1 (base 16) of the revision.
     /// </summary>
-    [JsonProperty]
-    public string Sha1 { get; private set; } = "";
+    public string Sha1 { get; init; } = "";
 
     /// <summary>
     /// The user who made the revision.
     /// </summary>
     /// <seealso cref="RevisionFlags.Anonymous"/>
     /// <seealso cref="RevisionHiddenFields.User"/>
-    [JsonProperty("user")]
-    public string UserName { get; private set; } = "";
+    [JsonPropertyName("user")]
+    public string UserName { get; init; } = "";
 
     /// <summary>
     /// User id of revision creator.
     /// </summary>
     /// <seealso cref="RevisionFlags.Anonymous"/>
     /// <seealso cref="RevisionHiddenFields.User"/>
-    [JsonProperty]
-    public long UserId { get; private set; }
+    public long UserId { get; init; }
 
     /// <summary>
     /// Gets a <see cref="UserStub"/> containing the name and ID of the user made this revision.
     /// </summary>
-    [JsonProperty]
     public UserStub UserStub => new UserStub(UserName, UserId);
 
     /// <summary>
     /// Content length, in bytes.
     /// </summary>
     /// <seealso cref="WikiPage.ContentLength"/>
-    [JsonProperty("size")]
-    public int ContentLength { get; private set; }
+    [JsonPropertyName("size")]
+    public int ContentLength { get; init; }
 
     /// <summary>
     /// Any tags for this revision, such as those added by <a href="https://www.mediawiki.org/wiki/Extension:AbuseFilter">AbuseFilter</a>.
     /// </summary>
-    [JsonProperty]
-    public IList<string> Tags { get; private set; } = Array.Empty<string>();
+    public IList<string> Tags { get; init; } = Array.Empty<string>();
 
     /// <summary>
     /// The timestamp of revision.
     /// </summary>
-    [JsonProperty]
-    public DateTime TimeStamp { get; private set; }
+    public DateTime TimeStamp { get; init; }
 
     /// <summary>
     /// Additional status of the revision.
     /// </summary>
-    public RevisionFlags Flags { get; private set; }
+    public RevisionFlags Flags { get; init; }
 
     /// <summary>
     /// Revision slots. (MW 1.32+)
     /// </summary>
     /// <value>Revision slots, or empty dictionary if the site does not support revision slot.</value>
     /// <seealso cref="RevisionSlot"/>
-    [JsonProperty]
-    public IDictionary<string, RevisionSlot> Slots { get; private set; } = ImmutableDictionary<string, RevisionSlot>.Empty;
+    public IDictionary<string, RevisionSlot> Slots
+    {
+        get => slots;
+        init
+        {
+            slots = value;
+            // Make compatible with the slot-based revision JSON
+            if (value.TryGetValue(RevisionSlot.MainSlotName, out var mainSlot))
+            {
+                if (string.IsNullOrEmpty(Content)) Content = mainSlot.Content;
+                if (ContentLength == 0) ContentLength = mainSlot.ContentLength;
+                if (string.IsNullOrEmpty(ContentModel)) ContentModel = mainSlot.ContentModel;
+                if (string.IsNullOrEmpty(Sha1)) Sha1 = mainSlot.Sha1;
+            }
+        }
+    }
 
     /// <summary>
-    /// Gets a indicator of whether one or more fields has been hidden.
+    /// Gets an indicator of whether one or more fields has been hidden.
     /// </summary>
     /// <remarks>See https://www.mediawiki.org/wiki/Help:RevisionDelete .</remarks>
-    public RevisionHiddenFields HiddenFields { get; private set; }
+    public RevisionHiddenFields HiddenFields { get; init; }
 
-#pragma warning disable IDE0044, CS0649 // Add readonly modifier
-    [JsonProperty] private bool Minor;
-    [JsonProperty] private bool Bot;
-    [JsonProperty] private bool New;
-    [JsonProperty] private bool Anon;
-    [JsonProperty] private bool UserHidden;
-#pragma warning restore IDE0044, CS0649 // Add readonly modifier
-
-    [OnDeserialized]
-    private void OnDeserialized(StreamingContext context)
+    [JsonInclude]
+    private bool Minor
     {
-        Flags = RevisionFlags.None;
-        if (Minor) Flags |= RevisionFlags.Minor;
-        if (Bot) Flags |= RevisionFlags.Bot;
-        if (New) Flags |= RevisionFlags.Create;
-        if (Anon) Flags |= RevisionFlags.Anonymous;
-        HiddenFields = RevisionHiddenFields.None;
-        if (UserHidden) HiddenFields |= RevisionHiddenFields.User;
-        // Make compatible with the slot-based revision JSON
-        if (Slots.TryGetValue(RevisionSlot.MainSlotName, out var mainSlot))
-        {
-            if (string.IsNullOrEmpty(Content)) Content = mainSlot.Content;
-            if (ContentLength == 0) ContentLength = mainSlot.ContentLength;
-            if (string.IsNullOrEmpty(ContentModel)) ContentModel = mainSlot.ContentModel;
-            if (string.IsNullOrEmpty(Sha1)) Sha1 = mainSlot.Sha1;
-        }
+        init => Flags = value ? (Flags | RevisionFlags.Minor) : (Flags & ~RevisionFlags.Minor);
+    }
+
+    [JsonInclude]
+    private bool Bot
+    {
+        init => Flags = value ? (Flags | RevisionFlags.Bot) : (Flags & ~RevisionFlags.Bot);
+    }
+
+    [JsonInclude]
+    private bool New
+    {
+        init => Flags = value ? (Flags | RevisionFlags.Create) : (Flags & ~RevisionFlags.Create);
+    }
+
+    [JsonInclude]
+    private bool Anon
+    {
+        init => Flags = value ? (Flags | RevisionFlags.Anonymous) : (Flags & ~RevisionFlags.Anonymous);
+    }
+
+    [JsonInclude]
+    private bool UserHidden
+    {
+        init => HiddenFields = value ? (HiddenFields | RevisionHiddenFields.User) : (HiddenFields & ~RevisionHiddenFields.User);
     }
 
     /// <inheritdoc/>
@@ -234,15 +243,9 @@ public class Revision
 /// <a href="https://www.mediawiki.org/wiki/Manual:Slot">mw:Manual:slot</a>.</para>
 /// </remarks>
 /// <seealso cref="RevisionsPropertyProvider.Slots"/>
-[JsonObject(MemberSerialization.OptIn)]
-public class RevisionSlot
+[JsonContract]
+public sealed record RevisionSlot
 {
-
-#pragma warning disable CS8618 // 在退出构造函数时，不可为 null 的字段必须包含非 null 值。请考虑声明为可以为 null。
-    public RevisionSlot()
-#pragma warning restore CS8618 // 在退出构造函数时，不可为 null 的字段必须包含非 null 值。请考虑声明为可以为 null。
-    {
-    }
 
     /// <summary>
     /// Revision slot name for main revisions.
@@ -254,8 +257,8 @@ public class RevisionSlot
     /// </summary>
     public const string DocumentationSlotName = "documentation";
 
-    [JsonProperty("*")]
-    public string Content { get; set; }
+    [JsonPropertyName("*")]
+    public string Content { get; init; } = "";
 
     /// <summary>
     /// Content serialization format used for the revision slot. 
@@ -264,8 +267,7 @@ public class RevisionSlot
     /// Possible values: text/x-wiki (wikitext), text/javascript (javascript), text/css (css),
     /// text/plain (plain text), application/json (json).
     /// </remarks>
-    [JsonProperty]
-    public string ContentFormat { get; set; }
+    public string ContentFormat { get; init; } = "";
 
     /// <summary>
     /// Content model of the revision slot.
@@ -275,20 +277,18 @@ public class RevisionSlot
     /// This list may include additional values registered by extensions;
     /// on Wikimedia wikis, these include: JsonZeroConfig, Scribunto, JsonSchema
     /// </remarks>
-    [JsonProperty]
-    public string ContentModel { get; set; }
+    public string ContentModel { get; init; } = "";
 
     /// <summary>
     /// Content length (in bytes) of the revision slot.
     /// </summary>
-    [JsonProperty("size")]
-    public int ContentLength { get; set; }
+    [JsonPropertyName("size")]
+    public int ContentLength { get; init; }
 
     /// <summary>
     /// SHA-1 (base 16) of the revision slot.
     /// </summary>
-    [JsonProperty]
-    public string Sha1 { get; set; }
+    public string Sha1 { get; init; } = "";
 
 }
 

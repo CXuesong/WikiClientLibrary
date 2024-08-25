@@ -1,4 +1,6 @@
 ﻿using System.Collections;
+using System.Diagnostics;
+using System.Reflection;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
@@ -8,10 +10,10 @@ namespace WikiClientLibrary.Infrastructures;
 /// A dictionary with predefined strong-typed derived properties customizable by implementers.
 /// </summary>
 [JsonContract]
-public class WikiReadOnlyDictionary : IDictionary<string, JsonElement>, IJsonOnDeserialized
+public class WikiReadOnlyDictionary : IDictionary<string, JsonElement>
 {
 
-    [JsonExtensionData] private readonly Dictionary<string, JsonElement> myDict = new();
+    private readonly Dictionary<string, JsonElement> myDict = new();
 
     /// <summary>
     /// Gets the count of all properties.
@@ -196,7 +198,53 @@ public class WikiReadOnlyDictionary : IDictionary<string, JsonElement>, IJsonOnD
     {
     }
 
-    /// <inheritdoc />
-    void IJsonOnDeserialized.OnDeserialized() => OnDeserialized();
+    internal sealed class DictionaryJsonConverter<T> : JsonConverter<T> where T : WikiReadOnlyDictionary, new()
+    {
+
+        public static readonly DictionaryJsonConverter<T> Default = new();
+
+        /// <inheritdoc />
+        public override T? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+        {
+            switch (reader.TokenType)
+            {
+                case JsonTokenType.Null:
+                    return null;
+                case JsonTokenType.StartObject:
+                    var inst = new T();
+                    var myDict = inst.myDict;
+                    Debug.Assert(myDict.Count == 0, "Expect new instance to be an empty collection.");
+                    reader.Read();
+                    while (reader.TokenType != JsonTokenType.EndObject)
+                    {
+                        Debug.Assert(reader.TokenType == JsonTokenType.PropertyName);
+                        var key = reader.GetString();
+                        reader.Read();
+                        var value = JsonElement.ParseValue(ref reader);
+                        reader.Read();
+                        myDict.Add(key!, value);
+                    }
+                    inst.OnDeserialized();
+                    return inst;
+                default:
+                    throw new JsonException($"Unexpected JSON token: {reader.TokenType}.");
+            }
+        }
+
+        /// <inheritdoc />
+        public override void Write(Utf8JsonWriter writer, T value, JsonSerializerOptions options)
+        {
+            writer.WriteStartObject();
+            // n.b. options.DictionaryKeyPolicy is not followed on deserialization
+            // https://learn.microsoft.com/zh-cn/dotnet/api/system.text.json.jsonserializeroptions.dictionarykeypolicy
+            foreach (var (k, v) in value.myDict)
+            {
+                writer.WritePropertyName(k);
+                v.WriteTo(writer);
+            }
+            writer.WriteEndObject();
+        }
+
+    }
 
 }

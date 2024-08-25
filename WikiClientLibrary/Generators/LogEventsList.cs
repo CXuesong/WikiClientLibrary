@@ -1,9 +1,8 @@
 ﻿using System.Diagnostics;
-using System.Runtime.Serialization;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Nodes;
-using Newtonsoft.Json;
+using System.Text.Json.Serialization;
 using WikiClientLibrary.Generators.Primitive;
 using WikiClientLibrary.Infrastructures;
 using WikiClientLibrary.Sites;
@@ -164,7 +163,7 @@ public class LogEventsList : WikiList<LogEventItem>
             }
         }
 
-        return json.Deserialize<LogEventItem>(MediaWikiHelper.WikiJsonSerializerOptions);
+        return json.Deserialize<LogEventItem>(MediaWikiHelper.WikiJsonSerializerOptions)!;
     }
 
 }
@@ -172,16 +171,9 @@ public class LogEventsList : WikiList<LogEventItem>
 /// <summary>
 /// Represents an MediaWiki log event entry.
 /// </summary>
-[JsonObject(MemberSerialization.OptIn)]
-public sealed class LogEventItem
+[JsonContract]
+public sealed record LogEventItem
 {
-
-    [JsonConstructor]
-#pragma warning disable CS8618 // 在退出构造函数时，不可为 null 的字段必须包含非 null 值。请考虑声明为可以为 null。
-    private LogEventItem()
-#pragma warning restore CS8618 // 在退出构造函数时，不可为 null 的字段必须包含非 null 值。请考虑声明为可以为 null。
-    {
-    }
 
     internal static LogEventItem FromRecentChangeItem(RecentChangeItem rc)
     {
@@ -205,21 +197,20 @@ public sealed class LogEventItem
     }
 
     /// <summary>Namespace ID of the page affected by this item.</summary>
-    [JsonProperty("ns")]
-    public int NamespaceId { get; private set; }
+    [JsonPropertyName("ns")]
+    public int NamespaceId { get; init; }
 
     /// <summary>Full title of the page affected by this item.</summary>
     /// <remarks>For user operation, this is the title user page of target user.</remarks>
-    [JsonProperty]
-    public string Title { get; private set; }
+    public string Title { get; init; }
 
     /// <summary>the page id at the time the log was stored.</summary>
-    [JsonProperty("logpage")]
-    public long PageId { get; private set; }
+    [JsonPropertyName("logpage")]
+    public long PageId { get; init; }
 
     /// <summary>Name of the user making this recent change.</summary>
-    [JsonProperty("user")]
-    public string UserName { get; private set; }
+    [JsonPropertyName("user")]
+    public string UserName { get; init; }
 
     /// <summary>The user ID who was responsible for the log event/recent change.</summary>
     /// <remarks>
@@ -232,33 +223,26 @@ public sealed class LogEventItem
     /// <para>To get the user ID for the created user, especially in <see cref="LogActions.Create2"/> log action,
     /// use <see cref="Params"/>.<see cref="LogParameterCollection.UserId"/> .</para>
     /// </remarks>
-    [JsonProperty]
-    public long UserId { get; private set; }
+    public long UserId { get; init; }
 
     /// <summary>The time and date of the change.</summary>
-    [JsonProperty]
-    public DateTime TimeStamp { get; private set; }
+    public DateTime TimeStamp { get; init; }
 
     /// <summary>The edit/log comment.</summary>
-    [JsonProperty]
-    public string Comment { get; private set; }
+    public string Comment { get; init; }
 
     /// <summary>The parsed comment for the edit/log comment.</summary>
-    [JsonProperty]
-    public string ParsedComment { get; private set; }
+    public string ParsedComment { get; init; }
 
     /// <summary>Tags for the event.</summary>
-    [JsonProperty]
-    public IList<string> Tags { get; private set; }
+    public IList<string> Tags { get; init; }
 
     /// <summary>Gets ID of the log entry.</summary>
-    [JsonProperty]
-    public int LogId { get; private set; }
+    public int LogId { get; init; }
 
     /// <summary>Gets log type name.</summary>
     /// <remarks>See <see cref="LogTypes"/> for a list of predefined values.</remarks>
-    [JsonProperty]
-    public string Type { get; private set; }
+    public string Type { get; init; }
 
     /// <summary>
     /// Specific log action.
@@ -269,8 +253,7 @@ public sealed class LogEventItem
     /// property, because certain the same log action value may have different meaning in
     /// different log type context.
     /// </remarks>
-    [JsonProperty]
-    public string Action { get; private set; }
+    public string Action { get; init; }
 
     /// <summary>For log items, gets additional log parameters.</summary>
     /// <value>
@@ -283,26 +266,43 @@ public sealed class LogEventItem
     /// For compatibility with MediaWiki 1.19 and below, this property also tries to use the property
     /// whose name is the value of <see cref="Type"/>. (e.g. use `move` property if <see cref="Type"/> is <see cref="LogActions.Move"/>.
     /// </remarks>
-    [JsonProperty(ObjectCreationHandling = ObjectCreationHandling.Replace)]
-    public LogParameterCollection Params { get; private set; } = LogParameterCollection.Empty;
+    public LogParameterCollection Params { get; init; } = LogParameterCollection.Empty;
 
     /// <summary>
     /// Gets a combination of flags indicating which fields have been hidden.
     /// (<a href="https://www.mediawiki.org/wiki/Manual:RevisionDelete">mw:Manual:RevisionDelete</a>)
     /// </summary>
-    public LogEventHiddenFields HiddenFields { get; private set; }
+    [JsonIgnore]
+    public LogEventHiddenFields HiddenFields { get; init; }
 
-    [JsonProperty] private bool ActionHidden;
-    [JsonProperty] private bool UserHidden;
-    [JsonProperty] private bool CommentHidden;
-
-    [OnDeserialized]
-    private void OnDeserialized(StreamingContext context)
+    [JsonInclude]
+    private bool ActionHidden
     {
-        HiddenFields = LogEventHiddenFields.None;
-        if (ActionHidden) HiddenFields |= LogEventHiddenFields.Action;
-        if (UserHidden) HiddenFields |= LogEventHiddenFields.User;
-        if (CommentHidden) HiddenFields |= LogEventHiddenFields.Comment;
+        init
+        {
+            if (value) HiddenFields |= LogEventHiddenFields.Action;
+            else HiddenFields &= ~LogEventHiddenFields.Action;
+        }
+    }
+
+    [JsonInclude]
+    private bool UserHidden
+    {
+        init
+        {
+            if (value) HiddenFields |= LogEventHiddenFields.User;
+            else HiddenFields &= ~LogEventHiddenFields.User;
+        }
+    }
+
+    [JsonInclude]
+    private bool CommentHidden
+    {
+        init
+        {
+            if (value) HiddenFields |= LogEventHiddenFields.Comment;
+            else HiddenFields &= ~LogEventHiddenFields.Comment;
+        }
     }
 
     /// <inheritdoc/>

@@ -61,7 +61,7 @@ public class FileInfoPropertyGroup : WikiPagePropertyGroup
 
     internal static FileInfoPropertyGroup? Create(JsonObject jpage)
     {
-        var info = jpage["imageinfo"].AsArray();
+        var info = jpage["imageinfo"]?.AsArray();
         // jpage["imageinfo"] == null indicates the page may not be a valid File.
         if (info == null) return null;
         if (info.Count == 0) return Empty;

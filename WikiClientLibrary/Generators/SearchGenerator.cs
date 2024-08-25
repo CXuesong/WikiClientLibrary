@@ -113,7 +113,7 @@ public class SearchGenerator : WikiPageGenerator<SearchResultItem>
     /// <inheritdoc />
     protected override SearchResultItem ItemFromJson(JsonNode json)
     {
-        return json.Deserialize<SearchResultItem>(MediaWikiHelper.WikiJsonSerializerOptions);
+        return json.Deserialize<SearchResultItem>(MediaWikiHelper.WikiJsonSerializerOptions)!;
     }
 
 }

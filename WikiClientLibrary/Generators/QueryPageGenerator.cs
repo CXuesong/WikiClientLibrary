@@ -151,7 +151,7 @@ public sealed record QueryPageResultItem
 {
 
     // MaxValue: not resolved yet.
-    // MW 1.19 does not have this field.
+    // MW 1.19- does not have this field.
     [JsonInclude] [JsonPropertyName("timestamp")] private DateTime _Timestamp = DateTime.MaxValue;
 
     /// <summary>Title of the page, or title of the entry, depending on the nature of query page.</summary>
@@ -191,6 +191,7 @@ public sealed record QueryPageResultItem
     /// <remarks>
     /// Only access this property when you already know the query page you are accessing yields valid timestamp values.
     /// </remarks>
+    [JsonIgnore]
     public DateTime Timestamp
     {
         get
@@ -199,7 +200,7 @@ public sealed record QueryPageResultItem
             if (long.TryParse(Value, NumberStyles.Integer, CultureInfo.InvariantCulture, out var epoch))
             {
                 // 1990-01-01 0:0:0 ~ 9999-12-31 23:59:59
-                if (epoch > 631152000 && epoch <= 253402300799)
+                if (epoch is > 631152000 and <= 253402300799)
                 {
                     return _Timestamp = DateTimeOffset.FromUnixTimeSeconds(epoch).UtcDateTime;
                 }
