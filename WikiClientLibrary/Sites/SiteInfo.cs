@@ -908,19 +908,19 @@ public sealed record SiteStatistics
 /// See <a href="https://www.mediawiki.org/wiki/Manual:Magic_words">mw:Manual:Magic words</a>.
 /// </remarks>
 [JsonContract]
-public class MagicWordInfo
+public sealed record MagicWordInfo
 {
 
     /// <summary>Name of the magic word. This is a case-sensitive magic word ID.</summary>
-    public string Name { get; private set; } = "";
+    public required string Name { get; init; }
 
     /// <summary>Aliases of the magic word. These are the valid wikitext expression when magic word is to be invoked.</summary>
-    public IReadOnlyCollection<string> Aliases { get; private set; } = ImmutableList<string>.Empty;
+    public IReadOnlyCollection<string> Aliases { get; init; } = ImmutableList<string>.Empty;
 
     /// <summary>Whether the magic word aliases are case-sensitive.</summary>
     /// <remarks>The value of this property affects the behavior of <see cref="MagicWordCollection.TryGetByAlias(string)"/></remarks>
     [JsonPropertyName("case-sensitive")]
-    public bool CaseSensitive { get; private set; }
+    public bool CaseSensitive { get; init; }
 
     /// <inheritdoc />
     public override string ToString()

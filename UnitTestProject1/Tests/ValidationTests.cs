@@ -63,7 +63,7 @@ public class ValidationTests : WikiSiteTestsBase, IClassFixture<WikiSiteProvider
     }
 
     /// <summary>
-    /// [B]Debian package release adds +dfsg to revision number, breaking version parsing.
+    /// [B]SiteInfo.MagicWords is not filled by anything
     /// </summary>
     [Fact]
     public async Task Issue89()

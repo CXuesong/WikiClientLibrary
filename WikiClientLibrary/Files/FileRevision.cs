@@ -1,5 +1,4 @@
 ﻿using System.Collections.Immutable;
-using System.Globalization;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using WikiClientLibrary.Infrastructures;
@@ -116,56 +115,10 @@ public sealed record FileRevisionExtMetadataValue
     /// <summary>Whether this metadata field is hidden on File page by default.</summary>
     public bool Hidden { get; init; }
 
-    public string? GetValueAsString()
-    {
-        return Value.ValueKind switch
-        {
-            JsonValueKind.String or JsonValueKind.Null => Value.GetString(),
-            JsonValueKind.Number => Value.GetRawText(),
-            JsonValueKind.True => "true",
-            JsonValueKind.False => "false",
-            var k => throw new InvalidOperationException($"Invalid cast from {k} to String."),
-        };
-    }
-
-    public int GetValueAsInt32()
-    {
-        return Value.ValueKind switch
-        {
-            JsonValueKind.String => Convert.ToInt32(Value.GetString(), CultureInfo.InvariantCulture),
-            JsonValueKind.Number => Value.GetInt32(),
-            var k => throw new InvalidOperationException($"Invalid cast from {k} to Int32."),
-        };
-    }
-
-    public long GetValueAsInt64()
-    {
-        return Value.ValueKind switch
-        {
-            JsonValueKind.String => Convert.ToInt64(Value.GetString(), CultureInfo.InvariantCulture),
-            JsonValueKind.Number => Value.GetInt64(),
-            var k => throw new InvalidOperationException($"Invalid cast from {k} to Int64."),
-        };
-    }
-
-    public double GetValueAsDouble()
-    {
-        return Value.ValueKind switch
-        {
-            JsonValueKind.String => Convert.ToDouble(Value.GetString(), CultureInfo.InvariantCulture),
-            JsonValueKind.Number => Value.GetDouble(),
-            var k => throw new InvalidOperationException($"Invalid cast from {k} to Double."),
-        };
-    }
-
-    public DateTime GetValueAsDateTime()
-    {
-        return Value.ValueKind switch
-        {
-            JsonValueKind.String => Convert.ToDateTime(Value.GetString(), CultureInfo.InvariantCulture),
-            var k => throw new InvalidOperationException($"Invalid cast from {k} to DateTime."),
-        };
-    }
+    /// <summary>
+    /// Retrieves the metadata value, converted into the specified primitive type.
+    /// </summary>
+    public T? GetValueAs<T>() => WikiJsonElementHelper.ConvertTo<T>(Value);
 
     /// <inheritdoc />
     public override string ToString() => $"{Value} ({Source})";

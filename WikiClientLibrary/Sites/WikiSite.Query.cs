@@ -274,7 +274,7 @@ partial class WikiSite
 
         var titles = jarray[1]!.AsArray();
         var descs = jarray.Count > 2 ? jarray[2]!.AsArray() : null;
-        var urls = jarray.Count > 3 ? jarray[3]!.AsObject() : null;
+        var urls = jarray.Count > 3 ? jarray[3]!.AsArray() : null;
 
         for (int i = 0; i < titles.Count; i++)
         {

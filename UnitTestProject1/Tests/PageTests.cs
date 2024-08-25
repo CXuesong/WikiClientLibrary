@@ -243,7 +243,7 @@ public class PageTests : WikiSiteTestsBase, IClassFixture<WikiSiteProvider>
 
         Utility.AssertNotNull(file.LastFileRevision.ExtMetadata);
         var extDateTime = file.LastFileRevision.ExtMetadata["DateTime"];
-        Assert.True(new DateTime(2013, 11, 14, 12, 15, 30, DateTimeKind.Utc) <= extDateTime.GetValueAsDateTime());
+        Assert.True(new DateTime(2013, 11, 14, 12, 15, 30, DateTimeKind.Utc) <= extDateTime.GetValueAs<DateTime>());
         Assert.Equal(FileRevisionExtMetadataValueSources.MediaWikiMetadata, extDateTime.Source);
     }
 
