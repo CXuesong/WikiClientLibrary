@@ -260,7 +260,7 @@ internal static class RequestHelper
                             var pageInfo = pageInfoDict[title];
                             if (redirectTrace.Count > 0)
                                 page.RedirectPath = redirectTrace;
-                            MediaWikiHelper.PopulatePageFromJson(page, (JsonObject)pageInfo.Value, options);
+                            MediaWikiHelper.PopulatePageFromJson(page, pageInfo.Value.AsObject(), options);
                         }
                     }
                     else

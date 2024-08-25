@@ -242,8 +242,9 @@ public class PageTests : WikiSiteTestsBase, IClassFixture<WikiSiteProvider>
         ShallowTrace(file.LastFileRevision.ExtMetadata);
 
         Utility.AssertNotNull(file.LastFileRevision.ExtMetadata);
-        Assert.True(new DateTime(2013, 11, 14, 12, 15, 30) <= (DateTime)file.LastFileRevision.ExtMetadata["DateTime"].Value);
-        Assert.Equal(FileRevisionExtMetadataValueSources.MediaWikiMetadata, file.LastFileRevision.ExtMetadata["DateTime"]?.Source);
+        var extDateTime = file.LastFileRevision.ExtMetadata["DateTime"];
+        Assert.True(new DateTime(2013, 11, 14, 12, 15, 30, DateTimeKind.Utc) <= extDateTime.GetValueAsDateTime());
+        Assert.Equal(FileRevisionExtMetadataValueSources.MediaWikiMetadata, extDateTime.Source);
     }
 
     [Fact]

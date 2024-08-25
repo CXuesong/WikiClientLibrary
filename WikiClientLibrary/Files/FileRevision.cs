@@ -1,6 +1,8 @@
 ﻿using System.Collections.Immutable;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
+using System.Globalization;
+using System.Text.Json;
+using System.Text.Json.Serialization;
+using WikiClientLibrary.Infrastructures;
 using WikiClientLibrary.Pages;
 using WikiClientLibrary.Pages.Queries.Properties;
 
@@ -14,8 +16,8 @@ namespace WikiClientLibrary.Files;
 /// </remarks>
 /// <seealso cref="FileInfoPropertyGroup"/>
 /// <seealso cref="FileInfoPropertyProvider"/>
-[JsonObject(MemberSerialization.OptIn)]
-public class FileRevision
+[JsonContract]
+public sealed record FileRevision
 {
 
     /// <summary>
@@ -27,8 +29,7 @@ public class FileRevision
     /// Formatted metadata combined from multiple sources. Results are HTML formatted. (MW 1.17+)
     /// </summary>
     /// <seealso cref="FileInfoPropertyProvider.QueryExtMetadata"/>
-    [JsonProperty]
-    public IReadOnlyDictionary<string, FileRevisionExtMetadataValue> ExtMetadata { get; private set; }
+    public IReadOnlyDictionary<string, FileRevisionExtMetadataValue> ExtMetadata { get; init; }
         = ImmutableDictionary<string, FileRevisionExtMetadataValue>.Empty;
 
     /// <summary>
@@ -37,65 +38,55 @@ public class FileRevision
     /// <remarks>
     /// Before ~MW 1.33, if this revision indicates a stashed file, this property will be <c>true</c>.
     /// </remarks>
-    [JsonProperty("anon")]
-    public bool IsAnonymous { get; private set; }
+    [JsonPropertyName("anon")]
+    public bool IsAnonymous { get; init; }
 
-    [JsonProperty]
-    public int BitDepth { get; private set; }
+    public int BitDepth { get; init; }
 
     /// <summary>
     /// MIME type of the file.
     /// </summary>
-    [JsonProperty]
-    public string Mime { get; private set; } = "";
+    public string Mime { get; init; } = "";
 
     /// <summary>
     /// The time and date of the revision.
     /// </summary>
-    [JsonProperty]
-    public DateTime TimeStamp { get; private set; }
+    public DateTime TimeStamp { get; init; }
 
     /// <summary>
     /// Name of the user uploading this file revision.
     /// </summary>
-    [JsonProperty("user")]
-    public string UserName { get; private set; } = "";
+    [JsonPropertyName("user")]
+    public string UserName { get; init; } = "";
 
     /// <summary>
     /// The comment associated with the upload of this revision.
     /// </summary>
-    [JsonProperty]
-    public string Comment { get; private set; } = "";
+    public string Comment { get; init; } = "";
 
     /// <summary>
     /// Url of the file.
     /// </summary>
-    [JsonProperty]
-    public string Url { get; private set; } = "";
+    public string Url { get; init; } = "";
 
     /// <summary>
     /// Url of the description page.
     /// </summary>
-    [JsonProperty]
-    public string DescriptionUrl { get; private set; } = "";
+    public string DescriptionUrl { get; init; } = "";
 
     /// <summary>
     /// Size of the file. In bytes.
     /// </summary>
-    [JsonProperty]
-    public int Size { get; private set; }
+    public int Size { get; init; }
 
-    [JsonProperty]
-    public int Width { get; private set; }
+    public int Width { get; init; }
 
-    [JsonProperty]
-    public int Height { get; private set; }
+    public int Height { get; init; }
 
     /// <summary>
     /// The file's SHA-1 hash.
     /// </summary>
-    [JsonProperty]
-    public string Sha1 { get; private set; } = "";
+    public string Sha1 { get; init; } = "";
 
 }
 
@@ -103,29 +94,78 @@ public class FileRevision
 /// Represents the value and source of an entry of <seealso cref="FileRevision"/> extmetadata.
 /// </summary>
 /// <seealso cref="FileRevision.ExtMetadata"/>
-[JsonObject(MemberSerialization.OptIn)]
-public class FileRevisionExtMetadataValue
+[JsonContract]
+public sealed record FileRevisionExtMetadataValue
 {
 
-    /// <summary>Metadata value.</summary>
+    /// <summary>Metadata value JSON.</summary>
     /// <remarks>
     /// According to <a href="https://www.mediawiki.org/wiki/API:Imageinfo">mw:API:Imageinfo</a>,
     /// the metadata value is expected to be formatted HTML expression.
-    /// But sometimes the value could be <c>"True"</c>, <c>"true"</c>, or JSON numeric expression.
-    /// You need to cast the returned value into your expected CLR type before working on it.
+    /// But sometimes the value could be a JSON <c>string</c> of <c>"True"</c>, <c>"true"</c>, or a JSON number.
+    /// You need to retrieve the corresponding JSON value into your expected CLR type before working on it.
+    /// Alternatively, you can leverage the <c>GetValueAs*</c> APIs in this class for more resilient type conversion.
     /// </remarks>
-    [JsonProperty]
-    public JToken? Value { get; private set; }
+    public required JsonElement Value { get; init; }
 
     /// <summary>Source of the metadata value.</summary>
     /// <remarks>See <see cref="FileRevisionExtMetadataValueSources"/> for a list of possible metadata sources.</remarks>
-    [JsonProperty]
-    public string Source { get; private set; } = "";
+    public string Source { get; init; } = "";
 
     // https://github.com/wikimedia/mediawiki/blob/a638c0dce0b5a71c3c42ddf7e38e11e7bcd61f7a/includes/media/FormatMetadata.php#L1712
     /// <summary>Whether this metadata field is hidden on File page by default.</summary>
-    [JsonProperty]
-    public bool Hidden { get; private set; }
+    public bool Hidden { get; init; }
+
+    public string? GetValueAsString()
+    {
+        return Value.ValueKind switch
+        {
+            JsonValueKind.String or JsonValueKind.Null => Value.GetString(),
+            JsonValueKind.Number => Value.GetRawText(),
+            JsonValueKind.True => "true",
+            JsonValueKind.False => "false",
+            var k => throw new InvalidOperationException($"Invalid cast from {k} to String."),
+        };
+    }
+
+    public int GetValueAsInt32()
+    {
+        return Value.ValueKind switch
+        {
+            JsonValueKind.String => Convert.ToInt32(Value.GetString(), CultureInfo.InvariantCulture),
+            JsonValueKind.Number => Value.GetInt32(),
+            var k => throw new InvalidOperationException($"Invalid cast from {k} to Int32."),
+        };
+    }
+
+    public long GetValueAsInt64()
+    {
+        return Value.ValueKind switch
+        {
+            JsonValueKind.String => Convert.ToInt64(Value.GetString(), CultureInfo.InvariantCulture),
+            JsonValueKind.Number => Value.GetInt64(),
+            var k => throw new InvalidOperationException($"Invalid cast from {k} to Int64."),
+        };
+    }
+
+    public double GetValueAsDouble()
+    {
+        return Value.ValueKind switch
+        {
+            JsonValueKind.String => Convert.ToDouble(Value.GetString(), CultureInfo.InvariantCulture),
+            JsonValueKind.Number => Value.GetDouble(),
+            var k => throw new InvalidOperationException($"Invalid cast from {k} to Double."),
+        };
+    }
+
+    public DateTime GetValueAsDateTime()
+    {
+        return Value.ValueKind switch
+        {
+            JsonValueKind.String => Convert.ToDateTime(Value.GetString(), CultureInfo.InvariantCulture),
+            var k => throw new InvalidOperationException($"Invalid cast from {k} to DateTime."),
+        };
+    }
 
     /// <inheritdoc />
     public override string ToString() => $"{Value} ({Source})";

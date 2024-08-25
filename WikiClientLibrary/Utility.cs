@@ -33,7 +33,12 @@ internal static class Utility
                 // https://github.com/JamesNK/Newtonsoft.Json/issues/862
                 // https://github.com/CXuesong/WikiClientLibrary/issues/49
                 DateParseHandling = DateParseHandling.None,
-                Converters = { new WikiBooleanJsonConverter0(), new WikiStringEnumJsonConverter0(), new WikiDateTimeJsonConverter0(), },
+                Converters =
+                {
+                    new WikiBooleanJsonConverter0(),
+                    new WikiStringEnumJsonConverter0(),
+                    new WikiDateTimeJsonConverter0(),
+                },
             };
         return JsonSerializer.CreateDefault(settings);
     }
@@ -249,10 +254,12 @@ internal static class Utility
         }
     }
 
+#if !BCL_FEATURE_KVP_TO_DICTIONARY
     public static Dictionary<TKey, TValue> ToDictionary<TKey, TValue>(this IEnumerable<KeyValuePair<TKey, TValue>> source)
         where TKey : notnull
     {
         return source.ToDictionary(p => p.Key, p => p.Value);
     }
+#endif
 
 }

@@ -6,6 +6,6 @@
   </PropertyGroup>
 
   <PropertyGroup Condition=" $([System.Text.RegularExpressions.Regex]::IsMatch($(TargetFramework), `^net[8-9]\.\d+$`)) ">
-    <DefineConstants>$(DefineConstants);BCL_FEATURE_REQUIRED_MEMBER</DefineConstants>
+    <DefineConstants>$(DefineConstants);BCL_FEATURE_REQUIRED_MEMBER;BCL_FEATURE_KVP_TO_DICTIONARY</DefineConstants>
   </PropertyGroup>
 </Project>

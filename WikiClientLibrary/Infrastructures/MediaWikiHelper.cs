@@ -252,14 +252,22 @@ public static string MakeAbsoluteProtocol(string relativeProtocolUrl, string def
 
     public static GeoCoordinate GeoCoordinateFromJson(JsonObject jcoordinate)
     {
+        var contract = jcoordinate.Deserialize<GeoCoordinateJsonContract>(WikiJsonSerializerOptions)!;
         return new GeoCoordinate
         {
-            Longitude = (double)jcoordinate["lon"],
-            Latitude = (double)jcoordinate["lat"],
-            Dimension = (double?)jcoordinate["dim"] ?? 0,
-            Globe = (string)jcoordinate["globe"],
+            Longitude = contract.lon,
+            Latitude = contract.lat,
+            Dimension = contract.dim,
+            Globe = contract.globe,
         };
     }
+
+    private sealed record GeoCoordinateJsonContract(
+        double lon,
+        double lat,
+        double dim = 0,
+        string? globe = null
+    );
 
     // See includes/GlobalFunctions.php in mediawiki/core
     private static readonly string[] infinityValues = { "infinite", "indefinite", "infinity", "never" };

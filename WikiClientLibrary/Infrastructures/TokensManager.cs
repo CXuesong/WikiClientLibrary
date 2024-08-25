@@ -149,10 +149,15 @@ internal sealed class TokensManager
         string ExtractToken(IDictionary<string, JsonNode?> jTokens, string tokenType1)
         {
             if (jTokens == null) throw new ArgumentNullException(nameof(jTokens));
-            var value = (string?)(jTokens[tokenType1] ?? jTokens[tokenType1 + "token"]);
-            if (value == null)
+            if (!jTokens.TryGetValue(tokenType1, out var jtoken)
+                && !jTokens.TryGetValue(tokenType1 + "token", out jtoken))
+            {
+                jtoken = null;
+            }
+            var token = (string?)jtoken;
+            if (token == null)
                 throw new ArgumentException($"Invalid token type: {tokenType1}.", nameof(tokenType));
-            return value;
+            return token;
         }
 
         using (site.BeginActionScope(null, (object)tokenType))

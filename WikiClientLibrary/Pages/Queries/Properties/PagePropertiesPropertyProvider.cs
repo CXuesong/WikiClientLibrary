@@ -46,7 +46,7 @@ public class PagePropertiesPropertyGroup : WikiPagePropertyGroup
         // even if client specified prop=pageprops
         // if (props == null) return null;
         if (props == null || props.Count == 0) return Empty;
-        return new PagePropertiesPropertyGroup(jpage);
+        return new PagePropertiesPropertyGroup(props);
     }
 
     private PagePropertiesPropertyGroup()

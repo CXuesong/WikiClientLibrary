@@ -257,8 +257,10 @@ public sealed record RevisionSlot
     /// </summary>
     public const string DocumentationSlotName = "documentation";
 
+    /// <summary>Slot content.</summary>
+    /// <value>slot content. This property will be <c>null</c> if the content has not been requested to be fetched.</value>
     [JsonPropertyName("*")]
-    public string Content { get; init; } = "";
+    public string? Content { get; init; }
 
     /// <summary>
     /// Content serialization format used for the revision slot. 
