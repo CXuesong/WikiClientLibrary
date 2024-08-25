@@ -1,136 +1,111 @@
-﻿using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
+﻿using System.Text.Json;
+using System.Text.Json.Nodes;
+using System.Text.Json.Serialization;
+using WikiClientLibrary.Infrastructures;
 
 namespace WikiClientLibrary.Wikibase.Contracts;
 
-[JsonObject(MemberSerialization.OptIn)]
-internal class Entity
+[JsonContract]
+internal sealed class Entity
 {
 
     [JsonExtensionData]
-    public IDictionary<string, JToken>? ExtensionData { get; set; }
+    public IDictionary<string, JsonElement>? ExtensionData { get; set; }
 
-    [JsonProperty]
     public string? Type { get; set; }
 
-    [JsonProperty]
     public string? DataType { get; set; }
 
-    [JsonProperty]
     public string? Id { get; set; }
 
-    [JsonProperty]
     public IDictionary<string, MonolingualText>? Labels { get; set; }
 
-    [JsonProperty]
     public IDictionary<string, MonolingualText>? Descriptions { get; set; }
 
-    [JsonProperty]
     public IDictionary<string, ICollection<MonolingualText>>? Aliases { get; set; }
 
-    [JsonProperty]
     public IDictionary<string, ICollection<Claim>>? Claims { get; set; }
 
-    [JsonProperty]
     public IDictionary<string, SiteLink>? Sitelinks { get; set; }
 
 }
 
-[JsonObject(MemberSerialization.OptIn)]
-internal class MonolingualText
+[JsonContract]
+internal sealed class MonolingualText
 {
 
-    [JsonProperty]
-    public string Language { get; set; } = "";
+    public required string Language { get; set; }
 
-    [JsonProperty]
+    // This field must exist, even if Remove == true.
+    // Otherwise, there will be internal_api_error_TypeError
     public string Value { get; set; } = "";
 
-    [JsonProperty]
     public bool Remove { get; set; }
 
 }
 
-[JsonObject(MemberSerialization.OptIn)]
-internal class Claim
+[JsonContract]
+internal sealed class Claim
 {
 
-    [JsonProperty]
     public Snak? MainSnak { get; set; }
 
-    [JsonProperty]
     public string? Type { get; set; }
 
-    [JsonProperty]
     public IDictionary<string, ICollection<Snak>>? Qualifiers { get; set; }
 
-    [JsonProperty("qualifiers-order")]
+    [JsonPropertyName("qualifiers-order")]
     public IList<string>? QualifiersOrder { get; set; }
 
-    [JsonProperty]
     public string? Id { get; set; }
 
-    [JsonProperty]
     public string? Rank { get; set; }
 
-    [JsonProperty]
     public IList<Reference>? References { get; set; }
 
-    [JsonProperty]
     public bool Remove { get; set; }
 
 }
 
-[JsonObject(MemberSerialization.OptIn)]
-internal class Snak
+[JsonContract]
+internal sealed class Snak
 {
 
-    [JsonProperty]
     public string? SnakType { get; set; }
 
-    [JsonProperty]
-    public string Property { get; set; } = "";
+    public required string Property { get; set; }
 
-    [JsonProperty]
     public string? Hash { get; set; }
 
-    [JsonProperty]
-    public JObject? DataValue { get; set; }
+    public JsonObject? DataValue { get; set; }
 
-    [JsonProperty]
     public string? DataType { get; set; }
 
 }
 
-[JsonObject(MemberSerialization.OptIn)]
-internal class Reference
+[JsonContract]
+internal sealed class Reference
 {
 
-    [JsonProperty]
     public string? Hash { get; set; }
 
-    [JsonProperty]
     public IDictionary<string, ICollection<Snak>>? Snaks { get; set; }
 
-    [JsonProperty("snaks-order")]
+    [JsonPropertyName("snaks-order")]
     public IList<string>? SnaksOrder { get; set; }
 
 }
 
-[JsonObject(MemberSerialization.OptIn)]
-internal class SiteLink
+[JsonContract]
+internal sealed class SiteLink
 {
 
-    [JsonProperty]
-    public string Site { get; set; } = "";
+    public required string Site { get; set; }
 
-    [JsonProperty]
-    public string Title { get; set; } = "";
+    public string? Title { get; set; }
 
-    [JsonProperty]
     public IList<string>? Badges { get; set; }
 
-    [JsonProperty]
     public bool Remove { get; set; }
 
 }

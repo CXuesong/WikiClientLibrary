@@ -1,5 +1,6 @@
 ﻿using System.Diagnostics;
-using Newtonsoft.Json.Linq;
+using System.Text.Json;
+using System.Text.Json.Nodes;
 
 namespace WikiClientLibrary.Wikibase.DataTypes;
 
@@ -40,13 +41,13 @@ public abstract class WikibaseDataType
     /// <summary>
     /// Converts the JSON to the CLR value.
     /// </summary>
-    public abstract object Parse(JToken expr);
+    public abstract object Parse(JsonNode expr);
 
 
     /// <summary>
     /// Converts the CLR value to JSON.
     /// </summary>
-    public abstract JToken ToJson(object value);
+    public abstract JsonNode ToJson(object value);
 
     /// <inheritdoc />
     public override string ToString()
@@ -62,15 +63,15 @@ public abstract class WikibaseDataType
 internal sealed class DelegatePropertyType<T> : WikibaseDataType where T : notnull
 {
 
-    private readonly Func<JToken, T> parseHandler;
-    private readonly Func<T, JToken> toJsonHandler;
+    private readonly Func<JsonNode, T> parseHandler;
+    private readonly Func<T, JsonNode> toJsonHandler;
 
-    public DelegatePropertyType(string name, Func<JToken, T> parseHandler, Func<T, JToken> toJsonHandler)
+    public DelegatePropertyType(string name, Func<JsonNode, T> parseHandler, Func<T, JsonNode> toJsonHandler)
         : this(name, name, parseHandler, toJsonHandler)
     {
     }
 
-    public DelegatePropertyType(string name, string valueTypeName, Func<JToken, T> parseHandler, Func<T, JToken> toJsonHandler)
+    public DelegatePropertyType(string name, string valueTypeName, Func<JsonNode, T> parseHandler, Func<T, JsonNode> toJsonHandler)
     {
         Name = name ?? throw new ArgumentNullException(nameof(name));
         ValueTypeName = valueTypeName ?? throw new ArgumentNullException(nameof(valueTypeName));
@@ -87,12 +88,12 @@ internal sealed class DelegatePropertyType<T> : WikibaseDataType where T : notnu
     /// <inheritdoc />
     public override Type MappedType => typeof(T);
 
-    public override object Parse(JToken expr)
+    public override object Parse(JsonNode expr)
     {
         return parseHandler(expr);
     }
 
-    public override JToken ToJson(object value)
+    public override JsonNode ToJson(object value)
     {
         if (value == null)
             throw new ArgumentNullException(nameof(value));
@@ -127,18 +128,19 @@ internal sealed class MissingPropertyType : WikibaseDataType
     public override string ValueTypeName { get; }
 
     /// <inheritdoc />
-    public override Type MappedType => typeof(JToken);
+    public override Type MappedType => typeof(JsonNode);
 
     /// <inheritdoc />
-    public override object Parse(JToken expr)
+    public override object Parse(JsonNode expr)
     {
         return expr;
     }
 
     /// <inheritdoc />
-    public override JToken ToJson(object value)
+    public override JsonNode ToJson(object value)
     {
-        return JToken.FromObject(value);
+        // This also creates defensive copy.
+        return JsonSerializer.SerializeToNode(value)!;
     }
 
 }
@@ -157,7 +159,7 @@ internal sealed class MissingPropertyType : WikibaseDataType
 public static class BuiltInDataTypes
 {
 
-    private static string EntityIdFromJson(JToken value)
+    private static string EntityIdFromJson(JsonNode value)
     {
         var id = (string)value["id"];
         if (id != null) return id;
@@ -172,7 +174,7 @@ public static class BuiltInDataTypes
         return id;
     }
 
-    private static JToken EntityIdToJson(string id)
+    private static JsonNode EntityIdToJson(string id)
     {
         if (id == null) throw new ArgumentNullException(nameof(id));
         id = id.Trim();
@@ -186,7 +188,7 @@ public static class BuiltInDataTypes
         {
             throw new ArgumentException("Invalid entity identifier. Expect numeric id follows.", nameof(id));
         }
-        var value = new JObject();
+        var value = new JsonObject();
         switch (id[0])
         {
             case 'P':
@@ -265,7 +267,7 @@ public static class BuiltInDataTypes
             return WbTime.Parse(time, before, after, timeZone, precision, WikibaseUriFactory.Get(calendar));
         }, v =>
         {
-            var obj = new JObject
+            var obj = new JsonObject
             {
                 { "time", v.ToIso8601UtcString() },
                 { "timezone", v.TimeZone },
@@ -298,7 +300,10 @@ public static class BuiltInDataTypes
                 unit == "1" ? WbQuantity.Unity : WikibaseUriFactory.Get(unit));
         }, v =>
         {
-            var obj = new JObject { { "amount", v.Amount.ToString(SignedFloatFormat) }, { "unit", v.Unit.ToString() }, };
+            var obj = new JsonObject
+            {
+                { "amount", v.Amount.ToString(SignedFloatFormat) }, { "unit", v.Unit.ToString() },
+            };
             if (v.HasError)
             {
                 obj.Add("lowerBound", v.LowerBound.ToString(SignedFloatFormat));
@@ -319,7 +324,7 @@ public static class BuiltInDataTypes
     public static WikibaseDataType MonolingualText { get; }
         = new DelegatePropertyType<WbMonolingualText>("monolingualtext",
             e => new WbMonolingualText((string)e["language"], (string)e["text"]),
-            v => new JObject { { "text", v.Text }, { "language", v.Language } });
+            v => new JsonObject { { "text", v.Text }, { "language", v.Language } });
 
     /// <summary>
     /// Literal data field for mathematical expressions, formula, equations and such, expressed in a variant of LaTeX.
@@ -353,9 +358,12 @@ public static class BuiltInDataTypes
         = new DelegatePropertyType<WbGlobeCoordinate>("globe-coordinate", "globecoordinate",
             e => new WbGlobeCoordinate((double)e["latitude"], (double)e["longitude"],
                 (double)e["precision"], WikibaseUriFactory.Get((string)e["globe"])),
-            v => new JObject
+            v => new JsonObject
             {
-                { "latitude", v.Latitude }, { "longitude", v.Longitude }, { "precision", v.Precision }, { "globe", v.Globe.ToString() },
+                { "latitude", v.Latitude },
+                { "longitude", v.Longitude },
+                { "precision", v.Precision },
+                { "globe", v.Globe.ToString() },
             });
 
     /// <summary>
@@ -372,7 +380,7 @@ public static class BuiltInDataTypes
     public static WikibaseDataType TabularData { get; } = new DelegatePropertyType<string>("tabular-data", "string",
         e => (string)e, v => v);
 
-    private static readonly Dictionary<string, WikibaseDataType> typeDict = new Dictionary<string, WikibaseDataType>();
+    private static readonly Dictionary<string, WikibaseDataType> typeDict = new();
 
     static BuiltInDataTypes()
     {
@@ -394,8 +402,7 @@ public static class BuiltInDataTypes
     public static WikibaseDataType? Get(string typeName)
     {
         if (typeName == null) throw new ArgumentNullException(nameof(typeName));
-        if (typeDict.TryGetValue(typeName, out var t)) return t;
-        return null;
+        return typeDict.GetValueOrDefault(typeName);
     }
 
 }

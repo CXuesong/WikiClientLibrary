@@ -226,7 +226,7 @@ public sealed partial class Entity : IEntity
         return WikibaseRequestHelper.RefreshEntitiesAsync(new[] { this }, options, languages, cancellationToken);
     }
 
-    private static readonly IDictionary<string, JToken> emptyExtensionData = new Dictionary<string, JToken>();
+    private static readonly IDictionary<string, JsonElement> emptyExtensionData = new Dictionary<string, JsonElement>();
 
     internal void LoadFromJson(JsonNode jentity, EntityQueryOptions options, bool isPostEditing)
     {
@@ -268,12 +268,12 @@ public sealed partial class Entity : IEntity
             if (!isPostEditing)
             {
                 // wbeditentity response does not have these properties.
-                PageId = (long)extensionData["pageid"];
-                NamespaceId = (int)extensionData["ns"];
-                Title = (string)extensionData["title"];
-                LastModified = (DateTime)extensionData["modified"];
+                PageId = extensionData["pageid"].GetInt64();
+                NamespaceId = extensionData["ns"].GetInt32();
+                Title = extensionData["title"].GetString();
+                LastModified = extensionData["modified"].GetDateTime();
             }
-            LastRevisionId = (long)extensionData["lastrevid"];
+            LastRevisionId = extensionData["lastrevid"].GetInt64();
         }
 
         Labels = (options & EntityQueryOptions.FetchLabels) == EntityQueryOptions.FetchLabels && serializable.Labels.Count > 0

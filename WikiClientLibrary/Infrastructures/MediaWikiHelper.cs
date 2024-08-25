@@ -53,7 +53,7 @@ public static partial class MediaWikiHelper
                         {
                             if (p.PropertyType == typeof(bool))
                             {
-                                p.ShouldSerialize = static (_, value) => value != null && (bool)value == false;
+                                p.ShouldSerialize = static (_, value) => value == null || (bool)value;
                             }
                         }
                     },

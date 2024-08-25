@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics;
+using System.Text.Json.Nodes;
 using Newtonsoft.Json.Linq;
 using WikiClientLibrary.Wikibase.DataTypes;
 
@@ -225,10 +226,10 @@ public sealed class ClaimReference
 public sealed class Snak
 {
 
-    private static readonly JObject DirtyDataValuePlaceholder = new JObject();
+    private static readonly JsonObject DirtyDataValuePlaceholder = new();
 
     private object? _DataValue;
-    private JObject? _RawDataValue;
+    private JsonObject? _RawDataValue;
 
     /// <summary>
     /// Initializes a snak with specified property ID and empty value.
@@ -261,7 +262,7 @@ public sealed class Snak
     /// <param name="rawDataValue">The raw JSON data value of the property.</param>
     /// <param name="dataType">The data value type.</param>
     /// <exception cref="ArgumentNullException"><paramref name="propertyId"/> or <paramref name="dataType"/> is <c>null</c>.</exception>
-    public Snak(string propertyId, JObject rawDataValue, WikibaseDataType dataType)
+    public Snak(string propertyId, JsonObject rawDataValue, WikibaseDataType dataType)
     {
         PropertyId = propertyId ?? throw new ArgumentNullException(nameof(propertyId));
         DataType = dataType ?? throw new ArgumentNullException(nameof(dataType));
@@ -316,7 +317,7 @@ public sealed class Snak
 
     /// <summary>Raw JSON value of <c>datavalue</c> node.</summary>
     /// <remarks>For the cases when <see cref="SnakType"/> is not <see cref="SnakType.Value"/>, this property should be <c>null</c>.</remarks>
-    public JObject? RawDataValue
+    public JsonObject? RawDataValue
     {
         get
         {
@@ -329,7 +330,7 @@ public sealed class Snak
             }
             Debug.Assert(_DataValue != DirtyDataValuePlaceholder);
             if (DataType == null) throw new InvalidOperationException("DataType is null.");
-            var data = new JObject { { "value", DataType.ToJson(_DataValue) }, { "type", DataType.ValueTypeName } };
+            var data = new JsonObject { { "value", DataType.ToJson(_DataValue) }, { "type", DataType.ValueTypeName } };
             _RawDataValue = data;
             return data;
         }
