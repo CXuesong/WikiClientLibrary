@@ -155,7 +155,7 @@ internal static class Utility
     /// to its canonical form.
     /// </summary>
     /// <param name="title">The title to be normalized.</param>
-    /// <param name="caseSensitive">Whether the title is case sensitive.</param>
+    /// <param name="caseSensitive">Whether the title is case-sensitive.</param>
     /// <returns>
     /// Normalized part of title. The underscores are replaced by spaces,
     /// and when <paramref name="caseSensitive"/> is <c>true</c>, the first letter is
@@ -178,9 +178,9 @@ internal static class Utility
         var sb = new StringBuilder();
         foreach (var c in title)
         {
-            var isWhitespace = c == ' ' || c == '_';
+            var isWhitespace = c is ' ' or '_';
             // Remove left-to-right and right-to-left markers.
-            if (c == '\u200e' || c == '\u200f') continue;
+            if (c is '\u200e' or '\u200f') continue;
             switch (state)
             {
                 case 0:

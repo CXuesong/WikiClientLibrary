@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using System.Globalization;
+using System.Text.Json.Serialization;
 using WikiClientLibrary.Infrastructures;
 
 namespace WikiClientLibrary.Wikia.Sites;
@@ -6,49 +7,49 @@ namespace WikiClientLibrary.Wikia.Sites;
 /// <summary>
 /// Represents a node in the WikiVariable API response.
 /// </summary>
-[JsonObject(MemberSerialization.OptIn)]
-public class AppleTouchIconInfo
+[JsonContract]
+public sealed record AppleTouchIconInfo
 {
 
     private string _Size;
 
-    [JsonProperty("url")]
-    public string Url { get; private set; }
+    [JsonPropertyName("url")]
+    public string Url { get; init; }
 
-    [JsonProperty("size")]
+    [JsonPropertyName("size")]
     public string Size
     {
         get { return _Size; }
-        private set
+        init
         {
             _Size = value;
             if (value != null)
             {
                 var fields = value.Split('x');
-                Width = Convert.ToSingle(fields[0]);
-                Height = Convert.ToSingle(fields[1]);
+                Width = Convert.ToSingle(fields[0], CultureInfo.InvariantCulture);
+                Height = Convert.ToSingle(fields[1], CultureInfo.InvariantCulture);
             }
         }
     }
 
-    public float Width { get; private set; }
+    public float Width { get; init; }
 
-    public float Height { get; private set; }
+    public float Height { get; init; }
 
 }
 
 /// <summary>
 /// Represents a node in the WikiVariable API response.
 /// </summary>
-[JsonObject(MemberSerialization.OptIn)]
-public class SiteLanguageInfo
+[JsonContract]
+public sealed record SiteLanguageInfo
 {
 
-    [JsonProperty("content")]
-    public string ContentLanguage { get; private set; }
+    [JsonPropertyName("content")]
+    public string ContentLanguage { get; init; }
 
-    [JsonProperty("contentDir")]
-    public string ContentFlowDirection { get; private set; }
+    [JsonPropertyName("contentDir")]
+    public string ContentFlowDirection { get; init; }
 
     /// <inheritdoc />
     public override string ToString() => ContentLanguage + "," + ContentFlowDirection;
@@ -97,26 +98,26 @@ public class TrackingInfo : WikiReadOnlyDictionary
 
     public string Vertical => GetStringValue("vertical");
 
-    //[JsonProperty("comscore")]
-    //public Comscore Comscore { get; private set; }
+    //[JsonPropertyName("comscore")]
+    //public Comscore Comscore { get; init; }
 
-    //[JsonProperty("nielsen")]
-    //public Nielsen Nielsen { get; private set; }
+    //[JsonPropertyName("nielsen")]
+    //public Nielsen Nielsen { get; init; }
 
-    //[JsonProperty("netzathleten")]
-    //public Netzathleten Netzathleten { get; private set; }
+    //[JsonPropertyName("netzathleten")]
+    //public Netzathleten Netzathleten { get; init; }
 
 }
 
 /// <summary>
 /// Represents a node in the WikiVariable API response.
 /// </summary>
-[JsonObject(MemberSerialization.OptIn)]
-public class NavigationItem
+[JsonContract]
+public sealed record NavigationItem
 {
 
-    [JsonProperty("text")]
-    public string Text { get; private set; }
+    [JsonPropertyName("text")]
+    public string Text { get; init; }
 
     /// <summary>
     /// The relative URL of the Page.
@@ -124,14 +125,14 @@ public class NavigationItem
     /// <remarks>
     /// Absolute URL: obtained from combining relative URL with <see cref="SiteVariableData.BasePath"/> from response.
     /// </remarks>
-    [JsonProperty("href")]
-    public string Url { get; private set; }
+    [JsonPropertyName("href")]
+    public string Url { get; init; }
 
     /// <summary>
     /// Children collection containing article or special pages data.
     /// </summary>
-    [JsonProperty("children")]
-    public IList<NavigationItem> Children { get; private set; } = Array.Empty<NavigationItem>();
+    [JsonPropertyName("children")]
+    public IList<NavigationItem> Children { get; init; } = Array.Empty<NavigationItem>();
 
     /// <inheritdoc />
     public override string ToString() => Text + "(" + Url + ")";
@@ -141,15 +142,15 @@ public class NavigationItem
 /// <summary>
 /// Represents a node in the WikiVariable API response.
 /// </summary>
-[JsonObject(MemberSerialization.OptIn)]
-public class SiteHtmlTitleInfo
+[JsonContract]
+public sealed record SiteHtmlTitleInfo
 {
 
-    [JsonProperty("separator")]
-    public string Separator { get; private set; }
+    [JsonPropertyName("separator")]
+    public string Separator { get; init; }
 
-    [JsonProperty("parts")]
-    public IList<string> Parts { get; private set; }
+    [JsonPropertyName("parts")]
+    public IList<string> Parts { get; init; }
 
     /// <inheritdoc />
     public override string ToString()
@@ -167,126 +168,126 @@ public class SiteHtmlTitleInfo
 /// <a href="http://www.wikia.com/api/v1/#!/Mercury/getWikiData_get_0">http://www.wikia.com/api/v1/#!/Mercury/getWikiData_get_0</a>
 /// for Wikia's official documentation for the WikiVariable API response.
 /// </remarks>
-[JsonObject(MemberSerialization.OptIn)]
-public class SiteVariableData
+[JsonContract]
+public sealed record SiteVariableData
 {
 
     private static readonly ICollection<int> fallbackContentNamespaceIds = Array.AsReadOnly(new[] { 0 });
 
-    [JsonProperty("appleTouchIcon")]
-    public AppleTouchIconInfo AppleTouchIcon { get; private set; }
+    [JsonPropertyName("appleTouchIcon")]
+    public AppleTouchIconInfo AppleTouchIcon { get; init; }
 
     /// <summary>
     /// Current wiki cachebuster value.
     /// </summary>
-    [JsonProperty("cacheBuster")]
+    [JsonPropertyName("cacheBuster")]
     [Obsolete("cacheBuster is not present in latest Wikia sites anymore. This property will be removed.")]
-    public long CacheBuster { get; private set; }
+    public long CacheBuster { get; init; }
 
-    [JsonProperty("cdnRootUrl")]
-    public string CdnRootUrl { get; private set; }
+    [JsonPropertyName("cdnRootUrl")]
+    public string CdnRootUrl { get; init; }
 
     [Obsolete("contentNamespaces is not present in latest Wikia sites anymore. This property will be removed.")]
     public ICollection<int> ContentNamespaceIds => fallbackContentNamespaceIds;
 
-    [JsonProperty("dbName")]
-    public string DatabaseName { get; private set; }
+    [JsonPropertyName("dbName")]
+    public string DatabaseName { get; init; }
 
-    [JsonProperty("defaultSkin")]
+    [JsonPropertyName("defaultSkin")]
     [Obsolete("defaultSkin is not present in latest Wikia sites anymore. This property will be removed.")]
-    public string DefaultSkinName { get; private set; }
+    public string DefaultSkinName { get; init; }
 
-    [JsonProperty("disableAnonymousEditing")]
-    public bool IsAnonymousEditingDisabled { get; private set; }
+    [JsonPropertyName("disableAnonymousEditing")]
+    public bool IsAnonymousEditingDisabled { get; init; }
 
-    [JsonProperty("disableAnonymousUploadForMercury")]
-    public bool IsMercuryAnonymousUploadDisabled { get; private set; }
+    [JsonPropertyName("disableAnonymousUploadForMercury")]
+    public bool IsMercuryAnonymousUploadDisabled { get; init; }
 
-    [JsonProperty("disableMobileSectionEditor")]
-    public bool IsMobileSectionEditorDisabled { get; private set; }
+    [JsonPropertyName("disableMobileSectionEditor")]
+    public bool IsMobileSectionEditorDisabled { get; init; }
 
-    [JsonProperty("enableCommunityData")]
-    public bool IsCommunityDataEnabled { get; private set; }
+    [JsonPropertyName("enableCommunityData")]
+    public bool IsCommunityDataEnabled { get; init; }
 
-    [JsonProperty("enableDiscussions")]
-    public bool IsDiscussionsEnabled { get; private set; }
+    [JsonPropertyName("enableDiscussions")]
+    public bool IsDiscussionsEnabled { get; init; }
 
-    [JsonProperty("enableDiscussionsImageUpload")]
-    public bool IsDiscussionsImageUploadEnabled { get; private set; }
+    [JsonPropertyName("enableDiscussionsImageUpload")]
+    public bool IsDiscussionsImageUploadEnabled { get; init; }
 
-    [JsonProperty("enableFandomAppSmartBanner")]
-    public bool IsFandomAppSmartBannerEnabled { get; private set; }
+    [JsonPropertyName("enableFandomAppSmartBanner")]
+    public bool IsFandomAppSmartBannerEnabled { get; init; }
 
-    [JsonProperty("enableNewAuth")]
-    public bool IsNewAuthEnabled { get; private set; }
+    [JsonPropertyName("enableNewAuth")]
+    public bool IsNewAuthEnabled { get; init; }
 
-    [JsonProperty("favicon")]
-    public string FavIconUrl { get; private set; }
+    [JsonPropertyName("favicon")]
+    public string FavIconUrl { get; init; }
 
     /// <summary>Home page URL of FANDOM.</summary>
     /// <seealso cref="MainPageTitle"/>
-    [JsonProperty("homepage")]
-    public string HomePageUrl { get; private set; }
+    [JsonPropertyName("homepage")]
+    public string HomePageUrl { get; init; }
 
-    [JsonProperty("id")]
-    public int Id { get; private set; }
+    [JsonPropertyName("id")]
+    public int Id { get; init; }
 
-    [JsonProperty("isCoppaWiki")]
-    public bool IsCoppaWiki { get; private set; }
+    [JsonPropertyName("isCoppaWiki")]
+    public bool IsCoppaWiki { get; init; }
 
-    [JsonProperty("isDarkTheme")]
-    public bool IsDarkTheme { get; private set; }
+    [JsonPropertyName("isDarkTheme")]
+    public bool IsDarkTheme { get; init; }
 
-    [JsonProperty("language")]
-    public SiteLanguageInfo LanguageInfo { get; private set; }
+    [JsonPropertyName("language")]
+    public SiteLanguageInfo LanguageInfo { get; init; }
 
-    [JsonProperty("mainPageTitle")]
-    public string MainPageTitle { get; private set; }
+    [JsonPropertyName("mainPageTitle")]
+    public string MainPageTitle { get; init; }
 
-    [JsonProperty("namespaces")]
-    public IDictionary<int, string> NamespaceNames { get; private set; }
+    [JsonPropertyName("namespaces")]
+    public IDictionary<int, string> NamespaceNames { get; init; }
 
-    [JsonProperty("siteMessage")]
-    public string SiteMessage { get; private set; }
+    [JsonPropertyName("siteMessage")]
+    public string SiteMessage { get; init; }
 
-    [JsonProperty("siteName")]
-    public string SiteName { get; private set; }
+    [JsonPropertyName("siteName")]
+    public string SiteName { get; init; }
 
-    [JsonProperty("theme")]
-    public SiteThemeInfo ThemeInfo { get; private set; }
+    [JsonPropertyName("theme")]
+    public SiteThemeInfo ThemeInfo { get; init; }
 
-    [JsonProperty("discussionColorOverride")]
-    public string DiscussionColorOverride { get; private set; }
+    [JsonPropertyName("discussionColorOverride")]
+    public string DiscussionColorOverride { get; init; }
 
-    [JsonProperty("tracking")]
-    public TrackingInfo TrackingInfo { get; private set; }
+    [JsonPropertyName("tracking")]
+    public TrackingInfo TrackingInfo { get; init; }
 
-    [JsonProperty("wikiCategories")]
-    public IList<string> WikiCategories { get; private set; }
+    [JsonPropertyName("wikiCategories")]
+    public IList<string> WikiCategories { get; init; }
 
-    [JsonProperty("localNav")]
-    public IList<NavigationItem> NavigationItems { get; private set; }
+    [JsonPropertyName("localNav")]
+    public IList<NavigationItem> NavigationItems { get; init; }
 
     /// <summary>
     /// Gets the site's Wikia hub name (e.g. Gaming, Entertainment, Lifestyle).
     /// </summary>
-    [JsonProperty("vertical")]
-    public string Vertical { get; private set; }
+    [JsonPropertyName("vertical")]
+    public string Vertical { get; init; }
 
-    [JsonProperty("basePath")]
-    public string BasePath { get; private set; }
+    [JsonPropertyName("basePath")]
+    public string BasePath { get; init; }
 
-    [JsonProperty("articlePath")]
-    public string ArticlePath { get; private set; }
+    [JsonPropertyName("articlePath")]
+    public string ArticlePath { get; init; }
 
-    [JsonProperty("image")]
-    public string Image { get; private set; }
+    [JsonPropertyName("image")]
+    public string Image { get; init; }
 
-    [JsonProperty("specialRobotPolicy")]
-    public object SpecialRobotPolicy { get; private set; }
+    [JsonPropertyName("specialRobotPolicy")]
+    public object SpecialRobotPolicy { get; init; }
 
-    [JsonProperty("htmlTitle")]
-    public SiteHtmlTitleInfo HtmlTitle { get; private set; }
+    [JsonPropertyName("htmlTitle")]
+    public SiteHtmlTitleInfo HtmlTitle { get; init; }
 
     /// <inheritdoc />
     public override string ToString() => $"[{Id}]{SiteName}";

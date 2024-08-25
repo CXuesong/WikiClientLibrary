@@ -1,4 +1,5 @@
 ﻿using System.Text.Json;
+using WikiClientLibrary.Infrastructures;
 
 namespace WikiClientLibrary.Wikia;
 
@@ -7,7 +8,7 @@ internal static class Utility
 
     public static readonly JsonSerializerOptions WikiaApiJsonSerializerOptions = new()
     {
-        PropertyNamingPolicy = JsonNamingPolicy.SnakeCaseLower,
+        PropertyNamingPolicy = JsonNamingPolicy.SnakeCaseLower, Converters = { new WikiReadOnlyDictionaryConverterFactory(), }
     };
 
     /// <summary>

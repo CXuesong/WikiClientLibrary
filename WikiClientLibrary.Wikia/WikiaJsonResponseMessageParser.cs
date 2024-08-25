@@ -1,4 +1,5 @@
-﻿using System.Text.Json.Nodes;
+﻿using System.Diagnostics;
+using System.Text.Json.Nodes;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -13,7 +14,7 @@ namespace WikiClientLibrary.Wikia;
 public class WikiaJsonResponseParser : WikiResponseMessageParser<JsonNode>
 {
 
-    internal static readonly WikiaJsonResponseParser Default = new WikiaJsonResponseParser();
+    internal static readonly WikiaJsonResponseParser Default = new ();
 
     /// <inheritdoc />
     /// <remarks>
@@ -60,6 +61,7 @@ public class WikiaJsonResponseParser : WikiResponseMessageParser<JsonNode>
             var exception = obj["exception"];
             if (exception != null)
             {
+                // 2024-08: This path seems never get hit.
                 var type = (string)exception["type"];
                 var message = (string)exception["message"];
                 var details = (string)exception["details"];
@@ -68,7 +70,7 @@ public class WikiaJsonResponseParser : WikiResponseMessageParser<JsonNode>
                 throw type switch
                 {
                     "NotFoundApiException" => new NotFoundApiException(type, message, code, details, traceId),
-                    _ => new WikiaApiException(type, message, code, details, traceId)
+                    _ => new WikiaApiException(type, message, code, details, traceId),
                 };
             }
             // Check for exception node: {"status":404,"error":"ControllerNotFoundException","details":"Controller not found: ApiDocs"}
@@ -81,7 +83,12 @@ public class WikiaJsonResponseParser : WikiResponseMessageParser<JsonNode>
                     obj.Remove("status");
                     obj.Remove("error");
                     obj.Remove("details");
-                    throw new WikiaApiException(error, details, status, obj.Count > 0 ? obj.ToString() : null, null);
+                    var errorDetails = obj.Count > 0 ? obj.ToString() : null;
+                    throw error switch
+                    {
+                        "NotFoundException" => new NotFoundApiException(error, details, status, errorDetails, null),
+                        _ => new WikiaApiException(error, details, status, errorDetails, null),
+                    };
                 }
                 if (error != null)
                 {

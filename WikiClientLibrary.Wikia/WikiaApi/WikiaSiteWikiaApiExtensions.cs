@@ -40,7 +40,7 @@ public static class WikiaSiteWikiaApiExtensions
             try
             {
                 jresult = await site.InvokeWikiaApiAsync("/User/Details",
-                    new WikiaQueryRequestMessage(new { ids = userName }), cancellationToken);
+                    new WikiaQueryRequestMessage(new { ids = NormalizeUserName(userName) }), cancellationToken);
             }
             catch (NotFoundApiException)
             {
@@ -58,11 +58,11 @@ public static class WikiaSiteWikiaApiExtensions
     /// Asynchronously fetches the specified users' information.
     /// </summary>
     /// <param name="site">The site to issue the request.</param>
-    /// <param name="userNames">The user names to be fetched.</param>
+    /// <param name="userNames">The usernames to be fetched.</param>
     /// <exception cref="ArgumentNullException">Either <paramref name="site"/> or <paramref name="userNames"/> is <c>null</c>.</exception>
     /// <returns>
     /// An asynchronous sequence containing the detailed user information.
-    /// The user names are normalized by the server. Inexistent user names are skipped.
+    /// The usernames are normalized locally to ensure the first character is upper-case. Non-existent usernames are skipped.
     /// </returns>
     public static async IAsyncEnumerable<UserInfo> FetchUsersAsync(this WikiaSite site, IEnumerable<string> userNames,
         [EnumeratorCancellation] CancellationToken cancellationToken = default)
@@ -74,29 +74,48 @@ public static class WikiaSiteWikiaApiExtensions
             foreach (var names in userNames.Partition(100))
             {
                 JsonNode jresult;
+                // 2024-08: Wikia API won't normalize the names for us anymore.
+                // So we will have to this by ourselves.
+                var normalizedNames = names.Select(NormalizeUserName).ToList();
                 try
                 {
                     jresult = await site.InvokeWikiaApiAsync("/User/Details",
-                        new WikiaQueryRequestMessage(new { ids = string.Join(", ", names) }), cancellationToken);
+                        // 2024-08: There cannot be any whitespace around ","
+                        new WikiaQueryRequestMessage(new { ids = string.Join(',', normalizedNames) }), cancellationToken);
                 }
                 catch (WikiaApiException ex) when (ex.ErrorType == "NotFoundApiException")
                 {
-                    // All the usesers in this batch are not found.
+                    // All the users in this batch are not found.
                     // Pity.
                     continue;
                 }
                 var basePath = (string)jresult["basepath"];
-                var users = jresult["items"].Deserialize<List<UserInfo>>();
+                var userItemDict = jresult["items"].AsArray().Select(i => i.Deserialize<UserInfo>()).ToDictionary(i => i.Name);
                 if (basePath != null)
                 {
-                    foreach (var user in users)
+                    foreach (var user in userItemDict.Values)
                         user.ApplyBasePath(basePath);
                 }
                 using (ExecutionContextStash.Capture())
-                    foreach (var user in users)
-                        yield return user;
+                    foreach (var name in normalizedNames)
+                    {
+                        if (userItemDict.TryGetValue(name, out var user))
+                            yield return user;
+                    }
             }
         }
+    }
+
+    private static string NormalizeUserName(string userName)
+    {
+        // TODO Possibly reuse Utility.NormalizeTitlePart
+        userName = userName.Trim(' ', '\t', '_');
+        if (userName.Length > 0)
+        {
+            var char0 = char.ToUpperInvariant(userName[0]);
+            if (userName[0] != char0) userName = char0 + userName[1..];
+        }
+        return userName;
     }
 
     /// <inheritdoc cref="FetchRelatedPagesAsync(WikiaSite,long,int,CancellationToken)"/>

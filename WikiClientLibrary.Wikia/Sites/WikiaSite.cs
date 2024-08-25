@@ -146,7 +146,7 @@ public class WikiaSite : WikiSite
             var jresult = await InvokeWikiaApiAsync("/Mercury/WikiVariables", new WikiaQueryRequestMessage(), CancellationToken.None);
             var jdata = jresult["data"];
             if (jdata == null) throw new UnexpectedDataException("Missing data node in the JSON response.");
-            WikiVariables = jdata.Deserialize<SiteVariableData>(MediaWikiHelper.WikiJsonSerializerOptions);
+            WikiVariables = jdata.Deserialize<SiteVariableData>(Utility.WikiaApiJsonSerializerOptions);
         }
     }
 

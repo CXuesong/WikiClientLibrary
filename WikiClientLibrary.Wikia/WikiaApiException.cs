@@ -58,7 +58,7 @@ public class WikiaApiException : WikiClientException
 }
 
 /// <summary>
-/// The CLR counterpart for Wikia <c>NotFoundApiException</c>.
+/// The CLR counterpart for Wikia <c>NotFoundException</c> (previously, <c>NotFoundApiException</c>).
 /// </summary>
 public class NotFoundApiException : WikiaApiException
 {

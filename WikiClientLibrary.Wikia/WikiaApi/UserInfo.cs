@@ -1,38 +1,47 @@
-﻿using Newtonsoft.Json;
+﻿using System.Text.Json.Serialization;
 using WikiClientLibrary.Infrastructures;
 
 namespace WikiClientLibrary.Wikia.WikiaApi;
 
-[JsonObject(MemberSerialization.OptIn)]
-public class UserInfo
+/// <summary>
+/// See https://github.com/Wikia/app/blob/dev/includes/wikia/api/UserApiController.class.php#L31-L87 .
+/// </summary>
+[JsonContract]
+public sealed record UserInfo
 {
 
     /// <summary>User ID.</summary>
-    [JsonProperty("user_id")]
-    public int Id { get; private set; }
+    [JsonPropertyName("user_id")]
+    public int Id { get; init; }
 
     /// <summary>User title. (Often the same as <see cref="Name"/>.)</summary>
-    [JsonProperty("title")]
-    public string Title { get; private set; }
+    [JsonPropertyName("title")]
+    public string Title { get; init; }
 
     /// <summary>User name.</summary>
-    [JsonProperty("name")]
-    public string Name { get; private set; }
+    [JsonPropertyName("name")]
+    public string Name { get; init; }
 
     /// <summary>The full URL of user's page.</summary>
-    [JsonProperty("url")]
+    [JsonPropertyName("url")]
+    [JsonInclude]
     public string UserPageUrl { get; private set; }
 
-    [JsonProperty("poweruser_types")]
-    public ICollection<string> PowerUserTypes { get; private set; } = Array.Empty<string>();
+    [Obsolete("The field has been removed from Wikia v1 API response.")]
+    [JsonIgnore]
+    public ICollection<string> PowerUserTypes { get; init; } = Array.Empty<string>();
+
+    [JsonPropertyName("is_subject_to_ccpa")]
+    public bool? IsSubjectToCcpa { get; init; }
 
     /// <summary>The full URL of user's avatar.</summary>
-    [JsonProperty("avatar")]
+    [JsonPropertyName("avatar")]
+    [JsonInclude]
     public string AvatarUrl { get; private set; }
 
     /// <summary>User's number of edits.</summary>
-    [JsonProperty("numberofedits")]
-    public int EditsCount { get; private set; }
+    [JsonPropertyName("numberofedits")]
+    public int EditsCount { get; init; }
 
     internal void ApplyBasePath(string basePath)
     {
