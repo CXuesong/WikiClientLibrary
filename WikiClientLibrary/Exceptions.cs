@@ -29,6 +29,12 @@ public class WikiClientException : Exception
 public class OperationFailedException : WikiClientException
 {
 
+    internal static string? BuildExceptionMessage(string? errorCode, string? errorMessage)
+    {
+        if (string.IsNullOrEmpty(errorMessage)) return errorCode;
+        return $"{errorCode}: {errorMessage}";
+    }
+
     /// <summary>
     /// Error code provided by MediaWiki API.
     /// </summary>
@@ -44,13 +50,8 @@ public class OperationFailedException : WikiClientException
     {
     }
 
-    public OperationFailedException(string? errorCode, string? errorMessage)
-        : base(
-            string.Format(
-                string.IsNullOrEmpty(errorMessage)
-                    ? "{0}"
-                    : "{0}: {1}",
-                errorCode, errorMessage))
+    public OperationFailedException(string? errorCode, string? errorMessage, string? message = null)
+        : base(message ?? BuildExceptionMessage(errorCode, errorMessage))
     {
         ErrorCode = errorCode;
         ErrorMessage = errorMessage;
@@ -295,6 +296,31 @@ public class ServerLagException : OperationFailedException
     /// The lagged host name.
     /// </summary>
     public string LaggedHost { get; }
+
+}
+
+/// <summary>
+/// Raises when the MediaWiki server is in read-only mode.
+/// </summary>
+public class MediaWikiReadOnlyException : OperationFailedException
+{
+
+    internal static string? BuildExceptionMessage(string errorCode, string errorMessage, string? readOnlyReason)
+    {
+        errorMessage ??= "";
+        if (!string.IsNullOrEmpty(readOnlyReason) && !errorMessage.Contains(readOnlyReason, StringComparison.Ordinal))
+            errorMessage += " " + readOnlyReason;
+        return BuildExceptionMessage(errorCode, errorMessage);
+    }
+
+    public MediaWikiReadOnlyException(string errorCode, string errorMessage, string? readOnlyReason)
+        : base(errorCode, errorMessage, BuildExceptionMessage(errorCode, errorMessage, readOnlyReason))
+    {
+        ReadOnlyReason = readOnlyReason;
+    }
+
+    /// <summary>The reason the wiki is in read-only mode.</summary>
+    public string? ReadOnlyReason { get; }
 
 }
 

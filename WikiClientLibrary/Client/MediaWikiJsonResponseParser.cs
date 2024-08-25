@@ -146,7 +146,7 @@ public class MediaWikiJsonResponseParser : WikiResponseMessageParser<JsonNode>
     {
         var fullMessage = errorMessage;
         // Append additional messages from WMF, if any.
-        var jmessages = (JsonArray?)errorNode["messages"];
+        var jmessages = errorNode["messages"]?.AsArray();
         if (jmessages != null && jmessages.Count > 1 && jmessages[0]["html"] != null)
         {
             // jmessages[0] usually is the same as errorMessage
@@ -186,6 +186,8 @@ public class MediaWikiJsonResponseParser : WikiResponseMessageParser<JsonNode>
                 if (fullMessage.Contains("\"action\""))
                     throw new InvalidActionException(errorCode, fullMessage);
                 throw new BadValueException(errorCode, fullMessage);
+            case "readonly":
+                throw new MediaWikiReadOnlyException(errorCode, fullMessage, (string?)errorNode["readonlyreason"]);
             default:
                 if (errorCode.StartsWith("unknown_", StringComparison.OrdinalIgnoreCase))
                     throw new BadValueException(errorCode, fullMessage);

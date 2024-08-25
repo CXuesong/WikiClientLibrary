@@ -160,6 +160,11 @@ public sealed record SiteInfo
 
 #region Limitations
 
+    public long MaxArticleSize { get; init; }
+
+    /// <summary>The maximum upload size on the wiki. See <c>$wgMaxUploadSize</c>.</summary>
+    /// <remarks>This is always an integer for the primary maximum upload size;
+    /// retrieving the by-URL size is not currently available.</remarks>
     public long MaxUploadSize { get; init; }
 
     public int MinUploadChunkSize { get; init; }
@@ -198,7 +203,7 @@ public sealed record SiteInfo
     public string TimeZoneName { get; init; }
 
     /// <summary>
-    /// The offset of the wiki's time zone, from UTC. See $wgLocalTZoffset. 1.13+
+    /// The offset of the wiki's time zone, from UTC. See $wgLocalTZoffset. (1.13+)
     /// </summary>
     [JsonIgnore]
     public TimeSpan TimeOffset { get; private set; }
@@ -209,6 +214,13 @@ public sealed record SiteInfo
     {
         set { TimeOffset = TimeSpan.FromMinutes(value); }
     }
+
+    /// <summary>Whether the wiki is in read-only mode.</summary>
+    [JsonPropertyName("readonly")]
+    public bool IsReadOnly { get; init; }
+
+    /// <summary>The reason the wiki is in read-only mode, if applicable. (MW 1.16+)</summary>
+    public string? ReadOnlyReason { get; init; }
 
     private ReadOnlyDictionary<string, JsonElement>? extensionDataWrapper;
 
