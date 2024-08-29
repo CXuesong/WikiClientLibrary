@@ -1,6 +1,5 @@
 ﻿using System.ComponentModel;
 using System.Text.Json.Nodes;
-using Newtonsoft.Json.Linq;
 using WikiClientLibrary.Generators.Primitive;
 using WikiClientLibrary.Infrastructures;
 using WikiClientLibrary.Pages;

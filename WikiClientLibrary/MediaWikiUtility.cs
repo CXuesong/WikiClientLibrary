@@ -1,7 +1,7 @@
+using System.Text.Json;
+using System.Text.Json.Nodes;
 using System.Text.RegularExpressions;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using WikiClientLibrary.Client;
 using WikiClientLibrary.Infrastructures.Logging;
 
@@ -115,7 +115,7 @@ internal static class MediaWikiUtility
             // Ref: {"batchcomplete":""}
             if (string.IsNullOrEmpty(content) || content.Length < 2) return null;
             if (content[0] != '{' && content[0] != '[') return null;
-            JToken.Parse(content);
+            JsonNode.Parse(content);
             // Remove query string in the result
             var querySplitter = finalUrl.IndexOf('?');
             if (querySplitter > 0) finalUrl = finalUrl.Substring(0, querySplitter);

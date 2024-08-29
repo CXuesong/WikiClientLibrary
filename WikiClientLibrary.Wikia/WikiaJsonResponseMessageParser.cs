@@ -1,8 +1,6 @@
-﻿using System.Diagnostics;
+﻿using System.Text.Json;
 using System.Text.Json.Nodes;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using WikiClientLibrary.Client;
 using WikiClientLibrary.Infrastructures;
 

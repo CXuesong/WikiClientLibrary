@@ -3,7 +3,6 @@ using System.Text.Json;
 using System.Text.Json.Nodes;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
-using Newtonsoft.Json.Linq;
 using WikiClientLibrary.Client;
 using WikiClientLibrary.Infrastructures;
 using WikiClientLibrary.Infrastructures.Logging;
@@ -342,7 +341,7 @@ public partial class WikiSite : IWikiClientLoggable, IWikiClientAsyncInitializat
     /// Invokes MediaWiki API and gets JSON result.
     /// </summary>
     /// <param name="message">The request message.</param>
-    /// <param name="responseParser">The parser that checks and parses the API response into <see cref="JToken"/>.</param>
+    /// <param name="responseParser">The parser that checks and parses the API response into <see cref="JsonNode"/>.</param>
     /// <param name="suppressAccountAssertion">Whether to temporarily disable account assertion as set in <see cref="SiteOptions.AccountAssertion"/>.</param>
     /// <param name="cancellationToken">The cancellation token that will be checked prior to completing the returned task.</param>
     /// <exception cref="InvalidActionException">Specified action is not supported.</exception>

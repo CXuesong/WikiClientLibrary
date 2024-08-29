@@ -3,7 +3,6 @@ using System.Diagnostics;
 using System.Dynamic;
 using System.Globalization;
 using System.Text;
-using Newtonsoft.Json;
 using WikiClientLibrary.Generators;
 using WikiClientLibrary.Infrastructures;
 using WikiClientLibrary.Pages;
@@ -12,36 +11,6 @@ namespace WikiClientLibrary;
 
 internal static class Utility
 {
-
-    // http://stackoverflow.com/questions/36186276/is-the-json-net-jsonserializer-threadsafe
-    [Obsolete("Use MediaWikiHelper.WikiJsonSerializerOptions when using System.Text.Json API.")]
-    public static readonly JsonSerializer WikiJsonSerializer = CreateWikiJsonSerializer();
-
-    /// <summary>
-    /// Create an new instance of <see cref="JsonSerializer"/> with its
-    /// own instance of <see cref="JsonSerializerSettings"/>.
-    /// </summary>
-    public static JsonSerializer CreateWikiJsonSerializer()
-    {
-        var settings =
-            new JsonSerializerSettings
-            {
-                DateFormatHandling = DateFormatHandling.IsoDateFormat,
-                NullValueHandling = NullValueHandling.Ignore,
-                ContractResolver = new WikiJsonContractResolver(),
-                Formatting = Formatting.None,
-                // https://github.com/JamesNK/Newtonsoft.Json/issues/862
-                // https://github.com/CXuesong/WikiClientLibrary/issues/49
-                DateParseHandling = DateParseHandling.None,
-                Converters =
-                {
-                    new WikiBooleanJsonConverter0(),
-                    new WikiStringEnumJsonConverter0(),
-                    new WikiDateTimeJsonConverter0(),
-                },
-            };
-        return JsonSerializer.CreateDefault(settings);
-    }
 
     /// <summary>
     /// Convert name-value paris to URL query format.

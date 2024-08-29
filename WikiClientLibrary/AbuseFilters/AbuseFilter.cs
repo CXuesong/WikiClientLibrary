@@ -1,27 +1,27 @@
 ﻿using System.Collections.ObjectModel;
-using Newtonsoft.Json;
+using System.Text.Json.Serialization;
+using WikiClientLibrary.Infrastructures;
 
 namespace WikiClientLibrary.AbuseFilters;
 
-[JsonObject(MemberSerialization.OptIn)]
-public sealed class AbuseFilter
+[JsonContract]
+public sealed record AbuseFilter
 {
 
-    [JsonProperty]
-    public int Id { get; private set; }
+    public int Id { get; init; }
 
-    [JsonProperty]
     public string Description { get; set; } = "";
 
-    [JsonProperty]
     public string Pattern { get; set; } = "";
 
-    public IReadOnlyCollection<string> Actions { get; private set; } = Array.Empty<string>();
+    [JsonIgnore]
+    public IReadOnlyCollection<string> Actions { get; init; } = Array.Empty<string>();
 
-    [JsonProperty("actions")]
+    [JsonInclude]
+    [JsonPropertyName("actions")]
     private string RawActions
     {
-        set
+        init
         {
             Actions = string.IsNullOrEmpty(value)
                 ? Array.Empty<string>()
@@ -29,25 +29,21 @@ public sealed class AbuseFilter
         }
     }
 
-    [JsonProperty]
-    public int Hits { get; private set; }
+    public int Hits { get; init; }
 
-    [JsonProperty]
-    public string Comments { get; set; } = "";
+    public string Comments { get; init; } = "";
 
-    [JsonProperty]
-    public string LastEditor { get; private set; } = "";
+    public string? LastEditor { get; init; }
 
-    [JsonProperty]
-    public DateTime LastEditTime { get; private set; }
+    public DateTime LastEditTime { get; init; }
 
-    [JsonProperty("deleted")]
-    public bool IsDeleted { get; private set; }
+    [JsonPropertyName("deleted")]
+    public bool IsDeleted { get; init; }
 
-    [JsonProperty("private")]
-    public bool IsPrivate { get; private set; }
+    [JsonPropertyName("private")]
+    public bool IsPrivate { get; init; }
 
-    [JsonProperty("enabled")]
-    public bool IsEnabled { get; private set; }
+    [JsonPropertyName("enabled")]
+    public bool IsEnabled { get; init; }
 
 }

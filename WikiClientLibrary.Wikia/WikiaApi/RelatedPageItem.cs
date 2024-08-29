@@ -1,32 +1,35 @@
-﻿using Newtonsoft.Json;
+﻿using System.Text.Json.Serialization;
 using WikiClientLibrary.Infrastructures;
 
 namespace WikiClientLibrary.Wikia.WikiaApi;
 
-public class RelatedPageItem
+[JsonContract]
+public sealed record RelatedPageItem
 {
 
     /// <summary>Absolute URL of the page.</summary>
-    [JsonProperty("url")]
+    [JsonInclude]
+    [JsonPropertyName("url")]
     public string Url { get; private set; }
 
     /// <summary>Full title of the page.</summary>
-    [JsonProperty("title")]
-    public string Title { get; private set; }
+    [JsonPropertyName("title")]
+    public string Title { get; init; }
 
     /// <summary>ID of the page.</summary>
-    [JsonProperty("id")]
-    public int Id { get; private set; }
+    [JsonPropertyName("id")]
+    public int Id { get; init; }
 
-    [JsonProperty("imgUrl")]
+    [JsonInclude]
+    [JsonPropertyName("imgUrl")]
     public string ImageUrl { get; private set; }
 
-    [JsonProperty("imgOriginalDimensions")]
-    public string ImageOriginalDimensions { get; private set; }
+    [JsonPropertyName("imgOriginalDimensions")]
+    public string ImageOriginalDimensions { get; init; }
 
     /// <summary>Excerpt of the page.</summary>
-    [JsonProperty("text")]
-    public string Text { get; private set; }
+    [JsonPropertyName("text")]
+    public string Text { get; init; }
 
     internal void ApplyBasePath(string basePath)
     {

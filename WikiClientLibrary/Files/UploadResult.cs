@@ -2,7 +2,7 @@
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Text.Json;
-using Newtonsoft.Json;
+using System.Text.Json.Serialization;
 using WikiClientLibrary.Infrastructures;
 
 namespace WikiClientLibrary.Files;
@@ -11,19 +11,20 @@ namespace WikiClientLibrary.Files;
 /// Contains the result from server after an upload operation.
 /// </summary>
 /// <remarks>See https://www.mediawiki.org/wiki/API:Upload .</remarks>
-[JsonObject(MemberSerialization.OptIn)]
-public class UploadResult
+[JsonContract]
+public sealed record UploadResult
 {
 
     /// <summary>
     /// A brief word describing the result of the operation.
     /// </summary>
-    public UploadResultCode ResultCode { get; private set; }
+    public UploadResultCode ResultCode { get; init; }
 
-    [JsonProperty("result")]
+    [JsonInclude]
+    [JsonPropertyName("result")]
     private string Result
     {
-        set
+        init
         {
             ResultCode = value switch
             {
@@ -39,14 +40,13 @@ public class UploadResult
     /// For <see cref="UploadResultCode.Warning"/> and <see cref="UploadResultCode.Continue"/>,
     /// the file key to be passed into the next upload attempt. 
     /// </summary>
-    [JsonProperty]
-    public string? FileKey { get; private set; }
+    public string? FileKey { get; init; }
 
     // Same as filekey, maintained for backward compatibility (deprecated in 1.18)
-    [JsonProperty]
-    private string SessionKey
+    [JsonInclude]
+    private string? SessionKey
     {
-        set
+        init
         {
             if (FileKey == null) FileKey = value;
             else Debug.Assert(FileKey == value);
@@ -56,8 +56,7 @@ public class UploadResult
     /// <summary>
     /// When performing chunked uploading, gets the starting offset of the next chunk.
     /// </summary>
-    [JsonProperty]
-    public long? Offset { get; private set; }
+    public long? Offset { get; init; }
 
     /// <summary>
     /// Gets a collection of warnings resulted from this upload.
@@ -71,22 +70,20 @@ public class UploadResult
     /// <para>You can use <see cref="UploadWarningCollection.FormatWarning"/> to get user-friendly warning messages.</para>
     /// <para>If you have suppressed warnings, the warnings will still be here, but <see cref="ResultCode"/> will be <see cref="UploadResultCode.Success"/>.</para>
     /// </remarks>
-    [JsonProperty(ObjectCreationHandling = ObjectCreationHandling.Replace)]
-    public UploadWarningCollection Warnings { get; private set; } = UploadWarningCollection.Empty;
+    public UploadWarningCollection Warnings { get; init; } = UploadWarningCollection.Empty;
 
     /// <summary>
     /// Gets a collection of errors during stashing the chunk or the file to be uploaded.
     /// (MW 1.29+)
     /// </summary>
-    [JsonProperty]
-    public IReadOnlyList<StashError> StashErrors { get; private set; } = ImmutableList<StashError>.Empty;
+    public IReadOnlyList<StashError> StashErrors { get; init; } = ImmutableList<StashError>.Empty;
 
     /// <summary>
     /// For a successful upload or stashing, gets the revision information
     /// for the uploaded file.
     /// </summary>
-    [JsonProperty("imageinfo")]
-    public FileRevision? FileRevision { get; private set; }
+    [JsonPropertyName("imageinfo")]
+    public FileRevision? FileRevision { get; init; }
 
     /// <summary>
     /// 返回表示当前对象的字符串。
@@ -269,25 +266,21 @@ public class UploadWarningCollection : WikiReadOnlyDictionary
 /// <summary>
 /// Represents an stash error entry in the MediaWiki file upload result.
 /// </summary>
-[JsonObject(MemberSerialization.OptIn)]
+[JsonContract]
 public class StashError
 {
 
     /// <summary>Error code.</summary>
-    [JsonProperty]
-    public string Code { get; private set; } = "";
+    public string Code { get; init; } = "";
 
     /// <summary>Error message.</summary>
-    [JsonProperty]
-    public string Message { get; private set; } = "";
+    public string Message { get; init; } = "";
 
     /// <summary>Additional error details.</summary>
-    [JsonProperty]
-    public IReadOnlyList<string> Params { get; private set; } = ImmutableList<string>.Empty;
+    public IReadOnlyList<string> Params { get; init; } = ImmutableList<string>.Empty;
 
     /// <summary>Error type. The value is usually one of <c>"error"</c> or <c>"warning"</c>.</summary>
-    [JsonProperty]
-    public string Type { get; private set; } = "";
+    public string Type { get; init; } = "";
 
     /// <inheritdoc />
     public override string ToString() => $"{Code}: {Message}";

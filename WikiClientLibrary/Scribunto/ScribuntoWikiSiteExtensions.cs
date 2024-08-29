@@ -1,5 +1,6 @@
 ﻿using System.Text;
-using Newtonsoft.Json;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using WikiClientLibrary.Sites;
 
 namespace WikiClientLibrary.Scribunto;
@@ -7,24 +8,27 @@ namespace WikiClientLibrary.Scribunto;
 public static class ScribuntoWikiSiteExtensions
 {
 
-    private static readonly JsonSerializer defaultJsonSerializer = JsonSerializer.CreateDefault();
+    private static readonly JsonSerializerOptions luaTableDefaultSerializerOptions = new()
+    {
+        NumberHandling = JsonNumberHandling.AllowReadingFromString | JsonNumberHandling.AllowNamedFloatingPointLiterals,
+    };
 
-    /// <inheritdoc cref="ScribuntoLoadDataAsync{T}(WikiSite,string,JsonSerializer,CancellationToken)"/>
+    /// <inheritdoc cref="ScribuntoLoadDataAsync{T}(WikiSite,string,JsonSerializerOptions,CancellationToken)"/>
     public static Task<T> ScribuntoLoadDataAsync<T>(this WikiSite site, string moduleName)
     {
         return ScribuntoLoadDataAsync<T>(site, moduleName, null, null, CancellationToken.None);
     }
 
-    /// <inheritdoc cref="ScribuntoLoadDataAsync{T}(WikiSite,string,JsonSerializer,CancellationToken)"/>
+    /// <inheritdoc cref="ScribuntoLoadDataAsync{T}(WikiSite,string,JsonSerializerOptions,CancellationToken)"/>
     public static Task<T> ScribuntoLoadDataAsync<T>(this WikiSite site, string moduleName, CancellationToken cancellationToken)
     {
         return ScribuntoLoadDataAsync<T>(site, moduleName, null, null, cancellationToken);
     }
 
-    /// <inheritdoc cref="ScribuntoLoadDataAsync{T}(WikiSite,string,JsonSerializer,CancellationToken)"/>
-    public static Task<T> ScribuntoLoadDataAsync<T>(this WikiSite site, string moduleName, JsonSerializer serializer)
+    /// <inheritdoc cref="ScribuntoLoadDataAsync{T}(WikiSite,string,JsonSerializerOptions,CancellationToken)"/>
+    public static Task<T> ScribuntoLoadDataAsync<T>(this WikiSite site, string moduleName, JsonSerializerOptions? serializerOptions)
     {
-        return ScribuntoLoadDataAsync<T>(site, moduleName, serializer, CancellationToken.None);
+        return ScribuntoLoadDataAsync<T>(site, moduleName, serializerOptions, CancellationToken.None);
     }
 
     /// <summary>
@@ -36,20 +40,20 @@ public static class ScribuntoWikiSiteExtensions
     /// <a href="https://www.mediawiki.org/wiki/Extension:Scribunto/Lua_reference_manual#mw.loadData"><c>mw.loadData</c></a>,
     /// it works as long as the imported module meets the requirement of <c>loadData</c> function.
     /// </remarks>
-    /// <inheritdoc cref="ScribuntoLoadDataAsync{T}(WikiSite,string,string,JsonSerializer,CancellationToken)"/>
+    /// <inheritdoc cref="ScribuntoLoadDataAsync{T}(WikiSite,string,string,JsonSerializerOptions,CancellationToken)"/>
     public static Task<T> ScribuntoLoadDataAsync<T>(this WikiSite site, string moduleName,
-        JsonSerializer? serializer, CancellationToken cancellationToken)
+        JsonSerializerOptions? serializerOptions, CancellationToken cancellationToken)
     {
-        return ScribuntoLoadDataAsync<T>(site, moduleName, null, serializer, cancellationToken);
+        return ScribuntoLoadDataAsync<T>(site, moduleName, null, serializerOptions, cancellationToken);
     }
 
-    /// <inheritdoc cref="ScribuntoLoadDataAsync{T}(WikiSite,string,JsonSerializer,CancellationToken)"/>
+    /// <inheritdoc cref="ScribuntoLoadDataAsync{T}(WikiSite,string,JsonSerializerOptions,CancellationToken)"/>
     public static Task<T> ScribuntoLoadDataAsync<T>(this WikiSite site, string moduleName, string? epilog)
     {
         return ScribuntoLoadDataAsync<T>(site, moduleName, epilog, null, CancellationToken.None);
     }
 
-    /// <inheritdoc cref="ScribuntoLoadDataAsync{T}(WikiSite,string,JsonSerializer,CancellationToken)"/>
+    /// <inheritdoc cref="ScribuntoLoadDataAsync{T}(WikiSite,string,JsonSerializerOptions,CancellationToken)"/>
     public static Task<T> ScribuntoLoadDataAsync<T>(this WikiSite site, string moduleName, string? epilog,
         CancellationToken cancellationToken)
     {
@@ -64,11 +68,11 @@ public static class ScribuntoWikiSiteExtensions
     /// <param name="moduleName">Name of the module to be imported, with or without <c>Module:</c> prefix.</param>
     /// <param name="epilog">The Lua code snippet used to return value from the imported module (denoted as <c>p</c> in Lua),
     /// or <c>null</c> to use default epilog (<c>return p</c>).</param>
-    /// <param name="serializer">The JsonSerializer used to deserialize the return value from JSON, or <c>null</c> to use default JSON serializer.</param>
+    /// <param name="serializerOptions">The JsonSerializerOptions used to deserialize the return value from JSON, or <c>null</c> to use default JSON serializer.</param>
     /// <param name="cancellationToken">A token used to cancel the operation.</param>
     /// <returns>The deserialized Lua evaluation result.</returns>
     public static Task<T> ScribuntoLoadDataAsync<T>(this WikiSite site, string moduleName, string? epilog,
-        JsonSerializer? serializer, CancellationToken cancellationToken)
+        JsonSerializerOptions? serializerOptions, CancellationToken cancellationToken)
     {
         if (site == null)
             throw new ArgumentNullException(nameof(site));
@@ -87,25 +91,25 @@ public static class ScribuntoWikiSiteExtensions
         sb.Append("]==])\n\n");
         sb.Append(epilog);
         sb.AppendLine();
-        return ScribuntoExecuteLuaAsync<T>(site, sb.ToString(), serializer, cancellationToken);
+        return ScribuntoExecuteLuaAsync<T>(site, sb.ToString(), serializerOptions, cancellationToken);
     }
 
-    /// <inheritdoc cref="ScribuntoExecuteLuaAsync{T}(WikiSite,string,JsonSerializer,CancellationToken)"/>
+    /// <inheritdoc cref="ScribuntoExecuteLuaAsync{T}(WikiSite,string,JsonSerializerOptions,CancellationToken)"/>
     public static Task<T> ScribuntoExecuteLuaAsync<T>(this WikiSite site, string moduleContent)
     {
         return ScribuntoExecuteLuaAsync<T>(site, moduleContent, null, CancellationToken.None);
     }
 
-    /// <inheritdoc cref="ScribuntoExecuteLuaAsync{T}(WikiSite,string,JsonSerializer,CancellationToken)"/>
+    /// <inheritdoc cref="ScribuntoExecuteLuaAsync{T}(WikiSite,string,JsonSerializerOptions,CancellationToken)"/>
     public static Task<T> ScribuntoExecuteLuaAsync<T>(this WikiSite site, string moduleContent, CancellationToken cancellationToken)
     {
         return ScribuntoExecuteLuaAsync<T>(site, moduleContent, null, cancellationToken);
     }
 
-    /// <inheritdoc cref="ScribuntoExecuteLuaAsync{T}(WikiSite,string,JsonSerializer,CancellationToken)"/>
-    public static Task<T> ScribuntoExecuteLuaAsync<T>(this WikiSite site, string moduleContent, JsonSerializer serializer)
+    /// <inheritdoc cref="ScribuntoExecuteLuaAsync{T}(WikiSite,string,JsonSerializerOptions,CancellationToken)"/>
+    public static Task<T> ScribuntoExecuteLuaAsync<T>(this WikiSite site, string moduleContent, JsonSerializerOptions serializerOptions)
     {
-        return ScribuntoExecuteLuaAsync<T>(site, moduleContent, serializer, CancellationToken.None);
+        return ScribuntoExecuteLuaAsync<T>(site, moduleContent, serializerOptions, CancellationToken.None);
     }
 
     /// <summary>
@@ -114,35 +118,34 @@ public static class ScribuntoWikiSiteExtensions
     /// <typeparam name="T">The expected evaluation return value type.</typeparam>
     /// <param name="site">The MediaWiki site on which to evaluate the module.</param>
     /// <param name="moduleContent">The module content to be evaluated. You need to use <c>return</c> statement to return any value from the module.</param>
-    /// <param name="serializer">The JsonSerializer used to deserialize the return value from JSON, or <c>null</c> to use default JSON serializer.</param>
+    /// <param name="serializerOptions">The JsonSerializerOptions used to deserialize the return value from JSON, or <c>null</c> to use default JSON serializer.</param>
     /// <param name="cancellationToken">A token used to cancel the operation.</param>
     /// <returns>The deserialized Lua evaluation result.</returns>
     /// <remarks>
     /// <para>This method will let MediaWiki server to evaluate <paramref name="moduleContent"/> as an ad-hoc Lua module,
     /// and to serialize the return value into JSON with
     /// <a href="https://www.mediawiki.org/wiki/Extension:Scribunto/Lua_reference_manual#mw.text.jsonEncode"><c>mw.text.jsonEncode</c></a>
-    /// method. The returned value will be deserialized by WCL with your specified <paramref name="serializer"/>.
+    /// method. The returned value will be deserialized by WCL with your specified <paramref name="serializerOptions"/>.
     /// You need to read the documentation for <c>jsonEncode</c> carefully, as there might be some common pitfalls, such as
     /// empty Lua table will be serialized as JSON <c>[]</c> rather than <c>{}</c>.</para>
     /// <para>Due to the nature of JSON serialization and deserialization,
     /// you cannot return Lua functions or tables containing functions in the module.</para>
     /// </remarks>
     public static async Task<T> ScribuntoExecuteLuaAsync<T>(this WikiSite site, string moduleContent,
-        JsonSerializer? serializer, CancellationToken cancellationToken)
+        JsonSerializerOptions? serializerOptions, CancellationToken cancellationToken)
     {
         if (site == null)
             throw new ArgumentNullException(nameof(site));
         if (string.IsNullOrEmpty(moduleContent))
             throw new ArgumentException(Prompts.ExceptionArgumentNullOrEmpty, nameof(moduleContent));
         cancellationToken.ThrowIfCancellationRequested();
-        if (serializer == null) serializer = defaultJsonSerializer;
+
         var result = await ScribuntoConsole.InvokeApiAsync(site, null, ScribuntoConsole.AdhocModuleTitlePrefix,
             moduleContent, "=mw.text.jsonEncode(p)", true, cancellationToken);
         if (string.IsNullOrEmpty(result.ReturnValue))
             throw new UnexpectedDataException(Prompts.ExceptionScribuntoConsoleReturnEmpty);
-        using var sr = new StringReader(result.ReturnValue);
-        using var jr = new JsonTextReader(sr);
-        return serializer.Deserialize<T>(jr);
+
+        return JsonSerializer.Deserialize<T>(result.ReturnValue, serializerOptions ?? luaTableDefaultSerializerOptions)!;
     }
 
 }

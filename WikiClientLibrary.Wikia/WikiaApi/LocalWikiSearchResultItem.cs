@@ -1,49 +1,47 @@
-﻿using Newtonsoft.Json;
+﻿using System.Text.Json.Serialization;
+using WikiClientLibrary.Infrastructures;
 
 namespace WikiClientLibrary.Wikia.WikiaApi;
 
 /// <summary>
 /// Represents an item in the Wikia local wiki site search result.
 /// </summary>
-[JsonObject(MemberSerialization.OptIn)]
-public class LocalWikiSearchResultItem
+[JsonContract]
+public sealed record LocalWikiSearchResultItem
 {
 
     /// <summary>
     /// Id of the page.
     /// </summary>
-    [JsonProperty("id")]
-    public int Id { get; private set; }
+    [JsonPropertyName("id")]
+    public int Id { get; init; }
 
     /// <summary>
     /// Gets the full title of the page.
     /// </summary>
-    [JsonProperty("title")]
-    public string Title { get; private set; }
+    [JsonPropertyName("title")]
+    public string Title { get; init; }
 
     /// <summary>
     /// Absolute URL of the page.
     /// </summary>
-    [JsonProperty]
-    public string Url { get; private set; }
+    public string Url { get; init; }
 
     /// <summary>
     /// Namespace id of the page.
     /// </summary>
-    [JsonProperty("ns")]
-    public int NamespaceId { get; private set; }
+    [JsonPropertyName("ns")]
+    public int NamespaceId { get; init; }
 
     /// <summary>
     /// Quality of matching.
     /// </summary>
-    [JsonProperty]
-    public int Quality { get; private set; }
+    public int Quality { get; init; }
 
     /// <summary>
     /// Gets the parsed HTML snippet of the page.
     /// </summary>  
-    [JsonProperty]
-    public string Snippet { get; private set; }
+    public string Snippet { get; init; }
 
     /// <inheritdoc />
     public override string ToString()

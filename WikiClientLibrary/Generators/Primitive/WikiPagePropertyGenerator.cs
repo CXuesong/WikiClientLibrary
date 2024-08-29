@@ -1,5 +1,4 @@
 ﻿using System.Text.Json.Nodes;
-using Newtonsoft.Json.Linq;
 using WikiClientLibrary.Infrastructures;
 using WikiClientLibrary.Infrastructures.Logging;
 using WikiClientLibrary.Pages;

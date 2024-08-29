@@ -2,8 +2,6 @@
 using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Text.Json.Serialization;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using WikiClientLibrary.Infrastructures;
 using WikiClientLibrary.Pages.Parsing;
 

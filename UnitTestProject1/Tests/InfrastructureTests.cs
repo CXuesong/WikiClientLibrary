@@ -1,5 +1,5 @@
-﻿using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
+﻿using System.Text.Json;
+using System.Text.Json.Nodes;
 using WikiClientLibrary.Infrastructures;
 using WikiClientLibrary.Wikibase.DataTypes;
 using Xunit;
@@ -15,31 +15,25 @@ public class InfrastructureTests : UnitTestsBase
     {
     }
 
-    private T DeserializeWith<T>(string json, JsonSerializer serializer)
-    {
-        using var sr = new StringReader(json);
-        using var jr = new JsonTextReader(sr);
-        return serializer.Deserialize<T>(jr);
-    }
-
     [Fact]
     public void JsonDataTimeTests()
     {
-        var serializer = MediaWikiHelper.CreateWikiJsonSerializer();
-        var value = DeserializeWith<JValue>("\"2008-08-23T18:05:46Z\"", serializer);
+        var value = JsonSerializer.Deserialize<JsonNode>("\"2008-08-23T18:05:46Z\"", MediaWikiHelper.WikiJsonSerializerOptions);
+        // Back when we were on Newtonsoft.Json, we suffer from
         // https://github.com/CXuesong/WikiClientLibrary/issues/49
-        // We want to keep string intact as JValue
-        Assert.Equal(JTokenType.String, value.Type);
+        // We want to keep string intact as JValue, even if it contains a DateTime expression.
+        // Now with System.Text.Json, such implicit conversion behavior seems no longer exists.
+        Assert.IsAssignableFrom<JsonValue>(value);
         // We want to allow it get parsed into DateTime at the same time.
         Assert.Equal(new DateTime(2008, 08, 23, 18, 05, 46, DateTimeKind.Utc),
-            DeserializeWith<DateTime>("\"2008-08-23T18:05:46Z\"", serializer));
+            JsonSerializer.Deserialize<DateTime>("\"2008-08-23T18:05:46Z\"", MediaWikiHelper.WikiJsonSerializerOptions));
         Assert.Equal(new DateTimeOffset(2008, 08, 23, 18, 05, 46, TimeSpan.Zero),
-            DeserializeWith<DateTimeOffset>("\"2008-08-23T18:05:46Z\"", serializer));
+            JsonSerializer.Deserialize<DateTimeOffset>("\"2008-08-23T18:05:46Z\"", MediaWikiHelper.WikiJsonSerializerOptions));
         string[] infinityValues = { "infinite", "indefinite", "infinity", "never" };
         foreach (var iTest in infinityValues)
         {
-            Assert.Equal(DateTime.MaxValue, DeserializeWith<DateTime>($"\"{iTest}\"", serializer));
-            Assert.Equal(DateTimeOffset.MaxValue, DeserializeWith<DateTimeOffset>($"\"{iTest}\"", serializer));
+            Assert.Equal(DateTime.MaxValue, JsonSerializer.Deserialize<DateTime>($"\"{iTest}\"", MediaWikiHelper.WikiJsonSerializerOptions));
+            Assert.Equal(DateTimeOffset.MaxValue, JsonSerializer.Deserialize<DateTimeOffset>($"\"{iTest}\"", MediaWikiHelper.WikiJsonSerializerOptions));
         }
     }
 
