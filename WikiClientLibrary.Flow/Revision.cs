@@ -1,14 +1,16 @@
 ﻿using System.Collections.ObjectModel;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
+using System.Text.Json;
+using System.Text.Json.Nodes;
+using System.Text.Json.Serialization;
+using WikiClientLibrary.Infrastructures;
 
 namespace WikiClientLibrary.Flow;
 
 /// <summary>
 /// Contains the revision information with content of Flow board headers or topic posts.
 /// </summary>
-[JsonObject(MemberSerialization.OptIn)]
-public class Revision
+[JsonContract]
+public sealed class Revision
 {
 
     private static readonly IDictionary<string, FlowLink> emptyLinks = new ReadOnlyDictionary<string, FlowLink>(
@@ -18,120 +20,121 @@ public class Revision
     /// Workflow ID of the revision. For board header, this is the workflow ID of the board;
     /// for topic posts, this is the topic ID.
     /// </summary>
-    [JsonProperty]
-    public string WorkflowId { get; private set; }
+    public string WorkflowId { get; init; }
 
     /// <summary>
     /// Full title of the page containing this revision.
     /// </summary>
-    [JsonProperty]
-    public string ArticleTitle { get; private set; }
+    public string ArticleTitle { get; init; }
 
     /// <summary>
     /// Flow revision ID.
     /// </summary>
-    [JsonProperty]
-    public string RevisionId { get; private set; }
+    public string RevisionId { get; init; }
 
     /// <summary>
     /// The time stamp of the revision.
     /// </summary>
-    public DateTime TimeStamp { get; private set; }
+    public DateTime TimeStamp { get; init; }
 
-    [JsonProperty("timestamp")]
+    [JsonInclude]
+    [JsonPropertyName("timestamp")]
     private string RawTimeStamp
     {
-        set => TimeStamp = DateTime.ParseExact(value, "yyyyMMddHHmmss", null);
+        init => TimeStamp = DateTime.ParseExact(value, "yyyyMMddHHmmss", null);
     }
 
     /// <summary>
     /// For topic revision, the last update time of the whole topic,
     /// including replies, changes to topic title, content, or replies.
     /// </summary>
-    public DateTime? LastUpdated { get; private set; }
+    [JsonIgnore]
+    public DateTime? LastUpdated { get; init; }
 
-    [JsonProperty("last_updated")]
+    [JsonInclude]
+    [JsonPropertyName("last_updated")]
     private long RawLastUpdated
     {
-        set => LastUpdated = FlowUtility.DateFromJavaScriptTicks(value);
+        init => LastUpdated = FlowUtility.DateFromJavaScriptTicks(value);
     }
 
-    public FlowRevisionAction ChangeType { get; private set; }
+    [JsonIgnore]
+    public FlowRevisionAction ChangeType { get; init; }
 
-    [JsonProperty("changeType")]
+    [JsonInclude]
+    [JsonPropertyName("changeType")]
     private string RawChangeType
     {
-        set => ChangeType = ParseRevisionAction(value);
+        init => ChangeType = ParseRevisionAction(value);
     }
 
     // "dateFormats": { "timeAndDate": "05:44, 11 October 2017", "date": "11 October 2017", "time": "05:44"}
     //[JsonProperty]
-    //public DateFormats DateFormats { get; private set; }
+    //public DateFormats DateFormats { get; init; }
 
     // Can be JObject, or empty JArray
-    [JsonProperty]
-    public JToken Properties { get; private set; }
+    public JsonNode Properties { get; init; }
 
-    [JsonProperty]
-    public bool IsOriginalContent { get; private set; }
+    public bool IsOriginalContent { get; init; }
 
     /// <summary>
     /// Determines whether the post has been moderated (hidden).
     /// </summary>
-    [JsonProperty]
-    public bool IsModerated { get; private set; }
+    public bool IsModerated { get; init; }
 
     /// <summary>
     /// Determines whether the post has been locked (i.e. discussion closed).
     /// </summary>
-    [JsonProperty]
-    public bool IsLocked { get; private set; }
+    public bool IsLocked { get; init; }
 
     /// <summary>
     /// Determines whether the post has been moderated but not locked.
     /// </summary>
-    [JsonProperty]
-    public bool IsModeratedNotLocked { get; private set; }
+    public bool IsModeratedNotLocked { get; init; }
 
-    public ModerationState ModerationState { get; private set; }
+    [JsonIgnore]
+    public ModerationState ModerationState { get; init; }
 
-    [JsonProperty("moderateState")]
+    [JsonInclude]
+    [JsonPropertyName("moderateState")]
     public string RawModerationState
     {
-        set => ModerationState = EnumParser.ParseModerationState(value);
+        init => ModerationState = EnumParser.ParseModerationState(value);
     }
 
-    public string ModerationReason { get; private set; }
+    [JsonIgnore]
+    public string ModerationReason { get; init; }
 
-    [JsonProperty("moderateReason")]
-    public JToken RawModerationReason
+    [JsonInclude]
+    [JsonPropertyName("moderateReason")]
+    public JsonNode RawModerationReason
     {
-        set => ModerationReason = (string)value["content"];
+        init => ModerationReason = (string)value["content"];
     }
 
-    [JsonProperty]
-    public bool IsMaxThreadingDepth { get; private set; }
+    public bool IsMaxThreadingDepth { get; init; }
 
     /// <summary>
     /// Workflow ID of the replies.
     /// </summary>
-    [JsonProperty("replies")]
-    public IList<string> ReplyIds { get; private set; } = (IList<string>)Array.Empty<string>();
+    [JsonPropertyName("replies")]
+    public IList<string> ReplyIds { get; init; } = (IList<string>)Array.Empty<string>();
 
     /// <summary>
     /// HTML links to show different views.
     /// </summary>
-    public IDictionary<string, FlowLink> Links { get; private set; } = emptyLinks;
+    public IDictionary<string, FlowLink> Links { get; init; } = emptyLinks;
 
-    [JsonProperty("links")]
-    private JToken RawLinks
+    [JsonInclude]
+    [JsonPropertyName("links")]
+    private JsonNode RawLinks
     {
-        set
+        init
         {
-            if (value is JObject obj)
+            if (value is JsonObject obj)
                 Links = new ReadOnlyDictionary<string, FlowLink>(
-                    obj.ToObject<Dictionary<string, FlowLink>>(FlowUtility.FlowJsonSerializer));
-            else if (value is JArray array && array.Count == 0)
+                    obj.Deserialize<Dictionary<string, FlowLink>>(FlowUtility.FlowJsonSerializer));
+            else if (value is JsonArray array && array.Count == 0)
                 Links = emptyLinks;
             else
                 throw new ArgumentException("Cannot parse JSON value.", nameof(value));
@@ -141,17 +144,19 @@ public class Revision
     /// <summary>
     /// HTML links to show operations.
     /// </summary>
-    public IDictionary<string, FlowLink> Actions { get; private set; } = emptyLinks;
+    [JsonIgnore]
+    public IDictionary<string, FlowLink> Actions { get; init; } = emptyLinks;
 
-    [JsonProperty("actions")]
-    private JToken RawActions
+    [JsonInclude]
+    [JsonPropertyName("actions")]
+    private JsonNode RawActions
     {
-        set
+        init
         {
-            if (value is JObject obj)
+            if (value is JsonObject obj)
                 Actions = new ReadOnlyDictionary<string, FlowLink>(
-                    obj.ToObject<Dictionary<string, FlowLink>>(FlowUtility.FlowJsonSerializer));
-            else if (value is JArray array && array.Count == 0)
+                    obj.Deserialize<Dictionary<string, FlowLink>>(FlowUtility.FlowJsonSerializer));
+            else if (value is JsonArray array && array.Count == 0)
                 Actions = emptyLinks;
             else
                 throw new ArgumentException("Cannot parse JSON value.", nameof(value));
@@ -161,17 +166,19 @@ public class Revision
     /// <summary>
     /// Content length before this revision, in bytes.
     /// </summary>
-    public int OldContentLength { get; private set; }
+    [JsonIgnore]
+    public int OldContentLength { get; init; }
 
     /// <summary>
     /// Content length, in bytes.
     /// </summary>
-    public int ContentLength { get; private set; }
+    [JsonIgnore]
+    public int ContentLength { get; init; }
 
-    [JsonProperty]
-    private JToken Size
+    [JsonInclude]
+    private JsonNode Size
     {
-        set
+        init
         {
             OldContentLength = (int)value["old"];
             ContentLength = (int)value["new"];
@@ -181,48 +188,44 @@ public class Revision
     /// <summary>
     /// Author of the post or header.
     /// </summary>
-    [JsonProperty]
-    public UserStub Author { get; private set; }
+    public UserStub Author { get; init; }
 
     /// <summary>
     /// Last editor of the post or header.
     /// </summary>
-    [JsonProperty]
-    public UserStub LastEditUser { get; private set; }
+    public UserStub LastEditUser { get; init; }
 
-    [JsonProperty]
-    public UserStub Moderator { get; private set; }
+    public UserStub Moderator { get; init; }
 
     /// <summary>
     /// Revision ID of the last edit.
     /// </summary>
-    [JsonProperty]
-    public string LastEditId { get; private set; }
+    public string LastEditId { get; init; }
 
     /// <summary>
     /// Revision ID of the previous revision.
     /// </summary>
-    [JsonProperty]
-    public string PreviousRevisionId { get; private set; }
+    public string PreviousRevisionId { get; init; }
 
     /// <summary>
     /// Workflow ID of the post this revision replies to.
     /// </summary>
-    [JsonProperty]
-    public string ReplyToId { get; private set; }
+    public string ReplyToId { get; init; }
 
     /// <summary>
     /// Revision content, in wikitext format.
     /// Depending on the context, this can be the topic content, topic summary, or post content.
     /// </summary>
-    public string Content { get; private set; }
+    [JsonIgnore]
+    public string Content { get; init; }
 
-    [JsonProperty("content")]
-    private JToken RawContent
+    [JsonInclude]
+    [JsonPropertyName("content")]
+    private JsonNode RawContent
     {
-        set
+        init
         {
-            if (value == null || value.Type == JTokenType.Null)
+            if (value == null)
                 Content = null;
             else
                 Content = (string)value["content"];
@@ -232,12 +235,14 @@ public class Revision
     /// <summary>
     /// For topic title revision, this is the latest revision of topic summary, if available.
     /// </summary>
-    public Revision Summary { get; private set; }
+    [JsonIgnore]
+    public Revision Summary { get; init; }
 
-    [JsonProperty("summary")]
-    private JToken RawSummary
+    [JsonInclude]
+    [JsonPropertyName("summary")]
+    private JsonNode RawSummary
     {
-        set => Summary = value["revision"]?.ToObject<Revision>();
+        init => Summary = value["revision"]?.Deserialize<Revision>();
     }
 
     private static readonly Dictionary<string, FlowRevisionAction> flowActionsDict = new Dictionary<string, FlowRevisionAction>
@@ -273,7 +278,7 @@ public class Revision
 /// <summary>
 /// Represents an HTML link to perform operations in Flow.
 /// </summary>
-[JsonObject(MemberSerialization.OptIn)]
+[JsonContract]
 public class FlowLink
 {
 
@@ -289,13 +294,10 @@ public class FlowLink
         Text = text;
     }
 
-    [JsonProperty]
     public string Url { get; }
 
-    [JsonProperty]
     public string Title { get; }
 
-    [JsonProperty]
     public string Text { get; }
 
 }

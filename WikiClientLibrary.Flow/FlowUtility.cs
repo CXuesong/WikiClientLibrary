@@ -1,7 +1,6 @@
 ﻿using System.Diagnostics;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-using Newtonsoft.Json.Serialization;
+using System.Text.Json;
+using System.Text.Json.Nodes;
 using WikiClientLibrary.Infrastructures;
 
 namespace WikiClientLibrary.Flow;
@@ -9,28 +8,24 @@ namespace WikiClientLibrary.Flow;
 internal static class FlowUtility
 {
 
-    public static readonly JsonSerializer FlowJsonSerializer =
-        JsonSerializer.CreateDefault(new JsonSerializerSettings
+    public static readonly JsonSerializerOptions FlowJsonSerializer =
+        new()
         {
-            DateFormatHandling = DateFormatHandling.IsoDateFormat,
-            NullValueHandling = NullValueHandling.Include,
-            ContractResolver = new CamelCasePropertyNamesContractResolver(), // Flow uses camel-case.
-            Converters = { new WikiStringEnumJsonConverter0(), new FlowUserStubConverter(), },
-        });
+            PropertyNamingPolicy = JsonNamingPolicy.CamelCase, // Flow uses camel-case.
+            Converters =
+            {
+                new WikiStringEnumJsonConverter(), new FlowUserStubConverter(),
+            },
+        };
 
-    public static bool IsNullOrJsonNull(JToken token)
-    {
-        return token == null || token.Type == JTokenType.Null;
-    }
-
-    public static UserStub UserFromJson(JToken user)
+    public static UserStub UserFromJson(JsonObject user)
     {
         if (user == null) throw new ArgumentNullException(nameof(user));
         Gender gender = (string)user["gender"] switch
         {
             "male" => Gender.Male,
             "female" => Gender.Female,
-            _ => Gender.Unknown
+            _ => Gender.Unknown,
         };
         return new UserStub((string)user["name"], (int?)user["id"] ?? 0, gender, (string)user["wiki"]);
     }
@@ -58,37 +53,29 @@ internal static class FlowUtility
 
 }
 
-internal class FlowUserStubConverter : JsonConverter
+internal class FlowUserStubConverter : System.Text.Json.Serialization.JsonConverter<UserStub>
 {
 
-    private static readonly object boxedEmptyUserStub = UserStub.Empty;
+    /// <inheritdoc />
+    public override UserStub Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+    {
+        if (reader.TokenType == JsonTokenType.Null) return default;
+        if (reader.TokenType != JsonTokenType.StartObject) throw new JsonException("Expect JSON object.");
+        var jUser = JsonNode.Parse(ref reader, new JsonNodeOptions { PropertyNameCaseInsensitive = options.PropertyNameCaseInsensitive });
+        if (jUser?["name"] == null)
+        {
+            Debug.Assert(jUser?["id"] == null);
+            // jUser["gender"] == "unknown"
+            Debug.Assert(jUser?["site"] == null);
+            return default;
+        }
+        return FlowUtility.UserFromJson(jUser.AsObject());
+    }
 
     /// <inheritdoc />
-    public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
+    public override void Write(Utf8JsonWriter writer, UserStub value, JsonSerializerOptions options)
     {
         throw new NotSupportedException();
-    }
-
-    /// <inheritdoc />
-    public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
-    {
-        if (reader.TokenType == JsonToken.Null) return boxedEmptyUserStub;
-        if (reader.TokenType != JsonToken.StartObject) throw new JsonSerializationException("Expect JSON object.");
-        var jUser = JToken.ReadFrom(reader);
-        if (FlowUtility.IsNullOrJsonNull(jUser["name"]))
-        {
-            Debug.Assert(FlowUtility.IsNullOrJsonNull(jUser["id"]));
-            // jUser["gender"] == "unknown"
-            Debug.Assert(FlowUtility.IsNullOrJsonNull(jUser["site"]));
-            return boxedEmptyUserStub;
-        }
-        return FlowUtility.UserFromJson(jUser);
-    }
-
-    /// <inheritdoc />
-    public override bool CanConvert(Type objectType)
-    {
-        return objectType == typeof(UserStub);
     }
 
 }

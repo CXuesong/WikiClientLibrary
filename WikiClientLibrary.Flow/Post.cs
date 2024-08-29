@@ -1,5 +1,6 @@
 ﻿using System.Collections.ObjectModel;
-using Newtonsoft.Json.Linq;
+using System.Text.Json;
+using System.Text.Json.Nodes;
 using WikiClientLibrary.Sites;
 using WikiClientLibrary.Client;
 
@@ -56,7 +57,7 @@ public sealed class Post
     /// <remarks>This property is set to <see cref="LastRevision"/>.<see cref="Revision.Content"/> after the refresh.</remarks>
     public string Content { get; set; }
 
-    internal static Post FromJson(WikiSite site, JObject topicList, string workflowId)
+    internal static Post FromJson(WikiSite site, JsonObject topicList, string workflowId)
     {
         var post = new Post(site, "Thread:dummy", workflowId);
         post.LoadFromJsonTopicList(topicList, workflowId);
@@ -79,7 +80,7 @@ public sealed class Post
     /// </remarks>
     public async Task RefreshAsync(CancellationToken cancellationToken)
     {
-        var jresult = await Site.InvokeMediaWikiApiAsync(new MediaWikiFormRequestMessage(new
+        var jresult = await Site.InvokeMediaWikiApiAsync2(new MediaWikiFormRequestMessage(new
         {
             action = "flow",
             submodule = "view-post",
@@ -87,8 +88,8 @@ public sealed class Post
             vppostId = WorkflowId,
             vpformat = "wikitext",
         }), cancellationToken);
-        var jtopiclist = (JObject)jresult["flow"]["view-post"]["result"]["topic"];
-        var workflowId = (string)jtopiclist["roots"].First;
+        var jtopiclist = jresult["flow"]["view-post"]["result"]["topic"].AsObject();
+        var workflowId = (string)jtopiclist["roots"].AsArray().First();
         LoadFromJsonTopicList(jtopiclist, workflowId);
     }
 
@@ -109,10 +110,10 @@ public sealed class Post
     {
         if (reason == null) throw new ArgumentNullException(nameof(reason));
         if (reason.Length == 0) throw new ArgumentException("Reason cannot be empty.", nameof(reason));
-        JToken jresult;
+        JsonNode jresult;
         using (await Site.ModificationThrottler.QueueWorkAsync("Moderate: " + WorkflowId, cancellationToken))
         {
-            jresult = await Site.InvokeMediaWikiApiAsync(new MediaWikiFormRequestMessage(new
+            jresult = await Site.InvokeMediaWikiApiAsync2(new MediaWikiFormRequestMessage(new
             {
                 action = "flow",
                 submodule = "moderate-post",
@@ -126,15 +127,15 @@ public sealed class Post
     }
 
     // topicList: The topiclist node of a view-topiclist query result.
-    internal void LoadFromJsonTopicList(JObject topicList, string workflowId)
+    internal void LoadFromJsonTopicList(JsonObject topicList, string workflowId)
     {
-        var revisionId = (string)topicList["posts"][workflowId]?.First;
+        var revisionId = (string)topicList["posts"][workflowId]?.AsArray().First();
         if (revisionId == null)
             throw new ArgumentException("Cannot find workflow ID " + workflowId + " in [posts] array.", nameof(workflowId));
-        var jrevision = (JObject)topicList["revisions"][revisionId];
+        var jrevision = topicList["revisions"][revisionId]?.AsObject();
         if (jrevision == null)
             throw new UnexpectedDataException("Cannot find revision " + revisionId + " in [revisions] array.");
-        var rev = jrevision.ToObject<Revision>(FlowUtility.FlowJsonSerializer);
+        var rev = jrevision.Deserialize<Revision>(FlowUtility.FlowJsonSerializer);
         LastRevision = rev;
         if (rev.ReplyIds == null || rev.ReplyIds.Count == 0)
         {

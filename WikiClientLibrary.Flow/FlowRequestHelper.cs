@@ -1,5 +1,5 @@
 ﻿using System.Diagnostics;
-using Newtonsoft.Json.Linq;
+using System.Text.Json.Nodes;
 using WikiClientLibrary.Client;
 using WikiClientLibrary.Sites;
 
@@ -15,10 +15,10 @@ internal static class FlowRequestHelper
         Debug.Assert(pageTitle != null);
         Debug.Assert(workflowId != null);
         Debug.Assert(content != null);
-        JToken jresult;
+        JsonNode jresult;
         using (await site.ModificationThrottler.QueueWorkAsync("Reply: " + workflowId, cancellationToken))
         {
-            jresult = await site.InvokeMediaWikiApiAsync(
+            jresult = await site.InvokeMediaWikiApiAsync2(
                 new MediaWikiFormRequestMessage(new
                 {
                     action = "flow",
@@ -44,10 +44,10 @@ internal static class FlowRequestHelper
         Debug.Assert(pageTitle != null);
         Debug.Assert(topicTitle != null);
         Debug.Assert(topicContent != null);
-        JToken jresult;
+        JsonNode jresult;
         using (await site.ModificationThrottler.QueueWorkAsync("New topic", cancellationToken))
         {
-            jresult = await site.InvokeMediaWikiApiAsync(
+            jresult = await site.InvokeMediaWikiApiAsync2(
                 new MediaWikiFormRequestMessage(new
                 {
                     action = "flow",

@@ -1,6 +1,7 @@
 ﻿using System.Collections.ObjectModel;
 using System.Diagnostics;
-using Newtonsoft.Json.Linq;
+using System.Text.Json;
+using System.Text.Json.Nodes;
 using WikiClientLibrary.Client;
 using WikiClientLibrary.Sites;
 
@@ -86,12 +87,12 @@ public class Topic
     /// <param name="cancellationToken">The token used to cancel the operation.</param>
     public async Task RefreshAsync(CancellationToken cancellationToken)
     {
-        var jresult = await Site.InvokeMediaWikiApiAsync(new MediaWikiFormRequestMessage(new
+        var jresult = await Site.InvokeMediaWikiApiAsync2(new MediaWikiFormRequestMessage(new
         {
             action = "flow", submodule = "view-topic", page = Title, vtformat = "wikitext",
         }), cancellationToken);
-        var jtopiclist = (JObject)jresult["flow"]["view-topic"]["result"]["topic"];
-        var workflowId = (string)jtopiclist["roots"].First;
+        var jtopiclist = jresult["flow"]["view-topic"]["result"]["topic"].AsObject();
+        var workflowId = (string)jtopiclist["roots"].AsArray().First();
         LoadFromJsonTopicList(jtopiclist, workflowId);
     }
 
@@ -125,10 +126,10 @@ public class Topic
     {
         if (reason == null) throw new ArgumentNullException(nameof(reason));
         if (reason.Length == 0) throw new ArgumentException("Reason cannot be empty.", nameof(reason));
-        JToken jresult;
+        JsonNode jresult;
         using (await Site.ModificationThrottler.QueueWorkAsync("Moderate: " + WorkflowId, cancellationToken))
         {
-            jresult = await Site.InvokeMediaWikiApiAsync(new MediaWikiFormRequestMessage(new
+            jresult = await Site.InvokeMediaWikiApiAsync2(new MediaWikiFormRequestMessage(new
             {
                 action = "flow",
                 submodule = "lock-topic",
@@ -153,10 +154,10 @@ public class Topic
     /// <remarks>This method will not update <see cref="TopicTitleRevision"/> content, you need to call <see cref="RefreshAsync()"/> if you need the latest revision information.</remarks>
     public async Task UpdateSummaryAsync(CancellationToken cancellationToken)
     {
-        JToken jresult;
+        JsonNode jresult;
         using (await Site.ModificationThrottler.QueueWorkAsync("UpdateSummary: " + WorkflowId, cancellationToken))
         {
-            jresult = await Site.InvokeMediaWikiApiAsync(new MediaWikiFormRequestMessage(new
+            jresult = await Site.InvokeMediaWikiApiAsync2(new MediaWikiFormRequestMessage(new
             {
                 action = "flow",
                 submodule = "edit-topic-summary",
@@ -182,10 +183,10 @@ public class Topic
     /// <remarks>This method will not update <see cref="TopicTitleRevision"/> content, you need to call <see cref="RefreshAsync()"/> if you need the latest revision information.</remarks>
     public async Task UpdateTopicTitleAsync(CancellationToken cancellationToken)
     {
-        JToken jresult;
+        JsonNode jresult;
         using (await Site.ModificationThrottler.QueueWorkAsync("UpdateTitle: " + WorkflowId, cancellationToken))
         {
-            jresult = await Site.InvokeMediaWikiApiAsync(new MediaWikiFormRequestMessage(new
+            jresult = await Site.InvokeMediaWikiApiAsync2(new MediaWikiFormRequestMessage(new
             {
                 action = "flow",
                 submodule = "edit-title",
@@ -208,10 +209,10 @@ public class Topic
     {
         if (reason == null) throw new ArgumentNullException(nameof(reason));
         if (reason.Length == 0) throw new ArgumentException("Reason cannot be empty.", nameof(reason));
-        JToken jresult;
+        JsonNode jresult;
         using (await Site.ModificationThrottler.QueueWorkAsync("Moderate: " + WorkflowId, cancellationToken))
         {
-            jresult = await Site.InvokeMediaWikiApiAsync(new MediaWikiFormRequestMessage(new
+            jresult = await Site.InvokeMediaWikiApiAsync2(new MediaWikiFormRequestMessage(new
             {
                 action = "flow",
                 submodule = "moderate-topic",
@@ -223,30 +224,30 @@ public class Topic
         }
     }
 
-    internal static IEnumerable<Topic> FromJsonTopicList(WikiSite site, JObject topicList)
+    internal static IEnumerable<Topic> FromJsonTopicList(WikiSite site, JsonObject topicList)
     {
-        return topicList["roots"].Select(rootId =>
+        return topicList["roots"].AsArray().Select(rootId =>
         {
             var topic = new Topic(site);
-            topic.LoadFromJsonTopicList(topicList, (string)rootId);
+            topic.LoadFromJsonTopicList(topicList.AsObject(), (string)rootId);
             return topic;
         });
     }
 
     // topicList: The topiclist node of a view-topiclist query result.
-    internal void LoadFromJsonTopicList(JObject topicList, string workflowId)
+    internal void LoadFromJsonTopicList(JsonObject topicList, string workflowId)
     {
         if (topicList == null) throw new ArgumentNullException(nameof(topicList));
         if (workflowId == null) throw new ArgumentNullException(nameof(workflowId));
         TopicTitleRevision = null;
         WorkflowId = null;
-        var revisionId = (string)topicList["posts"][workflowId]?.First;
+        var revisionId = (string)topicList["posts"][workflowId]?.AsArray().FirstOrDefault();
         if (revisionId == null)
             throw new ArgumentException("Cannot find workflow ID " + workflowId + " in [posts] array.", nameof(workflowId));
-        var jrevision = (JObject)topicList["revisions"][revisionId];
+        var jrevision = topicList["revisions"][revisionId]?.AsObject();
         if (jrevision == null)
             throw new UnexpectedDataException("Cannot find revision " + revisionId + " in [revisions] array.");
-        var rev = jrevision.ToObject<Revision>(FlowUtility.FlowJsonSerializer);
+        var rev = jrevision.Deserialize<Revision>(FlowUtility.FlowJsonSerializer);
         // Assume the first post as title.
         TopicTitleRevision = rev;
         if (rev.ReplyIds == null || rev.ReplyIds.Count == 0)
