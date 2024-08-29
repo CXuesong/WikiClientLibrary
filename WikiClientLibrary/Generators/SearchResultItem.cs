@@ -7,7 +7,7 @@ namespace WikiClientLibrary.Generators;
 /// Represents an item in the search result.
 /// </summary>
 [JsonContract]
-public sealed record SearchResultItem
+public sealed class SearchResultItem
 {
 
     /// <summary>

@@ -12,7 +12,7 @@ namespace WikiClientLibrary.Files;
 /// </summary>
 /// <remarks>See https://www.mediawiki.org/wiki/API:Upload .</remarks>
 [JsonContract]
-public sealed record UploadResult
+public sealed class UploadResult
 {
 
     /// <summary>

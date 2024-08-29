@@ -7,7 +7,7 @@ namespace WikiClientLibrary.Wikia.WikiaApi;
 /// Represents an item in the Wikia local wiki site search result.
 /// </summary>
 [JsonContract]
-public sealed record LocalWikiSearchResultItem
+public sealed class LocalWikiSearchResultItem
 {
 
     /// <summary>

@@ -6,7 +6,7 @@ namespace WikiClientLibrary.Wikibase;
 /// <summary>
 /// Contains read-only data about a Wikibase-enabled site.
 /// </summary>
-public sealed record WikibaseSiteInfo
+public sealed class WikibaseSiteInfo
 {
 
     private WikibaseSiteInfo()

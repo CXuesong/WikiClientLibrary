@@ -7,7 +7,7 @@ namespace WikiClientLibrary.Wikia.WikiaApi;
 /// See https://github.com/Wikia/app/blob/dev/includes/wikia/api/UserApiController.class.php#L31-L87 .
 /// </summary>
 [JsonContract]
-public sealed record UserInfo
+public sealed class UserInfo
 {
 
     /// <summary>User ID.</summary>

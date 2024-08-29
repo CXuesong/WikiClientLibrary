@@ -172,7 +172,7 @@ public class LogEventsList : WikiList<LogEventItem>
 /// Represents an MediaWiki log event entry.
 /// </summary>
 [JsonContract]
-public sealed record LogEventItem
+public sealed class LogEventItem
 {
 
     internal static LogEventItem FromRecentChangeItem(RecentChangeItem rc)

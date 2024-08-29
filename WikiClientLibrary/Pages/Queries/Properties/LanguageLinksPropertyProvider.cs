@@ -113,7 +113,7 @@ public enum LanguageLinkProperties
 /// See <a href="https://github.com/wikimedia/mediawiki/blob/master/includes/api/ApiQueryLangLinks.php">ApiQueryLangLinks.php</a>.
 /// </remarks>
 [JsonContract]
-public sealed record LanguageLinkInfo
+public sealed class LanguageLinkInfo
 {
 
     [JsonPropertyName("lang")]

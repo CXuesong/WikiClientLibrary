@@ -4,7 +4,7 @@ using WikiClientLibrary.Infrastructures;
 namespace WikiClientLibrary.Wikia.WikiaApi;
 
 [JsonContract]
-public sealed record RelatedPageItem
+public sealed class RelatedPageItem
 {
 
     /// <summary>Absolute URL of the page.</summary>

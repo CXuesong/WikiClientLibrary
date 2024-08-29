@@ -312,7 +312,7 @@ public enum OpenSearchOptions
 /// <summary>
 /// Represents an entry in opensearch result.
 /// </summary>
-public sealed record OpenSearchResultEntry
+public sealed class OpenSearchResultEntry
 {
 
     /// <summary>

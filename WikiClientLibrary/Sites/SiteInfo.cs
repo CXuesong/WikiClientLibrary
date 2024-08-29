@@ -15,7 +15,7 @@ namespace WikiClientLibrary.Sites;
 /// </summary>
 /// <seealso cref="WikiSite"/>
 [JsonContract]
-public sealed record SiteInfo
+public sealed class SiteInfo
 {
 
     private string _Generator = "";
@@ -247,7 +247,7 @@ public sealed record SiteInfo
 /// </summary>
 /// <remarks>See https://www.mediawiki.org/wiki/API:Siteinfo#Namespaces .</remarks>
 [JsonContract]
-public sealed record NamespaceInfo
+public sealed class NamespaceInfo
 {
 
     private readonly int _Id;
@@ -536,7 +536,7 @@ public class NamespaceCollection : ICollection<NamespaceInfo>
 /// An item of interwiki map.
 /// </summary>
 [JsonContract]
-public sealed record InterwikiEntry
+public sealed class InterwikiEntry
 {
 
     /// <summary>
@@ -785,7 +785,7 @@ public class ExtensionCollection : ReadOnlyCollection<ExtensionInfo>
 /// <para>See <a href="https://www.mediawiki.org/wiki/API:Siteinfo#Extensions">mw:API:Siteinfo#Extensions</a>.</para>
 /// </remarks>
 [JsonContract]
-public sealed record ExtensionInfo
+public sealed class ExtensionInfo
 {
 
     /// <summary>The extension type.</summary>
@@ -862,7 +862,7 @@ public sealed record ExtensionInfo
 /// Contains statistical information of a MediaWiki site.
 /// </summary>
 [JsonContract]
-public sealed record SiteStatistics
+public sealed class SiteStatistics
 {
 
     [JsonPropertyName("pages")]
@@ -908,7 +908,7 @@ public sealed record SiteStatistics
 /// See <a href="https://www.mediawiki.org/wiki/Manual:Magic_words">mw:Manual:Magic words</a>.
 /// </remarks>
 [JsonContract]
-public sealed record MagicWordInfo
+public sealed class MagicWordInfo
 {
 
     /// <summary>Name of the magic word. This is a case-sensitive magic word ID.</summary>

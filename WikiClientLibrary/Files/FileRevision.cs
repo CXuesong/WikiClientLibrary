@@ -16,7 +16,7 @@ namespace WikiClientLibrary.Files;
 /// <seealso cref="FileInfoPropertyGroup"/>
 /// <seealso cref="FileInfoPropertyProvider"/>
 [JsonContract]
-public sealed record FileRevision
+public sealed class FileRevision
 {
 
     /// <summary>
@@ -94,7 +94,7 @@ public sealed record FileRevision
 /// </summary>
 /// <seealso cref="FileRevision.ExtMetadata"/>
 [JsonContract]
-public sealed record FileRevisionExtMetadataValue
+public sealed class FileRevisionExtMetadataValue
 {
 
     /// <summary>Metadata value JSON.</summary>

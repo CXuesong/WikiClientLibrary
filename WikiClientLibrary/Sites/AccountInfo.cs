@@ -8,7 +8,7 @@ namespace WikiClientLibrary.Sites;
 /// </summary>
 /// <remarks>See <a href="https://www.mediawiki.org/wiki/API:Userinfo">mw:API:UserInfo</a>.</remarks>
 [JsonContract]
-public sealed record AccountInfo
+public sealed class AccountInfo
 {
 
     public long Id { get; init; }

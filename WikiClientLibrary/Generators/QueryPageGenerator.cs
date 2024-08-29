@@ -127,7 +127,7 @@ public class QueryPageGenerator : WikiPageGenerator<QueryPageResultItem>
 /// Contains the basic information of a specific MediaWiki query page result set.
 /// </summary>
 [JsonContract]
-public sealed record QueryPageResultInfo
+public sealed class QueryPageResultInfo
 {
 
     /// <summary>Name of the query page.</summary>
@@ -147,7 +147,7 @@ public sealed record QueryPageResultInfo
 }
 
 [JsonContract]
-public sealed record QueryPageResultItem
+public sealed class QueryPageResultItem
 {
 
     // MaxValue: not resolved yet.

@@ -222,7 +222,7 @@ public enum ScribuntoEvaluationResultType
 }
 
 [JsonContract]
-public sealed record ScribuntoEvaluationResult
+public sealed class ScribuntoEvaluationResult
 {
 
     /// <summary>The evaluation result type.</summary>

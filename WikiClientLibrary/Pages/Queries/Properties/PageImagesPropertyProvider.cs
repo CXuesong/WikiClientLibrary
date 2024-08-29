@@ -60,7 +60,7 @@ public class PageImagesPropertyProvider : WikiPagePropertyProvider<PageImagesPro
 /// <summary>
 /// Contains information for page image URL along with image size.
 /// </summary>
-public sealed record PageImageInfo
+public sealed class PageImageInfo
 {
 
     /// <summary>Image URL.</summary>

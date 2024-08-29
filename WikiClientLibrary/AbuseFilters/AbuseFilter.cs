@@ -5,14 +5,14 @@ using WikiClientLibrary.Infrastructures;
 namespace WikiClientLibrary.AbuseFilters;
 
 [JsonContract]
-public sealed record AbuseFilter
+public sealed class AbuseFilter
 {
 
     public int Id { get; init; }
 
-    public string Description { get; set; } = "";
+    public string Description { get; init; } = "";
 
-    public string Pattern { get; set; } = "";
+    public string Pattern { get; init; } = "";
 
     [JsonIgnore]
     public IReadOnlyCollection<string> Actions { get; init; } = Array.Empty<string>();

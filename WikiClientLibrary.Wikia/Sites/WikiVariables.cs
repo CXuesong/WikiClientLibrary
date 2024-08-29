@@ -8,7 +8,7 @@ namespace WikiClientLibrary.Wikia.Sites;
 /// Represents a node in the WikiVariable API response.
 /// </summary>
 [JsonContract]
-public sealed record AppleTouchIconInfo
+public sealed class AppleTouchIconInfo
 {
 
     private string _Size;
@@ -42,7 +42,7 @@ public sealed record AppleTouchIconInfo
 /// Represents a node in the WikiVariable API response.
 /// </summary>
 [JsonContract]
-public sealed record SiteLanguageInfo
+public sealed class SiteLanguageInfo
 {
 
     [JsonPropertyName("content")]
@@ -113,7 +113,7 @@ public class TrackingInfo : WikiReadOnlyDictionary
 /// Represents a node in the WikiVariable API response.
 /// </summary>
 [JsonContract]
-public sealed record NavigationItem
+public sealed class NavigationItem
 {
 
     [JsonPropertyName("text")]
@@ -143,7 +143,7 @@ public sealed record NavigationItem
 /// Represents a node in the WikiVariable API response.
 /// </summary>
 [JsonContract]
-public sealed record SiteHtmlTitleInfo
+public sealed class SiteHtmlTitleInfo
 {
 
     [JsonPropertyName("separator")]
@@ -169,7 +169,7 @@ public sealed record SiteHtmlTitleInfo
 /// for Wikia's official documentation for the WikiVariable API response.
 /// </remarks>
 [JsonContract]
-public sealed record SiteVariableData
+public sealed class SiteVariableData
 {
 
     private static readonly ICollection<int> fallbackContentNamespaceIds = Array.AsReadOnly(new[] { 0 });

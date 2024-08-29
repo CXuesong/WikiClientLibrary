@@ -11,7 +11,7 @@ namespace WikiClientLibrary.Generators;
 /// Represents MediaWiki recent change entry.
 /// </summary>
 [JsonContract]
-public sealed record RecentChangeItem
+public sealed class RecentChangeItem
 {
 
     private WikiSite? site;

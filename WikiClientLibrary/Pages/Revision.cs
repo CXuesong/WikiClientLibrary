@@ -14,7 +14,7 @@ namespace WikiClientLibrary.Pages;
 /// <seealso cref="RevisionsPropertyGroup"/>
 /// <seealso cref="RevisionsPropertyProvider"/>
 [JsonContract]
-public sealed record Revision
+public sealed class Revision
 {
 
     private readonly IDictionary<string, RevisionSlot> slots = ImmutableDictionary<string, RevisionSlot>.Empty;
@@ -244,7 +244,7 @@ public sealed record Revision
 /// </remarks>
 /// <seealso cref="RevisionsPropertyProvider.Slots"/>
 [JsonContract]
-public sealed record RevisionSlot
+public sealed class RevisionSlot
 {
 
     /// <summary>
