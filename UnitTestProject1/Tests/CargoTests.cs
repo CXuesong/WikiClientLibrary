@@ -1,5 +1,4 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
-using Newtonsoft.Json;
 using WikiClientLibrary.Cargo;
 using WikiClientLibrary.Cargo.Linq;
 using WikiClientLibrary.Cargo.Schema;

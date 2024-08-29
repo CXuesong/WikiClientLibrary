@@ -1,4 +1,4 @@
-﻿using Newtonsoft.Json.Linq;
+﻿using System.Text.Json.Nodes;
 using WikiClientLibrary.Scribunto;
 using WikiClientLibrary.Tests.UnitTestProject1.Fixtures;
 using Xunit;
@@ -85,7 +85,7 @@ return p
         Assert.Equal(74.921595, atomWeights["As"]);
         Assert.Equal(196.966569, atomWeights["Au"]);
         Assert.Equal(65.38, atomWeights["Zn"]);
-        var data = await site.ScribuntoLoadDataAsync<JObject>("Icon/data", "return {project=p.project, meta=p.meta}");
+        var data = await site.ScribuntoLoadDataAsync<JsonObject>("Icon/data", "return {project=p.project, meta=p.meta}");
         Utility.AssertNotNull(data);
         Assert.Equal(2, data.Count);
         Assert.Equal("Symbol project class.svg", (string)data["project"]["image"]);
