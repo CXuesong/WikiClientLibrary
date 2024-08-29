@@ -13,7 +13,7 @@ public sealed class AccountInfo
 
     public long Id { get; init; }
 
-    public string Name { get; init; }
+    public required string Name { get; init; }
 
     /// <summary>
     /// Determines wheter current user is anonymous.
@@ -35,27 +35,29 @@ public sealed class AccountInfo
     /// </summary>
     public bool IsBot => Groups.Contains(UserGroups.Bot);
 
+    // TODO Provide a AccountBlockInfo sub-structure.
+
     /// <summary>
     /// Determines whether the current user has been blocked.
     /// </summary>
-    public bool IsBlocked => BlockId != 0;
+    public bool IsBlocked => BlockId != null;
 
-    public int BlockId { get; init; }
+    public int? BlockId { get; init; }
 
-    public string BlockedBy { get; init; }
+    public string? BlockedBy { get; init; }
 
-    public int BlockedById { get; init; }
+    public int? BlockedById { get; init; }
 
-    public string BlockReason { get; init; }
+    public string? BlockReason { get; init; }
 
     [JsonPropertyName("blockedtimestamp")]
-    public DateTime BlockedSince { get; init; }
+    public DateTime? BlockedSince { get; init; }
 
-    public DateTime BlockExpiry { get; init; }
+    public DateTime? BlockExpiry { get; init; }
 
-    public IReadOnlyCollection<string> Groups { get; init; }
+    public required IReadOnlyCollection<string> Groups { get; init; }
 
-    public IReadOnlyCollection<string> Rights { get; init; }
+    public required IReadOnlyCollection<string> Rights { get; init; }
 
     /// <summary>
     /// Determines whether the user is in certain group.
