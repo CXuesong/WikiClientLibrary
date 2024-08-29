@@ -1,4 +1,5 @@
 ﻿using System.Text;
+using System.Text.Json;
 using WikiClientLibrary.Tests.UnitTestProject1.Fixtures;
 using WikiClientLibrary.Tests.UnitTestProject1.Properties;
 using WikiClientLibrary.Wikibase;
@@ -292,11 +293,23 @@ public class WikibaseTests : WikiSiteTestsBase, IClassFixture<WikiSiteProvider>
     [Fact]
     public void SerializableEntityEofTest()
     {
-        Assert.Null(SerializableEntity.Parse(""));
-        Assert.Null(SerializableEntity.Parse("    \t\t    "));
-        Assert.Null(SerializableEntity.Load(TextReader.Null));
-        Assert.Empty(SerializableEntity.ParseAll(""));
-        Assert.Empty(SerializableEntity.LoadAll(TextReader.Null));
+        Assert.Throws<JsonException>(() => SerializableEntity.Parse(""));
+        Assert.Throws<JsonException>(() => SerializableEntity.Parse("    \t\t    "));
+        Assert.Throws<JsonException>(() => SerializableEntity.Load(Stream.Null));
+        Assert.Throws<JsonException>(() => SerializableEntity.ParseAll(""));
+        Assert.Throws<JsonException>(() => SerializableEntity.LoadAll(Stream.Null).ToList());
+    }
+
+    [Fact]
+    public void SerializableEntityNullTest()
+    {
+        using var streamOfNull = new MemoryStream(Encoding.UTF8.GetBytes("null"));
+        Assert.Null(SerializableEntity.Parse("null"));
+        Assert.Null(SerializableEntity.Parse("    \t\t    null  "));
+        Assert.Null(SerializableEntity.Load(streamOfNull));
+        Assert.Empty(SerializableEntity.ParseAll("[]"));
+        streamOfNull.Position = 0;
+        Assert.Empty(SerializableEntity.LoadAll(streamOfNull));
     }
 
     internal static class WikidataItems

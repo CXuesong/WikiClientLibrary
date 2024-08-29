@@ -33,6 +33,8 @@ public static partial class MediaWikiHelper
             DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
             PropertyNamingPolicy = new WikiJsonNamingPolicy(),
             NumberHandling = JsonNumberHandling.AllowReadingFromString | JsonNumberHandling.AllowNamedFloatingPointLiterals,
+            // Serialized entity processing in Wikibase may need this.
+            ReadCommentHandling = JsonCommentHandling.Skip,
             WriteIndented = false,
             Converters =
             {

@@ -2,8 +2,7 @@
 using System.Diagnostics;
 using System.Text.Json;
 using System.Text.Json.Nodes;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
+using System.Text.Json.Serialization;
 using WikiClientLibrary.Infrastructures;
 using WikiClientLibrary.Sites;
 using WikiClientLibrary.Wikibase.DataTypes;

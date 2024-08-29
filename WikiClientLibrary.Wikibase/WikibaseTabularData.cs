@@ -1,6 +1,5 @@
-﻿using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-using Newtonsoft.Json.Serialization;
+﻿using System.Text.Json.Nodes;
+using WikiClientLibrary.Infrastructures;
 
 namespace WikiClientLibrary.Wikibase;
 
@@ -11,23 +10,19 @@ namespace WikiClientLibrary.Wikibase;
 /// <remarks>
 /// See "https://www.mediawiki.org/wiki/Help:Tabular_Data" for more documentation about tabular data.
 /// </remarks>
-[JsonObject(MemberSerialization.OptIn, NamingStrategyType = typeof(CamelCaseNamingStrategy))]
+//[JsonObject(MemberSerialization.OptIn, NamingStrategyType = typeof(CamelCaseNamingStrategy))]
+[JsonContract]
 internal class WikibaseTabularData // Reserved for future use.
 {
 
-    [JsonProperty]
     public string? License { get; set; }
 
-    [JsonProperty]
     public IDictionary<string, string>? Description { get; set; }
 
-    [JsonProperty]
     public string? Sources { get; set; }
 
-    [JsonProperty]
-    public JObject? Schema { get; set; }
+    public JsonObject? Schema { get; set; }
 
-    [JsonProperty]
-    public JArray? Data { get; set; }
+    public JsonArray? Data { get; set; }
 
 }

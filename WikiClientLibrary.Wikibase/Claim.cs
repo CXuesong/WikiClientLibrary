@@ -1,6 +1,5 @@
 ﻿using System.Diagnostics;
 using System.Text.Json.Nodes;
-using Newtonsoft.Json.Linq;
 using WikiClientLibrary.Wikibase.DataTypes;
 
 namespace WikiClientLibrary.Wikibase;

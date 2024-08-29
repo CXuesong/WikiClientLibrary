@@ -1,8 +1,9 @@
 ﻿using System.Collections.Concurrent;
 using System.Diagnostics;
-using Newtonsoft.Json;
 
 namespace WikiClientLibrary.Wikibase;
+
+// TODO: Take over the URI deserialization to leverage cache in WikibaseUriFactory.
 
 /// <summary>
 /// A static class provides functionality for caching <see cref="Uri"/> instances.
@@ -10,8 +11,7 @@ namespace WikiClientLibrary.Wikibase;
 public static class WikibaseUriFactory
 {
 
-    private static readonly ConcurrentDictionary<string, WeakReference<Uri>> cacheDict =
-        new ConcurrentDictionary<string, WeakReference<Uri>>();
+    private static readonly ConcurrentDictionary<string, WeakReference<Uri>> cacheDict = new();
 
     private static int nextTrimTrigger = 32;
 
@@ -63,31 +63,6 @@ public static class WikibaseUriFactory
     {
         cacheDict.Clear();
         nextTrimTrigger = 32;
-    }
-
-}
-
-internal class WikibaseUriJsonConverter : JsonConverter
-{
-
-    /// <inheritdoc />
-    public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
-    {
-        writer.WriteValue((Uri)value);
-    }
-
-    /// <inheritdoc />
-    public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
-    {
-        if (reader.TokenType != JsonToken.String) throw new JsonException("Expect string value.");
-        var uri = (string)reader.Value;
-        return WikibaseUriFactory.Get(uri);
-    }
-
-    /// <inheritdoc />
-    public override bool CanConvert(Type objectType)
-    {
-        return objectType == typeof(Uri);
     }
 
 }
