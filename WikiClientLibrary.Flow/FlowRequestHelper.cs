@@ -18,7 +18,7 @@ internal static class FlowRequestHelper
         JsonNode jresult;
         using (await site.ModificationThrottler.QueueWorkAsync("Reply: " + workflowId, cancellationToken))
         {
-            jresult = await site.InvokeMediaWikiApiAsync2(
+            jresult = await site.InvokeMediaWikiApiAsync(
                 new MediaWikiFormRequestMessage(new
                 {
                     action = "flow",
@@ -47,7 +47,7 @@ internal static class FlowRequestHelper
         JsonNode jresult;
         using (await site.ModificationThrottler.QueueWorkAsync("New topic", cancellationToken))
         {
-            jresult = await site.InvokeMediaWikiApiAsync2(
+            jresult = await site.InvokeMediaWikiApiAsync(
                 new MediaWikiFormRequestMessage(new
                 {
                     action = "flow",

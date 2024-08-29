@@ -80,7 +80,7 @@ public sealed class Post
     /// </remarks>
     public async Task RefreshAsync(CancellationToken cancellationToken)
     {
-        var jresult = await Site.InvokeMediaWikiApiAsync2(new MediaWikiFormRequestMessage(new
+        var jresult = await Site.InvokeMediaWikiApiAsync(new MediaWikiFormRequestMessage(new
         {
             action = "flow",
             submodule = "view-post",
@@ -113,7 +113,7 @@ public sealed class Post
         JsonNode jresult;
         using (await Site.ModificationThrottler.QueueWorkAsync("Moderate: " + WorkflowId, cancellationToken))
         {
-            jresult = await Site.InvokeMediaWikiApiAsync2(new MediaWikiFormRequestMessage(new
+            jresult = await Site.InvokeMediaWikiApiAsync(new MediaWikiFormRequestMessage(new
             {
                 action = "flow",
                 submodule = "moderate-post",

@@ -230,7 +230,7 @@ public readonly struct WikiPageStub : IEquatable<WikiPageStub>
             : 50;
         foreach (var partition in ids.Partition(titleLimit))
         {
-            var jresult = await site.InvokeMediaWikiApiAsync2(
+            var jresult = await site.InvokeMediaWikiApiAsync(
                 new MediaWikiFormRequestMessage(new { action = "query", pageids = MediaWikiHelper.JoinValues(partition), }),
                 cancellationToken);
             Debug.Assert(jresult["query"] != null);
@@ -265,7 +265,7 @@ public readonly struct WikiPageStub : IEquatable<WikiPageStub>
             : 50;
         foreach (var partition in titles.Partition(titleLimit))
         {
-            var jresult = await site.InvokeMediaWikiApiAsync2(
+            var jresult = await site.InvokeMediaWikiApiAsync(
                 new MediaWikiFormRequestMessage(new
                 {
                     action = "query", titles = MediaWikiHelper.JoinValues(partition),

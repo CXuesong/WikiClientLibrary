@@ -90,7 +90,7 @@ public static class CargoWikiSiteExtensions
                 sb.Append(" ROWS ONLY");
                 site.Logger.LogDebug("Invoke Cargo query. Pseudo-query: {0}", sb.ToString());
             }
-            var resp = await site.InvokeMediaWikiApiAsync2(new MediaWikiFormRequestMessage(new
+            var resp = await site.InvokeMediaWikiApiAsync(new MediaWikiFormRequestMessage(new
             {
                 action = "cargoquery",
                 offset = queryParameters.Offset,

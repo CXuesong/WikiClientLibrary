@@ -78,7 +78,7 @@ internal static class WikibaseRequestHelper
                 // No entity to fetch
                 if (ids == "") continue;
                 req["ids"] = ids;
-                var jresult = await site.InvokeMediaWikiApiAsync2(new MediaWikiFormRequestMessage(req), cancellationToken);
+                var jresult = await site.InvokeMediaWikiApiAsync(new MediaWikiFormRequestMessage(req), cancellationToken);
                 var jentities = jresult["entities"].AsObject();
                 foreach (var entity in partition)
                 {
@@ -125,7 +125,7 @@ internal static class WikibaseRequestHelper
                 partition[i] = partition[i].Trim(whitespaceAndUnderscore).Replace('_', ' ');
             }
             req["titles"] = MediaWikiHelper.JoinValues(partition);
-            var jresult = await site.InvokeMediaWikiApiAsync2(new MediaWikiFormRequestMessage(req), cancellationToken);
+            var jresult = await site.InvokeMediaWikiApiAsync(new MediaWikiFormRequestMessage(req), cancellationToken);
             var jentities = jresult["entities"].AsObject();
             var nameIdDict = jentities.Where(p => p.Value!["missing"] == null)
                 .ToDictionary(p => (string)p.Value["sitelinks"][siteName]["title"], p => (string)p.Value["id"]);

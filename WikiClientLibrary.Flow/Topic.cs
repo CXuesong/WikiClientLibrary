@@ -87,7 +87,7 @@ public class Topic
     /// <param name="cancellationToken">The token used to cancel the operation.</param>
     public async Task RefreshAsync(CancellationToken cancellationToken)
     {
-        var jresult = await Site.InvokeMediaWikiApiAsync2(new MediaWikiFormRequestMessage(new
+        var jresult = await Site.InvokeMediaWikiApiAsync(new MediaWikiFormRequestMessage(new
         {
             action = "flow", submodule = "view-topic", page = Title, vtformat = "wikitext",
         }), cancellationToken);
@@ -129,7 +129,7 @@ public class Topic
         JsonNode jresult;
         using (await Site.ModificationThrottler.QueueWorkAsync("Moderate: " + WorkflowId, cancellationToken))
         {
-            jresult = await Site.InvokeMediaWikiApiAsync2(new MediaWikiFormRequestMessage(new
+            jresult = await Site.InvokeMediaWikiApiAsync(new MediaWikiFormRequestMessage(new
             {
                 action = "flow",
                 submodule = "lock-topic",
@@ -157,7 +157,7 @@ public class Topic
         JsonNode jresult;
         using (await Site.ModificationThrottler.QueueWorkAsync("UpdateSummary: " + WorkflowId, cancellationToken))
         {
-            jresult = await Site.InvokeMediaWikiApiAsync2(new MediaWikiFormRequestMessage(new
+            jresult = await Site.InvokeMediaWikiApiAsync(new MediaWikiFormRequestMessage(new
             {
                 action = "flow",
                 submodule = "edit-topic-summary",
@@ -186,7 +186,7 @@ public class Topic
         JsonNode jresult;
         using (await Site.ModificationThrottler.QueueWorkAsync("UpdateTitle: " + WorkflowId, cancellationToken))
         {
-            jresult = await Site.InvokeMediaWikiApiAsync2(new MediaWikiFormRequestMessage(new
+            jresult = await Site.InvokeMediaWikiApiAsync(new MediaWikiFormRequestMessage(new
             {
                 action = "flow",
                 submodule = "edit-title",
@@ -212,7 +212,7 @@ public class Topic
         JsonNode jresult;
         using (await Site.ModificationThrottler.QueueWorkAsync("Moderate: " + WorkflowId, cancellationToken))
         {
-            jresult = await Site.InvokeMediaWikiApiAsync2(new MediaWikiFormRequestMessage(new
+            jresult = await Site.InvokeMediaWikiApiAsync(new MediaWikiFormRequestMessage(new
             {
                 action = "flow",
                 submodule = "moderate-topic",

@@ -120,7 +120,7 @@ internal static class RequestHelper
         {
             var queryParams = new Dictionary<string, object?>(baseQueryParams);
             queryParams.MergeFrom(continuationParams);
-            var jresult = await site.InvokeMediaWikiApiAsync2(new MediaWikiFormRequestMessage(queryParams), cancellationToken);
+            var jresult = await site.InvokeMediaWikiApiAsync(new MediaWikiFormRequestMessage(queryParams), cancellationToken);
             var jpages = (JsonObject?)FindQueryResponseItemsRoot(jresult, "pages");
             if (jpages != null)
             {
@@ -199,7 +199,7 @@ internal static class RequestHelper
                         Debug.Assert(sitePages.All(p => p.PageStub.HasId));
                         queryParams["pageids"] = MediaWikiHelper.JoinValues(partition.Select(p => p.Id));
                     }
-                    var jobj = await site.InvokeMediaWikiApiAsync2(new MediaWikiFormRequestMessage(queryParams), cancellationToken);
+                    var jobj = await site.InvokeMediaWikiApiAsync(new MediaWikiFormRequestMessage(queryParams), cancellationToken);
                     var jquery = jobj["query"]?.AsObject();
                     if (jquery == null) throw new UnexpectedDataException("Missing $.query node.");
                     var continuationStatus = ParseContinuationParameters(jobj, queryParams, null);
@@ -219,7 +219,7 @@ internal static class RequestHelper
                             queryParams1.Clear();
                             queryParams1.MergeFrom(queryParams);
                             queryParams1.MergeFrom(continuationParams);
-                            jobj1 = await site.InvokeMediaWikiApiAsync2(new MediaWikiFormRequestMessage(queryParams1), cancellationToken);
+                            jobj1 = await site.InvokeMediaWikiApiAsync(new MediaWikiFormRequestMessage(queryParams1), cancellationToken);
                             var jquery1 = jobj1["query"]?.AsObject();
                             if (jquery1 != null)
                             {
@@ -300,7 +300,7 @@ internal static class RequestHelper
             {
                 site.Logger.LogDebug("Fetching {Count} revisions from {Site}.", partition.Count, site);
                 queryParams["revids"] = MediaWikiHelper.JoinValues(partition);
-                var jobj = await site.InvokeMediaWikiApiAsync2(new MediaWikiFormRequestMessage(queryParams), cancellationToken);
+                var jobj = await site.InvokeMediaWikiApiAsync(new MediaWikiFormRequestMessage(queryParams), cancellationToken);
                 var jpages = jobj["query"]["pages"].AsObject();
                 // Generate stubs first
                 foreach (var p in jpages)
@@ -368,7 +368,7 @@ internal static class RequestHelper
                     }
                     try
                     {
-                        var jresult = await site.InvokeMediaWikiApiAsync2(new MediaWikiFormRequestMessage(new
+                        var jresult = await site.InvokeMediaWikiApiAsync(new MediaWikiFormRequestMessage(new
                         {
                             action = "purge",
                             titles = titles,
@@ -410,7 +410,7 @@ internal static class RequestHelper
             throw new InvalidOperationException(Prompts.ExceptionPatrolledByRevisionNotSupported);
         try
         {
-            var jresult = await site.InvokeMediaWikiApiAsync2(new MediaWikiFormRequestMessage(new
+            var jresult = await site.InvokeMediaWikiApiAsync(new MediaWikiFormRequestMessage(new
             {
                 action = "patrol", rcid = recentChangeId, revid = revisionId, token = WikiSiteToken.Patrol,
             }), cancellationToken);
@@ -467,7 +467,7 @@ internal static class RequestHelper
         {
             pa["modules"] = moduleName;
         }
-        var jresult = await site.InvokeMediaWikiApiAsync2(new MediaWikiFormRequestMessage(pa), CancellationToken.None);
+        var jresult = await site.InvokeMediaWikiApiAsync(new MediaWikiFormRequestMessage(pa), CancellationToken.None);
         var jmodules = jresult["paraminfo"]?.AsObject().FirstOrDefault(p => p.Key.EndsWith("modules")).Value;
         // For now we use the method internally.
         Debug.Assert(jmodules != null);

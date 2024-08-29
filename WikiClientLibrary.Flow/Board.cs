@@ -57,7 +57,7 @@ public class Board
     public async Task RefreshAsync(CancellationToken cancellationToken)
     {
         // Known Issue: view-header doesn't support multiple page names.
-        var jresult = await Site.InvokeMediaWikiApiAsync2(
+        var jresult = await Site.InvokeMediaWikiApiAsync(
             new MediaWikiFormRequestMessage(new { action = "flow", submodule = "view-header", page = Title, vhformat = "wikitext" }),
             cancellationToken);
         var jheader = jresult["flow"]["view-header"]["result"]["header"];
@@ -110,7 +110,7 @@ public class Board
             { "vtlformat", "wikitext" },
         };
         NEXT_PAGE:
-        var jresult = await Site.InvokeMediaWikiApiAsync2(new MediaWikiFormRequestMessage(queryParams), cancellationToken);
+        var jresult = await Site.InvokeMediaWikiApiAsync(new MediaWikiFormRequestMessage(queryParams), cancellationToken);
         var jtopiclist = jresult["flow"]["view-topiclist"]["result"]["topiclist"].AsObject();
         using (ExecutionContextStash.Capture())
             foreach (var t in Topic.FromJsonTopicList(Site, jtopiclist))

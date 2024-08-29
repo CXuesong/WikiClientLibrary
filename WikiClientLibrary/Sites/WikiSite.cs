@@ -179,7 +179,7 @@ public partial class WikiSite : IWikiClientLoggable, IWikiClientAsyncInitializat
     {
         using (this.BeginActionScope(null))
         {
-            var jobj = await InvokeMediaWikiApiAsync2(
+            var jobj = await InvokeMediaWikiApiAsync(
                 new MediaWikiFormRequestMessage(new
                 {
                     action = "query",
@@ -212,7 +212,7 @@ public partial class WikiSite : IWikiClientLoggable, IWikiClientAsyncInitializat
         // Note: _SiteInfo can be null here.
         using (this.BeginActionScope(null))
         {
-            var jobj = await InvokeMediaWikiApiAsync2(
+            var jobj = await InvokeMediaWikiApiAsync(
                 new MediaWikiFormRequestMessage(new { action = "query", meta = "userinfo", uiprop = "blockinfo|groups|hasmsg|rights" }),
                 true, CancellationToken.None);
             _AccountInfo = jobj["query"]["userinfo"].Deserialize<AccountInfo>(MediaWikiHelper.WikiJsonSerializerOptions);
@@ -326,24 +326,16 @@ public partial class WikiSite : IWikiClientLoggable, IWikiClientAsyncInitializat
 
     /// <inheritdoc cref="InvokeMediaWikiApiAsync{T}(WikiRequestMessage,IWikiResponseMessageParser{T},bool,CancellationToken)"/>
     /// <remarks>This overload uses <see cref="MediaWikiJsonResponseParser.Default"/> as response parser.</remarks>
-    public Task<JsonNode> InvokeMediaWikiApiAsync2(WikiRequestMessage message, CancellationToken cancellationToken)
+    public Task<JsonNode> InvokeMediaWikiApiAsync(WikiRequestMessage message, CancellationToken cancellationToken)
     {
         return InvokeMediaWikiApiAsync(message, MediaWikiJsonResponseParser.Default, false, cancellationToken);
     }
 
     /// <inheritdoc cref="InvokeMediaWikiApiAsync{T}(WikiRequestMessage,IWikiResponseMessageParser{T},bool,CancellationToken)"/>
     /// <remarks>This overload uses <see cref="MediaWikiJsonResponseParser.Default"/> as response parser.</remarks>
-    public Task<JsonNode> InvokeMediaWikiApiAsync2(WikiRequestMessage message, bool suppressAccountAssertion, CancellationToken cancellationToken)
+    public Task<JsonNode> InvokeMediaWikiApiAsync(WikiRequestMessage message, bool suppressAccountAssertion, CancellationToken cancellationToken)
     {
         return InvokeMediaWikiApiAsync(message, MediaWikiJsonResponseParser.Default, suppressAccountAssertion, cancellationToken);
-    }
-
-    /// <inheritdoc cref="InvokeMediaWikiApiAsync{T}(WikiRequestMessage,IWikiResponseMessageParser{T},bool,CancellationToken)"/>
-    /// <remarks>This overload uses <see cref="MediaWikiNewtonsoftJsonResponseParser.Default"/> as response parser.</remarks>
-    [Obsolete("Newtonsoft.Json API is being deprecated in favor of System.Text.Json API.")]
-    public Task<JToken> InvokeMediaWikiApiAsync(WikiRequestMessage message, CancellationToken cancellationToken)
-    {
-        return InvokeMediaWikiApiAsync(message, MediaWikiNewtonsoftJsonResponseParser.Default, false, cancellationToken);
     }
 
     /// <summary>
@@ -564,7 +556,7 @@ public partial class WikiSite : IWikiClientLoggable, IWikiClientAsyncInitializat
                 //  because the client might be logging to a private wiki,
                 //  where any "query" operation before logging-in might raise readapidenied error.
                 RETRY:
-                var jobj = await InvokeMediaWikiApiAsync2(new MediaWikiFormRequestMessage(new
+                var jobj = await InvokeMediaWikiApiAsync(new MediaWikiFormRequestMessage(new
                 {
                     action = "login",
                     lgname = userName,
@@ -673,7 +665,7 @@ public partial class WikiSite : IWikiClientLoggable, IWikiClientAsyncInitializat
             // git #d965b0b4 - [SECURITY] [API BREAKING CHANGE] Require logout token. (task T25227) by sbassett
             token = await tokensManager.GetTokenAsync("csrf", false, CancellationToken.None);
         }
-        var jobj = await InvokeMediaWikiApiAsync2(new MediaWikiFormRequestMessage(new
+        var jobj = await InvokeMediaWikiApiAsync(new MediaWikiFormRequestMessage(new
             {
                 action = "logout", token = token,
             }), true,

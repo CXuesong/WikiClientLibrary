@@ -85,7 +85,7 @@ public static class WikiSiteExtensions
         var p = BuildParsingParams(site, options);
         p["page"] = title;
         p["uselang"] = lang;
-        var jobj = await site.InvokeMediaWikiApiAsync2(new MediaWikiFormRequestMessage(p), cancellationToken);
+        var jobj = await site.InvokeMediaWikiApiAsync(new MediaWikiFormRequestMessage(p), cancellationToken);
         var parsed = jobj["parse"].Deserialize<ParsedContentInfo>(MediaWikiHelper.WikiJsonSerializerOptions);
         return parsed;
     }
@@ -127,7 +127,7 @@ public static class WikiSiteExtensions
         var p = BuildParsingParams(site, options);
         p["pageid"] = id;
         p["uselang"] = lang;
-        var jobj = await site.InvokeMediaWikiApiAsync2(new MediaWikiFormRequestMessage(p), cancellationToken);
+        var jobj = await site.InvokeMediaWikiApiAsync(new MediaWikiFormRequestMessage(p), cancellationToken);
         var parsed = jobj["parse"].Deserialize<ParsedContentInfo>(MediaWikiHelper.WikiJsonSerializerOptions);
         return parsed;
     }
@@ -168,7 +168,7 @@ public static class WikiSiteExtensions
         var p = BuildParsingParams(site, options);
         p["oldid"] = revId;
         p["uselang"] = lang;
-        var jobj = await site.InvokeMediaWikiApiAsync2(new MediaWikiFormRequestMessage(p), cancellationToken);
+        var jobj = await site.InvokeMediaWikiApiAsync(new MediaWikiFormRequestMessage(p), cancellationToken);
         var parsed = jobj["parse"].Deserialize<ParsedContentInfo>(MediaWikiHelper.WikiJsonSerializerOptions);
         return parsed;
     }
@@ -220,7 +220,7 @@ public static class WikiSiteExtensions
         p["title"] = title;
         p["uselang"] = lang;
         p["contentmodel"] = contentModel;
-        var jobj = await site.InvokeMediaWikiApiAsync2(new MediaWikiFormRequestMessage(p), cancellationToken);
+        var jobj = await site.InvokeMediaWikiApiAsync(new MediaWikiFormRequestMessage(p), cancellationToken);
         var parsed = jobj["parse"].Deserialize<ParsedContentInfo>(MediaWikiHelper.WikiJsonSerializerOptions);
         return parsed;
     }

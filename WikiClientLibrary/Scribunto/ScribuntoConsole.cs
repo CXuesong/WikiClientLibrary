@@ -175,7 +175,7 @@ public class ScribuntoConsole
         JsonNode jresult;
         try
         {
-            jresult = await site.InvokeMediaWikiApiAsync2(new MediaWikiFormRequestMessage(new
+            jresult = await site.InvokeMediaWikiApiAsync(new MediaWikiFormRequestMessage(new
             {
                 action = "scribunto-console",
                 // Since wikimedia/mediawiki-extensions-Scribunto@0f2585244cbdc22580cc431745328a8f1fb270bd (1.40.0-wmf.5)

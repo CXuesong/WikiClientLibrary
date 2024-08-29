@@ -202,7 +202,7 @@ partial class Entity
                 var contract = SerializeEditEntries(edits);
                 using (await Site.ModificationThrottler.QueueWorkAsync("Edit: " + this, cancellationToken))
                 {
-                    var jresult = await Site.InvokeMediaWikiApiAsync2(
+                    var jresult = await Site.InvokeMediaWikiApiAsync(
                         new MediaWikiFormRequestMessage(new
                         {
                             action = "wbeditentity",
@@ -253,7 +253,7 @@ partial class Entity
                     {
                         Debug.Assert(p.Value != null);
                         var value = (WbMonolingualText)p.Value;
-                        var jresult = await Site.InvokeMediaWikiApiAsync2(new MediaWikiFormRequestMessage(new
+                        var jresult = await Site.InvokeMediaWikiApiAsync(new MediaWikiFormRequestMessage(new
                         {
                             action = "wbsetlabel",
                             token = WikiSiteToken.Edit,
@@ -274,7 +274,7 @@ partial class Entity
                     {
                         Debug.Assert(p.Value != null);
                         var value = (WbMonolingualText)p.Value;
-                        var jresult = await Site.InvokeMediaWikiApiAsync2(new MediaWikiFormRequestMessage(new
+                        var jresult = await Site.InvokeMediaWikiApiAsync(new MediaWikiFormRequestMessage(new
                         {
                             action = "wbsetdescription",
                             token = WikiSiteToken.Edit,
@@ -301,7 +301,7 @@ partial class Entity
                             var removeExpr = MediaWikiHelper.JoinValues(langGroup
                                 .Where(e => e.State == EntityEditEntryState.Removed)
                                 .Select(e => ((WbMonolingualText)e.Value!).Text));
-                            var jresult = await Site.InvokeMediaWikiApiAsync2(new MediaWikiFormRequestMessage(new
+                            var jresult = await Site.InvokeMediaWikiApiAsync(new MediaWikiFormRequestMessage(new
                             {
                                 action = "wbsetaliases",
                                 token = WikiSiteToken.Edit,
@@ -339,7 +339,7 @@ partial class Entity
                             {
                                 throw new ArgumentException("One site can own at most one site link.", nameof(edits));
                             }
-                            var jresult = await Site.InvokeMediaWikiApiAsync2(new MediaWikiFormRequestMessage(new
+                            var jresult = await Site.InvokeMediaWikiApiAsync(new MediaWikiFormRequestMessage(new
                             {
                                 action = "wbsetsitelink",
                                 token = WikiSiteToken.Edit,
@@ -369,7 +369,7 @@ partial class Entity
                             if (Id == null)
                             {
                                 // This is a new entity, so we need to create it first.
-                                var jresult1 = await Site.InvokeMediaWikiApiAsync2(
+                                var jresult1 = await Site.InvokeMediaWikiApiAsync(
                                     new MediaWikiFormRequestMessage(new
                                     {
                                         action = "wbeditentity",
@@ -385,7 +385,7 @@ partial class Entity
                             Debug.Assert(Id != null, "Id is expected to be loaded after entity creation.");
                             claimContract.Id = Utility.NewClaimGuid(Id);
                         }
-                        var jresult = await Site.InvokeMediaWikiApiAsync2(new MediaWikiFormRequestMessage(new
+                        var jresult = await Site.InvokeMediaWikiApiAsync(new MediaWikiFormRequestMessage(new
                         {
                             action = "wbsetclaim",
                             token = WikiSiteToken.Edit,
@@ -402,7 +402,7 @@ partial class Entity
                     foreach (var batch in prop.Where(e => e.State == EntityEditEntryState.Removed)
                                  .Select(e => ((Claim)e.Value!).Id).Partition(50))
                     {
-                        var jresult = await Site.InvokeMediaWikiApiAsync2(new MediaWikiFormRequestMessage(new
+                        var jresult = await Site.InvokeMediaWikiApiAsync(new MediaWikiFormRequestMessage(new
                         {
                             action = "wbremoveclaims",
                             token = WikiSiteToken.Edit,

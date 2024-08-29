@@ -155,7 +155,7 @@ public abstract class WikiList<T> : IWikiList<T>
             JsonArray? listNode;
             try
             {
-                jresult = await Site.InvokeMediaWikiApiAsync2(new MediaWikiFormRequestMessage(queryParams), cancellationToken);
+                jresult = await Site.InvokeMediaWikiApiAsync(new MediaWikiFormRequestMessage(queryParams), cancellationToken);
                 listNode = ItemsFromResponse(jresult);
             }
             catch (Exception ex)
@@ -213,7 +213,7 @@ public abstract class WikiList<T> : IWikiList<T>
                                     queryParams.MergeFrom(baseQueryParams);
                                     queryParams.MergeFrom(continuationParams);
                                     queryParams[limitParamName] = currentLimit;
-                                    var jresult2 = await Site.InvokeMediaWikiApiAsync2(new MediaWikiFormRequestMessage(queryParams),
+                                    var jresult2 = await Site.InvokeMediaWikiApiAsync(new MediaWikiFormRequestMessage(queryParams),
                                         cancellationToken);
                                     var applyResult = RequestHelper.ParseContinuationParameters(jresult2, queryParams, continuationParams);
                                     switch (applyResult)

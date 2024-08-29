@@ -70,7 +70,7 @@ public class QueryPageGenerator : WikiPageGenerator<QueryPageResultItem>
     /// </remarks>
     public async Task<QueryPageResultInfo> GetQueryPageResultInfoAsync(CancellationToken cancellationToken = default)
     {
-        var jresult = await Site.InvokeMediaWikiApiAsync2(new MediaWikiFormRequestMessage(
+        var jresult = await Site.InvokeMediaWikiApiAsync(new MediaWikiFormRequestMessage(
             new
             {
                 action = "query",

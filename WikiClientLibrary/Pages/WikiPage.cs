@@ -433,7 +433,7 @@ public partial class WikiPage
             JsonNode jresult;
             try
             {
-                jresult = await Site.InvokeMediaWikiApiAsync2(new MediaWikiFormRequestMessage(new
+                jresult = await Site.InvokeMediaWikiApiAsync(new MediaWikiFormRequestMessage(new
                 {
                     action = "edit",
                     token = WikiSiteToken.Edit,
@@ -534,7 +534,7 @@ public partial class WikiPage
             JsonNode jresult;
             try
             {
-                jresult = await Site.InvokeMediaWikiApiAsync2(new MediaWikiFormRequestMessage(new
+                jresult = await Site.InvokeMediaWikiApiAsync(new MediaWikiFormRequestMessage(new
                 {
                     action = "move",
                     token = WikiSiteToken.Move,
@@ -601,7 +601,7 @@ public partial class WikiPage
             JsonNode jresult;
             try
             {
-                jresult = await Site.InvokeMediaWikiApiAsync2(new MediaWikiFormRequestMessage(new
+                jresult = await Site.InvokeMediaWikiApiAsync(new MediaWikiFormRequestMessage(new
                 {
                     action = "delete",
                     token = WikiSiteToken.Delete,
