@@ -81,14 +81,10 @@ internal static class MediaWikiUtility
             }
         }
         var status = (int)resp.StatusCode;
-        if (status == 200 || (accept400 && status >= 400 && status < 500))
+        if (status == 200 || (accept400 && status is >= 400 and < 500))
         {
             var finalUrl = resp.RequestMessage!.RequestUri!.ToString();
-#if NETSTANDARD2_1
-                var content = await resp.Content.ReadAsStringAsync();
-#else
             var content = await resp.Content.ReadAsStringAsync(cancellationToken);
-#endif
             return (finalUrl, content);
         }
         return (null, null);
