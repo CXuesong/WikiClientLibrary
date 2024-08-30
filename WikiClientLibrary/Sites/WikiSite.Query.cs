@@ -12,7 +12,7 @@ partial class WikiSite
     private async Task<JsonArray> FetchMessagesAsync(string messagesExpr, CancellationToken cancellationToken)
     {
         var jresult = await InvokeMediaWikiApiAsync(
-            new MediaWikiFormRequestMessage(new { action = "query", meta = "allmessages", ammessages = messagesExpr, }), cancellationToken);
+            new MediaWikiFormRequestMessage(new { action = "query", meta = "allmessages", ammessages = messagesExpr }), cancellationToken);
         return jresult["query"]["allmessages"]!.AsArray();
         //return jresult.ToDictionary(m => , m => (string) m["*"]);
     }
@@ -136,7 +136,7 @@ partial class WikiSite
     public async Task<SiteStatistics> GetStatisticsAsync(CancellationToken cancellationToken)
     {
         var jobj = await InvokeMediaWikiApiAsync(
-            new MediaWikiFormRequestMessage(new { action = "query", meta = "siteinfo", siprop = "statistics", }), cancellationToken);
+            new MediaWikiFormRequestMessage(new { action = "query", meta = "siteinfo", siprop = "statistics" }), cancellationToken);
         var jstat = jobj["query"]?["statistics"]?.AsObject();
         if (jstat == null) throw new UnexpectedDataException();
         var parsed = jstat.Deserialize<SiteStatistics>(MediaWikiHelper.WikiJsonSerializerOptions);

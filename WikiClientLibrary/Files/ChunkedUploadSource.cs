@@ -146,7 +146,7 @@ public class ChunkedUploadSource : WikiUploadSource
         return new[]
         {
             new KeyValuePair<string, object>(
-                siteInfo.Version >= v118 ? "filekey" : "sessionkey", FileKey)
+                siteInfo.Version >= v118 ? "filekey" : "sessionkey", FileKey),
         };
     }
 

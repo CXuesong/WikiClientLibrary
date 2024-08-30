@@ -225,7 +225,7 @@ public class WikiLink
             NamespaceName = nsPrefix,
             Title = localTitle,
             FullTitle = localTitle,
-            TargetSite = targetSite
+            TargetSite = targetSite,
         };
         link.Namespace = nsPrefix != null && link.TargetSite != null
             ? link.TargetSite.Namespaces[nsPrefix]

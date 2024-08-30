@@ -12,7 +12,7 @@ public class PagePropertiesPropertyProvider : WikiPagePropertyProvider<PagePrope
     {
         return new OrderedKeyValuePairs<string, object?>
         {
-            { "ppprop", SelectedProperties == null ? null : MediaWikiHelper.JoinValues(SelectedProperties) }
+            { "ppprop", SelectedProperties == null ? null : MediaWikiHelper.JoinValues(SelectedProperties) },
         };
     }
 

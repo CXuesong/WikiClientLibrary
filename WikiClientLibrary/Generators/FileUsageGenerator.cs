@@ -52,7 +52,7 @@ public class FileUsageGenerator : WikiPageGenerator
             { "iutitle", TargetTitle },
             { "iunamespace", NamespaceIds == null ? null : MediaWikiHelper.JoinValues(NamespaceIds) },
             { "iufilterredir", RedirectsFilter.ToString("redirects", "nonredirects") },
-            { "iulimit", PaginationSize }
+            { "iulimit", PaginationSize },
         };
     }
 

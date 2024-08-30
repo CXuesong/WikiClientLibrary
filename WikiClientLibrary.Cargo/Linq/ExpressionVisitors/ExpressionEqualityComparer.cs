@@ -41,7 +41,7 @@ internal class ExpressionEqualityComparer : EqualityComparer<Expression>
             BinaryExpression be => HashCode.Combine(be.NodeType, GetHashCode(be.Left), GetHashCode(be.Right)),
             MemberExpression me => HashCode.Combine(me.NodeType, GetHashCode(me.Expression), me.Member, me.Type),
             null => 0,
-            _ => obj.GetHashCode()
+            _ => obj.GetHashCode(),
         };
     }
 

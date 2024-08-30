@@ -56,7 +56,7 @@ internal static class Utility
                 AutoWatchBehavior.None => "nochange",
                 AutoWatchBehavior.Watch => "watch",
                 AutoWatchBehavior.Unwatch => "unwatch",
-                _ => throw new ArgumentOutOfRangeException(nameof(value), value, null)
+                _ => throw new ArgumentOutOfRangeException(nameof(value), value, null),
             },
             DateTime dt => dt.ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ssK", CultureInfo.InvariantCulture), // ISO 8601
             IFormattable fmt => fmt.ToString(null, CultureInfo.InvariantCulture),
@@ -92,7 +92,7 @@ internal static class Utility
             PropertyFilterOption.Disable => allValue,
             PropertyFilterOption.WithProperty => withValue,
             PropertyFilterOption.WithoutProperty => withoutValue,
-            _ => throw new ArgumentOutOfRangeException(nameof(value), value, null)
+            _ => throw new ArgumentOutOfRangeException(nameof(value), value, null),
         };
     }
 

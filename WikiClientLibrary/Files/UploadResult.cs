@@ -31,7 +31,7 @@ public sealed class UploadResult
                 "Success" => UploadResultCode.Success,
                 "Warning" => UploadResultCode.Warning,
                 "Continue" => UploadResultCode.Continue,
-                _ => throw new ArgumentOutOfRangeException(nameof(value), value, "Unknown result: " + value)
+                _ => throw new ArgumentOutOfRangeException(nameof(value), value, "Unknown result: " + value),
             };
         }
     }
@@ -106,7 +106,7 @@ public enum UploadResultCode
 
     Success = 0,
     Warning,
-    Continue
+    Continue,
 
 }
 

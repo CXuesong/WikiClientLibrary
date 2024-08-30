@@ -62,7 +62,7 @@ public sealed class RecentChangeItem
     public int NamespaceId { get; init; }
 
     /// <summary>Full title of the page affected by this item.</summary>
-    public string Title { get; init; }
+    public string? Title { get; init; }
 
     /// <summary>ID of the page affected by this item.</summary>
     public long PageId { get; init; }
@@ -81,7 +81,7 @@ public sealed class RecentChangeItem
 
     /// <summary>Name of the user making this recent change.</summary>
     [JsonPropertyName("user")]
-    public string UserName { get; init; }
+    public string? UserName { get; init; }
 
     /// <summary>The user ID who was responsible for the recent change.</summary>
     /// <remarks>When using this property with log events, there are some caveats.
@@ -103,15 +103,15 @@ public sealed class RecentChangeItem
     public DateTime TimeStamp { get; init; }
 
     /// <summary>The edit/log comment.</summary>
-    public string Comment { get; init; }
+    public string? Comment { get; init; }
 
     /// <summary>The parsed comment for the edit/log comment.</summary>
-    public string ParsedComment { get; init; }
+    public string? ParsedComment { get; init; }
 
-    public IList<string> Tags { get; init; }
+    public IList<string> Tags { get; init; } = Array.Empty<string>();
 
     /// <summary>SHA-1 hash of the updated revision.</summary>
-    public string Sha1 { get; init; }
+    public string? Sha1 { get; init; }
 
     public bool Redirect { get; init; }
 
@@ -138,10 +138,10 @@ public sealed class RecentChangeItem
     public LogParameterCollection LogParams { get; init; } = LogParameterCollection.Empty;
 
     [JsonIgnore]
-    public RevisionFlags Flags { get; private set; }
+    public RevisionFlags Flags { get; private init; }
 
     [JsonIgnore]
-    public PatrolStatus PatrolStatus { get; private set; }
+    public PatrolStatus PatrolStatus { get; private init; }
 
     [JsonInclude]
     private bool Minor
@@ -198,7 +198,7 @@ public sealed class RecentChangeItem
     /// </summary>
     /// <exception cref="UnauthorizedOperationException">
     /// <para>You don't have permission to patrol changes. Only users with the patrol right can do this.</para>
-    /// <para>OR You don't have permission to patrol your own changes. Only users with the autopatrol right can do this.</para>
+    /// <para>OR You don't have permission to patrol your own changes. Only users with the <c>autopatrol</c> right can do this.</para>
     /// </exception>
     /// <remarks>It's suggested that the caller only patrol the pages whose <see cref="PatrolStatus"/> is <see cref="Generators.PatrolStatus.Unpatrolled"/>.</remarks>
     /// <exception cref="NotSupportedException">Patrolling is disabled on this wiki.</exception>
@@ -291,17 +291,14 @@ public enum RecentChangesType
     Move,
     Log,
 
-    /// <summary>
-    /// Category membership change. (MediaWiki 1.27)
-    /// </summary>
+    /// <summary>Category membership change. (MediaWiki 1.27+)</summary>
     /// <remarks>See https://www.mediawiki.org/wiki/Manual:CategoryMembershipChanges .</remarks>
     Categorize,
     External,
 
-    /// <summary>
-    /// Move over redirect. (Obsolete.)
-    /// </summary>
-    [Obsolete] MoveOverRedirect,
+    /// <summary>Move over redirect. (Obsolete.)</summary>
+    [Obsolete("The Recent Change type is obsolete as marked by the documentation.")]
+    MoveOverRedirect,
 
 }
 

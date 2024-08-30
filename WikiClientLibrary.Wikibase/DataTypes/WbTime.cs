@@ -214,7 +214,7 @@ public struct WbTime : IEquatable<WbTime>
             WikibaseTimePrecision.Hour => $"{Year:0000}-{Month:00}-{Day:00} {Hour:00}h",
             WikibaseTimePrecision.Minute => $"{Year:0000}-{Month:00}-{Day:00} {Hour:00}:{Minute:00}",
             WikibaseTimePrecision.Second => $"{Year:0000}-{Month:00}-{Day:00} {Hour:00}:{Minute:00}:{Second:00}",
-            _ => "Y" + Year
+            _ => "Y" + Year,
         };
     }
 
@@ -354,6 +354,6 @@ public enum WikibaseTimePrecision
     Minute = 13,
 
     /// <summary>Seconds.</summary>
-    Second = 14
+    Second = 14,
 
 }

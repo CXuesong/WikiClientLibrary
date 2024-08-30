@@ -40,7 +40,7 @@ class Program
         // Create a MediaWiki Site instance with the URL of API endpoint.
         var site = new WikiSite(wikiClient, "https://test2.wikipedia.org/w/api.php")
         {
-            Logger = loggerFactory.CreateLogger<WikiSite>()
+            Logger = loggerFactory.CreateLogger<WikiSite>(),
         };
         // Waits for the WikiSite to initialize
         await site.Initialization;
@@ -114,7 +114,7 @@ class Program
         var allpages = new AllPagesGenerator(site)
         {
             StartTitle = "Wiki",
-            RedirectsFilter = PropertyFilterOption.WithoutProperty
+            RedirectsFilter = PropertyFilterOption.WithoutProperty,
         };
         // Take the first 1000 results
         var pages = await allpages.EnumPagesAsync().Take(1000).ToListAsync();
@@ -126,7 +126,7 @@ class Program
         Console.WriteLine("Cats");
         var catmembers = new CategoryMembersGenerator(site, "Category:Cats")
         {
-            MemberTypes = CategoryMemberTypes.Subcategory
+            MemberTypes = CategoryMemberTypes.Subcategory,
         };
         pages = await catmembers.EnumPagesAsync().Take(10).ToListAsync();
         foreach (var p in pages)
@@ -175,7 +175,7 @@ class Program
         {
             TypeFilters = RecentChangesFilterTypes.Create,
             PaginationSize = 5,
-            PatrolledFilter = PropertyFilterOption.WithoutProperty
+            PatrolledFilter = PropertyFilterOption.WithoutProperty,
         };
         // List the first unpatrolled result.
         var rc = await rcg.EnumItemsAsync().FirstOrDefaultAsync();

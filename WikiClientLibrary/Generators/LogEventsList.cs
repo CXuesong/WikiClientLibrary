@@ -124,7 +124,7 @@ public class LogEventsList : WikiList<LogEventItem>
             { "letag", Tag },
             { "letype", LogType },
             { "leaction", fullLogAction },
-            { "lelimit", PaginationSize }
+            { "lelimit", PaginationSize },
         };
     }
 
@@ -192,7 +192,7 @@ public sealed class LogEventItem
             PageId = rc.PageId,
             ParsedComment = rc.ParsedComment,
             Tags = rc.Tags,
-            Title = rc.Title
+            Title = rc.Title,
         };
     }
 
@@ -202,7 +202,7 @@ public sealed class LogEventItem
 
     /// <summary>Full title of the page affected by this item.</summary>
     /// <remarks>For user operation, this is the title user page of target user.</remarks>
-    public string Title { get; init; }
+    public string? Title { get; init; }
 
     /// <summary>the page id at the time the log was stored.</summary>
     [JsonPropertyName("logpage")]
@@ -210,7 +210,7 @@ public sealed class LogEventItem
 
     /// <summary>Name of the user making this recent change.</summary>
     [JsonPropertyName("user")]
-    public string UserName { get; init; }
+    public string? UserName { get; init; }
 
     /// <summary>The user ID who was responsible for the log event/recent change.</summary>
     /// <remarks>
@@ -229,10 +229,10 @@ public sealed class LogEventItem
     public DateTime TimeStamp { get; init; }
 
     /// <summary>The edit/log comment.</summary>
-    public string Comment { get; init; }
+    public string? Comment { get; init; }
 
     /// <summary>The parsed comment for the edit/log comment.</summary>
-    public string ParsedComment { get; init; }
+    public string? ParsedComment { get; init; }
 
     /// <summary>Tags for the event.</summary>
     public IList<string> Tags { get; init; }
@@ -242,7 +242,7 @@ public sealed class LogEventItem
 
     /// <summary>Gets log type name.</summary>
     /// <remarks>See <see cref="LogTypes"/> for a list of predefined values.</remarks>
-    public string Type { get; init; }
+    public string? Type { get; init; }
 
     /// <summary>
     /// Specific log action.
@@ -253,7 +253,7 @@ public sealed class LogEventItem
     /// property, because certain the same log action value may have different meaning in
     /// different log type context.
     /// </remarks>
-    public string Action { get; init; }
+    public string? Action { get; init; }
 
     /// <summary>For log items, gets additional log parameters.</summary>
     /// <value>
@@ -264,7 +264,7 @@ public sealed class LogEventItem
     /// <remarks>
     /// For modern MediaWiki builds, this property uses the value of `params` property.
     /// For compatibility with MediaWiki 1.19 and below, this property also tries to use the property
-    /// whose name is the value of <see cref="Type"/>. (e.g. use `move` property if <see cref="Type"/> is <see cref="LogActions.Move"/>.
+    /// whose name is the value of <see cref="Type"/>. (e.g. use `move` property if <see cref="Type"/> is <see cref="LogActions.Move"/>).
     /// </remarks>
     public LogParameterCollection Params { get; init; } = LogParameterCollection.Empty;
 
@@ -510,7 +510,7 @@ public static class LogActions
     /// <summary>(<see cref="LogTypes.NewUsers"/>) For an anonymous user creating an account for himself.</summary>
     public const string Create = "create";
 
-    /// <summary>(<see cref="LogTypes.NewUsers"/>) For a logged in user creating an account for someone else.</summary>
+    /// <summary>(<see cref="LogTypes.NewUsers"/>) For a logged-in user creating an account for someone else.</summary>
     public const string Create2 = "create2";
 
     /// <summary>(<see cref="LogTypes.PageLanguage"/>) For pages whose language has been changed.</summary>

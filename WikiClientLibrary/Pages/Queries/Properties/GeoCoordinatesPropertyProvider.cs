@@ -40,7 +40,7 @@ public class GeoCoordinatesPropertyProvider : WikiPagePropertyProvider<GeoCoordi
     /// <inheritdoc />
     public override IEnumerable<KeyValuePair<string, object?>> EnumParameters(MediaWikiVersion version)
     {
-        var p = new OrderedKeyValuePairs<string, object?> { { "coprop", "globe|dim" }, };
+        var p = new OrderedKeyValuePairs<string, object?> { { "coprop", "globe|dim" } };
         if (QueryPrimaryCoordinate && QuerySecondaryCoordinate)
             p.Add("coprimary", "all");
         else if (QueryPrimaryCoordinate)

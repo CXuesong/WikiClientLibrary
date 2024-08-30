@@ -23,7 +23,7 @@ public class CargoPreEvaluationTranslator : ExpressionVisitor
                     node.Type),
                 nameof(CargoFunctions.DateDiff) => new CargoFunctionExpression("DATEDIFF", typeof(int), Visit(node.Arguments[0]),
                     Visit(node.Arguments[1])),
-                _ => throw new NotImplementedException($"CargoFunction call is not implemented: {node.Method}.")
+                _ => throw new NotImplementedException($"CargoFunction call is not implemented: {node.Method}."),
             };
         }
         return base.VisitMethodCall(node);

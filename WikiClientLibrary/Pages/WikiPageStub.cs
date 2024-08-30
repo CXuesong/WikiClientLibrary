@@ -231,7 +231,7 @@ public readonly struct WikiPageStub : IEquatable<WikiPageStub>
         foreach (var partition in ids.Partition(titleLimit))
         {
             var jresult = await site.InvokeMediaWikiApiAsync(
-                new MediaWikiFormRequestMessage(new { action = "query", pageids = MediaWikiHelper.JoinValues(partition), }),
+                new MediaWikiFormRequestMessage(new { action = "query", pageids = MediaWikiHelper.JoinValues(partition) }),
                 cancellationToken);
             Debug.Assert(jresult["query"] != null);
             var jpages = jresult["query"]["pages"];

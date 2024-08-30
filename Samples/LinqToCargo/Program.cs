@@ -18,7 +18,7 @@ var loggerFactory = LoggerFactory.Create(c => c
 using var client = new WikiClient
 {
     ClientUserAgent = "WikiClientLibrary.Samples.CargoLinq/1.0",
-    Logger = loggerFactory.CreateLogger<WikiClient>()
+    Logger = loggerFactory.CreateLogger<WikiClient>(),
 };
 var site = new WikiSite(client, "https://lol.fandom.com/api.php");
 site.Logger = loggerFactory.CreateLogger<WikiSite>();
@@ -41,7 +41,7 @@ var query = context.RosterChanges
         x.Direction,
         Roles = string.Join(';', x.Roles),
         Tags = string.Join(';', x.Tags),
-        Tournaments = string.Join(';', x.Tournaments)
+        Tournaments = string.Join(';', x.Tournaments),
     });
 var counter = 0;
 await foreach (var item in query)

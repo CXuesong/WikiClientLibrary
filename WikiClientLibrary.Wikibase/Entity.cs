@@ -407,7 +407,7 @@ public sealed class EntitySiteLink
         {
             null => ImmutableList<string>.Empty,
             IImmutableList<string> imBadges => imBadges,
-            var b => b.ToImmutableList()
+            var b => b.ToImmutableList(),
         };
         Url = url;
     }

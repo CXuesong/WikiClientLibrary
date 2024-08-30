@@ -52,7 +52,7 @@ public class TranscludedInGenerator : WikiPageGenerator
             { "eititle", TargetTitle },
             { "einamespace", NamespaceIds == null ? null : MediaWikiHelper.JoinValues(NamespaceIds) },
             { "eifilterredir", RedirectsFilter.ToString("redirects", "nonredirects") },
-            { "eilimit", PaginationSize }
+            { "eilimit", PaginationSize },
         };
     }
 

@@ -116,7 +116,7 @@ public class PageImagesPropertyGroup : WikiPagePropertyGroup
         {
             Url = (string)root["source"],
             Width = (int)root["width"],
-            Height = (int)root["height"]
+            Height = (int)root["height"],
         };
     }
 

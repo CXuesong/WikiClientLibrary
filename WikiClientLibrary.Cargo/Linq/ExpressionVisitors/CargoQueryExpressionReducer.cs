@@ -47,7 +47,7 @@ public class CargoQueryExpressionReducer : ExpressionVisitor
                     UnwindLambdaExpression(Visit(node.Arguments[1])), true),
                 nameof(Queryable.ThenByDescending) => ProcessThenOrderByCall((CargoQueryExpression)Visit(node.Arguments[0]),
                     UnwindLambdaExpression(Visit(node.Arguments[1])), true),
-                _ => throw new NotSupportedException($"Queryable method call is not supported: {node.Method}.")
+                _ => throw new NotSupportedException($"Queryable method call is not supported: {node.Method}."),
             };
         }
         return node;

@@ -131,7 +131,7 @@ partial class Entity
         {
             EntityType.Item => "item",
             EntityType.Property => "property",
-            _ => throw new ArgumentException("Invalid entity type.", nameof(type))
+            _ => throw new ArgumentException("Invalid entity type.", nameof(type)),
         };
     }
 
@@ -470,6 +470,6 @@ public enum EntityEditOptions
     /// instead of only checking for conflict before sending the first API request.</summary>
     /// <remarks>When this flag is set, if other user edited the same entity as the one performing progressive edit,
     /// an <see cref="OperationConflictException"/> will be thrown.</remarks>
-    StrictEditConflictDetection
+    StrictEditConflictDetection,
 
 }

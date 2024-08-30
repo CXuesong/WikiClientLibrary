@@ -25,8 +25,8 @@ public class RenderingTests : WikiSiteTestsBase, IClassFixture<WikiSiteProvider>
 
         Assert.Equal("一九五二年", result.Title);
         Assert.Matches(@"<span class=""[\w-]+"">一九五二年</span>", result.DisplayTitle);
-        Assert.True(result.LanguageLinks.First(l => l.Language == "en").Title == "1952");
-        Assert.True(result.LanguageLinks.First(l => l.Language == "zh").Title == "1952年");
+        Assert.Equal("1952", result.LanguageLinks.First(l => l.Language == "en").Title);
+        Assert.Equal("1952年", result.LanguageLinks.First(l => l.Language == "zh").Title);
         Assert.Contains(">公元<b>一九五二年</b>於諸曆</", result.Content);
 
         WriteOutput("Sections");

@@ -35,7 +35,7 @@ public static class AsyncInitializationHelper
             TaskStatus.Faulted => new InvalidOperationException(
                 string.Format(Prompts.ExceptionAsyncInitFaulted2, name, initializationTask.Exception),
                 initializationTask.Exception),
-            _ => new InvalidOperationException(string.Format(Prompts.ExceptionAsyncInitNotComplete1, name))
+            _ => new InvalidOperationException(string.Format(Prompts.ExceptionAsyncInitNotComplete1, name)),
         };
     }
 

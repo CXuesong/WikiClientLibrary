@@ -54,7 +54,7 @@ public class TransclusionsGenerator : WikiPagePropertyGenerator
             { "tlnamespace", NamespaceIds == null ? null : MediaWikiHelper.JoinValues(NamespaceIds) },
             { "tllimit", PaginationSize },
             { "tltemplates", MatchingTitles == null ? null : MediaWikiHelper.JoinValues(MatchingTitles) },
-            { "tldir", OrderDescending ? "descending" : "ascending" }
+            { "tldir", OrderDescending ? "descending" : "ascending" },
         };
     }
 

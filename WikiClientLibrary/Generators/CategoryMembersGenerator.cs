@@ -76,7 +76,7 @@ public class CategoryMembersGenerator : WikiPageGenerator
             { "cmtitle", CategoryTitle },
             { "cmlimit", PaginationSize },
             { "cmnamespace", NamespaceIds == null ? null : MediaWikiHelper.JoinValues(NamespaceIds) },
-            { "cmtype", ParseMemberTypes(MemberTypes) }
+            { "cmtype", ParseMemberTypes(MemberTypes) },
         };
     }
 

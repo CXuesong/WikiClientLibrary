@@ -209,7 +209,7 @@ public sealed class ClaimReference
         {
             Hash = Hash,
             Snaks = Claim.GroupIntoDictionary(Snaks.Select(s => s.ToContract()), s => s.Property),
-            SnaksOrder = Snaks.Select(s => s.PropertyId).Distinct().ToList()
+            SnaksOrder = Snaks.Select(s => s.PropertyId).Distinct().ToList(),
         };
     }
 
@@ -381,7 +381,7 @@ public sealed class Snak
             SnakType.Value => DataValue?.ToString(),
             SnakType.SomeValue => "[SomeValue]",
             SnakType.NoValue => "[NoValue]",
-            _ => "[Invalid SnakType]"
+            _ => "[Invalid SnakType]",
         };
         return $"{PropertyId} = {valueExpr}";
     }
@@ -394,7 +394,7 @@ public sealed class Snak
             "value" => SnakType.Value,
             "somevalue" => SnakType.SomeValue,
             "novalue" => SnakType.NoValue,
-            _ => throw new ArgumentException("Invalid SnackType expression.", nameof(expr))
+            _ => throw new ArgumentException("Invalid SnackType expression.", nameof(expr)),
         };
     }
 
@@ -405,7 +405,7 @@ public sealed class Snak
             SnakType.Value => "value",
             SnakType.SomeValue => "somevalue",
             SnakType.NoValue => "novalue",
-            _ => throw new ArgumentException("Invalid SnackType value.", nameof(value))
+            _ => throw new ArgumentException("Invalid SnackType value.", nameof(value)),
         };
     }
 

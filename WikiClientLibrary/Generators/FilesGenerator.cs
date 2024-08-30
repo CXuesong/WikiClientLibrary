@@ -48,7 +48,7 @@ public class FilesGenerator : WikiPagePropertyGenerator
         {
             { "imlimit", PaginationSize },
             { "imimages", MatchingTitles == null ? null : MediaWikiHelper.JoinValues(MatchingTitles) },
-            { "imdir", OrderDescending ? "descending" : "ascending" }
+            { "imdir", OrderDescending ? "descending" : "ascending" },
         };
     }
 

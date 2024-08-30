@@ -276,7 +276,7 @@ public sealed class NamespaceInfo
             {
                 "case-sensitive" => true,
                 "first-letter" => false,
-                _ => throw new ArgumentException("Invalid case value.")
+                _ => throw new ArgumentException("Invalid case value."),
             };
         }
     }

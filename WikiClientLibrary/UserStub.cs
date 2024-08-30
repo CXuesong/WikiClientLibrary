@@ -95,6 +95,6 @@ public enum Gender
     Male,
 
     /// <summary>Female.</summary>
-    Female
+    Female,
 
 }

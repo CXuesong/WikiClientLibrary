@@ -121,7 +121,7 @@ public class LocalWikiSearchList : IWikiList<LocalWikiSearchResultItem>
             SearchRankingType.MostViewed => "most-viewed",
             SearchRankingType.Freshest => "freshest",
             SearchRankingType.Stalest => "stalest",
-            _ => throw new ArgumentOutOfRangeException(nameof(value), value, null)
+            _ => throw new ArgumentOutOfRangeException(nameof(value), value, null),
         };
     }
 
@@ -161,6 +161,6 @@ public enum SearchRankingType
     Stable,
     MostViewed,
     Freshest,
-    Stalest
+    Stalest,
 
 }

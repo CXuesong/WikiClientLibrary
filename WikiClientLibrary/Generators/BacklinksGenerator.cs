@@ -75,7 +75,7 @@ public class BacklinksGenerator : WikiPageGenerator
             { "blnamespace", NamespaceIds == null ? null : MediaWikiHelper.JoinValues(NamespaceIds) },
             { "blfilterredir", RedirectsFilter.ToString("redirects", "nonredirects") },
             { "bllimit", actualPaginationSize },
-            { "blredirect", AllowRedirectedLinks }
+            { "blredirect", AllowRedirectedLinks },
         };
     }
 

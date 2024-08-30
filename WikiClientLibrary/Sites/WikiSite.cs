@@ -183,7 +183,7 @@ public partial class WikiSite : IWikiClientLoggable, IWikiClientAsyncInitializat
                 {
                     action = "query",
                     meta = "siteinfo",
-                    siprop = "general|namespaces|namespacealiases|interwikimap|extensions|magicwords"
+                    siprop = "general|namespaces|namespacealiases|interwikimap|extensions|magicwords",
                 }), true, CancellationToken.None);
             var qg = jobj["query"]["general"].AsObject();
             var ns = jobj["query"]["namespaces"].AsObject();

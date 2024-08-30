@@ -24,7 +24,7 @@ public class CategoriesPropertyProvider : WikiPagePropertyProvider<CategoriesPro
     {
         var p = new OrderedKeyValuePairs<string, object?>
         {
-            { "clprop", "sortkey|timestamp|hidden" }, { "clshow", HiddenCategoryFilter.ToString("hidden", "!hidden", null) }
+            { "clprop", "sortkey|timestamp|hidden" }, { "clshow", HiddenCategoryFilter.ToString("hidden", "!hidden", null) },
         };
         if (CategorySelection != null) p.Add("clcategories", MediaWikiHelper.JoinValues(CategorySelection));
         return p;

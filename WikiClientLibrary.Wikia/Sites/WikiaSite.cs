@@ -77,7 +77,7 @@ public class WikiaSite : WikiSite
         {
             var fields = new List<KeyValuePair<string, object>>(queryRequest.Fields.Count + 1)
             {
-                new KeyValuePair<string, object>("action", "ajax")
+                new KeyValuePair<string, object>("action", "ajax"),
             };
             fields.AddRange(queryRequest.Fields);
             localRequest = new WikiaQueryRequestMessage(request.Id, fields, queryRequest.UseHttpPost);

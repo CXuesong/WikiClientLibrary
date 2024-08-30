@@ -516,7 +516,7 @@ internal static class RequestHelper
             { "prop", "templates" },
             { "tllimit", limit > 0 ? limit : site.ListingPagingSize },
             { "tlnamespace", namespaces == null ? null : MediaWikiHelper.JoinValues(namespaces) },
-            { "tltemplates", transcludedTitlesExpr == null ? null : MediaWikiHelper.JoinValues(transcludedTitlesExpr) }
+            { "tltemplates", transcludedTitlesExpr == null ? null : MediaWikiHelper.JoinValues(transcludedTitlesExpr) },
         };
         pa["titles"] = titlesExpr;
         var resultCounter = 0;

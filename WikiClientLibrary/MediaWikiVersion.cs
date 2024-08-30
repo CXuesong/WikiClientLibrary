@@ -36,7 +36,7 @@ public enum MediaWikiDevChannel
     /// <summary>
     /// Release candidate. Version suffix is <c>-rc</c>.
     /// </summary>
-    RC = 4
+    RC = 4,
 
 }
 

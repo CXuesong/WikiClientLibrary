@@ -134,7 +134,7 @@ public class RecentChangesGenerator : WikiPageGenerator<RecentChangeItem>
             { prefix + "rctype", ParseRecentChangesTypes(TypeFilters) },
             { prefix + "rcshow", ParseFilters() },
             { prefix + "rctoponly", LastRevisionsOnly },
-            { prefix + "rclimit", PaginationSize }
+            { prefix + "rclimit", PaginationSize },
         };
         if (isList)
         {
@@ -221,6 +221,6 @@ public enum RecentChangesFilterTypes
     /// <summary>
     /// All types of changes.
     /// </summary>
-    All = Edit | External | Create | Log | Categorize
+    All = Edit | External | Create | Log | Categorize,
 
 }

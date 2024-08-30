@@ -73,7 +73,7 @@ public class WikiPageQueryProvider : IWikiPageQueryProvider
                 new PagePropertiesPropertyProvider { },
                 new FileInfoPropertyProvider { },
             },
-            ResolveRedirects = (options & PageQueryOptions.ResolveRedirects) == PageQueryOptions.ResolveRedirects
+            ResolveRedirects = (options & PageQueryOptions.ResolveRedirects) == PageQueryOptions.ResolveRedirects,
         };
         return provider;
     }
@@ -103,7 +103,7 @@ public class WikiPageQueryProvider : IWikiPageQueryProvider
     public virtual IEnumerable<KeyValuePair<string, object?>> EnumParameters(MediaWikiVersion version)
     {
         var propBuilder = new StringBuilder();
-        var p = new OrderedKeyValuePairs<string, object?> { { "action", "query" }, { "redirects", ResolveRedirects }, { "maxlag", 5 }, };
+        var p = new OrderedKeyValuePairs<string, object?> { { "action", "query" }, { "redirects", ResolveRedirects }, { "maxlag", 5 } };
         if (_Properties != null)
         {
             foreach (var prop in _Properties)

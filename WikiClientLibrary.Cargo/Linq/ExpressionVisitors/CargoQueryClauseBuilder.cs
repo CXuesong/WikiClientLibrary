@@ -33,7 +33,7 @@ internal class CargoQueryClauseBuilder : ExpressionVisitor
         { ExpressionType.Divide, " / " },
         { ExpressionType.Modulo, " % " },
         { ExpressionType.And, " & " },
-        { ExpressionType.Or, " | " }
+        { ExpressionType.Or, " | " },
     };
 
     public string BuildClause(Expression expr)

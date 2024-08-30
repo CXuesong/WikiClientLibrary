@@ -27,7 +27,7 @@ internal static class FlowRequestHelper
                     token = WikiSiteToken.Edit,
                     repreplyTo = workflowId,
                     repformat = "wikitext",
-                    repcontent = content
+                    repcontent = content,
                 }), cancellationToken);
         }
         var jtopic = jresult["flow"]["reply"]["committed"]?["topic"];
@@ -56,7 +56,7 @@ internal static class FlowRequestHelper
                     token = WikiSiteToken.Edit,
                     nttopic = topicTitle,
                     ntformat = "wikitext",
-                    ntcontent = topicContent
+                    ntcontent = topicContent,
                 }), cancellationToken);
         }
         var jtopiclist = jresult["flow"]["new-topic"]?["committed"]?["topiclist"];

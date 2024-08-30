@@ -199,7 +199,7 @@ public static class WikiLoggingHelper
                     0 => new KeyValuePair<string, object?>("Target", target),
                     1 => new KeyValuePair<string, object?>("Action", action),
                     2 => new KeyValuePair<string, object?>("Parameters", parameters),
-                    _ => throw new IndexOutOfRangeException()
+                    _ => throw new IndexOutOfRangeException(),
                 };
             }
         }

@@ -74,7 +74,7 @@ public class WikiaApiTests : WikiSiteTestsBase, IClassFixture<WikiSiteProvider>
     public async Task SearchListTest()
     {
         var site = await WikiaTestSiteAsync;
-        var list = new LocalWikiSearchList(site, "test keyword") { PaginationSize = 10, };
+        var list = new LocalWikiSearchList(site, "test keyword") { PaginationSize = 10 };
         var results = await list.EnumItemsAsync().Take(30).ToListAsync();
         ShallowTrace(results);
         Assert.NotEmpty(results);

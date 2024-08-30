@@ -9,7 +9,7 @@ public enum CISkippedReason
     Unknown = 0,
     Unstable,
     Deprecated,
-    AgentBlocked
+    AgentBlocked,
 
 }
 

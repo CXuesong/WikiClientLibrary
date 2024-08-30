@@ -92,12 +92,12 @@ public sealed class WikiSiteProvider : IAsyncDisposable
         {
             var uri = new Uri(url, UriKind.Absolute);
             var rootUrl = new Uri(uri, ".").ToString();
-            var options = new WikiaSiteOptions(rootUrl) { AccountAssertion = AccountAssertionBehavior.AssertAll, };
+            var options = new WikiaSiteOptions(rootUrl) { AccountAssertion = AccountAssertionBehavior.AssertAll };
             site = new WikiaSite(wikiClient, options) { Logger = loggerFactory.CreateLogger<WikiaSite>() };
         }
         else
         {
-            var options = new SiteOptions(url) { AccountAssertion = AccountAssertionBehavior.AssertAll, };
+            var options = new SiteOptions(url) { AccountAssertion = AccountAssertionBehavior.AssertAll };
             site = new WikiSite(wikiClient, options) { Logger = loggerFactory.CreateLogger<WikiSite>() };
         }
         await site.Initialization;

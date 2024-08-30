@@ -64,7 +64,7 @@ internal static partial class EnumParser
             ModerationAction.Unhide => "unhide",
             ModerationAction.Undelete => "undelete",
             ModerationAction.Unsuppress => "unsuppress",
-            _ => throw new ArgumentOutOfRangeException(nameof(value), value, null)
+            _ => throw new ArgumentOutOfRangeException(nameof(value), value, null),
         };
     }
 
@@ -74,7 +74,7 @@ internal static partial class EnumParser
         {
             LockAction.Lock => "lock",
             LockAction.Unlock => "unlock",
-            _ => throw new ArgumentOutOfRangeException(nameof(value), value, null)
+            _ => throw new ArgumentOutOfRangeException(nameof(value), value, null),
         };
     }
 
@@ -85,7 +85,7 @@ internal static partial class EnumParser
             "delete" => ModerationState.Deleted,
             "hide" => ModerationState.Hidden,
             "suppress" => ModerationState.Suppressed,
-            _ => ModerationState.Unknown
+            _ => ModerationState.Unknown,
         };
     }
 

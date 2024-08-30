@@ -96,7 +96,7 @@ public enum AccountAssertionBehavior
     /// <summary>
     /// Checks for "bot" user right, or "user" if the former is not applicable per request.
     /// </summary>
-    AssertAll = AssertUser | AssertBot
+    AssertAll = AssertUser | AssertBot,
 
 }
 

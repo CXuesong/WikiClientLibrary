@@ -42,7 +42,7 @@ public class GeneratorTests2 : WikiSiteTestsBase, IClassFixture<WikiSiteProvider
         // Introduce some last-resorts.
         generator.CompatibilityOptions = new WikiListCompatibilityOptions
         {
-            ContinuationLoopBehaviors = WikiListContinuationLoopBehaviors.FetchMore
+            ContinuationLoopBehaviors = WikiListContinuationLoopBehaviors.FetchMore,
         };
         var logs2 = await generator.EnumItemsAsync().Take(100).ToListAsync();
         Output.WriteLine("logs = {0}", string.Join(",", logs.Select(l => l.LogId)));
@@ -107,7 +107,7 @@ public class GeneratorTests2 : WikiSiteTestsBase, IClassFixture<WikiSiteProvider
         var site = await WikiSiteFromNameAsync(siteName);
         var generator = new RecentChangesGenerator(site)
         {
-            LastRevisionsOnly = true, TypeFilters = RecentChangesFilterTypes.Edit, PaginationSize = 500
+            LastRevisionsOnly = true, TypeFilters = RecentChangesFilterTypes.Edit, PaginationSize = 500,
         };
         var pages = await generator.EnumPagesAsync().Take(2000).ToListAsync();
         TracePages(pages);
@@ -146,7 +146,7 @@ public class GeneratorTests2 : WikiSiteTestsBase, IClassFixture<WikiSiteProvider
         var site = await WpTest2SiteAsync;
         var generator = new RecentChangesGenerator(site)
         {
-            LastRevisionsOnly = true, PatrolledFilter = PropertyFilterOption.WithoutProperty
+            LastRevisionsOnly = true, PatrolledFilter = PropertyFilterOption.WithoutProperty,
         };
         var rc = await generator.EnumItemsAsync().Take(2).ToListAsync();
         Output.WriteLine("Changes to patrol:");
@@ -170,7 +170,7 @@ public class GeneratorTests2 : WikiSiteTestsBase, IClassFixture<WikiSiteProvider
             LogAction = LogActions.MoveOverRedirect,
             TimeAscending = false,
             // Local time should be converted to UTC in Utility.ToWikiQueryValue
-            StartTime = DateTime.Now - TimeSpan.FromDays(7)
+            StartTime = DateTime.Now - TimeSpan.FromDays(7),
         };
         var logs = await generator.EnumItemsAsync().Take(200).ToListAsync();
         ShallowTrace(logs, 1);

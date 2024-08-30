@@ -45,7 +45,7 @@ public class RevisionsPropertyProvider : WikiPagePropertyProvider<RevisionsPrope
                 "rvprop", FetchContent
                     ? "ids|timestamp|flags|comment|user|userid|contentmodel|sha1|tags|size|content"
                     : "ids|timestamp|flags|comment|user|userid|contentmodel|sha1|tags|size"
-            }
+            },
         };
         if (Slots != null || version.Above(1, 32))
         {

@@ -269,7 +269,7 @@ public enum PostQueryOptions
     /// <para>If you are fetching for only 1 comment at a time, the exact authoring information
     /// will be fetching regardless of this flag.</para>
     /// </remarks>
-    ExactAuthoringInformation
+    ExactAuthoringInformation,
 
 }
 

@@ -27,12 +27,12 @@ public class FileInfoPropertyProvider : WikiPagePropertyProvider<FileInfoPropert
             "comment",
             "url",
             "size",
-            "sha1"
+            "sha1",
         };
         if (QueryExtMetadata)
             properties.Add("extmetadata");
 
-        return new OrderedKeyValuePairs<string, object?> { { "iiprop", string.Join("|", properties) }, };
+        return new OrderedKeyValuePairs<string, object?> { { "iiprop", string.Join("|", properties) } };
     }
 
     /// <inheritdoc />

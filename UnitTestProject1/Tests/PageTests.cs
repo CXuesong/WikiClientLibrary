@@ -144,7 +144,7 @@ public class PageTests : WikiSiteTestsBase, IClassFixture<WikiSiteProvider>
         var page = new WikiPage(site, "莎拉伯恩哈特");
         await page.RefreshAsync(new WikiPageQueryProvider
         {
-            Properties = { new ExtractsPropertyProvider { AsPlainText = true, IntroductionOnly = true, MaxSentences = 1 } }
+            Properties = { new ExtractsPropertyProvider { AsPlainText = true, IntroductionOnly = true, MaxSentences = 1 } },
         });
         ShallowTrace(page);
         Assert.Equal("莎拉·伯恩哈特，一八四四年生，法國巴黎人也。", page.GetPropertyGroup<ExtractsPropertyGroup>()!.Extract);
@@ -157,7 +157,7 @@ public class PageTests : WikiSiteTestsBase, IClassFixture<WikiSiteProvider>
         var page = new WikiPage(site, "挪威");
         await page.RefreshAsync(new WikiPageQueryProvider
         {
-            Properties = { new PageImagesPropertyProvider { QueryOriginalImage = true, ThumbnailSize = 100 } }
+            Properties = { new PageImagesPropertyProvider { QueryOriginalImage = true, ThumbnailSize = 100 } },
         });
         var group = page.GetPropertyGroup<PageImagesPropertyGroup>();
         ShallowTrace(group);
@@ -176,7 +176,7 @@ public class PageTests : WikiSiteTestsBase, IClassFixture<WikiSiteProvider>
         var page = new WikiPage(site, "莎拉伯恩哈特");
         await page.RefreshAsync(new WikiPageQueryProvider
         {
-            Properties = { new LanguageLinksPropertyProvider(LanguageLinkProperties.Autonym) }
+            Properties = { new LanguageLinksPropertyProvider(LanguageLinkProperties.Autonym) },
         });
         var langLinks = page.GetPropertyGroup<LanguageLinksPropertyGroup>()?.LanguageLinks;
         ShallowTrace(langLinks);

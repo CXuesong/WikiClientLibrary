@@ -111,7 +111,7 @@ public class SerializableEntity : IEntity
         {
             "item" => EntityType.Item,
             "property" => EntityType.Property,
-            _ => EntityType.Unknown
+            _ => EntityType.Unknown,
         };
     }
 
@@ -121,7 +121,7 @@ public class SerializableEntity : IEntity
         {
             EntityType.Item => "item",
             EntityType.Property => "property",
-            _ => "unknown"
+            _ => "unknown",
         };
     }
 
@@ -142,7 +142,7 @@ public class SerializableEntity : IEntity
             Descriptions = new WbMonolingualTextCollection(entity.Descriptions),
             Labels = new WbMonolingualTextCollection(entity.Labels),
             Claims = new ClaimCollection(entity.Claims),
-            SiteLinks = new EntitySiteLinkCollection(entity.SiteLinks)
+            SiteLinks = new EntitySiteLinkCollection(entity.SiteLinks),
         };
         return inst;
     }
@@ -319,7 +319,7 @@ public class SerializableEntity : IEntity
             Sitelinks = SiteLinks.ToDictionary(link => link.Site,
                 link => new Contracts.SiteLink { Site = link.Site, Title = link.Title, Badges = link.Badges.ToList() }),
             Claims = Claims.GroupBy(c => c.MainSnak.PropertyId).ToDictionary(g => g.Key,
-                g => (ICollection<Contracts.Claim>)g.Select(c => c.ToContract(false)).ToList())
+                g => (ICollection<Contracts.Claim>)g.Select(c => c.ToContract(false)).ToList()),
         };
         return obj;
     }

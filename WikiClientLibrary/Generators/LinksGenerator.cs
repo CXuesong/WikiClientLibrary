@@ -55,7 +55,7 @@ public class LinksGenerator : WikiPagePropertyGenerator
             { "plnamespace", NamespaceIds == null ? null : MediaWikiHelper.JoinValues(NamespaceIds) },
             { "pllimit", PaginationSize },
             { "pltitles", MatchingTitles == null ? null : MediaWikiHelper.JoinValues(MatchingTitles) },
-            { "pldir", OrderDescending ? "descending" : "ascending" }
+            { "pldir", OrderDescending ? "descending" : "ascending" },
         };
     }
 

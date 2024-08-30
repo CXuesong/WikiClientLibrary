@@ -8,7 +8,7 @@ internal static class Utility
 
     public static readonly JsonSerializerOptions WikiaApiJsonSerializerOptions = new()
     {
-        PropertyNamingPolicy = JsonNamingPolicy.SnakeCaseLower, Converters = { new WikiReadOnlyDictionaryConverterFactory(), }
+        PropertyNamingPolicy = JsonNamingPolicy.SnakeCaseLower, Converters = { new WikiReadOnlyDictionaryConverterFactory() },
     };
 
     /// <summary>

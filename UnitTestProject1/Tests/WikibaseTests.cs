@@ -241,7 +241,7 @@ public class WikibaseTests : WikiSiteTestsBase, IClassFixture<WikiSiteProvider>
         ShallowTrace(entity);
 
         // Remove a claim (claim2 contains the claim id now).
-        changelist = new[] { new EntityEditEntry(nameof(Entity.Claims), claim2, EntityEditEntryState.Removed), };
+        changelist = new[] { new EntityEditEntry(nameof(Entity.Claims), claim2, EntityEditEntryState.Removed) };
         await entity.EditAsync(changelist, "Edit test entity. Remove a claim.", options);
         if ((options & EntityEditOptions.Bulk) != EntityEditOptions.Bulk)
             await entity.RefreshAsync(EntityQueryOptions.FetchClaims);

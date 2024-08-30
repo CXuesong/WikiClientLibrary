@@ -138,7 +138,7 @@ public abstract class WikiList<T> : IWikiList<T>
     /// </exception>
     public async IAsyncEnumerable<T> EnumItemsAsync([EnumeratorCancellation] CancellationToken cancellationToken = default)
     {
-        var baseQueryParams = new Dictionary<string, object?> { { "action", "query" }, { "maxlag", 5 }, { "list", ListName }, };
+        var baseQueryParams = new Dictionary<string, object?> { { "action", "query" }, { "maxlag", 5 }, { "list", ListName } };
         foreach (var p in EnumListParameters())
             baseQueryParams.Add(p.Key, p.Value);
         cancellationToken.ThrowIfCancellationRequested();

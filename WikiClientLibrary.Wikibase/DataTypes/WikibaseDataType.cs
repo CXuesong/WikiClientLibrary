@@ -168,7 +168,7 @@ public static class BuiltInDataTypes
         {
             "item" => "Q",
             "property" => "P",
-            _ => throw new ArgumentException($"Invalid entity-type: {type}.", nameof(value))
+            _ => throw new ArgumentException($"Invalid entity-type: {type}.", nameof(value)),
         };
         id += (string)value["numeric-id"];
         return id;
@@ -274,7 +274,7 @@ public static class BuiltInDataTypes
                 { "before", v.Before },
                 { "after", v.After },
                 { "precision", (int)v.Precision },
-                { "calendarmodel", v.CalendarModel.ToString() }
+                { "calendarmodel", v.CalendarModel.ToString() },
             };
             return obj;
         });

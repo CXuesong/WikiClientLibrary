@@ -241,7 +241,7 @@ public class WikiClient : IWikiClient, IWikiClientLoggable, IDisposable
                 {
                     throw new HttpRequestException(ex1.Message + Prompts.ExceptionSecureChannelFailureHint, ex)
                     {
-                        HelpLink = MediaWikiHelper.ExceptionTroubleshootingHelpLink
+                        HelpLink = MediaWikiHelper.ExceptionTroubleshootingHelpLink,
                     };
                 }
             }

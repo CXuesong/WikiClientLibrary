@@ -184,7 +184,7 @@ public class ScribuntoConsole
                 title = title,
                 clear = clear,
                 question = question,
-                content = content
+                content = content,
             }), ct);
         }
         catch (InvalidActionException ex)
@@ -198,7 +198,7 @@ public class ScribuntoConsole
             ScribuntoEvaluationResultType.Normal => result,
             ScribuntoEvaluationResultType.Error => throw new ScribuntoConsoleException((string)jresult["messagename"],
                 (string)jresult["message"], result),
-            _ => throw new UnexpectedDataException($"Unexpected evaluation result type: {(string)jresult["type"]}.")
+            _ => throw new UnexpectedDataException($"Unexpected evaluation result type: {(string)jresult["type"]}."),
         };
     }
 

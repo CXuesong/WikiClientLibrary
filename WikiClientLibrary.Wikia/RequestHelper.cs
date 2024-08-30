@@ -69,7 +69,7 @@ internal static class RequestHelper
                         controller = "ArticleComments",
                         method = "Content",
                         articleId = board.Page.Id,
-                        page = page
+                        page = page,
                     }), WikiaJsonResponseParser.Default, cancellationToken);
                 // Build comment structure.
                 var jcomments = jroot["commentListRaw"]?.AsObject();
@@ -88,7 +88,7 @@ internal static class RequestHelper
 
     private static readonly WikiPageQueryProvider postLastRevisionQueryProvider = new WikiPageQueryProvider
     {
-        Properties = { new RevisionsPropertyProvider { FetchContent = true } }, ResolveRedirects = false
+        Properties = { new RevisionsPropertyProvider { FetchContent = true } }, ResolveRedirects = false,
     };
 
     private static readonly RevisionsPropertyProvider postRevisionWithContentProvider =

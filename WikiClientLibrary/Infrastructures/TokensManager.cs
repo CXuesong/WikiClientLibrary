@@ -38,7 +38,7 @@ internal sealed class TokensManager
     private async Task<IDictionary<string, JsonNode?>> FetchTokensAsync2(string tokenTypeExpr, CancellationToken cancellationToken)
     {
         var jobj = await site.InvokeMediaWikiApiAsync(
-            new MediaWikiFormRequestMessage(new { action = "query", meta = "tokens", type = tokenTypeExpr, }), true, cancellationToken);
+            new MediaWikiFormRequestMessage(new { action = "query", meta = "tokens", type = tokenTypeExpr }), true, cancellationToken);
         var warnings = jobj["warnings"]?["tokens"];
         if (warnings != null)
         {
@@ -182,7 +182,7 @@ internal sealed class TokensManager
                         var jobj = await site.InvokeMediaWikiApiAsync(
                             new MediaWikiFormRequestMessage(new
                             {
-                                action = "query", list = "recentchanges", rctoken = "patrol", rclimit = 1
+                                action = "query", list = "recentchanges", rctoken = "patrol", rclimit = 1,
                             }), cts.Token);
                         try
                         {

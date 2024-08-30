@@ -7,7 +7,9 @@
 
 using System.Diagnostics.CodeAnalysis;
 
-[assembly:
-    SuppressMessage("Style", "VSTHRD200:Use Async suffix for async methods", Justification = "test methods",
-        Scope = "namespaceanddescendants", Target = "~N:WikiClientLibrary.Tests.UnitTestProject1.Tests")
-]
+[assembly: SuppressMessage("Style", "VSTHRD003:Avoid awaiting or returning a Task representing work that was not started within your context as that can lead to deadlocks.",
+    Justification = "There is no STA thread so what are you talking about? ",
+    Scope = "namespaceanddescendants", Target = "~N:WikiClientLibrary.Tests.UnitTestProject1.Tests")]
+[assembly: SuppressMessage("Style", "VSTHRD200:Use Async suffix for async methods", 
+    Justification = "test methods", 
+    Scope = "namespaceanddescendants", Target = "~N:WikiClientLibrary.Tests.UnitTestProject1.Tests")]

@@ -89,7 +89,7 @@ public class SearchGenerator : WikiPageGenerator<SearchResultItem>
             { "srwhat", MatchingField },
             { "srlimit", PaginationSize },
             { "srinterwiki", IncludesInterwiki },
-            { "srbackend", BackendName }
+            { "srbackend", BackendName },
         };
         // Include redirect pages in the search. From 1.23 onwards, redirects are always included. (Removed in 1.23)
         if (Site.SiteInfo.Version < new MediaWikiVersion(1, 23))
@@ -99,7 +99,7 @@ public class SearchGenerator : WikiPageGenerator<SearchResultItem>
             SearchableField.Title => "title",
             SearchableField.Text => "text",
             SearchableField.NearMatch => "nearmatch",
-            _ => throw new ArgumentOutOfRangeException()
+            _ => throw new ArgumentOutOfRangeException(),
         };
         return dict;
     }
@@ -142,6 +142,6 @@ public enum SearchableField
     /// <summary>
     /// Search for a near match in the title. (MediaWiki 1.17+)
     /// </summary>
-    NearMatch
+    NearMatch,
 
 }

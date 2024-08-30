@@ -40,9 +40,9 @@ public class InfrastructureTests : UnitTestsBase
     [Fact]
     public void WbMonolingualTextCollectionTest()
     {
-        var collection = new WbMonolingualTextCollection(new[] { new WbMonolingualText("en", "Wikipedia"), })
+        var collection = new WbMonolingualTextCollection(new[] { new WbMonolingualText("en", "Wikipedia") })
         {
-            { "zh-hans", "维基百科" }, { "zh-Hant", "維基百科" }, new WbMonolingualText("ja", "ウィキペディア")
+            { "zh-hans", "维基百科" }, { "zh-Hant", "維基百科" }, new WbMonolingualText("ja", "ウィキペディア"),
         };
         collection["ru"] = "Википедия";
         Assert.Equal(5, collection.Count);
