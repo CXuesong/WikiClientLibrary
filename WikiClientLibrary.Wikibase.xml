@@ -933,7 +933,7 @@
     </member>
     <member name="T:WikiClientLibrary.Wikibase.SerializableEntity">
       <summary>
-            Represents a entity that can be loaded from or serialized into JSON.
+            Represents an entity that can be loaded from or serialized into JSON.
             </summary>
       <remarks>
             When working with JSON dump of Wikibase items, this class may provide some facility.
@@ -972,33 +972,30 @@
     <member name="P:WikiClientLibrary.Wikibase.SerializableEntity.Labels">
       <summary>Gets the labels (aka. names) of the entity.</summary>
     </member>
-    <member name="M:WikiClientLibrary.Wikibase.SerializableEntity.Load(Newtonsoft.Json.JsonReader)">
+    <member name="M:WikiClientLibrary.Wikibase.SerializableEntity.Load(System.IO.Stream)">
       <summary>
-            Loads 1 <see cref="T:WikiClientLibrary.Wikibase.SerializableEntity" /> from JSON reader.
+            Loads exactly 1 <see cref="T:WikiClientLibrary.Wikibase.SerializableEntity" /> from the <see cref="T:System.IO.Stream" />.
             </summary>
-      <param name="reader">The reader from which to read serialized entity JSON.</param>
-      <returns>The deserialized entity, or <c>null</c> if EOF has been reached.</returns>
-    </member>
-    <member name="M:WikiClientLibrary.Wikibase.SerializableEntity.Load(Newtonsoft.Json.Linq.JObject)">
-      <summary>
-            Creates a new instance of <see cref="T:WikiClientLibrary.Wikibase.SerializableEntity" /> from <see cref="T:Newtonsoft.Json.Linq.JObject" />.
-            </summary>
-      <param name="entity">The serialized entity JSON.</param>
-    </member>
-    <member name="M:WikiClientLibrary.Wikibase.SerializableEntity.Load(System.IO.TextReader)">
-      <summary>
-            Loads 1 <see cref="T:WikiClientLibrary.Wikibase.SerializableEntity" /> from text reader.
-            </summary>
-      <param name="reader">The reader from which to read serialized entity JSON.</param>
-      <returns>The deserialized entity, or <c>null</c> if EOF has been reached.</returns>
+      <param name="s">The stream from which to read serialized entity JSON.</param>
+      <returns>The deserialized entity, or <c>null</c> if the JSON token contained in the stream input is <c>null</c>.</returns>
+      <exception cref="T:System.Text.Json.JsonException">
+        <param name="s" /> does not contain a valid JSON object; OR there is extraneous content after the JSON object.</exception>
     </member>
     <member name="M:WikiClientLibrary.Wikibase.SerializableEntity.Load(System.String)">
       <summary>
-            Loads 1 <see cref="T:WikiClientLibrary.Wikibase.SerializableEntity" /> from the specified file.
+            Loads exactly 1 <see cref="T:WikiClientLibrary.Wikibase.SerializableEntity" /> from the specified file.
             </summary>
       <param name="fileName">The path of file containing the serialized JSON of a single entity.</param>
-      <param name="reader">The reader from which to read serialized entity JSON.</param>
-      <returns>The deserialized entity, or <c>null</c> if EOF has been reached.</returns>
+      <param name="s">The stream from which to read serialized entity JSON.</param>
+      <returns>The deserialized entity, or <c>null</c> if the JSON token contained in the stream input is <c>null</c>.</returns>
+      <exception cref="T:System.Text.Json.JsonException">
+        <param name="s" /> does not contain a valid JSON object; OR there is extraneous content after the JSON object.</exception>
+    </member>
+    <member name="M:WikiClientLibrary.Wikibase.SerializableEntity.Load(System.Text.Json.Nodes.JsonObject)">
+      <summary>
+            Creates a new instance of <see cref="T:WikiClientLibrary.Wikibase.SerializableEntity" /> from <see cref="T:System.Text.Json.Nodes.JsonObject" />.
+            </summary>
+      <param name="entity">The serialized entity JSON.</param>
     </member>
     <member name="M:WikiClientLibrary.Wikibase.SerializableEntity.Load(WikiClientLibrary.Wikibase.IEntity)">
       <summary>
@@ -1007,83 +1004,85 @@
             </summary>
       <param name="entity">The existing entity. A shallow copy of values will be made from it.</param>
     </member>
-    <member name="M:WikiClientLibrary.Wikibase.SerializableEntity.LoadAll(Newtonsoft.Json.JsonReader)">
+    <member name="M:WikiClientLibrary.Wikibase.SerializableEntity.LoadAll(System.IO.Stream)">
       <summary>
-            Enumerates all the entities from JSON array of serialized contained in the JSON reader.
+            Synchronously enumerates a JSON array of the serialized Wikibase entities contained in the specified stream.
             </summary>
-      <param name="reader">The reader from which to read serialized entity JSON.</param>
+      <param name="s">The stream from which to read serialized entity JSON.</param>
       <returns>
-            A sequence that, when enumerated, will read a JSON array from reader, and parses it
+            A sequence that, when enumerated, will read a JSON array from the stream, and parses it
             into a sequence of <see cref="T:WikiClientLibrary.Wikibase.SerializableEntity" />s.
             If there is <c>null</c> in the JSON array, <c>null</c> will be enumerated in the sequence.
             </returns>
       <remarks>
         <para>This method is recommended when you are working with a large JSON dump of Wikibase entities,
             because it only put the current enumerated entity in the memory. Still, you can use
-            <see cref="M:System.Linq.Enumerable.ToList``1(System.Collections.Generic.IEnumerable{``0})" /> to get all the entities at one time.</para>
-        <para>If you stopped enumerating the returned sequence, the <paramref name="reader" /> will stop
-            in the middle of array, at the end of current enumerated entity.</para>
+            <see cref="M:System.Linq.AsyncEnumerable.ToListAsync``1(System.Collections.Generic.IAsyncEnumerable{``0},System.Threading.CancellationToken)" /> to materialize all the entities at once.</para>
+        <para>Due to the buffering mechanism of the implementation, if you stopped enumeration at the middle
+            of the returned sequence, <paramref name="s" /> may stop at a point later than the last deserialized
+            JSON array item (JSON object).</para>
+        <para>Unlike other <see cref="!:overloads:Load" /> overloads, this method returns empty sequence
+            if <paramref name="s" /> does not contain any content.</para>
       </remarks>
-      <exception cref="T:Newtonsoft.Json.JsonException">The JSON is invalid.</exception>
-    </member>
-    <member name="M:WikiClientLibrary.Wikibase.SerializableEntity.LoadAll(System.IO.TextReader)">
-      <summary>
-            Enumerates all the entities from JSON array of serialized contained in the JSON reader.
-            </summary>
-      <param name="reader">The reader from which to read serialized entity JSON.</param>
-      <returns>
-            A sequence that, when enumerated, will read a JSON array from reader, and parses it
-            into a sequence of <see cref="T:WikiClientLibrary.Wikibase.SerializableEntity" />s.
-            If there is <c>null</c> in the JSON array, <c>null</c> will be enumerated in the sequence.
-            </returns>
-      <remarks>
-        <para>This method is recommended when you are working with a large JSON dump of Wikibase entities,
-            because it only put the current enumerated entity in the memory. Still, you can use
-            <see cref="M:System.Linq.Enumerable.ToList``1(System.Collections.Generic.IEnumerable{``0})" /> to get all the entities at one time.</para>
-        <para>If you stopped enumerating the returned sequence, the <paramref name="reader" /> will stop
-            in the middle of array, at the end of current enumerated entity.</para>
-      </remarks>
-      <exception cref="T:Newtonsoft.Json.JsonException">The JSON is invalid.</exception>
+      <exception cref="T:System.Text.Json.JsonException">The stream does not contain a JSON array of objects; OR there is extraneous content after the root JSON array.</exception>
     </member>
     <member name="M:WikiClientLibrary.Wikibase.SerializableEntity.LoadAll(System.String)">
       <summary>
-            Creates a new instance of <see cref="T:WikiClientLibrary.Wikibase.SerializableEntity" /> from JSON contained in the file.
+            Synchronously enumerates a JSON array of the serialized Wikibase entities contained in the specified stream.
             </summary>
-      <param name="fileName">The path of file containing the serialized JSON of a single entity.</param>
-      <param name="reader">The reader from which to read serialized entity JSON.</param>
+      <param name="fileName">The path of file containing the serialized JSON array of entities.</param>
+      <param name="s">The stream from which to read serialized entity JSON.</param>
       <returns>
-            A sequence that, when enumerated, will read a JSON array from reader, and parses it
+            A sequence that, when enumerated, will read a JSON array from the stream, and parses it
             into a sequence of <see cref="T:WikiClientLibrary.Wikibase.SerializableEntity" />s.
             If there is <c>null</c> in the JSON array, <c>null</c> will be enumerated in the sequence.
             </returns>
       <remarks></remarks>
-      <exception cref="T:Newtonsoft.Json.JsonException">The JSON is invalid.</exception>
+      <exception cref="T:System.Text.Json.JsonException">The stream does not contain a JSON array of objects; OR there is extraneous content after the root JSON array.</exception>
+    </member>
+    <member name="M:WikiClientLibrary.Wikibase.SerializableEntity.LoadAllAsync(System.IO.Stream)">
+      <summary>
+            Asynchronously enumerates a JSON array of the serialized Wikibase entities contained in the specified stream.
+            </summary>
+      <param name="s">The stream from which to read serialized entity JSON.</param>
+      <returns>
+            A sequence that, when enumerated asynchronously, will read a JSON array from the stream, and parses it
+            into a sequence of <see cref="T:WikiClientLibrary.Wikibase.SerializableEntity" />s.
+            If there is <c>null</c> in the JSON array, <c>null</c> will be enumerated in the sequence.
+            </returns>
+      <remarks>
+        <para>This method is recommended when you are working with a large JSON dump of Wikibase entities,
+            because it only put the current enumerated entity in the memory. Still, you can use
+            <see cref="M:System.Linq.AsyncEnumerable.ToListAsync``1(System.Collections.Generic.IAsyncEnumerable{``0},System.Threading.CancellationToken)" /> to materialize all the entities at once.</para>
+        <para>Due to the buffering mechanism of the implementation, if you stopped enumeration at the middle
+            of the returned sequence, <paramref name="s" /> may stop at a point later than the last deserialized
+            JSON array item (JSON object).</para>
+        <para>Unlike other <see cref="!:overloads:Load" /> overloads, this method returns empty sequence
+            if <paramref name="s" /> does not contain any content.</para>
+      </remarks>
+      <exception cref="T:System.Text.Json.JsonException">The stream does not contain a JSON array of objects; OR there is extraneous content after the root JSON array.</exception>
     </member>
     <member name="M:WikiClientLibrary.Wikibase.SerializableEntity.Parse(System.String)">
       <summary>
             Creates a new instance of <see cref="T:WikiClientLibrary.Wikibase.SerializableEntity" /> from JSON string.
             </summary>
       <param name="entityJson">The serialized entity JSON string.</param>
-      <returns>the first parsed entity, or <c>null</c> if the input is empty or does not contain JSON object.</returns>
+      <param name="s">The stream from which to read serialized entity JSON.</param>
+      <returns>The deserialized entity, or <c>null</c> if the JSON token contained in the stream input is <c>null</c>.</returns>
+      <exception cref="T:System.Text.Json.JsonException">
+        <param name="s" /> does not contain a valid JSON object; OR there is extraneous content after the JSON object.</exception>
     </member>
     <member name="M:WikiClientLibrary.Wikibase.SerializableEntity.ParseAll(System.String)">
       <summary>
             Enumerates all the entities from JSON array of serialized entities contained in the string.
             </summary>
       <param name="entitiesJson">The serialized entities JSON string.</param>
-      <param name="reader">The reader from which to read serialized entity JSON.</param>
-      <returns>
-            A sequence that, when enumerated, will read a JSON array from reader, and parses it
-            into a sequence of <see cref="T:WikiClientLibrary.Wikibase.SerializableEntity" />s.
-            If there is <c>null</c> in the JSON array, <c>null</c> will be enumerated in the sequence.
-            </returns>
       <remarks></remarks>
-      <exception cref="T:Newtonsoft.Json.JsonException">The JSON is invalid.</exception>
     </member>
     <member name="P:WikiClientLibrary.Wikibase.SerializableEntity.SiteLinks">
       <summary>Gets the sitelinks of the entity.</summary>
     </member>
-    <member name="M:WikiClientLibrary.Wikibase.SerializableEntity.ToJObject">
+    <member name="M:WikiClientLibrary.Wikibase.SerializableEntity.ToJsonObject">
       <summary>
             Serializes the entity into JSON.
             </summary>
@@ -1096,30 +1095,16 @@
     <member name="P:WikiClientLibrary.Wikibase.SerializableEntity.Type">
       <summary>Wikibase entity type.</summary>
     </member>
-    <member name="M:WikiClientLibrary.Wikibase.SerializableEntity.WriteTo(Newtonsoft.Json.JsonWriter)">
+    <member name="M:WikiClientLibrary.Wikibase.SerializableEntity.WriteTo(System.IO.Stream)">
       <summary>
-            Writes the serialized entity into <see cref="T:Newtonsoft.Json.JsonWriter" />.
+            Writes the serialized entity into <see cref="T:System.IO.Stream" />.
             </summary>
-      <param name="writer">
+      <param name="s">
         <markup>
           <include item="SMCMissingParamTag">
             <parameter>param</parameter>
-            <parameter>writer</parameter>
-            <parameter>M:WikiClientLibrary.Wikibase.SerializableEntity.WriteTo(Newtonsoft.Json.JsonWriter)</parameter>
-          </include>
-        </markup>
-      </param>
-    </member>
-    <member name="M:WikiClientLibrary.Wikibase.SerializableEntity.WriteTo(System.IO.TextWriter)">
-      <summary>
-            Writes the serialized entity into <see cref="T:System.IO.TextWriter" />.
-            </summary>
-      <param name="writer">
-        <markup>
-          <include item="SMCMissingParamTag">
-            <parameter>param</parameter>
-            <parameter>writer</parameter>
-            <parameter>M:WikiClientLibrary.Wikibase.SerializableEntity.WriteTo(System.IO.TextWriter)</parameter>
+            <parameter>s</parameter>
+            <parameter>M:WikiClientLibrary.Wikibase.SerializableEntity.WriteTo(System.IO.Stream)</parameter>
           </include>
         </markup>
       </param>
@@ -1130,7 +1115,7 @@
             </summary>
       <remarks>
             To compare the equality of two snaks' values, consider using
-            <see cref="M:Newtonsoft.Json.Linq.JToken.DeepEquals(Newtonsoft.Json.Linq.JToken,Newtonsoft.Json.Linq.JToken)" /> on <see cref="P:WikiClientLibrary.Wikibase.Snak.RawDataValue" />.
+            <see cref="M:System.Text.Json.Nodes.JsonNode.DeepEquals(System.Text.Json.Nodes.JsonNode,System.Text.Json.Nodes.JsonNode)" /> on <see cref="P:WikiClientLibrary.Wikibase.Snak.RawDataValue" />.
             </remarks>
     </member>
     <member name="M:WikiClientLibrary.Wikibase.Snak.#ctor(System.String)">
@@ -1141,22 +1126,22 @@
       <exception cref="T:System.ArgumentNullException">
         <paramref name="propertyId" /> is <c>null</c>.</exception>
     </member>
-    <member name="M:WikiClientLibrary.Wikibase.Snak.#ctor(System.String,Newtonsoft.Json.Linq.JObject,WikiClientLibrary.Wikibase.DataTypes.WikibaseDataType)">
-      <summary>
-            Initializes a snak with specified property ID and raw data value.
-            </summary>
-      <param name="propertyId">The property id.</param>
-      <param name="rawDataValue">The raw JSON data value of the property.</param>
-      <param name="dataType">The data value type.</param>
-      <exception cref="T:System.ArgumentNullException">
-        <paramref name="propertyId" /> or <paramref name="dataType" /> is <c>null</c>.</exception>
-    </member>
     <member name="M:WikiClientLibrary.Wikibase.Snak.#ctor(System.String,System.Object,WikiClientLibrary.Wikibase.DataTypes.WikibaseDataType)">
       <summary>
             Initializes a snak with specified property ID and data value.
             </summary>
       <param name="propertyId">The property id.</param>
       <param name="dataValue">The data value of the property.</param>
+      <param name="dataType">The data value type.</param>
+      <exception cref="T:System.ArgumentNullException">
+        <paramref name="propertyId" /> or <paramref name="dataType" /> is <c>null</c>.</exception>
+    </member>
+    <member name="M:WikiClientLibrary.Wikibase.Snak.#ctor(System.String,System.Text.Json.Nodes.JsonObject,WikiClientLibrary.Wikibase.DataTypes.WikibaseDataType)">
+      <summary>
+            Initializes a snak with specified property ID and raw data value.
+            </summary>
+      <param name="propertyId">The property id.</param>
+      <param name="rawDataValue">The raw JSON data value of the property.</param>
       <param name="dataType">The data value type.</param>
       <exception cref="T:System.ArgumentNullException">
         <paramref name="propertyId" /> or <paramref name="dataType" /> is <c>null</c>.</exception>
@@ -2506,7 +2491,7 @@
             The property type name.
             </summary>
     </member>
-    <member name="M:WikiClientLibrary.Wikibase.DataTypes.WikibaseDataType.Parse(Newtonsoft.Json.Linq.JToken)">
+    <member name="M:WikiClientLibrary.Wikibase.DataTypes.WikibaseDataType.Parse(System.Text.Json.Nodes.JsonNode)">
       <summary>
             Converts the JSON to the CLR value.
             </summary>
@@ -2515,7 +2500,7 @@
           <include item="SMCMissingParamTag">
             <parameter>param</parameter>
             <parameter>expr</parameter>
-            <parameter>M:WikiClientLibrary.Wikibase.DataTypes.WikibaseDataType.Parse(Newtonsoft.Json.Linq.JToken)</parameter>
+            <parameter>M:WikiClientLibrary.Wikibase.DataTypes.WikibaseDataType.Parse(System.Text.Json.Nodes.JsonNode)</parameter>
           </include>
         </markup>
       </param>

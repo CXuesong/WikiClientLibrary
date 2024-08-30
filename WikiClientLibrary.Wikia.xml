@@ -6,7 +6,7 @@
   <members>
     <member name="T:WikiClientLibrary.Wikia.NotFoundApiException">
       <summary>
-            The CLR counterpart for Wikia <c>NotFoundApiException</c>.
+            The CLR counterpart for Wikia <c>NotFoundException</c> (previously, <c>NotFoundApiException</c>).
             </summary>
     </member>
     <member name="M:WikiClientLibrary.Wikia.NotFoundApiException.#ctor">
@@ -293,8 +293,8 @@
       <remarks>
         <para>This method does not check the HTTP status code, because for certain JSON responses,
             the status code might has its semantic meanings.</para>
-        <para>Then the content will be parsed as JSON, in <see cref="T:Newtonsoft.Json.Linq.JToken" />. If there is
-            <see cref="T:Newtonsoft.Json.JsonException" /> thrown while parsing the response, a retry will be requested.</para>
+        <para>Then the content will be parsed as JSON, in <see cref="T:System.Text.Json.Nodes.JsonNode" />. If there is
+            <see cref="T:System.Text.Json.JsonException" /> thrown while parsing the response, a retry will be requested.</para>
         <para>The default implementation for this method throws a <see cref="T:WikiClientLibrary.Wikia.WikiaApiException" />
             or one of its derived exceptions when detected <c>exception</c> node in the JSON response.
             The exception mapping is as follows</para>
@@ -1289,7 +1289,7 @@
     </member>
     <member name="P:WikiClientLibrary.Wikia.Sites.SiteVariableData.CacheBuster">
       <summary>
-            Current wiki cachebuster value,
+            Current wiki cachebuster value.
             </summary>
     </member>
     <member name="P:WikiClientLibrary.Wikia.Sites.SiteVariableData.CdnRootUrl">
@@ -2054,13 +2054,8 @@
     </member>
     <member name="T:WikiClientLibrary.Wikia.WikiaApi.UserInfo">
       <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>T:WikiClientLibrary.Wikia.WikiaApi.UserInfo</parameter>
-          </include>
-        </markup>
-      </summary>
+            See https://github.com/Wikia/app/blob/dev/includes/wikia/api/UserApiController.class.php#L31-L87 .
+            </summary>
     </member>
     <member name="M:WikiClientLibrary.Wikia.WikiaApi.UserInfo.#ctor">
       <summary>
@@ -2079,6 +2074,16 @@
     </member>
     <member name="P:WikiClientLibrary.Wikia.WikiaApi.UserInfo.Id">
       <summary>User ID.</summary>
+    </member>
+    <member name="P:WikiClientLibrary.Wikia.WikiaApi.UserInfo.IsSubjectToCcpa">
+      <summary>
+        <markup>
+          <include item="SMCMissingTag">
+            <parameter>summary</parameter>
+            <parameter>P:WikiClientLibrary.Wikia.WikiaApi.UserInfo.IsSubjectToCcpa</parameter>
+          </include>
+        </markup>
+      </summary>
     </member>
     <member name="P:WikiClientLibrary.Wikia.WikiaApi.UserInfo.Name">
       <summary>User name.</summary>
@@ -2183,7 +2188,7 @@
             Asynchronously fetches the specified users' information.
             </summary>
       <param name="site">The site to issue the request.</param>
-      <param name="userNames">The user names to be fetched.</param>
+      <param name="userNames">The usernames to be fetched.</param>
       <param name="cancellationToken">
         <markup>
           <include item="SMCMissingParamTag">
@@ -2195,7 +2200,7 @@
       </param>
       <returns>
             An asynchronous sequence containing the detailed user information.
-            The user names are normalized by the server. Inexistent user names are skipped.
+            The usernames are normalized locally to ensure the first character is upper-case. Non-existent usernames are skipped.
             </returns>
       <exception cref="T:System.ArgumentNullException">Either <paramref name="site" /> or <paramref name="userNames" /> is <c>null</c>.</exception>
     </member>

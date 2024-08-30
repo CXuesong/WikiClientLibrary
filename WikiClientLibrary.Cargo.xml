@@ -361,12 +361,12 @@
         </markup>
       </summary>
     </member>
-    <member name="M:WikiClientLibrary.Cargo.Linq.CargoRecordConverter.DeserializeRecord(System.Collections.Generic.IReadOnlyDictionary{System.Reflection.MemberInfo,Newtonsoft.Json.Linq.JToken},System.Type)">
+    <member name="M:WikiClientLibrary.Cargo.Linq.CargoRecordConverter.DeserializeRecord(System.Collections.Generic.IReadOnlyDictionary{System.Reflection.MemberInfo,System.Text.Json.Nodes.JsonNode},System.Type)">
       <summary>
         <markup>
           <include item="SMCMissingTag">
             <parameter>summary</parameter>
-            <parameter>M:WikiClientLibrary.Cargo.Linq.CargoRecordConverter.DeserializeRecord(System.Collections.Generic.IReadOnlyDictionary{System.Reflection.MemberInfo,Newtonsoft.Json.Linq.JToken},System.Type)</parameter>
+            <parameter>M:WikiClientLibrary.Cargo.Linq.CargoRecordConverter.DeserializeRecord(System.Collections.Generic.IReadOnlyDictionary{System.Reflection.MemberInfo,System.Text.Json.Nodes.JsonNode},System.Type)</parameter>
           </include>
         </markup>
       </summary>
@@ -375,7 +375,7 @@
           <include item="SMCMissingParamTag">
             <parameter>param</parameter>
             <parameter>record</parameter>
-            <parameter>M:WikiClientLibrary.Cargo.Linq.CargoRecordConverter.DeserializeRecord(System.Collections.Generic.IReadOnlyDictionary{System.Reflection.MemberInfo,Newtonsoft.Json.Linq.JToken},System.Type)</parameter>
+            <parameter>M:WikiClientLibrary.Cargo.Linq.CargoRecordConverter.DeserializeRecord(System.Collections.Generic.IReadOnlyDictionary{System.Reflection.MemberInfo,System.Text.Json.Nodes.JsonNode},System.Type)</parameter>
           </include>
         </markup>
       </param>
@@ -384,7 +384,7 @@
           <include item="SMCMissingParamTag">
             <parameter>param</parameter>
             <parameter>modelType</parameter>
-            <parameter>M:WikiClientLibrary.Cargo.Linq.CargoRecordConverter.DeserializeRecord(System.Collections.Generic.IReadOnlyDictionary{System.Reflection.MemberInfo,Newtonsoft.Json.Linq.JToken},System.Type)</parameter>
+            <parameter>M:WikiClientLibrary.Cargo.Linq.CargoRecordConverter.DeserializeRecord(System.Collections.Generic.IReadOnlyDictionary{System.Reflection.MemberInfo,System.Text.Json.Nodes.JsonNode},System.Type)</parameter>
           </include>
         </markup>
       </param>
@@ -446,7 +446,7 @@
         </markup>
       </summary>
     </member>
-    <member name="M:WikiClientLibrary.Cargo.Linq.ICargoRecordConverter.DeserializeRecord(System.Collections.Generic.IReadOnlyDictionary{System.Reflection.MemberInfo,Newtonsoft.Json.Linq.JToken},System.Type)">
+    <member name="M:WikiClientLibrary.Cargo.Linq.ICargoRecordConverter.DeserializeRecord(System.Collections.Generic.IReadOnlyDictionary{System.Reflection.MemberInfo,System.Text.Json.Nodes.JsonNode},System.Type)">
       <summary>
             Converts JSON record object from MediaWiki Cargo API response into CLR model type.
             </summary>
@@ -455,7 +455,7 @@
           <include item="SMCMissingParamTag">
             <parameter>param</parameter>
             <parameter>record</parameter>
-            <parameter>M:WikiClientLibrary.Cargo.Linq.ICargoRecordConverter.DeserializeRecord(System.Collections.Generic.IReadOnlyDictionary{System.Reflection.MemberInfo,Newtonsoft.Json.Linq.JToken},System.Type)</parameter>
+            <parameter>M:WikiClientLibrary.Cargo.Linq.ICargoRecordConverter.DeserializeRecord(System.Collections.Generic.IReadOnlyDictionary{System.Reflection.MemberInfo,System.Text.Json.Nodes.JsonNode},System.Type)</parameter>
           </include>
         </markup>
       </param>
@@ -464,7 +464,7 @@
           <include item="SMCMissingParamTag">
             <parameter>param</parameter>
             <parameter>modelType</parameter>
-            <parameter>M:WikiClientLibrary.Cargo.Linq.ICargoRecordConverter.DeserializeRecord(System.Collections.Generic.IReadOnlyDictionary{System.Reflection.MemberInfo,Newtonsoft.Json.Linq.JToken},System.Type)</parameter>
+            <parameter>M:WikiClientLibrary.Cargo.Linq.ICargoRecordConverter.DeserializeRecord(System.Collections.Generic.IReadOnlyDictionary{System.Reflection.MemberInfo,System.Text.Json.Nodes.JsonNode},System.Type)</parameter>
           </include>
         </markup>
       </param>

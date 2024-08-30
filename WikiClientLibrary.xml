@@ -842,6 +842,50 @@
             Release candidate. Version suffix is <c>-rc</c>.
             </summary>
     </member>
+    <member name="T:WikiClientLibrary.MediaWikiReadOnlyException">
+      <summary>
+            Raises when the MediaWiki server is in read-only mode.
+            </summary>
+    </member>
+    <member name="M:WikiClientLibrary.MediaWikiReadOnlyException.#ctor(System.String,System.String,System.String)">
+      <summary>
+        <markup>
+          <include item="SMCAutoDocConstructor">
+            <parameter>WikiClientLibrary.MediaWikiReadOnlyException</parameter>
+          </include>
+        </markup>
+      </summary>
+      <param name="errorCode">
+        <markup>
+          <include item="SMCMissingParamTag">
+            <parameter>param</parameter>
+            <parameter>errorCode</parameter>
+            <parameter>M:WikiClientLibrary.MediaWikiReadOnlyException.#ctor(System.String,System.String,System.String)</parameter>
+          </include>
+        </markup>
+      </param>
+      <param name="errorMessage">
+        <markup>
+          <include item="SMCMissingParamTag">
+            <parameter>param</parameter>
+            <parameter>errorMessage</parameter>
+            <parameter>M:WikiClientLibrary.MediaWikiReadOnlyException.#ctor(System.String,System.String,System.String)</parameter>
+          </include>
+        </markup>
+      </param>
+      <param name="readOnlyReason">
+        <markup>
+          <include item="SMCMissingParamTag">
+            <parameter>param</parameter>
+            <parameter>readOnlyReason</parameter>
+            <parameter>M:WikiClientLibrary.MediaWikiReadOnlyException.#ctor(System.String,System.String,System.String)</parameter>
+          </include>
+        </markup>
+      </param>
+    </member>
+    <member name="P:WikiClientLibrary.MediaWikiReadOnlyException.ReadOnlyReason">
+      <summary>The reason the wiki is in read-only mode.</summary>
+    </member>
     <member name="T:WikiClientLibrary.MediaWikiRemoteException">
       <summary>
             Raises when the remote MediaWiki site has encountered an internal error. (<c>internal_api_error_*</c>)
@@ -1464,7 +1508,7 @@
         </markup>
       </param>
     </member>
-    <member name="M:WikiClientLibrary.OperationFailedException.#ctor(System.String,System.String)">
+    <member name="M:WikiClientLibrary.OperationFailedException.#ctor(System.String,System.String,System.String)">
       <summary>
         <markup>
           <include item="SMCAutoDocConstructor">
@@ -1477,7 +1521,7 @@
           <include item="SMCMissingParamTag">
             <parameter>param</parameter>
             <parameter>errorCode</parameter>
-            <parameter>M:WikiClientLibrary.OperationFailedException.#ctor(System.String,System.String)</parameter>
+            <parameter>M:WikiClientLibrary.OperationFailedException.#ctor(System.String,System.String,System.String)</parameter>
           </include>
         </markup>
       </param>
@@ -1486,7 +1530,16 @@
           <include item="SMCMissingParamTag">
             <parameter>param</parameter>
             <parameter>errorMessage</parameter>
-            <parameter>M:WikiClientLibrary.OperationFailedException.#ctor(System.String,System.String)</parameter>
+            <parameter>M:WikiClientLibrary.OperationFailedException.#ctor(System.String,System.String,System.String)</parameter>
+          </include>
+        </markup>
+      </param>
+      <param name="message">
+        <markup>
+          <include item="SMCMissingParamTag">
+            <parameter>param</parameter>
+            <parameter>message</parameter>
+            <parameter>M:WikiClientLibrary.OperationFailedException.#ctor(System.String,System.String,System.String)</parameter>
           </include>
         </markup>
       </param>
@@ -2555,7 +2608,7 @@
             </summary>
       <returns>A sequence of fields, which will override the basic query parameters.</returns>
     </member>
-    <member name="M:WikiClientLibrary.AbuseFilters.AbuseFilterList.ItemFromJson(Newtonsoft.Json.Linq.JToken)">
+    <member name="M:WikiClientLibrary.AbuseFilters.AbuseFilterList.ItemFromJson(System.Text.Json.Nodes.JsonNode)">
       <summary>
             Parses an item contained in the <c>action=query&amp;list=</c> JSON response.
             </summary>
@@ -2651,6 +2704,7 @@
             </description></item><item><description><see cref="T:System.DateTime" /> values are marshaled as UTC in ISO 8601 format.
             </description></item><item><description><see cref="T:System.IO.Stream" /> values are sent as <see cref="T:System.Net.Http.StreamContent" /> with a dummy file name,
             and this will force the whole form to be marshaled as <see cref="T:System.Net.Http.MultipartFormDataContent" />.
+            </description></item><item><description><see cref="T:System.Net.Http.Json.JsonContent" /> values are sent as JSON string content. (Not implemented yet)
             </description></item><item><description><see cref="T:WikiClientLibrary.Pages.AutoWatchBehavior" /> values are marshaled as one of "preferences", "nochange", "watch", "unwatch".
             </description></item><item><description>
             Other types of values are marshaled by calling <see cref="M:System.Object.ToString" /> on them.
@@ -2757,7 +2811,7 @@
     <member name="P:WikiClientLibrary.Client.MediaWikiJsonResponseParser.Default">
       <summary>Gets a default instance of <see cref="T:WikiClientLibrary.Client.MediaWikiJsonResponseParser" />.</summary>
     </member>
-    <member name="M:WikiClientLibrary.Client.MediaWikiJsonResponseParser.OnApiError(System.String,System.String,Newtonsoft.Json.Linq.JToken,Newtonsoft.Json.Linq.JToken,WikiClientLibrary.Client.WikiResponseParsingContext)">
+    <member name="M:WikiClientLibrary.Client.MediaWikiJsonResponseParser.OnApiError(System.String,System.String,System.Text.Json.Nodes.JsonNode,System.Text.Json.Nodes.JsonNode,WikiClientLibrary.Client.WikiResponseParsingContext)">
       <summary>
             Called when <c>error</c> node presents in the API response.
             </summary>
@@ -2861,12 +2915,12 @@
       <remarks>
         <para>This method checks the HTTP status code first.
             For non-successful HTTP status codes, this method will request for a retry.</para>
-        <para>Then the content will be parsed as JSON, in <see cref="T:Newtonsoft.Json.Linq.JToken" />. If there is
-            <see cref="T:Newtonsoft.Json.JsonException" /> thrown while parsing the response, a retry will be requested.</para>
+        <para>Then the content will be parsed as JSON, in <see cref="T:System.Text.Json.Nodes.JsonNode" />. If there is
+            <see cref="T:System.Text.Json.JsonException" /> thrown while parsing the response, a retry will be requested.</para>
         <para>Finally, before returning the parsed JSON, this method checks for <c>warning</c> and <c>error</c>
             nodes. If there exists <c>warning</c> node, a warning will be issued to the logger. If there exists <c>error</c>
             node, a <see cref="T:WikiClientLibrary.OperationFailedException" /> or its derived exception will be thrown. You can
-            customize the error generation behavior by overriding <see cref="M:WikiClientLibrary.Client.MediaWikiJsonResponseParser.OnApiError(System.String,System.String,Newtonsoft.Json.Linq.JToken,Newtonsoft.Json.Linq.JToken,WikiClientLibrary.Client.WikiResponseParsingContext)" /> method.</para>
+            customize the error generation behavior by overriding <see cref="M:WikiClientLibrary.Client.MediaWikiJsonResponseParser.OnApiError(System.String,System.String,System.Text.Json.Nodes.JsonNode,System.Text.Json.Nodes.JsonNode,WikiClientLibrary.Client.WikiResponseParsingContext)" /> method.</para>
       </remarks>
     </member>
     <member name="T:WikiClientLibrary.Client.WikiClient">
@@ -3556,6 +3610,20 @@
         </markup>
       </summary>
     </member>
+    <member name="M:WikiClientLibrary.Files.FileRevisionExtMetadataValue.GetValueAs``1">
+      <summary>
+            Retrieves the metadata value, converted into the specified primitive type.
+            </summary>
+      <typeparam name="T">
+        <markup>
+          <include item="SMCMissingParamTag">
+            <parameter>typeparam</parameter>
+            <parameter>T</parameter>
+            <parameter>M:WikiClientLibrary.Files.FileRevisionExtMetadataValue.GetValueAs``1</parameter>
+          </include>
+        </markup>
+      </typeparam>
+    </member>
     <member name="P:WikiClientLibrary.Files.FileRevisionExtMetadataValue.Hidden">
       <summary>Whether this metadata field is hidden on File page by default.</summary>
     </member>
@@ -3568,12 +3636,13 @@
       <returns>A string that represents the current object.</returns>
     </member>
     <member name="P:WikiClientLibrary.Files.FileRevisionExtMetadataValue.Value">
-      <summary>Metadata value.</summary>
+      <summary>Metadata value JSON.</summary>
       <remarks>
             According to <a href="https://www.mediawiki.org/wiki/API:Imageinfo">mw:API:Imageinfo</a>,
             the metadata value is expected to be formatted HTML expression.
-            But sometimes the value could be <c>"True"</c>, <c>"true"</c>, or JSON numeric expression.
-            You need to cast the returned value into your expected CLR type before working on it.
+            But sometimes the value could be a JSON <c>string</c> of <c>"True"</c>, <c>"true"</c>, or a JSON number.
+            You need to retrieve the corresponding JSON value into your expected CLR type before working on it.
+            Alternatively, you can leverage the <c>GetValueAs*</c> APIs in this class for more resilient type conversion.
             </remarks>
     </member>
     <member name="T:WikiClientLibrary.Files.FileRevisionExtMetadataValueSources">
@@ -3730,7 +3799,7 @@
             but it can be empty.
             </value>
       <remarks>
-        <para>You can use <see cref="M:WikiClientLibrary.Files.UploadWarningCollection.FormatWarning(System.String,Newtonsoft.Json.Linq.JToken)" /> to get user-friendly warning messages.</para>
+        <para>You can use <see cref="M:WikiClientLibrary.Files.UploadWarningCollection.FormatWarning(System.String,System.Text.Json.JsonElement)" /> to get user-friendly warning messages.</para>
         <para>If you have suppressed warnings, the warnings will still be here, but <see cref="P:WikiClientLibrary.Files.UploadResult.ResultCode" /> will be <see cref="F:WikiClientLibrary.Files.UploadResultCode.Success" />.</para>
       </remarks>
     </member>
@@ -3774,7 +3843,7 @@
       <value>
         <c>null</c> if there is no such warning in the response.</value>
     </member>
-    <member name="M:WikiClientLibrary.Files.UploadWarningCollection.FormatWarning(System.String,Newtonsoft.Json.Linq.JToken)">
+    <member name="M:WikiClientLibrary.Files.UploadWarningCollection.FormatWarning(System.String,System.Text.Json.JsonElement)">
       <summary>
             Try to convert the specified warning code and context into a user-friendly
             warning message.
@@ -3801,6 +3870,16 @@
       <summary>
             The file type is of an unwanted type.
             </summary>
+    </member>
+    <member name="M:WikiClientLibrary.Files.UploadWarningCollection.OnDeserialized">
+      <summary>
+        <markup>
+          <include item="SMCMissingTag">
+            <parameter>summary</parameter>
+            <parameter>M:WikiClientLibrary.Files.UploadWarningCollection.OnDeserialized</parameter>
+          </include>
+        </markup>
+      </summary>
     </member>
     <member name="P:WikiClientLibrary.Files.UploadWarningCollection.TitleExists">
       <summary>
@@ -4169,7 +4248,7 @@
             Whether to include hidden categories in the returned list.
             </summary>
     </member>
-    <member name="M:WikiClientLibrary.Generators.CategoriesGenerator.ItemFromJson(Newtonsoft.Json.Linq.JToken,Newtonsoft.Json.Linq.JObject)">
+    <member name="M:WikiClientLibrary.Generators.CategoriesGenerator.ItemFromJson(System.Text.Json.Nodes.JsonNode,System.Text.Json.Nodes.JsonObject)">
       <summary>
             Parses an item contained in the <c>action=query&amp;prop={PropertyName}</c> JSON response.
             </summary>
@@ -4428,7 +4507,7 @@
             Gets/set a value indicating whether to include secondary coordinates in the search results.
             </summary>
     </member>
-    <member name="M:WikiClientLibrary.Generators.GeoSearchGenerator.ItemFromJson(Newtonsoft.Json.Linq.JToken)">
+    <member name="M:WikiClientLibrary.Generators.GeoSearchGenerator.ItemFromJson(System.Text.Json.Nodes.JsonNode)">
       <summary>
             Parses an item contained in the <c>action=query&amp;list=</c> JSON response.
             </summary>
@@ -4596,7 +4675,7 @@
       <summary>(<see cref="F:WikiClientLibrary.Generators.LogTypes.NewUsers" />) For an anonymous user creating an account for himself.</summary>
     </member>
     <member name="F:WikiClientLibrary.Generators.LogActions.Create2">
-      <summary>(<see cref="F:WikiClientLibrary.Generators.LogTypes.NewUsers" />) For a logged in user creating an account for someone else.</summary>
+      <summary>(<see cref="F:WikiClientLibrary.Generators.LogTypes.NewUsers" />) For a logged-in user creating an account for someone else.</summary>
     </member>
     <member name="F:WikiClientLibrary.Generators.LogActions.Delete">
       <summary>(<see cref="F:WikiClientLibrary.Generators.LogTypes.Delete" />) Delete a page.</summary>
@@ -4683,6 +4762,15 @@
             Represents an MediaWiki log event entry.
             </summary>
     </member>
+    <member name="M:WikiClientLibrary.Generators.LogEventItem.#ctor">
+      <summary>
+        <markup>
+          <include item="SMCAutoDocConstructor">
+            <parameter>WikiClientLibrary.Generators.LogEventItem</parameter>
+          </include>
+        </markup>
+      </summary>
+    </member>
     <member name="P:WikiClientLibrary.Generators.LogEventItem.Action">
       <summary>
             Specific log action.
@@ -4722,7 +4810,7 @@
       <remarks>
             For modern MediaWiki builds, this property uses the value of `params` property.
             For compatibility with MediaWiki 1.19 and below, this property also tries to use the property
-            whose name is the value of <see cref="P:WikiClientLibrary.Generators.LogEventItem.Type" />. (e.g. use `move` property if <see cref="P:WikiClientLibrary.Generators.LogEventItem.Type" /> is <see cref="F:WikiClientLibrary.Generators.LogActions.Move" />.
+            whose name is the value of <see cref="P:WikiClientLibrary.Generators.LogEventItem.Type" />. (e.g. use `move` property if <see cref="P:WikiClientLibrary.Generators.LogEventItem.Type" /> is <see cref="F:WikiClientLibrary.Generators.LogActions.Move" />).
             </remarks>
     </member>
     <member name="P:WikiClientLibrary.Generators.LogEventItem.ParsedComment">
@@ -4789,7 +4877,7 @@
             </summary>
       <returns>A sequence of fields, which will override the basic query parameters.</returns>
     </member>
-    <member name="M:WikiClientLibrary.Generators.LogEventsList.ItemFromJson(Newtonsoft.Json.Linq.JToken)">
+    <member name="M:WikiClientLibrary.Generators.LogEventsList.ItemFromJson(System.Text.Json.Nodes.JsonNode)">
       <summary>
             Parses an item contained in the <c>action=query&amp;list=</c> JSON response.
             </summary>
@@ -5063,12 +5151,12 @@
             Title (with namespace prefix) to begin enumerating from.
             </summary>
     </member>
-    <member name="M:WikiClientLibrary.Generators.MyWatchlistGenerator.ItemFromJson(Newtonsoft.Json.Linq.JToken)">
+    <member name="M:WikiClientLibrary.Generators.MyWatchlistGenerator.ItemFromJson(System.Text.Json.Nodes.JsonNode)">
       <summary>
         <markup>
           <include item="SMCMissingTag">
             <parameter>summary</parameter>
-            <parameter>M:WikiClientLibrary.Generators.MyWatchlistGenerator.ItemFromJson(Newtonsoft.Json.Linq.JToken)</parameter>
+            <parameter>M:WikiClientLibrary.Generators.MyWatchlistGenerator.ItemFromJson(System.Text.Json.Nodes.JsonNode)</parameter>
           </include>
         </markup>
       </summary>
@@ -5077,7 +5165,7 @@
           <include item="SMCMissingParamTag">
             <parameter>param</parameter>
             <parameter>json</parameter>
-            <parameter>M:WikiClientLibrary.Generators.MyWatchlistGenerator.ItemFromJson(Newtonsoft.Json.Linq.JToken)</parameter>
+            <parameter>M:WikiClientLibrary.Generators.MyWatchlistGenerator.ItemFromJson(System.Text.Json.Nodes.JsonNode)</parameter>
           </include>
         </markup>
       </param>
@@ -5191,7 +5279,7 @@
     </member>
     <member name="T:WikiClientLibrary.Generators.PagesWithPropGenerator">
       <summary>
-            List all pages using a given page property. The list of available properties can be found at action=query&amp;list=pagepropnames.
+            List all pages using a given page property.
             </summary>
     </member>
     <member name="M:WikiClientLibrary.Generators.PagesWithPropGenerator.#ctor(WikiClientLibrary.Sites.WikiSite,System.String)">
@@ -5231,12 +5319,12 @@
         </markup>
       </summary>
     </member>
-    <member name="M:WikiClientLibrary.Generators.PagesWithPropGenerator.ItemFromJson(Newtonsoft.Json.Linq.JToken)">
+    <member name="M:WikiClientLibrary.Generators.PagesWithPropGenerator.ItemFromJson(System.Text.Json.Nodes.JsonNode)">
       <summary>
         <markup>
           <include item="SMCMissingTag">
             <parameter>summary</parameter>
-            <parameter>M:WikiClientLibrary.Generators.PagesWithPropGenerator.ItemFromJson(Newtonsoft.Json.Linq.JToken)</parameter>
+            <parameter>M:WikiClientLibrary.Generators.PagesWithPropGenerator.ItemFromJson(System.Text.Json.Nodes.JsonNode)</parameter>
           </include>
         </markup>
       </summary>
@@ -5245,7 +5333,7 @@
           <include item="SMCMissingParamTag">
             <parameter>param</parameter>
             <parameter>json</parameter>
-            <parameter>M:WikiClientLibrary.Generators.PagesWithPropGenerator.ItemFromJson(Newtonsoft.Json.Linq.JToken)</parameter>
+            <parameter>M:WikiClientLibrary.Generators.PagesWithPropGenerator.ItemFromJson(System.Text.Json.Nodes.JsonNode)</parameter>
           </include>
         </markup>
       </param>
@@ -5268,13 +5356,15 @@
     </member>
     <member name="P:WikiClientLibrary.Generators.PagesWithPropGenerator.PropertyName">
       <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>P:WikiClientLibrary.Generators.PagesWithPropGenerator.PropertyName</parameter>
-          </include>
-        </markup>
-      </summary>
+            Page property for which to enumerate pages.
+            </summary>
+      <remarks>
+        <para>
+            The list of available properties can be found at
+            <a href="https://www.mediawiki.org/wiki/Special:ApiSandbox#action=query&amp;list=pagepropnames"><c>action=query&amp;list=pagepropnames</c></a>.
+            A non-exhaustive example includes
+            <list type="bullet"><item><description><c>defaultsort</c></description></item><item><description><c>disambiguation</c></description></item><item><description><c>displaytitle</c></description></item><item><description><c>forcetoc</c></description></item></list></para>
+      </remarks>
     </member>
     <member name="T:WikiClientLibrary.Generators.PagesWithPropResultItem">
       <summary>
@@ -5448,17 +5538,17 @@
             </remarks>
       <exception cref="T:WikiClientLibrary.UnexpectedDataException">Received unexpected JSON data from MediaWiki server.</exception>
     </member>
-    <member name="M:WikiClientLibrary.Generators.QueryPageGenerator.ItemFromJson(Newtonsoft.Json.Linq.JToken)">
+    <member name="M:WikiClientLibrary.Generators.QueryPageGenerator.ItemFromJson(System.Text.Json.Nodes.JsonNode)">
       <summary>
             Parses an item contained in the <c>action=query&amp;list=</c> JSON response.
             </summary>
       <param name="json">One of the item node under the .</param>
       <returns>The item that will be returned in the sequence from <see cref="M:WikiClientLibrary.Generators.Primitive.WikiList`1.EnumItemsAsync(System.Threading.CancellationToken)" />.</returns>
     </member>
-    <member name="M:WikiClientLibrary.Generators.QueryPageGenerator.ItemsFromResponse(Newtonsoft.Json.Linq.JToken)">
+    <member name="M:WikiClientLibrary.Generators.QueryPageGenerator.ItemsFromResponse(System.Text.Json.Nodes.JsonNode)">
       <summary>
             From the given MediaWiki API response of the MediaWiki <c>list</c> request,
-            locates the array of items whose items will be processed by <see cref="M:WikiClientLibrary.Generators.Primitive.WikiList`1.ItemFromJson(Newtonsoft.Json.Linq.JToken)" />.
+            locates the array of items whose items will be processed by <see cref="M:WikiClientLibrary.Generators.Primitive.WikiList`1.ItemFromJson(System.Text.Json.Nodes.JsonNode)" />.
             </summary>
       <param name="response">JSON root of MediaWiki API response. This is usually one page of the list.</param>
       <returns>a JSON array, or <c>null</c> if <paramref name="response" /> contains no item to yield.</returns>
@@ -5484,6 +5574,15 @@
       <summary>
             Contains the basic information of a specific MediaWiki query page result set.
             </summary>
+    </member>
+    <member name="M:WikiClientLibrary.Generators.QueryPageResultInfo.#ctor">
+      <summary>
+        <markup>
+          <include item="SMCAutoDocConstructor">
+            <parameter>WikiClientLibrary.Generators.QueryPageResultInfo</parameter>
+          </include>
+        </markup>
+      </summary>
     </member>
     <member name="P:WikiClientLibrary.Generators.QueryPageResultInfo.CachedTimestamp">
       <summary>Timestamp of the cached result set, if <see cref="P:WikiClientLibrary.Generators.QueryPageResultInfo.IsCached" /> is <c>true</c>.</summary>
@@ -5585,7 +5684,7 @@
             </summary>
       <returns>A sequence of fields, which will override the basic query parameters.</returns>
     </member>
-    <member name="M:WikiClientLibrary.Generators.RandomPageGenerator.ItemFromJson(Newtonsoft.Json.Linq.JToken)">
+    <member name="M:WikiClientLibrary.Generators.RandomPageGenerator.ItemFromJson(System.Text.Json.Nodes.JsonNode)">
       <summary>
             Parses an item contained in the <c>action=query&amp;list=</c> JSON response.
             </summary>
@@ -5612,6 +5711,15 @@
       <summary>
             Represents MediaWiki recent change entry.
             </summary>
+    </member>
+    <member name="M:WikiClientLibrary.Generators.RecentChangeItem.#ctor">
+      <summary>
+        <markup>
+          <include item="SMCAutoDocConstructor">
+            <parameter>WikiClientLibrary.Generators.RecentChangeItem</parameter>
+          </include>
+        </markup>
+      </summary>
     </member>
     <member name="P:WikiClientLibrary.Generators.RecentChangeItem.Comment">
       <summary>The edit/log comment.</summary>
@@ -5678,7 +5786,7 @@
       <remarks>It's suggested that the caller only patrol the pages whose <see cref="P:WikiClientLibrary.Generators.RecentChangeItem.PatrolStatus" /> is <see cref="F:WikiClientLibrary.Generators.PatrolStatus.Unpatrolled" />.</remarks>
       <exception cref="T:WikiClientLibrary.UnauthorizedOperationException">
         <para>You don't have permission to patrol changes. Only users with the patrol right can do this.</para>
-        <para>OR You don't have permission to patrol your own changes. Only users with the autopatrol right can do this.</para>
+        <para>OR You don't have permission to patrol your own changes. Only users with the <c>autopatrol</c> right can do this.</para>
       </exception>
       <exception cref="T:System.NotSupportedException">Patrolling is disabled on this wiki.</exception>
     </member>
@@ -5857,7 +5965,7 @@
             Do not list changes made by this user.
             </summary>
     </member>
-    <member name="M:WikiClientLibrary.Generators.RecentChangesGenerator.ItemFromJson(Newtonsoft.Json.Linq.JToken)">
+    <member name="M:WikiClientLibrary.Generators.RecentChangesGenerator.ItemFromJson(System.Text.Json.Nodes.JsonNode)">
       <summary>
             Parses an item contained in the <c>action=query&amp;list=</c> JSON response.
             </summary>
@@ -5936,14 +6044,10 @@
             </summary>
     </member>
     <member name="F:WikiClientLibrary.Generators.RecentChangesType.Categorize">
-      <summary>
-            Category membership change. (MediaWiki 1.27)
-            </summary>
+      <summary>Category membership change. (MediaWiki 1.27+)</summary>
     </member>
     <member name="F:WikiClientLibrary.Generators.RecentChangesType.MoveOverRedirect">
-      <summary>
-            Move over redirect. (Obsolete.)
-            </summary>
+      <summary>Move over redirect. (Obsolete.)</summary>
     </member>
     <member name="T:WikiClientLibrary.Generators.RevisionsGenerator">
       <summary>
@@ -6041,7 +6145,7 @@
             Do not list revisions made by this user.
             </summary>
     </member>
-    <member name="M:WikiClientLibrary.Generators.RevisionsGenerator.ItemFromJson(Newtonsoft.Json.Linq.JToken,Newtonsoft.Json.Linq.JObject)">
+    <member name="M:WikiClientLibrary.Generators.RevisionsGenerator.ItemFromJson(System.Text.Json.Nodes.JsonNode,System.Text.Json.Nodes.JsonObject)">
       <summary>
             Parses an item contained in the <c>action=query&amp;prop={PropertyName}</c> JSON response.
             </summary>
@@ -6179,7 +6283,7 @@
             Include interwiki results in the search, if available. (Default: false, MediaWiki 1.23+)
             </summary>
     </member>
-    <member name="M:WikiClientLibrary.Generators.SearchGenerator.ItemFromJson(Newtonsoft.Json.Linq.JToken)">
+    <member name="M:WikiClientLibrary.Generators.SearchGenerator.ItemFromJson(System.Text.Json.Nodes.JsonNode)">
       <summary>
             Parses an item contained in the <c>action=query&amp;list=</c> JSON response.
             </summary>
@@ -6230,7 +6334,7 @@
     </member>
     <member name="P:WikiClientLibrary.Generators.SearchResultItem.Id">
       <summary>
-            Id of the page.
+            ID of the page.
             </summary>
     </member>
     <member name="P:WikiClientLibrary.Generators.SearchResultItem.NamespaceId">
@@ -6514,17 +6618,17 @@
             </summary>
       <returns>A sequence of fields, which will override the basic query parameters.</returns>
     </member>
-    <member name="M:WikiClientLibrary.Generators.Primitive.WikiList`1.ItemFromJson(Newtonsoft.Json.Linq.JToken)">
+    <member name="M:WikiClientLibrary.Generators.Primitive.WikiList`1.ItemFromJson(System.Text.Json.Nodes.JsonNode)">
       <summary>
             Parses an item contained in the <c>action=query&amp;list=</c> JSON response.
             </summary>
       <param name="json">One of the item node under the .</param>
       <returns>The item that will be returned in the sequence from <see cref="M:WikiClientLibrary.Generators.Primitive.WikiList`1.EnumItemsAsync(System.Threading.CancellationToken)" />.</returns>
     </member>
-    <member name="M:WikiClientLibrary.Generators.Primitive.WikiList`1.ItemsFromResponse(Newtonsoft.Json.Linq.JToken)">
+    <member name="M:WikiClientLibrary.Generators.Primitive.WikiList`1.ItemsFromResponse(System.Text.Json.Nodes.JsonNode)">
       <summary>
             From the given MediaWiki API response of the MediaWiki <c>list</c> request,
-            locates the array of items whose items will be processed by <see cref="M:WikiClientLibrary.Generators.Primitive.WikiList`1.ItemFromJson(Newtonsoft.Json.Linq.JToken)" />.
+            locates the array of items whose items will be processed by <see cref="M:WikiClientLibrary.Generators.Primitive.WikiList`1.ItemFromJson(System.Text.Json.Nodes.JsonNode)" />.
             </summary>
       <param name="response">JSON root of MediaWiki API response. This is usually one page of the list.</param>
       <returns>a JSON array, or <c>null</c> if <paramref name="response" /> contains no item to yield.</returns>
@@ -6642,7 +6746,7 @@
       </summary>
       <param name="site">The MediaWiki site this instance applies to.</param>
     </member>
-    <member name="M:WikiClientLibrary.Generators.Primitive.WikiPageGenerator.ItemFromJson(Newtonsoft.Json.Linq.JToken)">
+    <member name="M:WikiClientLibrary.Generators.Primitive.WikiPageGenerator.ItemFromJson(System.Text.Json.Nodes.JsonNode)">
       <summary>
             Parses an item contained in the <c>action=query&amp;list=</c> JSON response.
             </summary>
@@ -6757,7 +6861,7 @@
             if <see cref="F:WikiClientLibrary.Pages.WikiPageStub.Empty" /> is specified, it will be ignored.
             </param>
     </member>
-    <member name="M:WikiClientLibrary.Generators.Primitive.WikiPagePropertyGenerator.ItemFromJson(Newtonsoft.Json.Linq.JToken,Newtonsoft.Json.Linq.JObject)">
+    <member name="M:WikiClientLibrary.Generators.Primitive.WikiPagePropertyGenerator.ItemFromJson(System.Text.Json.Nodes.JsonNode,System.Text.Json.Nodes.JsonObject)">
       <summary>
             Parses an item contained in the <c>action=query&amp;prop={PropertyName}</c> JSON response.
             </summary>
@@ -6921,7 +7025,7 @@
             </summary>
       <returns>A sequence of fields, which will override the basic query parameters.</returns>
     </member>
-    <member name="M:WikiClientLibrary.Generators.Primitive.WikiPagePropertyList`1.ItemFromJson(Newtonsoft.Json.Linq.JToken,Newtonsoft.Json.Linq.JObject)">
+    <member name="M:WikiClientLibrary.Generators.Primitive.WikiPagePropertyList`1.ItemFromJson(System.Text.Json.Nodes.JsonNode,System.Text.Json.Nodes.JsonObject)">
       <summary>
             Parses an item contained in the <c>action=query&amp;prop={PropertyName}</c> JSON response.
             </summary>
@@ -7040,14 +7144,62 @@
             Restores the captured execution context.
             </summary>
     </member>
+    <member name="T:WikiClientLibrary.Infrastructures.JsonContractAttribute">
+      <summary>
+            Infrastructure. Not intended to be used directly in your code.
+            Indicates the specified class will be used as JSON contract class with <see cref="T:System.Text.Json.JsonSerializer" /> API.
+            </summary>
+    </member>
+    <member name="M:WikiClientLibrary.Infrastructures.JsonContractAttribute.#ctor">
+      <summary>
+        <markup>
+          <include item="SMCAutoDocConstructor">
+            <parameter>WikiClientLibrary.Infrastructures.JsonContractAttribute</parameter>
+          </include>
+        </markup>
+      </summary>
+    </member>
+    <member name="T:WikiClientLibrary.Infrastructures.JsonHelper">
+      <summary>
+        <markup>
+          <include item="SMCMissingTag">
+            <parameter>summary</parameter>
+            <parameter>T:WikiClientLibrary.Infrastructures.JsonHelper</parameter>
+          </include>
+        </markup>
+      </summary>
+    </member>
+    <member name="M:WikiClientLibrary.Infrastructures.JsonHelper.InplaceMerge(System.Text.Json.Nodes.JsonNode,System.Text.Json.Nodes.JsonNode)">
+      <summary>
+        <markup>
+          <include item="SMCMissingTag">
+            <parameter>summary</parameter>
+            <parameter>M:WikiClientLibrary.Infrastructures.JsonHelper.InplaceMerge(System.Text.Json.Nodes.JsonNode,System.Text.Json.Nodes.JsonNode)</parameter>
+          </include>
+        </markup>
+      </summary>
+      <param name="root1">
+        <markup>
+          <include item="SMCMissingParamTag">
+            <parameter>param</parameter>
+            <parameter>root1</parameter>
+            <parameter>M:WikiClientLibrary.Infrastructures.JsonHelper.InplaceMerge(System.Text.Json.Nodes.JsonNode,System.Text.Json.Nodes.JsonNode)</parameter>
+          </include>
+        </markup>
+      </param>
+      <param name="root2">
+        <markup>
+          <include item="SMCMissingParamTag">
+            <parameter>param</parameter>
+            <parameter>root2</parameter>
+            <parameter>M:WikiClientLibrary.Infrastructures.JsonHelper.InplaceMerge(System.Text.Json.Nodes.JsonNode,System.Text.Json.Nodes.JsonNode)</parameter>
+          </include>
+        </markup>
+      </param>
+    </member>
     <member name="T:WikiClientLibrary.Infrastructures.MediaWikiHelper">
       <summary>
             Helper methods for extending MediaWiki API.
-            </summary>
-    </member>
-    <member name="M:WikiClientLibrary.Infrastructures.MediaWikiHelper.CreateWikiJsonSerializer">
-      <summary>
-            Create an new instance of <see cref="T:Newtonsoft.Json.JsonSerializer" /> for parsing MediaWiki API response.
             </summary>
     </member>
     <member name="M:WikiClientLibrary.Infrastructures.MediaWikiHelper.EnumValues(System.Object)">
@@ -7059,12 +7211,12 @@
             Or an anonymous object, in which case, its properties and values are enumerated.</param>
       <returns>A sequence containing the enumerated key-value pairs.</returns>
     </member>
-    <member name="M:WikiClientLibrary.Infrastructures.MediaWikiHelper.FileRevisionFromJson(Newtonsoft.Json.Linq.JObject,WikiClientLibrary.Pages.WikiPageStub)">
+    <member name="M:WikiClientLibrary.Infrastructures.MediaWikiHelper.FileRevisionFromJson(System.Text.Json.Nodes.JsonObject,WikiClientLibrary.Pages.WikiPageStub)">
       <summary>
         <markup>
           <include item="SMCMissingTag">
             <parameter>summary</parameter>
-            <parameter>M:WikiClientLibrary.Infrastructures.MediaWikiHelper.FileRevisionFromJson(Newtonsoft.Json.Linq.JObject,WikiClientLibrary.Pages.WikiPageStub)</parameter>
+            <parameter>M:WikiClientLibrary.Infrastructures.MediaWikiHelper.FileRevisionFromJson(System.Text.Json.Nodes.JsonObject,WikiClientLibrary.Pages.WikiPageStub)</parameter>
           </include>
         </markup>
       </summary>
@@ -7073,7 +7225,7 @@
           <include item="SMCMissingParamTag">
             <parameter>param</parameter>
             <parameter>jRevision</parameter>
-            <parameter>M:WikiClientLibrary.Infrastructures.MediaWikiHelper.FileRevisionFromJson(Newtonsoft.Json.Linq.JObject,WikiClientLibrary.Pages.WikiPageStub)</parameter>
+            <parameter>M:WikiClientLibrary.Infrastructures.MediaWikiHelper.FileRevisionFromJson(System.Text.Json.Nodes.JsonObject,WikiClientLibrary.Pages.WikiPageStub)</parameter>
           </include>
         </markup>
       </param>
@@ -7082,17 +7234,17 @@
           <include item="SMCMissingParamTag">
             <parameter>param</parameter>
             <parameter>pageStub</parameter>
-            <parameter>M:WikiClientLibrary.Infrastructures.MediaWikiHelper.FileRevisionFromJson(Newtonsoft.Json.Linq.JObject,WikiClientLibrary.Pages.WikiPageStub)</parameter>
+            <parameter>M:WikiClientLibrary.Infrastructures.MediaWikiHelper.FileRevisionFromJson(System.Text.Json.Nodes.JsonObject,WikiClientLibrary.Pages.WikiPageStub)</parameter>
           </include>
         </markup>
       </param>
     </member>
-    <member name="M:WikiClientLibrary.Infrastructures.MediaWikiHelper.GeoCoordinateFromJson(Newtonsoft.Json.Linq.JObject)">
+    <member name="M:WikiClientLibrary.Infrastructures.MediaWikiHelper.GeoCoordinateFromJson(System.Text.Json.Nodes.JsonObject)">
       <summary>
         <markup>
           <include item="SMCMissingTag">
             <parameter>summary</parameter>
-            <parameter>M:WikiClientLibrary.Infrastructures.MediaWikiHelper.GeoCoordinateFromJson(Newtonsoft.Json.Linq.JObject)</parameter>
+            <parameter>M:WikiClientLibrary.Infrastructures.MediaWikiHelper.GeoCoordinateFromJson(System.Text.Json.Nodes.JsonObject)</parameter>
           </include>
         </markup>
       </summary>
@@ -7101,7 +7253,7 @@
           <include item="SMCMissingParamTag">
             <parameter>param</parameter>
             <parameter>jcoordinate</parameter>
-            <parameter>M:WikiClientLibrary.Infrastructures.MediaWikiHelper.GeoCoordinateFromJson(Newtonsoft.Json.Linq.JObject)</parameter>
+            <parameter>M:WikiClientLibrary.Infrastructures.MediaWikiHelper.GeoCoordinateFromJson(System.Text.Json.Nodes.JsonObject)</parameter>
           </include>
         </markup>
       </param>
@@ -7157,7 +7309,7 @@
         <paramref name="baseUrl" />, <paramref name="relativeUrl" />,
             or <paramref name="defaultProtocol" /> is <c>null</c>.</exception>
     </member>
-    <member name="M:WikiClientLibrary.Infrastructures.MediaWikiHelper.PageStubFromJson(Newtonsoft.Json.Linq.JObject)">
+    <member name="M:WikiClientLibrary.Infrastructures.MediaWikiHelper.PageStubFromJson(System.Text.Json.Nodes.JsonObject)">
       <summary>
             Creates a <see cref="T:WikiClientLibrary.Pages.WikiPageStub" /> instance from the given raw page information.
             </summary>
@@ -7278,9 +7430,13 @@
       <exception cref="T:System.ArgumentNullException">
         <paramref name="stream" /> is <c>null</c>.</exception>
       <exception cref="T:WikiClientLibrary.UnexpectedDataException">
-        <paramref name="stream" /> is empty stream, or there is an error parsing the JSON response.</exception>
+        <paramref name="stream" /> is empty stream,
+            - or -
+            parsed JSON response is <c>null</c>,
+            - or -
+            there is an error parsing the JSON response.</exception>
     </member>
-    <member name="M:WikiClientLibrary.Infrastructures.MediaWikiHelper.PopulatePageFromJson(WikiClientLibrary.Pages.WikiPage,Newtonsoft.Json.Linq.JObject,WikiClientLibrary.Pages.Queries.IWikiPageQueryProvider)">
+    <member name="M:WikiClientLibrary.Infrastructures.MediaWikiHelper.PopulatePageFromJson(WikiClientLibrary.Pages.WikiPage,System.Text.Json.Nodes.JsonObject,WikiClientLibrary.Pages.Queries.IWikiPageQueryProvider)">
       <summary>
             Loads page information from JSON.
             </summary>
@@ -7289,7 +7445,7 @@
           <include item="SMCMissingParamTag">
             <parameter>param</parameter>
             <parameter>page</parameter>
-            <parameter>M:WikiClientLibrary.Infrastructures.MediaWikiHelper.PopulatePageFromJson(WikiClientLibrary.Pages.WikiPage,Newtonsoft.Json.Linq.JObject,WikiClientLibrary.Pages.Queries.IWikiPageQueryProvider)</parameter>
+            <parameter>M:WikiClientLibrary.Infrastructures.MediaWikiHelper.PopulatePageFromJson(WikiClientLibrary.Pages.WikiPage,System.Text.Json.Nodes.JsonObject,WikiClientLibrary.Pages.Queries.IWikiPageQueryProvider)</parameter>
           </include>
         </markup>
       </param>
@@ -7299,7 +7455,7 @@
           <include item="SMCMissingParamTag">
             <parameter>param</parameter>
             <parameter>options</parameter>
-            <parameter>M:WikiClientLibrary.Infrastructures.MediaWikiHelper.PopulatePageFromJson(WikiClientLibrary.Pages.WikiPage,Newtonsoft.Json.Linq.JObject,WikiClientLibrary.Pages.Queries.IWikiPageQueryProvider)</parameter>
+            <parameter>M:WikiClientLibrary.Infrastructures.MediaWikiHelper.PopulatePageFromJson(WikiClientLibrary.Pages.WikiPage,System.Text.Json.Nodes.JsonObject,WikiClientLibrary.Pages.Queries.IWikiPageQueryProvider)</parameter>
           </include>
         </markup>
       </param>
@@ -7322,12 +7478,12 @@
             If you want to apply your customization based on the presets, use <see cref="M:WikiClientLibrary.Pages.Queries.WikiPageQueryProvider.FromOptions(WikiClientLibrary.Pages.PageQueryOptions)" />.
             </remarks>
     </member>
-    <member name="M:WikiClientLibrary.Infrastructures.MediaWikiHelper.RevisionFromJson(Newtonsoft.Json.Linq.JObject,WikiClientLibrary.Pages.WikiPageStub)">
+    <member name="M:WikiClientLibrary.Infrastructures.MediaWikiHelper.RevisionFromJson(System.Text.Json.Nodes.JsonObject,WikiClientLibrary.Pages.WikiPageStub)">
       <summary>
         <markup>
           <include item="SMCMissingTag">
             <parameter>summary</parameter>
-            <parameter>M:WikiClientLibrary.Infrastructures.MediaWikiHelper.RevisionFromJson(Newtonsoft.Json.Linq.JObject,WikiClientLibrary.Pages.WikiPageStub)</parameter>
+            <parameter>M:WikiClientLibrary.Infrastructures.MediaWikiHelper.RevisionFromJson(System.Text.Json.Nodes.JsonObject,WikiClientLibrary.Pages.WikiPageStub)</parameter>
           </include>
         </markup>
       </summary>
@@ -7336,7 +7492,7 @@
           <include item="SMCMissingParamTag">
             <parameter>param</parameter>
             <parameter>jRevision</parameter>
-            <parameter>M:WikiClientLibrary.Infrastructures.MediaWikiHelper.RevisionFromJson(Newtonsoft.Json.Linq.JObject,WikiClientLibrary.Pages.WikiPageStub)</parameter>
+            <parameter>M:WikiClientLibrary.Infrastructures.MediaWikiHelper.RevisionFromJson(System.Text.Json.Nodes.JsonObject,WikiClientLibrary.Pages.WikiPageStub)</parameter>
           </include>
         </markup>
       </param>
@@ -7345,7 +7501,7 @@
           <include item="SMCMissingParamTag">
             <parameter>param</parameter>
             <parameter>pageStub</parameter>
-            <parameter>M:WikiClientLibrary.Infrastructures.MediaWikiHelper.RevisionFromJson(Newtonsoft.Json.Linq.JObject,WikiClientLibrary.Pages.WikiPageStub)</parameter>
+            <parameter>M:WikiClientLibrary.Infrastructures.MediaWikiHelper.RevisionFromJson(System.Text.Json.Nodes.JsonObject,WikiClientLibrary.Pages.WikiPageStub)</parameter>
           </include>
         </markup>
       </param>
@@ -7393,6 +7549,11 @@
         <paramref name="expression" /> is empty.</exception>
       <exception cref="T:System.FormatException">
         <paramref name="expression" /> is not a valid timestamp expression.</exception>
+    </member>
+    <member name="P:WikiClientLibrary.Infrastructures.MediaWikiHelper.WikiJsonSerializerOptions">
+      <summary>
+            Gets a read-only instance of <see cref="T:System.Text.Json.JsonSerializerOptions" /> for parsing MediaWiki API response.
+            </summary>
     </member>
     <member name="T:WikiClientLibrary.Infrastructures.OrderedKeyValuePairs`2">
       <summary>
@@ -7581,39 +7742,54 @@
         </markup>
       </summary>
     </member>
-    <member name="M:WikiClientLibrary.Infrastructures.WikiBooleanJsonConverter.CanConvert(System.Type)">
-      <summary>
-            Determines whether this instance can convert the specified object type.
-            </summary>
-      <param name="objectType">Type of the object.</param>
-      <returns>
-        <c>true</c> if this instance can convert the specified object type; otherwise, <c>false</c>.
-            </returns>
+    <member name="M:WikiClientLibrary.Infrastructures.WikiBooleanJsonConverter.Read(System.Text.Json.Utf8JsonReader@,System.Type,System.Text.Json.JsonSerializerOptions)">
+      <summary>Reads and converts the JSON to type <typeparamref name="T" />.</summary>
+      <param name="reader">The reader.</param>
+      <param name="typeToConvert">The type to convert.</param>
+      <param name="options">An object that specifies serialization options to use.</param>
+      <returns>The converted value.</returns>
     </member>
-    <member name="M:WikiClientLibrary.Infrastructures.WikiBooleanJsonConverter.ReadJson(Newtonsoft.Json.JsonReader,System.Type,System.Object,Newtonsoft.Json.JsonSerializer)">
-      <summary>
-            Reads the JSON representation of the object.
-            </summary>
-      <param name="reader">The <see cref="T:Newtonsoft.Json.JsonReader" /> to read from.</param>
-      <param name="objectType">Type of the object.</param>
-      <param name="existingValue">The existing value of object being read.</param>
-      <param name="serializer">The calling serializer.</param>
-      <returns>
-            The object value.
-            </returns>
+    <member name="M:WikiClientLibrary.Infrastructures.WikiBooleanJsonConverter.Write(System.Text.Json.Utf8JsonWriter,System.Boolean,System.Text.Json.JsonSerializerOptions)">
+      <summary>Writes a specified value as JSON.</summary>
+      <param name="writer">The writer to write to.</param>
+      <param name="value">The value to convert to JSON.</param>
+      <param name="options">An object that specifies serialization options to use.</param>
     </member>
-    <member name="M:WikiClientLibrary.Infrastructures.WikiBooleanJsonConverter.WriteJson(Newtonsoft.Json.JsonWriter,System.Object,Newtonsoft.Json.JsonSerializer)">
+    <member name="T:WikiClientLibrary.Infrastructures.WikiDateTimeConverter">
       <summary>
-            Writes the JSON representation of the object.
+            Handles the conversion between MediaWiki API timestamp and its CLR counterparts.
+            This specific class handles the timestamp represented by <see cref="T:System.DateTimeOffset" />.
             </summary>
-      <param name="writer">The <see cref="T:Newtonsoft.Json.JsonWriter" /> to write to.</param>
-      <param name="value">The value.</param>
-      <param name="serializer">The calling serializer.</param>
+      <remarks>
+            See the "Remarks" section of <see cref="T:WikiClientLibrary.Infrastructures.WikiDateTimeOffsetConverter" /> for the conversion behavior.
+            </remarks>
     </member>
-    <member name="T:WikiClientLibrary.Infrastructures.WikiDateTimeJsonConverter">
+    <member name="M:WikiClientLibrary.Infrastructures.WikiDateTimeConverter.#ctor">
       <summary>
-            Handles the conversion between MediaWiki API timestamp and its CLR counterparts:
-            <see cref="T:System.DateTime" /> and <see cref="T:System.DateTimeOffset" />.
+        <markup>
+          <include item="SMCAutoDocConstructor">
+            <parameter>WikiClientLibrary.Infrastructures.WikiDateTimeConverter</parameter>
+          </include>
+        </markup>
+      </summary>
+    </member>
+    <member name="M:WikiClientLibrary.Infrastructures.WikiDateTimeConverter.Read(System.Text.Json.Utf8JsonReader@,System.Type,System.Text.Json.JsonSerializerOptions)">
+      <summary>Reads and converts the JSON to type <typeparamref name="T" />.</summary>
+      <param name="reader">The reader.</param>
+      <param name="typeToConvert">The type to convert.</param>
+      <param name="options">An object that specifies serialization options to use.</param>
+      <returns>The converted value.</returns>
+    </member>
+    <member name="M:WikiClientLibrary.Infrastructures.WikiDateTimeConverter.Write(System.Text.Json.Utf8JsonWriter,System.DateTime,System.Text.Json.JsonSerializerOptions)">
+      <summary>Writes a specified value as JSON.</summary>
+      <param name="writer">The writer to write to.</param>
+      <param name="value">The value to convert to JSON.</param>
+      <param name="options">An object that specifies serialization options to use.</param>
+    </member>
+    <member name="T:WikiClientLibrary.Infrastructures.WikiDateTimeOffsetConverter">
+      <summary>
+            Handles the conversion between MediaWiki API timestamp and its CLR counterparts.
+            This specific class handles the timestamp represented by <see cref="T:System.DateTimeOffset" />.
             </summary>
       <remarks>
         <para>This converter uses ISO 8601 format to serialize the timestamp,
@@ -7624,105 +7800,240 @@
             See their documentation respectively for more behavioral information.</para>
       </remarks>
     </member>
-    <member name="M:WikiClientLibrary.Infrastructures.WikiDateTimeJsonConverter.#ctor">
+    <member name="M:WikiClientLibrary.Infrastructures.WikiDateTimeOffsetConverter.#ctor">
       <summary>
         <markup>
           <include item="SMCAutoDocConstructor">
-            <parameter>WikiClientLibrary.Infrastructures.WikiDateTimeJsonConverter</parameter>
+            <parameter>WikiClientLibrary.Infrastructures.WikiDateTimeOffsetConverter</parameter>
           </include>
         </markup>
       </summary>
     </member>
-    <member name="M:WikiClientLibrary.Infrastructures.WikiDateTimeJsonConverter.CanConvert(System.Type)">
-      <summary>
-            Determines whether this instance can convert the specified object type.
-            </summary>
-      <param name="objectType">Type of the object.</param>
-      <returns>
-        <c>true</c> if this instance can convert the specified object type; otherwise, <c>false</c>.
-            </returns>
+    <member name="M:WikiClientLibrary.Infrastructures.WikiDateTimeOffsetConverter.Read(System.Text.Json.Utf8JsonReader@,System.Type,System.Text.Json.JsonSerializerOptions)">
+      <summary>Reads and converts the JSON to type <typeparamref name="T" />.</summary>
+      <param name="reader">The reader.</param>
+      <param name="typeToConvert">The type to convert.</param>
+      <param name="options">An object that specifies serialization options to use.</param>
+      <returns>The converted value.</returns>
     </member>
-    <member name="M:WikiClientLibrary.Infrastructures.WikiDateTimeJsonConverter.ReadJson(Newtonsoft.Json.JsonReader,System.Type,System.Object,Newtonsoft.Json.JsonSerializer)">
-      <summary>
-            Reads the JSON representation of the object.
-            </summary>
-      <param name="reader">The <see cref="T:Newtonsoft.Json.JsonReader" /> to read from.</param>
-      <param name="objectType">Type of the object.</param>
-      <param name="existingValue">The existing value of object being read.</param>
-      <param name="serializer">The calling serializer.</param>
-      <returns>The object value.</returns>
+    <member name="M:WikiClientLibrary.Infrastructures.WikiDateTimeOffsetConverter.Write(System.Text.Json.Utf8JsonWriter,System.DateTimeOffset,System.Text.Json.JsonSerializerOptions)">
+      <summary>Writes a specified value as JSON.</summary>
+      <param name="writer">The writer to write to.</param>
+      <param name="value">The value to convert to JSON.</param>
+      <param name="options">An object that specifies serialization options to use.</param>
     </member>
-    <member name="M:WikiClientLibrary.Infrastructures.WikiDateTimeJsonConverter.WriteJson(Newtonsoft.Json.JsonWriter,System.Object,Newtonsoft.Json.JsonSerializer)">
+    <member name="T:WikiClientLibrary.Infrastructures.WikiJsonElementHelper">
       <summary>
-            Writes the JSON representation of the object.
+            Infrastructure. The implementation is subject to changes so it's not recommended to directly reference them in your code.
             </summary>
-      <param name="writer">The <see cref="T:Newtonsoft.Json.JsonWriter" /> to write to.</param>
-      <param name="value">The value.</param>
-      <param name="serializer">The calling serializer.</param>
     </member>
-    <member name="T:WikiClientLibrary.Infrastructures.WikiJsonContractResolver">
+    <member name="M:WikiClientLibrary.Infrastructures.WikiJsonElementHelper.ConvertTo``1(System.Text.Json.JsonElement)">
       <summary>
         <markup>
           <include item="SMCMissingTag">
             <parameter>summary</parameter>
-            <parameter>T:WikiClientLibrary.Infrastructures.WikiJsonContractResolver</parameter>
+            <parameter>M:WikiClientLibrary.Infrastructures.WikiJsonElementHelper.ConvertTo``1(System.Text.Json.JsonElement)</parameter>
           </include>
         </markup>
       </summary>
+      <param name="e">
+        <markup>
+          <include item="SMCMissingParamTag">
+            <parameter>param</parameter>
+            <parameter>e</parameter>
+            <parameter>M:WikiClientLibrary.Infrastructures.WikiJsonElementHelper.ConvertTo``1(System.Text.Json.JsonElement)</parameter>
+          </include>
+        </markup>
+      </param>
+      <typeparam name="T">
+        <markup>
+          <include item="SMCMissingParamTag">
+            <parameter>typeparam</parameter>
+            <parameter>T</parameter>
+            <parameter>M:WikiClientLibrary.Infrastructures.WikiJsonElementHelper.ConvertTo``1(System.Text.Json.JsonElement)</parameter>
+          </include>
+        </markup>
+      </typeparam>
     </member>
-    <member name="M:WikiClientLibrary.Infrastructures.WikiJsonContractResolver.#ctor">
+    <member name="M:WikiClientLibrary.Infrastructures.WikiJsonElementHelper.ConvertToDateTime(System.Text.Json.JsonElement)">
       <summary>
         <markup>
-          <include item="SMCAutoDocConstructor">
-            <parameter>WikiClientLibrary.Infrastructures.WikiJsonContractResolver</parameter>
+          <include item="SMCMissingTag">
+            <parameter>summary</parameter>
+            <parameter>M:WikiClientLibrary.Infrastructures.WikiJsonElementHelper.ConvertToDateTime(System.Text.Json.JsonElement)</parameter>
           </include>
         </markup>
       </summary>
+      <param name="e">
+        <markup>
+          <include item="SMCMissingParamTag">
+            <parameter>param</parameter>
+            <parameter>e</parameter>
+            <parameter>M:WikiClientLibrary.Infrastructures.WikiJsonElementHelper.ConvertToDateTime(System.Text.Json.JsonElement)</parameter>
+          </include>
+        </markup>
+      </param>
     </member>
-    <member name="M:WikiClientLibrary.Infrastructures.WikiJsonContractResolver.CreateProperty(System.Reflection.MemberInfo,Newtonsoft.Json.MemberSerialization)">
+    <member name="M:WikiClientLibrary.Infrastructures.WikiJsonElementHelper.ConvertToDouble(System.Text.Json.JsonElement)">
       <summary>
-            Creates a <see cref="T:Newtonsoft.Json.Serialization.JsonProperty" /> for the given <see cref="T:System.Reflection.MemberInfo" />.
-            </summary>
-      <param name="memberSerialization">The member's parent <see cref="T:Newtonsoft.Json.MemberSerialization" />.</param>
-      <param name="member">The member to create a <see cref="T:Newtonsoft.Json.Serialization.JsonProperty" /> for.</param>
-      <returns>A created <see cref="T:Newtonsoft.Json.Serialization.JsonProperty" /> for the given <see cref="T:System.Reflection.MemberInfo" />.</returns>
+        <markup>
+          <include item="SMCMissingTag">
+            <parameter>summary</parameter>
+            <parameter>M:WikiClientLibrary.Infrastructures.WikiJsonElementHelper.ConvertToDouble(System.Text.Json.JsonElement)</parameter>
+          </include>
+        </markup>
+      </summary>
+      <param name="e">
+        <markup>
+          <include item="SMCMissingParamTag">
+            <parameter>param</parameter>
+            <parameter>e</parameter>
+            <parameter>M:WikiClientLibrary.Infrastructures.WikiJsonElementHelper.ConvertToDouble(System.Text.Json.JsonElement)</parameter>
+          </include>
+        </markup>
+      </param>
     </member>
-    <member name="M:WikiClientLibrary.Infrastructures.WikiJsonContractResolver.ResolveDictionaryKey(System.String)">
+    <member name="M:WikiClientLibrary.Infrastructures.WikiJsonElementHelper.ConvertToInt32(System.Text.Json.JsonElement)">
       <summary>
-            Resolves the key of the dictionary. By default <see cref="M:Newtonsoft.Json.Serialization.DefaultContractResolver.ResolvePropertyName(System.String)" /> is used to resolve dictionary keys.
-            </summary>
-      <param name="dictionaryKey">Key of the dictionary.</param>
-      <returns>Resolved key of the dictionary.</returns>
+        <markup>
+          <include item="SMCMissingTag">
+            <parameter>summary</parameter>
+            <parameter>M:WikiClientLibrary.Infrastructures.WikiJsonElementHelper.ConvertToInt32(System.Text.Json.JsonElement)</parameter>
+          </include>
+        </markup>
+      </summary>
+      <param name="e">
+        <markup>
+          <include item="SMCMissingParamTag">
+            <parameter>param</parameter>
+            <parameter>e</parameter>
+            <parameter>M:WikiClientLibrary.Infrastructures.WikiJsonElementHelper.ConvertToInt32(System.Text.Json.JsonElement)</parameter>
+          </include>
+        </markup>
+      </param>
     </member>
-    <member name="M:WikiClientLibrary.Infrastructures.WikiJsonContractResolver.ResolvePropertyName(System.String)">
+    <member name="M:WikiClientLibrary.Infrastructures.WikiJsonElementHelper.ConvertToInt64(System.Text.Json.JsonElement)">
       <summary>
-            Resolves the name of the property.
-            </summary>
-      <param name="propertyName">Name of the property.</param>
-      <returns>Resolved name of the property.</returns>
+        <markup>
+          <include item="SMCMissingTag">
+            <parameter>summary</parameter>
+            <parameter>M:WikiClientLibrary.Infrastructures.WikiJsonElementHelper.ConvertToInt64(System.Text.Json.JsonElement)</parameter>
+          </include>
+        </markup>
+      </summary>
+      <param name="e">
+        <markup>
+          <include item="SMCMissingParamTag">
+            <parameter>param</parameter>
+            <parameter>e</parameter>
+            <parameter>M:WikiClientLibrary.Infrastructures.WikiJsonElementHelper.ConvertToInt64(System.Text.Json.JsonElement)</parameter>
+          </include>
+        </markup>
+      </param>
     </member>
-    <member name="T:WikiClientLibrary.Infrastructures.WikiJsonNamingStrategy">
+    <member name="M:WikiClientLibrary.Infrastructures.WikiJsonElementHelper.ConvertToSingle(System.Text.Json.JsonElement)">
+      <summary>
+        <markup>
+          <include item="SMCMissingTag">
+            <parameter>summary</parameter>
+            <parameter>M:WikiClientLibrary.Infrastructures.WikiJsonElementHelper.ConvertToSingle(System.Text.Json.JsonElement)</parameter>
+          </include>
+        </markup>
+      </summary>
+      <param name="e">
+        <markup>
+          <include item="SMCMissingParamTag">
+            <parameter>param</parameter>
+            <parameter>e</parameter>
+            <parameter>M:WikiClientLibrary.Infrastructures.WikiJsonElementHelper.ConvertToSingle(System.Text.Json.JsonElement)</parameter>
+          </include>
+        </markup>
+      </param>
+    </member>
+    <member name="M:WikiClientLibrary.Infrastructures.WikiJsonElementHelper.ConvertToString(System.Text.Json.JsonElement)">
+      <summary>
+        <markup>
+          <include item="SMCMissingTag">
+            <parameter>summary</parameter>
+            <parameter>M:WikiClientLibrary.Infrastructures.WikiJsonElementHelper.ConvertToString(System.Text.Json.JsonElement)</parameter>
+          </include>
+        </markup>
+      </summary>
+      <param name="e">
+        <markup>
+          <include item="SMCMissingParamTag">
+            <parameter>param</parameter>
+            <parameter>e</parameter>
+            <parameter>M:WikiClientLibrary.Infrastructures.WikiJsonElementHelper.ConvertToString(System.Text.Json.JsonElement)</parameter>
+          </include>
+        </markup>
+      </param>
+    </member>
+    <member name="M:WikiClientLibrary.Infrastructures.WikiJsonElementHelper.ConvertToUInt64(System.Text.Json.JsonElement)">
+      <summary>
+        <markup>
+          <include item="SMCMissingTag">
+            <parameter>summary</parameter>
+            <parameter>M:WikiClientLibrary.Infrastructures.WikiJsonElementHelper.ConvertToUInt64(System.Text.Json.JsonElement)</parameter>
+          </include>
+        </markup>
+      </summary>
+      <param name="e">
+        <markup>
+          <include item="SMCMissingParamTag">
+            <parameter>param</parameter>
+            <parameter>e</parameter>
+            <parameter>M:WikiClientLibrary.Infrastructures.WikiJsonElementHelper.ConvertToUInt64(System.Text.Json.JsonElement)</parameter>
+          </include>
+        </markup>
+      </param>
+    </member>
+    <member name="M:WikiClientLibrary.Infrastructures.WikiJsonElementHelper.TryConvertToDouble(System.Text.Json.JsonElement,System.Double@)">
+      <summary>
+        <markup>
+          <include item="SMCMissingTag">
+            <parameter>summary</parameter>
+            <parameter>M:WikiClientLibrary.Infrastructures.WikiJsonElementHelper.TryConvertToDouble(System.Text.Json.JsonElement,System.Double@)</parameter>
+          </include>
+        </markup>
+      </summary>
+      <param name="e">
+        <markup>
+          <include item="SMCMissingParamTag">
+            <parameter>param</parameter>
+            <parameter>e</parameter>
+            <parameter>M:WikiClientLibrary.Infrastructures.WikiJsonElementHelper.TryConvertToDouble(System.Text.Json.JsonElement,System.Double@)</parameter>
+          </include>
+        </markup>
+      </param>
+      <param name="value">
+        <markup>
+          <include item="SMCMissingParamTag">
+            <parameter>param</parameter>
+            <parameter>value</parameter>
+            <parameter>M:WikiClientLibrary.Infrastructures.WikiJsonElementHelper.TryConvertToDouble(System.Text.Json.JsonElement,System.Double@)</parameter>
+          </include>
+        </markup>
+      </param>
+    </member>
+    <member name="T:WikiClientLibrary.Infrastructures.WikiJsonNamingPolicy">
       <summary>
             All-lower-case property naming strategy as used in MediaWiki API response.
             </summary>
     </member>
-    <member name="M:WikiClientLibrary.Infrastructures.WikiJsonNamingStrategy.#ctor">
+    <member name="M:WikiClientLibrary.Infrastructures.WikiJsonNamingPolicy.#ctor">
       <summary>
         <markup>
           <include item="SMCAutoDocConstructor">
-            <parameter>WikiClientLibrary.Infrastructures.WikiJsonNamingStrategy</parameter>
+            <parameter>WikiClientLibrary.Infrastructures.WikiJsonNamingPolicy</parameter>
           </include>
         </markup>
       </summary>
     </member>
-    <member name="M:WikiClientLibrary.Infrastructures.WikiJsonNamingStrategy.ResolvePropertyName(System.String)">
-      <summary>
-            Resolves the specified property name.
-            </summary>
-      <param name="name">The property name to resolve.</param>
-      <returns>
-            The resolved property name.
-            </returns>
+    <member name="M:WikiClientLibrary.Infrastructures.WikiJsonNamingPolicy.ConvertName(System.String)">
+      <summary>When overridden in a derived class, converts the specified name according to the policy.</summary>
+      <param name="name">The name to convert.</param>
+      <returns>The converted name.</returns>
     </member>
     <member name="T:WikiClientLibrary.Infrastructures.WikiReadOnlyDictionary">
       <summary>
@@ -7804,20 +8115,6 @@
       <param name="key">The property name.</param>
       <returns>The converted value - or - <c>null</c> if the specified key does not exist.</returns>
     </member>
-    <member name="M:WikiClientLibrary.Infrastructures.WikiReadOnlyDictionary.GetValueDirect(System.String)">
-      <summary>
-            Tries to directly gets the value of the specified property.
-            </summary>
-      <param name="key">
-        <markup>
-          <include item="SMCMissingParamTag">
-            <parameter>param</parameter>
-            <parameter>key</parameter>
-            <parameter>M:WikiClientLibrary.Infrastructures.WikiReadOnlyDictionary.GetValueDirect(System.String)</parameter>
-          </include>
-        </markup>
-      </param>
-    </member>
     <member name="P:WikiClientLibrary.Infrastructures.WikiReadOnlyDictionary.Item(System.String)">
       <summary>
             Tries to get the value of the specified property.
@@ -7829,32 +8126,32 @@
       <summary>Gets an <see cref="T:System.Collections.Generic.ICollection`1" /> containing the keys of the <see cref="T:System.Collections.Generic.IDictionary`2" />.</summary>
       <returns>An <see cref="T:System.Collections.Generic.ICollection`1" /> containing the keys of the object that implements <see cref="T:System.Collections.Generic.IDictionary`2" />.</returns>
     </member>
-    <member name="M:WikiClientLibrary.Infrastructures.WikiReadOnlyDictionary.MakeReadonly">
+    <member name="M:WikiClientLibrary.Infrastructures.WikiReadOnlyDictionary.OnDeserialized">
       <summary>
         <markup>
           <include item="SMCMissingTag">
             <parameter>summary</parameter>
-            <parameter>M:WikiClientLibrary.Infrastructures.WikiReadOnlyDictionary.MakeReadonly</parameter>
+            <parameter>M:WikiClientLibrary.Infrastructures.WikiReadOnlyDictionary.OnDeserialized</parameter>
           </include>
         </markup>
       </summary>
     </member>
-    <member name="M:WikiClientLibrary.Infrastructures.WikiReadOnlyDictionary.System#Collections#Generic#ICollection{System#Collections#Generic#KeyValuePair{System#String@Newtonsoft#Json#Linq#JToken}}#Add(System.Collections.Generic.KeyValuePair{System.String,Newtonsoft.Json.Linq.JToken})">
+    <member name="M:WikiClientLibrary.Infrastructures.WikiReadOnlyDictionary.System#Collections#Generic#ICollection{System#Collections#Generic#KeyValuePair{System#String@System#Text#Json#JsonElement}}#Add(System.Collections.Generic.KeyValuePair{System.String,System.Text.Json.JsonElement})">
       <summary>Adds an item to the <see cref="T:System.Collections.Generic.ICollection`1" />.</summary>
       <param name="item">The object to add to the <see cref="T:System.Collections.Generic.ICollection`1" />.</param>
       <exception cref="T:System.NotSupportedException">The <see cref="T:System.Collections.Generic.ICollection`1" /> is read-only.</exception>
     </member>
-    <member name="M:WikiClientLibrary.Infrastructures.WikiReadOnlyDictionary.System#Collections#Generic#ICollection{System#Collections#Generic#KeyValuePair{System#String@Newtonsoft#Json#Linq#JToken}}#Clear">
+    <member name="M:WikiClientLibrary.Infrastructures.WikiReadOnlyDictionary.System#Collections#Generic#ICollection{System#Collections#Generic#KeyValuePair{System#String@System#Text#Json#JsonElement}}#Clear">
       <summary>Removes all items from the <see cref="T:System.Collections.Generic.ICollection`1" />.</summary>
       <exception cref="T:System.NotSupportedException">The <see cref="T:System.Collections.Generic.ICollection`1" /> is read-only.</exception>
     </member>
-    <member name="M:WikiClientLibrary.Infrastructures.WikiReadOnlyDictionary.System#Collections#Generic#ICollection{System#Collections#Generic#KeyValuePair{System#String@Newtonsoft#Json#Linq#JToken}}#Contains(System.Collections.Generic.KeyValuePair{System.String,Newtonsoft.Json.Linq.JToken})">
+    <member name="M:WikiClientLibrary.Infrastructures.WikiReadOnlyDictionary.System#Collections#Generic#ICollection{System#Collections#Generic#KeyValuePair{System#String@System#Text#Json#JsonElement}}#Contains(System.Collections.Generic.KeyValuePair{System.String,System.Text.Json.JsonElement})">
       <summary>Determines whether the <see cref="T:System.Collections.Generic.ICollection`1" /> contains a specific value.</summary>
       <param name="item">The object to locate in the <see cref="T:System.Collections.Generic.ICollection`1" />.</param>
       <returns>
         <see langword="true" /> if <paramref name="item" /> is found in the <see cref="T:System.Collections.Generic.ICollection`1" />; otherwise, <see langword="false" />.</returns>
     </member>
-    <member name="M:WikiClientLibrary.Infrastructures.WikiReadOnlyDictionary.System#Collections#Generic#ICollection{System#Collections#Generic#KeyValuePair{System#String@Newtonsoft#Json#Linq#JToken}}#CopyTo(System.Collections.Generic.KeyValuePair{System.String,Newtonsoft.Json.Linq.JToken}[],System.Int32)">
+    <member name="M:WikiClientLibrary.Infrastructures.WikiReadOnlyDictionary.System#Collections#Generic#ICollection{System#Collections#Generic#KeyValuePair{System#String@System#Text#Json#JsonElement}}#CopyTo(System.Collections.Generic.KeyValuePair{System.String,System.Text.Json.JsonElement}[],System.Int32)">
       <summary>Copies the elements of the <see cref="T:System.Collections.Generic.ICollection`1" /> to an <see cref="T:System.Array" />, starting at a particular <see cref="T:System.Array" /> index.</summary>
       <param name="array">The one-dimensional <see cref="T:System.Array" /> that is the destination of the elements copied from <see cref="T:System.Collections.Generic.ICollection`1" />. The <see cref="T:System.Array" /> must have zero-based indexing.</param>
       <param name="arrayIndex">The zero-based index in <paramref name="array" /> at which copying begins.</param>
@@ -7864,19 +8161,19 @@
         <paramref name="arrayIndex" /> is less than 0.</exception>
       <exception cref="T:System.ArgumentException">The number of elements in the source <see cref="T:System.Collections.Generic.ICollection`1" /> is greater than the available space from <paramref name="arrayIndex" /> to the end of the destination <paramref name="array" />.</exception>
     </member>
-    <member name="P:WikiClientLibrary.Infrastructures.WikiReadOnlyDictionary.System#Collections#Generic#ICollection{System#Collections#Generic#KeyValuePair{System#String@Newtonsoft#Json#Linq#JToken}}#IsReadOnly">
+    <member name="P:WikiClientLibrary.Infrastructures.WikiReadOnlyDictionary.System#Collections#Generic#ICollection{System#Collections#Generic#KeyValuePair{System#String@System#Text#Json#JsonElement}}#IsReadOnly">
       <summary>Gets a value indicating whether the <see cref="T:System.Collections.Generic.ICollection`1" /> is read-only.</summary>
       <returns>
         <see langword="true" /> if the <see cref="T:System.Collections.Generic.ICollection`1" /> is read-only; otherwise, <see langword="false" />.</returns>
     </member>
-    <member name="M:WikiClientLibrary.Infrastructures.WikiReadOnlyDictionary.System#Collections#Generic#ICollection{System#Collections#Generic#KeyValuePair{System#String@Newtonsoft#Json#Linq#JToken}}#Remove(System.Collections.Generic.KeyValuePair{System.String,Newtonsoft.Json.Linq.JToken})">
+    <member name="M:WikiClientLibrary.Infrastructures.WikiReadOnlyDictionary.System#Collections#Generic#ICollection{System#Collections#Generic#KeyValuePair{System#String@System#Text#Json#JsonElement}}#Remove(System.Collections.Generic.KeyValuePair{System.String,System.Text.Json.JsonElement})">
       <summary>Removes the first occurrence of a specific object from the <see cref="T:System.Collections.Generic.ICollection`1" />.</summary>
       <param name="item">The object to remove from the <see cref="T:System.Collections.Generic.ICollection`1" />.</param>
       <returns>
         <see langword="true" /> if <paramref name="item" /> was successfully removed from the <see cref="T:System.Collections.Generic.ICollection`1" />; otherwise, <see langword="false" />. This method also returns <see langword="false" /> if <paramref name="item" /> is not found in the original <see cref="T:System.Collections.Generic.ICollection`1" />.</returns>
       <exception cref="T:System.NotSupportedException">The <see cref="T:System.Collections.Generic.ICollection`1" /> is read-only.</exception>
     </member>
-    <member name="M:WikiClientLibrary.Infrastructures.WikiReadOnlyDictionary.System#Collections#Generic#IDictionary{System#String@Newtonsoft#Json#Linq#JToken}#Add(System.String,Newtonsoft.Json.Linq.JToken)">
+    <member name="M:WikiClientLibrary.Infrastructures.WikiReadOnlyDictionary.System#Collections#Generic#IDictionary{System#String@System#Text#Json#JsonElement}#Add(System.String,System.Text.Json.JsonElement)">
       <summary>Adds an element with the provided key and value to the <see cref="T:System.Collections.Generic.IDictionary`2" />.</summary>
       <param name="key">The object to use as the key of the element to add.</param>
       <param name="value">The object to use as the value of the element to add.</param>
@@ -7885,7 +8182,7 @@
       <exception cref="T:System.ArgumentException">An element with the same key already exists in the <see cref="T:System.Collections.Generic.IDictionary`2" />.</exception>
       <exception cref="T:System.NotSupportedException">The <see cref="T:System.Collections.Generic.IDictionary`2" /> is read-only.</exception>
     </member>
-    <member name="M:WikiClientLibrary.Infrastructures.WikiReadOnlyDictionary.System#Collections#Generic#IDictionary{System#String@Newtonsoft#Json#Linq#JToken}#Remove(System.String)">
+    <member name="M:WikiClientLibrary.Infrastructures.WikiReadOnlyDictionary.System#Collections#Generic#IDictionary{System#String@System#Text#Json#JsonElement}#Remove(System.String)">
       <summary>Removes the element with the specified key from the <see cref="T:System.Collections.Generic.IDictionary`2" />.</summary>
       <param name="key">The key of the element to remove.</param>
       <returns>
@@ -7894,7 +8191,7 @@
         <paramref name="key" /> is <see langword="null" />.</exception>
       <exception cref="T:System.NotSupportedException">The <see cref="T:System.Collections.Generic.IDictionary`2" /> is read-only.</exception>
     </member>
-    <member name="M:WikiClientLibrary.Infrastructures.WikiReadOnlyDictionary.System#Collections#Generic#IEnumerable{System#Collections#Generic#KeyValuePair{System#String@Newtonsoft#Json#Linq#JToken}}#GetEnumerator">
+    <member name="M:WikiClientLibrary.Infrastructures.WikiReadOnlyDictionary.System#Collections#Generic#IEnumerable{System#Collections#Generic#KeyValuePair{System#String@System#Text#Json#JsonElement}}#GetEnumerator">
       <summary>Returns an enumerator that iterates through the collection.</summary>
       <returns>An enumerator that can be used to iterate through the collection.</returns>
     </member>
@@ -7902,7 +8199,7 @@
       <summary>Returns an enumerator that iterates through a collection.</summary>
       <returns>An <see cref="T:System.Collections.IEnumerator" /> object that can be used to iterate through the collection.</returns>
     </member>
-    <member name="M:WikiClientLibrary.Infrastructures.WikiReadOnlyDictionary.TryGetValue(System.String,Newtonsoft.Json.Linq.JToken@)">
+    <member name="M:WikiClientLibrary.Infrastructures.WikiReadOnlyDictionary.TryGetValue(System.String,System.Text.Json.JsonElement@)">
       <summary>Gets the value associated with the specified key.</summary>
       <param name="key">The key whose value to get.</param>
       <param name="value">When this method returns, the value associated with the specified key, if the key is found; otherwise, the default value for the type of the <paramref name="value" /> parameter. This parameter is passed uninitialized.</param>
@@ -7914,6 +8211,32 @@
     <member name="P:WikiClientLibrary.Infrastructures.WikiReadOnlyDictionary.Values">
       <summary>Gets an <see cref="T:System.Collections.Generic.ICollection`1" /> containing the values in the <see cref="T:System.Collections.Generic.IDictionary`2" />.</summary>
       <returns>An <see cref="T:System.Collections.Generic.ICollection`1" /> containing the values in the object that implements <see cref="T:System.Collections.Generic.IDictionary`2" />.</returns>
+    </member>
+    <member name="T:WikiClientLibrary.Infrastructures.WikiReadOnlyDictionaryConverterFactory">
+      <summary>
+            Handles the serialization and deserialization of instances derived from <see cref="T:WikiClientLibrary.Infrastructures.WikiReadOnlyDictionary" />.
+            </summary>
+    </member>
+    <member name="M:WikiClientLibrary.Infrastructures.WikiReadOnlyDictionaryConverterFactory.#ctor">
+      <summary>
+        <markup>
+          <include item="SMCAutoDocConstructor">
+            <parameter>WikiClientLibrary.Infrastructures.WikiReadOnlyDictionaryConverterFactory</parameter>
+          </include>
+        </markup>
+      </summary>
+    </member>
+    <member name="M:WikiClientLibrary.Infrastructures.WikiReadOnlyDictionaryConverterFactory.CanConvert(System.Type)">
+      <summary>When overridden in a derived class, determines whether the converter instance can convert the specified object type.</summary>
+      <param name="typeToConvert">The type of the object to check whether it can be converted by this converter instance.</param>
+      <returns>
+        <see langword="true" /> if the instance can convert the specified object type; otherwise, <see langword="false" />.</returns>
+    </member>
+    <member name="M:WikiClientLibrary.Infrastructures.WikiReadOnlyDictionaryConverterFactory.CreateConverter(System.Type,System.Text.Json.JsonSerializerOptions)">
+      <summary>Creates a converter for a specified type.</summary>
+      <param name="typeToConvert">The type handled by the converter.</param>
+      <param name="options">The serialization options to use.</param>
+      <returns>A converter for which <typeparamref name="T" /> is compatible with <paramref name="typeToConvert" />.</returns>
     </member>
     <member name="T:WikiClientLibrary.Infrastructures.WikiStringEnumJsonConverter">
       <summary>
@@ -7930,31 +8253,25 @@
       </summary>
     </member>
     <member name="M:WikiClientLibrary.Infrastructures.WikiStringEnumJsonConverter.CanConvert(System.Type)">
-      <summary>
-            Determines whether this instance can convert the specified object type.
-            </summary>
-      <param name="objectType">Type of the object.</param>
+      <summary>When overridden in a derived class, determines whether the converter instance can convert the specified object type.</summary>
+      <param name="typeToConvert">The type of the object to check whether it can be converted by this converter instance.</param>
+      <param name="objectType">
+        <markup>
+          <include item="SMCMissingParamTag">
+            <parameter>param</parameter>
+            <parameter>objectType</parameter>
+            <parameter>M:WikiClientLibrary.Infrastructures.WikiStringEnumJsonConverter.CanConvert(System.Type)</parameter>
+          </include>
+        </markup>
+      </param>
       <returns>
-        <c>true</c> if this instance can convert the specified object type; otherwise, <c>false</c>.
-            </returns>
+        <see langword="true" /> if the instance can convert the specified object type; otherwise, <see langword="false" />.</returns>
     </member>
-    <member name="M:WikiClientLibrary.Infrastructures.WikiStringEnumJsonConverter.ReadJson(Newtonsoft.Json.JsonReader,System.Type,System.Object,Newtonsoft.Json.JsonSerializer)">
-      <summary>
-            Reads the JSON representation of the object.
-            </summary>
-      <param name="reader">The <see cref="T:Newtonsoft.Json.JsonReader" /> to read from.</param>
-      <param name="objectType">Type of the object.</param>
-      <param name="existingValue">The existing value of object being read.</param>
-      <param name="serializer">The calling serializer.</param>
-      <returns>The object value.</returns>
-    </member>
-    <member name="M:WikiClientLibrary.Infrastructures.WikiStringEnumJsonConverter.WriteJson(Newtonsoft.Json.JsonWriter,System.Object,Newtonsoft.Json.JsonSerializer)">
-      <summary>
-            Writes the JSON representation of the object.
-            </summary>
-      <param name="writer">The <see cref="T:Newtonsoft.Json.JsonWriter" /> to write to.</param>
-      <param name="value">The value.</param>
-      <param name="serializer">The calling serializer.</param>
+    <member name="M:WikiClientLibrary.Infrastructures.WikiStringEnumJsonConverter.CreateConverter(System.Type,System.Text.Json.JsonSerializerOptions)">
+      <summary>Creates a converter for a specified type.</summary>
+      <param name="typeToConvert">The type handled by the converter.</param>
+      <param name="options">The serialization options to use.</param>
+      <returns>A converter for which <typeparamref name="T" /> is compatible with <paramref name="typeToConvert" />.</returns>
     </member>
     <member name="T:WikiClientLibrary.Infrastructures.Logging.WikiLoggingHelper">
       <summary>
@@ -8664,7 +8981,7 @@
     </member>
     <member name="P:WikiClientLibrary.Pages.Revision.HiddenFields">
       <summary>
-            Gets a indicator of whether one or more fields has been hidden.
+            Gets an indicator of whether one or more fields has been hidden.
             </summary>
       <remarks>See https://www.mediawiki.org/wiki/Help:RevisionDelete .</remarks>
     </member>
@@ -8796,14 +9113,8 @@
       </summary>
     </member>
     <member name="P:WikiClientLibrary.Pages.RevisionSlot.Content">
-      <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>P:WikiClientLibrary.Pages.RevisionSlot.Content</parameter>
-          </include>
-        </markup>
-      </summary>
+      <summary>Slot content.</summary>
+      <value>slot content. This property will be <c>null</c> if the content has not been requested to be fetched.</value>
     </member>
     <member name="P:WikiClientLibrary.Pages.RevisionSlot.ContentFormat">
       <summary>
@@ -9260,12 +9571,12 @@
             Namespace id of the page.
             </summary>
     </member>
-    <member name="M:WikiClientLibrary.Pages.WikiPage.OnLoadPageInfo(Newtonsoft.Json.Linq.JObject,WikiClientLibrary.Pages.Queries.IWikiPageQueryProvider)">
+    <member name="M:WikiClientLibrary.Pages.WikiPage.OnLoadPageInfo(System.Text.Json.Nodes.JsonObject,WikiClientLibrary.Pages.Queries.IWikiPageQueryProvider)">
       <summary>
         <markup>
           <include item="SMCMissingTag">
             <parameter>summary</parameter>
-            <parameter>M:WikiClientLibrary.Pages.WikiPage.OnLoadPageInfo(Newtonsoft.Json.Linq.JObject,WikiClientLibrary.Pages.Queries.IWikiPageQueryProvider)</parameter>
+            <parameter>M:WikiClientLibrary.Pages.WikiPage.OnLoadPageInfo(System.Text.Json.Nodes.JsonObject,WikiClientLibrary.Pages.Queries.IWikiPageQueryProvider)</parameter>
           </include>
         </markup>
       </summary>
@@ -9274,7 +9585,7 @@
           <include item="SMCMissingParamTag">
             <parameter>param</parameter>
             <parameter>jpage</parameter>
-            <parameter>M:WikiClientLibrary.Pages.WikiPage.OnLoadPageInfo(Newtonsoft.Json.Linq.JObject,WikiClientLibrary.Pages.Queries.IWikiPageQueryProvider)</parameter>
+            <parameter>M:WikiClientLibrary.Pages.WikiPage.OnLoadPageInfo(System.Text.Json.Nodes.JsonObject,WikiClientLibrary.Pages.Queries.IWikiPageQueryProvider)</parameter>
           </include>
         </markup>
       </param>
@@ -9283,7 +9594,7 @@
           <include item="SMCMissingParamTag">
             <parameter>param</parameter>
             <parameter>options</parameter>
-            <parameter>M:WikiClientLibrary.Pages.WikiPage.OnLoadPageInfo(Newtonsoft.Json.Linq.JObject,WikiClientLibrary.Pages.Queries.IWikiPageQueryProvider)</parameter>
+            <parameter>M:WikiClientLibrary.Pages.WikiPage.OnLoadPageInfo(System.Text.Json.Nodes.JsonObject,WikiClientLibrary.Pages.Queries.IWikiPageQueryProvider)</parameter>
           </include>
         </markup>
       </param>
@@ -9682,6 +9993,42 @@
             you can use literal page title or page ID in the place where <see cref="T:WikiClientLibrary.Pages.WikiPageStub" /> is needed.</para>
       </remarks>
     </member>
+    <member name="M:WikiClientLibrary.Pages.WikiPageStub.#ctor(System.Int32,System.String,System.Int32)">
+      <summary>
+        <markup>
+          <include item="SMCAutoDocConstructor">
+            <parameter>WikiClientLibrary.Pages.WikiPageStub</parameter>
+          </include>
+        </markup>
+      </summary>
+      <param name="id">
+        <markup>
+          <include item="SMCMissingParamTag">
+            <parameter>param</parameter>
+            <parameter>id</parameter>
+            <parameter>M:WikiClientLibrary.Pages.WikiPageStub.#ctor(System.Int32,System.String,System.Int32)</parameter>
+          </include>
+        </markup>
+      </param>
+      <param name="title">
+        <markup>
+          <include item="SMCMissingParamTag">
+            <parameter>param</parameter>
+            <parameter>title</parameter>
+            <parameter>M:WikiClientLibrary.Pages.WikiPageStub.#ctor(System.Int32,System.String,System.Int32)</parameter>
+          </include>
+        </markup>
+      </param>
+      <param name="namespaceId">
+        <markup>
+          <include item="SMCMissingParamTag">
+            <parameter>param</parameter>
+            <parameter>namespaceId</parameter>
+            <parameter>M:WikiClientLibrary.Pages.WikiPageStub.#ctor(System.Int32,System.String,System.Int32)</parameter>
+          </include>
+        </markup>
+      </param>
+    </member>
     <member name="M:WikiClientLibrary.Pages.WikiPageStub.#ctor(System.Int64)">
       <summary>
             Initializes a new instance of <see cref="T:WikiClientLibrary.Pages.WikiPageStub" />.
@@ -9732,7 +10079,7 @@
       <returns>
         <see langword="true" /> if the current object is equal to the <paramref name="other" /> parameter; otherwise, <see langword="false" />.</returns>
     </member>
-    <member name="M:WikiClientLibrary.Pages.WikiPageStub.FromPageIds(WikiClientLibrary.Sites.WikiSite,System.Collections.Generic.IEnumerable{System.Int32},System.Threading.CancellationToken)">
+    <member name="M:WikiClientLibrary.Pages.WikiPageStub.FromPageIds(WikiClientLibrary.Sites.WikiSite,System.Collections.Generic.IEnumerable{System.Int64},System.Threading.CancellationToken)">
       <summary>
             Construct a sequence of <see cref="T:WikiClientLibrary.Pages.WikiPageStub" /> from the given page IDs.
             </summary>
@@ -9743,7 +10090,7 @@
           <include item="SMCMissingParamTag">
             <parameter>param</parameter>
             <parameter>cancellationToken</parameter>
-            <parameter>M:WikiClientLibrary.Pages.WikiPageStub.FromPageIds(WikiClientLibrary.Sites.WikiSite,System.Collections.Generic.IEnumerable{System.Int32},System.Threading.CancellationToken)</parameter>
+            <parameter>M:WikiClientLibrary.Pages.WikiPageStub.FromPageIds(WikiClientLibrary.Sites.WikiSite,System.Collections.Generic.IEnumerable{System.Int64},System.Threading.CancellationToken)</parameter>
           </include>
         </markup>
       </param>
@@ -10158,6 +10505,25 @@
           </include>
         </markup>
       </summary>
+    </member>
+    <member name="M:WikiClientLibrary.Pages.Parsing.ContentPropertyInfo.GetValueAs``1">
+      <summary>
+        <markup>
+          <include item="SMCMissingTag">
+            <parameter>summary</parameter>
+            <parameter>M:WikiClientLibrary.Pages.Parsing.ContentPropertyInfo.GetValueAs``1</parameter>
+          </include>
+        </markup>
+      </summary>
+      <typeparam name="T">
+        <markup>
+          <include item="SMCMissingParamTag">
+            <parameter>typeparam</parameter>
+            <parameter>T</parameter>
+            <parameter>M:WikiClientLibrary.Pages.Parsing.ContentPropertyInfo.GetValueAs``1</parameter>
+          </include>
+        </markup>
+      </typeparam>
     </member>
     <member name="P:WikiClientLibrary.Pages.Parsing.ContentPropertyInfo.Name">
       <summary>
@@ -10842,7 +11208,7 @@
             for <c>action=query</c> request.
             </returns>
     </member>
-    <member name="M:WikiClientLibrary.Pages.Queries.IWikiPageQueryProvider.ParsePropertyGroups(Newtonsoft.Json.Linq.JObject)">
+    <member name="M:WikiClientLibrary.Pages.Queries.IWikiPageQueryProvider.ParsePropertyGroups(System.Text.Json.Nodes.JsonObject)">
       <summary>
             Parses one or more property groups from the given<c>action=query</c> JSON response.
             </summary>
@@ -10895,7 +11261,7 @@
             for <c>action=query</c> request.
             </returns>
     </member>
-    <member name="M:WikiClientLibrary.Pages.Queries.WikiPageQueryProvider.ParsePropertyGroups(Newtonsoft.Json.Linq.JObject)">
+    <member name="M:WikiClientLibrary.Pages.Queries.WikiPageQueryProvider.ParsePropertyGroups(System.Text.Json.Nodes.JsonObject)">
       <summary>
             Parses one or more property groups from the given<c>action=query</c> JSON response.
             </summary>
@@ -10971,7 +11337,7 @@
             Whether to include hidden categories in the returned list.
             </summary>
     </member>
-    <member name="M:WikiClientLibrary.Pages.Queries.Properties.CategoriesPropertyProvider.ParsePropertyGroup(Newtonsoft.Json.Linq.JObject)">
+    <member name="M:WikiClientLibrary.Pages.Queries.Properties.CategoriesPropertyProvider.ParsePropertyGroup(System.Text.Json.Nodes.JsonObject)">
       <summary>
             Parses the properties from the given<c>action=query</c> JSON response.
             </summary>
@@ -10996,12 +11362,12 @@
             For the categories that has sub-items but without category page, this property group is still valid.
             </remarks>
     </member>
-    <member name="M:WikiClientLibrary.Pages.Queries.Properties.CategoryInfoPropertyGroup.Create(Newtonsoft.Json.Linq.JObject)">
+    <member name="M:WikiClientLibrary.Pages.Queries.Properties.CategoryInfoPropertyGroup.Create(System.Text.Json.Nodes.JsonObject)">
       <summary>
         <markup>
           <include item="SMCMissingTag">
             <parameter>summary</parameter>
-            <parameter>M:WikiClientLibrary.Pages.Queries.Properties.CategoryInfoPropertyGroup.Create(Newtonsoft.Json.Linq.JObject)</parameter>
+            <parameter>M:WikiClientLibrary.Pages.Queries.Properties.CategoryInfoPropertyGroup.Create(System.Text.Json.Nodes.JsonObject)</parameter>
           </include>
         </markup>
       </summary>
@@ -11010,7 +11376,7 @@
           <include item="SMCMissingParamTag">
             <parameter>param</parameter>
             <parameter>jPage</parameter>
-            <parameter>M:WikiClientLibrary.Pages.Queries.Properties.CategoryInfoPropertyGroup.Create(Newtonsoft.Json.Linq.JObject)</parameter>
+            <parameter>M:WikiClientLibrary.Pages.Queries.Properties.CategoryInfoPropertyGroup.Create(System.Text.Json.Nodes.JsonObject)</parameter>
           </include>
         </markup>
       </param>
@@ -11052,7 +11418,7 @@
             </summary>
       <param name="version">MediaWiki API version. Use <seealso cref="P:WikiClientLibrary.MediaWikiVersion.Zero" /> for unknown version or compatible mode.</param>
     </member>
-    <member name="M:WikiClientLibrary.Pages.Queries.Properties.CategoryInfoPropertyProvider.ParsePropertyGroup(Newtonsoft.Json.Linq.JObject)">
+    <member name="M:WikiClientLibrary.Pages.Queries.Properties.CategoryInfoPropertyProvider.ParsePropertyGroup(System.Text.Json.Nodes.JsonObject)">
       <summary>
             Parses the properties from the given<c>action=query</c> JSON response.
             </summary>
@@ -11151,7 +11517,7 @@
             Either this property or <see cref="P:WikiClientLibrary.Pages.Queries.Properties.ExtractsPropertyProvider.MaxCharacters" /> should be 0.
             </remarks>
     </member>
-    <member name="M:WikiClientLibrary.Pages.Queries.Properties.ExtractsPropertyProvider.ParsePropertyGroup(Newtonsoft.Json.Linq.JObject)">
+    <member name="M:WikiClientLibrary.Pages.Queries.Properties.ExtractsPropertyProvider.ParsePropertyGroup(System.Text.Json.Nodes.JsonObject)">
       <summary>
             Parses the properties from the given<c>action=query</c> JSON response.
             </summary>
@@ -11212,7 +11578,7 @@
             </summary>
       <param name="version">MediaWiki API version. Use <seealso cref="P:WikiClientLibrary.MediaWikiVersion.Zero" /> for unknown version or compatible mode.</param>
     </member>
-    <member name="M:WikiClientLibrary.Pages.Queries.Properties.FileInfoPropertyProvider.ParsePropertyGroup(Newtonsoft.Json.Linq.JObject)">
+    <member name="M:WikiClientLibrary.Pages.Queries.Properties.FileInfoPropertyProvider.ParsePropertyGroup(System.Text.Json.Nodes.JsonObject)">
       <summary>
             Parses the properties from the given<c>action=query</c> JSON response.
             </summary>
@@ -11285,7 +11651,7 @@
             </summary>
       <param name="version">MediaWiki API version. Use <seealso cref="P:WikiClientLibrary.MediaWikiVersion.Zero" /> for unknown version or compatible mode.</param>
     </member>
-    <member name="M:WikiClientLibrary.Pages.Queries.Properties.GeoCoordinatesPropertyProvider.ParsePropertyGroup(Newtonsoft.Json.Linq.JObject)">
+    <member name="M:WikiClientLibrary.Pages.Queries.Properties.GeoCoordinatesPropertyProvider.ParsePropertyGroup(System.Text.Json.Nodes.JsonObject)">
       <summary>
             Parses the properties from the given<c>action=query</c> JSON response.
             </summary>
@@ -11368,7 +11734,7 @@
             See <a href="https://www.mediawiki.org/wiki/API:Query">mw:API:Query</a> for the latest count limit on ids and titles.
             </remarks>
     </member>
-    <member name="M:WikiClientLibrary.Pages.Queries.Properties.IWikiPagePropertyProvider`1.ParsePropertyGroup(Newtonsoft.Json.Linq.JObject)">
+    <member name="M:WikiClientLibrary.Pages.Queries.Properties.IWikiPagePropertyProvider`1.ParsePropertyGroup(System.Text.Json.Nodes.JsonObject)">
       <summary>
             Parses the properties from the given<c>action=query</c> JSON response.
             </summary>
@@ -11389,6 +11755,9 @@
       <summary>
             Represents the information about a language link.
             </summary>
+      <remarks>
+            See <a href="https://github.com/wikimedia/mediawiki/blob/master/includes/api/ApiQueryLangLinks.php">ApiQueryLangLinks.php</a>.
+            </remarks>
     </member>
     <member name="M:WikiClientLibrary.Pages.Queries.Properties.LanguageLinkInfo.#ctor">
       <summary>
@@ -11424,14 +11793,8 @@
       <returns>A string that represents the current object.</returns>
     </member>
     <member name="P:WikiClientLibrary.Pages.Queries.Properties.LanguageLinkInfo.Url">
-      <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>P:WikiClientLibrary.Pages.Queries.Properties.LanguageLinkInfo.Url</parameter>
-          </include>
-        </markup>
-      </summary>
+      <summary>URL of the language link target.</summary>
+      <remarks>In rare cases, such as when the <see cref="P:WikiClientLibrary.Pages.Queries.Properties.LanguageLinkInfo.Title" /> is malformed, this property can be <c>null</c>.</remarks>
     </member>
     <member name="T:WikiClientLibrary.Pages.Queries.Properties.LanguageLinkProperties">
       <summary>
@@ -11528,12 +11891,12 @@
             specifies the display language of the language names.
             </summary>
     </member>
-    <member name="M:WikiClientLibrary.Pages.Queries.Properties.LanguageLinksPropertyProvider.ParsePropertyGroup(Newtonsoft.Json.Linq.JObject)">
+    <member name="M:WikiClientLibrary.Pages.Queries.Properties.LanguageLinksPropertyProvider.ParsePropertyGroup(System.Text.Json.Nodes.JsonObject)">
       <summary>
         <markup>
           <include item="SMCMissingTag">
             <parameter>summary</parameter>
-            <parameter>M:WikiClientLibrary.Pages.Queries.Properties.LanguageLinksPropertyProvider.ParsePropertyGroup(Newtonsoft.Json.Linq.JObject)</parameter>
+            <parameter>M:WikiClientLibrary.Pages.Queries.Properties.LanguageLinksPropertyProvider.ParsePropertyGroup(System.Text.Json.Nodes.JsonObject)</parameter>
           </include>
         </markup>
       </summary>
@@ -11542,7 +11905,7 @@
           <include item="SMCMissingParamTag">
             <parameter>param</parameter>
             <parameter>json</parameter>
-            <parameter>M:WikiClientLibrary.Pages.Queries.Properties.LanguageLinksPropertyProvider.ParsePropertyGroup(Newtonsoft.Json.Linq.JObject)</parameter>
+            <parameter>M:WikiClientLibrary.Pages.Queries.Properties.LanguageLinksPropertyProvider.ParsePropertyGroup(System.Text.Json.Nodes.JsonObject)</parameter>
           </include>
         </markup>
       </param>
@@ -11560,7 +11923,7 @@
             Contains information for page image URL along with image size.
             </summary>
     </member>
-    <member name="M:WikiClientLibrary.Pages.Queries.Properties.PageImageInfo.#ctor(System.String,System.Int32,System.Int32)">
+    <member name="M:WikiClientLibrary.Pages.Queries.Properties.PageImageInfo.#ctor">
       <summary>
         <markup>
           <include item="SMCAutoDocConstructor">
@@ -11568,122 +11931,13 @@
           </include>
         </markup>
       </summary>
-      <param name="url">
-        <markup>
-          <include item="SMCMissingParamTag">
-            <parameter>param</parameter>
-            <parameter>url</parameter>
-            <parameter>M:WikiClientLibrary.Pages.Queries.Properties.PageImageInfo.#ctor(System.String,System.Int32,System.Int32)</parameter>
-          </include>
-        </markup>
-      </param>
-      <param name="width">
-        <markup>
-          <include item="SMCMissingParamTag">
-            <parameter>param</parameter>
-            <parameter>width</parameter>
-            <parameter>M:WikiClientLibrary.Pages.Queries.Properties.PageImageInfo.#ctor(System.String,System.Int32,System.Int32)</parameter>
-          </include>
-        </markup>
-      </param>
-      <param name="height">
-        <markup>
-          <include item="SMCMissingParamTag">
-            <parameter>param</parameter>
-            <parameter>height</parameter>
-            <parameter>M:WikiClientLibrary.Pages.Queries.Properties.PageImageInfo.#ctor(System.String,System.Int32,System.Int32)</parameter>
-          </include>
-        </markup>
-      </param>
-    </member>
-    <member name="F:WikiClientLibrary.Pages.Queries.Properties.PageImageInfo.Empty">
-      <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>F:WikiClientLibrary.Pages.Queries.Properties.PageImageInfo.Empty</parameter>
-          </include>
-        </markup>
-      </summary>
-    </member>
-    <member name="M:WikiClientLibrary.Pages.Queries.Properties.PageImageInfo.Equals(System.Object)">
-      <summary>Indicates whether this instance and a specified object are equal.</summary>
-      <param name="obj">The object to compare with the current instance.</param>
-      <returns>
-        <see langword="true" /> if <paramref name="obj" /> and this instance are the same type and represent the same value; otherwise, <see langword="false" />.</returns>
-    </member>
-    <member name="M:WikiClientLibrary.Pages.Queries.Properties.PageImageInfo.Equals(WikiClientLibrary.Pages.Queries.Properties.PageImageInfo)">
-      <summary>Indicates whether the current object is equal to another object of the same type.</summary>
-      <param name="other">An object to compare with this object.</param>
-      <returns>
-        <see langword="true" /> if the current object is equal to the <paramref name="other" /> parameter; otherwise, <see langword="false" />.</returns>
-    </member>
-    <member name="M:WikiClientLibrary.Pages.Queries.Properties.PageImageInfo.GetHashCode">
-      <summary>Returns the hash code for this instance.</summary>
-      <returns>A 32-bit signed integer that is the hash code for this instance.</returns>
     </member>
     <member name="P:WikiClientLibrary.Pages.Queries.Properties.PageImageInfo.Height">
       <summary>Image height, in pixel.</summary>
     </member>
-    <member name="M:WikiClientLibrary.Pages.Queries.Properties.PageImageInfo.op_Equality(WikiClientLibrary.Pages.Queries.Properties.PageImageInfo,WikiClientLibrary.Pages.Queries.Properties.PageImageInfo)">
-      <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>M:WikiClientLibrary.Pages.Queries.Properties.PageImageInfo.op_Equality(WikiClientLibrary.Pages.Queries.Properties.PageImageInfo,WikiClientLibrary.Pages.Queries.Properties.PageImageInfo)</parameter>
-          </include>
-        </markup>
-      </summary>
-      <param name="left">
-        <markup>
-          <include item="SMCMissingParamTag">
-            <parameter>param</parameter>
-            <parameter>left</parameter>
-            <parameter>M:WikiClientLibrary.Pages.Queries.Properties.PageImageInfo.op_Equality(WikiClientLibrary.Pages.Queries.Properties.PageImageInfo,WikiClientLibrary.Pages.Queries.Properties.PageImageInfo)</parameter>
-          </include>
-        </markup>
-      </param>
-      <param name="right">
-        <markup>
-          <include item="SMCMissingParamTag">
-            <parameter>param</parameter>
-            <parameter>right</parameter>
-            <parameter>M:WikiClientLibrary.Pages.Queries.Properties.PageImageInfo.op_Equality(WikiClientLibrary.Pages.Queries.Properties.PageImageInfo,WikiClientLibrary.Pages.Queries.Properties.PageImageInfo)</parameter>
-          </include>
-        </markup>
-      </param>
-    </member>
-    <member name="M:WikiClientLibrary.Pages.Queries.Properties.PageImageInfo.op_Inequality(WikiClientLibrary.Pages.Queries.Properties.PageImageInfo,WikiClientLibrary.Pages.Queries.Properties.PageImageInfo)">
-      <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>M:WikiClientLibrary.Pages.Queries.Properties.PageImageInfo.op_Inequality(WikiClientLibrary.Pages.Queries.Properties.PageImageInfo,WikiClientLibrary.Pages.Queries.Properties.PageImageInfo)</parameter>
-          </include>
-        </markup>
-      </summary>
-      <param name="left">
-        <markup>
-          <include item="SMCMissingParamTag">
-            <parameter>param</parameter>
-            <parameter>left</parameter>
-            <parameter>M:WikiClientLibrary.Pages.Queries.Properties.PageImageInfo.op_Inequality(WikiClientLibrary.Pages.Queries.Properties.PageImageInfo,WikiClientLibrary.Pages.Queries.Properties.PageImageInfo)</parameter>
-          </include>
-        </markup>
-      </param>
-      <param name="right">
-        <markup>
-          <include item="SMCMissingParamTag">
-            <parameter>param</parameter>
-            <parameter>right</parameter>
-            <parameter>M:WikiClientLibrary.Pages.Queries.Properties.PageImageInfo.op_Inequality(WikiClientLibrary.Pages.Queries.Properties.PageImageInfo,WikiClientLibrary.Pages.Queries.Properties.PageImageInfo)</parameter>
-          </include>
-        </markup>
-      </param>
-    </member>
     <member name="M:WikiClientLibrary.Pages.Queries.Properties.PageImageInfo.ToString">
-      <summary>Returns the fully qualified type name of this instance.</summary>
-      <returns>The fully qualified type name.</returns>
+      <summary>Returns a string that represents the current object.</summary>
+      <returns>A string that represents the current object.</returns>
     </member>
     <member name="P:WikiClientLibrary.Pages.Queries.Properties.PageImageInfo.Url">
       <summary>Image URL.</summary>
@@ -11744,7 +11998,7 @@
             See <a href="https://www.mediawiki.org/wiki/API:Query">mw:API:Query</a> for the latest count limit on ids and titles.
             </remarks>
     </member>
-    <member name="M:WikiClientLibrary.Pages.Queries.Properties.PageImagesPropertyProvider.ParsePropertyGroup(Newtonsoft.Json.Linq.JObject)">
+    <member name="M:WikiClientLibrary.Pages.Queries.Properties.PageImagesPropertyProvider.ParsePropertyGroup(System.Text.Json.Nodes.JsonObject)">
       <summary>
             Parses the properties from the given<c>action=query</c> JSON response.
             </summary>
@@ -11783,7 +12037,7 @@
         </markup>
       </summary>
     </member>
-    <member name="M:WikiClientLibrary.Pages.Queries.Properties.PageInfoPropertyGroup.#ctor(Newtonsoft.Json.Linq.JObject)">
+    <member name="M:WikiClientLibrary.Pages.Queries.Properties.PageInfoPropertyGroup.#ctor(System.Text.Json.Nodes.JsonObject)">
       <summary>
         <markup>
           <include item="SMCAutoDocConstructor">
@@ -11796,7 +12050,7 @@
           <include item="SMCMissingParamTag">
             <parameter>param</parameter>
             <parameter>jPage</parameter>
-            <parameter>M:WikiClientLibrary.Pages.Queries.Properties.PageInfoPropertyGroup.#ctor(Newtonsoft.Json.Linq.JObject)</parameter>
+            <parameter>M:WikiClientLibrary.Pages.Queries.Properties.PageInfoPropertyGroup.#ctor(System.Text.Json.Nodes.JsonObject)</parameter>
           </include>
         </markup>
       </param>
@@ -11911,7 +12165,7 @@
             </summary>
       <param name="version">MediaWiki API version. Use <seealso cref="P:WikiClientLibrary.MediaWikiVersion.Zero" /> for unknown version or compatible mode.</param>
     </member>
-    <member name="M:WikiClientLibrary.Pages.Queries.Properties.PageInfoPropertyProvider.ParsePropertyGroup(Newtonsoft.Json.Linq.JObject)">
+    <member name="M:WikiClientLibrary.Pages.Queries.Properties.PageInfoPropertyProvider.ParsePropertyGroup(System.Text.Json.Nodes.JsonObject)">
       <summary>
             Parses the properties from the given<c>action=query</c> JSON response.
             </summary>
@@ -11972,7 +12226,7 @@
             </summary>
       <param name="version">MediaWiki API version. Use <seealso cref="P:WikiClientLibrary.MediaWikiVersion.Zero" /> for unknown version or compatible mode.</param>
     </member>
-    <member name="M:WikiClientLibrary.Pages.Queries.Properties.PagePropertiesPropertyProvider.ParsePropertyGroup(Newtonsoft.Json.Linq.JObject)">
+    <member name="M:WikiClientLibrary.Pages.Queries.Properties.PagePropertiesPropertyProvider.ParsePropertyGroup(System.Text.Json.Nodes.JsonObject)">
       <summary>
             Parses the properties from the given<c>action=query</c> JSON response.
             </summary>
@@ -12077,7 +12331,7 @@
             See <a href="https://www.mediawiki.org/wiki/API:Query">mw:API:Query</a> for the latest count limit on ids and titles.
             </remarks>
     </member>
-    <member name="M:WikiClientLibrary.Pages.Queries.Properties.RevisionsPropertyProvider.ParsePropertyGroup(Newtonsoft.Json.Linq.JObject)">
+    <member name="M:WikiClientLibrary.Pages.Queries.Properties.RevisionsPropertyProvider.ParsePropertyGroup(System.Text.Json.Nodes.JsonObject)">
       <summary>
             Parses the properties from the given<c>action=query</c> JSON response.
             </summary>
@@ -12251,7 +12505,7 @@
             See <a href="https://www.mediawiki.org/wiki/API:Query">mw:API:Query</a> for the latest count limit on ids and titles.
             </remarks>
     </member>
-    <member name="M:WikiClientLibrary.Pages.Queries.Properties.WikiPagePropertyProvider`1.ParsePropertyGroup(Newtonsoft.Json.Linq.JObject)">
+    <member name="M:WikiClientLibrary.Pages.Queries.Properties.WikiPagePropertyProvider`1.ParsePropertyGroup(System.Text.Json.Nodes.JsonObject)">
       <summary>
             Parses the properties from the given<c>action=query</c> JSON response.
             </summary>
@@ -12679,7 +12933,7 @@
             </summary>
       <param name="site">The MediaWiki site on which to evaluate the module.</param>
       <param name="moduleContent">The module content to be evaluated. You need to use <c>return</c> statement to return any value from the module.</param>
-      <param name="serializer">The JsonSerializer used to deserialize the return value from JSON, or <c>null</c> to use default JSON serializer.</param>
+      <param name="serializerOptions">The JsonSerializerOptions used to deserialize the return value from JSON, or <c>null</c> to use default JSON serializer.</param>
       <param name="cancellationToken">A token used to cancel the operation.</param>
       <typeparam name="T">The expected evaluation return value type.</typeparam>
       <returns>The deserialized Lua evaluation result.</returns>
@@ -12687,20 +12941,20 @@
         <para>This method will let MediaWiki server to evaluate <paramref name="moduleContent" /> as an ad-hoc Lua module,
             and to serialize the return value into JSON with
             <a href="https://www.mediawiki.org/wiki/Extension:Scribunto/Lua_reference_manual#mw.text.jsonEncode"><c>mw.text.jsonEncode</c></a>
-            method. The returned value will be deserialized by WCL with your specified <paramref name="serializer" />.
+            method. The returned value will be deserialized by WCL with your specified <paramref name="serializerOptions" />.
             You need to read the documentation for <c>jsonEncode</c> carefully, as there might be some common pitfalls, such as
             empty Lua table will be serialized as JSON <c>[]</c> rather than <c>{}</c>.</para>
         <para>Due to the nature of JSON serialization and deserialization,
             you cannot return Lua functions or tables containing functions in the module.</para>
       </remarks>
     </member>
-    <member name="M:WikiClientLibrary.Scribunto.ScribuntoWikiSiteExtensions.ScribuntoExecuteLuaAsync``1(WikiClientLibrary.Sites.WikiSite,System.String,Newtonsoft.Json.JsonSerializer)">
+    <member name="M:WikiClientLibrary.Scribunto.ScribuntoWikiSiteExtensions.ScribuntoExecuteLuaAsync``1(WikiClientLibrary.Sites.WikiSite,System.String,System.Text.Json.JsonSerializerOptions)">
       <summary>
             Evaluates an ad-hoc Lua module with the specified module content in Scribunto Lua console, and gets the returned value.
             </summary>
       <param name="site">The MediaWiki site on which to evaluate the module.</param>
       <param name="moduleContent">The module content to be evaluated. You need to use <c>return</c> statement to return any value from the module.</param>
-      <param name="serializer">The JsonSerializer used to deserialize the return value from JSON, or <c>null</c> to use default JSON serializer.</param>
+      <param name="serializerOptions">The JsonSerializerOptions used to deserialize the return value from JSON, or <c>null</c> to use default JSON serializer.</param>
       <param name="cancellationToken">A token used to cancel the operation.</param>
       <typeparam name="T">The expected evaluation return value type.</typeparam>
       <returns>The deserialized Lua evaluation result.</returns>
@@ -12708,20 +12962,20 @@
         <para>This method will let MediaWiki server to evaluate <paramref name="moduleContent" /> as an ad-hoc Lua module,
             and to serialize the return value into JSON with
             <a href="https://www.mediawiki.org/wiki/Extension:Scribunto/Lua_reference_manual#mw.text.jsonEncode"><c>mw.text.jsonEncode</c></a>
-            method. The returned value will be deserialized by WCL with your specified <paramref name="serializer" />.
+            method. The returned value will be deserialized by WCL with your specified <paramref name="serializerOptions" />.
             You need to read the documentation for <c>jsonEncode</c> carefully, as there might be some common pitfalls, such as
             empty Lua table will be serialized as JSON <c>[]</c> rather than <c>{}</c>.</para>
         <para>Due to the nature of JSON serialization and deserialization,
             you cannot return Lua functions or tables containing functions in the module.</para>
       </remarks>
     </member>
-    <member name="M:WikiClientLibrary.Scribunto.ScribuntoWikiSiteExtensions.ScribuntoExecuteLuaAsync``1(WikiClientLibrary.Sites.WikiSite,System.String,Newtonsoft.Json.JsonSerializer,System.Threading.CancellationToken)">
+    <member name="M:WikiClientLibrary.Scribunto.ScribuntoWikiSiteExtensions.ScribuntoExecuteLuaAsync``1(WikiClientLibrary.Sites.WikiSite,System.String,System.Text.Json.JsonSerializerOptions,System.Threading.CancellationToken)">
       <summary>
             Evaluates an ad-hoc Lua module with the specified module content in Scribunto Lua console, and gets the returned value.
             </summary>
       <param name="site">The MediaWiki site on which to evaluate the module.</param>
       <param name="moduleContent">The module content to be evaluated. You need to use <c>return</c> statement to return any value from the module.</param>
-      <param name="serializer">The JsonSerializer used to deserialize the return value from JSON, or <c>null</c> to use default JSON serializer.</param>
+      <param name="serializerOptions">The JsonSerializerOptions used to deserialize the return value from JSON, or <c>null</c> to use default JSON serializer.</param>
       <param name="cancellationToken">A token used to cancel the operation.</param>
       <typeparam name="T">The expected evaluation return value type.</typeparam>
       <returns>The deserialized Lua evaluation result.</returns>
@@ -12729,7 +12983,7 @@
         <para>This method will let MediaWiki server to evaluate <paramref name="moduleContent" /> as an ad-hoc Lua module,
             and to serialize the return value into JSON with
             <a href="https://www.mediawiki.org/wiki/Extension:Scribunto/Lua_reference_manual#mw.text.jsonEncode"><c>mw.text.jsonEncode</c></a>
-            method. The returned value will be deserialized by WCL with your specified <paramref name="serializer" />.
+            method. The returned value will be deserialized by WCL with your specified <paramref name="serializerOptions" />.
             You need to read the documentation for <c>jsonEncode</c> carefully, as there might be some common pitfalls, such as
             empty Lua table will be serialized as JSON <c>[]</c> rather than <c>{}</c>.</para>
         <para>Due to the nature of JSON serialization and deserialization,
@@ -12742,7 +12996,7 @@
             </summary>
       <param name="site">The MediaWiki site on which to evaluate the module.</param>
       <param name="moduleContent">The module content to be evaluated. You need to use <c>return</c> statement to return any value from the module.</param>
-      <param name="serializer">The JsonSerializer used to deserialize the return value from JSON, or <c>null</c> to use default JSON serializer.</param>
+      <param name="serializerOptions">The JsonSerializerOptions used to deserialize the return value from JSON, or <c>null</c> to use default JSON serializer.</param>
       <param name="cancellationToken">A token used to cancel the operation.</param>
       <typeparam name="T">The expected evaluation return value type.</typeparam>
       <returns>The deserialized Lua evaluation result.</returns>
@@ -12750,7 +13004,7 @@
         <para>This method will let MediaWiki server to evaluate <paramref name="moduleContent" /> as an ad-hoc Lua module,
             and to serialize the return value into JSON with
             <a href="https://www.mediawiki.org/wiki/Extension:Scribunto/Lua_reference_manual#mw.text.jsonEncode"><c>mw.text.jsonEncode</c></a>
-            method. The returned value will be deserialized by WCL with your specified <paramref name="serializer" />.
+            method. The returned value will be deserialized by WCL with your specified <paramref name="serializerOptions" />.
             You need to read the documentation for <c>jsonEncode</c> carefully, as there might be some common pitfalls, such as
             empty Lua table will be serialized as JSON <c>[]</c> rather than <c>{}</c>.</para>
         <para>Due to the nature of JSON serialization and deserialization,
@@ -12765,43 +13019,7 @@
       <param name="moduleName">Name of the module to be imported, with or without <c>Module:</c> prefix.</param>
       <param name="epilog">The Lua code snippet used to return value from the imported module (denoted as <c>p</c> in Lua),
             or <c>null</c> to use default epilog (<c>return p</c>).</param>
-      <param name="serializer">The JsonSerializer used to deserialize the return value from JSON, or <c>null</c> to use default JSON serializer.</param>
-      <param name="cancellationToken">A token used to cancel the operation.</param>
-      <typeparam name="T">The expected evaluation return value type.</typeparam>
-      <returns>The deserialized Lua evaluation result of the module.</returns>
-      <remarks>
-            This overload is intended to provide similar behavior to
-            <a href="https://www.mediawiki.org/wiki/Extension:Scribunto/Lua_reference_manual#mw.loadData"><c>mw.loadData</c></a>,
-            it works as long as the imported module meets the requirement of <c>loadData</c> function.
-            </remarks>
-    </member>
-    <member name="M:WikiClientLibrary.Scribunto.ScribuntoWikiSiteExtensions.ScribuntoLoadDataAsync``1(WikiClientLibrary.Sites.WikiSite,System.String,Newtonsoft.Json.JsonSerializer)">
-      <summary>
-            Imports the Lua module with the specified name and gets the module content.
-            </summary>
-      <param name="site">The MediaWiki site on which to evaluate the module.</param>
-      <param name="moduleName">Name of the module to be imported, with or without <c>Module:</c> prefix.</param>
-      <param name="epilog">The Lua code snippet used to return value from the imported module (denoted as <c>p</c> in Lua),
-            or <c>null</c> to use default epilog (<c>return p</c>).</param>
-      <param name="serializer">The JsonSerializer used to deserialize the return value from JSON, or <c>null</c> to use default JSON serializer.</param>
-      <param name="cancellationToken">A token used to cancel the operation.</param>
-      <typeparam name="T">The expected evaluation return value type.</typeparam>
-      <returns>The deserialized Lua evaluation result of the module.</returns>
-      <remarks>
-            This overload is intended to provide similar behavior to
-            <a href="https://www.mediawiki.org/wiki/Extension:Scribunto/Lua_reference_manual#mw.loadData"><c>mw.loadData</c></a>,
-            it works as long as the imported module meets the requirement of <c>loadData</c> function.
-            </remarks>
-    </member>
-    <member name="M:WikiClientLibrary.Scribunto.ScribuntoWikiSiteExtensions.ScribuntoLoadDataAsync``1(WikiClientLibrary.Sites.WikiSite,System.String,Newtonsoft.Json.JsonSerializer,System.Threading.CancellationToken)">
-      <summary>
-            Imports the Lua module with the specified name and gets the module content.
-            </summary>
-      <param name="site">The MediaWiki site on which to evaluate the module.</param>
-      <param name="moduleName">Name of the module to be imported, with or without <c>Module:</c> prefix.</param>
-      <param name="epilog">The Lua code snippet used to return value from the imported module (denoted as <c>p</c> in Lua),
-            or <c>null</c> to use default epilog (<c>return p</c>).</param>
-      <param name="serializer">The JsonSerializer used to deserialize the return value from JSON, or <c>null</c> to use default JSON serializer.</param>
+      <param name="serializerOptions">The JsonSerializerOptions used to deserialize the return value from JSON, or <c>null</c> to use default JSON serializer.</param>
       <param name="cancellationToken">A token used to cancel the operation.</param>
       <typeparam name="T">The expected evaluation return value type.</typeparam>
       <returns>The deserialized Lua evaluation result of the module.</returns>
@@ -12819,7 +13037,7 @@
       <param name="moduleName">Name of the module to be imported, with or without <c>Module:</c> prefix.</param>
       <param name="epilog">The Lua code snippet used to return value from the imported module (denoted as <c>p</c> in Lua),
             or <c>null</c> to use default epilog (<c>return p</c>).</param>
-      <param name="serializer">The JsonSerializer used to deserialize the return value from JSON, or <c>null</c> to use default JSON serializer.</param>
+      <param name="serializerOptions">The JsonSerializerOptions used to deserialize the return value from JSON, or <c>null</c> to use default JSON serializer.</param>
       <param name="cancellationToken">A token used to cancel the operation.</param>
       <typeparam name="T">The expected evaluation return value type.</typeparam>
       <returns>The deserialized Lua evaluation result of the module.</returns>
@@ -12829,7 +13047,7 @@
             it works as long as the imported module meets the requirement of <c>loadData</c> function.
             </remarks>
     </member>
-    <member name="M:WikiClientLibrary.Scribunto.ScribuntoWikiSiteExtensions.ScribuntoLoadDataAsync``1(WikiClientLibrary.Sites.WikiSite,System.String,System.String,Newtonsoft.Json.JsonSerializer,System.Threading.CancellationToken)">
+    <member name="M:WikiClientLibrary.Scribunto.ScribuntoWikiSiteExtensions.ScribuntoLoadDataAsync``1(WikiClientLibrary.Sites.WikiSite,System.String,System.String,System.Text.Json.JsonSerializerOptions,System.Threading.CancellationToken)">
       <summary>
             Imports the Lua module with the specified name and evaluates the specified Lua code with it.
             </summary>
@@ -12837,7 +13055,7 @@
       <param name="moduleName">Name of the module to be imported, with or without <c>Module:</c> prefix.</param>
       <param name="epilog">The Lua code snippet used to return value from the imported module (denoted as <c>p</c> in Lua),
             or <c>null</c> to use default epilog (<c>return p</c>).</param>
-      <param name="serializer">The JsonSerializer used to deserialize the return value from JSON, or <c>null</c> to use default JSON serializer.</param>
+      <param name="serializerOptions">The JsonSerializerOptions used to deserialize the return value from JSON, or <c>null</c> to use default JSON serializer.</param>
       <param name="cancellationToken">A token used to cancel the operation.</param>
       <typeparam name="T">The expected evaluation return value type.</typeparam>
       <returns>The deserialized Lua evaluation result.</returns>
@@ -12850,7 +13068,43 @@
       <param name="moduleName">Name of the module to be imported, with or without <c>Module:</c> prefix.</param>
       <param name="epilog">The Lua code snippet used to return value from the imported module (denoted as <c>p</c> in Lua),
             or <c>null</c> to use default epilog (<c>return p</c>).</param>
-      <param name="serializer">The JsonSerializer used to deserialize the return value from JSON, or <c>null</c> to use default JSON serializer.</param>
+      <param name="serializerOptions">The JsonSerializerOptions used to deserialize the return value from JSON, or <c>null</c> to use default JSON serializer.</param>
+      <param name="cancellationToken">A token used to cancel the operation.</param>
+      <typeparam name="T">The expected evaluation return value type.</typeparam>
+      <returns>The deserialized Lua evaluation result of the module.</returns>
+      <remarks>
+            This overload is intended to provide similar behavior to
+            <a href="https://www.mediawiki.org/wiki/Extension:Scribunto/Lua_reference_manual#mw.loadData"><c>mw.loadData</c></a>,
+            it works as long as the imported module meets the requirement of <c>loadData</c> function.
+            </remarks>
+    </member>
+    <member name="M:WikiClientLibrary.Scribunto.ScribuntoWikiSiteExtensions.ScribuntoLoadDataAsync``1(WikiClientLibrary.Sites.WikiSite,System.String,System.Text.Json.JsonSerializerOptions)">
+      <summary>
+            Imports the Lua module with the specified name and gets the module content.
+            </summary>
+      <param name="site">The MediaWiki site on which to evaluate the module.</param>
+      <param name="moduleName">Name of the module to be imported, with or without <c>Module:</c> prefix.</param>
+      <param name="epilog">The Lua code snippet used to return value from the imported module (denoted as <c>p</c> in Lua),
+            or <c>null</c> to use default epilog (<c>return p</c>).</param>
+      <param name="serializerOptions">The JsonSerializerOptions used to deserialize the return value from JSON, or <c>null</c> to use default JSON serializer.</param>
+      <param name="cancellationToken">A token used to cancel the operation.</param>
+      <typeparam name="T">The expected evaluation return value type.</typeparam>
+      <returns>The deserialized Lua evaluation result of the module.</returns>
+      <remarks>
+            This overload is intended to provide similar behavior to
+            <a href="https://www.mediawiki.org/wiki/Extension:Scribunto/Lua_reference_manual#mw.loadData"><c>mw.loadData</c></a>,
+            it works as long as the imported module meets the requirement of <c>loadData</c> function.
+            </remarks>
+    </member>
+    <member name="M:WikiClientLibrary.Scribunto.ScribuntoWikiSiteExtensions.ScribuntoLoadDataAsync``1(WikiClientLibrary.Sites.WikiSite,System.String,System.Text.Json.JsonSerializerOptions,System.Threading.CancellationToken)">
+      <summary>
+            Imports the Lua module with the specified name and gets the module content.
+            </summary>
+      <param name="site">The MediaWiki site on which to evaluate the module.</param>
+      <param name="moduleName">Name of the module to be imported, with or without <c>Module:</c> prefix.</param>
+      <param name="epilog">The Lua code snippet used to return value from the imported module (denoted as <c>p</c> in Lua),
+            or <c>null</c> to use default epilog (<c>return p</c>).</param>
+      <param name="serializerOptions">The JsonSerializerOptions used to deserialize the return value from JSON, or <c>null</c> to use default JSON serializer.</param>
       <param name="cancellationToken">A token used to cancel the operation.</param>
       <typeparam name="T">The expected evaluation return value type.</typeparam>
       <returns>The deserialized Lua evaluation result of the module.</returns>
@@ -12868,7 +13122,7 @@
       <param name="moduleName">Name of the module to be imported, with or without <c>Module:</c> prefix.</param>
       <param name="epilog">The Lua code snippet used to return value from the imported module (denoted as <c>p</c> in Lua),
             or <c>null</c> to use default epilog (<c>return p</c>).</param>
-      <param name="serializer">The JsonSerializer used to deserialize the return value from JSON, or <c>null</c> to use default JSON serializer.</param>
+      <param name="serializerOptions">The JsonSerializerOptions used to deserialize the return value from JSON, or <c>null</c> to use default JSON serializer.</param>
       <param name="cancellationToken">A token used to cancel the operation.</param>
       <typeparam name="T">The expected evaluation return value type.</typeparam>
       <returns>The deserialized Lua evaluation result of the module.</returns>
@@ -12912,6 +13166,15 @@
             Provides read-only access to the current logged-in information.
             </summary>
       <remarks>See <a href="https://www.mediawiki.org/wiki/API:Userinfo">mw:API:UserInfo</a>.</remarks>
+    </member>
+    <member name="M:WikiClientLibrary.Sites.AccountInfo.#ctor">
+      <summary>
+        <markup>
+          <include item="SMCAutoDocConstructor">
+            <parameter>WikiClientLibrary.Sites.AccountInfo</parameter>
+          </include>
+        </markup>
+      </summary>
     </member>
     <member name="M:WikiClientLibrary.Sites.AccountInfo.AssertInGroup(System.String)">
       <summary>
@@ -13023,12 +13286,12 @@
     </member>
     <member name="P:WikiClientLibrary.Sites.AccountInfo.IsBlocked">
       <summary>
-            Determins whether the current user has been blocked.
+            Determines whether the current user has been blocked.
             </summary>
     </member>
     <member name="P:WikiClientLibrary.Sites.AccountInfo.IsBot">
       <summary>
-            Determines wheter current user is in "bot" group.
+            Determines whether current user is in "bot" group.
             </summary>
     </member>
     <member name="M:WikiClientLibrary.Sites.AccountInfo.IsInGroup(System.String)">
@@ -13040,7 +13303,7 @@
     </member>
     <member name="P:WikiClientLibrary.Sites.AccountInfo.IsUser">
       <summary>
-            Determines wheter current user is in "user" group.
+            Determines whether current user is in "user" group.
             This is usually used to determine whether a user
             has logged in.
             </summary>
@@ -13113,14 +13376,13 @@
         <paramref name="name" /> is <c>null</c>.</exception>
     </member>
     <member name="T:WikiClientLibrary.Sites.ExtensionInfo">
-      <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>T:WikiClientLibrary.Sites.ExtensionInfo</parameter>
-          </include>
-        </markup>
-      </summary>
+      <summary>Represents a MediaWiki extension item.</summary>
+      <remarks>
+        <para>The same extension can be registered in more than one type,
+            in which case the results will be repeated for each different type.
+            See <see cref="P:WikiClientLibrary.Sites.ExtensionInfo.Type" /> for more information.</para>
+        <para>See <a href="https://www.mediawiki.org/wiki/API:Siteinfo#Extensions">mw:API:Siteinfo#Extensions</a>.</para>
+      </remarks>
     </member>
     <member name="M:WikiClientLibrary.Sites.ExtensionInfo.#ctor">
       <summary>
@@ -13132,14 +13394,7 @@
       </summary>
     </member>
     <member name="P:WikiClientLibrary.Sites.ExtensionInfo.Author">
-      <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>P:WikiClientLibrary.Sites.ExtensionInfo.Author</parameter>
-          </include>
-        </markup>
-      </summary>
+      <summary>The author or authors as a comma-delimited string.</summary>
     </member>
     <member name="P:WikiClientLibrary.Sites.ExtensionInfo.Credits">
       <summary>
@@ -13152,24 +13407,11 @@
       </summary>
     </member>
     <member name="P:WikiClientLibrary.Sites.ExtensionInfo.Description">
-      <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>P:WikiClientLibrary.Sites.ExtensionInfo.Description</parameter>
-          </include>
-        </markup>
-      </summary>
+      <summary>User-friendly description of the extension. (MediaWiki 1.24+)</summary>
     </member>
     <member name="P:WikiClientLibrary.Sites.ExtensionInfo.DescriptionMessage">
-      <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>P:WikiClientLibrary.Sites.ExtensionInfo.DescriptionMessage</parameter>
-          </include>
-        </markup>
-      </summary>
+      <summary>The system message name for the user-friendly description of the extension.
+            This can be emitted in conjunction with the description.</summary>
     </member>
     <member name="P:WikiClientLibrary.Sites.ExtensionInfo.License">
       <summary>
@@ -13192,88 +13434,40 @@
       </summary>
     </member>
     <member name="P:WikiClientLibrary.Sites.ExtensionInfo.Name">
-      <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>P:WikiClientLibrary.Sites.ExtensionInfo.Name</parameter>
-          </include>
-        </markup>
-      </summary>
+      <summary>The class name of the extension.</summary>
     </member>
     <member name="P:WikiClientLibrary.Sites.ExtensionInfo.NameMessage">
-      <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>P:WikiClientLibrary.Sites.ExtensionInfo.NameMessage</parameter>
-          </include>
-        </markup>
-      </summary>
+      <summary>The system message name for the user-friendly name of the extension.</summary>
     </member>
     <member name="M:WikiClientLibrary.Sites.ExtensionInfo.ToString">
       <summary>Returns a string that represents the current object.</summary>
       <returns>A string that represents the current object.</returns>
     </member>
     <member name="P:WikiClientLibrary.Sites.ExtensionInfo.Type">
-      <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>P:WikiClientLibrary.Sites.ExtensionInfo.Type</parameter>
-          </include>
-        </markup>
-      </summary>
+      <summary>The extension type.</summary>
+      <remarks>
+        <para>Default values include specialpage, parserhook, variable, media, antispam, skin, api, and other.
+            Extension-defined types are allowed, though only the coded value is emitted—there is currently no way
+            to retrieve the user-friendly type name (as seen on Special:Version) via the API.</para>
+        <para>The same extension can be registered in more than one type,
+            in which case the results will be repeated for each different type.</para>
+      </remarks>
     </member>
     <member name="P:WikiClientLibrary.Sites.ExtensionInfo.Url">
-      <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>P:WikiClientLibrary.Sites.ExtensionInfo.Url</parameter>
-          </include>
-        </markup>
-      </summary>
+      <summary>The URL for the homepage of the extension.</summary>
     </member>
     <member name="P:WikiClientLibrary.Sites.ExtensionInfo.VcsDate">
-      <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>P:WikiClientLibrary.Sites.ExtensionInfo.VcsDate</parameter>
-          </include>
-        </markup>
-      </summary>
+      <summary>(Git only) The date of the latest version.</summary>
     </member>
     <member name="P:WikiClientLibrary.Sites.ExtensionInfo.VcsSystem">
-      <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>P:WikiClientLibrary.Sites.ExtensionInfo.VcsSystem</parameter>
-          </include>
-        </markup>
-      </summary>
+      <summary>Which version control system is in use for the extension, if any.</summary>
+      <remarks>This can be either <c>"git"</c> or <c>"svn"</c>.</remarks>
     </member>
     <member name="P:WikiClientLibrary.Sites.ExtensionInfo.VcsUrl">
-      <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>P:WikiClientLibrary.Sites.ExtensionInfo.VcsUrl</parameter>
-          </include>
-        </markup>
-      </summary>
+      <summary>The URL of the repository.</summary>
     </member>
     <member name="P:WikiClientLibrary.Sites.ExtensionInfo.VcsVersion">
-      <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>P:WikiClientLibrary.Sites.ExtensionInfo.VcsVersion</parameter>
-          </include>
-        </markup>
-      </summary>
+      <summary>The version number of the extension in the version control system.</summary>
     </member>
     <member name="P:WikiClientLibrary.Sites.ExtensionInfo.Version">
       <summary>
@@ -13326,12 +13520,12 @@
     <member name="P:WikiClientLibrary.Sites.InterwikiEntry.IsLocal">
       <summary>
             Whether the interwiki prefix points to a site belonging to the current wiki farm.
-            The value is read straight out of the iw_local column of the interwiki table. 
+            The value is read straight out of the <c>iw_local</c> column of the interwiki table. 
             </summary>
     </member>
     <member name="P:WikiClientLibrary.Sites.InterwikiEntry.IsLocalInterwiki">
       <summary>
-            Whether the interwiki link points to the current wiki, based on Manual:$wgLocalInterwikis.
+            Whether the interwiki link points to the current wiki, based on <c>Manual:$wgLocalInterwikis</c>.
             </summary>
     </member>
     <member name="P:WikiClientLibrary.Sites.InterwikiEntry.IsProtocolRelative">
@@ -13352,9 +13546,14 @@
             this is used the same way as a namespace is used when editing.
             </summary>
       <remarks>
+        <para>
             Prefixes must be all lower-case.
             See <a href="https://www.mediawiki.org/wiki/Manual:Interwiki#Field_documentation">mw:Manual:Interwiki#Field documentation</a> for more information.
-            </remarks>
+            </para>
+        <para>
+            See <a href="https://github.com/wikimedia/mediawiki/blob/master/includes/api/ApiQuerySiteinfo.php">ApiQuerySiteinfo.php</a>.
+            </para>
+      </remarks>
     </member>
     <member name="P:WikiClientLibrary.Sites.InterwikiEntry.SiteName">
       <summary>
@@ -13375,7 +13574,7 @@
       <summary>
             The internal name of the database. Not filled in by default;
             it may be missing for you. The value is read straight out
-            of the iw_wikiid column of the interwiki table.
+            of the <c>iw_wikiid</c> column of the interwiki table.
             </summary>
     </member>
     <member name="T:WikiClientLibrary.Sites.InterwikiMap">
@@ -13760,8 +13959,12 @@
     </member>
     <member name="P:WikiClientLibrary.Sites.NamespaceInfo.CanonicalName">
       <summary>
-            Canonical namespace name.
+            Canonical namespace name. This may or may not be the same as the actual namespace name (<see cref="P:WikiClientLibrary.Sites.NamespaceInfo.CustomName" />).
             </summary>
+      <remarks>
+            For example, all wikis have a "Project:" (canonical) namespace, but the actual namespace name is normally changed to
+            the name of the wiki (on Wikipedia for example, the "Project:" namespace is "Wikipedia:")
+            </remarks>
     </member>
     <member name="P:WikiClientLibrary.Sites.NamespaceInfo.CustomName">
       <summary>
@@ -13803,13 +14006,8 @@
     </member>
     <member name="P:WikiClientLibrary.Sites.NamespaceInfo.IsNonIncludable">
       <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>P:WikiClientLibrary.Sites.NamespaceInfo.IsNonIncludable</parameter>
-          </include>
-        </markup>
-      </summary>
+            Whether pages in this namespace can be transcluded.
+            </summary>
     </member>
     <member name="P:WikiClientLibrary.Sites.NamespaceInfo.SubPages">
       <summary>
@@ -13822,12 +14020,8 @@
       </summary>
     </member>
     <member name="M:WikiClientLibrary.Sites.NamespaceInfo.ToString">
-      <summary>
-            返回表示当前对象的字符串。
-            </summary>
-      <returns>
-            表示当前对象的字符串。
-            </returns>
+      <summary>Returns a string that represents the current object.</summary>
+      <returns>A string that represents the current object.</returns>
     </member>
     <member name="T:WikiClientLibrary.Sites.OpenSearchOptions">
       <summary>
@@ -13848,6 +14042,15 @@
             Represents an entry in opensearch result.
             </summary>
     </member>
+    <member name="M:WikiClientLibrary.Sites.OpenSearchResultEntry.#ctor">
+      <summary>
+        <markup>
+          <include item="SMCAutoDocConstructor">
+            <parameter>WikiClientLibrary.Sites.OpenSearchResultEntry</parameter>
+          </include>
+        </markup>
+      </summary>
+    </member>
     <member name="P:WikiClientLibrary.Sites.OpenSearchResultEntry.Description">
       <summary>
             Description of the page. May be null.
@@ -13859,12 +14062,8 @@
             </summary>
     </member>
     <member name="M:WikiClientLibrary.Sites.OpenSearchResultEntry.ToString">
-      <summary>
-            返回该实例的完全限定类型名。
-            </summary>
-      <returns>
-            包含完全限定类型名的 <see cref="T:System.String" />。
-            </returns>
+      <summary>Returns a string that represents the current object.</summary>
+      <returns>A string that represents the current object.</returns>
     </member>
     <member name="P:WikiClientLibrary.Sites.OpenSearchResultEntry.Url">
       <summary>
@@ -13917,6 +14116,9 @@
             </summary>
       <remarks>Example value: <c>MediaWiki 1.28.0-wmf.15</c>.</remarks>
     </member>
+    <member name="P:WikiClientLibrary.Sites.SiteInfo.IsReadOnly">
+      <summary>Whether the wiki is in read-only mode.</summary>
+    </member>
     <member name="P:WikiClientLibrary.Sites.SiteInfo.IsTitleCaseSensitive">
       <summary>
             Whether the first letter in a title is case-sensitive. (MediaWiki 1.8+)
@@ -13965,15 +14167,20 @@
             </remarks>
       <exception cref="T:System.ArgumentNullException">Either <paramref name="title" /> or <paramref name="defaultProtocol" /> is <c>null</c>.</exception>
     </member>
-    <member name="P:WikiClientLibrary.Sites.SiteInfo.MaxUploadSize">
+    <member name="P:WikiClientLibrary.Sites.SiteInfo.MaxArticleSize">
       <summary>
         <markup>
           <include item="SMCMissingTag">
             <parameter>summary</parameter>
-            <parameter>P:WikiClientLibrary.Sites.SiteInfo.MaxUploadSize</parameter>
+            <parameter>P:WikiClientLibrary.Sites.SiteInfo.MaxArticleSize</parameter>
           </include>
         </markup>
       </summary>
+    </member>
+    <member name="P:WikiClientLibrary.Sites.SiteInfo.MaxUploadSize">
+      <summary>The maximum upload size on the wiki. See <c>$wgMaxUploadSize</c>.</summary>
+      <remarks>This is always an integer for the primary maximum upload size;
+            retrieving the by-URL size is not currently available.</remarks>
     </member>
     <member name="P:WikiClientLibrary.Sites.SiteInfo.MinUploadChunkSize">
       <summary>
@@ -13984,6 +14191,9 @@
           </include>
         </markup>
       </summary>
+    </member>
+    <member name="P:WikiClientLibrary.Sites.SiteInfo.ReadOnlyReason">
+      <summary>The reason the wiki is in read-only mode, if applicable. (MW 1.16+)</summary>
     </member>
     <member name="P:WikiClientLibrary.Sites.SiteInfo.ScriptDirectoryPath">
       <summary>
@@ -14020,7 +14230,7 @@
     </member>
     <member name="P:WikiClientLibrary.Sites.SiteInfo.TimeOffset">
       <summary>
-            The offset of the wiki's time zone, from UTC. See $wgLocalTZoffset. 1.13+
+            The offset of the wiki's time zone, from UTC. See $wgLocalTZoffset. (1.13+)
             </summary>
     </member>
     <member name="P:WikiClientLibrary.Sites.SiteInfo.TimeZoneName">
@@ -14695,7 +14905,7 @@
             Invokes MediaWiki API and gets JSON result.
             </summary>
       <param name="message">The request message.</param>
-      <param name="responseParser">The parser that checks and parses the API response into <see cref="T:Newtonsoft.Json.Linq.JToken" />.</param>
+      <param name="responseParser">The parser that checks and parses the API response into <see cref="T:System.Text.Json.Nodes.JsonNode" />.</param>
       <param name="suppressAccountAssertion">Whether to temporarily disable account assertion as set in <see cref="P:WikiClientLibrary.Sites.SiteOptions.AccountAssertion" />.</param>
       <param name="cancellationToken">The cancellation token that will be checked prior to completing the returned task.</param>
       <returns>A task that returns the JSON response when completed.</returns>
@@ -14709,7 +14919,7 @@
             Invokes MediaWiki API and gets JSON result.
             </summary>
       <param name="message">The request message.</param>
-      <param name="responseParser">The parser that checks and parses the API response into <see cref="T:Newtonsoft.Json.Linq.JToken" />.</param>
+      <param name="responseParser">The parser that checks and parses the API response into <see cref="T:System.Text.Json.Nodes.JsonNode" />.</param>
       <param name="suppressAccountAssertion">Whether to temporarily disable account assertion as set in <see cref="P:WikiClientLibrary.Sites.SiteOptions.AccountAssertion" />.</param>
       <param name="cancellationToken">The cancellation token that will be checked prior to completing the returned task.</param>
       <returns>A task that returns the JSON response when completed.</returns>
@@ -14723,7 +14933,7 @@
             Invokes MediaWiki API and gets JSON result.
             </summary>
       <param name="message">The request message.</param>
-      <param name="responseParser">The parser that checks and parses the API response into <see cref="T:Newtonsoft.Json.Linq.JToken" />.</param>
+      <param name="responseParser">The parser that checks and parses the API response into <see cref="T:System.Text.Json.Nodes.JsonNode" />.</param>
       <param name="suppressAccountAssertion">Whether to temporarily disable account assertion as set in <see cref="P:WikiClientLibrary.Sites.SiteOptions.AccountAssertion" />.</param>
       <param name="cancellationToken">The cancellation token that will be checked prior to completing the returned task.</param>
       <typeparam name="T">
