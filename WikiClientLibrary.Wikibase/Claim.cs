@@ -220,7 +220,7 @@ public sealed class ClaimReference
 /// </summary>
 /// <remarks>
 /// To compare the equality of two snaks' values, consider using
-/// <see cref="JToken.DeepEquals(JToken,JToken)"/> on <see cref="RawDataValue"/>.
+/// <see cref="JsonNode.DeepEquals"/> on <see cref="RawDataValue"/>.
 /// </remarks>
 public sealed class Snak
 {

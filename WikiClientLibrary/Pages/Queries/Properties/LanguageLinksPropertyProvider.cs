@@ -99,7 +99,7 @@ public enum LanguageLinkProperties
     LanguageName = 2,
 
     /// <summary>Adds the native language name. (MW 1.23+)</summary>
-    Autonym = 4
+    Autonym = 4,
 
 }
 
@@ -116,17 +116,20 @@ public enum LanguageLinkProperties
 public sealed class LanguageLinkInfo
 {
 
+    /// <see cref="LanguageLinkProperties.LanguageName"/>
     [JsonPropertyName("lang")]
     public required string Language { get; init; }
 
     /// <summary>URL of the language link target.</summary>
     /// <remarks>In rare cases, such as when the <see cref="Title"/> is malformed, this property can be <c>null</c>.</remarks>
+    /// <see cref="LanguageLinkProperties.Url"/>
     public string? Url { get; init; }
 
     /// <summary>
     /// Autonym of the language.
     /// </summary>
-    public required string Autonym { get; init; }
+    /// <see cref="LanguageLinkProperties.Autonym"/>
+    public string? Autonym { get; init; }
 
     /// <summary>
     /// Title of the page in the specified language.
