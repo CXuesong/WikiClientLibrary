@@ -1,5 +1,6 @@
 ﻿using System.Diagnostics;
 using System.Net;
+using System.Runtime.CompilerServices;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using WikiClientLibrary.Infrastructures;
@@ -33,7 +34,7 @@ public class WikiClient : IWikiClient, IWikiClientLoggable, IDisposable
         // Bots eat up a lot of bandwidth, which is not free.
         if (_HttpClientHandler.SupportsAutomaticDecompression)
         {
-            _HttpClientHandler.AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate;
+            _HttpClientHandler.AutomaticDecompression = DecompressionMethods.All;
         }
     }
 
@@ -53,7 +54,7 @@ public class WikiClient : IWikiClient, IWikiClientLoggable, IDisposable
         ClientUserAgent = null;
         _HttpClientHandler = handler as HttpClientHandler;
 #if DEBUG
-        HttpClient.DefaultRequestHeaders.Add("X-WCL-DEBUG-CLIENT-ID", GetHashCode().ToString());
+        HttpClient.DefaultRequestHeaders.Add("X-WCL-DEBUG-CLIENT-ID", RuntimeHelpers.GetHashCode(this).ToString());
 #endif
     }
 
@@ -147,17 +148,15 @@ public class WikiClient : IWikiClient, IWikiClientLoggable, IDisposable
     {
         if (endPointUrl == null) throw new ArgumentNullException(nameof(endPointUrl));
         if (message == null) throw new ArgumentNullException(nameof(message));
-        using (this.BeginActionScope(null, message))
-        {
-            var result = await SendAsync(endPointUrl, message, responseParser, cancellationToken);
-            return result;
-        }
+        using var scope = this.BeginActionScope(null, message);
+        var result = await SendAsync(endPointUrl, message, responseParser, cancellationToken);
+        return result;
     }
 
     /// <inheritdoc />
     public override string ToString()
     {
-        return $"{GetType().Name}#{GetHashCode()}";
+        return $"{GetType().Name}#{RuntimeHelpers.GetHashCode(this)}";
     }
 
     /// <summary>
