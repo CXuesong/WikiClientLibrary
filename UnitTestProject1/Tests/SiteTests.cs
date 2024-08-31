@@ -126,30 +126,35 @@ public class SiteTests : WikiSiteTestsBase, IClassFixture<WikiSiteProvider>
         var site = await CreateIsolatedWikiSiteAsync(endpointUrl, true);
         Assert.False(site.AccountInfo.IsUser);
         Assert.True(site.AccountInfo.IsAnonymous);
+        Assert.True(site.AccountInfo.IsInGroup("*"));
+        Assert.True(site.AccountInfo.HasRight(UserRights.Read));
+        Assert.False(site.AccountInfo.HasRight(UserRights.Upload));
 
         await CredentialManager.LoginAsync(site);
+        Output.WriteLine("{0} has logged into {1}", site.AccountInfo.Name, site);
         Assert.True(site.AccountInfo.IsUser);
         Assert.False(site.AccountInfo.IsAnonymous);
-        Output.WriteLine($"{site.AccountInfo.Name} has logged into {site}");
 
         await site.LogoutAsync();
+        Output.WriteLine("{0} has logged out.", site.AccountInfo.Name);
         Assert.False(site.AccountInfo.IsUser);
         Assert.True(site.AccountInfo.IsAnonymous);
-        Output.WriteLine($"{site.AccountInfo.Name} has logged out.");
     }
 
-    [Fact]
-    public async Task LoginWpTest2_2()
+    [SkippableTheory]
+    [InlineData(Endpoints.WikipediaZh)]
+    [InlineData(Endpoints.WikipediaEn)]
+    [InlineData(Endpoints.WikiaTest)]
+    [InlineData(Endpoints.WikipediaTest2)]
+    [InlineData(Endpoints.TFWiki)]
+    public async Task WikiSiteAccountAnonymousBlockTest(string endpointUrl)
     {
-        var site = await CreateIsolatedWikiSiteAsync(Endpoints.WikipediaTest2, true);
-        await CredentialManager.LoginAsync(site);
-        Assert.True(site.AccountInfo.IsUser);
-        Assert.False(site.AccountInfo.IsAnonymous);
-        Output.WriteLine($"{site.AccountInfo.Name} has logged into {site}");
-        await site.LogoutAsync();
-        Assert.False(site.AccountInfo.IsUser);
+        var site = await CreateIsolatedWikiSiteAsync(endpointUrl, true);
+        ShallowTrace(site.AccountInfo, 2);
         Assert.True(site.AccountInfo.IsAnonymous);
-        Output.WriteLine($"{site.AccountInfo.Name} has logged out.");
+        if (!site.AccountInfo.IsBlocked)
+            throw new SkipException("Account is not blocked.");
+        Assert.NotNull(site.AccountInfo.BlockInfo);
     }
 
     [Fact]

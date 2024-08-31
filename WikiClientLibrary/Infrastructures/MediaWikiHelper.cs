@@ -346,7 +346,7 @@ public static string MakeAbsoluteProtocol(string relativeProtocolUrl, string def
             throw new ArgumentNullException(nameof(expression));
         if (expression.Length == 0)
             throw new ArgumentException(Prompts.ExceptionArgumentIsEmpty, nameof(expression));
-        if (expression.Length <= infinityExpressionMaxLength && infinityValues.Contains(expression.ToLowerInvariant()))
+        if (expression.Length <= infinityExpressionMaxLength && infinityValues.Contains(expression, StringComparer.OrdinalIgnoreCase))
         {
             result = DateTime.MaxValue;
             return true;

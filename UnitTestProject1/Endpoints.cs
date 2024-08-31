@@ -18,6 +18,11 @@ public static class Endpoints
     /// <summary>
     /// This is NOT a test site so do not make modifications to the site.
     /// </summary>
+    public const string WikipediaZh = "https://zh.wikipedia.org/w/api.php";
+
+    /// <summary>
+    /// This is NOT a test site so do not make modifications to the site.
+    /// </summary>
     public const string WikipediaLzh = "https://zh-classical.wikipedia.org/w/api.php";
 
     public const string WikimediaCommonsBeta = "https://commons.wikimedia.beta.wmflabs.org/w/api.php";
