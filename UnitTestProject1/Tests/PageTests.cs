@@ -138,6 +138,31 @@ public class PageTests : WikiSiteTestsBase, IClassFixture<WikiSiteProvider>
     }
 
     [Fact]
+    public async Task WpEnPageCategoriesTest()
+    {
+        var site = await WpEnSiteAsync;
+        var page = new WikiPage(site, "Paris");
+        await page.RefreshAsync(new WikiPageQueryProvider { Properties = { new CategoriesPropertyProvider() } });
+        ShallowTrace(page);
+
+        var cats = page.GetPropertyGroup<CategoriesPropertyGroup>()?.Categories;
+        ShallowTrace(cats);
+        Utility.AssertNotNull(cats);
+
+        var catParis = cats.FirstOrDefault(c => c.Title == "Category:Paris");
+        var catCapitalsInEurope = cats.FirstOrDefault(c => c.Title == "Category:Capitals in Europe");
+        var catGoodArticles = cats.FirstOrDefault(c => c.Title == "Category:Good articles");
+
+        Assert.NotNull(catParis);
+        Assert.NotNull(catCapitalsInEurope);
+        Assert.NotNull(catGoodArticles);
+
+        Assert.False(catParis.IsHidden);
+        Assert.False(catCapitalsInEurope.IsHidden);
+        Assert.True(catGoodArticles.IsHidden);
+    }
+
+    [Fact]
     public async Task WpLzhPageExtractTest()
     {
         var site = await WpLzhSiteAsync;
@@ -178,6 +203,7 @@ public class PageTests : WikiSiteTestsBase, IClassFixture<WikiSiteProvider>
         {
             Properties = { new LanguageLinksPropertyProvider(LanguageLinkProperties.Autonym) },
         });
+
         var langLinks = page.GetPropertyGroup<LanguageLinksPropertyGroup>()?.LanguageLinks;
         ShallowTrace(langLinks);
         Utility.AssertNotNull(langLinks);
@@ -188,6 +214,7 @@ public class PageTests : WikiSiteTestsBase, IClassFixture<WikiSiteProvider>
         Assert.Equal("English", langLink.Autonym);
         // We didn't ask for URL so this should be null.
         Assert.All(langLinks, l => Assert.Null(l.Url));
+
         // Try out whether we still can fetch complete prop values even in the case of prop pagination.
         var pages = new[] { "挪威", "坤輿", "維基共享" }.Select(t => new WikiPage(site, t)).Append(page).ToList();
         await pages.RefreshAsync(new WikiPageQueryProvider { Properties = { new LanguageLinksPropertyProvider() } });

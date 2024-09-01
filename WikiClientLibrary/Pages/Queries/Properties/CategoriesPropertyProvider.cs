@@ -1,5 +1,4 @@
 ﻿using System.Collections.ObjectModel;
-using System.Diagnostics.CodeAnalysis;
 using System.Text.Json.Nodes;
 using WikiClientLibrary.Generators;
 using WikiClientLibrary.Infrastructures;
@@ -33,7 +32,8 @@ public class CategoriesPropertyProvider : WikiPagePropertyProvider<CategoriesPro
     /// <inheritdoc />
     public override CategoriesPropertyGroup? ParsePropertyGroup(JsonObject json)
     {
-        throw new NotImplementedException();
+        ArgumentNullException.ThrowIfNull(json);
+        return CategoriesPropertyGroup.Create(json["categories"]?.AsArray());
     }
 
     /// <inheritdoc />
@@ -44,41 +44,32 @@ public class CategoriesPropertyProvider : WikiPagePropertyProvider<CategoriesPro
 /// <summary>
 /// Contains information about a page's belonging category.
 /// </summary>
-public readonly struct WikiPageCategoryInfo
+public sealed class WikiPageCategoryInfo
 {
-
-    public WikiPageCategoryInfo(WikiPageStub page, bool isHidden, string? sortKey, string? fullSortKey, DateTime timeStamp)
-    {
-        Page = page;
-        IsHidden = isHidden;
-        SortKey = sortKey;
-        TimeStamp = timeStamp;
-        FullSortKey = fullSortKey;
-    }
 
     /// <summary>
     /// Page information for the category.
     /// </summary>
     /// <remarks>The <see cref="WikiPageStub.HasId"/> of the returned <see cref="WikiPageStub"/> is <c>false</c>.</remarks>
-    public WikiPageStub Page { get; }
+    public required WikiPageStub Page { get; init; }
 
     /// <summary>
-    /// Full name of the category.
+    /// Full name of the category, with namespace prefix.
     /// </summary>
     public string? Title => Page.HasTitle ? Page.Title : null;
 
     /// <summary>Gets a value that indicates whether the category is hidden.</summary>
-    public bool IsHidden { get; }
+    public bool IsHidden { get; init; }
 
     /// <summary>Gets the sortkey prefix (human-readable part) of the current page in the category.</summary>
-    public string? SortKey { get; }
+    public string? SortKey { get; init; }
 
     /// <summary>Gets the sortkey (hexadecimal string) of the current page in the category.</summary>
-    public string? FullSortKey { get; }
+    public string? FullSortKey { get; init; }
 
     /// <summary>Gets the timestamp of when the category was added.</summary>
     /// <value>A timestamp, or <see cref="DateTime.MinValue"/> if not available.</value>
-    public DateTime TimeStamp { get; }
+    public DateTime TimeStamp { get; init; }
 
     /// <inheritdoc />
     public override string ToString()
@@ -91,13 +82,11 @@ public readonly struct WikiPageCategoryInfo
 public class CategoriesPropertyGroup : WikiPagePropertyGroup
 {
 
-    private static readonly CategoriesPropertyGroup empty = new CategoriesPropertyGroup();
+    private static readonly CategoriesPropertyGroup empty = new();
 
-    [return:NotNullIfNotNull(nameof(jcats))]
-    internal CategoriesPropertyGroup? Create(JsonArray? jcats)
+    internal static CategoriesPropertyGroup Create(JsonArray? jcats)
     {
-        if (jcats == null) return null;
-        if (jcats.Count == 0) return empty;
+        if (jcats == null || jcats.Count == 0) return empty;
         return new CategoriesPropertyGroup(jcats);
     }
 
@@ -116,9 +105,14 @@ public class CategoriesPropertyGroup : WikiPagePropertyGroup
 
     internal static WikiPageCategoryInfo CategoryInfoFromJson(JsonNode json)
     {
-        return new WikiPageCategoryInfo(MediaWikiHelper.PageStubFromJson(json.AsObject()),
-            json["hidden"] != null, (string?)json["sortkeyprefix"], (string?)json["sortkey"],
-            (DateTime?)json["timestamp"] ?? DateTime.MinValue);
+        return new WikiPageCategoryInfo
+        {
+            Page = MediaWikiHelper.PageStubFromJson(json.AsObject()),
+            IsHidden = json["hidden"] != null,
+            SortKey = (string?)json["sortkeyprefix"],
+            FullSortKey = (string?)json["sortkey"],
+            TimeStamp = (DateTime?)json["timestamp"] ?? DateTime.MinValue,
+        };
     }
 
     public IReadOnlyCollection<WikiPageCategoryInfo> Categories { get; }
