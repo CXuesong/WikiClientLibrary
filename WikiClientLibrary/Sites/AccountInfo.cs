@@ -79,6 +79,7 @@ public sealed class AccountInfo
             var localBlockInfo = this._BlockInfo;
             if (localBlockInfo == null)
             {
+                // While `blockid` could be `null` for system blocks, the node always exists.
                 if (extensionDataRaw != null
                     && extensionDataRaw.ContainsKey("blockid")
                     && extensionDataRaw.ContainsKey("blockedbyid")
@@ -236,12 +237,15 @@ public sealed class AccountBlockInfo
 {
 
     /// <summary>ID of the block.</summary>
-    public required long BlockId { get; init; }
+    /// <value>block ID, or <c>null</c> if the block is a system block (see <see cref="SystemBlockType"/>).</value>
+    public required long? BlockId { get; init; }
 
     /// <summary>Username of the blocker.</summary>
+    /// <value>username, or empty string (<c>""</c>) if the block is a system block.</value>
     public required string BlockedBy { get; init; }
 
     /// <summary>User ID of the blocker.</summary>
+    /// <value>username, or <c>0</c> if the block is a system block.</value>
     public required long BlockedById { get; init; }
 
     /// <summary>Reason provided for the block, in Wikitext.</summary>
