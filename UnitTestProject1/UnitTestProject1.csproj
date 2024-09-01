@@ -9,7 +9,6 @@
     <ImplicitUsings>Enable</ImplicitUsings>
   </PropertyGroup>
 
-
   <PropertyGroup Condition=" '$(WCL_IS_CI_BUILD)' == 'True' ">
     <!-- CI environment is likely to be in an IP range that is blocked by WP. -->
     <DefineConstants>$(DefineConstants);DRY_RUN</DefineConstants>

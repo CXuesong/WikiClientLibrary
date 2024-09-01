@@ -84,4 +84,11 @@ public class InfrastructureTests : UnitTestsBase
         Assert.True(rect.Contains(new GeoCoordinate(25, 370)));
     }
 
+    [Fact]
+    public void JoinValuesTest()
+    {
+        Assert.Equal("abc|def|123", MediaWikiHelper.JoinValues<object>(["abc", "def", 123]));
+        Assert.Equal("\u001fabc\u001fdef|ghi\u001f123", MediaWikiHelper.JoinValues<object>(["abc", "def|ghi", 123]));
+    }
+
 }

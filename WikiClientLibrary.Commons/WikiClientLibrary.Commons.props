@@ -1,4 +1,8 @@
 <Project>
+  <PropertyGroup>
+    <LangVersion>latest</LangVersion>
+  </PropertyGroup>
+
   <PropertyGroup Condition=" '$(WCL_IS_CI_BUILD)' == '1' Or '$(WCL_IS_CI_BUILD)' == 'True' Or '$(WCL_IS_CI_BUILD)' == 'On' Or '$(WCL_IS_CI_BUILD)' == 'Yes' ">
     <DefineConstants>$(DefineConstants);ENV_CI_BUILD</DefineConstants>
     <!-- Normalize value -->

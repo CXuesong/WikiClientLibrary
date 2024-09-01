@@ -16,9 +16,10 @@ using WikiClientLibrary.Pages.Queries;
 namespace WikiClientLibrary.Infrastructures;
 
 /// <summary>
-/// Helper methods for extending MediaWiki API.
+/// Low-level helper methods for extending MediaWiki API.
+/// These helper members are also intended to be leveraged by WCL library consumers.
 /// </summary>
-public static partial class MediaWikiHelper
+public static class MediaWikiHelper
 {
 
     /// <summary>
@@ -297,7 +298,7 @@ public static string MakeAbsoluteProtocol(string relativeProtocolUrl, string def
     /// for more information.</para>
     /// </remarks>
     /// <seealso cref="ParseDateTime"/>
-    /// <seealso cref="WikiDateTimeJsonConverter0"/>
+    /// <seealso cref="WikiDateTimeOffsetConverter"/>
     public static DateTimeOffset ParseDateTimeOffset(string expression)
     {
         if (expression == null)
@@ -319,6 +320,7 @@ public static string MakeAbsoluteProtocol(string relativeProtocolUrl, string def
     /// </summary>
     /// <inheritdoc cref="ParseDateTimeOffset"/>
     /// <seealso cref="ParseDateTimeOffset"/>
+    /// <seealso cref="WikiDateTimeConverter"/>
     public static DateTime ParseDateTime(string expression)
     {
         if (expression == null)
@@ -405,22 +407,21 @@ public static string MakeAbsoluteProtocol(string relativeProtocolUrl, string def
         {
             if (sb.Length > 0) sb.Append(delimiter);
             var str = v?.ToString();
-            if (str != null)
+            if (str == null) continue;
+            if (delimiter == '|')
             {
-                if (delimiter == '|')
+                if (str.Contains('|', StringComparison.Ordinal))
                 {
-                    if (str.Contains('|'))
-                    {
-                        sb.Replace('|', '\u001F');
-                        sb.Insert(0, '\u001F');
-                    }
+                    sb.Replace('|', '\u001F');
+                    sb.Insert(0, '\u001F');
+                    delimiter = '\u001F';
                 }
-                else if ( /* delimiter == '\u001F' && */ str.Contains('\u001F'))
-                {
-                    throw new ArgumentException(Prompts.ExceptionJoinValuesCannotContainPipeAndSeparator);
-                }
-                sb.Append(str);
             }
+            else if ( /* delimiter == '\u001F' && */ str.Contains('\u001F'))
+            {
+                throw new ArgumentException(Prompts.ExceptionJoinValuesCannotContainPipeAndSeparator);
+            }
+            sb.Append(str);
         }
         return sb.ToString();
     }
