@@ -3072,6 +3072,70 @@
             The User Agent of Wiki Client Library.
             </summary>
     </member>
+    <member name="T:WikiClientLibrary.Client.WikiClientHelper">
+      <summary>
+            Provides a set of opinionated but also useful methods for <see cref="T:WikiClientLibrary.Client.WikiClient" /> instances.
+            </summary>
+      <remarks>
+            While you can still do well if you just implement your own equivalencies to this class,
+            you are encouraged to open an issue on GitHub if there is any problems or feature requests.
+            </remarks>
+    </member>
+    <member name="M:WikiClientLibrary.Client.WikiClientHelper.BuildUserAgent(System.Reflection.Assembly)">
+      <summary>
+            Builds a valid <c>User-Agent</c> header value from the information inferred from the specified assembly,
+            which can be used in <see cref="P:WikiClientLibrary.Client.WikiClient.ClientUserAgent" />.
+            </summary>
+      <param name="assembly">The assembly from which to acquire the user agent information.</param>
+      <param name="comment">Optional comment in User Agent. Can be <c>null</c>.</param>
+      <returns>A <c>User-Agent</c> header value string, in the form <c>assembly-name/assembly-version (comment)</c>, such as <c>App1/1.0</c>.</returns>
+      <remarks>To generate <c>User-Agent</c> for your application automatically, use <c>BuildUserAgent(typeof(Program), "comment")</c>,
+            where <c>Program</c> is a class in your application assembly.</remarks>
+    </member>
+    <member name="M:WikiClientLibrary.Client.WikiClientHelper.BuildUserAgent(System.Reflection.Assembly,System.String)">
+      <summary>
+            Builds a valid <c>User-Agent</c> header value from the information inferred from the specified assembly,
+            which can be used in <see cref="P:WikiClientLibrary.Client.WikiClient.ClientUserAgent" />.
+            </summary>
+      <param name="assembly">The assembly from which to acquire the user agent information.</param>
+      <param name="comment">Optional comment in User Agent. Can be <c>null</c>.</param>
+      <returns>A <c>User-Agent</c> header value string, in the form <c>assembly-name/assembly-version (comment)</c>, such as <c>App1/1.0</c>.</returns>
+      <remarks>To generate <c>User-Agent</c> for your application automatically, use <c>BuildUserAgent(typeof(Program), "comment")</c>,
+            where <c>Program</c> is a class in your application assembly.</remarks>
+    </member>
+    <member name="M:WikiClientLibrary.Client.WikiClientHelper.BuildUserAgent(System.String)">
+      <summary>
+            Builds a valid <c>User-Agent</c> header value that can be used in <see cref="P:WikiClientLibrary.Client.WikiClient.ClientUserAgent" />.
+            </summary>
+      <param name="productName">Product name.</param>
+      <param name="productVersion">Product version, or <c>null</c>.</param>
+      <param name="comment">Comment, or <c>null</c>.</param>
+      <returns>A <c>User-Agent</c> header value string, in the form <c>productName/productVersion (comment)</c>.</returns>
+      <exception cref="T:System.ArgumentNullException">
+        <paramref name="productName" /> is <c>null</c>.</exception>
+    </member>
+    <member name="M:WikiClientLibrary.Client.WikiClientHelper.BuildUserAgent(System.String,System.String)">
+      <summary>
+            Builds a valid <c>User-Agent</c> header value that can be used in <see cref="P:WikiClientLibrary.Client.WikiClient.ClientUserAgent" />.
+            </summary>
+      <param name="productName">Product name.</param>
+      <param name="productVersion">Product version, or <c>null</c>.</param>
+      <param name="comment">Comment, or <c>null</c>.</param>
+      <returns>A <c>User-Agent</c> header value string, in the form <c>productName/productVersion (comment)</c>.</returns>
+      <exception cref="T:System.ArgumentNullException">
+        <paramref name="productName" /> is <c>null</c>.</exception>
+    </member>
+    <member name="M:WikiClientLibrary.Client.WikiClientHelper.BuildUserAgent(System.String,System.String,System.String)">
+      <summary>
+            Builds a valid <c>User-Agent</c> header value that can be used in <see cref="P:WikiClientLibrary.Client.WikiClient.ClientUserAgent" />.
+            </summary>
+      <param name="productName">Product name.</param>
+      <param name="productVersion">Product version, or <c>null</c>.</param>
+      <param name="comment">Comment, or <c>null</c>.</param>
+      <returns>A <c>User-Agent</c> header value string, in the form <c>productName/productVersion (comment)</c>.</returns>
+      <exception cref="T:System.ArgumentNullException">
+        <paramref name="productName" /> is <c>null</c>.</exception>
+    </member>
     <member name="T:WikiClientLibrary.Client.WikiRequestMessage">
       <summary>
             The traceable API request message to be sent to the wiki sites.
@@ -7199,7 +7263,8 @@
     </member>
     <member name="T:WikiClientLibrary.Infrastructures.MediaWikiHelper">
       <summary>
-            Helper methods for extending MediaWiki API.
+            Low-level helper methods for extending MediaWiki API.
+            These helper members are also intended to be leveraged by WCL library consumers.
             </summary>
     </member>
     <member name="M:WikiClientLibrary.Infrastructures.MediaWikiHelper.EnumValues(System.Object)">
@@ -8569,6 +8634,73 @@
       <summary>
             Do not change watchlist.
             </summary>
+    </member>
+    <member name="T:WikiClientLibrary.Pages.PageHelper">
+      <summary>
+            Provides a set of opinionated but also useful methods for MediaWiki pages and page titles.
+            </summary>
+      <remarks>
+            While you can still do well if you just implement your own equivalencies to this class,
+            you are encouraged to open an issue on GitHub if there is any problems or feature requests.
+            </remarks>
+    </member>
+    <member name="M:WikiClientLibrary.Pages.PageHelper.EvaluateSanitizedSha1(System.String)">
+      <summary>
+            Evaluates SHA1 hash of the sanitized version of specified text content, in UTF-8 encoding.
+            </summary>
+      <param name="content">The text content to be hashed.</param>
+      <returns>The lower-case hexadecimal hash string.</returns>
+      <remarks>
+        <para>You may compare the returned hash directly to <see cref="P:WikiClientLibrary.Pages.Revision.Sha1" />
+            to determine whether certain remote revision is much likely to have the same
+            content as specified by <paramref name="content" />.</para>
+        <para>Due to the limitation of offline normalization, the SHA1 evaluated locally
+            could still be different from the server-side value. See the "Remarks" section of
+            <seealso cref="M:WikiClientLibrary.Pages.PageHelper.SanitizePageContent(System.String)" /> for more information.</para>
+      </remarks>
+    </member>
+    <member name="M:WikiClientLibrary.Pages.PageHelper.EvaluateSha1(System.String)">
+      <summary>
+            Evaluates SHA1 hash of the specified text content, in UTF-8 encoding.
+            </summary>
+      <param name="content">The text content to be hashed.</param>
+      <returns>The lower-case hexadecimal hash string.</returns>
+      <remarks>To evaluate the SHA1 hash of sanitized text content (especially when
+            you are checking revision hash locally before sending remote requests), use
+            <see cref="M:WikiClientLibrary.Pages.PageHelper.EvaluateSanitizedSha1(System.String)" />.</remarks>
+    </member>
+    <member name="M:WikiClientLibrary.Pages.PageHelper.SanitizePageContent(System.String)">
+      <summary>
+            Sanitizes the MediaWiki page content locally for SHA1 evaluation.
+            </summary>
+      <param name="content">The content to be sanitized.</param>
+      <remarks>
+        <para>This method normalizes line breaks into <c>"\n"</c>, and trims the trailing white spaces.
+            Leading white spaces are kept to align with the MediaWiki behavior.</para>
+        <para>Due to the limitation of offline page content normalization, this function will not expand
+            and <c>~~~~</c> or <c>{{subst:}}</c> magic. This could still cause different content and thus SHA1
+            hash from the MediaWiki server being evaluated, possibly causing false-positive when checking
+            whether the page content retrieved from MediaWiki server is the same as the local version.</para>
+      </remarks>
+      <exception cref="T:System.ArgumentNullException">
+        <paramref name="content" /> is <c>null</c>.</exception>
+    </member>
+    <member name="M:WikiClientLibrary.Pages.PageHelper.StripTitleDisambiguation(System.String)">
+      <summary>
+            Strips disambiguation part of the title from the full article title.
+            </summary>
+      <param name="originalTitle">The original full article title.</param>
+      <returns>The article title without disambiguation part, or the original title given if no such part can be found.</returns>
+      <remarks>
+        <para>According to the current naming practice of disambiguation on Wikipedia,
+            the page title with disambiguation part is like: <c>Politics (Aristotle)</c>.
+            Note there is a space before the left bracket. However, for the sake of compatibility,
+            especially on the Wiki sites outside Wikimedia Projects, the method also handles the following cases
+            <list type="bullet"><item><term>Politics(Aristotle)</term><description>Missing, or extra whitespaces before the bracket.</description></item><item><term>政治学 （亚里士多德）</term><description>Full-width left bracket instead of half-width one.</description></item></list></para>
+        <para>For general concept on disambiguation, see <a href="https://en.wikipedia.org/wiki/Wikipedia:Disambiguation">Wikipedia:Disambiguation</a>.</para>
+      </remarks>
+      <exception cref="T:System.ArgumentNullException">
+        <paramref name="originalTitle" /> is <c>null</c>.</exception>
     </member>
     <member name="T:WikiClientLibrary.Pages.PageMovingOptions">
       <summary>
@@ -13161,6 +13293,74 @@
             Checks for "bot" user right, or "user" if the former is not applicable per request.
             </summary>
     </member>
+    <member name="T:WikiClientLibrary.Sites.AccountBlockInfo">
+      <summary>
+            Contains basic information about a given account block.
+            </summary>
+      <remarks>
+            See <a href="https://github.com/wikimedia/mediawiki/blob/master/includes/api/ApiBlockInfoTrait.php">ApiBlockInfoTrait.php</a>.
+            </remarks>
+    </member>
+    <member name="M:WikiClientLibrary.Sites.AccountBlockInfo.#ctor">
+      <summary>
+        <markup>
+          <include item="SMCAutoDocConstructor">
+            <parameter>WikiClientLibrary.Sites.AccountBlockInfo</parameter>
+          </include>
+        </markup>
+      </summary>
+    </member>
+    <member name="P:WikiClientLibrary.Sites.AccountBlockInfo.BlockComponents">
+      <summary>For composite block, retrieve the block components. (MW 1.34+)</summary>
+      <value>a readonly collection of block information, or <c>null</c> if the block is not a composite block.</value>
+    </member>
+    <member name="P:WikiClientLibrary.Sites.AccountBlockInfo.BlockedBy">
+      <summary>Username of the blocker.</summary>
+      <value>username, or empty string (<c>""</c>) if the block is a system block.</value>
+    </member>
+    <member name="P:WikiClientLibrary.Sites.AccountBlockInfo.BlockedById">
+      <summary>User ID of the blocker.</summary>
+      <value>username, or <c>0</c> if the block is a system block.</value>
+    </member>
+    <member name="P:WikiClientLibrary.Sites.AccountBlockInfo.BlockedSince">
+      <summary>Timestamp for when the block was placed/modified.</summary>
+    </member>
+    <member name="P:WikiClientLibrary.Sites.AccountBlockInfo.BlockExpiry">
+      <summary>Expiry time of the block.</summary>
+    </member>
+    <member name="P:WikiClientLibrary.Sites.AccountBlockInfo.BlockId">
+      <summary>ID of the block.</summary>
+      <value>block ID, or <c>null</c> if the block is a system block (see <see cref="P:WikiClientLibrary.Sites.AccountBlockInfo.SystemBlockType" />).</value>
+    </member>
+    <member name="P:WikiClientLibrary.Sites.AccountBlockInfo.BlockReason">
+      <summary>Reason provided for the block, in Wikitext.</summary>
+    </member>
+    <member name="P:WikiClientLibrary.Sites.AccountBlockInfo.IsAnonymousBlock">
+      <summary>Whether the block only affects anonymous users.</summary>
+      <remarks>
+        <para>If the value of this property is <c>false</c>, the block is a "hard block" (affects logged-in users on a given IP/range).
+            Note that temporary users are not considered logged-in here - they are always blocked by IP-address blocks.
+            Note that user blocks are always hard blocks, since the target is logged in by definition.</para>
+        <para>See <a href="https://github.com/wikimedia/mediawiki/blob/684496b6211784197042c3f8e30dc8c7b060c2ae/includes/block/Block.php#L163-L173">Block.php</a>
+            for more information.</para>
+      </remarks>
+    </member>
+    <member name="P:WikiClientLibrary.Sites.AccountBlockInfo.IsCreateAccountBlocked">
+      <summary>Whether the account creation has also been blocked.</summary>
+    </member>
+    <member name="P:WikiClientLibrary.Sites.AccountBlockInfo.IsEmailBlocked">
+      <summary>Whether this block blocks the target from sending emails.</summary>
+    </member>
+    <member name="P:WikiClientLibrary.Sites.AccountBlockInfo.IsPartialBlock">
+      <summary>Whether the block only applies to certain pages, namespaces and/or actions</summary>
+    </member>
+    <member name="P:WikiClientLibrary.Sites.AccountBlockInfo.IsUserTalkEditBlocked">
+      <summary>Whether the block blocks the target from editing their own user talk page.</summary>
+    </member>
+    <member name="P:WikiClientLibrary.Sites.AccountBlockInfo.SystemBlockType">
+      <summary>System block type, if this block is a system block.</summary>
+      <remarks>Refer to <seealso cref="T:WikiClientLibrary.Sites.AccountSystemBlockTypes" /> for a list of possible system block type.</remarks>
+    </member>
     <member name="T:WikiClientLibrary.Sites.AccountInfo">
       <summary>
             Provides read-only access to the current logged-in information.
@@ -13190,65 +13390,13 @@
       <param name="rightName">The name of the right.</param>
       <exception cref="T:WikiClientLibrary.UnauthorizedOperationException">The user doesn't have specific right.</exception>
     </member>
-    <member name="P:WikiClientLibrary.Sites.AccountInfo.BlockedBy">
-      <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>P:WikiClientLibrary.Sites.AccountInfo.BlockedBy</parameter>
-          </include>
-        </markup>
-      </summary>
+    <member name="P:WikiClientLibrary.Sites.AccountInfo.BlockInfo">
+      <summary>Detailed information of the active block placed on the current user, if any.</summary>
     </member>
-    <member name="P:WikiClientLibrary.Sites.AccountInfo.BlockedById">
+    <member name="P:WikiClientLibrary.Sites.AccountInfo.ExtensionData">
       <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>P:WikiClientLibrary.Sites.AccountInfo.BlockedById</parameter>
-          </include>
-        </markup>
-      </summary>
-    </member>
-    <member name="P:WikiClientLibrary.Sites.AccountInfo.BlockedSince">
-      <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>P:WikiClientLibrary.Sites.AccountInfo.BlockedSince</parameter>
-          </include>
-        </markup>
-      </summary>
-    </member>
-    <member name="P:WikiClientLibrary.Sites.AccountInfo.BlockExpiry">
-      <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>P:WikiClientLibrary.Sites.AccountInfo.BlockExpiry</parameter>
-          </include>
-        </markup>
-      </summary>
-    </member>
-    <member name="P:WikiClientLibrary.Sites.AccountInfo.BlockId">
-      <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>P:WikiClientLibrary.Sites.AccountInfo.BlockId</parameter>
-          </include>
-        </markup>
-      </summary>
-    </member>
-    <member name="P:WikiClientLibrary.Sites.AccountInfo.BlockReason">
-      <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>P:WikiClientLibrary.Sites.AccountInfo.BlockReason</parameter>
-          </include>
-        </markup>
-      </summary>
+            Gets the other extensible site information.
+            </summary>
     </member>
     <member name="P:WikiClientLibrary.Sites.AccountInfo.Groups">
       <summary>
@@ -13262,32 +13410,28 @@
     </member>
     <member name="M:WikiClientLibrary.Sites.AccountInfo.HasRight(System.String)">
       <summary>
-            Determines whether the user has certian right.
+            Determines whether the user has certain right.
             </summary>
       <param name="rightName">The name of the right.</param>
-      <remarks>It's recommended to use this method instead of checking <see cref="P:WikiClientLibrary.Sites.AccountInfo.Rights" /> manually.</remarks>
+      <remarks>
+        <para>
+            It's recommended to use this method instead of checking <see cref="P:WikiClientLibrary.Sites.AccountInfo.Rights" /> manually.</para>
+        <para>Refer to <see cref="T:WikiClientLibrary.Sites.UserRights" /> for a list of commonly-used built-in user rights.</para>
+      </remarks>
     </member>
     <member name="P:WikiClientLibrary.Sites.AccountInfo.Id">
-      <summary>
-        <markup>
-          <include item="SMCMissingTag">
-            <parameter>summary</parameter>
-            <parameter>P:WikiClientLibrary.Sites.AccountInfo.Id</parameter>
-          </include>
-        </markup>
-      </summary>
+      <summary>Current user ID.</summary>
+      <value>user ID, or <c>0</c> if the current user has not logged in yet.</value>
     </member>
     <member name="P:WikiClientLibrary.Sites.AccountInfo.IsAnonymous">
       <summary>
-            Determines wheter current user is anonymous.
+            Determines whether current user is anonymous.
             It's recommended that you use <see cref="P:WikiClientLibrary.Sites.AccountInfo.IsUser" /> to determine
             whether a user has logged in.
             </summary>
     </member>
     <member name="P:WikiClientLibrary.Sites.AccountInfo.IsBlocked">
-      <summary>
-            Determines whether the current user has been blocked.
-            </summary>
+      <summary>Determines whether the current user has been blocked.</summary>
     </member>
     <member name="P:WikiClientLibrary.Sites.AccountInfo.IsBot">
       <summary>
@@ -13336,6 +13480,21 @@
       <summary>
             Creates a <see cref="T:WikiClientLibrary.UserStub" /> from the current account information.
             </summary>
+    </member>
+    <member name="T:WikiClientLibrary.Sites.AccountSystemBlockTypes">
+      <summary>Predefined account system block types.</summary>
+    </member>
+    <member name="F:WikiClientLibrary.Sites.AccountSystemBlockTypes.DnsBlacklistUrl">
+      <summary>the IP is associated with a listed domain in <c>$wgDnsBlacklistUrls</c>.</summary>
+    </member>
+    <member name="F:WikiClientLibrary.Sites.AccountSystemBlockTypes.GlobalBlock">
+      <summary>for backwards compatibility with the <c>UserIsBlockedGlobally</c> hook.</summary>
+    </member>
+    <member name="F:WikiClientLibrary.Sites.AccountSystemBlockTypes.Proxy">
+      <summary>the IP is listed in <c>$wgProxyList</c>.</summary>
+    </member>
+    <member name="F:WikiClientLibrary.Sites.AccountSystemBlockTypes.SoftBlockRanges">
+      <summary>the IP is covered by <c>$wgSoftBlockRanges</c>.</summary>
     </member>
     <member name="T:WikiClientLibrary.Sites.ExtensionCollection">
       <summary>
@@ -14408,9 +14567,7 @@
       </summary>
     </member>
     <member name="T:WikiClientLibrary.Sites.UserGroups">
-      <summary>
-            Predefined User Groups.
-            </summary>
+      <summary>Predefined User Groups.</summary>
     </member>
     <member name="F:WikiClientLibrary.Sites.UserGroups.Autoconfirmed">
       <summary>
@@ -14418,6 +14575,16 @@
           <include item="SMCMissingTag">
             <parameter>summary</parameter>
             <parameter>F:WikiClientLibrary.Sites.UserGroups.Autoconfirmed</parameter>
+          </include>
+        </markup>
+      </summary>
+    </member>
+    <member name="F:WikiClientLibrary.Sites.UserGroups.AutoConfirmed">
+      <summary>
+        <markup>
+          <include item="SMCMissingTag">
+            <parameter>summary</parameter>
+            <parameter>F:WikiClientLibrary.Sites.UserGroups.AutoConfirmed</parameter>
           </include>
         </markup>
       </summary>
@@ -14453,9 +14620,7 @@
       </summary>
     </member>
     <member name="T:WikiClientLibrary.Sites.UserRights">
-      <summary>
-            Predefined User Rights.
-            </summary>
+      <summary>Predefined User Rights.</summary>
     </member>
     <member name="F:WikiClientLibrary.Sites.UserRights.ApiHighLimits">
       <summary>
@@ -14477,12 +14642,82 @@
         </markup>
       </summary>
     </member>
+    <member name="F:WikiClientLibrary.Sites.UserRights.CreateAccount">
+      <summary>
+        <markup>
+          <include item="SMCMissingTag">
+            <parameter>summary</parameter>
+            <parameter>F:WikiClientLibrary.Sites.UserRights.CreateAccount</parameter>
+          </include>
+        </markup>
+      </summary>
+    </member>
+    <member name="F:WikiClientLibrary.Sites.UserRights.CreatePage">
+      <summary>
+        <markup>
+          <include item="SMCMissingTag">
+            <parameter>summary</parameter>
+            <parameter>F:WikiClientLibrary.Sites.UserRights.CreatePage</parameter>
+          </include>
+        </markup>
+      </summary>
+    </member>
+    <member name="F:WikiClientLibrary.Sites.UserRights.CreateTalk">
+      <summary>
+        <markup>
+          <include item="SMCMissingTag">
+            <parameter>summary</parameter>
+            <parameter>F:WikiClientLibrary.Sites.UserRights.CreateTalk</parameter>
+          </include>
+        </markup>
+      </summary>
+    </member>
+    <member name="F:WikiClientLibrary.Sites.UserRights.Edit">
+      <summary>
+        <markup>
+          <include item="SMCMissingTag">
+            <parameter>summary</parameter>
+            <parameter>F:WikiClientLibrary.Sites.UserRights.Edit</parameter>
+          </include>
+        </markup>
+      </summary>
+    </member>
+    <member name="F:WikiClientLibrary.Sites.UserRights.Move">
+      <summary>
+        <markup>
+          <include item="SMCMissingTag">
+            <parameter>summary</parameter>
+            <parameter>F:WikiClientLibrary.Sites.UserRights.Move</parameter>
+          </include>
+        </markup>
+      </summary>
+    </member>
     <member name="F:WikiClientLibrary.Sites.UserRights.Patrol">
       <summary>
         <markup>
           <include item="SMCMissingTag">
             <parameter>summary</parameter>
             <parameter>F:WikiClientLibrary.Sites.UserRights.Patrol</parameter>
+          </include>
+        </markup>
+      </summary>
+    </member>
+    <member name="F:WikiClientLibrary.Sites.UserRights.Read">
+      <summary>
+        <markup>
+          <include item="SMCMissingTag">
+            <parameter>summary</parameter>
+            <parameter>F:WikiClientLibrary.Sites.UserRights.Read</parameter>
+          </include>
+        </markup>
+      </summary>
+    </member>
+    <member name="F:WikiClientLibrary.Sites.UserRights.Upload">
+      <summary>
+        <markup>
+          <include item="SMCMissingTag">
+            <parameter>summary</parameter>
+            <parameter>F:WikiClientLibrary.Sites.UserRights.Upload</parameter>
           </include>
         </markup>
       </summary>
