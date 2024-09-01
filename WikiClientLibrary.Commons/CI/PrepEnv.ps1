@@ -28,10 +28,10 @@ elseif ($IsWindows) {
     # SHFB
     if ($SHFB) {
         Write-Host "Downloading SHFB."
-        Invoke-WebRequest "https://github.com/EWSoftware/SHFB/releases/download/2023.7.8.0/SHFBInstaller_2023.7.8.0.zip" -OutFile SHFBInstaller.zip
+        Invoke-WebRequest "https://github.com/EWSoftware/SHFB/releases/download/2024.2.18.0/SHFBInstaller_2024.2.18.0.zip" -OutFile SHFBInstaller.zip
         New-Item -ItemType Directory SHFBInstaller | Out-Null
         Expand-Archive SHFBInstaller.zip SHFBInstaller
-        Write-Host "Downloading SHFB."
+        Write-Host "Installing SHFB."
         $proc = Start-Process -PassThru -Wait -FilePath ./SHFBInstaller/InstallResources/SandcastleHelpFileBuilder.msi -ArgumentList /quiet, /lwe, SHFBInstall.log
         Get-Content SHFBInstall.log
         CheckLastExitCode ($proc.ExitCode)
