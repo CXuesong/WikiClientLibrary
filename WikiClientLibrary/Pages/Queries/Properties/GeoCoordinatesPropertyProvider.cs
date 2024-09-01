@@ -81,8 +81,7 @@ public class GeoCoordinatesPropertyGroup : WikiPagePropertyGroup
 
     internal static GeoCoordinatesPropertyGroup? Create(JsonArray? jcoordinates)
     {
-        if (jcoordinates == null) return null;
-        if (jcoordinates.Count == 0) return empty;
+        if (jcoordinates == null || jcoordinates.Count == 0) return empty;
         return new GeoCoordinatesPropertyGroup(jcoordinates);
     }
 

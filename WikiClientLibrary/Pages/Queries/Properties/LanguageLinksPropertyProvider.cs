@@ -150,11 +150,10 @@ public class LanguageLinksPropertyGroup : WikiPagePropertyGroup
 
     private static readonly LanguageLinksPropertyGroup Empty = new LanguageLinksPropertyGroup(Array.Empty<LanguageLinkInfo>());
 
-    internal static LanguageLinksPropertyGroup? Create(JsonObject jpage)
+    internal static LanguageLinksPropertyGroup Create(JsonObject jpage)
     {
         var jlangLinks = jpage["langlinks"];
-        if (jlangLinks == null) return null;
-        if (jpage.Count == 0) return Empty;
+        if (jlangLinks == null || jpage.Count == 0) return Empty;
         var langLinks = jlangLinks.Deserialize<IReadOnlyCollection<LanguageLinkInfo>>(MediaWikiHelper.WikiJsonSerializerOptions);
         return new LanguageLinksPropertyGroup(langLinks!);
     }

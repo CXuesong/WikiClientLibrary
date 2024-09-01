@@ -74,15 +74,14 @@ public class RevisionsPropertyProvider : WikiPagePropertyProvider<RevisionsPrope
 public class RevisionsPropertyGroup : WikiPagePropertyGroup
 {
 
-    private static readonly RevisionsPropertyGroup Empty = new RevisionsPropertyGroup();
+    private static readonly RevisionsPropertyGroup Empty = new ();
 
     private Revision[] _Revisions;
 
     internal static RevisionsPropertyGroup? Create(JsonObject jpage)
     {
         var jrevisions = jpage["revisions"]?.AsArray();
-        if (jrevisions == null) return null;
-        if (jrevisions.Count == 0) return Empty;
+        if (jrevisions == null || jrevisions.Count == 0) return Empty;
         var stub = MediaWikiHelper.PageStubFromJson(jpage);
         return new RevisionsPropertyGroup(stub, jrevisions);
     }
