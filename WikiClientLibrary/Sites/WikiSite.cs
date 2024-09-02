@@ -542,60 +542,66 @@ public partial class WikiSite : IWikiClientLoggable, IWikiClientAsyncInitializat
         if (string.IsNullOrEmpty(password)) throw new ArgumentNullException(nameof(password));
         if (Interlocked.Exchange(ref isLoggingInOut, 1) != 0)
             throw new InvalidOperationException(Prompts.ExceptionCannotLoginLogoutConcurrently);
-        using (this.BeginActionScope(null, (object)userName))
+        using var scope = this.BeginActionScope(null, (object)userName);
+        try
         {
-            try
+            string? token = null;
+            // For MediaWiki 1.27+
+            if (_SiteInfo != null && _SiteInfo.Version >= new MediaWikiVersion(1, 27))
+                token = await GetTokenAsync("login", true, cancellationToken);
+            // For MediaWiki < 1.27, We'll have to request twice.
+            // If we are logging in before initialization of WikiSite, we just treat it the same as MediaWiki < 1.27,
+            //  because the client might be logging to a private wiki,
+            //  where any "query" operation before logging-in might raise readapidenied error.
+            RETRY:
+            var jobj = await InvokeMediaWikiApiAsync(new MediaWikiFormRequestMessage(new
             {
-                string? token = null;
-                // For MediaWiki 1.27+
-                if (_SiteInfo != null && _SiteInfo.Version >= new MediaWikiVersion(1, 27))
-                    token = await GetTokenAsync("login", true, cancellationToken);
-                // For MediaWiki < 1.27, We'll have to request twice.
-                // If we are logging in before initialization of WikiSite, we just treat it the same as MediaWiki < 1.27,
-                //  because the client might be logging to a private wiki,
-                //  where any "query" operation before logging-in might raise readapidenied error.
-                RETRY:
-                var jobj = await InvokeMediaWikiApiAsync(new MediaWikiFormRequestMessage(new
-                {
-                    action = "login",
-                    lgname = userName,
-                    lgpassword = password,
-                    lgtoken = token,
-                    lgdomain = domain,
-                }), true, cancellationToken);
-                var result = (string)jobj["login"]["result"];
-                string? message = null;
-                switch (result)
-                {
-                    case "Success":
-                        tokensManager.ClearCache();
-                        await RefreshAccountInfoAsync();
-                        Debug.Assert(_AccountInfo != null);
-                        Logger.LogInformation("Logged in as {Account}.", _AccountInfo);
-                        Debug.Assert(_AccountInfo.IsUser,
-                            "API result indicates the login is successful, but you are not currently in \"user\" group. Are you logging out on the other Site instance with the same API endpoint and the same WikiClient?");
-                        return;
-                    case "Aborted":
-                        message = Prompts.ExceptionLoginAborted;
-                        break;
-                    case "Throttled":
-                        var time = (int)jobj["login"]["wait"];
-                        Logger.LogWarning("{Site} login throttled: {Time}sec.", ToString(), time);
-                        await Task.Delay(TimeSpan.FromSeconds(time), cancellationToken);
-                        goto RETRY;
-                    case "NeedToken":
-                        token = (string)jobj["login"]["token"];
-                        goto RETRY;
-                    case "WrongToken": // We should have got correct token.
-                        throw new UnexpectedDataException(string.Format(Prompts.ExceptionUnexpectedLoginResult1, result));
-                }
-                message = (string)jobj["login"]["reason"] ?? message;
-                throw new OperationFailedException(result, message);
-            }
-            finally
+                action = "login",
+                lgname = userName,
+                lgpassword = password,
+                lgtoken = token,
+                lgdomain = domain,
+            }), true, cancellationToken);
+            var result = (string)jobj["login"]["result"];
+            string? message = null;
+            switch (result)
             {
-                Interlocked.Exchange(ref isLoggingInOut, 0);
+                case "Success":
+                    tokensManager.ClearCache();
+                    await RefreshAccountInfoAsync();
+                    Debug.Assert(_AccountInfo != null);
+                    Logger.LogInformation("Logged in as {Account}.", _AccountInfo);
+                    if (!_AccountInfo.IsUser)
+                    {
+                        Logger.LogWarning(
+                            """Login is successful, but you ({Account}) are not currently in "user" group. """
+                            + "Refer to {HelpLink} for troubleshooting.",
+                            _AccountInfo, MediaWikiHelper.ExceptionTroubleshootingHelpLink);
+                        Debug.Fail(
+                            $"""Login is successful, but you ({_AccountInfo}) are not currently in "user" group. """ +
+                            $"Refer to {MediaWikiHelper.ExceptionTroubleshootingHelpLink} for troubleshooting.");
+                    }
+                    return;
+                case "Aborted":
+                    message = Prompts.ExceptionLoginAborted;
+                    break;
+                case "Throttled":
+                    var time = (int)jobj["login"]["wait"];
+                    Logger.LogWarning("{Site} login throttled: {Time}sec.", ToString(), time);
+                    await Task.Delay(TimeSpan.FromSeconds(time), cancellationToken);
+                    goto RETRY;
+                case "NeedToken":
+                    token = (string)jobj["login"]["token"];
+                    goto RETRY;
+                case "WrongToken": // We should have got correct token.
+                    throw new UnexpectedDataException(string.Format(Prompts.ExceptionUnexpectedLoginResult1, result));
             }
+            message = (string)jobj["login"]["reason"] ?? message;
+            throw new OperationFailedException(result, message);
+        }
+        finally
+        {
+            Interlocked.Exchange(ref isLoggingInOut, 0);
         }
     }
 
