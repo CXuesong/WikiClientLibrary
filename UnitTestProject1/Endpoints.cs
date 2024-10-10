@@ -33,9 +33,8 @@ public static class Endpoints
 
     public const string WikidataBeta = "https://wikidata.beta.wmflabs.org/w/api.php";
 
-    // Suggested by KockaAdmiralac.
-    // It's on MW 1.33 now. Well.
-    public const string WikiaTest = "https://dman.fandom.com/api.php";
+    // It's on MW 1.39 now. Well.
+    public const string WikiaTest = "https://dman2.fandom.com/api.php";
 
     // It's on MW 1.19 as of now.
     public const string TFWiki = "https://tfwiki.net/api.php";

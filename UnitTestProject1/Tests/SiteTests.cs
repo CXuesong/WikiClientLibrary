@@ -100,7 +100,7 @@ public class SiteTests : WikiSiteTestsBase, IClassFixture<WikiSiteProvider>
     {
         var site = await WikiaTestSiteAsync;
         ShallowTrace(site);
-        Assert.Equal("Discussion Manual Wiki", site.SiteInfo.SiteName);
+        Assert.Equal("DMan Ⅱ Wiki", site.SiteInfo.SiteName);
         ValidateNamespaces(site);
     }
 
@@ -214,12 +214,12 @@ public class SiteTests : WikiSiteTestsBase, IClassFixture<WikiSiteProvider>
     public async Task WikiaOpenSearchTest()
     {
         var site = await WikiaTestSiteAsync;
-        var result = await Task.WhenAll(site.OpenSearchAsync("Dman Wi"),
+        var result = await Task.WhenAll(site.OpenSearchAsync("Dman Ⅱ W"),
             site.OpenSearchAsync("THISTITLEDOESNOTEXIST"));
         ShallowTrace(result[0]);
         ShallowTrace(result[1]);
         Assert.True(result[0].Count > 0);
-        Assert.Contains(result[0], e => e.Title == "Dman Wikia");
+        Assert.Contains(result[0], e => e.Title == "DMan \u2161 Wiki");
         Assert.True(result[1].Count == 0);
     }
 

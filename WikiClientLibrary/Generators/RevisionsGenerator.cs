@@ -62,7 +62,7 @@ public class RevisionsGenerator : WikiPagePropertyGenerator<Revision>
     }
 
     /// <summary>
-    /// Whether to list revisions in an ascending order of time.
+    /// Whether to list revisions in ascending order of time.
     /// </summary>
     /// <value><c>true</c>, if oldest revisions are listed first; or <c>false</c>, if newest revisions are listed first.</value>
     /// <remarks>
@@ -115,7 +115,7 @@ public class RevisionsGenerator : WikiPagePropertyGenerator<Revision>
     /// Asynchronously enumerates the pages from generator.</summary>
     /// <remarks>
     /// Using <c>revisions</c> as generator is not supported until MediaWiki 1.25.
-    /// Usually this generator will only returns the title specified in
+    /// Usually this generator will only return the title specified in
     /// <see cref="WikiPagePropertyList{T}.PageTitle"/> or <see cref="WikiPagePropertyList{T}.PageId"/>.
     /// </remarks>
     [EditorBrowsable(EditorBrowsableState.Never)]
@@ -129,7 +129,7 @@ public class RevisionsGenerator : WikiPagePropertyGenerator<Revision>
     /// Asynchronously enumerates the pages from generator.</summary>
     /// <remarks>
     /// Using <c>revisions</c> as generator is not supported until MediaWiki 1.25.
-    /// Usually this generator will only returns the title specified in
+    /// Usually this generator will only return the title specified in
     /// <see cref="WikiPagePropertyList{T}.PageTitle"/> or <see cref="WikiPagePropertyList{T}.PageId"/>.
     /// </remarks>
     [EditorBrowsable(EditorBrowsableState.Never)]
@@ -143,7 +143,7 @@ public class RevisionsGenerator : WikiPagePropertyGenerator<Revision>
     /// Asynchronously enumerates the pages from generator.</summary>
     /// <remarks>
     /// Using <c>revisions</c> as generator is not supported until MediaWiki 1.25.
-    /// Usually this generator will only returns the title specified in
+    /// Usually this generator will only return the title specified in
     /// <see cref="WikiPagePropertyList{T}.PageTitle"/> or <see cref="WikiPagePropertyList{T}.PageId"/>.
     /// </remarks>
     [EditorBrowsable(EditorBrowsableState.Never)]

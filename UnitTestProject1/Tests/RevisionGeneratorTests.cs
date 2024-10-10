@@ -66,7 +66,11 @@ public class RevisionGeneratorTests : WikiSiteTestsBase, IClassFixture<WikiSiteP
     public async Task WikiaEnumRevisionsTest1()
     {
         var site = await WikiaTestSiteAsync;
-        var page = new WikiPage(site, "Dman Wikia");
+        var page = new WikiPage(site, "DMan \u2161 Wiki");
+        await page.RefreshAsync();
+        // Sanity check: the page exists.
+        Assert.True(page.Exists);
+
         var gen = page.CreateRevisionsGenerator();
         gen.PaginationSize = 20;
         var revisions = await gen.EnumItemsAsync().Skip(5).Take(5).ToListAsync();
