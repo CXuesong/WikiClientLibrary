@@ -18,14 +18,14 @@ public class SiteTokenTests : WikiSiteTestsBase, IClassFixture<WikiSiteProvider>
         SiteNeedsLogin(Endpoints.TFWiki);
     }
 
-    [SkippableTheory]
-    [InlineData(nameof(WpTest2SiteAsync))]
-    [InlineData(nameof(WikiaTestSiteAsync))]
-    [InlineData(nameof(TFWikiSiteAsync))]
-    public async Task TokenTest(string testSiteName)
+    [Theory]
+    [InlineData(nameof(WpTest2SiteAsync), new[] { "edit", "move", "patrol" })]
+    [InlineData(nameof(WikiaTestSiteAsync), new[] { "edit", "move", "patrol" })]
+    [InlineData(nameof(TFWikiSiteAsync), new[] { "edit", "patrol" })]
+    public async Task TokenTest(string testSiteName, string[] tokenTypes)
     {
         var site = await WikiSiteFromNameAsync(testSiteName);
-        foreach (var tokenType in new[] { "edit", "move", "patrol" })
+        foreach (var tokenType in tokenTypes)
         {
             // Fetch twice at a time...
             var tokenValueTask1 = site.GetTokenAsync(tokenType);

@@ -49,10 +49,10 @@ public class WikiLinkTests : WikiSiteTestsBase, IClassFixture<WikiSiteProvider>
     [Fact]
     public async Task TestMethod2()
     {
-        var WikiaTestSite = await WikiaTestSiteAsync;
-        var link1 = WikiLink.Parse(WikiaTestSite, "__ _project_ _talk_:___sandbox_", BuiltInNamespaces.Category);
-        var link2 = WikiLink.Parse(WikiaTestSite, "part1:part2:part3", BuiltInNamespaces.Category);
-        Assert.Equal("Discussion Manual Wiki talk:Sandbox", link1.ToString());
+        var wikiaTestSite = await WikiaTestSiteAsync;
+        var link1 = WikiLink.Parse(wikiaTestSite, "__ _project_ _talk_:___sandbox_", BuiltInNamespaces.Category);
+        var link2 = WikiLink.Parse(wikiaTestSite, "part1:part2:part3", BuiltInNamespaces.Category);
+        Assert.Equal("DMan Ⅱ Wiki talk:Sandbox", link1.ToString());
         Assert.Equal("Category:Part1:part2:part3", link2.ToString());
     }
 

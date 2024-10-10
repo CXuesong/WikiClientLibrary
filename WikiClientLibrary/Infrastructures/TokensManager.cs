@@ -82,7 +82,7 @@ internal sealed class TokensManager
     {
         if (string.IsNullOrEmpty(tokenType))
             throw new ArgumentException(Prompts.ExceptionArgumentNullOrEmpty, nameof(tokenType));
-        if (tokenType.Contains("|"))
+        if (tokenType.Contains('|'))
             throw new ArgumentException(Prompts.ExceptionArgumentContainsPipe, nameof(tokenType));
         cancellationToken.ThrowIfCancellationRequested();
         tokenType = tokenType.Trim();
@@ -95,6 +95,8 @@ internal sealed class TokensManager
         if (site.SiteInfo.Version < v117 && tokenType == "patrol")
             realTokenType = "edit";
         // Use csrf token if possible.
+        // https://www.mediawiki.org/wiki/MediaWiki_1.37/Deprecation_of_legacy_API_token_parameters
+        // https://github.com/wikimedia/mediawiki/blob/1.19.10/includes/api/ApiQueryInfo.php
         if (site.SiteInfo.Version >= v124 && CsrfTokens.Contains(tokenType))
             realTokenType = "csrf";
         // Collect tokens from cache
@@ -156,7 +158,7 @@ internal sealed class TokensManager
             }
             var token = (string?)jtoken;
             if (token == null)
-                throw new ArgumentException($"Invalid token type: {tokenType1}.", nameof(tokenType));
+                throw new ArgumentException($"Failed to extract {tokenType1} token from the API response.", nameof(tokenType));
             return token;
         }
 
