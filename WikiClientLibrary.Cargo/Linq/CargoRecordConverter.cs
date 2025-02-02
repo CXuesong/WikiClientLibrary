@@ -40,10 +40,10 @@ public class CargoRecordConverter : ICargoRecordConverter
     [return: NotNullIfNotNull("value")]
     private static IList<T>? DeserializeCollection<T>(JsonNode? value, string separator)
     {
-        var values = (string)value;
+        var values = (string?)value;
         if (values == null) return default;
         if (values.Length == 0) return Array.Empty<T>();
-        return values.Split(new[] { separator }, StringSplitOptions.None)
+        return values.Split([separator], StringSplitOptions.None)
             .Select(i => (T)Convert.ChangeType(i, typeof(T), CultureInfo.InvariantCulture))
             .ToList()!;
     }
@@ -54,7 +54,7 @@ public class CargoRecordConverter : ICargoRecordConverter
         var values = (string?)value;
         if (values == null) return default;
         if (values.Length == 0) return Array.Empty<string>();
-        var result = values.Split(new[] { separator }, StringSplitOptions.None);
+        var result = values.Split([separator], StringSplitOptions.None);
         for (int i = 0; i < result.Length; i++)
             result[i] = result[i].Trim();
         return result;
@@ -96,7 +96,7 @@ public class CargoRecordConverter : ICargoRecordConverter
             var builder = new DynamicMethod(
                 typeof(CargoRecordConverter) + "$DeserializeRecordImpl[" + modelType + "]",
                 modelType,
-                new[] { typeof(IReadOnlyDictionary<string, JsonNode>) },
+                [typeof(IReadOnlyDictionary<string, JsonNode>)],
                 typeof(CargoRecordConverter)
             );
             var gen = builder.GetILGenerator();
@@ -181,7 +181,7 @@ public class CargoRecordConverter : ICargoRecordConverter
 
         public static T? DeserializeValue<T>(JsonNode? value) => value == null ? default : value.Deserialize<T>();
 
-        public static bool IsNullableNull(JsonNode token)
+        public static bool IsNullableNull([NotNullWhen(false)] JsonNode? token)
         {
             if (token == null) return true;
             if (token is not JsonValue value) return false;
@@ -202,15 +202,18 @@ public class CargoRecordConverter : ICargoRecordConverter
 
         public static string? DeserializeString(JsonNode value) => (string?)value;
 
-        private static Exception CreateInvalidCastException(Type targetType)
-            => new InvalidOperationException($"Cannot cast the JSON node into {targetType}.");
+        private static Exception CreateInvalidCastException(Type targetType, string jsonPath)
+            => new InvalidOperationException($"Cannot cast the JSON node into {targetType}. JSON path: {jsonPath}");
+
+        private static Exception CreateInvalidCastException(Type targetType, JsonNode node)
+            => CreateInvalidCastException(targetType, node.GetPath());
 
         public static int DeserializeInt32(JsonNode node)
         {
             var value = node.AsValue();
             if (value.TryGetValue(out int i32)) return i32;
             if (value.TryGetValue(out string? str)) return Convert.ToInt32(str);
-            throw CreateInvalidCastException(typeof(int));
+            throw CreateInvalidCastException(typeof(int), node);
         }
 
         public static long DeserializeInt64(JsonNode node)
@@ -218,7 +221,7 @@ public class CargoRecordConverter : ICargoRecordConverter
             var value = node.AsValue();
             if (value.TryGetValue(out long i64)) return i64;
             if (value.TryGetValue(out string? str)) return Convert.ToInt64(str);
-            throw CreateInvalidCastException(typeof(long));
+            throw CreateInvalidCastException(typeof(long), node);
         }
 
         public static float DeserializeFloat(JsonNode node)
@@ -226,7 +229,7 @@ public class CargoRecordConverter : ICargoRecordConverter
             var value = node.AsValue();
             if (value.TryGetValue(out float f)) return f;
             if (value.TryGetValue(out string? str)) return Convert.ToSingle(str);
-            throw CreateInvalidCastException(typeof(float));
+            throw CreateInvalidCastException(typeof(float), node);
         }
 
         public static double DeserializeDouble(JsonNode node)
@@ -234,7 +237,7 @@ public class CargoRecordConverter : ICargoRecordConverter
             var value = node.AsValue();
             if (value.TryGetValue(out double d)) return d;
             if (value.TryGetValue(out string? str)) return Convert.ToDouble(str);
-            throw CreateInvalidCastException(typeof(double));
+            throw CreateInvalidCastException(typeof(double), node);
         }
 
         public static decimal DeserializeDecimal(JsonNode node)
@@ -242,7 +245,7 @@ public class CargoRecordConverter : ICargoRecordConverter
             var value = node.AsValue();
             if (value.TryGetValue(out decimal dec)) return dec;
             if (value.TryGetValue(out string? str)) return Convert.ToDecimal(str);
-            throw CreateInvalidCastException(typeof(decimal));
+            throw CreateInvalidCastException(typeof(decimal), node);
         }
 
         public static bool DeserializeBoolean(JsonNode node)
@@ -271,7 +274,7 @@ public class CargoRecordConverter : ICargoRecordConverter
             var value = node.AsValue();
             if (value.TryGetValue(out DateTime dt)) return dt;
             if (value.TryGetValue(out string? str)) return Convert.ToDateTime(str);
-            throw CreateInvalidCastException(typeof(DateTime));
+            throw CreateInvalidCastException(typeof(DateTime), node);
         }
 
         public static DateTimeOffset DeserializeDateTimeOffset(JsonNode node)
@@ -279,25 +282,25 @@ public class CargoRecordConverter : ICargoRecordConverter
             var value = node.AsValue();
             if (value.TryGetValue(out DateTimeOffset dto)) return dto;
             if (value.TryGetValue(out string? str)) return DateTimeOffset.Parse(str);
-            throw CreateInvalidCastException(typeof(DateTimeOffset));
+            throw CreateInvalidCastException(typeof(DateTimeOffset), node);
         }
 
-        public static int? DeserializeNullableInt32(JsonNode value) => IsNullableNull(value) ? (int?)null : (int)value;
+        public static int? DeserializeNullableInt32(JsonNode? value) => IsNullableNull(value) ? null : DeserializeInt32(value);
 
-        public static long? DeserializeNullableInt64(JsonNode value) => IsNullableNull(value) ? (long?)null : (long)value;
+        public static long? DeserializeNullableInt64(JsonNode? value) => IsNullableNull(value) ? null : DeserializeInt64(value);
 
-        public static float? DeserializeNullableFloat(JsonNode value) => IsNullableNull(value) ? (float?)null : (float)value;
+        public static float? DeserializeNullableFloat(JsonNode? value) => IsNullableNull(value) ? null : DeserializeFloat(value);
 
-        public static double? DeserializeNullableDouble(JsonNode value) => IsNullableNull(value) ? (double?)null : (double)value;
+        public static double? DeserializeNullableDouble(JsonNode? value) => IsNullableNull(value) ? null : DeserializeDouble(value);
 
-        public static decimal? DeserializeNullableDecimal(JsonNode value) => IsNullableNull(value) ? (decimal?)null : (decimal)value;
+        public static decimal? DeserializeNullableDecimal(JsonNode? value) => IsNullableNull(value) ? null : DeserializeDecimal(value);
 
-        public static bool? DeserializeNullableBoolean(JsonNode value) => IsNullableNull(value) ? (bool?)null : DeserializeBoolean(value);
+        public static bool? DeserializeNullableBoolean(JsonNode? value) => IsNullableNull(value) ? null : DeserializeBoolean(value);
 
-        public static DateTime? DeserializeNullableDateTime(JsonNode value) => IsNullableNull(value) ? (DateTime?)null : (DateTime)value;
+        public static DateTime? DeserializeNullableDateTime(JsonNode? value) => IsNullableNull(value) ? null : DeserializeDateTime(value);
 
-        public static DateTimeOffset? DeserializeNullableDateTimeOffset(JsonNode value)
-            => IsNullableNull(value) ? (DateTimeOffset?)null : (DateTimeOffset)value;
+        public static DateTimeOffset? DeserializeNullableDateTimeOffset(JsonNode? value)
+            => IsNullableNull(value) ? null : DeserializeDateTimeOffset(value);
 
     }
 
