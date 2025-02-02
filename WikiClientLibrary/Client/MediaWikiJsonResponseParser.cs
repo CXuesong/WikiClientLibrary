@@ -73,9 +73,9 @@ public class MediaWikiJsonResponseParser : WikiResponseMessageParser<JsonNode>
             var err = jobj["error"];
             if (err != null)
             {
-                var errcode = (string)err["code"];
+                var errcode = (string?)err["code"];
                 // err["*"]: API usage.
-                var errmessage = ((string)err["info"]).Trim();
+                var errmessage = ((string?)err["info"])?.Trim();
                 context.Logger.LogWarning("API error: {Code} - {Message}", errcode, errmessage);
                 OnApiError(errcode, errmessage, err, jobj, context);
             }
@@ -141,7 +141,7 @@ public class MediaWikiJsonResponseParser : WikiResponseMessageParser<JsonNode>
     /// </item>
     /// </list> 
     /// </remarks>
-    protected virtual void OnApiError(string errorCode, string errorMessage,
+    protected virtual void OnApiError(string? errorCode, string? errorMessage,
         JsonNode errorNode, JsonNode responseNode, WikiResponseParsingContext context)
     {
         var fullMessage = errorMessage;

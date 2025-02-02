@@ -71,7 +71,7 @@ public static class WikiSiteExtensions
             var request = new MediaWikiFormRequestMessage(requestFields, true);
             site.Logger.LogDebug("Start uploading.");
             var jresult = await site.InvokeMediaWikiApiAsync(request, cancellationToken);
-            var result = jresult["upload"].Deserialize<UploadResult>(MediaWikiHelper.WikiJsonSerializerOptions);
+            var result = jresult["upload"].Deserialize<UploadResult>(MediaWikiHelper.WikiJsonSerializerOptions)!;
             site.Logger.LogInformation("Uploaded. Result={Result}.", result.ResultCode);
             return result;
         }

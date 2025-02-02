@@ -247,14 +247,15 @@ public class ChunkedUploadSource : WikiUploadSource
                     // Possible error: code=stashfailed, info=Invalid chunk offset
                     // We will retry from the server-expected offset.
                     var err = jresult["error"];
-                    if (err != null && (string)err["code"] == "stashfailed" && err["offset"] != null)
+                    if (err != null && (string?)err["code"] == "stashfailed" && err["offset"] != null)
                     {
+                        var offset = (int)err["offset"]!;
                         Site.Logger.LogWarning("Server reported: {Message}. Will retry from offset {Offset}.",
-                            (string)err["info"], (int)err["offset"]);
-                        UploadedSize = (int)err["offset"];
+                            (string?)err["info"], offset);
+                        UploadedSize = offset;
                         goto RETRY;
                     }
-                    result = jresult["upload"].Deserialize<UploadResult>(MediaWikiHelper.WikiJsonSerializerOptions);
+                    result = jresult["upload"].Deserialize<UploadResult>(MediaWikiHelper.WikiJsonSerializerOptions)!;
                     // Ignore warnings, as long as we have filekey to continue the upload.
                     if (result.FileKey == null)
                     {
@@ -305,18 +306,15 @@ public class ChunkedUploadSource : WikiUploadSource
     private class ChunkedUploadResponseParser : MediaWikiJsonResponseParser
     {
 
-        public static new readonly ChunkedUploadResponseParser Default = new ChunkedUploadResponseParser();
+        public static new readonly ChunkedUploadResponseParser Default = new();
 
         /// <inheritdoc />
-        protected override void OnApiError(string errorCode, string errorMessage, JsonNode errorNode, JsonNode responseNode,
+        protected override void OnApiError(string? errorCode, string? errorMessage, JsonNode errorNode, JsonNode responseNode,
             WikiResponseParsingContext context)
         {
             // Possible error: code=stashfailed, info=Invalid chunk offset, offset=xxxx
-            // We will try to recover.
-            if (errorCode == "stashfailed" && errorNode["offset"] != null)
-            {
-                return;
-            }
+            // We will try to recover from the caller-side.
+            if (errorCode == "stashfailed" && errorNode["offset"] != null) return;
             base.OnApiError(errorCode, errorMessage, errorNode, responseNode, context);
         }
 

@@ -230,11 +230,11 @@ public class UploadWarningCollection : WikiReadOnlyDictionary
             switch (warningCode)
             {
                 case "duplicateversions":
-                    var timeStamps = context.EnumerateArray()
+                    var timestamps = context.EnumerateArray()
                         .Select(v => MediaWikiHelper.ParseDateTime(v.GetProperty("timestamp").GetString()))
                         .Take(4).ToList();
-                    contextString = string.Join(",", timeStamps.Take(3));
-                    if (timeStamps.Count > 3) contextString += ",…";
+                    contextString = string.Join(",", timestamps.Take(3));
+                    if (timestamps.Count > 3) contextString += ",…";
                     break;
                 case "duplicate":
                     var titles = context.EnumerateArray()

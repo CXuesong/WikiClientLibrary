@@ -37,7 +37,7 @@ public class AbuseFilterList : WikiList<AbuseFilter>
     /// <inheritdoc />
     protected override AbuseFilter ItemFromJson(JsonNode json)
     {
-        return json.Deserialize<AbuseFilter>(MediaWikiHelper.WikiJsonSerializerOptions);
+        return json.Deserialize<AbuseFilter>(MediaWikiHelper.WikiJsonSerializerOptions)!;
     }
 
 }
