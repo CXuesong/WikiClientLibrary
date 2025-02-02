@@ -76,7 +76,10 @@ public sealed class WikiSiteProvider : IAsyncDisposable
 #pragma warning disable VSTHRD103 // 当在异步方法中时，调用异步方法
                 var site = task.Result;
 #pragma warning restore VSTHRD103 // 当在异步方法中时，调用异步方法
+                // TODO We need an easier approach to replace loggers.
                 site.Logger = loggerFactory.CreateLogger(site.GetType());
+                ((WikiClient)site.WikiClient).Logger = loggerFactory.CreateLogger(site.WikiClient.GetType());
+                site.ModificationThrottler.Logger = loggerFactory.CreateLogger(site.WikiClient.GetType());
             }
             return task;
         }
