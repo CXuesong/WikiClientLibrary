@@ -52,7 +52,7 @@ public class WikiLinkTests : WikiSiteTestsBase, IClassFixture<WikiSiteProvider>
         var wikiaTestSite = await WikiaTestSiteAsync;
         var link1 = WikiLink.Parse(wikiaTestSite, "__ _project_ _talk_:___sandbox_", BuiltInNamespaces.Category);
         var link2 = WikiLink.Parse(wikiaTestSite, "part1:part2:part3", BuiltInNamespaces.Category);
-        Assert.Equal("DMan Ⅱ Wiki talk:Sandbox", link1.ToString());
+        Assert.Equal("Sandbox Wiki talk:Sandbox", link1.ToString());
         Assert.Equal("Category:Part1:part2:part3", link2.ToString());
     }
 

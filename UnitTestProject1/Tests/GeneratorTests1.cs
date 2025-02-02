@@ -72,9 +72,9 @@ public class GeneratorTests1 : WikiSiteTestsBase, IClassFixture<WikiSiteProvider
     }
 
     [Theory]
-    [InlineData(nameof(WpTest2SiteAsync), "Category:Template documentation pages‏")]
-    [InlineData(nameof(WikiaTestSiteAsync), "Free wiki software‎")]
-    [InlineData(nameof(TFWikiSiteAsync), "Category:Autobot subgroups‏")]
+    [InlineData(nameof(WpTest2SiteAsync), "Category:Template documentation pages")]
+    [InlineData(nameof(WikiaTestSiteAsync), "In_timeline")]
+    [InlineData(nameof(TFWikiSiteAsync), "Category:Autobot subgroups")]
     public async Task CategoryMembersGeneratorTest(string siteName, string categoryName)
     {
         var site = await WikiSiteFromNameAsync(siteName);

@@ -66,7 +66,7 @@ public class RevisionGeneratorTests : WikiSiteTestsBase, IClassFixture<WikiSiteP
     public async Task WikiaEnumRevisionsTest1()
     {
         var site = await WikiaTestSiteAsync;
-        var page = new WikiPage(site, "DMan \u2161 Wiki");
+        var page = new WikiPage(site, "Sandbox_Wiki");
         await page.RefreshAsync();
         // Sanity check: the page exists.
         Assert.True(page.Exists);
