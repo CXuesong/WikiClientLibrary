@@ -31,9 +31,10 @@ jobs:
       - uses: actions/setup-dotnet@v4
         with:
           dotnet-version: |
-            6.0.x
-            8.0.x
-            9.0.x
+            6.x
+            8.x
+            9.x
+          dotnet-quality: 'preview'
       - uses: actions/checkout@v4
         with:
           submodules: true
@@ -70,10 +71,10 @@ jobs:
       - uses: actions/setup-dotnet@v4
         with:
           dotnet-version: |
-            3.1.x
-            6.0.x
-            8.0.x
-          include-prerelease: true
+            6.x
+            8.x
+            9.x
+          dotnet-quality: 'preview'
       - uses: actions/checkout@v4
         with:
           submodules: true
