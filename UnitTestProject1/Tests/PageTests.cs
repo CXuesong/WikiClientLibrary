@@ -189,7 +189,7 @@ public class PageTests : WikiSiteTestsBase, IClassFixture<WikiSiteProvider>
         Utility.AssertNotNull(group);
         Assert.Equal("Flag_of_Norway.svg", group.ImageTitle);
         Assert.Equal("https://upload.wikimedia.org/wikipedia/commons/d/d9/Flag_of_Norway.svg", group.OriginalImage.Url);
-        Assert.Equal("https://upload.wikimedia.org/wikipedia/commons/thumb/d/d9/Flag_of_Norway.svg/100px-Flag_of_Norway.svg.png",
+        Assert.Equal("https://upload.wikimedia.org/wikipedia/commons/thumb/d/d9/Flag_of_Norway.svg/120px-Flag_of_Norway.svg.png",
             group.ThumbnailImage.Url);
         Assert.Equal(100, Math.Max(group.ThumbnailImage.Width, group.ThumbnailImage.Height));
     }
