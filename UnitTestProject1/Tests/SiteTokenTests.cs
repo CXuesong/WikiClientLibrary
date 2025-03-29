@@ -79,7 +79,7 @@ public class SiteTokenTests : WikiSiteTestsBase, IClassFixture<WikiSiteProvider>
             // This should cause token cache invalidation.
             await page.EditAsync(new WikiPageEditOptions { Content = page.Content!, Summary = "Make an empty update.", Minor = true });
         }
-        catch (OperationFailedException ex) when (ex.ErrorCode == "globalblocking-blockedtext-range")
+        catch (OperationFailedException ex) when (ex.ErrorCode is "blocked" or "globalblocking-blockedtext-range")
         {
             // wikimedia-globalblocking-ipblocked-range
             Output.WriteLine("UpdateContentAsync fails due to IP block: " + ex);
