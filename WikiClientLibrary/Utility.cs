@@ -43,6 +43,22 @@ internal static class Utility
             dict[item.Key] = item.Value;
     }
 
+    public static void MergeFrom<TKey, TValue>(this IDictionary<TKey, object?> dict, IEnumerable<KeyValuePair<TKey, TValue>> items)
+    {
+        foreach (var item in items)
+            dict[item.Key] = item.Value;
+    }
+
+    /*
+    Causes ambiguity with MergeFrom<TKey, TValue>
+    public static void MergeFrom<TKey, TValue, TValue2>(this IDictionary<TKey,TValue> dict, IEnumerable<KeyValuePair<TKey, TValue2>> items)
+        where TValue2 : TValue
+    {
+        foreach (var item in items)
+            dict[item.Key] = item.Value;
+    }
+    */
+
     public static string? ToWikiQueryValue(object? value)
     {
         return value switch

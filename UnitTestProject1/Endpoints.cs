@@ -25,6 +25,8 @@ public static class Endpoints
     /// </summary>
     public const string WikipediaLzh = "https://zh-classical.wikipedia.org/w/api.php";
 
+    public const string WikimediaCommons = "https://commons.wikimedia.org/w/api.php";
+
     public const string WikimediaCommonsBeta = "https://commons.wikimedia.beta.wmflabs.org/w/api.php";
 
     public const string Wikidata = "https://www.wikidata.org/w/api.php";

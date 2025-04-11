@@ -142,7 +142,7 @@ public abstract class WikiList<T> : IWikiList<T>
         foreach (var p in EnumListParameters())
             baseQueryParams.Add(p.Key, p.Value);
         cancellationToken.ThrowIfCancellationRequested();
-        var continuationParams = new Dictionary<string, object?>();
+        var continuationParams = new Dictionary<string, string>();
         using var scope = Site.BeginActionScope(this);
         // query parameters for this batch. The content/ref will be modified below.
         var queryParams = new Dictionary<string, object?>();

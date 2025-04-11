@@ -347,3 +347,29 @@ public class UnexpectedDataException : WikiClientException
     }
 
 }
+
+/// <summary>
+/// Raises when the received MediaWiki continuation parameter is exactly the same
+/// as the parameter used to send the MediaWiki API query. This means we are not
+/// moving forward in the paginated results.
+/// </summary>
+public class UnexpectedContinuationLoopException : UnexpectedDataException
+{
+
+    public UnexpectedContinuationLoopException()
+        : this(Prompts.ExceptionUnexpectedContinuationLoop)
+    {
+    }
+
+    public UnexpectedContinuationLoopException(string message)
+        : base(message)
+    {
+    }
+
+    public UnexpectedContinuationLoopException(string message, Exception inner)
+        : base(message, inner)
+    {
+    }
+
+}
+

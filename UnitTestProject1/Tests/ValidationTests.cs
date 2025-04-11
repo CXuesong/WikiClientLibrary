@@ -1,5 +1,8 @@
 ﻿using WikiClientLibrary.Generators;
 using WikiClientLibrary.Infrastructures;
+using WikiClientLibrary.Pages;
+using WikiClientLibrary.Pages.Queries;
+using WikiClientLibrary.Pages.Queries.Properties;
 using WikiClientLibrary.Tests.UnitTestProject1.Fixtures;
 using Xunit;
 using Xunit.Abstractions;
@@ -84,6 +87,31 @@ public class ValidationTests : WikiSiteTestsBase, IClassFixture<WikiSiteProvider
         Assert.False(site.MagicWords.ContainsAlias("namespace"));
         // Non-existing magic
         Assert.False(site.MagicWords.ContainsAlias("__non_existing_magic__"));
+    }
+
+    /// <summary>
+    /// [B]Infinite Continuation on Wiki Commons Site
+    /// </summary>
+    [Fact]
+    public async Task Issue118()
+    {
+        var commonsSite = await GetWikiSiteAsync(Endpoints.WikimediaCommons);
+        var page = new WikiPage(commonsSite, "File:Harku mõisa park.JPG");
+
+        // Just in case RefreshAsync gets into an infinite loop.
+        using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(10));
+
+        await Assert.ThrowsAsync<UnexpectedContinuationLoopException>(() => page.RefreshAsync(new WikiPageQueryProvider
+        {
+            Properties =
+            {
+                new FileInfoPropertyProvider { QueryExtMetadata = true },
+                new PageImagesPropertyProvider { QueryOriginalImage = true },
+                new LanguageLinksPropertyProvider(LanguageLinkProperties.Url),
+                new PageInfoPropertyProvider(),
+                new PagePropertiesPropertyProvider(),
+            },
+        }, cts.Token));
     }
 
 }

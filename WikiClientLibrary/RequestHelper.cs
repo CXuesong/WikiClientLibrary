@@ -29,43 +29,39 @@ internal static class RequestHelper
                              ?? jresult["query-continue"]?.AsObject().FirstOrDefault().Value);
     }
 
-    public static int ParseContinuationParameters(JsonNode jresult, IDictionary<string, object?> queryParams,
-        IDictionary<string, object?>? continuationParams)
+    public static int ParseContinuationParameters(JsonNode jresult, IDictionary<string, object> queryParams,
+        IDictionary<string, string>? continuationParams)
     {
         var continuation = FindQueryContinuationParameterRoot(jresult);
         // No more results.
         if (continuation == null || continuation.Count == 0)
             return CONTINUATION_DONE;
+
         var anyNewValue = false;
         continuationParams?.Clear();
         foreach (var p in continuation)
         {
             if (p.Value == null) continue;
 
-            var parsed = p.Value switch
+            var parsed = p.Value.GetValueKind() switch
             {
-                JsonValue value => value.GetValue<object>(),
+                // Trivial: unwrap strings.
+                JsonValueKind.String => p.Value.GetValue<string>(),
+                // Retrieve JSON representation so we won't need to consider which int/float type to use.
+                JsonValueKind.Number => p.Value.ToJsonString(),
+                // Ignore nulls.
+                JsonValueKind.Null or JsonValueKind.Undefined => null,
+                // We cannot help -- this is the best we can do.
                 _ => p.Value.ToJsonString(),
             };
-            if (!queryParams.TryGetValue(p.Key, out var existingValue) || !ValueEquals(existingValue, parsed))
+            if (parsed == null) continue;
+
+            if (!queryParams.TryGetValue(p.Key, out var existing) || !Equals(existing, parsed))
                 anyNewValue = true;
+
             continuationParams?.Add(new(p.Key, parsed));
         }
         return anyNewValue ? CONTINUATION_AVAILABLE : CONTINUATION_LOOP;
-
-        static bool ValueEquals(object? existing, object? incoming)
-        {
-            if (Equals(existing, incoming)) return true;
-            if (existing is DateTime dt && incoming is string s)
-            {
-                if (MediaWikiHelper.TryParseDateTime(s, out var dt2))
-                {
-                    // We have called ToUniversalTime() in ToWikiStringValuePairs.
-                    return dt.ToUniversalTime() == dt2.ToUniversalTime();
-                }
-            }
-            return false;
-        }
     }
 
     public static JsonNode? FindQueryResponseItemsRoot(JsonNode jresult, string actionName)
@@ -115,7 +111,7 @@ internal static class RequestHelper
         // Defensive copy.
         var baseQueryParams = new Dictionary<string, object?>(parameters);
         Debug.Assert("query".Equals(baseQueryParams["action"]));
-        var continuationParams = new Dictionary<string, object?>();
+        var continuationParams = new Dictionary<string, string>();
         while (true)
         {
             var queryParams = new Dictionary<string, object?>(baseQueryParams);
@@ -158,7 +154,7 @@ internal static class RequestHelper
                     // Continue the loop and fetch for the next page of query.
                     break;
                 case CONTINUATION_LOOP:
-                    throw new UnexpectedDataException();
+                    throw new UnexpectedContinuationLoopException();
             }
         }
     }
@@ -207,13 +203,13 @@ internal static class RequestHelper
                     if (continuationStatus != CONTINUATION_DONE)
                     {
                         var queryParams1 = new Dictionary<string, object?>();
-                        var continuationParams = new Dictionary<string, object?>();
+                        var continuationParams = new Dictionary<string, string>();
                         var jobj1 = jobj;
                         ParseContinuationParameters(jobj1, queryParams1, continuationParams);
                         while (continuationStatus != CONTINUATION_DONE)
                         {
                             if (continuationStatus == CONTINUATION_LOOP)
-                                throw new UnexpectedDataException(Prompts.ExceptionUnexpectedContinuationLoop);
+                                throw new UnexpectedContinuationLoopException();
                             Debug.Assert(continuationStatus == CONTINUATION_AVAILABLE);
                             site.Logger.LogDebug("Detected query continuation. PartitionCount={PartitionCount}.", partition.Count);
                             queryParams1.Clear();
