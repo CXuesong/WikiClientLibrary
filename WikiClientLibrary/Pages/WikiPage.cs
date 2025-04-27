@@ -372,9 +372,9 @@ public partial class WikiPage
     /// For fetching multiple pages at one time, see <see cref="WikiPageExtensions.RefreshAsync(IEnumerable{WikiPage}, PageQueryOptions)"/>.
     /// </remarks>
     /// <exception cref="InvalidOperationException">Circular redirect detected when resolving redirects.</exception>
-    public Task RefreshAsync(IWikiPageQueryProvider options, CancellationToken cancellationToken)
+    public async Task RefreshAsync(IWikiPageQueryProvider options, CancellationToken cancellationToken)
     {
-        return RequestHelper.RefreshPagesAsync(new[] { this }, options, cancellationToken);
+        await RequestHelper.RefreshPagesAsync(new[] { this }, options, cancellationToken);
     }
 
 #endregion

@@ -1,4 +1,5 @@
 ﻿using System.Text;
+using WikiClientLibrary.Generators.Primitive;
 
 namespace WikiClientLibrary;
 
@@ -353,6 +354,13 @@ public class UnexpectedDataException : WikiClientException
 /// as the parameter used to send the MediaWiki API query. This means we are not
 /// moving forward in the paginated results.
 /// </summary>
+/// <remarks>
+/// In certain cases, fetching more items can help to move on.
+/// You may consider enabling <seealso cref="WikiListContinuationLoopBehaviors.FetchMore"/>
+/// in <see cref="WikiListCompatibilityOptions.ContinuationLoopBehaviors"/>
+/// to workaround this Exception.
+/// </remarks>
+/// <seealso cref="WikiListCompatibilityOptions.ContinuationLoopBehaviors"/>
 public class UnexpectedContinuationLoopException : UnexpectedDataException
 {
 

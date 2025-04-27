@@ -70,10 +70,10 @@ public partial class WikiSite : IWikiClientLoggable, IWikiClientAsyncInitializat
     /// <exception cref="TimeoutException">A time-out has been reached during test requests.</exception>
     /// <exception cref="OperationCanceledException">Operation has been cancelled.</exception>
     /// <returns>The URL of Api Endpoint. OR <c>null</c> if such search has failed.</returns>
-    public static Task<string?> SearchApiEndpointAsync(WikiClient client, string urlExpression,
+    public static async Task<string?> SearchApiEndpointAsync(WikiClient client, string urlExpression,
         CancellationToken cancellationToken = default)
     {
-        return MediaWikiUtility.SearchApiEndpointAsync(client, urlExpression, cancellationToken);
+        return await MediaWikiUtility.SearchApiEndpointAsync(client, urlExpression, cancellationToken);
     }
 
     /// <inheritdoc cref="WikiSite(IWikiClient,SiteOptions,string,string)"/>
@@ -483,9 +483,9 @@ public partial class WikiSite : IWikiClientLoggable, IWikiClientAsyncInitializat
     /// <param name="forceRefetch">Whether to fetch token from server, regardless of the cache.</param>
     /// <remarks>See https://www.mediawiki.org/wiki/API:Tokens .</remarks>
     /// <exception cref="ArgumentException">Specified token type cannot be recognized.</exception>
-    public Task<string> GetTokenAsync(string tokenType, bool forceRefetch, CancellationToken cancellationToken)
+    public async Task<string> GetTokenAsync(string tokenType, bool forceRefetch, CancellationToken cancellationToken)
     {
-        return tokensManager.GetTokenAsync(tokenType, forceRefetch, cancellationToken);
+        return await tokensManager.GetTokenAsync(tokenType, forceRefetch, cancellationToken);
     }
 
 #endregion

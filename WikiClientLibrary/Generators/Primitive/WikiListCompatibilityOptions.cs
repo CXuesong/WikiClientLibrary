@@ -4,6 +4,7 @@
 /// Provides more options on detailed behavior of <see cref="WikiList{T}"/>-derived instances.
 /// Most of the options are provided for compatibility purpose.
 /// </summary>
+/// <seealso cref="WikiList{T}.CompatibilityOptions"/>
 public class WikiListCompatibilityOptions
 {
 

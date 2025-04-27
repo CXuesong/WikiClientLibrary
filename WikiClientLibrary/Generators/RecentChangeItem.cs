@@ -217,13 +217,13 @@ public sealed class RecentChangeItem
     /// </exception>
     /// <remarks>It's suggested that the caller only patrol the pages whose <see cref="PatrolStatus"/> is <see cref="Generators.PatrolStatus.Unpatrolled"/>.</remarks>
     /// <exception cref="NotSupportedException">Patrolling is disabled on this wiki.</exception>
-    public Task PatrolAsync(CancellationToken cancellationToken)
+    public async Task PatrolAsync(CancellationToken cancellationToken)
     {
         Debug.Assert(site != null);
         if (PatrolStatus == PatrolStatus.Patrolled)
             throw new InvalidOperationException(Prompts.ExceptionChangePatrolled);
         site.AccountInfo.AssertRight(UserRights.Patrol);
-        return RequestHelper.PatrolAsync(site, Id, null, cancellationToken);
+        await RequestHelper.PatrolAsync(site, Id, null, cancellationToken);
     }
 
     /// <summary>

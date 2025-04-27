@@ -220,9 +220,9 @@ public sealed partial class Entity : IEntity
     /// </param>
     /// <param name="cancellationToken">The token used to cancel the operation.</param>
     /// <seealso cref="EntityExtensions.RefreshAsync(IEnumerable{Entity},EntityQueryOptions,ICollection{string},CancellationToken)"/>
-    public Task RefreshAsync(EntityQueryOptions options, ICollection<string>? languages, CancellationToken cancellationToken)
+    public async Task RefreshAsync(EntityQueryOptions options, ICollection<string>? languages, CancellationToken cancellationToken)
     {
-        return WikibaseRequestHelper.RefreshEntitiesAsync(new[] { this }, options, languages, cancellationToken);
+        await WikibaseRequestHelper.RefreshEntitiesAsync(new[] { this }, options, languages, cancellationToken);
     }
 
     private static readonly IDictionary<string, JsonElement> emptyExtensionData = new Dictionary<string, JsonElement>();

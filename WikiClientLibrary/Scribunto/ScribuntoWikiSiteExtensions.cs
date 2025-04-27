@@ -71,7 +71,7 @@ public static class ScribuntoWikiSiteExtensions
     /// <param name="serializerOptions">The JsonSerializerOptions used to deserialize the return value from JSON, or <c>null</c> to use default JSON serializer.</param>
     /// <param name="cancellationToken">A token used to cancel the operation.</param>
     /// <returns>The deserialized Lua evaluation result.</returns>
-    public static Task<T> ScribuntoLoadDataAsync<T>(this WikiSite site, string moduleName, string? epilog,
+    public static async Task<T> ScribuntoLoadDataAsync<T>(this WikiSite site, string moduleName, string? epilog,
         JsonSerializerOptions? serializerOptions, CancellationToken cancellationToken)
     {
         if (site == null)
@@ -91,7 +91,7 @@ public static class ScribuntoWikiSiteExtensions
         sb.Append("]==])\n\n");
         sb.Append(epilog);
         sb.AppendLine();
-        return ScribuntoExecuteLuaAsync<T>(site, sb.ToString(), serializerOptions, cancellationToken);
+        return await ScribuntoExecuteLuaAsync<T>(site, sb.ToString(), serializerOptions, cancellationToken);
     }
 
     /// <inheritdoc cref="ScribuntoExecuteLuaAsync{T}(WikiSite,string,JsonSerializerOptions,CancellationToken)"/>

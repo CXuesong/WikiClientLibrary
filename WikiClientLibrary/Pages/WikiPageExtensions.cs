@@ -28,9 +28,9 @@ public static class WikiPageExtensions
     }
 
     /// <inheritdoc cref="RefreshAsync(IEnumerable{WikiPage},IWikiPageQueryProvider,CancellationToken)"/>
-    public static Task RefreshAsync(this IEnumerable<WikiPage> pages, PageQueryOptions options, CancellationToken cancellationToken)
+    public static async Task RefreshAsync(this IEnumerable<WikiPage> pages, PageQueryOptions options, CancellationToken cancellationToken)
     {
-        return RequestHelper.RefreshPagesAsync(pages, MediaWikiHelper.QueryProviderFromOptions(options), cancellationToken);
+        await RequestHelper.RefreshPagesAsync(pages, MediaWikiHelper.QueryProviderFromOptions(options), cancellationToken);
     }
 
     /// <summary>
@@ -44,9 +44,9 @@ public static class WikiPageExtensions
     /// that is hold by caller, because this method will not return the refreshed pages.
     /// </remarks>
     /// <exception cref="InvalidOperationException">Circular redirect detected when resolving redirects.</exception>
-    public static Task RefreshAsync(this IEnumerable<WikiPage> pages, IWikiPageQueryProvider options, CancellationToken cancellationToken)
+    public static async Task RefreshAsync(this IEnumerable<WikiPage> pages, IWikiPageQueryProvider options, CancellationToken cancellationToken)
     {
-        return RequestHelper.RefreshPagesAsync(pages, options, cancellationToken);
+        await RequestHelper.RefreshPagesAsync(pages, options, cancellationToken);
     }
 
     /// <summary>
