@@ -28,6 +28,7 @@ public class FileInfoPropertyProvider : WikiPagePropertyProvider<FileInfoPropert
             "url",
             "size",
             "sha1",
+            "mime",
         };
         if (QueryExtMetadata)
             properties.Add("extmetadata");

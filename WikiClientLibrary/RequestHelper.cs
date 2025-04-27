@@ -97,7 +97,7 @@ internal static class RequestHelper
         return null;
     }
 
-#region Page/Revision query
+    #region Page/Revision query
 
     public static async IAsyncEnumerable<JsonObject> QueryWithContinuation(WikiSite site,
         IEnumerable<KeyValuePair<string, object?>> parameters,
@@ -178,6 +178,13 @@ internal static class RequestHelper
             var site = sitePages.Key.Site;
             var queryParams = options.EnumParameters(site.SiteInfo.Version).ToDictionary();
             var titleLimit = options.GetMaxPaginationSize(site.SiteInfo.Version, site.AccountInfo.HasRight(UserRights.ApiHighLimits));
+            // Workaround https://github.com/CXuesong/WikiClientLibrary/issues/118
+            // Currently, `prop=revisions` itself does not trigger continuation unless `rvlimit` has been specified. Good.
+            // However, `prop=imageinfo` insists it return all the items eventually
+            // meaning it will trigger continuation even if WCL consumer is only refreshing 1 page and
+            // might only be interested in the latest n versions.
+            var needPropImageInfoContinueHack = queryParams.GetValueOrDefault("prop")?.ToString()
+                ?.Contains("imageinfo", StringComparison.Ordinal) ?? false;
             using (site.BeginActionScope(sitePages, options))
             {
                 foreach (var partition in sitePages.Partition(titleLimit))
@@ -208,6 +215,20 @@ internal static class RequestHelper
                         ParseContinuationParameters(jobj1, queryParams1, continuationParams);
                         while (continuationStatus != CONTINUATION_DONE)
                         {
+                            if (needPropImageInfoContinueHack
+                                && partition.Count == 1
+                                && continuationParams.ContainsKey("iistart"))
+                            {
+                                var continueValue = continuationParams.GetValueOrDefault("continue");
+                                if (continueValue != null && !continueValue.Contains("imageinfo", StringComparison.Ordinal))
+                                {
+                                    // Workaround https://github.com/CXuesong/WikiClientLibrary/issues/118
+                                    // Fiddle with `continue` so it won't return old file revisions.
+                                    continuationParams["continue"] = string.IsNullOrEmpty(continueValue)
+                                        ? "||imageinfo"
+                                        : continueValue + "|imageinfo";
+                                }
+                            }
                             if (continuationStatus == CONTINUATION_LOOP)
                                 throw new UnexpectedContinuationLoopException();
                             Debug.Assert(continuationStatus == CONTINUATION_AVAILABLE);
@@ -323,7 +344,7 @@ internal static class RequestHelper
         }
     }
 
-#endregion
+    #endregion
 
     /// <summary>
     /// Asynchronously purges the pages.
@@ -408,7 +429,10 @@ internal static class RequestHelper
         {
             var jresult = await site.InvokeMediaWikiApiAsync(new MediaWikiFormRequestMessage(new
             {
-                action = "patrol", rcid = recentChangeId, revid = revisionId, token = WikiSiteToken.Patrol,
+                action = "patrol",
+                rcid = recentChangeId,
+                revid = revisionId,
+                token = WikiSiteToken.Patrol,
             }), cancellationToken);
             if (recentChangeId != null) Debug.Assert((int)jresult["patrol"]["rcid"] == recentChangeId.Value);
         }

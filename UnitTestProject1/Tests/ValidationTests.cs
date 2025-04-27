@@ -101,7 +101,7 @@ public class ValidationTests : WikiSiteTestsBase, IClassFixture<WikiSiteProvider
         // Just in case RefreshAsync gets into an infinite loop.
         using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(10));
 
-        await Assert.ThrowsAsync<UnexpectedContinuationLoopException>(() => page.RefreshAsync(new WikiPageQueryProvider
+        await page.RefreshAsync(new WikiPageQueryProvider
         {
             Properties =
             {
@@ -111,7 +111,11 @@ public class ValidationTests : WikiSiteTestsBase, IClassFixture<WikiSiteProvider
                 new PageInfoPropertyProvider(),
                 new PagePropertiesPropertyProvider(),
             },
-        }, cts.Token));
+        }, cts.Token);
+
+        ShallowTrace(page.LastFileRevision);
+        Assert.NotNull(page.LastFileRevision);
+        Assert.Equal("image/jpeg", page.LastFileRevision!.Mime, StringComparer.OrdinalIgnoreCase);
     }
 
 }
