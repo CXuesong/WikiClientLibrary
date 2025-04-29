@@ -1758,6 +1758,73 @@
       <summary>Creates and returns a string representation of the current exception.</summary>
       <returns>A string representation of the current exception.</returns>
     </member>
+    <member name="T:WikiClientLibrary.UnexpectedContinuationLoopException">
+      <summary>
+            Raises when the received MediaWiki continuation parameter is exactly the same
+            as the parameter used to send the MediaWiki API query. This means we are not
+            moving forward in the paginated results.
+            </summary>
+      <remarks>
+            In certain cases, fetching more items can help to move on.
+            You may consider enabling <seealso cref="F:WikiClientLibrary.Generators.Primitive.WikiListContinuationLoopBehaviors.FetchMore" />
+            in <see cref="P:WikiClientLibrary.Generators.Primitive.WikiListCompatibilityOptions.ContinuationLoopBehaviors" />
+            to workaround this Exception.
+            </remarks>
+    </member>
+    <member name="M:WikiClientLibrary.UnexpectedContinuationLoopException.#ctor">
+      <summary>
+        <markup>
+          <include item="SMCAutoDocConstructor">
+            <parameter>WikiClientLibrary.UnexpectedContinuationLoopException</parameter>
+          </include>
+        </markup>
+      </summary>
+    </member>
+    <member name="M:WikiClientLibrary.UnexpectedContinuationLoopException.#ctor(System.String)">
+      <summary>
+        <markup>
+          <include item="SMCAutoDocConstructor">
+            <parameter>WikiClientLibrary.UnexpectedContinuationLoopException</parameter>
+          </include>
+        </markup>
+      </summary>
+      <param name="message">
+        <markup>
+          <include item="SMCMissingParamTag">
+            <parameter>param</parameter>
+            <parameter>message</parameter>
+            <parameter>M:WikiClientLibrary.UnexpectedContinuationLoopException.#ctor(System.String)</parameter>
+          </include>
+        </markup>
+      </param>
+    </member>
+    <member name="M:WikiClientLibrary.UnexpectedContinuationLoopException.#ctor(System.String,System.Exception)">
+      <summary>
+        <markup>
+          <include item="SMCAutoDocConstructor">
+            <parameter>WikiClientLibrary.UnexpectedContinuationLoopException</parameter>
+          </include>
+        </markup>
+      </summary>
+      <param name="message">
+        <markup>
+          <include item="SMCMissingParamTag">
+            <parameter>param</parameter>
+            <parameter>message</parameter>
+            <parameter>M:WikiClientLibrary.UnexpectedContinuationLoopException.#ctor(System.String,System.Exception)</parameter>
+          </include>
+        </markup>
+      </param>
+      <param name="inner">
+        <markup>
+          <include item="SMCMissingParamTag">
+            <parameter>param</parameter>
+            <parameter>inner</parameter>
+            <parameter>M:WikiClientLibrary.UnexpectedContinuationLoopException.#ctor(System.String,System.Exception)</parameter>
+          </include>
+        </markup>
+      </param>
+    </member>
     <member name="T:WikiClientLibrary.UnexpectedDataException">
       <summary>
             Raises when the received network data is out of expectation.
@@ -6172,7 +6239,7 @@
             Asynchronously enumerates the pages from generator.</summary>
       <remarks>
             Using <c>revisions</c> as generator is not supported until MediaWiki 1.25.
-            Usually this generator will only returns the title specified in
+            Usually this generator will only return the title specified in
             <see cref="P:WikiClientLibrary.Generators.Primitive.WikiPagePropertyList`1.PageTitle" /> or <see cref="P:WikiClientLibrary.Generators.Primitive.WikiPagePropertyList`1.PageId" />.
             </remarks>
     </member>
@@ -6190,7 +6257,7 @@
       </param>
       <remarks>
             Using <c>revisions</c> as generator is not supported until MediaWiki 1.25.
-            Usually this generator will only returns the title specified in
+            Usually this generator will only return the title specified in
             <see cref="P:WikiClientLibrary.Generators.Primitive.WikiPagePropertyList`1.PageTitle" /> or <see cref="P:WikiClientLibrary.Generators.Primitive.WikiPagePropertyList`1.PageId" />.
             </remarks>
     </member>
@@ -6200,7 +6267,7 @@
       <param name="options">Options when querying for the pages.</param>
       <remarks>
             Using <c>revisions</c> as generator is not supported until MediaWiki 1.25.
-            Usually this generator will only returns the title specified in
+            Usually this generator will only return the title specified in
             <see cref="P:WikiClientLibrary.Generators.Primitive.WikiPagePropertyList`1.PageTitle" /> or <see cref="P:WikiClientLibrary.Generators.Primitive.WikiPagePropertyList`1.PageId" />.
             </remarks>
     </member>
@@ -6238,7 +6305,7 @@
     </member>
     <member name="P:WikiClientLibrary.Generators.RevisionsGenerator.TimeAscending">
       <summary>
-            Whether to list revisions in an ascending order of time.
+            Whether to list revisions in ascending order of time.
             </summary>
       <value>
         <c>true</c>, if oldest revisions are listed first; or <c>false</c>, if newest revisions are listed first.</value>
@@ -12497,7 +12564,7 @@
             Contains information about a page's belonging category.
             </summary>
     </member>
-    <member name="M:WikiClientLibrary.Pages.Queries.Properties.WikiPageCategoryInfo.#ctor(WikiClientLibrary.Pages.WikiPageStub,System.Boolean,System.String,System.String,System.DateTime)">
+    <member name="M:WikiClientLibrary.Pages.Queries.Properties.WikiPageCategoryInfo.#ctor">
       <summary>
         <markup>
           <include item="SMCAutoDocConstructor">
@@ -12505,51 +12572,6 @@
           </include>
         </markup>
       </summary>
-      <param name="page">
-        <markup>
-          <include item="SMCMissingParamTag">
-            <parameter>param</parameter>
-            <parameter>page</parameter>
-            <parameter>M:WikiClientLibrary.Pages.Queries.Properties.WikiPageCategoryInfo.#ctor(WikiClientLibrary.Pages.WikiPageStub,System.Boolean,System.String,System.String,System.DateTime)</parameter>
-          </include>
-        </markup>
-      </param>
-      <param name="isHidden">
-        <markup>
-          <include item="SMCMissingParamTag">
-            <parameter>param</parameter>
-            <parameter>isHidden</parameter>
-            <parameter>M:WikiClientLibrary.Pages.Queries.Properties.WikiPageCategoryInfo.#ctor(WikiClientLibrary.Pages.WikiPageStub,System.Boolean,System.String,System.String,System.DateTime)</parameter>
-          </include>
-        </markup>
-      </param>
-      <param name="sortKey">
-        <markup>
-          <include item="SMCMissingParamTag">
-            <parameter>param</parameter>
-            <parameter>sortKey</parameter>
-            <parameter>M:WikiClientLibrary.Pages.Queries.Properties.WikiPageCategoryInfo.#ctor(WikiClientLibrary.Pages.WikiPageStub,System.Boolean,System.String,System.String,System.DateTime)</parameter>
-          </include>
-        </markup>
-      </param>
-      <param name="fullSortKey">
-        <markup>
-          <include item="SMCMissingParamTag">
-            <parameter>param</parameter>
-            <parameter>fullSortKey</parameter>
-            <parameter>M:WikiClientLibrary.Pages.Queries.Properties.WikiPageCategoryInfo.#ctor(WikiClientLibrary.Pages.WikiPageStub,System.Boolean,System.String,System.String,System.DateTime)</parameter>
-          </include>
-        </markup>
-      </param>
-      <param name="timeStamp">
-        <markup>
-          <include item="SMCMissingParamTag">
-            <parameter>param</parameter>
-            <parameter>timeStamp</parameter>
-            <parameter>M:WikiClientLibrary.Pages.Queries.Properties.WikiPageCategoryInfo.#ctor(WikiClientLibrary.Pages.WikiPageStub,System.Boolean,System.String,System.String,System.DateTime)</parameter>
-          </include>
-        </markup>
-      </param>
     </member>
     <member name="P:WikiClientLibrary.Pages.Queries.Properties.WikiPageCategoryInfo.FullSortKey">
       <summary>Gets the sortkey (hexadecimal string) of the current page in the category.</summary>
@@ -12572,12 +12594,12 @@
     </member>
     <member name="P:WikiClientLibrary.Pages.Queries.Properties.WikiPageCategoryInfo.Title">
       <summary>
-            Full name of the category.
+            Full name of the category, with namespace prefix.
             </summary>
     </member>
     <member name="M:WikiClientLibrary.Pages.Queries.Properties.WikiPageCategoryInfo.ToString">
-      <summary>Returns the fully qualified type name of this instance.</summary>
-      <returns>The fully qualified type name.</returns>
+      <summary>Returns a string that represents the current object.</summary>
+      <returns>A string that represents the current object.</returns>
     </member>
     <member name="T:WikiClientLibrary.Pages.Queries.Properties.WikiPagePropertyGroup">
       <summary>
