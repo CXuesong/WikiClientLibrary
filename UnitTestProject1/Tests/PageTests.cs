@@ -245,13 +245,13 @@ public class PageTests : WikiSiteTestsBase, IClassFixture<WikiSiteProvider>
     public async Task WpLzhFetchFileTest()
     {
         var site = await WpLzhSiteAsync;
-        var file = new WikiPage(site, "File:Empress Suiko.jpg");
+        var file = new WikiPage(site, "File:Empress Suiko 2.jpg");
         await file.RefreshAsync();
         ShallowTrace(file);
         Assert.False(file.Exists); //It's on Wikimedia!
         Utility.AssertNotNull(file.LastFileRevision);
-        Assert.Equal(58865, file.LastFileRevision.Size);
-        Assert.Equal("7aa12c613c156dd125212d85a072b250625ae39f", file.LastFileRevision.Sha1.ToLowerInvariant());
+        Assert.Equal(2_514_942, file.LastFileRevision.Size);
+        Assert.Equal("e48773b1b1361f7020237e12b88b33e4734c551a", file.LastFileRevision.Sha1);
         Assert.Empty(file.LastFileRevision.ExtMetadata);
     }
 
@@ -259,7 +259,8 @@ public class PageTests : WikiSiteTestsBase, IClassFixture<WikiSiteProvider>
     public async Task WpLzhFetchFileWithExtMetadataTest()
     {
         var site = await WpLzhSiteAsync;
-        var file = new WikiPage(site, "File:Empress Suiko.jpg");
+        // From Wikimedia Commons
+        var file = new WikiPage(site, "File:Empress Suiko 2.jpg");
         await file.RefreshAsync(new WikiPageQueryProvider { Properties = { new FileInfoPropertyProvider { QueryExtMetadata = true } } });
 
         Output.WriteLine("Fetched file:");
