@@ -391,6 +391,12 @@ public partial class WikiSite : IWikiClientLoggable, IWikiClientAsyncInitializat
                          AccountAssertionBehavior.AssertUser && _AccountInfo.IsUser)
                     newFields.Add("assert", "user");
             }
+            // Apply maxlag
+            if (options.MaxLag != null)
+            {
+                newFields.Add("maxlag", options.MaxLag.GetValueOrDefault());
+            }
+
             localRequest = new MediaWikiFormRequestMessage(form.Id, newFields, form.AsMultipartFormData);
         }
         Logger.LogDebug("Sending request {Request}, SuppressAccountAssertion={SuppressAccountAssertion}",

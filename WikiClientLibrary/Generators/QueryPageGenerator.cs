@@ -74,7 +74,6 @@ public class QueryPageGenerator : WikiPageGenerator<QueryPageResultItem>
             new
             {
                 action = "query",
-                maxlag = 5,
                 list = "querypage",
                 qppage = QueryPageName,
                 qplimit = 1,
