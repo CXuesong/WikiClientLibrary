@@ -28,13 +28,13 @@ jobs:
       WCL_IS_CI_BUILD: 1
       BUILD_SECRET_KEY: "${{ secrets.BUILD_SECRET }}"
     steps:
-      - uses: actions/setup-dotnet@v4
+      - uses: actions/setup-dotnet@v6
         with:
           dotnet-version: |
             8.x
             10.x
           dotnet-quality: 'preview'
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           submodules: true
       - name: PrepEnv
@@ -46,7 +46,7 @@ jobs:
       - name: CollectArtifacts
         shell: pwsh
         run: './WikiClientLibrary.Commons/CI/CollectArtifacts -Configuration Release'
-      - uses: actions/upload-artifact@master
+      - uses: actions/upload-artifact@v7
         with:
           name: BuildArtifacts-Linux-Release
           path: ./CollectedArtifacts
@@ -54,11 +54,13 @@ jobs:
         shell: pwsh
         run: ./WikiClientLibrary.Commons/CI/Test.ps1
   build_windows:
-    if: success()
+    # Run jobs sequentially
+    needs: build_linux
     name: Windows Build & Test
     runs-on: windows-latest
     timeout-minutes: 30
     strategy:
+      max-parallel: 1
       matrix:
         config: ["Debug", "Release"]
     env:
@@ -67,13 +69,13 @@ jobs:
       WCL_IS_CI_BUILD: 1
       BUILD_SECRET_KEY: "${{ secrets.BUILD_SECRET }}"
     steps:
-      - uses: actions/setup-dotnet@v4
+      - uses: actions/setup-dotnet@v6
         with:
           dotnet-version: |
             8.x
             10.x
           dotnet-quality: 'preview'
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           submodules: true
       - name: PrepEnv
@@ -85,7 +87,7 @@ jobs:
       - name: CollectArtifacts
         shell: pwsh
         run: './WikiClientLibrary.Commons/CI/CollectArtifacts -Configuration ${{ matrix.config }}'
-      - uses: actions/upload-artifact@master
+      - uses: actions/upload-artifact@v7
         with:
           name: BuildArtifacts-Windows-${{ matrix.config }}
           path: ./CollectedArtifacts

@@ -204,7 +204,7 @@ public class WikiClient : IWikiClient, IWikiClientLoggable, IDisposable
                 Logger.LogWarning("Cannot retry: {Exception}.", ex.Message);
                 return false;
             }
-            Logger.LogDebug("Retry #{Retries} after {Delay}.", retries, RetryDelay);
+            Logger.LogDebug("Retry #{Retries} after {Delay}.", retries, delay);
             await Task.Delay(delay, cancellationToken);
             return true;
         }
@@ -259,7 +259,7 @@ public class WikiClient : IWikiClient, IWikiClientLoggable, IDisposable
             var localRetryDelay = RetryDelay;
             if (response.Headers.RetryAfter != null)
             {
-                Logger.LogWarning("Detected Retry-After header in HTTP response: {RetryAfter}.", response.Headers.RetryAfter);
+                Logger.LogInformation("Detected Retry-After header in HTTP response: {RetryAfter}.", response.Headers.RetryAfter);
                 if (retries < MaxRetries)
                 {
                     // Service Error. We can retry.
