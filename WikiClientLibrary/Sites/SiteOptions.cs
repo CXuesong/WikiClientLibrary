@@ -40,6 +40,13 @@ public class SiteOptions
     public AccountAssertionBehavior AccountAssertion { get; set; } = AccountAssertionBehavior.AssertAll;
 
     /// <summary>
+    /// Gets/sets the maximum lag allowed for the requests (in seconds).
+    /// </summary>
+    /// <remarks>Defaults to 5 seconds.</remarks>
+    /// <seealso href="https://www.mediawiki.org/wiki/Manual:Maxlag_parameter"/>
+    public int? MaxLag { get; set; } = 5;
+
+    /// <summary>
     /// Initializes with empty settings.
     /// </summary>
     public SiteOptions()

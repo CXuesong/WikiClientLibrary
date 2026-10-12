@@ -442,7 +442,6 @@ public partial class WikiPage
                     minor = options.Minor,
                     bot = options.Bot,
                     recreate = true,
-                    maxlag = 5,
                     basetimestamp = LastRevision?.TimeStamp,
                     watchlist = options.Watch,
                     summary = options.Summary,
@@ -541,7 +540,6 @@ public partial class WikiPage
                     from = PageStub.HasTitle ? PageStub.Title : null,
                     fromid = PageStub.HasTitle ? null : (int?)PageStub.Id,
                     to = newTitle,
-                    maxlag = 5,
                     movetalk = (options & PageMovingOptions.LeaveTalk) != PageMovingOptions.LeaveTalk,
                     movesubpages = (options & PageMovingOptions.MoveSubpages) == PageMovingOptions.MoveSubpages,
                     noredirect = (options & PageMovingOptions.NoRedirect) == PageMovingOptions.NoRedirect,
@@ -607,7 +605,6 @@ public partial class WikiPage
                     token = WikiSiteToken.Delete,
                     title = PageStub.HasTitle ? PageStub.Title : null,
                     pageid = PageStub.HasTitle ? null : (int?)PageStub.Id,
-                    maxlag = 5,
                     watchlist = watch,
                     reason = reason,
                 }), cancellationToken);

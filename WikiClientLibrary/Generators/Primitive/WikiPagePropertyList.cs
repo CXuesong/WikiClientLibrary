@@ -108,7 +108,6 @@ public abstract class WikiPagePropertyList<T> : IWikiList<T>
         var queryParams = new Dictionary<string, object?>
         {
             { "action", "query" },
-            { "maxlag", 5 },
             { "titles", PageTitle },
             { "prop", PropertyName },
         };
