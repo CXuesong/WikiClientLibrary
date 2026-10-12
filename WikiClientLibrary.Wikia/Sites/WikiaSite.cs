@@ -46,7 +46,21 @@ public class WikiaSite : WikiSite
     {
     }
 
-    public SiteVariableData WikiVariables { get; private set; }
+    public SiteVariableData WikiVariables
+    {
+        get
+        {
+            if (field == null)
+            {
+                throw new InvalidOperationException("WikiVariables has not been initialized, or the last Mercury API call has failed.");
+            }
+            return field;
+        }
+        private set
+        {
+            field = value;
+        }
+    }
 
     /// <inheritdoc cref="InvokeWikiaAjaxAsync{T}(WikiRequestMessage,IWikiResponseMessageParser{T},CancellationToken)"/>
     /// <remarks>
@@ -142,10 +156,19 @@ public class WikiaSite : WikiSite
         await base.RefreshSiteInfoAsync();
         using (this.BeginActionScope(null))
         {
-            var jresult = await InvokeWikiaApiAsync("/Mercury/WikiVariables", new WikiaQueryRequestMessage(), CancellationToken.None);
-            var jdata = jresult["data"];
-            if (jdata == null) throw new UnexpectedDataException("Missing data node in the JSON response.");
-            WikiVariables = jdata.Deserialize<SiteVariableData>(Utility.WikiaApiJsonSerializerOptions);
+            try
+            {
+                var jresult = await InvokeWikiaApiAsync("/Mercury/WikiVariables", new WikiaQueryRequestMessage(), CancellationToken.None);
+                var jdata = jresult["data"];
+                if (jdata == null) throw new UnexpectedDataException("Missing data node in the JSON response.");
+                WikiVariables = jdata.Deserialize<SiteVariableData>(Utility.WikiaApiJsonSerializerOptions);
+            }
+            catch (UnexpectedDataException)
+            {
+                // Workaround: Mercury is currently behind Cloudflare redirect, so we won't expect it to work.
+                // TODO Confirming whether Mercury API has been deprecated.
+                this.Logger.LogWarning("Failed to retrieve Wikia WikiVariables. (UnexpectedDataException)");
+            }
         }
     }
 

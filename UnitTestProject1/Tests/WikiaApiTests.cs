@@ -92,7 +92,7 @@ public class WikiaApiTests : WikiSiteTestsBase, IClassFixture<WikiSiteProvider>
     public async Task ArticleEnumCommentsTest()
     {
         var site = await WikiaTestSiteAsync;
-        var commentArea = new Board(site, "1WEPN1UE18M6N");
+        var commentArea = new Board(site, "Sandbox 1");
         await commentArea.RefreshAsync();
         Skip.IfNot(commentArea.Exists, $"Page [[{commentArea}]] is gone. There is nothing we can do for it.");
         // [[w:c:mediawiki119:1WEPN1UE18M6N]]
